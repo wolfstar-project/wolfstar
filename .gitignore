@@ -1,0 +1,42 @@
+# Ignore a blackhole and the folder for development
+node_modules/
+.vs/
+.idea/
+*.iml
+/rethinkdb_data/
+coverage/
+
+# Yarn files
+.yarn/install-state.gz
+.yarn/build-state.yml
+
+# Environment variables
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+redis.local.conf
+
+# Ignore bwd folders
+dist/
+
+# Ignore auto-generated files
+.config/
+generated/
+
+# Ignore heapsnapshot and log files
+*.heapsnapshot
+*.log
+
+# Ignore package locks
+package-lock.json
+
+# Ignore the GH cli downloaded by workflows
+gh
+
+# Ignore the "wiki" folder so we can checkout the wiki inside the same folder
+wiki/
+
+# Profiler data
+*.0x

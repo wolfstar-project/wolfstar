@@ -1,0 +1,6 @@
+{
+	"caseNotExists_one": "{{REDCROSS}} Lo siento, pero el caso de registro de moderación seleccionado no existe.",
+	"caseNotExists_other": "{{REDCROSS}} Lo siento, pero ninguno de los registros de moderación seleccionados existe.",
+	"restrictionNotConfigured": "El rol de restricción debe ser configurado para que esta acción se pueda llevar a cabo",
+	"success": "Ejecutado el comando con éxito."
+}

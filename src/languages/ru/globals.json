@@ -1,0 +1,10 @@
+{
+	"defaultLanguage": "Язык по умолчанию",
+	"no": "Нет",
+	"yes": "Да",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"orListValue": "{{value, orList}}"
+}

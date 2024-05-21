@@ -1,0 +1,10 @@
+export const Enabled = 'selfmodInvitesEnabled';
+export const IgnoredCodes = 'selfmodInvitesIgnoredCodes';
+export const IgnoredGuilds = 'selfmodInvitesIgnoredGuilds';
+export const IgnoredRoles = 'selfmodInvitesIgnoredRoles';
+export const IgnoredChannels = 'selfmodInvitesIgnoredChannels';
+export const SoftAction = 'selfmodInvitesSoftAction';
+export const HardAction = 'selfmodInvitesHardAction';
+export const HardActionDuration = 'selfmodInvitesHardActionDuration';
+export const ThresholdMaximum = 'selfmodInvitesThresholdMaximum';
+export const ThresholdDuration = 'selfmodInvitesThresholdDuration';

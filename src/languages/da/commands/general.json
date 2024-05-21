@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "",
+	"helpCommandCount_one": "",
+	"helpCommandCount_other": "",
+	"helpData": {
+		"footer": "",
+		"title": ""
+	},
+	"helpDescription": "",
+	"helpExtended": {
+		"usages": [
+			"",
+			"",
+			"",
+			"",
+			""
+		],
+		"extendedHelp": "",
+		"reminder": "",
+		"examples": [
+			"",
+			"",
+			"",
+			"",
+			""
+		]
+	},
+	"helpDm": "",
+	"helpNodm": "",
+	"v7Description": "",
+	"v7Extended": {
+		"extendedHelp": ""
+	},
+	"v7Message": "",
+	"v7NayreMessage": ""
+}

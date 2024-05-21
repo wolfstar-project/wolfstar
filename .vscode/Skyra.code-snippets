@@ -1,0 +1,32 @@
+{
+	// Place your Wolfstar workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+	// Placeholders with the same ids are connected.
+	"WolfCommand": {
+		"scope": "typescript",
+		"prefix": "command",
+		"body": [
+			"import { WolfCommand } from '#lib/structures';",
+			"import { LanguageKeys } from '#lib/i18n/languageKeys';",
+			"import { ApplyOptions } from '@sapphire/decorators';",
+			"import type { Message } from 'discord.js';",
+			"",
+			"@ApplyOptions<WolfCommand.Options>({",
+			"\tcooldown: 10,",
+			"\tdescription: LanguageKeys.Commands.$1.${TM_FILENAME_BASE/(.{1})/${1:/upcase}/}Description,",
+			"\tdetailedDescription: LanguageKeys.Commands.$1.${TM_FILENAME_BASE/(.{1})/${1:/upcase}/}Extended,",
+			"\tpermissions: [$2],",
+			"})",
+			"export class UserCommand extends WolfCommand {",
+			"\tpublic async messageRun(message: Message, args: WolfCommand.Args) {",
+			"\t\treturn $3;",
+			"\t}",
+			"}",
+			""
+		],
+		"description": "Creates a WolfCommand"
+	}
+}

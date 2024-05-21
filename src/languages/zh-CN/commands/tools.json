@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "",
+	"avatarExtended": {
+		"usages": [
+			"",
+			""
+		],
+		"extendedHelp": "",
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		],
+		"reminder": ""
+	},
+	"avatarNone": "",
+	"voteDescription": "",
+	"voteExtended": {
+		"usages": [
+			""
+		],
+		"examples": [
+			""
+		],
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		]
+	},
+	"voteContentNeeded": "",
+	"voteReactionBlocked": "",
+	"whoisExtended": {
+		"usages": [
+			"",
+			""
+		],
+		"extendedHelp": "",
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": ""
+}

@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Mostrando una categoría por página. ¿Tiene problemas con el incrustado? Ejecute `{{prefix}}help --all` para obtener una lista completa en mensajes directos.",
+	"helpCommandCount_one": "{{count}} comando",
+	"helpCommandCount_other": "{{count}} comandos",
+	"helpData": {
+		"footer": "Descripción de ayuda para {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Muestra todos los comandos o la descripción de uno.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--all",
+			"NombreDeCategoría",
+			"Página",
+			"NombreDeComando"
+		],
+		"extendedHelp": "El comando de ayuda muestra una lista paginada de todos los comandos por sus categorías, o la información extendida de un comando si se especifica.\n\nSi utiliza `--categories` o `--cat`, puede obtener la lista de todas las categorías y la cantidad de comandos en cada una de ellas.",
+		"reminder": "El comando de ayuda **sólo** muestra los comandos que puedes utilizar. Para la lista completa, por favor visita <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--cat",
+			"--all",
+			"Moderación",
+			"12",
+			"help"
+		]
+	},
+	"helpDm": "📥 | La lista de comandos a los que tienes acceso ha sido enviada a tus mensajes directos.",
+	"helpNodm": "{{REDCROSS}} | Tienes los mensajes directos deshabilitados, por lo que no pude enviarte la lista de comandos.",
+	"v7Description": "",
+	"v7Extended": {
+		"extendedHelp": ""
+	},
+	"v7Message": "",
+	"v7NayreMessage": ""
+}

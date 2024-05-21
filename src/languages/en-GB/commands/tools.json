@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "View somebody's avatar at full size.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			""
+		],
+		"extendedHelp": "As this command's name says, it shows somebody's avatar.",
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		],
+		"reminder": "Use the --size flag to change the avatar's size."
+	},
+	"avatarNone": "That user has not set an avatar.",
+	"voteDescription": "",
+	"voteExtended": {
+		"usages": [
+			""
+		],
+		"examples": [
+			""
+		],
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		]
+	},
+	"voteContentNeeded": "",
+	"voteReactionBlocked": "",
+	"whoisExtended": {
+		"usages": [
+			"",
+			""
+		],
+		"extendedHelp": "",
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": ""
+}

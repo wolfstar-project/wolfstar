@@ -1,0 +1,84 @@
+version: '2.4'
+services:
+  influx:
+    command: 'influxd run --bolt-path /var/lib/influxdb2/influxd.bolt --engine-path /var/lib/influxdb2/engine --store bolt'
+    container_name: influxdb
+    image: 'influxdb:2.7-alpine'
+    networks:
+      - wolfstar
+    ports:
+      - '8285:8086'
+    restart: always
+    volumes:
+      - 'influx-data:/var/lib/influxdb2'
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  postgres:
+    container_name: postgres
+    image: 'postgres:15-alpine'
+    networks:
+      - wolfstar
+    ports:
+      - '5432:5432'
+    restart: always
+    volumes:
+      - 'postgres-data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=wolfstar
+    logging:
+      options:
+        max-size: '20m'
+        max-file: '3'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
+  redis:
+    command: 'redis-server --port 8287 --requirepass redis'
+    container_name: redis
+    image: 'redis:alpine'
+    networks:
+      - wolfstar
+    ports:
+      - '8287:8287'
+    restart: always
+    logging:
+      options:
+        max-size: '20m'
+        max-file: '3'
+
+  wolfstar:
+    build: ./
+    container_name: wolfstar
+    depends_on:
+      - influx
+      - postgres
+    env_file:
+      - src/.env.development
+      - src/.env.development.local
+    image: ghcr.io/wolfstar-project/wolfstar:latest
+    networks:
+      - wolfstar
+    ports:
+      - '8282:8282'
+    restart: always
+    tty: true
+    logging:
+      options:
+        max-size: '1g'
+        max-file: '3'
+
+volumes:
+  postgres-data:
+  influx-data:
+
+networks:
+  wolfstar:

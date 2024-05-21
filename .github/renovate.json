@@ -1,0 +1,13 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["github>sapphiredev/.github:sapphire-renovate"],
+	"npm": {
+		"packageRules": [
+			{
+				"matchPackagePatterns": ["@types/node"],
+				"enabled": false
+			}
+		]
+	},
+	"forkProcessing": "enabled"
+}

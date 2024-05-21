@@ -1,0 +1,18 @@
+{
+	"guildMemberAdd": "Nuevo Usuario",
+	"guildMemberAddedRoles_one": "**Rol añadido**: {{addedRoles}}",
+	"guildMemberAddMute": "Un usuario silenciado se ha unido",
+	"guildMemberBanned": "Usuario Baneado",
+	"guildMemberKicked": "Usuario Expulsado",
+	"guildMemberNoUpdate": "No se han detectado actualizaciones",
+	"guildMemberRemove": "Un usuario nos ha abandonado",
+	"guildMemberRemovedRoles_one": "**Rol eliminado**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Usuario Softbaneado",
+	"nameUpdateNextWasNotSet": "**Siguiente**: No Establecido",
+	"nameUpdateNextWasSet": "**Siguiente**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Anterior**: No Establecido",
+	"nameUpdatePreviousWasSet": "**Anterior**: `{{previousName}}`",
+	"nicknameUpdate": "Apodo Editado",
+	"roleUpdate": "Roles Editados",
+	"usernameUpdate": "Nombre de Usuario Editado"
+}

@@ -1,0 +1,30 @@
+{
+	"evalDescription": "",
+	"evalExtended": {
+		"usages": [
+			""
+		],
+		"extendedHelp": "",
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		],
+		"examples": [
+			"",
+			""
+		],
+		"reminder": ""
+	},
+	"evalTimeout": "",
+	"evalError": "**Ошибка**:{{output}}\n**Тип**:{{type}}\n{{time}}",
+	"dmNotSent": "",
+	"dmSent": "Я отправила вам личное сообщение.",
+	"reboot": "",
+	"rebootDescription": "Перезагружает бота.",
+	"rebootExtended": {
+		"extendedHelp": "",
+		"reminder": ""
+	}
+}

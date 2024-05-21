@@ -1,0 +1,7 @@
+{
+	"escaperopeDescription": "Usa la Cuerda Huida de Pokemon.",
+	"escaperopeExtended": {
+		"extendedHelp": "**WolfStar** utilizó **Cuerda Huida**."
+	},
+	"escaperopeOutput": "**{{user}}** utilizó **Cuerda Huida**"
+}

@@ -1,0 +1,30 @@
+{
+	"evalDescription": "",
+	"evalExtended": {
+		"usages": [
+			""
+		],
+		"extendedHelp": "",
+		"explainedUsage": [
+			[
+				"",
+				""
+			]
+		],
+		"examples": [
+			"",
+			""
+		],
+		"reminder": ""
+	},
+	"evalTimeout": "",
+	"evalError": "",
+	"dmNotSent": "",
+	"dmSent": "",
+	"reboot": "",
+	"rebootDescription": "",
+	"rebootExtended": {
+		"extendedHelp": "",
+		"reminder": ""
+	}
+}
