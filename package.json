@@ -121,7 +121,7 @@
 	},
 	"resolutions": {
 		"@types/node": "20.11.5",
-		"ansi-regex": "^6.0.1",
+		"ansi-regex": "^5.0.1",
 		"discord-api-types": "^0.37.84",
 		"minimist": "^1.2.8",
 		"@skyra/tags@^1.1.3": "patch:@skyra/tags@npm%3A1.1.3#./.yarn/patches/@skyra-tags-npm-1.1.3-b9536c74b6.patch"
