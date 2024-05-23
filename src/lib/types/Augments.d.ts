@@ -147,11 +147,7 @@ declare module '@skyra/env-utilities' {
 
 		TWITCH_CALLBACK: string;
 
-		PGSQL_DATABASE_NAME: string;
-		PGSQL_DATABASE_PASSWORD: string;
-		PGSQL_DATABASE_USER: string;
-		PGSQL_DATABASE_PORT: IntegerString;
-		PGSQL_DATABASE_HOST: string;
+		PGSQL_DATABASE_URL: string;
 		TYPEORM_DEBUG_LOGS: BooleanString;
 
 		INFLUX_ENABLED: BooleanString;
