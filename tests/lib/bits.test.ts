@@ -59,7 +59,7 @@ describe('Bits', () => {
 				'CreateEvents',
 				'UseExternalSounds',
 				'SendVoiceMessages',
-				'UsePolls'
+				'SendPolls'
 			]);
 		});
 	});
