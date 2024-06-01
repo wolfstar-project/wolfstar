@@ -54,86 +54,97 @@ export class UserCommand extends WolfSubcommand {
 	}
 
 	public async any(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, () => true);
+		return this.handlePurge(message, args, () => true, 'any');
 	}
 
 	public async attachments(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.attachments.size > 0);
+		return this.handlePurge(message, args, (msg) => msg.attachments.size > 0, 'attachments');
 	}
 
 	public async images(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.attachments.some((at) => !isNullish(getImageUrl(at.url))));
+		return this.handlePurge(message, args, (msg) => msg.attachments.some((at) => !isNullish(getImageUrl(at.url))), 'images');
 	}
 
 	public async author(message: GuildMessage, args: WolfSubcommand.Args) {
 		const author = args.finished ? message.author : await args.pick('user');
-		return this.handlePurge(message, args, (msg) => msg.author.id === author.id);
+		return this.handlePurge(message, args, (msg) => msg.author.id === author.id, 'author');
 	}
 
 	public async bots(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.author.bot);
+		return this.handlePurge(message, args, (msg) => msg.author.bot, 'bots');
 	}
 
 	public async humans(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => !msg.author.bot);
+		return this.handlePurge(message, args, (msg) => !msg.author.bot, 'humans');
 	}
 
 	public async invites(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => UserCommand.kInviteRegExp.test(msg.content));
+		return this.handlePurge(message, args, (msg) => UserCommand.kInviteRegExp.test(msg.content), 'invites');
 	}
 
 	public async links(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => UserCommand.kLinkRegExp.test(msg.content));
+		return this.handlePurge(message, args, (msg) => UserCommand.kLinkRegExp.test(msg.content), 'links');
 	}
 
 	public async you(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.author.id === process.env.CLIENT_ID);
+		return this.handlePurge(message, args, (msg) => msg.author.id === process.env.CLIENT_ID, 'you');
 	}
 
 	public async pins(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.pinned);
+		return this.handlePurge(message, args, (msg) => msg.pinned, 'pins');
 	}
 
 	public async silent(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, () => true, true);
+		return this.handlePurge(message, args, () => true, 'silent', true);
 	}
 
 	public async age(message: GuildMessage, args: WolfSubcommand.Args) {
 		const maximumAge = await this.getAge(args);
 		const oldestMessageTimestamp = Date.now() - maximumAge;
-		return this.handlePurge(message, args, (msg) => msg.createdTimestamp > oldestMessageTimestamp);
+		return this.handlePurge(message, args, (msg) => msg.createdTimestamp > oldestMessageTimestamp, 'age');
 	}
 
 	public async includes(message: GuildMessage, args: WolfSubcommand.Args) {
 		const includes = (await args.rest('string')).toLowerCase();
-		return this.handlePurge(message, args, (msg) => msg.content.toLowerCase().includes(includes));
+		return this.handlePurge(message, args, (msg) => msg.content.toLowerCase().includes(includes), 'includes');
 	}
 
 	public async match(message: GuildMessage, args: WolfSubcommand.Args) {
 		const pattern = new RegExp(await args.rest('string'), 'i');
-		return this.handlePurge(message, args, (msg) => pattern.test(msg.content));
+		return this.handlePurge(message, args, (msg) => pattern.test(msg.content), 'match');
 	}
 
 	public async startswith(message: GuildMessage, args: WolfSubcommand.Args) {
 		const startswith = (await args.rest('string')).toLowerCase();
-		return this.handlePurge(message, args, (msg) => msg.content.toLowerCase().startsWith(startswith));
+		return this.handlePurge(message, args, (msg) => msg.content.toLowerCase().startsWith(startswith), 'startswith');
 	}
 
 	public async endswith(message: GuildMessage, args: WolfSubcommand.Args) {
 		const endswith = (await args.rest('string')).toLowerCase();
-		return this.handlePurge(message, args, (msg) => msg.content.toLowerCase().endsWith(endswith));
+		return this.handlePurge(message, args, (msg) => msg.content.toLowerCase().endsWith(endswith), 'endswith');
 	}
 
 	public async mentions(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.mentions.users.size > 0 || msg.mentions.roles.size > 0 || msg.mentions.channels.size > 0);
+		return this.handlePurge(
+			message,
+			args,
+			(msg) => msg.mentions.users.size > 0 || msg.mentions.roles.size > 0 || msg.mentions.channels.size > 0,
+			'mentions'
+		);
 	}
 
 	public async embeds(message: GuildMessage, args: WolfSubcommand.Args) {
-		return this.handlePurge(message, args, (msg) => msg.embeds.length > 0);
+		return this.handlePurge(message, args, (msg) => msg.embeds.length > 0, 'embeds');
 	}
 
-	private async handlePurge(message: GuildMessage, args: WolfSubcommand.Args, filter: BooleanFn<[GuildMessage]>, silent = false) {
-		const limit = await args.pick('integer', { minimum: 1, maximum: 1000 });
+	private async handlePurge(
+		message: GuildMessage,
+		args: WolfSubcommand.Args,
+		filter: BooleanFn<[GuildMessage]>,
+		subcommand: string,
+		silent = false
+	) {
+		const limit = await args.pick('integer', { minimum: 1, maximum: subcommand === 'any' ? 1000 : 100 });
 		const rawPosition = args.finished ? null : await args.pick(UserCommand.position);
 		const targetMessage = args.finished && rawPosition === null ? message : await args.pick('message');
 
