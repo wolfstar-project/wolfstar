@@ -16,8 +16,8 @@ services:
         max-size: '10m'
         max-file: '3'
 
-  postgres:
-    container_name: postgres
+  postgres2:
+    container_name: postgres2
     image: 'postgres:15-alpine'
     networks:
       - wolfstar

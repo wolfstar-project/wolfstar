@@ -1,8 +1,8 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { Events, type GuildMessage } from '#lib/types';
 import { deleteMessage, isModerator } from '#utils/functions';
-import { MEDIA_EXTENSION } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';
+import { isImageAttachment } from '@sapphire/discord.js-utilities';
 import { Listener } from '@sapphire/framework';
 
 @ApplyOptions<Listener.Options>({ event: Events.GuildUserMessage })
@@ -32,6 +32,6 @@ export class UserListener extends Listener {
 	}
 
 	private hasMediaAttachments(message: GuildMessage) {
-		return message.attachments.some((att) => MEDIA_EXTENSION.test(att.url));
+		return message.attachments.some((attachment) => isImageAttachment(attachment));
 	}
 }
