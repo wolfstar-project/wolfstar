@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Exibindo uma categoria por página. Você tem problemas com a incorporação? Execute `{{prefix}}ajuda --all` para obter uma lista completa em DMs.",
+	"helpCommandCount_one": "Comando {{count}}",
+	"helpCommandCount_other": "Comandos {{count}}",
+	"helpData": {
+		"footer": "Ajuda de comando para {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Exibe todos os comandos ou a descrição de um.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--todos",
+			"Nome",
+			"Página",
+			"Nome"
+		],
+		"extendedHelp": "The help command shows a paginated list of all commands by their categories, or the extended information of a command if specified.\n\nIf you use `--categories` or `--cat`, you can get the list of all categories and the amount of commands each one of them have.",
+		"reminder": "O comando de ajuda **somente** mostra os comandos que você pode usar. Para a lista completa, visite <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"Gato",
+			"--todos",
+			"Moderação",
+			"12",
+			"Ajuda"
+		]
+	},
+	"helpDm": "📥 『A lista de comandos que você tem acesso foi enviada para seus DMs.",
+	"helpNodm": "{{REDCROSS}} \"Você tem mensagens diretas desativadas, então não pude enviar a lista de comandos\".",
+	"v7Description": "Obtém a informação sobre Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Este é um comando **oculto** usado exclusivamente para enviar um aviso para todos que tentam usar comandos que foram removidos de acordo com [SKyra v7](https://skyra. planos otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)."
+	},
+	"v7Message": "Oi! Obrigado por usar este comando, no entanto, ele foi removido devido a [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). O link inclui uma explicação para o motivo do `{{command}}` ter sido removido.\n\nDesculpe pelo inconveniente e obrigado por usar WolfStar. 💖",
+	"v7NayreMessage": "Hello there! Thank you for using this command, however, it was removed and will be either redesigned as part of Nayre's Acryss RPG as mentioned in [WolfStar v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖"
+}
