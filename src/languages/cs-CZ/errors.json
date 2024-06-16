@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Omlouvám se, pokusil jsem se provést akci pro kanál neznámý Discordu a selhalo, tato chyba byla nahlášena vývojářům.",
+	"genericUnknownGuild": "Omlouvám se, pokusil jsem se provést akci pro server neznámý Discordu a selhalo, tato chyba byla nahlášena vývojářům.",
+	"genericUnknownMember": "Omlouvám se, pokusil jsem se provést akci pro člena neznámého Discordu a selhalo, tato chyba byla nahlášena vývojářům.",
+	"genericUnknownMessage": "Omlouvám se, pokusil jsem se provést akci pro zprávu neznámou Discordu a selhalo, tato chyba byla nahlášena vývojářům.",
+	"genericUnknownRole": "Omlouvám se, pokusil jsem se provést akci pro roli neznámou Discordu a selhalo, tato chyba byla nahlášena vývojářům.",
+	"genericMissingAccess": "Omlouvám se, snažil jsem se provést akci pro zdroj bez potřebného oprávnění a tato chyba byla nahlášena vývojářům.",
+	"genericDiscordInternalServerError": "Jejda, Discord se rozbil, zkuste to prosím znovu později.",
+	"genericDiscordGateway": "Jejda, síť se snaží komunikovat s Discordem, zkuste to prosím později.",
+	"genericDiscordUnavailable": "Jejda, Discord je momentálně nedostupný, zkuste to prosím později.",
+	"guildBansEmpty": "Na tomto serveru nejsou zaregistrovány žádné zákazy.",
+	"guildBansNotFound": "Pokusil jsem se a nepodařilo najít tohoto uživatele ze seznamu zakázaných uživatelů. Jste si jisti, že je tento uživatel zablokován?",
+	"guildMemberNotVoicechannel": "Nemohu tuto akci provést u člena, který není připojen k hlasovému kanálu.",
+	"guildWarnNotFound": "Nedokázal jsem toto varování. Buď neexistuje, nemá žádné varování, nebo byl osloven.",
+	"modlogTimed": "Tento protokol modifikace je již načasován. Vyprší v {{remaining, duration}}",
+	"unexpectedIssue": "Neočekávaná chyba vyskakována! Bezpečně přerušuji tento příkaz...",
+	"userNotInGuild": "Tento uživatel není na tomto serveru."
+}
