@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "A réagi avec {{emoji}} sur {{message}}",
+	"reactionFooter": "Première réaction ajoutée",
+	"filterFooter": "Réaction filtrée",
+	"filter": "{{REDCROSS}} Hey {{user}}, ne pas ajouter cette réaction !",
+	"selfRoleHierarchy": "{{REDCROSS}} My role needs to be higher than all self-assignable roles, otherwise I can't grant them to people!"
+}
