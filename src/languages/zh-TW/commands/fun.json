@@ -1,7 +1,7 @@
 {
-	"escaperopeDescription": "",
+	"escaperopeDescription": "Use the escape rope from Pokemon.",
 	"escaperopeExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "**WolfStar** used **Escape Rope**."
 	},
-	"escaperopeOutput": ""
+	"escaperopeOutput": "**{{user}}** used **Escape Rope**"
 }
