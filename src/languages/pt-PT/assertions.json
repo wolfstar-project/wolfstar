@@ -1,0 +1,3 @@
+{
+	"expectedNonThreadChannel": "Esperado um canal de texto regular, mas eu recebi o canal de tópico {{channel}} em vez disso."
+}
