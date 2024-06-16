@@ -1,0 +1,15 @@
+{
+	"name": "whois",
+	"description": "Предоставляет информацию о пользователе Discord",
+	"contextMenuName": "Получить информацию",
+	"userName": "пользователь",
+	"userDescription": "Пользователь для получения информации о",
+	"rolesTitle_one": "Роль [1]",
+	"rolesTitle_other": "Роли [{{count, number}}]",
+	"permissionsTitle": "Разрешения ключа",
+	"permissionsAll": "Все права доступа",
+	"embedDescription": "**С пользователем**: {{createdAt}}",
+	"embedMemberDescription": "**С участника**: {{joinedAt}}",
+	"buttonAvatar": "Аватар",
+	"buttonProfile": "Профиль"
+}
