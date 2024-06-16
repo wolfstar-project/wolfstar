@@ -1,0 +1,15 @@
+{
+	"name": "whois",
+	"description": "Fornisce informazioni su un utente Discord",
+	"contextMenuName": "Ottieni Informazioni",
+	"userName": "utente",
+	"userDescription": "L'utente per ottenere informazioni su",
+	"rolesTitle_one": "Ruolo [1]",
+	"rolesTitle_other": "Ruoli [{{count, number}}]",
+	"permissionsTitle": "Permessi Chiave",
+	"permissionsAll": "Tutti I Permessi",
+	"embedDescription": "**Utente Successivo**: {{createdAt}}",
+	"embedMemberDescription": "**Membro Successivo**: {{joinedAt}}",
+	"buttonAvatar": "Avatar",
+	"buttonProfile": "Profilo"
+}
