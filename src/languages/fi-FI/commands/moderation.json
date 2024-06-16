@@ -1,0 +1,889 @@
+{
+	"permissions": "Permissions for {{username}} ({{id}})",
+	"permissionsAll": "Kaikki Oikeudet",
+	"slowmodeSet": "Tämän kanavan jäähtyminen on asetettu {{cooldown, duration}}.",
+	"slowmodeReset": "Tämän kanavan jäähdytys on nollattu.",
+	"banNotBannable": "Tavoite ei ole minulle kielletty.",
+	"dehoistStarting": "Aloitan dehoisting {{count}} jäsentä...",
+	"dehoistProgress": "Dehoisted {{count}} jäsentä toistaiseksi! ({{percentage}}%)",
+	"dehoistEmbed": {
+		"title": "Poistuneet {{users}} jäsentä",
+		"descriptionNoone": "Yhtään jäsentä ei hoiteltu. Lainkuuliaisille käyttäjille tarkoitettu suosionosoitusten kierros!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} member was dehoisted. We also tried to dehoist an additional {{errored}} member, but they errored out",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} members were dehoisted. We also tried to dehoist an additional {{errored}} members, but they errored out",
+		"description": "{{dehoistedMemberCount}} jäsentä poistettiin",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} jäsentä poistettiin käytöstä",
+		"fieldErrorTitle": "Käyttäjät, joita kohtasimme virhe:"
+	},
+	"kickNotKickable": "Tavoite ei ole minulle potkittavissa.",
+	"lockdownLock": "Kanava {{channel}} on nyt lukittu.",
+	"lockdownLocking": "{{LOADING}} Locking the channel {{channel}}... I might not be able to reply after this.",
+	"lockdownLocked": "Kanava {{channel}} on jo lukittu.",
+	"lockdownUnlocked": "Kanavaa {{channel}} ei ole lukittu.",
+	"lockdownOpen": "Kanavan {{channel}} lukitus on vapautettu.",
+	"muteMuted": "Kohdekäyttäjä on jo mykistetty.",
+	"muteUserNotMuted": "Tämä käyttäjä ei ole mykistetty.",
+	"restrictLowlevel": "{{REDCROSS}} Olen pahoillani, rajoitusroolia ei ole asetettu. Pyydä ylläpitäjää tai palvelimen omistajaa määrittämään se.",
+	"pruneAlert_one": "Successfully deleted {{count}} message from {{total}}.",
+	"pruneAlert_other": "Successfully deleted {{count}} messages from {{total}}.",
+	"pruneInvalidPosition": "{{REDCROSS}} sijainnin on oltava yksi \"ennen\" tai \"jälkeen\".",
+	"pruneNoDeletes": "Viestiä ei ole poistettu, viesti ei vastaa suodatinta tai se on yli 14 päivää vanha.",
+	"pruneLogHeader": "Moderaattorin pyyntö on luonut seuraavat viestit.\nPäivämäärän muotoilu on kohteesta \"$t(globals:dateFormat) hh:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} Onnistuneesti otettiin käyttöön moderointikielet.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Onnistuneesti estetty moderointi",
+	"moderationOutput_one": "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Failed to moderate user:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Failed to moderate users:\n{{users}}",
+	"moderationDmFooter": "Poista moderointi DM käytöstä, kirjoita `toggleModerationDM`.",
+	"moderationDmDescription": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified",
+	"moderationDmDescriptionWithReason": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**¶ Palvelin**: {{guild}}\n**¶ Tyyppi**: {{title}}\n**¶ Kesto: {{duration, duration}}\n**seemReason**: Ei ole määritetty",
+	"moderationDmDescriptionWithReasonWithDuration": "**¶ Palvelin**: {{guild}}\n**©️Type**: {{title}}\n**¶ Kesto**: {{duration, duration}}\n**·Reason**: {{reason}}",
+	"slowmodeDescription": "Aseta kanavan hidastilan arvo sekunneissa.",
+	"slowmodeExtended": {
+		"usages": [
+			"nollaa/sekuntia/kesto"
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_CHANNELS, permissions}}** ja muuttaa kanavan ratelimitiä käyttäjää kohti mihin tahansa arvoon 0 - 6 tuntia.",
+		"examples": [
+			"0",
+			"reset",
+			"4m"
+		],
+		"reminder": "Nollataksesi kanavan ratelimit per käyttäjä voit käyttää joko 0 tai 'nollata'."
+	},
+	"banDescription": "Hit joku kanssa kieltoa vasara.",
+	"banExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy",
+			"Käyttäjä --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Kiellettävä(t) käyttäjä(t) voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Kiellon keston pitäisi kestää. Esimerkiksi 24h 24 tuntia. Käyttäjä(t) poistetaan porttikielto automaattisesti tämän ajan jälkeen."
+			],
+			[
+				"Syy",
+				"Syy kiellon tekemiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Poistettavien viestien määrän arvoinen aika, jokainen lippu on valinnainen ja voidaan yhdistää. Enintään 7 päivää."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{BanMembers, permissions}}**, ja vain vähemmän roolihierarkiassa olevat jäsenet voivat olla kiellettyjä.\nEi, palvelimen omistajaa ei voi kieltää.\nTämä toiminto voidaan mahdollisesti ajoittaa tilapäisen kiellon luomiseksi.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming kaikki kanavat.",
+			"@Pete @Jack @John 24h Raiding"
+		]
+	},
+	"dehoistDescription": "Ammu kaikki Dehoistinator 3000",
+	"dehoistExtended": {
+		"extendedHelp": "Toimi nosto liittyy lisäämällä erityisiä merkkejä edessä oman lempinimen jotta näkyä korkeampi jäsenten luettelossa.\nTämä komento korvaa minkä tahansa jäsenen lempinimen, joka sisältää ne erikoismerkit, joilla on erikoismerkki, joka vetää ne listan loppuun.",
+		"reminder": "Tämä komento vaatii **{{ManageNicknames, permissions}}**, ja vain alemman roolin hierarkiassa olevat jäsenet voidaan karkottaa."
+	},
+	"kickDescription": "Osuu joku :woman's_boot:.",
+	"kickExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjän Syy"
+		],
+		"extendedHelp": "Tämä komento vaatii **{{KickMembers, permissions}}**, ja vain vähemmän roolihierarkiaa omaavat jäsenet voivat potkia minua. Ei, palvelimen omistajaa ei voi potkia.",
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä(t) potkuun. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy potkuun. Tämä näkyy myös serverin auditointilokeissa. @ info: whatsthis"
+			]
+		],
+		"examples": [
+			"@Sarah",
+			"@Sarah Spamming yleiskeskustelu."
+		]
+	},
+	"lockdownDescription": "Sulje portit tälle kanavalle!",
+	"lockdownExtended": {
+		"usages": [
+			"",
+			"Lukitus Rooli TextChannel Kesto",
+			"poista TextChannel lukitus",
+			"Roolin Tekstikanavan Kesto"
+		],
+		"extendedHelp": "This command requires **{{MANAGE_CHANNELS, permissions}}** in order to be able to manage the permissions for a channel.\nThis command removes the permission **{{SEND_MESSAGES, permissions}}** to the `@everyone` role so nobody but the members with roles that have their own overrides (besides administrators, who bypass channel overrides) can send messages.\nOptionally, you can pass time as second argument.",
+		"explainedUsage": [
+			[
+				"lukitus/avaus",
+				"Lukitseeko tai avataanko kanava. Oletuksena on \"lukitse\", jos kanava on lukittuna, tai \"avat\", jos se on lukittu."
+			],
+			[
+				"Rooli",
+				"Lukittava rooli. Oletuksena on `@everyone`-rooli."
+			],
+			[
+				"Tekstikanava",
+				"Lukittava kanava. Oletuksena on nykyinen kanava."
+			],
+			[
+				"Kesto",
+				"Aika tämän lukituksen pitäisi kestää. Oletuksena on ääretön."
+			]
+		],
+		"examples": [
+			"",
+			"#yleinen",
+			"lukko #yleinen 5m",
+			"unlock #general",
+			"lukitse Jäsenet #general"
+		],
+		"reminder": "Jos jäsenesi tarvitsevat \"jäsenen\" kaltaisen roolin lähettääksesi viestejä kanavalla aloittaaksesi, tämä komento ei toimi. Se on meidän backlog työn lisätä tehdä rooli, joka pitäisi lukita muokattavissa."
+	},
+	"muteDescription": "Mykistä käyttäjä kaikilla teksti- ja äänikanavilla.",
+	"muteExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät) mykistettäväksi. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Aika tämän mykistyksen pitäisi kestää. Esimerkiksi 24 h 24 tunnin ajan. Käyttäjä(t) poistetaan mykistys automaattisesti tämän ajan jälkeen."
+			],
+			[
+				"Syy",
+				"Syy mykistykseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajaa ei voi mykistää.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen mykistyksen luomiseksi. Tämä toiminto tallentaa jäsenen roolit väliaikaisesti, ja se myönnetään käyttäjälle mykistyksen jälkeen.\nMykistetty rooli on **sticky**, jos käyttäjä yrittää poistaa sen liittymällä palvelimeen, se lisätään takaisin.",
+		"examples": [
+			"@Alphonse",
+			"@Alphonse Spamming kaikki kanavat",
+			"@Alphonse 24h Spamming kaikki kanavat"
+		]
+	},
+	"setNicknameDescription": "Vaihda käyttäjän nimimerkki.",
+	"setNicknameExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Nimimerkki",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Nimimerkin Kesto Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Nimimerkin käyttäjä(t) voivat olla yhteensä enintään 10 käyttäjää."
+			],
+			[
+				"Lempinimi",
+				"Asetettu uusi nimimerkki. Tämä ei sisällä tätä komentoa, vaan se on käyttäjän käyttäjätunnus."
+			],
+			[
+				"Kesto",
+				"Aika tämän lempinimen muutoksen pitäisi kestää. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä (käyttäjät) saa nykyisen nimensä automaattisesti takaisin tämän ajan jälkeen."
+			],
+			[
+				"Syy",
+				"Syy tähän lempinimen muutokseen. Tämä näkyy myös serverin auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_NICKNAMES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajan lempinimeä ei voi muuttaa.",
+		"examples": [
+			"@Pete peeehteeerrr",
+			"@worker e¶ Pete Ei mainittavaa nimeä"
+		],
+		"reminder": "Poistuminen uudesta lempinimestä palauttaa sen takaisin käyttäjän käyttäjänimelle"
+	},
+	"addRoleDescription": "Lisää roolin käyttäjälle.",
+	"addRoleExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Rooli",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 rooli Kesto Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä(t) joilla lisätään rooli. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Rooli",
+				"Uusi rooli antaa"
+			],
+			[
+				"Kesto",
+				"Tämän roolin pitäisi olla tällä käyttäjällä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjällä (käyttäjillä) on rooli automaattisesti poistettu tämän ajan kuluttua."
+			],
+			[
+				"Syy",
+				"Syy tämän roolin lisäämiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajan rooleja ei voi muuttaa.",
+		"examples": [
+			"@Johanneksen jäsen",
+			"@Johanneksen jäsen Tee Johanneksesta jäsen"
+		]
+	},
+	"removeroleDescription": "Poistaa roolin käyttäjältä",
+	"removeroleExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Rooli",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 rooli Kesto Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka poistavat roolin. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Rooli",
+				"Tehtävä poistaa"
+			],
+			[
+				"Kesto",
+				"Tämän roolin määrä tulisi poistaa tältä käyttäjältä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä (käyttäjät) palauttaa roolin automaattisesti tämän ajan jälkeen."
+			],
+			[
+				"Syy",
+				"Syy tämän roolin poistamiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajan rooleja ei voi muuttaa.",
+		"examples": [
+			"@Paula jäsen",
+			"@Paula jäsen Poista jäsenten oikeudet Paulasta"
+		]
+	},
+	"pruneDescription": "Karsii tietyn määrän viestejä ilman suodatinta.",
+	"pruneExtended": {
+		"usages": [
+			"Summan Liput Käyttäjä",
+			"Lippujen määrä viestin jälkeen/ennen",
+			"Summa Käyttäjä",
+			"Summa Käyttäjä viestin jälkeen/ennen",
+			"Summa --hiljainen"
+		],
+		"extendedHelp": "Tämä komento poistaa tietyn määrän viestejä, joille on annettu suodatin viimeisessä 100 viestiä, jotka on lähetetty kanavalla, jota komento on ajettu.\nValinnaisesti voit lisätä `--silent` kertoaksesi, että WolfStar ei lähetä vastausviestiä.",
+		"explainedUsage": [
+			[
+				"Määrä",
+				"Poistettavien viestien määrä."
+			],
+			[
+				"--f/file/files",
+				"Poistaa viestit liitteineen."
+			],
+			[
+				"--a/tekijä",
+				"Poistaa viestit."
+			],
+			[
+				"--b/bot/bots",
+				"Poistaa bottien lähettämät viestit."
+			],
+			[
+				"--h/ihmiset/ihmiset",
+				"Poistaa käyttäjien lähettämät viestit."
+			],
+			[
+				"--i/kutsu/kutsut",
+				"Poistaa kutsulinkkejä sisältävät viestit."
+			],
+			[
+				"--l/linkki/linkit",
+				"Poistaa viestit, jotka sisältävät mitä tahansa linkkiä."
+			],
+			[
+				"--y/you",
+				"Poistaa viestini."
+			],
+			[
+				"--age=Kesto",
+				"Poistaa mitä tahansa viestiä uudempana kuin Kesto."
+			],
+			[
+				"--include/contain=Word",
+				"Poistaa sanaa sisältävät viestit."
+			],
+			[
+				"--p/pin/nastat",
+				"Poistaa kiinnitetyt viestit, ellei määritetty, muita suodattimia poistaa nastat."
+			],
+			[
+				"Käyttäjä",
+				"Poistaa määritetyn käyttäjän lähettämät viestit."
+			],
+			[
+				"Asema: jälkeen",
+				"Poistaa lähetetyt viestit määritetyn viestin jälkeen."
+			],
+			[
+				"Asema: ennen",
+				"Poistaa ennen annettua viestiä."
+			],
+			[
+				"--s/hiljainen",
+				"Onko vastausviesti lähetettävä vai ei, tämä poistaa myös komento viestin, jos viestejä oli alle 100 suodattunut."
+			]
+		],
+		"examples": [
+			"50 --a",
+			"75 @kyra",
+			"20 --botit",
+			"60 --human --files ennen 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --hiljainen"
+		],
+		"reminder": "Discordin rajoituksen vuoksi botit eivät voi poistaa yli 14 päivän ikäisiä viestejä."
+	},
+	"permissionsDescription": "Tarkista jäsenen tai sinun käyttöoikeussi.",
+	"permissionsExtended": {
+		"usages": [
+			"",
+			"Käyttäjä"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä",
+				"Käyttäjä, jolle haluat tarkistaa käyttöoikeudet. Oletuksena on sinulle itse."
+			]
+		],
+		"extendedHelp": "Ihanteellinen jos haluat tietää, mitä käyttöoikeuksia myönnetään jäsenelle, kun heillä on tietty joukko rooleja."
+	},
+	"restrictAttachmentDescription": "Rajoita käyttäjää lähettämästä liitteitä kaikille kanaville.",
+	"restrictAttachmentExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät) rajoittamaan liitteitä. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Tämän rajoituksen tulisi olla tämän käyttäjän käytettävissä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä(t) automaattisesti rajoitus poistetaan tämän ajan kuluttua."
+			],
+			[
+				"Syy",
+				"Syy tämän rajoituksen lisäämiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajaa ei voi rajoittaa.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen rajoituksen luomiseksi.\nRajoitettu rooli on **sticky**, jos käyttäjä yrittää poistaa sen liittymällä palvelimeen, se lisätään takaisin.",
+		"examples": [
+			"@Pete",
+			"@Pete Kuvien lähettäminen",
+			"@Pete 24h Lähettää NSFW kuvia"
+		]
+	},
+	"restrictEmbedDescription": "Rajoita käyttäjää liittämästä upotuksia kaikkiin kanaviin.",
+	"restrictEmbedExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka rajoittavat upotteja. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Tämän rajoituksen tulisi olla tämän käyttäjän käytettävissä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä(t) automaattisesti rajoitus poistetaan tämän ajan kuluttua."
+			],
+			[
+				"Syy",
+				"Syy tämän rajoituksen lisäämiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajaa ei voi rajoittaa.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen rajoituksen luomiseksi.\nRajoitettu rooli on **sticky**, jos käyttäjä yrittää poistaa sen liittymällä palvelimeen, se lisätään takaisin.",
+		"examples": [
+			"@Pete",
+			"@Pete Lähetetään outoja linkkejä",
+			"@Pete 24 h Posted a spam link"
+		],
+		"reminder": "Upotukset ovat esimerkiksi, kun käyttäjä lähettää videon, jonka hän saa upotettuna chattiin."
+	},
+	"restrictEmojiDescription": "Rajoita käyttäjää käyttämästä ulkoisia emojeja kaikilla kanavilla.",
+	"restrictEmojiExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä(t) rajoittamaan ulkoisia hymiöitä. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Tämän rajoituksen tulisi olla tämän käyttäjän käytettävissä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä(t) automaattisesti rajoitus poistetaan tämän ajan kuluttua."
+			],
+			[
+				"Syy",
+				"Syy tämän rajoituksen lisäämiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajaa ei voi rajoittaa.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen rajoituksen luomiseksi.\nRajoitettu rooli on **sticky**, jos käyttäjä yrittää poistaa sen liittymällä palvelimeen, se lisätään takaisin.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming ulkoinen emojis",
+			"@Pete 24 h Posted cringe"
+		],
+		"reminder": "Tämä estää vain ulkoisten hymiöiden käytön, joten sillä ei ole vaikutusta muihin kuin nitrokäyttäjiin. Jäsenet voivat edelleen käyttää oman palvelimen emojeja ja säännöllisesti rakentaa twemojis voi käyttää tämän roolin."
+	},
+	"restrictReactionDescription": "Rajoita käyttäjää reagoimasta viesteihin kaikilla kanavilla.",
+	"restrictReactionExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), joilla rajoitetaan reagointia viesteihin. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Tämän rajoituksen tulisi olla tämän käyttäjän käytettävissä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä(t) automaattisesti rajoitus poistetaan tämän ajan kuluttua."
+			],
+			[
+				"Syy",
+				"Syy tämän rajoituksen lisäämiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajaa ei voi rajoittaa.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen rajoituksen luomiseksi.\nRajoitettu rooli on **sticky**, jos käyttäjä yrittää poistaa sen liittymällä palvelimeen, se lisätään takaisin.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming reaktiot",
+			"@Pete 24h outojen reaktioiden lähettäminen"
+		]
+	},
+	"restrictVoiceDescription": "Rajoita käyttäjää liittymästä mihin tahansa äänikanavaan.",
+	"restrictVoiceExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka rajoittavat puhekanavan vuorovaikutusta, voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Tämän rajoituksen tulisi olla tämän käyttäjän käytettävissä. Esimerkiksi 24 tuntia 24 tuntia. Käyttäjä(t) automaattisesti rajoitus poistetaan tämän ajan kuluttua."
+			],
+			[
+				"Syy",
+				"Syy tämän rajoituksen lisäämiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}**, ja minä voin hallita vain jäseniä, joilla on alemman roolihierarkian sijainti.\nEi, palvelimen omistajaa ei voi rajoittaa.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen rajoituksen luomiseksi.\nRajoitettu rooli on **sticky**, jos käyttäjä yrittää poistaa sen liittymällä palvelimeen, se lisätään takaisin.",
+		"examples": [
+			"@Pete",
+			"@Pete Yleisäänikanavien korvaaminen",
+			"@Pete 24 h outoja ääniä"
+		]
+	},
+	"softBanDescription": "Hit jonkun, jolla on kieltävä vasara, tuhoaa kaikki heidän sanomansa muutamaksi päiväksi ja kumoa sen.",
+	"softBanExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy",
+			"Käyttäjä --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä(t) softban. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy softban käyttöön. Tämä näkyy myös palvelimen auditointilokeissa."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Poistettavien viestien määrän arvoinen aika, jokainen lippu on valinnainen ja voidaan yhdistää. Enintään 7 päivää."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{BanMembers, permissions}}**, ja vain vähemmän roolihierarkiassa olevat jäsenet voivat olla kiellettyjä.\nEi, palvelimen omistajaa ei voi kieltää.\nDeban ominaisuudessa Discordissa on ominaisuus, jonka avulla moderaattori voi poistaa kaikki viestit kaikista kanavista, jotka on lähetetty viimeisen 'x' päivän aikana, on numero välillä 0 (ei päivää) ja 7.\nKäyttäjä saa porttikiellon heti kiellon jälkeen, joten se on kuin potku, mutta se voi karsia monia viestejä.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming kaikki kanavat",
+			"@Pete 7 Kaikki 7 lähettämät viestit ovat nyt poissa, YEE HAH!"
+		]
+	},
+	"timeoutApplyDescription": "Aika ulos käyttäjältä.",
+	"timeoutApplyExtended": {
+		"usages": [
+			"Kesto Käyttäjä",
+			"Keston Käyttäjän Syy"
+		],
+		"explainedUsage": [
+			[
+				"Kesto",
+				"Aikataulun kesto. Esimerkiksi 24 tuntia 24 tuntia."
+			],
+			[
+				"Käyttäjä",
+				"Käyttäjä aika ulos."
+			],
+			[
+				"Syy",
+				"Syy aikakatkaisuun on tämä. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"examples": [
+			"30s @Pete",
+			"2h @Pete Spamming all channels"
+		]
+	},
+	"timeoutUndoDescription": "Poista aika pois käyttäjältä.",
+	"timeoutUndoExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjän Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä",
+				"Käyttäjä aika ulos."
+			],
+			[
+				"Syy",
+				"Syy aikakatkaisuun on tämä. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"examples": [
+			"@Pete",
+			"@Pete Osoittaa hän ei ollut se, joka roskapostia kaikki kanavat 🤷"
+		]
+	},
+	"timeoutNotModeratable": "En voi ajoittaa tätä tavoitetta.",
+	"toggleModerationDmDescription": "Valitse moderoinnin DMs.",
+	"toggleModerationDmExtended": {
+		"extendedHelp": "Tämän komennon avulla voit vaihtaa moderointilaitteita. Oletuksena ne ovat päällä, mikä tarkoittaa, että mikä tahansa moderointitoiminto (automaattinen tai manuaalinen) DM sinun, mutta voit poistaa ne käytöstä tällä komennolla."
+	},
+	"unbanDescription": "Poista porttikielto tältä palvelimelta.",
+	"unbanExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät) unban. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy kiellon poistamiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{BanMembers, permissions}}**. Se kirjaimellisesti saa jonkun roskakorista, puhdistaa heidät ja sallii siirtymisen tämän palvelimen porteille.",
+		"examples": [
+			"@Pete",
+			"@Pete Osoittaa hän ei ollut se, joka roskapostia kaikki kanavat 🤷"
+		]
+	},
+	"unmuteDescription": "Poista nokkateippi käyttäjän taholta.",
+	"unmuteExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Poistaaksesi mykistettävät käyttäjät. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy mykistyksen poistoon. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}** ja poistaa käyttäjän mykistetyn henkilön listalta, ja antaa vanhoja rooleja takaisin, jos käyttäjä oli niitä.",
+		"examples": [
+			"@Pete",
+			"@Pete (Lisää satunnainen vitsi."
+		]
+	},
+	"unrestrictAttachmentDescription": "Poista liitteen rajoitus yhdeltä tai useammalta käyttäjältä.",
+	"unrestrictAttachmentExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka poistavat liiterajoitukset. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy, jonka vuoksi liite on poistettu. Tämä näkyy myös palvelimen tarkastuslokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}** ja poistaa käyttäjän rajoitetun henkilön listalta.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmbedDescription": "Poista upotettu rajoitus yhdeltä tai useammalta käyttäjältä.",
+	"unrestrictEmbedExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka poistavat upotetut rajoitukset. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy, jonka vuoksi sulautettu rajoitus poistetaan. Tämä näkyy myös palvelimen tarkastuslokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}** ja poistaa käyttäjän rajoitetun henkilön listalta.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmojiDescription": "Poista ulkoinen emoje-rajoitus yhdeltä tai useammalta käyttäjältä.",
+	"unrestrictEmojiExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka poistavat emoji-rajoitukset. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy, jonka vuoksi emoji rajoitus poistetaan. Tämä näkyy myös serverin auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}** ja poistaa käyttäjän rajoitetun henkilön listalta.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictReactionDescription": "Poista reaktiorajoitus yhdeltä tai useammalta käyttäjältä.",
+	"unrestrictReactionExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät) poistaa reaktion rajoitukset. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Reaktiorajoituksen poistamisen syy. Tämä käy ilmi myös palvelimen tarkastuslokeista. @ info: whatsthis"
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}** ja poistaa käyttäjän rajoitetun henkilön listalta.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictVoiceDescription": "Poista äänen rajoitus yhdeltä tai useammalta käyttäjältä.",
+	"unrestrictVoiceExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka poistavat puherajoitukset. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy äänen rajoituksen poistamiseen. Tämä näkyy myös palvelimen auditointilokeissa, ja se näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MANAGE_ROLES, permissions}}** ja poistaa käyttäjän rajoitetun henkilön listalta.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unwarnDescription": "Valita varoituksen moderointilokikotelo.",
+	"unwarnExtended": {
+		"usages": [
+			"Laatikko",
+			"Laatikon Syy"
+		],
+		"explainedUsage": [
+			[
+				"Laatikko",
+				"Muutettavan laatikon numero. Löydät laatikkoluvut `history`-komennon kautta tai katsomalla moderointilokit -kanavallasi"
+			],
+			[
+				"Syy",
+				"Syy tämän varoituksen poistamiseen."
+			]
+		],
+		"extendedHelp": "Tämä komento vetoaa varoitukseen, se ei vaadi lupia, annat minulle vain moderointilokitapauksen valittaa ja syyn.",
+		"examples": [
+			"0 Hups, väärä jättää.",
+			"42 Tämä oli elämän määritelmä."
+		]
+	},
+	"vmuteDescription": "Heitä jonkun mikrofoni ulos ikkunasta.",
+	"vmuteExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä (käyttäjät), jotka mykistävät äänikanavilla. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Tämän äänen mykistyksen tulisi koskea esimerkiksi 24 tuntia 24 tunnin ajan. Käyttäjillä (käyttäjillä) on automaattisesti äänen mykistys poistettu tämän ajan jälkeen."
+			],
+			[
+				"Syy",
+				"Syy lisätä tämä ääni mykistä. Tämä näkyy myös palvelimen auditointi lokia."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MUTE_MEMBERS, permissions}}**, ja vain vähemmän roolihierarkiaa omaavat jäsenet voivat vaientaa minut.\nEi, palvelimen omistajaa ei voi hiljentää.\nTämä toiminto voidaan vaihtoehtoisesti ajoittaa tilapäisen äänen mykistyksen luomiseksi.",
+		"examples": [
+			"@Pete",
+			"@Pete Liian kovaa laulamista",
+			"@Pete 24h Kirjallisesti lauloi korva raiskaa"
+		]
+	},
+	"voiceKickDescription": "Osuu joku :woman's_boot: laulaa niin huono ja kova.",
+	"voiceKickExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy",
+			"Käyttäjä1 Käyttäjä2 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Käyttäjä(t) jotka potkivat nykyisestä äänikanavastaan. Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy käyttäjän (käyttäjien) potkimiseen äänikanavalla. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "This command requires the permissions **{{MANAGE_CHANNELS, permissions}}** to create a temporary (hidden) voice channel, and **{{MOVE_MEMBERS, permissions}}** to move the user to the temporary channel.\nAfter this, the channel is quickly deleted, making the user leave the voice channel.\nFor scared moderators, this command has almost no impact in the average user, as the channel is created in a way only me and the selected user can see and join, then quickly deleted.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming kaikki kanavat"
+		]
+	},
+	"vunmuteDescription": "Hanki jonkun mikrofoni takaisin, jotta he voivat puhua.",
+	"vunmuteExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Äänikanavien mykistyksen poistamiseen käytettävät käyttäjät voivat olla yhteensä enintään 10 käyttäjää."
+			],
+			[
+				"Syy",
+				"Syy äänen mykistyksen poistamiseen. Tämä näkyy myös palvelimen auditointilokeissa."
+			]
+		],
+		"extendedHelp": "Tämä komento vaatii **{{MUTE_MEMBERS, permissions}}**, ja vain vähemmän roolihierarkiassa olevat jäsenet voivat olla hiljentämättömiä.\nEi, palvelimen omistajaa ei voi hiljentää.",
+		"examples": [
+			"@Pete",
+			"@Pete valitti aikansa kirjautua kuulla raiskaus."
+		]
+	},
+	"warnDescription": "Anna varoitus jollekulle.",
+	"warnExtended": {
+		"usages": [
+			"Käyttäjä",
+			"Käyttäjä1 Käyttäjä2 Käyttäjä3...Käyttäjä10",
+			"Käyttäjä1 Kesto",
+			"Käyttäjä1 Käyttäjä2 Keston Syy"
+		],
+		"explainedUsage": [
+			[
+				"Käyttäjä/Käyttäjä1/Käyttäjä2",
+				"Varoittaaksesi käyttäjä(t). Voi olla jopa 10 käyttäjää."
+			],
+			[
+				"Kesto",
+				"Aika kuluu tähän varoitukseen. Esimerkiksi 24h 24 tuntia. Käyttäjä(t) varoitus poistetaan automaattisesti tämän ajan jälkeen."
+			],
+			[
+				"Syy",
+				"Syynä tähän varoitukseen."
+			]
+		],
+		"extendedHelp": "Tämä komento lähettää varoituksen käyttäjälle.\nTämän varoituksen on tarkoitus olla **muodollista varoitusta**, koska se näkyy 'varoituksissa' komennossa.\nOn hyvä käytäntö tehdä epävirallinen varoitus ennen tämän käskyn käyttöä.",
+		"examples": [
+			"@Pete Yritti mainita kaiken."
+		]
+	}
+}
