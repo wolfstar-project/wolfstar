@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Příkazy založené na zprávě jsou **zastaralé**, a budou odstraněny v budoucnu. Místo toho byste měli použít příkaz {{command}}!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Tento příkaz je dostupný pouze pomocí lomítka. Použijte prosím příkaz lomítka."
+	},
+	"slashOnlyErrorMessage": "Tento příkaz je dostupný pouze pomocí lomítka. Použijte prosím příkaz lomítka."
+}
