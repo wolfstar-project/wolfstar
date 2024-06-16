@@ -1,0 +1,889 @@
+{
+	"permissions": "Oprávnění pro {{username}} ({{id}})",
+	"permissionsAll": "Všechna oprávnění",
+	"slowmodeSet": "Rozložení tohoto kanálu bylo nastaveno na {{cooldown, duration}}.",
+	"slowmodeReset": "Chlazení tohoto kanálu bylo resetováno.",
+	"banNotBannable": "Cíl pro mě není zakázaný.",
+	"dehoistStarting": "Začnu dehoistovat {{count}} členy...",
+	"dehoistProgress": "Zatím odhojili {{count}} členové! ({{percentage}}%)",
+	"dehoistEmbed": {
+		"title": "Dokončeno rozkládání {{users}} členů",
+		"descriptionNoone": "Žádní členové nebyli dehorováni. Kolo potlesku pro vaše uživatele dodržující zákony!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} člen byl dehorován. Pokusili jsme se také dehorovat dalšího člena {{errored}} , ale chybili jsme",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} členové byli rozvedeni. Snažili jsme se také dehorovat další členy {{errored}} , ale chybili jsme",
+		"description": "Člen {{dehoistedMemberCount}} byl dehoistován",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} členové byli dehognováni",
+		"fieldErrorTitle": "Uživatelé, kteří jsme zaznamenali chybu:"
+	},
+	"kickNotKickable": "Cíl pro mě není vyhozitelný.",
+	"lockdownLock": "Kanál {{channel}} je nyní uzamčen.",
+	"lockdownLocking": "{{LOADING}} zamykání kanálu {{channel}}... možná nebudu moci odpovědět po tom.",
+	"lockdownLocked": "Kanál {{channel}} byl již uzamčen.",
+	"lockdownUnlocked": "Kanál {{channel}} nebyl uzamčen.",
+	"lockdownOpen": "Uzamčení kanálu {{channel}} bylo uvolněno.",
+	"muteMuted": "Cílový uživatel je již ztlumen.",
+	"muteUserNotMuted": "Tento uživatel není ztlumen.",
+	"restrictLowlevel": "{{REDCROSS}} Omlouvám se, není nakonfigurována žádná restrikční role. Požádejte správce nebo vlastníka serveru, aby ji nastavil.",
+	"pruneAlert_one": "Zpráva {{count}} byla úspěšně odstraněna z {{total}}.",
+	"pruneAlert_other": "Zprávy {{count}} byly úspěšně odstraněny z {{total}}.",
+	"pruneInvalidPosition": "{{REDCROSS}} pozice musí být jedna z \"před\" nebo \"po\".",
+	"pruneNoDeletes": "Nebyla smazána žádná zpráva, buď neodpovídá filtru nebo je starší 14 dní.",
+	"pruneLogHeader": "Následující zprávy byly generovány požadavkem moderátora.\nFormát data je z \"$t(globals:dateFormat) h:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} úspěšně povolil moderátorské DM.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Úspěšně zakázané moderátorské hry",
+	"moderationOutput_one": "{{GREENTICK}} Vytvořil případ {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Vytvořené bedny {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Vytvořil případ {{range}} | {{users, list(conjunction)}}.\nS důvodem: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Vytvořil bedny {{range}} | {{users, list(conjunction)}}.\nS důvodem: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Nepodařilo se modifikovat uživatele:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Nepodařilo se modifikovat uživatele:\n{{users}}",
+	"moderationDmFooter": "Chcete-li zakázat moderátorské DM, napište `toggleModerationDM`.",
+	"moderationDmDescription": "**<unk> Server**: {{guild}}\n**<unk> Typ**: {{title}}\n**<unk> Reason**: Není zadáno",
+	"moderationDmDescriptionWithReason": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Reason**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Trvání**: {{duration, duration}}\n**<unk> Reason**: None specified",
+	"moderationDmDescriptionWithReasonWithDuration": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Duration**: {{duration, duration}}\n**<unk> Reason**: {{reason}}",
+	"slowmodeDescription": "Nastavte pomalý režim kanálu v sekundách.",
+	"slowmodeExtended": {
+		"usages": [
+			"resetovat/sekundy/doba trvání"
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_CHANNELS, permissions}}** a upraví raatelimit kanálu na uživatele na libovolnou hodnotu mezi 0 a 6 hodinami.",
+		"examples": [
+			"0",
+			"reset",
+			"4 m"
+		],
+		"reminder": "Chcete-li resetovat ratelimit kanálu na uživatele, můžete použít 0 nebo 'reset'."
+	},
+	"banDescription": "Udeř někoho s kladivem zákazu.",
+	"banExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2",
+			"Uživatel --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé k zákazu. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Doba, po kterou by měl tento zákaz trvat. Například 24 hodin bude uživatel automaticky odblokován."
+			],
+			[
+				"Důvod",
+				"Důvod tohoto zákazu. Zobrazí se také v auditních záznamech serveru."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Časový limit zpráv k odstranění, každý znak je volitelný a lze jej kombinovat. Až 7 dní."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{BanMembers, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být mnou zabanováni.\nNe, vlastník serveru nemůže být zablokován.\nTato akce může být volitelně načasována pro vytvoření dočasného zákazu.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming všechny kanály.",
+			"@Pete @Jack @John 24h útočení"
+		]
+	},
+	"dehoistDescription": "Střílejte všechny s Dehoistinátorem 3000",
+	"dehoistExtended": {
+		"extendedHelp": "Akt zvedání zahrnuje přidání speciálních znaků před vaší přezdívkou, aby se objevily vyšší v seznamu členů.\nTento příkaz nahrazuje přezdívku každého člena, která obsahuje speciální znaky speciálním znakem, který je přetáhne na konec seznamu.",
+		"reminder": "Tento příkaz vyžaduje **{{ManageNicknames, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být dehorováni."
+	},
+	"kickDescription": "Stiskněte někoho s :feman’s_boot:.",
+	"kickExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Důvod uživatele"
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{KickMembers, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být mnou vyhozeni. Ne, vlastník serveru nemůže být vyhozen.",
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé k vykopnutí. Může to být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod výkopu. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"examples": [
+			"@Sarah",
+			"@Sarah Spamming generální chat."
+		]
+	},
+	"lockdownDescription": "Zavřete brány pro tento kanál!",
+	"lockdownExtended": {
+		"usages": [
+			"",
+			"Délka TextChannel zámku role",
+			"odemknout roli TextChannel",
+			"Délka trvání textového kanálu"
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_CHANNELS, permissions}}**, aby mohl spravovat oprávnění pro kanál.\nTento příkaz odstraňuje oprávnění **{{SEND_MESSAGES, permissions}}** k roli `@everyone` tak, aby nikdo jiný než členové s rolí, kteří mají vlastní přepsání (posílá správce, kdo obejít přepsání kanálu) může posílat zprávy.\nVolitelně můžete projít časem jako druhý argument.",
+		"explainedUsage": [
+			[
+				"zamknout/odemknout",
+				"Určuje, zda chcete kanál uzamknout nebo odemknout. Výchozí nastavení je \"uzamknuto\", pokud je kanál aktuálně odemčen, nebo \"odemknout\", pokud je aktuálně uzamčen."
+			],
+			[
+				"Role",
+				"Role k uzamčení. Výchozí nastavení je role `@everyone`."
+			],
+			[
+				"Textový kanál",
+				"Kanál k zamknutí. Výchozí nastavení je aktuální kanál."
+			],
+			[
+				"Doba trvání",
+				"Čas, po který má tento zámek trvat. Výchozí nastavení je nekonečné."
+			]
+		],
+		"examples": [
+			"",
+			"#Obecné",
+			"uzamknout #obecný 5 m",
+			"odemknout #general",
+			"uzamknout členy"
+		],
+		"reminder": "Pokud tví členové potřebují pro odeslání zpráv do kanálu roli jako \"člen\", pak tento příkaz nebude fungovat. Je v našem nevyřízené práci přidat roli, která by měla být uzamčena."
+	},
+	"muteDescription": "Ztlumit uživatele ve všech textových a hlasových kanálech.",
+	"muteExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Ztlumit uživatele. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Doba, po kterou má toto ztlumit trvat. Například 24 hodin bude uživatel automaticky odtlumen."
+			],
+			[
+				"Důvod",
+				"Důvod pro ztlumení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastník serveru nemůže být ztlumen.\nTato akce může být volitelně načasována pro vytvoření dočasného ztlumení. Tato akce dočasně uloží role člena a po odmlčení bude uživateli udělena.\nZtlumená role je **sticky**, pokud se ji uživatel pokouší odstranit opětovným připojením k serveru, bude přidána zpět.",
+		"examples": [
+			"@Alphonse",
+			"@Alphonse Spamming všechny kanály",
+			"@Alphonse 24h Spamming všechny kanály"
+		]
+	},
+	"setNicknameDescription": "Změnit přezdívku uživatele.",
+	"setNicknameExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatel1 Přezdívka",
+			"Doba trvání uživatele",
+			"Uživatel1 důvod trvání uživatelského jména 2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé k přezdívce. Může být až 10 uživatelů."
+			],
+			[
+				"Přezdívka",
+				"Nová nastavená přezdívka. Neobsahující tuto volbu učiní tento příkaz výchozím uživatelským jménem."
+			],
+			[
+				"Doba trvání",
+				"Doba, po kterou by tato změna přezdívky měla trvat. Například 24 hodin po dobu 24 hodin. Uživatelé budou automaticky dostávat své aktuální jméno zpět po této době."
+			],
+			[
+				"Důvod",
+				"Důvod této změny přezdívky. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_NICKNAMES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, přezdívku majitele serveru nelze změnit.",
+		"examples": [
+			"@Pete peeeeeeerrr",
+			"@<unk> e<unk> e<unk> Pete neuvedeno jméno"
+		],
+		"reminder": "Ponecháme-li novou přezdívku, resetuje ji zpět na uživatelské jméno"
+	},
+	"addRoleDescription": "Přidá roli uživateli.",
+	"addRoleExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelská role",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2 role"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) do něj přidá roli. Může to být až 10 uživatelů."
+			],
+			[
+				"Role",
+				"Nová role pro přiřazení"
+			],
+			[
+				"Doba trvání",
+				"Časový limit této role by měl být na tomto uživateli. Například 24 hodin po dobu 24 hodin. Uživatelé budou mít automaticky odstraněnou roli po této době."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání této role. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastnické role serveru nelze změnit.",
+		"examples": [
+			"@John člen",
+			"@John člen učiní Johnem členem"
+		]
+	},
+	"removeroleDescription": "Odstraní roli uživatele",
+	"removeroleExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelská role",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2 role"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro odebrání role. Může to být až 10 uživatelů."
+			],
+			[
+				"Role",
+				"Role k odstranění"
+			],
+			[
+				"Doba trvání",
+				"Časový limit této role by měl být odstraněn od tohoto uživatele. Například 24 hodin po dobu 24 hodin. Uživatelé automaticky získají roli po této době."
+			],
+			[
+				"Důvod",
+				"Důvod pro odstranění této role. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastnické role serveru nelze změnit.",
+		"examples": [
+			"člen @Paula",
+			"člen @Paula odebrat oprávnění členů z Paula"
+		]
+	},
+	"pruneDescription": "Hrušky určitého množství zpráv bez filtru.",
+	"pruneExtended": {
+		"usages": [
+			"Množství příznaků uživatele",
+			"Částka vlajky po/před zprávou",
+			"Částka uživatele",
+			"Částka uživatele po/před zprávou",
+			"Částka --silent"
+		],
+		"extendedHelp": "Tento příkaz smaže zadaný počet zpráv v rámci posledních 100 zpráv odeslaných v kanálu, které byl příkaz spuštěn.\nVolitelně můžete přidat `--silent` aby WolfStar neposlal zprávu o odpovědi.",
+		"explainedUsage": [
+			[
+				"Částka, která má být získána",
+				"Počet zpráv k odstranění."
+			],
+			[
+				"--f/soubor/soubory",
+				"Smaže zprávy s přílohami."
+			],
+			[
+				"--a/autor",
+				"Smaže vaše zprávy."
+			],
+			[
+				"--b/bot/bots",
+				"Smaže zprávy odeslané boty."
+			],
+			[
+				"--h/člověk/člověka",
+				"Smaže zprávy odeslané uživateli."
+			],
+			[
+				"--i/pozvánka/pozvánky",
+				"Smaže zprávy, které obsahují odkazy pozvání."
+			],
+			[
+				"--l/link/links",
+				"Smaže zprávy, které obsahují jakýkoli odkaz."
+			],
+			[
+				"--y/Vy",
+				"Odstraní mé zprávy."
+			],
+			[
+				"--age=Trvání",
+				"Odstraní zprávu novější než doba trvání."
+			],
+			[
+				"--include/contain=Word",
+				"Smaže zprávy, které obsahují slovo."
+			],
+			[
+				"--p/pin/piny",
+				"Smaže připnuté zprávy, pokud není zadáno, žádný jiný filtr neodstraní piny."
+			],
+			[
+				"Uživatel",
+				"Odstraní zprávy odeslané zadaným uživatelem."
+			],
+			[
+				"Funkce: po",
+				"Smaže zprávy odeslané po zadané zprávě."
+			],
+			[
+				"Pozice: před",
+				"Odstraní zprávy odeslané před zadanou zprávou."
+			],
+			[
+				"--s/ticho",
+				"Zda má být odeslána zpráva o odpovědi, pokud je filtrováno méně než 100 zpráv, bude také smazána vaše zpráva o příkazu."
+			]
+		],
+		"examples": [
+			"50 --a",
+			"75 @kyra",
+			"20 --botů",
+			"60 --humans --files před 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --silent"
+		],
+		"reminder": "Z důvodu omezení Discordu nemohou roboti odstranit zprávy starší než 14 dní."
+	},
+	"permissionsDescription": "Zkontrolujte oprávnění pro člena nebo vás.",
+	"permissionsExtended": {
+		"usages": [
+			"",
+			"Uživatel"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel",
+				"Uživatel, pro kterého chcete zkontrolovat oprávnění. Výchozí nastavení je pro vás sama."
+			]
+		],
+		"extendedHelp": "Ideální pokud chcete vědět, jaká oprávnění jsou udělena členovi, když mají určitou sadu rolí."
+	},
+	"restrictAttachmentDescription": "Omezí uživateli odesílání příloh ve všech kanálech.",
+	"restrictAttachmentExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé pro omezení příloh. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Časový limit by měl platit pro tohoto uživatele. Například 24 hodin po dobu 24 hodin. Uživatelé budou mít automaticky omezení po této době zrušeno."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání tohoto omezení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastník serveru nemůže být omezen.\nTato akce může být volitelně načasována pro vytvoření dočasného omezení.\nOmezená role je **sticky**, pokud se ji uživatel pokouší odstranit opětovným připojením k serveru, bude přidána zpět.",
+		"examples": [
+			"@Pete",
+			"@Pete Odesílání podivných obrázků",
+			"@Pete 24h odesílám NSFW obrázky"
+		]
+	},
+	"restrictEmbedDescription": "Omezí uživateli přidávat vložené do všech kanálů.",
+	"restrictEmbedExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro omezení embedí. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Časový limit by měl platit pro tohoto uživatele. Například 24 hodin po dobu 24 hodin. Uživatelé budou mít automaticky omezení po této době zrušeno."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání tohoto omezení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastník serveru nemůže být omezen.\nTato akce může být volitelně načasována pro vytvoření dočasného omezení.\nOmezená role je **sticky**, pokud se ji uživatel pokouší odstranit opětovným připojením k serveru, bude přidána zpět.",
+		"examples": [
+			"@Pete",
+			"@Pete odesílání podivných odkazů",
+			"@Pete 24h odeslal spam odkaz"
+		],
+		"reminder": "Vložené jsou například, když uživatel odešle video, které bude vloženo do chatu."
+	},
+	"restrictEmojiDescription": "Omezit používání externích emoji ve všech kanálech.",
+	"restrictEmojiExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé pro omezení externích emojů. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Časový limit by měl platit pro tohoto uživatele. Například 24 hodin po dobu 24 hodin. Uživatelé budou mít automaticky omezení po této době zrušeno."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání tohoto omezení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastník serveru nemůže být omezen.\nTato akce může být volitelně načasována pro vytvoření dočasného omezení.\nOmezená role je **sticky**, pokud se ji uživatel pokouší odstranit opětovným připojením k serveru, bude přidána zpět.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming externí smajlíky",
+			"@Pete 24h posíl"
+		],
+		"reminder": "Toto pouze zabrání použití externích emoji a nebude mít žádný vliv na uživatele bez nitra, emoji vašeho vlastního serveru a běžné sestavení ve dvojím jádře může být stále používáno členy s touto úlohou."
+	},
+	"restrictReactionDescription": "Omezí uživateli reagovat na zprávy ve všech kanálech.",
+	"restrictReactionExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) omezují reakci na zprávy. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Časový limit by měl platit pro tohoto uživatele. Například 24 hodin po dobu 24 hodin. Uživatelé budou mít automaticky omezení po této době zrušeno."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání tohoto omezení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastník serveru nemůže být omezen.\nTato akce může být volitelně načasována pro vytvoření dočasného omezení.\nOmezená role je **sticky**, pokud se ji uživatel pokouší odstranit opětovným připojením k serveru, bude přidána zpět.",
+		"examples": [
+			"@Pete",
+			"@Pete spamovací reakce",
+			"@Pete 24h divné reakce"
+		]
+	},
+	"restrictVoiceDescription": "Omezí uživateli vstup do libovolného hlasového kanálu.",
+	"restrictVoiceExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé omezují interakci hlasového kanálu. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Časový limit by měl platit pro tohoto uživatele. Například 24 hodin po dobu 24 hodin. Uživatelé budou mít automaticky omezení po této době zrušeno."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání tohoto omezení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být spravováni mnou.\nNe, vlastník serveru nemůže být omezen.\nTato akce může být volitelně načasována pro vytvoření dočasného omezení.\nOmezená role je **sticky**, pokud se ji uživatel pokouší odstranit opětovným připojením k serveru, bude přidána zpět.",
+		"examples": [
+			"@Pete",
+			"@Pete výdělky obecně hlasových kanálů",
+			"@Pete 24h podivný zvuk"
+		]
+	},
+	"softBanDescription": "Stiskněte někoho s kladivem zákazu, zničíte všechny jejich zprávy na několik dní a odblokujte je.",
+	"softBanExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod",
+			"Uživatel --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) na softban. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod softbanu. Zobrazí se také v auditních záznamech serveru."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Časový limit zpráv k odstranění, každý znak je volitelný a lze jej kombinovat. Až 7 dní."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{BanMembers, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být mnou zabanováni.\nNe, vlastník serveru nemůže být zabanován.\nFunkce zákazu z Discordu má funkci, která moderátorovi umožňuje odebrat všechny zprávy ze všech kanálů, které byly odeslány v posledních 'x' dnech, je číslo mezi 0 (ne dny) a 7.\nUživatel bude odblokován ihned po zákazu, takže je to jako výkop, ale může vyčistit mnoho zpráv.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming všechny kanály",
+			"@Pete 7 Všechny odeslané zprávy za 7 jsou pryč, YEE HAH!"
+		]
+	},
+	"timeoutApplyDescription": "Vypršel čas pro uživatele.",
+	"timeoutApplyExtended": {
+		"usages": [
+			"Uživatel doby trvání",
+			"Důvod uživatele doby trvání"
+		],
+		"explainedUsage": [
+			[
+				"Doba trvání",
+				"Časový limit vypršel. Například 24 hodin za 24 hodin."
+			],
+			[
+				"Uživatel",
+				"Vypršel časový limit uživatele."
+			],
+			[
+				"Důvod",
+				"Důvod vypršení časového limitu. Zobrazí se také v protokolech o auditu serveru."
+			]
+		],
+		"examples": [
+			"30s @Pete",
+			"2h @Pete spamming všechny kanály"
+		]
+	},
+	"timeoutUndoDescription": "Odebrat časový limit uživatele.",
+	"timeoutUndoExtended": {
+		"usages": [
+			"Uživatel",
+			"Důvod uživatele"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel",
+				"Vypršel časový limit uživatele."
+			],
+			[
+				"Důvod",
+				"Důvod vypršení časového limitu. Zobrazí se také v protokolech o auditu serveru."
+			]
+		],
+		"examples": [
+			"@Pete",
+			"@Pete se ukáže, že nebyl ten, kdo spamoval všechny kanály 🤷"
+		]
+	},
+	"timeoutNotModeratable": "Cíl mi nemůže být vypršen.",
+	"toggleModerationDmDescription": "Přepnout moderační DM.",
+	"toggleModerationDmExtended": {
+		"extendedHelp": "Tento příkaz umožňuje přepnout moderační DM. Ve výchozím nastavení jsou zapnuté, což znamená, že každá moderovaná akce (automatická nebo ruční) vám bude DM, ale můžete ji pomocí tohoto příkazu zakázat."
+	},
+	"unbanDescription": "Odbanovat někoho z tohoto serveru.",
+	"unbanExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé k odbanování. Může to být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod odstranění zákazu. To bude také zobrazeno v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{BanMembers, permissions}}**. Doslova dostane někoho z odpadkového koše, vyčistí ho nahoru a umožní průchod do bran tohoto serveru.",
+		"examples": [
+			"@Pete",
+			"@Pete se ukáže, že nebyl ten, kdo spamoval všechny kanály 🤷"
+		]
+	},
+	"unmuteDescription": "Odebrat pásku uživatele",
+	"unmuteExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) k odtlumení. Může to být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod pro odstranění ztlumení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}** a odstraní uživatele ze seznamu umlčených lidí, a dává staré role zpět, pokud je uživatel měl.",
+		"examples": [
+			"@Pete",
+			"@Pete (zde vložte náhodný vtip)."
+		]
+	},
+	"unrestrictAttachmentDescription": "Odstranit omezení přílohy od jednoho nebo více uživatelů.",
+	"unrestrictAttachmentExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro odstranění omezení příloh. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod, proč bylo omezení přílohy odstraněno. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}** a odebere uživatele ze seznamu omezených lidí.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmbedDescription": "Odstraňte vložené omezení od jednoho nebo více uživatelů.",
+	"unrestrictEmbedExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro odstranění vložených omezení. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod odstranění vloženého omezení. To bude také zobrazeno v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}** a odebere uživatele ze seznamu omezených lidí.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmojiDescription": "Odstranit externí emoji omezení od jednoho nebo více uživatelů.",
+	"unrestrictEmojiExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro odstranění emoji. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod odstranění omezení emoji. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}** a odebere uživatele ze seznamu omezených lidí.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictReactionDescription": "Odebrat omezení reakce od jednoho nebo více uživatelů.",
+	"unrestrictReactionExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro odstranění omezení reakce. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod, proč bylo odstraněno omezení reakce. To bude také zobrazeno v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}** a odebere uživatele ze seznamu omezených lidí.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictVoiceDescription": "Odebrat omezení hlasu od jednoho nebo více uživatelů.",
+	"unrestrictVoiceExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatel(é) pro odstranění hlasových omezení. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod odstranění hlasového omezení. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MANAGE_ROLES, permissions}}** a odebere uživatele ze seznamu omezených lidí.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unwarnDescription": "odvolat se na případ moderované výstrahy.",
+	"unwarnExtended": {
+		"usages": [
+			"Případ",
+			"Důvod případu"
+		],
+		"explainedUsage": [
+			[
+				"Případ",
+				"Číslo případu k úpravě. Čísla beden můžete najít pomocí příkazu `history` nebo vyhledáním ve vašem kanálu moderních protokolů"
+			],
+			[
+				"Důvod",
+				"Důvod pro odstranění tohoto varování."
+			]
+		],
+		"extendedHelp": "Tento příkaz apeluje na varování, nevyžaduje žádná oprávnění, udělujete mi pouze umírněný případ k odvolání a důvodu.",
+		"examples": [
+			"0 Jejda, špatný duch.",
+			"42 ukazuje, že to byla definice života."
+		]
+	},
+	"vmuteDescription": "Okno vyhodit někomu mikrofon.",
+	"vmuteExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé ztlumit v hlasových kanálech. Může být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Čas, po který by měl tento hlas ztlumit. Například 24 hodin trvá 24 hodin. Uživatelé budou mít automaticky ztlumený hlas po této době."
+			],
+			[
+				"Důvod",
+				"Důvod pro přidání tohoto hlasu. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MUTE_MEMBERS, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být mnou umlčeni.\nNe, majitel serveru nemůže být umlčen.\nTato akce může být volitelně načasována pro vytvoření dočasného hlasového mlčení.",
+		"examples": [
+			"@Pete",
+			"@Pete Posíláním příliš hlasu",
+			"@Pete 24h Literally slzné znásilnění uchy"
+		]
+	},
+	"voiceKickDescription": "Stiskněte někoho s :feman’s_boot: za zpěv tak špatným a hlasitým.",
+	"voiceKickExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod",
+			"User1 User2 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé vykopnou z jejich aktuálního hlasového kanálu. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod pro vyřazení uživatele z hlasového kanálu. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje oprávnění **{{MANAGE_CHANNELS, permissions}}** k vytvoření dočasného (skrytého) hlasového kanálu, a **{{MOVE_MEMBERS, permissions}}** přesunout uživatele na dočasný kanál.\nPoté je kanál rychle smazán, takže uživatel opustí hlasový kanál.\nPro strašlivé moderátory nemá tento příkaz téměř žádný vliv na průměrného uživatele, pokud je kanál vytvořen tak, jak jsem pouze já a vybraný uživatel může vidět a připojit, pak rychle smazán.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming všechny kanály"
+		]
+	},
+	"vunmuteDescription": "Vraťte někomu mikrofon zpět, aby mohli mluvit.",
+	"vunmuteExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Uživatelský 1 důvod"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Uživatelé pro odmlčení v hlasových kanálech. Může být až 10 uživatelů."
+			],
+			[
+				"Důvod",
+				"Důvod pro odstranění hlasového zvuku. Zobrazí se také v auditních záznamech serveru."
+			]
+		],
+		"extendedHelp": "Tento příkaz vyžaduje **{{MUTE_MEMBERS, permissions}}**, a pouze členové s nižší pozicí hierarchie rolí mohou být mou ne-umlčeni.\nNe, majitel serveru nemůže být odmlčen.",
+		"examples": [
+			"@Pete",
+			"@Pete Odvolal své časy, když podepisoval znásilnění."
+		]
+	},
+	"warnDescription": "Pošlete někomu varování.",
+	"warnExtended": {
+		"usages": [
+			"Uživatel",
+			"User1 User2 User3...User10",
+			"Doba trvání uživatele",
+			"Důvod trvání User1 User2"
+		],
+		"explainedUsage": [
+			[
+				"Uživatel/Uživatel/Uživatel 2",
+				"Upozornit uživatele. Může to být až 10 uživatelů."
+			],
+			[
+				"Doba trvání",
+				"Časový interval tohoto varování. Například 24 hodin po 24 hodinách bude uživatel automaticky odebrán varování."
+			],
+			[
+				"Důvod",
+				"Důvod tohoto varování."
+			]
+		],
+		"extendedHelp": "Tento příkaz je varován uživateli.\nTento druh varování má být **formálním varování**, protože bude zobrazen v příkazu 'varování'.\nPřed použitím tohoto příkazu je dobrá praxe dělat neformální varování.",
+		"examples": [
+			"@Pete se pokusil zmínit každého."
+		]
+	}
+}
