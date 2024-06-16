@@ -1,0 +1,7 @@
+{
+	"escaperopeDescription": "ポケモンからの脱出ロープを使用してください。",
+	"escaperopeExtended": {
+		"extendedHelp": "**WolfStar** は **エスケープ**を使いました。"
+	},
+	"escaperopeOutput": "**{{user}}** が **エスケープロープ** を使用しました"
+}
