@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Απενεργοποιημένο",
+	"explicitContentFilterMembersWithoutRoles": "Μέλη χωρίς ρόλους",
+	"explicitContentFilterAllMembers": "Όλα τα μέλη",
+	"defaultMessageNotificationsAllMessages": "Όλα Τα Μηνύματα",
+	"defaultMessageNotificationsOnlyMentions": "Μόνο @αναφορές",
+	"SuppressJoinNotifications": "Μέλος συμμετέχει στις ειδοποιήσεις",
+	"SuppressJoinNotificationReplies": "Εγγραφή μέλους κουμπιά απάντηση αυτοκόλλητο",
+	"SuppressPremiumSubscriptions": "Ενίσχυση ειδοποιήσεων διακομιστή",
+	"SuppressGuildReminderNotifications": "Συμβουλές ρύθμισης διακομιστή",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Καταστολή ειδοποιήσεων αγοράς ρόλου",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Καταστολή απαντήσεων για ειδοποιήσεις αγοράς ρόλων"
+}
