@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Vis noens avatar i full størrelse.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Bruker"
+		],
+		"extendedHelp": "Som denne kommandantens navn sier, vises den ved noens avatar.",
+		"explainedUsage": [
+			[
+				"Bruker",
+				"Brukeren å få avataren for. Standardinnstillinger for deg selv."
+			]
+		],
+		"reminder": "Bruk --size flagg for å endre avatarens størrelse."
+	},
+	"avatarNone": "Brukeren har ikke et profilbilde.",
+	"voteDescription": "Forenklet reaksjonsbasert stemme.",
+	"voteExtended": {
+		"usages": [
+			"Spørsmål"
+		],
+		"examples": [
+			"Bør jeg implementere #anime-kanalen?"
+		],
+		"explainedUsage": [
+			[
+				"Spørsmål",
+				"Spørsmålet du skal stemme på."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Du må gi et emne til avstemningen.",
+	"voteReactionBlocked": "{{REDCROSS}} Jeg kunne ikke legge til reaksjonene som var nødvendige for at denne kommandoen skal virke fordi du har meg blokkert! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Bruker"
+		],
+		"extendedHelp": "Henter informasjon på alle servermedlemmer. Også kjent som `userinfo` i mange andre boter.",
+		"explainedUsage": [
+			[
+				"Bruker",
+				"Brukeren for å få informasjon om. Standard til deg selv."
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} mer."
+}
