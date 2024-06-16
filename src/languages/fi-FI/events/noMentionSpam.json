@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Ole varovainen ja mainitse enkin, koska olet aikeissa olla kieltämässä ylittämästä tämän palvelimen mainintakynnystä.",
+	"message": "Banhammer on laskeutunut ja nyt käyttäjä {{userTag}} tunnuksella {{userId}} on kielletty mainitaksesi roskapostia.\nÄlä huoli! Olen täällä auttamassa sinua! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatic: Mention Spam threshold exceeded.\nThreshold: {{threshold}}."
+}
