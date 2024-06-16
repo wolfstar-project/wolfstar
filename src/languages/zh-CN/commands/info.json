@@ -1,1 +1,15 @@
-[]
+{
+	"name": "信息",
+	"description": "提供有关我的信息，以及添加机器人和加入支持服务器的链接",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} is a bot designed to help moderating your server. I use the [Sapphire Framework](https://sapphirejs.dev) for the [Discord.js library](https://discord.js.org).\n- [Privacy Policy](https://wolfstar.rocks/privacy) | [Terms of Service](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "统计",
+	"embedFieldApplicationValue": "- **Users**:{users, number}}\n- **Servers**: 哇{guilds, number}}\n- **Channels**:{channels, number}}\n- **Discord。 s**:{versionDiscord}}\n- **Sapphire**: 然后**Sapphire**:{versionSapphire}}\n- **Node.js**:{versionNode}}",
+	"embedFieldUptimeTitle": "运行时间",
+	"embedFieldUptimeValue": "- **Host**: {{host}}\n- **Client**: {{client}}",
+	"embedFieldServerUsageTitle": "服务器使用情况",
+	"embedFieldServerUsageValue": "- **CPU Usage**: {{cpu}}\n- **Memory**: {{heapUsed}}MB (Total: {{heapTotal}}MB)",
+	"buttonInvite": "将我添加到您的服务器！",
+	"buttonSupport": "支持服务器",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "捐助"
+}
