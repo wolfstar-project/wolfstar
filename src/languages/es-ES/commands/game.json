@@ -412,8 +412,8 @@
 			"",
 			"Categoría",
 			"Categoría multiple/boolean/truefalse",
-			"multiple easy/medium/hard",
-			"hard 2m"
+			"múltiples fácil/medio/duro",
+			"duro 2m"
 		],
 		"extendedHelp": "Responda a preguntas de trivia aquí, ¡con categorías que van desde los libros hasta la mitología! (alimentado por OpenTDB)\n\n**Categorías**: {{TRIVIA_CATEGORIES}}",
 		"explainedUsage": [
@@ -422,11 +422,11 @@
 				"Las preguntas de la categoría se harán a continuación."
 			],
 			[
-				"multiple/boolean/truefalse",
+				"múltiple/booleano/truefalse",
 				"Si desea una opción múltiple o una pregunta verdadera/falsa."
 			],
 			[
-				"easy/medium/hard",
+				"fácil/medio/duro",
 				"El nivel de dificultad de las preguntas formuladas."
 			],
 			[
@@ -435,9 +435,9 @@
 			]
 		],
 		"examples": [
-			"history",
-			"books multiple easy",
-			"videogames 45s"
+			"historia",
+			"libros múltiples fácil",
+			"videojuegos 45s"
 		]
 	},
 	"triviaIncorrect": "Lo siento, pero **{{attempt}}** no es la respuesta correcta. ¡Buena suerte la próxima vez!",
