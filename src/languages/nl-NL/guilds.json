@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Uitgeschakeld",
+	"explicitContentFilterMembersWithoutRoles": "Leden zonder rollen",
+	"explicitContentFilterAllMembers": "Alle leden",
+	"defaultMessageNotificationsAllMessages": "Alle berichten",
+	"defaultMessageNotificationsOnlyMentions": "Alleen @vermeldingen",
+	"SuppressJoinNotifications": "Lid inschrijf meldingen",
+	"SuppressJoinNotificationReplies": "Lid toetreden tot sticker antwoordknoppen",
+	"SuppressPremiumSubscriptions": "Notificaties voor boost server",
+	"SuppressGuildReminderNotifications": "Server setup tips",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Aankoop van een abonnement notificaties onderdrukken",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Onderdruk antwoorden voor aankoopmeldingen van rolabonnementen"
+}
