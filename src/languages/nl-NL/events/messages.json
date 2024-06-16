@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Bericht verwijderd • {{channel}}",
+	"messageDeleteUnknown": "Onbekend bericht verwijderd • {{channel}}",
+	"messageUpdate": "Bericht bewerkt • {{channel}}",
+	"messageUpdateUnknown": "Onbekend bericht bewerkt • {{channel}}",
+	"messageNotFound": "Onbekend bericht",
+	"messageDeleteBulk_one": "{{count}} bericht verwijderd in {{channel}} door {{author}}",
+	"messageDeleteBulk_other": "{{count}} berichten verwijderd in {{channel}} door {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} bericht verwijderd in {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} berichten verwijderd in {{channel}}",
+	"messageDeleteBulkFooter": "Meerdere berichten verwijderd",
+	"voiceActivityFooter": "Spraakactiviteit",
+	"jumpToContext": "Ga naar context"
+}
