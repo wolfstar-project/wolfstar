@@ -1,1 +1,19 @@
-[]
+{
+	"default": "{{key}} has not been localized for en-US yet.",
+	"defaultLanguage": "默认语言",
+	"no": "否",
+	"none": "无",
+	"unknown": "未知",
+	"yes": "否",
+	"paginatedMessagePage": "页",
+	"paginatedMessageWrongUserInteractionReply": "Please stop clicking the buttons on this message. They are only for {{user}}.",
+	"durationValue": "很抱歉{value, duration}}",
+	"numberValue": "很抱歉{value, number}}",
+	"numberCompactValue": "很抱歉{value, numberCompact}}",
+	"dateTimeValue": "很抱歉{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "MM/DD/YYYY",
+	"dateFormatExplanation": "月/年"
+}
