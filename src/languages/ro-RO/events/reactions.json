@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Reacție cu {{emoji}} despre {{message}}",
+	"reactionFooter": "Prima reacţie adăugată",
+	"filterFooter": "Reacție filtrată",
+	"filter": "{{REDCROSS}} Hei {{user}}, vă rugăm să nu adăugaţi această reacţie!",
+	"selfRoleHierarchy": "{{REDCROSS}} Rolul meu trebuie să fie mai mare decât toate rolurile care se pot auto-atribui, altfel nu le pot acorda oamenilor!"
+}
