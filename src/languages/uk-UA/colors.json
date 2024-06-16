@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Колір має бути у діапазоні 0 - 16777215 (0xFFFFFF), але отримано `{{value}}`.",
+	"invalidHexRed": "Invalid Red range. Must be between '00' and 'ff', but received `{{value}}`.",
+	"invalidHexGreen": "Invalid Green range. Must be between '00' and 'ff', but received `{{value}}`.",
+	"invalidHexBlue": "Invalid Blue range. Must be between '00' and 'ff', but received `{{value}}`.",
+	"invalidHslHue": "Неприпустимий діапазон Hue. Має бути від 0 до 360, але отримано `{{value}}`.",
+	"invalidHslSaturation": "Неприпустимий діапазон насиченості. Має бути між 0 і 100, але отримано `{{value}}`.",
+	"invalidHslLightness": "Неприпустимий діапазон світла. Має бути від 0 до 100, але отримано `{{value}}`.",
+	"invalidRgbRed": "Неправильний червоний діапазон. Повинно бути від 0 до 255, але отримано `{{value}}`.",
+	"invalidRgbGreen": "Неправильний зелений діапазон. Повинно бути від 0 до 255, але отримано `{{value}}`.",
+	"invalidRgbBlue": "Некоректний синій діапазон. Має бути від 0 до 255, але отримано `{{value}}`."
+}
