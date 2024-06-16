@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Affichage d'une catégorie par page. Vous avez des problèmes avec l'embarqué ? Exécutez `{{prefix}}help --all` pour une liste complète en DMs.",
+	"helpCommandCount_one": "Commande {{count}}",
+	"helpCommandCount_other": "Commandes {{count}}",
+	"helpData": {
+		"footer": "Aide de commande pour {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Affiche toutes les commandes ou la description d'une commande.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--tout",
+			"Nom de la catégorie",
+			"Page",
+			"Nom de commande"
+		],
+		"extendedHelp": "The help command shows a paginated list of all commands by their categories, or the extended information of a command if specified.\n\nIf you use `--categories` or `--cat`, you can get the list of all categories and the amount of commands each one of them have.",
+		"reminder": "La commande d'aide **seulement** montre les commandes que vous pouvez utiliser. Pour la liste complète, veuillez visiter <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--cat",
+			"--tout",
+			"Modération",
+			"12",
+			"Aide"
+		]
+	},
+	"helpDm": "📥 | La liste des commandes auxquelles vous avez accès a été envoyée à vos DM.",
+	"helpNodm": "{{REDCROSS}} | Vous avez des DMs désactivés, donc je ne peux pas vous envoyer la liste des commandes.",
+	"v7Description": "Obtient les informations concernant Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Il s'agit d'une commande **cachée** utilisée exclusivement pour envoyer une notification à tous ceux qui essaient d'utiliser des commandes qui ont été supprimées selon [SKyra v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)."
+	},
+	"v7Message": "Bonjour ! Merci d'utiliser cette commande, cependant, elle a été supprimée en raison des plans de [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). Le lien inclut une explication quant à la raison pour laquelle `{{command}}` a été supprimé.\n\nDésolé pour le désagrément occasionné, et merci d'utiliser WolfStar. 💖",
+	"v7NayreMessage": "Bonjour ! Merci d'utiliser cette commande cependant, il a été supprimé et sera soit redessiné dans le cadre du RPG Acryss de Nayre, tel que mentionné dans [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nDésolé pour la gêne occasionnée, et merci d'utiliser WolfStar. 💖"
+}
