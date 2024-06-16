@@ -1,36 +1,36 @@
 {
-	"helpAllFlag": "",
-	"helpCommandCount_one": "",
-	"helpCommandCount_other": "",
+	"helpAllFlag": "Displaying one category per page. Have issues with the embed? Run `{{prefix}}help --all` for a full list in DMs.",
+	"helpCommandCount_one": "{{count}} command",
+	"helpCommandCount_other": "{{count}} commands",
 	"helpData": {
-		"footer": "",
-		"title": ""
+		"footer": "Command help for {{footerName}}",
+		"title": "{{titleDescription}}"
 	},
-	"helpDescription": "",
+	"helpDescription": "显示所有命令或一个命令的描述。",
 	"helpExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"--cat/--cats",
+			"--all",
+			"类别名称",
+			"页",
+			"命令名称"
 		],
-		"extendedHelp": "",
-		"reminder": "",
+		"extendedHelp": "帮助命令显示按类别分页列出的所有命令，如果指定则显示命令的扩展信息。\n\n如果您使用 `--categories` 或 `--cat`，您可以获取所有类别的列表以及其中每个类别的命令数量。",
+		"reminder": "帮助命令**仅** 显示您可以使用的命令。对于完整的清单，请访问 <https://wolfstar.rocks/commands>。",
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"--cat",
+			"--all",
+			"审核",
+			"12",
+			"帮助"
 		]
 	},
-	"helpDm": "",
-	"helpNodm": "",
-	"v7Description": "",
+	"helpDm": "📥 | 您有访问权限的命令列表已经发送给您的 DMM",
+	"helpNodm": "{{REDCROSS}} | You have DMs disabled so I couldn't send you the list of commands.",
+	"v7Description": "获取关于 Skyra v7 的信息",
 	"v7Extended": {
-		"extendedHelp": ""
+		"extendedHelp": "这是一个 **隐藏** 命令，专门用于向所有试图使用已经被 [Syraa v7] (https://skyra) 移除的命令的人发送通知。 otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8号计划。"
 	},
-	"v7Message": "",
-	"v7NayreMessage": ""
+	"v7Message": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
+	"v7NayreMessage": "Hello there! Thank you for using this command, however, it was removed and will be either redesigned as part of Nayre's Acryss RPG as mentioned in [WolfStar v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖"
 }
