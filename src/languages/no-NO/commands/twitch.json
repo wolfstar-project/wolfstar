@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Beklager, jeg kunne ikke finne strømmeren. Er du sikker på at du skrev navnet deres riktig?",
+	"twitchSubscriptionStatusValues": [
+		"pålogget",
+		"frakoblet"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah der! Jeg forventet \"online\" eller \"offline\", men jeg forstår ikke hva du har gitt meg istedet.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Du abonnerer allerede på den kabelen som strømmes i denne kanalen for den statusen",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Suksess! Når {{name}} går offline vil jeg legge ut en ny melding i {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Suksess! Når {{name}} går i live, vil jeg legge ut en ny melding i {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} jeg beklager, men det er nødvendig å gi en melding når jeg gjør et offline abonnement.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} beklager, men du abonnerer ikke på noen streamer, avbryt abonnement!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} beklager, du kan ikke stoppe å abonnere på {{streamer}} fordi du ikke abonnerer på dem.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} jeg beklager; mens du abonnerer på denne strømmestatusen og strømmestatusen, blir ikke deres abonnementer postet på {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} beklager, men det ser ut til at du ikke får {{status}} varsler for {{streamer}}. Vi støtter \"online\" og \"offline\" varsler.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} vellykket! Jeg vil ikke lenger poste meldinger til {{channel}} når {{name}} går frakoblet.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Suksess! Jeg vil ikke lenger poste meldinger på {{channel}} når {{name}} er levende.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Suksess! {{count}} abonnement er fjernet fra denne serveren.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Vellykket! {{count}} abonnementer er fjernet fra denne serveren.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Du vil se alle abonnementer fra denne streamen, men det er ikke!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Direkte",
+		"offline": "Frakoblet"
+	},
+	"twitchSubscriptionShowUnknownUser": "Ukjent",
+	"twitchSubscriptionDescription": "Administrer abonnementene for serveren din.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"legge til strømskanalen status",
+			"legge til strømskanalen status",
+			"fjern strømningskanalen status",
+			"tilbakestill strøm",
+			"reset",
+			"vis",
+			""
+		],
+		"extendedHelp": "Behandle abonnementene for denne tjeneren.\n__Online Notifications__\nAll tilgjengelig data vil vises i en veldig fin seng som forteller deg nøyaktig hva streamer er opp til.\n\n__Offline varslinger__\nDu må skrive din egen melding som vil bli lagt ut når lytten går frakoblet. Den vil vises i en fin Twitch-lilla melding.",
+		"explainedUsage": [
+			[
+				"legge til/fjerne/res/vis",
+				"Om\n- Legg til et nytt Twitch-abonnement.\n- Fjern et eksisterende Twitch-abonnement\n- Tilbakestill alt twitch abonnement. eller de for en spesifikk streamer\n- Vis alle gjeldende Twitch-abonnementer"
+			],
+			[
+				"Strømmer",
+				"Twitch brukernavnet på streamen for å få varsler for."
+			],
+			[
+				"Kanal",
+				"En Discord-kanal hvor varslene skal legges inn."
+			],
+			[
+				"Status:",
+				"Statusen som Twitch streamer skal få for et varsel, en av online eller offline."
+			],
+			[
+				"Innhold",
+				"Meldingen som skal sendes i Discord chat. Kreves for frakoblede varsler, valgfrie for nettvarsler."
+			]
+		],
+		"examples": [
+			"legg til favna #twitch online",
+			"legg til favna #twitch offline Favna er nå frakoblet. Si farvel 👋!",
+			"fjern kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"vis"
+		]
+	}
+}
