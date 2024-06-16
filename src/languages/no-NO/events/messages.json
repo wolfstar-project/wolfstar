@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Melding slettet • {{channel}}",
+	"messageDeleteUnknown": "Ukjent melding slettet • {{channel}}",
+	"messageUpdate": "Melding redigert • {{channel}}",
+	"messageUpdateUnknown": "Ukjent melding redigert • {{channel}}",
+	"messageNotFound": "Ukjent melding",
+	"messageDeleteBulk_one": "{{count}} melding slettet i {{channel}} av {{author}}",
+	"messageDeleteBulk_other": "{{count}} meldinger slettet i {{channel}} av {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} melding slettet i {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} meldinger slettet i {{channel}}",
+	"messageDeleteBulkFooter": "Flere meldinger slettet",
+	"voiceActivityFooter": "Stemme aktivitet",
+	"jumpToContext": "Hopp til kontekst"
+}
