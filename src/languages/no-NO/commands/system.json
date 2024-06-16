@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Evaluerer vilkårlig Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Uttrykk"
+		],
+		"extendedHelp": "Den onde kommandoen evaluerer kode som-in, enhver feil som er kastet fra den vil bli håndtert.\nbruker også flaggfunksjonen. Skriv --silent, --depth=number or --async for å skreddersy resultatet.\nThe --wait flag changes the eval will run. Standardverdi er 60 sekunder. Aksepterer tid i millisekunder.\n--stille flagg gjør det ingenting.\n- dybdeflagget godtar for eksempel et nummer, --depth=2, for å skreddersy nytt.inspects dybde.\nFlagget – async vil pakke inn koden i en asynkroniseringsfunksjon hvor du kan nyte bruken av venter, men dersom du vil returnere noe, må du returnere nøkkelordet\n--dusjet flagg er aktivert som serie Skjult valg i bruk. uspekt.\nflagget - språk og -språk - lar deg markere forskjellig syntaks for output.\nFlagget --json konverterer produksjonen til json\nFlagget «Ingen tidsavbrudd deaktiverer tidsavbruddet\nHvis produksjonen er for stor, vil sende utdata som fil.",
+		"explainedUsage": [
+			[
+				"Uttrykk",
+				"Uttrykket å evaluere"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Reservert for bot eiere."
+	},
+	"evalTimeout": "TIMETER: Tok lenger enn {{seconds}} sekunder.",
+	"evalError": "**Feil**:{{output}}\n**Type**:{{type}}\n{{time}}",
+	"dmNotSent": "Jeg kan ikke sende deg en melding i DMs. har du blokkert meg?",
+	"dmSent": "Jeg har sendt deg meldingen i DMer.",
+	"reboot": "{{LOADING}} omstarter...",
+	"rebootDescription": "Starter boten.",
+	"rebootExtended": {
+		"extendedHelp": "Boten går bommen, så går botten reviere.",
+		"reminder": "Reservert for bot eiere."
+	}
+}
