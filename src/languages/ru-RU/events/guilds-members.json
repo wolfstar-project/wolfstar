@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Пользователь присоединился",
+	"guildMemberAddDescription": "{{user}} присоединился к Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Добавлены роли**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Добавлена роль**: {{addedRoles}}",
+	"guildMemberAddMute": "Заглушенный пользователь присоединился",
+	"guildMemberBanned": "Заблокирован",
+	"guildMemberKicked": "Пользователь выгнан",
+	"guildMemberNoUpdate": "Обновления не обнаружены",
+	"guildMemberRemove": "Пользователь покинул",
+	"guildMemberRemoveDescription": "{{user}} присоединился к этому серверу *неизвестное время*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} присоединился к серверу {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Удаленные роли**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Убрана роль**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Пользователь софтбанен",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Далее**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Предыдущий**: Убрать",
+	"nameUpdatePreviousWasSet": "**Предыдущий**: `{{previousName}}`",
+	"nicknameUpdate": "Псевдоним изменен",
+	"roleUpdate": "Роли изменены",
+	"usernameUpdate": "Имя пользователя изменено"
+}
