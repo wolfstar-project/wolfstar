@@ -9,8 +9,8 @@
 	"helpDescription": "Muestra todos los comandos o la descripción de uno.",
 	"helpExtended": {
 		"usages": [
-			"--cat/--categories",
-			"--all",
+			"--gato/--categorias",
+			"--todos",
 			"NombreDeCategoría",
 			"Página",
 			"NombreDeComando"
@@ -18,19 +18,19 @@
 		"extendedHelp": "El comando de ayuda muestra una lista paginada de todos los comandos por sus categorías, o la información extendida de un comando si se especifica.\n\nSi utiliza `--categories` o `--cat`, puede obtener la lista de todas las categorías y la cantidad de comandos en cada una de ellas.",
 		"reminder": "El comando de ayuda **sólo** muestra los comandos que puedes utilizar. Para la lista completa, por favor visita <https://wolfstar.rocks/commands>.",
 		"examples": [
-			"--cat",
-			"--all",
+			"--gato",
+			"--todos",
 			"Moderación",
 			"12",
-			"help"
+			"ayuda"
 		]
 	},
 	"helpDm": "📥 | La lista de comandos a los que tienes acceso ha sido enviada a tus mensajes directos.",
 	"helpNodm": "{{REDCROSS}} | Tienes los mensajes directos deshabilitados, por lo que no pude enviarte la lista de comandos.",
-	"v7Description": "",
+	"v7Description": "Obtiene la información relativa a Skyra v7",
 	"v7Extended": {
-		"extendedHelp": ""
+		"extendedHelp": "Este es un comando **oculto** usado exclusivamente para enviar un aviso a todos los que intentan usar comandos que han sido eliminados de acuerdo a [SKyra v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) planes."
 	},
-	"v7Message": "",
-	"v7NayreMessage": ""
+	"v7Message": "¡Hola! Gracias por usar este comando, sin embargo, fue eliminado debido a los planes de [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). El enlace incluye una explicación de por qué `{{command}}` fue eliminado.\n\nDisculpe las molestias, y gracias por usar WolfStar. 💖",
+	"v7NayreMessage": "¡Hola! Gracias por usar este comando, sin embargo, fue eliminado y será rediseñado como parte del RPG de Acryss de Nayre, como se menciona en [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nDisculpe las molestias y gracias por usar WolfStar. 💖"
 }
