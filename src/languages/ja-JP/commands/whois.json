@@ -1,0 +1,15 @@
+{
+	"name": "誰が",
+	"description": "Discordユーザーに関する情報を提供します",
+	"contextMenuName": "情報を取得",
+	"userName": "ユーザー",
+	"userDescription": "情報を取得するユーザー",
+	"rolesTitle_one": "ロール [1]",
+	"rolesTitle_other": "役割 [{{count, number}}]",
+	"permissionsTitle": "キーの権限",
+	"permissionsAll": "すべての権限",
+	"embedDescription": "**ユーザー登録**: {{createdAt}}",
+	"embedMemberDescription": "**メンバー登録**: {{joinedAt}}",
+	"buttonAvatar": "アバター",
+	"buttonProfile": "プロフィール"
+}
