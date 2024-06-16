@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} zatím nebyl lokalizován pro cs-USA.",
+	"defaultLanguage": "Výchozí jazyk",
+	"no": "Ne",
+	"none": "Nic",
+	"unknown": "neznámé",
+	"yes": "Ano",
+	"paginatedMessagePage": "Stránka",
+	"paginatedMessageWrongUserInteractionReply": "Zastavte kliknutí na tlačítka této zprávy. Jsou pouze pro {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "DD/MM/RRRR",
+	"dateFormatExplanation": "Měsíc/den/rok"
+}
