@@ -1,7 +1,7 @@
 {
 	"default": "La clave {{key}} aún no ha sido traducido para es-ES.",
 	"defaultLanguage": "Idioma predeterminado",
-	"no": "No",
+	"no": "Nu",
 	"none": "Ninguno",
 	"unknown": "desconocido",
 	"yes": "Sí",
@@ -11,6 +11,8 @@
 	"numberValue": "{{value, number}}",
 	"numberCompactValue": "{{value, numberCompact}}",
 	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
 	"orListValue": "{{value, orList}}",
 	"dateFormat": "DD/MM/YYYY",
 	"dateFormatExplanation": "Día/Mes/Año"
