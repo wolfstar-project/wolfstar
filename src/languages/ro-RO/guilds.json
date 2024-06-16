@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Dezactivat",
+	"explicitContentFilterMembersWithoutRoles": "Membri fără roluri",
+	"explicitContentFilterAllMembers": "Toți membrii",
+	"defaultMessageNotificationsAllMessages": "Toate mesajele",
+	"defaultMessageNotificationsOnlyMentions": "Doar @menționări",
+	"SuppressJoinNotifications": "Membru alăturat notificărilor",
+	"SuppressJoinNotificationReplies": "Membru se alătură butoanelor de răspuns sticker",
+	"SuppressPremiumSubscriptions": "Notificări amplificare server",
+	"SuppressGuildReminderNotifications": "Sfaturi configurare server",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Suprimă notificările de cumpărare a abonamentelor",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Suprimă răspunsurile pentru rolurile de notificări de cumpărare a abonamentelor"
+}
