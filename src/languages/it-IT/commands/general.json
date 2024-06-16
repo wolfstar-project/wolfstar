@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Visualizzazione di una categoria per pagina. Hai problemi con l'embed? Esegui `{{prefix}}help --all` per una lista completa in DMs.",
+	"helpCommandCount_one": "{{count}} command",
+	"helpCommandCount_other": "{{count}} commands",
+	"helpData": {
+		"footer": "Guida ai comandi per {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Mostra tutti i comandi o la descrizione di uno.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--all",
+			"CategoryName",
+			"Pagina",
+			"ComandoNome"
+		],
+		"extendedHelp": "Il comando help mostra un elenco paginato di tutti i comandi per le loro categorie, o le informazioni estese di un comando, se specificato.\n\nSe usi `--categories` o `--cat`, puoi ottenere la lista di tutte le categorie e la quantità di comandi che ognuno di loro possiede.",
+		"reminder": "Il comando di aiuto **solo** mostra i comandi che puoi usare. Per l'elenco completo, visita <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--cat",
+			"--all",
+			"Moderazione",
+			"12",
+			"aiuto"
+		]
+	},
+	"helpDm": "📥 <unk> La lista dei comandi a cui hai accesso è stata inviata ai tuoi DMs.",
+	"helpNodm": "{{REDCROSS}} <unk> You have DM disabled so I could not send you the list of commands.",
+	"v7Description": "Ottiene le informazioni riguardanti Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Questo è un comando **nascosto** utilizzato esclusivamente per inviare un avviso a tutti coloro che tentano di utilizzare comandi che sono stati rimossi secondo [SKyra v7](https://skyra. piani otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)."
+	},
+	"v7Message": "Ciao! Grazie per aver usato questo comando, tuttavia, è stato rimosso a causa dei piani di [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). Il link include una spiegazione del perché `{{command}}` è stato rimosso.\n\nCi scusiamo per l'inconveniente, e grazie per aver usato WolfStar. 💖",
+	"v7NayreMessage": "Ciao lì! Grazie per aver utilizzato questo comando, tuttavia, è stato rimosso e sarà ridisegnato come parte di Acryss RPG di Nayre, come indicato in [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nCi scusiamo per l'inconveniente, e grazie per aver usato WolfStar. 💖"
+}
