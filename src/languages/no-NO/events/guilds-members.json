@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Bruker er blitt med",
+	"guildMemberAddDescription": "{{user}} har sluttet seg til Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**La til roller**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Lagt til**: {{addedRoles}}",
+	"guildMemberAddMute": "Avgrenset bruker ble med",
+	"guildMemberBanned": "Brukeren er utestengt",
+	"guildMemberKicked": "Bruker sparket",
+	"guildMemberNoUpdate": "Ingen oppdatering oppdaget",
+	"guildMemberRemove": "Bruker igjen",
+	"guildMemberRemoveDescription": "{{user}} ble med i serveren *en ukjent tid siden*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} ble med på denne serveren {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Fjernede roller**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Fjernet rolle**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Bruker Softbannlyst",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Neste**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Previous**: Nullstill",
+	"nameUpdatePreviousWasSet": "**Forrige**: `{{previousName}}`",
+	"nicknameUpdate": "Kallenavn redigert",
+	"roleUpdate": "Roller redigert",
+	"usernameUpdate": "Brukernavn endret"
+}
