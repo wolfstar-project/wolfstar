@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Mi dispiace, non ho trovato lo streamer. Sei sicuro di aver scritto il loro nome correttamente?",
+	"twitchSubscriptionStatusValues": [
+		"online",
+		"offline"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah lì! Mi aspettavo \"online\" o \"offline\", ma non riesco a capire cosa mi hai dato.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Sei già iscritto a quel streamer in questo canale per quello stato.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Successo! Ogni volta che {{name}} va offline, pubblicherò un nuovo messaggio in {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Successo! Ogni volta che {{name}} va live, pubblicherò un nuovo messaggio in {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} Mi dispiace ma è necessario fornire un messaggio quando si effettua un abbonamento offline.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Mi dispiace ma non sei iscritto a nessun streamer, mission abort!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Mi dispiace, non puoi annullare la sottoscrizione a {{streamer}} perché non sei iscritto a loro.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} Mi dispiace; mentre sei iscritto a questo streamer e lo stato di streaming, le loro sottoscrizioni non sono pubblicate su {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Mi dispiace, ma sembra che tu non stia ricevendo le notifiche {{status}} per {{streamer}}. Supportiamo le notifiche \"online\" e \"offline\".",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Successo! Non pubblicherò più messaggi su {{channel}} ogni volta che {{name}} va offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Successo! Non pubblicherò più messaggi su {{channel}} ogni volta che {{name}} andrà in diretta.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Successo! {{count}} abbonamento è stato rimosso da questo server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Success! {{count}} subscriptions have been removed from this server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Volevi vedere tutti gli abbonamenti di questo streamer, ma non ce ne sono!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Live",
+		"offline": "Offline"
+	},
+	"twitchSubscriptionShowUnknownUser": "Sconosciuto",
+	"twitchSubscriptionDescription": "Gestisci le sottoscrizioni per il tuo server.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"aggiungi lo stato del canale Streamer",
+			"aggiungi lo stato del canale Streamer",
+			"Rimuovi lo stato del canale Streamer",
+			"reimposta Streamer",
+			"reset",
+			"mostra",
+			""
+		],
+		"extendedHelp": "Gestisci le sottoscrizioni per questo server.\n__Notifiche Online__\nTutti i dati disponibili verranno visualizzati in un simpatico embed che ti spiegherà esattamente ciò che lo streamer sta facendo.\n\n__Notifiche offline__\nDevi scrivere il tuo messaggio che verrà pubblicato quando lo streamer sarà offline. Verrà visualizzato in un bel messaggio Twitch-porporaEmbed.",
+		"explainedUsage": [
+			[
+				"aggiungere/rimuovere/reset/mostra",
+				"Indica se\n- Aggiungi un nuovo abbonamento Twitch.\n- Rimuovi un abbonamento Twitch esistente\n- Resetta tutti gli abbonamenti twitch, o quelli per uno specifico streamer\n- Mostra tutti gli abbonamenti Twitch correnti"
+			],
+			[
+				"Streamer",
+				"Il nome utente Twitch dello streamer per cui ricevere le notifiche."
+			],
+			[
+				"Canale",
+				"Un canale Discord dove pubblicare le notifiche."
+			],
+			[
+				"Stato",
+				"Lo stato che lo streamer di Twitch dovrebbe ottenere per una notifica, uno di online o offline."
+			],
+			[
+				"Contenuto",
+				"Il messaggio da inviare nella chat di Discord. Richiesto per le notifiche fuori rete, opzionale per le notifiche online."
+			]
+		],
+		"examples": [
+			"aggiungi favna #twitch online",
+			"aggiungi favna #twitch offline Favna è ora offline. Dì addio 👋!",
+			"rimuovi kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"mostra"
+		]
+	}
+}
