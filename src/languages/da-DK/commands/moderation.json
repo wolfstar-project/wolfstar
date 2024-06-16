@@ -1,0 +1,889 @@
+{
+	"permissions": "Tilladelser for {{username}} ({{id}})",
+	"permissionsAll": "Alle Tilladelser",
+	"slowmodeSet": "Nedkølingen for denne kanal er sat til {{cooldown, duration}}.",
+	"slowmodeReset": "Nedkølingen for denne kanal er blevet nulstillet.",
+	"banNotBannable": "Målet er ikke bannerbart for mig.",
+	"dehoistStarting": "Jeg vil begynde at frastøde {{count}} medlemmer...",
+	"dehoistProgress": "Dehoisted {{count}} medlemmer indtil videre! ({{percentage}}%)",
+	"dehoistEmbed": {
+		"title": "Afsluttede frastødende {{users}} medlemmer",
+		"descriptionNoone": "Ingen medlemmer blev dehoisted. En runde bifald til dine lovlydige brugere!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} medlem blev dehoisted. Vi forsøgte også at dehoisere et ekstra {{errored}} medlem, men de fejlede ud",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} medlemmer blev dehoisted. Vi forsøgte også at dehoisere yderligere {{errored}} medlemmer, men de fejlede ud",
+		"description": "{{dehoistedMemberCount}} medlem blev dehoisted",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} medlemmer blev dehoisted",
+		"fieldErrorTitle": "Brugerne vi stødte på en fejl for:"
+	},
+	"kickNotKickable": "Målet er ikke kickable for mig.",
+	"lockdownLock": "Kanalen {{channel}} er nu låst.",
+	"lockdownLocking": "{{LOADING}} Låser kanalen {{channel}}... Jeg kan måske ikke svare efter dette.",
+	"lockdownLocked": "Kanalen {{channel}} var allerede låst.",
+	"lockdownUnlocked": "Kanalen {{channel}} blev ikke låst.",
+	"lockdownOpen": "lockdown for kanalen {{channel}} er blevet udgivet.",
+	"muteMuted": "Målbrugeren er allerede dæmpet.",
+	"muteUserNotMuted": "Denne bruger er ikke dæmpet.",
+	"restrictLowlevel": "{{REDCROSS}} Beklager, der er ingen restriktionsrolle konfigureret. Bed venligst en administrator eller serverejeren om at sætte den op.",
+	"pruneAlert_one": "{{count}} besked slettet fra {{total}}.",
+	"pruneAlert_other": "{{count}} beskeder slettet fra {{total}}.",
+	"pruneInvalidPosition": "{{REDCROSS}} Position skal være en af \"før\" eller \"efter\".",
+	"pruneNoDeletes": "Intet brev er blevet slettet, enten ikke noget brev matcher filteret eller de er over 14 dage gamle.",
+	"pruneLogHeader": "Følgende beskeder er blevet genereret af en moderators anmodning.\nDatoformateringen er af \"$t(globals:dateFormat) hh:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} Aktiverede moderations-DM'er.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Deaktiveret moderations-DM'er med succes",
+	"moderationOutput_one": "{{GREENTICK}} Oprettet sag {{range}} - {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Oprettede sager {{range}} - {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Created case {{range}} ¤ {{users, list(conjunction)}}.\nMed årsagen til: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Created cases {{range}} ¤ {{users, list(conjunction)}}.\nMed årsagen til: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Kunne ikke moderere bruger:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Kunne ikke moderere brugere:\n{{users}}",
+	"moderationDmFooter": "For at deaktivere moderations-DMs, skriv `toggleModerationDM`.",
+	"moderationDmDescription": "**~Server**: {{guild}}\n**~Type**: {{title}}\n**~Reason**: Ingen angivet",
+	"moderationDmDescriptionWithReason": "**ŽServer**: {{guild}}\n**~Type**: {{title}}\n**~Reason**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**● Server**: {{guild}}\n**● Type**: {{title}}\n**● Varighed**: {{duration, duration}}\n**● Årsag**: Ingen angivet",
+	"moderationDmDescriptionWithReasonWithDuration": "**● Server**: {{guild}}\n**● Type**: {{title}}\n**● Varighed**: {{duration, duration}}\n**● Årsag**: {{reason}}",
+	"slowmodeDescription": "Indstil kanalens langsomme tilstand værdi i sekunder.",
+	"slowmodeExtended": {
+		"usages": [
+			"nulstillet/sekunder/varighed"
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_CHANNELS, permissions}}** og vil ændre kanalens grænse pr. bruger til enhver værdi mellem 0 og 6 timer.",
+		"examples": [
+			"0",
+			"reset",
+			"4m"
+		],
+		"reminder": "For at nulstille en kanals hastighedsgrænse pr. bruger, kan du enten bruge 0 eller 'nulstille'."
+	},
+	"banDescription": "Hit nogen med forbud hammer.",
+	"banExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag",
+			"Bruger -- seconds=S -- minutes=M -- hours=H -- days=D"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at udelukke. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid dette forbud skal vare. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk blive fjernet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til forbuddet. Dette vil også vise i serverens revisionslogs."
+			],
+			[
+				"-- seconds=S -- minutes=M -- hours=H -- days=D",
+				"Mængden af tid værd af meddelelser til at slette, hvert flag er valgfrit og kan kombineres. Op til 7 dage."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{BanMembers, permissions}}**, og kun medlemmer med lavere rollehierarki position kan forbydes af mig.\nNej, serverens ejer kan ikke udelukkes.\nDenne handling kan eventuelt udløses for at oprette en midlertidig ban.",
+		"examples": [
+			"@Pete",
+			"@ Pete Spamming alle kanaler.",
+			"@ Pete @ Jack @ John 24h Raiding"
+		]
+	},
+	"dehoistDescription": "Skyd alle med Dehoistinator 3000",
+	"dehoistExtended": {
+		"extendedHelp": "Den handling af heisting indebærer tilføje specielle tegn foran jeres øgenavn for at fremstå højere i den medlemmer liste.\nIndeværende befale erstatter hvilken som helst medlem's øgenavn at indbefatte disse specialtegn hos en speciel karakter at trækker sig hen til den bunden i den liste.",
+		"reminder": "Denne kommando kræver **{{ManageNicknames, permissions}}**, og kun medlemmer med lavere rollehierarki position kan være fraværende."
+	},
+	"kickDescription": "Hit nogen med :woman's_boot:.",
+	"kickExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger Årsag"
+		],
+		"extendedHelp": "Denne kommando kræver **{{KickMembers, permissions}}**, og kun medlemmer med lavere rollehierarki position kan blive smidt ud af mig. Nej, serverens ejer kan ikke sparkes.",
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at sparke. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til kick. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"examples": [
+			"@Sarah",
+			"@ Sarah Spamming generel chat."
+		]
+	},
+	"lockdownDescription": "Luk portene for denne kanal!",
+	"lockdownExtended": {
+		"usages": [
+			"",
+			"Lås Rolle TextChannel Varighed",
+			"oplås Rolle TextChannel",
+			"Rolle TextChannel Varighed"
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_CHANNELS, permissions}}** for at kunne håndtere tilladelser for en kanal.\nDenne kommando fjerner tilladelsen **{{SEND_MESSAGES, permissions}}** til `@everyone` rollen så ingen andre end de medlemmer med roller, der har deres egne overskrivninger (udover administratorer, hvem omgå kanal overrides) kan sende beskeder.\nAlternativt kan du passere tid som andet argument.",
+		"explainedUsage": [
+			[
+				"lås/oplåsning",
+				"Om kanalen skal låses eller låses op. Standard er \"låst\" hvis kanalen er låst op for øjeblikket, eller \"låst\" hvis den er låst."
+			],
+			[
+				"Rolle",
+				"Rollen der skal låses. Standard er rollen '@everyone'."
+			],
+			[
+				"TextChannel",
+				"Kanalen der skal låses. Standard er den aktuelle kanal."
+			],
+			[
+				"Varighed",
+				"Hvor lang tid denne lås skal vare. Standard er uendelig."
+			]
+		],
+		"examples": [
+			"",
+			"#generel",
+			"lås #generel 5m",
+			"oplås #generel",
+			"lås Medlemmer #general"
+		],
+		"reminder": "Hvis dine medlemmer har brug for en rolle som \"medlem\" for at sende beskeder i kanalen for at begynde med så vil denne kommando ikke virke. Det er i vores efterslæb af arbejde at tilføje gøre den rolle, der bør låses konfigurerbar."
+	},
+	"muteDescription": "Gør en bruger lydløs i al tekst og stemmekanaler.",
+	"muteExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at mute. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Hvor meget tid denne mute skal vare. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk blive slået fra efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til mute. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kan ikke muteres.\nDenne handling kan eventuelt times til at oprette en midlertidig mute. Denne handling sparer et medlems roller midlertidigt og vil blive tildelt brugeren efter unmute.\nDen dæmpede rolle er **sticky**, hvis brugeren forsøger at fjerne den ved at slutte sig til serveren, vil den blive tilføjet tilbage.",
+		"examples": [
+			"@Alphonse",
+			"@Alphonse Spamming alle kanaler",
+			"@Alphonse 24h Spamming alle kanaler"
+		]
+	},
+	"setNicknameDescription": "Ændre kaldenavnet på en bruger.",
+	"setNicknameExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Kaldenavn",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Kaldenavn Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Den bruger(e) hen til øgenavn. Kan være op hen til i alt 10 brugernavn."
+			],
+			[
+				"Kaldenavn",
+				"Det nye kaldenavn der skal indstilles. Ikke inklusive dette vil gøre denne kommando standard til brugerens brugernavn."
+			],
+			[
+				"Varighed",
+				"Mængden af tid dette kaldenavn skal ændre sig. For eksempel 24 timer i 24 timer. Brugeren(e) vil automatisk få deres nuværende navn tilbage efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til denne øgenavn ændring. Dette vil også vise i serverens revision logs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_NICKNAMES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kaldenavn kan ikke ændres.",
+		"examples": [
+			"@ Pete peeehteeerrr",
+			"@ řého eře Pete Unmentionable name"
+		],
+		"reminder": "Forlader ud den nye øgenavn vil nulstille den tilbage hen til den brugerens brugernavn"
+	},
+	"addRoleDescription": "Tilføjer en rolle til en bruger.",
+	"addRoleExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Rolle",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 rolle Varighed årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at tilføje en rolle til. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Rolle",
+				"Den nye rolle at tildele"
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne rolle skal være på denne bruger. For eksempel 24 timer i 24 timer. Brugeren(e) vil automatisk få rollen fjernet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne rolle. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejerroller kan ikke ændres.",
+		"examples": [
+			"@John medlem",
+			"@ John medlem Gør John til medlem"
+		]
+	},
+	"removeroleDescription": "Fjerner en rolle fra en bruger",
+	"removeroleExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Rolle",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 rolle Varighed årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at fjerne en rolle fra. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Rolle",
+				"Rollen der skal fjernes"
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne rolle skal fjernes fra denne bruger. For eksempel 24 timer i 24 timer. Brugeren(e) vil automatisk genvinde rollen efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at fjerne denne rolle. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejerroller kan ikke ændres.",
+		"examples": [
+			"@Paula medlem",
+			"@Paula medlem Fjern medlemstilladelser fra Paula"
+		]
+	},
+	"pruneDescription": "Beskærer et vist antal breve med filter.",
+	"pruneExtended": {
+		"usages": [
+			"Beløb Flag Bruger",
+			"Beløb flag efter/før besked",
+			"Beløb Bruger",
+			"Beløb bruger efter/før besked",
+			"Beløb -- Lydløs"
+		],
+		"extendedHelp": "Denne kommando sletter den angivne mængde breve givet et filter inden for de sidste 100 breve sendt i kanalen kommandoen er blevet kørt.\nValgfrit kan du tilføje `--silent` for at fortælle WolfStar ikke at sende en svarbesked.",
+		"explainedUsage": [
+			[
+				"Beløb",
+				"Mængden af beskeder der skal slettes."
+			],
+			[
+				"--f/file/files",
+				"Sletter breve med vedhæftede filer."
+			],
+			[
+				"--a/forfatter",
+				"Sletter dine beskeder."
+			],
+			[
+				"--b/bot/bots",
+				"Sletter breve sendt af bots."
+			],
+			[
+				"--h/menneske/mennesker",
+				"Sletter beskeder sendt af brugere."
+			],
+			[
+				"--i/inviter/invitationer",
+				"Sletter beskeder, der indeholder invitationslinks."
+			],
+			[
+				"--l/link/links",
+				"Sletter beskeder, der indeholder ethvert link."
+			],
+			[
+				"--y/you",
+				"Sletter mine beskeder."
+			],
+			[
+				"-- age=Varighed",
+				"Sletter enhver besked nyere end Varighed."
+			],
+			[
+				"--include/contain=Word",
+				"Sletter meddelelser, der indeholder Word."
+			],
+			[
+				"--p/pin/stifter",
+				"Sletter fastgjorte breve, med mindre det er angivet, slettes ingen andre filtre."
+			],
+			[
+				"Bruger",
+				"Sletter beskeder sendt af den angivne bruger."
+			],
+			[
+				"Stilling: efter",
+				"Sletter breve sendt efter det angivne brev."
+			],
+			[
+				"Placering: før",
+				"Sletter breve sendt før det angivne brev."
+			],
+			[
+				"--s/lydløs",
+				"Hvorvidt en svarmeddelelse skal sendes, vil dette også slette din kommando besked, hvis der var mindre end 100 breve filtreret."
+			]
+		],
+		"examples": [
+			"50 -- a",
+			"75 @kyra",
+			"20 -- bots",
+			"60 -- human -- files before 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 -- Lydløs"
+		],
+		"reminder": "På grund af en Discord begrænsning, kan bots ikke slette beskeder ældre end 14 dage."
+	},
+	"permissionsDescription": "Tjek tilladelsen for et medlem eller din.",
+	"permissionsExtended": {
+		"usages": [
+			"",
+			"Bruger"
+		],
+		"explainedUsage": [
+			[
+				"Bruger",
+				"Den bruger, for hvem du ønsker at kontrollere tilladelserne. Standard er til dig selv."
+			]
+		],
+		"extendedHelp": "Ideel, hvis du ønsker at vide, hvilke tilladelser der gives til et medlem, når de har et bestemt sæt af roller."
+	},
+	"restrictAttachmentDescription": "Begræns en bruger fra at sende vedhæftede filer i alle kanaler.",
+	"restrictAttachmentExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at begrænse vedhæftede filer for. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne begrænsning skal være på denne bruger. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få begrænsningen ophævet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne begrænsning. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kan ikke begrænses.\nDenne handling kan valgfrit times for at oprette en midlertidig begrænsning.\nDen begrænsede rolle er **sticky**, hvis brugeren forsøger at fjerne den ved at slutte sig til serveren, vil den blive tilføjet tilbage.",
+		"examples": [
+			"@Pete",
+			"@ Pete Sender mærkelige billeder",
+			"@ Pete 24h Sender NSFW billeder"
+		]
+	},
+	"restrictEmbedDescription": "Begræns en bruger fra at knytte indlejringer i alle kanaler.",
+	"restrictEmbedExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at begrænse embeds for. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne begrænsning skal være på denne bruger. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få begrænsningen ophævet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne begrænsning. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kan ikke begrænses.\nDenne handling kan valgfrit times for at oprette en midlertidig begrænsning.\nDen begrænsede rolle er **sticky**, hvis brugeren forsøger at fjerne den ved at slutte sig til serveren, vil den blive tilføjet tilbage.",
+		"examples": [
+			"@Pete",
+			"@Pete Sender underlige links",
+			"@Pete 24h Sendt et spam-link"
+		],
+		"reminder": "Indlejringer er, for eksempel, når en bruger sender en video, det bliver indlejret i chatten."
+	},
+	"restrictEmojiDescription": "Begræns en bruger fra at bruge eksterne emojis i alle kanaler.",
+	"restrictEmojiExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at begrænse eksterne emojis for. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne begrænsning skal være på denne bruger. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få begrænsningen ophævet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne begrænsning. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kan ikke begrænses.\nDenne handling kan valgfrit times for at oprette en midlertidig begrænsning.\nDen begrænsede rolle er **sticky**, hvis brugeren forsøger at fjerne den ved at slutte sig til serveren, vil den blive tilføjet tilbage.",
+		"examples": [
+			"@Pete",
+			"@ Pete Spamming eksterne emojis",
+			"@ Pete 24h Posted cringe"
+		],
+		"reminder": "Dette vil kun forhindre brugen af eksterne emojis og vil derfor ikke have nogen effekt for ikke-nitro brugere, din egen servers emojis og regelmæssig opbygning i twemojis kan stadig bruges af medlemmer med denne rolle."
+	},
+	"restrictReactionDescription": "Begræns en bruger fra at reagere på beskeder i alle kanaler.",
+	"restrictReactionExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at begrænse reaktion på beskeder for. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne begrænsning skal være på denne bruger. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få begrænsningen ophævet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne begrænsning. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kan ikke begrænses.\nDenne handling kan valgfrit times for at oprette en midlertidig begrænsning.\nDen begrænsede rolle er **sticky**, hvis brugeren forsøger at fjerne den ved at slutte sig til serveren, vil den blive tilføjet tilbage.",
+		"examples": [
+			"@Pete",
+			"@ Pete Spamming reaktioner",
+			"@ Pete 24h Posting mærkelige reaktioner"
+		]
+	},
+	"restrictVoiceDescription": "Begræns en bruger fra at deltage i enhver stemmekanal.",
+	"restrictVoiceExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at begrænse stemmekanalinteraktion for. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne begrænsning skal være på denne bruger. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få begrænsningen ophævet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne begrænsning. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}**, og kun medlemmer med lavere rollehierarki position kan håndteres af mig.\nNej, serverens ejer kan ikke begrænses.\nDenne handling kan valgfrit times for at oprette en midlertidig begrænsning.\nDen begrænsede rolle er **sticky**, hvis brugeren forsøger at fjerne den ved at slutte sig til serveren, vil den blive tilføjet tilbage.",
+		"examples": [
+			"@Pete",
+			"@ Pete Earraping i generelle stemmekanaler",
+			"@ Pete 24h At lave underlige lyde"
+		]
+	},
+	"softBanDescription": "Hit nogen med forbuddet hammer, ødelægge alle deres budskaber i nogle dage og forbyde det.",
+	"softBanExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag",
+			"Bruger -- seconds=S -- minutes=M -- hours=H -- days=D"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) til softban. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til softbanen. Dette vil også vise i serverens revisionslogs."
+			],
+			[
+				"-- seconds=S -- minutes=M -- hours=H -- days=D",
+				"Mængden af tid værd af meddelelser til at slette, hvert flag er valgfrit og kan kombineres. Op til 7 dage."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{BanMembers, permissions}}**, og kun medlemmer med lavere rollehierarki position kan forbydes af mig.\nNej, serverens ejer kan ikke udelukkes.\nBan funktionen fra Discord har en funktion, der tillader moderatoren at fjerne alle beskeder fra alle kanaler, der er blevet sendt i de sidste 'x' dage, er et tal mellem 0 (ingen dage) og 7.\nBrugeren bliver unbanned lige efter forbuddet, så det er som et spark, men det kan beskære mange beskeder.",
+		"examples": [
+			"@Pete",
+			"@ Pete Spamming alle kanaler",
+			"@ Pete 7 Alle beskeder sendt i 7 er væk nu, YEE HAH!"
+		]
+	},
+	"timeoutApplyDescription": "Tiden ud en bruger.",
+	"timeoutApplyExtended": {
+		"usages": [
+			"Varighed Bruger",
+			"Varighed Bruger Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Varighed",
+				"Varigheden af timeout. For eksempel 24 timer i 24 timer."
+			],
+			[
+				"Bruger",
+				"Brugeren til timeout."
+			],
+			[
+				"Årsag",
+				"Årsagen til timeout. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"examples": [
+			"30s @ Pete",
+			"2t @ Pete Spamming af alle kanaler"
+		]
+	},
+	"timeoutUndoDescription": "Fjern en tid ud fra en bruger.",
+	"timeoutUndoExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger",
+				"Brugeren til timeout."
+			],
+			[
+				"Årsag",
+				"Årsagen til timeout. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"examples": [
+			"@Pete",
+			"@ Pete Turns ud han var ikke den, der spammede alle kanaler: person_shrugging:"
+		]
+	},
+	"timeoutNotModeratable": "Målsætningen kan ikke udskydes af mig.",
+	"toggleModerationDmDescription": "Skift moderation DMs.",
+	"toggleModerationDmExtended": {
+		"extendedHelp": "Denne kommando tillader dig at skifte moderation DMs. Som standard er de på, hvilket betyder at enhver mådehold (automatisk eller manuel) vil DM dig, men du kan deaktivere dem med denne kommando."
+	},
+	"unbanDescription": "Fjern udelukkelse fra denne server.",
+	"unbanExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(-erne) der ikke kan udelukkes. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til fjernelsen af forbuddet. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{BanMembers, permissions}}**. Den får bogstaveligt talt nogen fra skraldespanden, renser dem op og tillader passet til serverens porte.",
+		"examples": [
+			"@Pete",
+			"@ Pete Turns ud han var ikke den, der spammede alle kanaler: person_shrugging:"
+		]
+	},
+	"unmuteDescription": "Fjern scotch tape fra en bruger.",
+	"unmuteExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at unmute. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til den mute fjernelse. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}** og fjerner en bruger fra listen over dæmpede personer, og giver de gamle roller tilbage, hvis brugeren havde dem.",
+		"examples": [
+			"@Pete",
+			"@ Pete (Indsæt tilfældig joke her)."
+		]
+	},
+	"unrestrictAttachmentDescription": "Fjern begrænsningen af vedhæftede filer fra en eller flere brugere.",
+	"unrestrictAttachmentExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at fjerne vedhæftningsbegrænsninger fra. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til fjernelse af vedhæftningsbegrænsningen. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}** og fjerner en bruger fra listen over begrænsede personer.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmbedDescription": "Fjern indlejret begrænsning fra en eller flere brugere.",
+	"unrestrictEmbedExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at fjerne indlejrede begrænsninger fra. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til fjernelsen af indlejret begrænsning. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}** og fjerner en bruger fra listen over begrænsede personer.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmojiDescription": "Fjern den eksterne emoji restriktion fra en eller flere brugere.",
+	"unrestrictEmojiExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at fjerne emoji restriktioner fra. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til fjernelsen af emoji-begrænsningen. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}** og fjerner en bruger fra listen over begrænsede personer.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictReactionDescription": "Fjern reaktionsbegrænsningen fra en eller flere brugere.",
+	"unrestrictReactionExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at fjerne reaktionsbegrænsninger fra. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til fjernelsen af reaktionsbegrænsningen. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}** og fjerner en bruger fra listen over begrænsede personer.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictVoiceDescription": "Fjern stemmebegrænsningen fra en eller flere brugere.",
+	"unrestrictVoiceExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at fjerne stemmebegrænsninger fra. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til fjernelsen af stemmebegrænsningen. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MANAGE_ROLES, permissions}}** og fjerner en bruger fra listen over begrænsede personer.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unwarnDescription": "Appel en advarsel moderation log sag.",
+	"unwarnExtended": {
+		"usages": [
+			"Sag",
+			"Sag Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Sag",
+				"Sagen nummer at ændre. Du kan finde sagens numre gennem `history` kommandoen eller ved at kigge i din moderation logs kanal"
+			],
+			[
+				"Årsag",
+				"Årsagen til at fjerne denne advarsel."
+			]
+		],
+		"extendedHelp": "Denne kommando appellerer en advarsel, den kræver ingen tilladelser, du giver mig kun mådehold log sagen til at appellere og årsagen.",
+		"examples": [
+			"0 Ups, forkert dude.",
+			"42 Slår ud dette var definitionen af livet."
+		]
+	},
+	"vmuteDescription": "Kast somebody's mikrofon ud af vinduet.",
+	"vmuteExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at dæmpe i stemmekanaler. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Mængden af tid denne stemme mute skal gælde for. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få stemmens mute ophævet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til at tilføje denne stemme mute. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MUTE_MEMBERS, permissions}}**, og kun medlemmer med lavere rollehierarki position kan blive tavse af mig.\nNej, serverens ejer kan ikke tabes.\nDenne handling kan eventuelt udløses for at oprette en midlertidig stemmedæmper.",
+		"examples": [
+			"@Pete",
+			"@ Pete synger for højt",
+			"@ Pete 24h Bogstaveligt sang ørerape"
+		]
+	},
+	"voiceKickDescription": "Hit nogen med :woman's_boot: for at synge så dårligt og højt.",
+	"voiceKickExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag",
+			"Bruger1 Bruger2 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at sparke fra deres aktuelle stemmekanal. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til at smide brugeren(e) ud af stemmekanalen. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver tilladelser **{{MANAGE_CHANNELS, permissions}}** for at oprette en midlertidig (skjul) stemmekanal, og **{{MOVE_MEMBERS, permissions}}** for at flytte brugeren til den midlertidige kanal.\nEfter dette, kanalen er hurtigt slettet, hvilket gør brugeren forlade stemmekanalen.\nFor skræddersyede moderatorer har denne kommando næsten ingen indvirkning på den gennemsnitlige bruger, da kanalen er skabt på en måde kun mig og den valgte bruger kan se og deltage, så hurtigt slettes.",
+		"examples": [
+			"@Pete",
+			"@ Pete Spamming alle kanaler"
+		]
+	},
+	"vunmuteDescription": "Få en eller anden mikrofon tilbage, så de kan tale.",
+	"vunmuteExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) at slå fra i stemmekanaler. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Årsag",
+				"Årsagen til at fjerne stemmen mute. Dette vil også vise i serverens revisionslogs."
+			]
+		],
+		"extendedHelp": "Denne kommando kræver **{{MUTE_MEMBERS, permissions}}**, og kun medlemmer med lavere rollehierarki position kan blive un-silenced af mig.\nNej, serverens ejer kan ikke deaktiveres.",
+		"examples": [
+			"@Pete",
+			"@ Pete Appealed hans gange signering høre voldtægt."
+		]
+	},
+	"warnDescription": "Send en advarsel til nogen.",
+	"warnExtended": {
+		"usages": [
+			"Bruger",
+			"Bruger1 Bruger2 Bruger3...Bruger10",
+			"Bruger1 Varighed",
+			"Bruger1 Bruger2 Varighed Årsag"
+		],
+		"explainedUsage": [
+			[
+				"Bruger/Bruger1/Bruger2",
+				"Brugeren(e) der skal advares. Kan være op til i alt 10 brugere."
+			],
+			[
+				"Varighed",
+				"Hvor lang tid denne advarsel gælder for. For eksempel 24 timer i 24 timer. Brugeren(-erne) vil automatisk få advarslen fjernet efter dette tidspunkt."
+			],
+			[
+				"Årsag",
+				"Årsagen til denne advarsel."
+			]
+		],
+		"extendedHelp": "Denne kommando filer en advarsel til en bruger.\nDenne form for advarsel er beregnet til at være **formelle advarsler**, da de vil blive vist i kommandoen 'advarsler'.\nDet er en god praksis at lave en uformel advarsel, før du bruger denne kommando.",
+		"examples": [
+			"@ Pete forsøgte at nævne alle."
+		]
+	}
+}
