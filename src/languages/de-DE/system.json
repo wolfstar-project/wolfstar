@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Ich hatte einen kleinen Netzwerkfehler bei Discord, bitte führe diesen Befehl erneut aus!",
+	"fetchBansFail": "Fehler beim Abrufen von Banns. Habe ich die **{{ADMINISTRATOR, permissions}}** Berechtigung?",
+	"helpTitles": {
+		"aliases": "🖇️ | **Aliases**",
+		"usages": "📝 | **Befehlsverwendung**",
+		"extendedHelp": ":magnifying_glass_tilted_left | **Erweiterte Hilfe**",
+		"explainedUsage": "⚙️ | **Erklärte Nutzung**",
+		"possibleFormats": "🔢 | **Mögliche Formate**",
+		"examples": "🔗 | **Beispiele**",
+		"reminders": "⏰ | **Erinnerung**"
+	},
+	"jumpTo": "Springe zur Nachricht <unk>",
+	"loading": [
+		"{{LOADING}} Schaue Hamster läuft...",
+		"{{LOADING}} Leute bei Versteckt-und-Suchen...",
+		"{{LOADING}} Versuche diesen Befehl zu finden...",
+		"{{LOADING}} Daten aus der Cloud werden abgerufen...",
+		"{{LOADING}} Linsen werden kalibriert...",
+		"{{LOADING}} Spielt Felsen, Papier, Scheren...",
+		"{{LOADING}} Tuning in die richtigen Frequenzen...",
+		"{{LOADING}} Splines rekonstruieren..."
+	],
+	"prefixReminder": "Das Präfix auf diesem Server ist auf `{{prefix}} ` gesetzt"
+}
