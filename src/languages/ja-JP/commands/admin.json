@@ -1,0 +1,107 @@
+{
+	"confUpdated": "キー **{{key}}**: {{response}} が正常に更新されました",
+	"confGetNoExt": "キー **{{key}}** は存在しないようです。",
+	"confGet": "キーの値は **{{key}}** です: `{{value}}`",
+	"confReset": "キー **{{key}}** がリセットされました: `{{value}}`",
+	"confNochange": "**{{key}}**の値はすでにその値でした。",
+	"confServerDescription": "サーバーごとの設定を定義します。",
+	"confServerExtended": {
+		"usages": [
+			"Set NameOfKey Value for Key",
+			"表示",
+			"NameOfKey を表示",
+			"Remove NameOfKey Value for Key",
+			"reset NameOfKey",
+			"メニュー"
+		],
+		"extendedHelp": "DiscordからWolfStarを設定することができます。format@@0(https://wolfstar.rocks) の代わりになります。",
+		"examples": [
+			"言語の設定 ja-JP",
+			"set channels.moderation-logs #moderation-logs",
+			"表示",
+			"チャンネルを表示",
+			"roles.moderator Moderator",
+			"reset roles.moderator",
+			"メニュー"
+		],
+		"reminder": "キーとグループがあり、グループ内のキーは `GroupName.KeyName` によって名前が付けられます。"
+	},
+	"confServer": "**サーバー設定 {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}`は、Webダッシュボードからのみ設定できます ",
+	"confSettingNotSet": "未設定",
+	"rolesetDescription": "ユニークなロールセットを管理します。",
+	"rolesetExtended": {
+		"usages": [
+			"set RoleSetName Role1 Role2 Role3...",
+			"Remove RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"リスト",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "A role set is a group of roles WolfStar identifies as unique for all members in the server, i.e. a roleset named `region` could have the roles `Africa`, `America`, `Asia`, and `Europe`, and members will only be able to have one of them. This is like a kind of \"rule\" that is applied in the three following situations:\n\n- When somebody claims a role via the `roles` command.\n- When somebody claims a role via reaction roles.\n- When somebody receives a role either manually or from another bot.",
+		"explainedUsage": [
+			[
+				"追加",
+				"新しいロールセットを作成するか、既存のロールにロールを追加します。"
+			],
+			[
+				"削除",
+				"既存のロールセットからロールを削除します。"
+			],
+			[
+				"reset",
+				"ロールセットからすべてのロールを削除します。指定されていない場合は、既存のすべてのロールセットを削除します。"
+			],
+			[
+				"リスト",
+				"すべてのロールセットを一覧表示します。"
+			],
+			[
+				"自動",
+				"ロールセットを追加または削除します。"
+			],
+			[
+				"RoleSetName",
+				"ロールセットの名前"
+			],
+			[
+				"ロール1ロール2ロール3",
+				"ロールセットに追加するロール"
+			]
+		],
+		"examples": [
+			"領域アメリカを追加",
+			"地域を追加 アフリカ アメリカ アジア ヨーロッパ",
+			"領域アメリカ",
+			"reset",
+			"領域のリセット",
+			"リスト",
+			"地域 アメリカ",
+			"地域 アフリカ アメリカ アジア ヨーロッパ"
+		],
+		"reminder": "このコマンドは、同時に複数のロールを追加および/または削除できます。"
+	},
+	"rolesetCreated": "{{name}} ユニークなロールセットが次のロールで作成されました： {{roles, list(conjunction)}}",
+	"rolesetAdded": "{{name}} ユニークなロールセットを更新しました。次のロールが追加されました： {{roles, list(conjunction)}}。",
+	"rolesetRemoved": "{{name}} ユニークなロールセットには以下のロールが含まれなくなります： {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} このグループにはロールセットが設定されていません。",
+	"rolesetResetAll": "{{GREENTICK}} すべてのロールセットを削除しました。",
+	"rolesetResetNotExists": "{{REDCROSS}} The roleset `{{name}}` does not exist in this server",
+	"rolesetResetGroup": "{{GREENTICK}} このサーバーからロールセット「{{name}}」を削除しました。",
+	"rolesetUpdated": "{{name}} のユニークなロールセットが更新されました。",
+	"rolesetNoRolesets": "ロールセットがありません。",
+	"confMenuRenderAtFolder": "現在の場所: 📁 {{path}}",
+	"confMenuRenderAtPiece": "現在: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "このフォルダに設定可能なキーはありません",
+	"confMenuRenderSelect": "以下のエントリ名のいずれかを入力してください",
+	"confMenuRenderUpdate": "• 値の更新 → `Set <value>`",
+	"confMenuRenderRemove": "• 値の削除 → ` <value>`",
+	"confMenuRenderReset": "• 値のリセット → `reset`",
+	"confMenuRenderUndo": "• 更新を元に戻す → 「元に戻す」",
+	"confMenuRenderCvalue": "現在の値: **``{{value}}``**",
+	"confMenuRenderBack": "◀️ ボタンを押して戻る",
+	"confMenuInvalidKey": "無効なキーです。次のいずれかのオプションでもう一度お試しください。",
+	"confMenuInvalidAction": "無効なアクションです。次のいずれかのオプションでもう一度お試しください。",
+	"confMenuSaved": "すべての変更を正常に保存しました。"
+}
