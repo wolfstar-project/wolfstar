@@ -1,0 +1,7 @@
+{
+	"escaperopeDescription": "Użyj liny ucieczki z Pokemon.",
+	"escaperopeExtended": {
+		"extendedHelp": "**WilfStar** użył **Escape Rope**."
+	},
+	"escaperopeOutput": "**{{user}}** użyto **Ropa ucieczkowa**"
+}
