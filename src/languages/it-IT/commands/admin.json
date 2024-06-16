@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Chiave aggiornata con successo **{{key}}**: {{response}}",
+	"confGetNoExt": "La chiave **{{key}}** non sembra esistere.",
+	"confGet": "Il valore per la chiave **{{key}}** è: `{{value}}`",
+	"confReset": "La chiave **{{key}}** è stata reimpostata a: `{{value}}`",
+	"confNochange": "Il valore per **{{key}}** era già quel valore.",
+	"confServerDescription": "Definire le impostazioni per server.",
+	"confServerExtended": {
+		"usages": [
+			"imposta il valore NameOfKey per la chiave",
+			"mostra",
+			"mostra NameOfKey",
+			"rimuovi il valore NameOfKey per la chiave",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "Ti permette di configurare WolfStar da Discord, come una rapida alternativa alla [dashboard web](https://wolfstar.rocks).",
+		"examples": [
+			"imposta lingua it-GB",
+			"set channels.moderation-logs #moderation-logs",
+			"mostra",
+			"mostra canali",
+			"remove roles.moderator Moderator",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Ci sono chiavi e gruppi, le chiavi all'interno di un gruppo sono denominate da `GroupName.KeyName`."
+	},
+	"confServer": "**Impostazioni Server {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` può essere configurato solo attraverso la dashboard web ",
+	"confSettingNotSet": "Non Impostato",
+	"rolesetDescription": "Gestisci set di ruoli unici.",
+	"rolesetExtended": {
+		"usages": [
+			"set <unk> SetName 1 <unk> 2 <unk> 3...",
+			"rimuovete <unk> SetName <unk> 1 <unk> 2 <unk> 3...",
+			"reset",
+			"reset RoleSetName",
+			"elenco",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Un set di ruoli è un gruppo di ruoli che WolfStar identifica come univoco per tutti i membri del server, ad es. un roleset chiamato `region` potrebbe avere i ruoli `Africa`, `America`, `Asia`, e `Europa`, e i membri saranno in grado di avere solo uno di loro. Questa è come una sorta di \"regola\" che viene applicata nelle tre seguenti situazioni:\n\n- Quando qualcuno sostiene un ruolo tramite il comando `roles`.\n- Quando qualcuno sostiene un ruolo tramite i ruoli di reazione.\n- Quando qualcuno riceve un ruolo manualmente o da un altro bot.",
+		"explainedUsage": [
+			[
+				"aggiungi",
+				"Crea un nuovo roleset o aggiungi un ruolo a uno esistente."
+			],
+			[
+				"rimuovi",
+				"Rimuovere un ruolo da un rullo esistente."
+			],
+			[
+				"reset",
+				"Rimuove tutti i ruoli da una roleset o, se non specificato, da tutte le rolesets esistenti."
+			],
+			[
+				"elenco",
+				"Elenca tutte le lesioni."
+			],
+			[
+				"auto",
+				"Aggiunge o rimuove una roleset."
+			],
+			[
+				"RoleSetName",
+				"Il nome del roleset"
+			],
+			[
+				"<unk> 1 <unk> 2 <unk> 3",
+				"I ruoli da aggiungere al rullo"
+			]
+		],
+		"examples": [
+			"aggiungere regioni America",
+			"aggiungere regioni Africa America Asia Europa",
+			"rimuovere regioni America",
+			"reset",
+			"reimpostare le regioni",
+			"elenco",
+			"regioni America",
+			"regioni Africa America Asia Europa"
+		],
+		"reminder": "Questo comando può aggiungere e/o rimuovere più ruoli contemporaneamente."
+	},
+	"rolesetCreated": "Il set di ruoli unici {{name}} è stato creato con i seguenti ruoli: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Aggiornato il set di ruoli unici {{name}} , ora ha i seguenti ruoli: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Il set di ruoli unici {{name}} non includerà più i seguenti ruoli: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Non ci sono rolesets configurati in questo gruppo.",
+	"rolesetResetAll": "{{GREENTICK}} Hai rimosso con successo tutte le lesioni.",
+	"rolesetResetNotExists": "{{REDCROSS}} Il roleset `{{name}}` non esiste in questo server.",
+	"rolesetResetGroup": "{{GREENTICK}} Hai rimosso con successo il roleset `{{name}}` da questo server.",
+	"rolesetUpdated": "Il set di ruoli unici {{name}} è stato aggiornato.",
+	"rolesetNoRolesets": "Non hai delle lesioni.",
+	"confMenuRenderAtFolder": "Attualmente a: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Attualmente a: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Non ci sono chiavi configurabili per questa cartella",
+	"confMenuRenderSelect": "Inserisci uno dei nomi delle seguenti voci",
+	"confMenuRenderUpdate": "• Aggiorna Valore → `set <value>`",
+	"confMenuRenderRemove": "• Rimuovi Valore → `remove <value>`",
+	"confMenuRenderReset": "• Reimposta Valore → `reset`",
+	"confMenuRenderUndo": "• Annulla Aggiornamento → `undo`",
+	"confMenuRenderCvalue": "Valore Attuale: **``{{value}}``**",
+	"confMenuRenderBack": "Premi ◀️ per tornare indietro",
+	"confMenuInvalidKey": "Chiave non valida, riprova con una delle seguenti opzioni.",
+	"confMenuInvalidAction": "Azione non valida, riprova con una delle seguenti opzioni.",
+	"confMenuSaved": "Tutte le modifiche salvate con successo."
+}
