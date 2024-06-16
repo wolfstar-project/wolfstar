@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Culoarea trebuie să se afle în intervalul 0 - 16777215 (0xFFFFFF), dar a primit \"{{value}}\".",
+	"invalidHexRed": "Intervalul roşu nevalid. Trebuie să fie între \"00\" şi \"ff\", dar primit \"{{value}}\".",
+	"invalidHexGreen": "Interval verde nevalid. Trebuie să fie între \"00\" şi \"ff\", dar primit \"{{value}}\".",
+	"invalidHexBlue": "Interval albastru invalid. Trebuie să fie între \"00\" şi \"ff\", dar primit \"{{value}}\".",
+	"invalidHslHue": "Interval nevalid Hue. Trebuie să fie între 0 şi 360, dar a primit `{{value}}`.",
+	"invalidHslSaturation": "Interval de Saturaţie nevalid. Trebuie să fie între 0 şi 100, dar a primit `{{value}}`.",
+	"invalidHslLightness": "Intervalul de luminozitate nevalid. Trebuie să fie între 0 și 100, dar a primit `{{value}}`.",
+	"invalidRgbRed": "Intervalul roşu nevalid. Trebuie să fie între 0 şi 255, dar a primit `{{value}}`.",
+	"invalidRgbGreen": "Interval verde nevalid. Trebuie să fie între 0 şi 255, dar a primit `{{value}}`.",
+	"invalidRgbBlue": "Interval albastru invalid. Trebuie să fie între 0 şi 255, dar a primit `{{value}}`."
+}
