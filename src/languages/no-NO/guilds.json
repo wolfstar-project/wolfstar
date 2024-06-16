@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Deaktivert",
+	"explicitContentFilterMembersWithoutRoles": "Medlemmer uten roller",
+	"explicitContentFilterAllMembers": "Alle medlemmer",
+	"defaultMessageNotificationsAllMessages": "Alle meldinger",
+	"defaultMessageNotificationsOnlyMentions": "Bare @mentions",
+	"SuppressJoinNotifications": "Medlem bli med i varsler",
+	"SuppressJoinNotificationReplies": "Medlem bli med i svar-knappen på klistremerke",
+	"SuppressPremiumSubscriptions": "Serverforsterknings varsler",
+	"SuppressGuildReminderNotifications": "Server konfigurerings tips",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Undertrykk varslinger om kjøp av rolle",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Undertrykk svar på varslinger om abonnementskjøp"
+}
