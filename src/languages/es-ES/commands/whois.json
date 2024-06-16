@@ -5,7 +5,7 @@
 	"userName": "usuario",
 	"userDescription": "El usuario sobre el que obtener información",
 	"rolesTitle_one": "Rol [1]",
-	"rolesTitle_other": "Roles [{{count, number}}]",
+	"rolesTitle_other": "Rol [{{count, number}}]",
 	"permissionsTitle": "Permisos Clave",
 	"permissionsAll": "Todos los permisos",
 	"embedDescription": "**Usuario Desde**: {{createdAt}}",
