@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Uživatel se připojil",
+	"guildMemberAddDescription": "{{user}} se připojil k Discordu {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Přidané role**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Přidána role**: {{addedRoles}}",
+	"guildMemberAddMute": "Ztlumený uživatel se připojil",
+	"guildMemberBanned": "Uživatel zabanován",
+	"guildMemberKicked": "Uživatel vyhozen",
+	"guildMemberNoUpdate": "Nebyla nalezena žádná aktualizace",
+	"guildMemberRemove": "Uživatel odešel",
+	"guildMemberRemoveDescription": "{{user}} se připojil na tento server *před neznámým časem*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} se připojil na tento server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Odstraněné role**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Odstraněná role**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Uživatel Softbanován",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Další**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Předchozí**: Nenastaveno",
+	"nameUpdatePreviousWasSet": "**Předchozí**: `{{previousName}}`",
+	"nicknameUpdate": "Přezdívka upravena",
+	"roleUpdate": "Role upraveny",
+	"usernameUpdate": "Uživatelské jméno upraveno"
+}
