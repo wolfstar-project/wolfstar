@@ -1,0 +1,30 @@
+{
+	"evalDescription": "任意の Javascript を評価します。",
+	"evalExtended": {
+		"usages": [
+			"式"
+		],
+		"extendedHelp": "The eval command evaluates code as-in, any error thrown from it will be handled.\nIt also uses the flags feature. Write --silent, --depth=number or --async to customize the output.\nThe --wait flag changes the time the eval will run. Defaults to 60 seconds. Accepts time in milliseconds.\nThe --silent flag will make it output nothing.\nThe --depth flag accepts a number, for example, --depth=2, to customize util.inspect's depth.\nThe --async flag will wrap the code into an async function where you can enjoy the use of await, however, if you want to return something, you will need the return keyword\nThe --showHidden flag will enable the showHidden option in util.inspect.\nThe --lang and --language flags allow different syntax highlight for the output.\nThe --json flag converts the output to json\nThe --no-timeout flag disables the timeout\nIf the output is too large, it'll send the output as a file.",
+		"explainedUsage": [
+			[
+				"式",
+				"評価する表現"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Botの所有者のために予約されています。"
+	},
+	"evalTimeout": "TIMEOUT: {{seconds}} 秒以上かかりました。",
+	"evalError": "**エラー**:{{output}}\n**タイプ**:{{type}}\n{{time}}",
+	"dmNotSent": "DMでメッセージを送信できません。ブロックしましたか？",
+	"dmSent": "DMでメッセージを送信しました。",
+	"reboot": "{{LOADING}} 再起動中...",
+	"rebootDescription": "Botを再起動します。",
+	"rebootExtended": {
+		"extendedHelp": "ボットがブームになり、ボットが復活します。",
+		"reminder": "Botの所有者のために予約されています。"
+	}
+}
