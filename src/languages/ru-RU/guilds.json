@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Отключено",
+	"explicitContentFilterMembersWithoutRoles": "Участники без ролей",
+	"explicitContentFilterAllMembers": "Все участники",
+	"defaultMessageNotificationsAllMessages": "Все сообщения",
+	"defaultMessageNotificationsOnlyMentions": "Только @упоминания",
+	"SuppressJoinNotifications": "Уведомления о присоединении участника",
+	"SuppressJoinNotificationReplies": "Присоединиться к стикеру кнопки ответа",
+	"SuppressPremiumSubscriptions": "Уведомления на сервере",
+	"SuppressGuildReminderNotifications": "Советы по настройке сервера",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Отключить уведомления о покупке подписки на роль",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Подавлять ответы для уведомлений о покупке ролей подписки"
+}
