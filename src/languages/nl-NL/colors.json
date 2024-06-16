@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Kleur moet binnen het bereik 0 - 16777215 (0xFFFFFFFF), maar ontvangen `{{value}}`.",
+	"invalidHexRed": "Ongeldig Rode bereik. Moet tussen '00' en 'ff' zijn, maar `{{value}} ` ontvangen.",
+	"invalidHexGreen": "Ongeldig groen bereik. Moet liggen tussen '00' en 'ff', maar `{{value}} ` ontvangen.",
+	"invalidHexBlue": "Ongeldig Blauw bereik. Moet tussen '00' en 'ff' liggen, maar `{{value}} ` ontvangen.",
+	"invalidHslHue": "Ongeldig Hue bereik. Moet tussen 0 en 36 zijn, maar `{{value}} ` ontvangen.",
+	"invalidHslSaturation": "Ongeldig Verzadigingsbereik. Moet tussen 0 en 100 liggen, maar `{{value}} ` ontvangen.",
+	"invalidHslLightness": "Ongeldig lengtebereik. Moet tussen 0 en 100 liggen, maar `{{value}} ` ontvangen.",
+	"invalidRgbRed": "Ongeldig Rode bereik. Moet tussen 0 en 255 zijn, maar `{{value}} ` ontvangen.",
+	"invalidRgbGreen": "Ongeldig Groene bereik. Moet tussen 0 en 255 zijn, maar `{{value}} ` ontvangen.",
+	"invalidRgbBlue": "Ongeldig Blauw bereik. Moet tussen 0 en 255 zijn, maar `{{value}} ` ontvangen."
+}
