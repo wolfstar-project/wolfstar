@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Tasten **{{key}}**: {{response}}",
+	"confGetNoExt": "Nøglen **{{key}}** synes ikke at eksistere.",
+	"confGet": "Værdien for nøglen **{{key}}** er: `{{value}}`",
+	"confReset": "Nøglen **{{key}}** er blevet nulstillet til: `{{value}}`",
+	"confNochange": "Værdien for **{{key}}** var allerede denne værdi.",
+	"confServerDescription": "Definer per-server indstillinger.",
+	"confServerExtended": {
+		"usages": [
+			"sæt NameOfKey værdi for nøgle",
+			"vis",
+			"vis NameOfKey",
+			"fjern NameOfKey Value for Key",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "Tillader dig at konfigurere WolfStar fra Discord, som et hurtigt alternativ til [webdashboard] (https://wolfstar.rocks).",
+		"examples": [
+			"set language da-DK",
+			"set channels.moderation-logs #moderation-logs",
+			"vis",
+			"vis kanaler",
+			"fjern roller.moderator Moderator",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Der er nøgler og grupper, nøgler, der er inden for en gruppe er navngivet af `GroupName.KeyName`."
+	},
+	"confServer": "**Serverindstilling {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` kan kun konfigureres via webkontrolpanelet ",
+	"confSettingNotSet": "Ikke Sat",
+	"rolesetDescription": "Administrer unikke rollesæt.",
+	"rolesetExtended": {
+		"usages": [
+			"set RoleSetName Rolle1 Rolle2 Rolle3...",
+			"Fjern RolleSetName Rolle1 Rolle2 Rolle3...",
+			"reset",
+			"reset RoleSetName",
+			"liste",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "En rolle sæt er en gruppe af roller WolfStar identificerer som unikke for alle medlemmer i serveren, dvs. a roleset med navnet `region` kunne have rollerne `Afrika`, `Amerika`, `Asien`, og `Europa`, og medlemmerne kan kun have en af dem. Dette er som en slags \"regel\", der anvendes i de tre følgende situationer:\n\n- Når nogen hævder en rolle via kommandoen 'roller'.\n- Når nogen hævder en rolle via reaktionsroller.\n- Når nogen modtager en rolle enten manuelt eller fra en anden bot.",
+		"explainedUsage": [
+			[
+				"tilføj",
+				"Opret en ny roleset eller tilføj en rolle til en eksisterende."
+			],
+			[
+				"fjern",
+				"Fjern en rolle fra en eksisterende rollespil."
+			],
+			[
+				"reset",
+				"Fjerner alle roller fra en roleset eller, hvis ikke angivet, alle eksisterende rollespil."
+			],
+			[
+				"liste",
+				"Lister alle rolesets."
+			],
+			[
+				"auto",
+				"Tilføjer eller fjerner en roleset."
+			],
+			[
+				"RoleSetName",
+				"Navnet på rollelisten"
+			],
+			[
+				"Rolle1 Rolle2 Rolle3",
+				"Rollerne der skal føjes til rollespillet"
+			]
+		],
+		"examples": [
+			"tilføj regioner Amerika",
+			"tilføje regioner Afrika Amerika Asien Europa",
+			"fjern regioner Amerika",
+			"reset",
+			"nulstil regioner",
+			"liste",
+			"regioner Amerika",
+			"regioner Afrika Amerika Asien Europa"
+		],
+		"reminder": "Denne kommando kan tilføje og/eller fjerne flere roller på samme tid."
+	},
+	"rolesetCreated": "The {{name}} unique role set has been created with the following roles: {{roles, list(conjunction)}} (Automatic Copy)",
+	"rolesetAdded": "Opdateret {{name}} unikke rollesæt, det har nu følgende roller: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "The {{name}} unique role set will not longer include the following roles: {{roles, list(conjunction)}} (Automatic Copy)",
+	"rolesetResetEmpty": "{{REDCROSS}} Der er ingen rolesets konfigureret i denne gruppe.",
+	"rolesetResetAll": "{{GREENTICK}} fjernede alle roller med succes.",
+	"rolesetResetNotExists": "{{REDCROSS}} Rolleret`{{name}}` findes ikke i denne server.",
+	"rolesetResetGroup": "{{GREENTICK}} fjernede roleset`{{name}}` fra denne server.",
+	"rolesetUpdated": "{{name}} unikke rollesæt er blevet opdateret.",
+	"rolesetNoRolesets": "Du har ingen rollespil.",
+	"confMenuRenderAtFolder": "I øjeblikket ved: 📁 {{path}}",
+	"confMenuRenderAtPiece": "I øjeblikket ved: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Der er ingen konfigurerbare nøgler til denne mappe",
+	"confMenuRenderSelect": "Indtast venligst et af følgende indgangsnavne",
+	"confMenuRenderUpdate": "• Opdateringsværdi → `sæt <value>`",
+	"confMenuRenderRemove": "• Fjern Værdi → 'Fjern <value>'",
+	"confMenuRenderReset": "• Nulstil Værdi → 'Nulstil'",
+	"confMenuRenderUndo": "• Fortryd Opdatering → 'Fortryd'",
+	"confMenuRenderCvalue": "Aktuel Værdi: **``{{value}}``**",
+	"confMenuRenderBack": "Tryk på ◀️ for at gå tilbage",
+	"confMenuInvalidKey": "Ugyldig nøgle, prøv igen med nogen af følgende muligheder.",
+	"confMenuInvalidAction": "Ugyldig handling, prøv igen med nogen af følgende muligheder.",
+	"confMenuSaved": "Alle ændringer blev gemt korrekt."
+}
