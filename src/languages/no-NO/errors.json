@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Beklager, jeg prøvde å utføre en handling for en kanal ukjent til Discord og feilet, denne feilen har blitt rapportert til utviklerne.",
+	"genericUnknownGuild": "Beklager, jeg prøvde å utføre en handling for en server ukjent til Discord og feilet, denne feilen er rapportert til utviklerne.",
+	"genericUnknownMember": "Beklager, jeg prøvde å utføre en handling for et medlem ukjent til Discord og feilet, denne feilen er rapportert til utviklerne.",
+	"genericUnknownMessage": "Beklager, jeg prøvde å utføre en handling for en melding ukjent til Discord og feilet, denne feilen er rapportert til utviklerne.",
+	"genericUnknownRole": "Beklager, jeg prøvde å utføre en handling for en rolle ukjent til Discord og feilet, denne feilen er rapportert til utviklerne.",
+	"genericMissingAccess": "Beklager, jeg prøvde å gjennomføre en handling for en ressurs uten de nødvendige tillatelsene og feilet, denne feilen er rapportert til utviklerne.",
+	"genericDiscordInternalServerError": "Oops, Discord ødela seg selv, prøv igjen senere.",
+	"genericDiscordGateway": "Huff da, nettverket sliter med å kommunisere med Discord, vennligst prøv igjen senere.",
+	"genericDiscordUnavailable": "Oops, Discord er for tiden utilgjengelig, prøv igjen senere.",
+	"guildBansEmpty": "Det er ingen utestengelser registrert på denne serveren.",
+	"guildBansNotFound": "Jeg prøvde og mislyktes i å finne denne brukeren fra utestengelseslisten. Er du sikker på at denne brukeren er utestengt?",
+	"guildMemberNotVoicechannel": "Jeg kan ikke utføre denne handlingen i et medlem som ikke er koblet til en talekanal.",
+	"guildWarnNotFound": "Jeg klarte ikke hente den advarselen. Enten den ikke eksisterer, er ikke typeadvarsel, eller den ble anket.",
+	"modlogTimed": "Denne moderasjonsloggen er allerede utløpt. Utløper om {{remaining, duration}}",
+	"unexpectedIssue": "En uventet feil stod opp! Safely avbryter denne kommandoen...",
+	"userNotInGuild": "Denne brukeren er ikke på serveren."
+}
