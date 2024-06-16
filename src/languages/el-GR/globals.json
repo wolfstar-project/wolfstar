@@ -1,0 +1,19 @@
+{
+	"default": "Το {{key}} δεν έχει εντοπιστεί ακόμα για τις ΗΠΑ.",
+	"defaultLanguage": "Προεπιλεγμένη Γλώσσα",
+	"no": "Όχι",
+	"none": "Κανένα",
+	"unknown": "άγνωστο",
+	"yes": "Ναι",
+	"paginatedMessagePage": "Σελίδα",
+	"paginatedMessageWrongUserInteractionReply": "Παρακαλώ σταματήστε να κάνετε κλικ στα κουμπιά αυτού του μηνύματος. Είναι μόνο για {{user}}.",
+	"durationValue": "◆{value, duration}}",
+	"numberValue": "◆{value, number}}",
+	"numberCompactValue": "◆{value, numberCompact}}",
+	"dateTimeValue": "◆{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "ΜΜ/ΗΗ/ΕΕΕΕ",
+	"dateFormatExplanation": "Μήνας/ημέρα/Έτος"
+}
