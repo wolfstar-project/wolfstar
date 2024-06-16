@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Desculpe, não consegui encontrar o streamer. Tem certeza de que você escreveu o nome deles corretamente?",
+	"twitchSubscriptionStatusValues": [
+		"Online",
+		"desconectado"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Opa! Eu esperava \"online\" ou \"offline\", mas não consigo entender o que você me deu.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Você já está inscrito neste canal para receber esse status.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Sucesso! Sempre que {{name}} ficar offline, eu publicarei uma nova mensagem em {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Sucesso! Sempre que {{name}} for ao ar, publicarei uma nova mensagem em {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} , desculpe, mas é necessário fornecer uma mensagem ao fazer uma assinatura offline.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Sinto muito, mas você não está inscrito em nenhum streamer, missão abortada!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Desculpe, você não pode cancelar a inscrição do {{streamer}} porque você não está assinando ele.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} , sinto muito; enquanto você está inscrito neste status de streaming e streamer, as assinaturas deles não são publicadas na {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Desculpe, mas parece que você não está recebendo {{status}} notificações para {{streamer}}. Suportamos as notificações \"online\" e \"offline\".",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Sucesso! Eu não vou mais postar mensagens para {{channel}} sempre que {{name}} ficar offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Sucesso! Eu não vou mais postar mensagens para {{channel}} sempre que {{name}} estiver ao vivo.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Sucesso! A inscrição {{count}} foi removida deste servidor.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Sucesso! Assinaturas de {{count}} foram removidas deste servidor.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Você queria ver todas as assinaturas desse streamer, mas não há nenhum!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Publicado",
+		"offline": "Desconectado"
+	},
+	"twitchSubscriptionShowUnknownUser": "Desconhecido",
+	"twitchSubscriptionDescription": "Gerencie as inscrições do seu servidor.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"Adicionar Status do Canal Streamer",
+			"Adicionar Status do Canal Streamer",
+			"remover status do canal",
+			"reiniciar streamer",
+			"reset",
+			"mostrar",
+			""
+		],
+		"extendedHelp": "Gerenciar as inscrições deste servidor.\n__Online Notifications__\nTodos os dados disponíveis aparecerão em uma incorporação muito boa dizendo exatamente o que o streamer está fazendo.\n\n__Notificações Offline__\nVocê precisa escrever sua própria mensagem que será postada quando o streamer ficar offline. Será exibido em uma mensagem roxa do Twitch-Rople agradável.",
+		"explainedUsage": [
+			[
+				"adicionar/remover/redefinir/mostrar",
+				"Whether to\n　- Add a new Twitch subscription.\n　- Remove an existing Twitch subscription\n　- Reset all twitch subscription, or those for a specific streamer\n　- Show all current Twitch subscriptions"
+			],
+			[
+				"Transmissor",
+				"O nome de usuário da Twitch para obter notificações."
+			],
+			[
+				"Canal",
+				"Um canal do Discord onde publicar as notificações."
+			],
+			[
+				"SItuação",
+				"O status que o streamer do Twitch deve obter para notificação, um de online ou offline."
+			],
+			[
+				"Conteúdo",
+				"A mensagem para enviar no chat do Discord. Necessário para notificações off-line, opcional para notificações online."
+			]
+		],
+		"examples": [
+			"adicionar favorito online",
+			"adicione o favorito offline do #twitch agora está offline. Diga adeus 👋!",
+			"remover kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"mostrar"
+		]
+	}
+}
