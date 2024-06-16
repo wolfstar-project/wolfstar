@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Succesvol de sleutel **{{key}}**: {{response}}",
+	"confGetNoExt": "De sleutel **{{key}}** lijkt niet te bestaan.",
+	"confGet": "De waarde voor de sleutel **{{key}}** is: `{{value}}`",
+	"confReset": "De sleutel **{{key}}** is gereset naar: `{{value}}`",
+	"confNochange": "De waarde voor **{{key}}** was al die waarde.",
+	"confServerDescription": "Definieer instellingen per server.",
+	"confServerExtended": {
+		"usages": [
+			"stel NaamOfKey Waarde in voor Sleutel",
+			"toon",
+			"toon NaamOfKey",
+			"verwijder NaamOfKey Waarde voor Sleutel",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "Staat je toe om WolfStar te configureren van Discord, als een snel alternatief voor het [web dashboard](https://wolfstar.rocks).",
+		"examples": [
+			"taal nl-NL instellen",
+			"zet channels.moderation-logs",
+			"toon",
+			"kanalen weergeven",
+			"verwijder rollen.moderator moderator",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Er zijn sleutels en groepen, sleutels die zich binnen een groep bevinden, zijn genoemd door `GroupName.KeyName`."
+	},
+	"confServer": "**Server Instelling {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` kan alleen worden geconfigureerd via het web dashboard ",
+	"confSettingNotSet": "Niet ingesteld",
+	"rolesetDescription": "Beheer unieke rolsets.",
+	"rolesetExtended": {
+		"usages": [
+			"stel RollenSetName Role1 Role2 in...",
+			"RoleSetName Role1 Role2 verwijderen...",
+			"reset",
+			"reset RoleSetName",
+			"lijst",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Een rol is een groep rollen die WolfStar als uniek identificeert voor alle leden op de server, d.w.z. een roleset genaamd `region` zou de rollen `Afrika`, `America`, `Azia` en `Europe` kunnen hebben, en leden zullen er maar één van kunnen hebben. Dit is als een soort \"regel\" dat wordt toegepast in de drie volgende situaties:\n\n- Wanneer iemand een rol claimt via het `rollen` commando.\n- Wanneer iemand een rol claimt via reactierollen.\n- Wanneer iemand een rol krijgt, hetzij handmatig of van een andere bot.",
+		"explainedUsage": [
+			[
+				"toevoegen",
+				"Maak een nieuwe rol of voeg een bestaande toe."
+			],
+			[
+				"verwijderen",
+				"Een rol van een bestaande rol verwijderen."
+			],
+			[
+				"reset",
+				"Verwijdert alle rollen van een rol of, indien niet gespecificeerd, alle bestaande rollen."
+			],
+			[
+				"lijst",
+				"Geeft alle rollen weer."
+			],
+			[
+				"automatisch",
+				"Voegt rollen toe of verwijdert ze."
+			],
+			[
+				"RoleSetName",
+				"De naam van de rol"
+			],
+			[
+				"Rol1 Rol2 Rol3",
+				"De rollen die aan de rol moeten worden toegevoegd"
+			]
+		],
+		"examples": [
+			"regio's toevoegen Amerika",
+			"Voeg regio's toe Afrika Amerika Azië Europa",
+			"verwijder regio's Amerika",
+			"reset",
+			"Reset provincies",
+			"lijst",
+			"regio Amerika",
+			"regio's Afrika Amerika Azië Europa"
+		],
+		"reminder": "Dit commando kan meerdere rollen tegelijkertijd toevoegen en/of verwijderen."
+	},
+	"rolesetCreated": "De {{name}} unieke rolset is aangemaakt met de volgende rollen: {{roles, list(conjunction)}}",
+	"rolesetAdded": "De {{name}} unieke rol set is geüpdatet en heeft nu de volgende rollen: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "De {{name}} unieke rolset bevat niet langer de volgende rollen: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Er zijn geen rollen geconfigureerd in deze groep.",
+	"rolesetResetAll": "{{GREENTICK}} heeft alle rollen verwijderd.",
+	"rolesetResetNotExists": "{{REDCROSS}} De rol `{{name}}` bestaat niet in deze server.",
+	"rolesetResetGroup": "{{GREENTICK}} Succesvol de rol `{{name}}` verwijderd van deze server.",
+	"rolesetUpdated": "De {{name}} unieke rol set is bijgewerkt.",
+	"rolesetNoRolesets": "Je hebt geen rolllen.",
+	"confMenuRenderAtFolder": "Momenteel op: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Momenteel op: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Er zijn geen instelbare sleutels voor deze map",
+	"confMenuRenderSelect": "Typ een van de volgende invoernamen in",
+	"confMenuRenderUpdate": "• Update Waarde → `set <value>`",
+	"confMenuRenderRemove": "• Verwijder Waarde → `verwijder <value>`",
+	"confMenuRenderReset": "• Reset Waarde → `reset`",
+	"confMenuRenderUndo": "• Update ongedaan maken → `undo`",
+	"confMenuRenderCvalue": "Huidige waarde: **``{{value}}``**",
+	"confMenuRenderBack": "Druk op ◀️ om terug te gaan",
+	"confMenuInvalidKey": "Ongeldige sleutel, probeer het opnieuw met een van de volgende opties.",
+	"confMenuInvalidAction": "Ongeldige actie, probeer het opnieuw met een van de volgende opties.",
+	"confMenuSaved": "Wijzigingen zijn succesvol opgeslagen."
+}
