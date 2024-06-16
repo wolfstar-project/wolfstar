@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Barva musí být v rozsahu 0 - 16777215 (0xFFFFFF), ale obdržena `{{value}}`.",
+	"invalidHexRed": "Neplatný červený rozsah. Musí být mezi '00' a 'ff', ale obdrženo `{{value}}`.",
+	"invalidHexGreen": "Neplatný zelený rozsah. Musí být mezi '00' a 'ff', ale obdrženo `{{value}}`.",
+	"invalidHexBlue": "Neplatný rozsah modře. Musí být mezi '00' a 'ff', ale obdrženo `{{value}}`.",
+	"invalidHslHue": "Neplatný rozsah Hue. Musí být mezi 0 a 360, ale musí být přijat `{{value}}`.",
+	"invalidHslSaturation": "Neplatný rozsah nasycení. Musí být mezi 0 a 100, ale obdrženo `{{value}}`.",
+	"invalidHslLightness": "Neplatný rozsah osvětlení. Musí být mezi 0 a 100, ale přijat `{{value}}`.",
+	"invalidRgbRed": "Neplatný červený rozsah. Musí být mezi 0 a 255, ale musí být obdržen `{{value}}`.",
+	"invalidRgbGreen": "Neplatný zelený rozsah. Musí být mezi 0 a 255, ale musí být obdržen `{{value}}`.",
+	"invalidRgbBlue": "Neplatný rozsah modře. Musí být mezi 0 a 255, ale musí být přijat `{{value}}`."
+}
