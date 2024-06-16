@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Desabilitado",
+	"explicitContentFilterMembersWithoutRoles": "Membros sem funções",
+	"explicitContentFilterAllMembers": "Todos os membros",
+	"defaultMessageNotificationsAllMessages": "Todas as Mensagens",
+	"defaultMessageNotificationsOnlyMentions": "Apenas @menções",
+	"SuppressJoinNotifications": "Notificações de membros conectados",
+	"SuppressJoinNotificationReplies": "Botão de junção de sticker",
+	"SuppressPremiumSubscriptions": "Notificações de otimização",
+	"SuppressGuildReminderNotifications": "Dicas de configuração",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Suprimir notificações de compra de função de assinatura",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Suprimir respostas para notificações de compra de função de assinatura"
+}
