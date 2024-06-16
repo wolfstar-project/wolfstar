@@ -1,0 +1,15 @@
+{
+	"name": "wis",
+	"description": "Biedt informatie over een Discord gebruiker",
+	"contextMenuName": "Krijg informatie",
+	"userName": "gebruiker",
+	"userDescription": "De gebruiker voor informatie over",
+	"rolesTitle_one": "Rol [1]",
+	"rolesTitle_other": "Rollen [{{count, number}}]",
+	"permissionsTitle": "Toets permissies",
+	"permissionsAll": "Alle rechten",
+	"embedDescription": "**Gebruiker sind**: {{createdAt}}",
+	"embedMemberDescription": "**Lid sind**: {{joinedAt}}",
+	"buttonAvatar": "Profielfoto",
+	"buttonProfile": "Profiel"
+}
