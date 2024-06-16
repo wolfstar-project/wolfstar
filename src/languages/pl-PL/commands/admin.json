@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Pomyślnie zaktualizowano klucz **{{key}}**: {{response}}",
+	"confGetNoExt": "Klucz **{{key}}** nie istnieje.",
+	"confGet": "Wartość klucza **{{key}}** to: `{{value}}`",
+	"confReset": "Klucz **{{key}}** został zresetowany do: `{{value}}`",
+	"confNochange": "Wartość dla **{{key}}** była już tą wartością.",
+	"confServerDescription": "Zdefiniuj ustawienia na serwer.",
+	"confServerExtended": {
+		"usages": [
+			"ustaw nazwęOfKey dla klucza",
+			"pokaż",
+			"pokaż NazwaOfKey",
+			"usuń nazwęOfKey dla klucza",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "Pozwala skonfigurować WolfStar z Discorda, jako szybką alternatywę dla [panelu internetowego](https://wolfstar.rocks).",
+		"examples": [
+			"ustaw język pl-PL",
+			"ustaw kanał.moderation-logs #moderation-logs",
+			"pokaż",
+			"pokaż kanały",
+			"usuń roles.moderator",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Istnieją klucze i grupy, klucze wewnątrz grupy są nazwane przez `GroupName.KeyName`."
+	},
+	"confServer": "**Serwer Ustawienie {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` można skonfigurować tylko przez panel www ",
+	"confSettingNotSet": "Nie ustawiono",
+	"rolesetDescription": "Zarządzaj unikalnymi zestawami ról",
+	"rolesetExtended": {
+		"usages": [
+			"ustaw RoleSetName Role1 Role2 Role3...",
+			"usuń rolę RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"lista",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Zestaw ról to grupa ról WolfStar rozpoznaje jako unikalne dla wszystkich członków na serwerze, tj. zestaw ról o nazwie `region` może mieć role `Africa`, `America`, `Asia`, i `Europe`, a członkowie będą mogli mieć tylko jedną z nich. Jest to rodzaj \"reguły\", która jest stosowana w trzech następujących sytuacjach:\n\n- Kiedy ktoś twierdzi, że rola za pomocą komendy `roles`.\n- Kiedy ktoś zgłasza rolę poprzez role reakcyjne.\n- Kiedy ktoś otrzymuje rolę ręcznie lub od innego bota.",
+		"explainedUsage": [
+			[
+				"dodaj",
+				"Utwórz nowy zestaw ról lub dodaj rolę do istniejącego."
+			],
+			[
+				"usuń",
+				"Usuń rolę z istniejącego zestawu roli."
+			],
+			[
+				"reset",
+				"Usuwa wszystkie role z zestawu ról lub, jeśli nie określono, wszystkie istniejące role."
+			],
+			[
+				"lista",
+				"Wyświetla wszystkie zestawy roli."
+			],
+			[
+				"auto",
+				"Dodaje lub usuwa zestaw ról"
+			],
+			[
+				"RoleSetName",
+				"Nazwa zestawu ról"
+			],
+			[
+				"Rola1 Rola 2 3",
+				"Role do dodania do zestawu ról"
+			]
+		],
+		"examples": [
+			"dodaj regiony Ameryki",
+			"dodaj regiony: Afryka Ameryka Azja – Europa",
+			"usuwa regiony Ameryki",
+			"reset",
+			"zresetuj regiony",
+			"lista",
+			"regiony Ameryka",
+			"Regiony Afryka Ameryka Azja, Europa"
+		],
+		"reminder": "Ta komenda może dodawać i/lub usuwać wiele ról jednocześnie."
+	},
+	"rolesetCreated": "Unikatowy zestaw ról {{name}} został utworzony z następującymi rolami: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Zaktualizowano zestaw unikalnych ról {{name}} , ma on teraz następujące role: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Unikatowa rola {{name}} nie będzie już zawierać następujących rol: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Brak skonfigurowanych zestawów ról w tej grupie.",
+	"rolesetResetAll": "{{GREENTICK}} pomyślnie usunięto wszystkie zestawy roli.",
+	"rolesetResetNotExists": "{{REDCROSS}} Zestaw ról `{{name}}` nie istnieje na tym serwerze.",
+	"rolesetResetGroup": "{{GREENTICK}} pomyślnie usunął zestaw ról `{{name}}` z tego serwera.",
+	"rolesetUpdated": "{{name}} unikalnych ról został zaktualizowany.",
+	"rolesetNoRolesets": "Nie masz zestawów roli.",
+	"confMenuRenderAtFolder": "Aktualnie w: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Aktualnie w: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Brak konfigurowalnych kluczy dla tego folderu",
+	"confMenuRenderSelect": "Wpisz dowolną z następujących nazw wpisów",
+	"confMenuRenderUpdate": "• Aktualizuj wartość → `set <value>`",
+	"confMenuRenderRemove": "• Usuń wartość → `remove <value>`",
+	"confMenuRenderReset": "• Resetuj wartość → `reset`",
+	"confMenuRenderUndo": "• Cofnij aktualizację → `cofnij`",
+	"confMenuRenderCvalue": "Aktualna wartość: **``{{value}}``**",
+	"confMenuRenderBack": "Naciśnij ◀️ aby wrócić",
+	"confMenuInvalidKey": "Nieprawidłowy klucz, spróbuj ponownie z jedną z poniższych opcji.",
+	"confMenuInvalidAction": "Nieprawidłowa akcja, spróbuj ponownie z jedną z następujących opcji.",
+	"confMenuSaved": "Wszystkie zmiany zostały pomyślnie zapisane."
+}
