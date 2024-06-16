@@ -1,1 +1,13 @@
-[]
+{
+	"explicitContentFilterDisabled": "Disabled",
+	"explicitContentFilterMembersWithoutRoles": "Members without roles",
+	"explicitContentFilterAllMembers": "All members",
+	"defaultMessageNotificationsAllMessages": "All Messages",
+	"defaultMessageNotificationsOnlyMentions": "Only @mentions",
+	"SuppressJoinNotifications": "Member join notifications",
+	"SuppressJoinNotificationReplies": "Member join sticker reply buttons",
+	"SuppressPremiumSubscriptions": "Server boost notifications",
+	"SuppressGuildReminderNotifications": "Server setup tips",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Suppress role subscription purchase notifications",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Suppress replies for role subscription purchase notifications"
+}
