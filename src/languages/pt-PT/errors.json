@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Desculpe, eu tentei executar uma ação para um canal desconhecido do Discord e falhou, este erro foi relatado aos desenvolvedores.",
+	"genericUnknownGuild": "Desculpe, eu tentei executar uma ação para um servidor desconhecido do Discord e falhou, este erro foi reportado aos desenvolvedores.",
+	"genericUnknownMember": "Desculpe, eu tentei executar uma ação para um membro desconhecido do Discord e falhou, esse erro foi relatado aos desenvolvedores.",
+	"genericUnknownMessage": "Desculpe, eu tentei executar uma ação para uma mensagem desconhecida do Discord e falhou, este erro foi relatado aos desenvolvedores.",
+	"genericUnknownRole": "Desculpe, eu tentei executar uma ação para um papel desconhecido do Discord e falhou, este erro foi relatado aos desenvolvedores.",
+	"genericMissingAccess": "Desculpe, eu tentei executar uma ação para um recurso sem as permissões necessárias e falhou, este erro foi relatado aos desenvolvedores.",
+	"genericDiscordInternalServerError": "Ops, o Discord se quebrou, por favor, tente novamente mais tarde.",
+	"genericDiscordGateway": "Ops, a rede está com dificuldades de comunicação com o Discord, por favor, tente novamente mais tarde.",
+	"genericDiscordUnavailable": "Ops, o Discord está indisponível no momento, por favor, tente novamente mais tarde.",
+	"guildBansEmpty": "Não há banimentos registrados neste servidor.",
+	"guildBansNotFound": "Eu tentei e não consegui encontrar este usuário na lista de banidos. Tem certeza que esse usuário é banido?",
+	"guildMemberNotVoicechannel": "Eu não posso executar esta ação em um membro que não está conectado a um canal de voz.",
+	"guildWarnNotFound": "Não consegui obter esse aviso. Ou ele não existe, não é de tipo aviso, ou foi recorrido.",
+	"modlogTimed": "Este log de moderação já está em tempo. Expira em {{remaining, duration}}",
+	"unexpectedIssue": "Um erro inesperado apareceu! Com segurança abortando este comando...",
+	"userNotInGuild": "Este usuário não está neste servidor."
+}
