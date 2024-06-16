@@ -1,49 +1,49 @@
 {
-	"avatarDescription": "",
+	"avatarDescription": "全尺寸查看某人头像。",
 	"avatarExtended": {
 		"usages": [
 			"",
-			""
+			"用户"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "正如该命令的名称所说的那样，它显示了某人的头像。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"用户",
+				"要获取头像的用户。默认为您自己。"
 			]
 		],
-		"reminder": ""
+		"reminder": "使用 --size 标志来更改头像的大小。"
 	},
-	"avatarNone": "",
-	"voteDescription": "",
+	"avatarNone": "用户没有头像集。",
+	"voteDescription": "简化的反应性投票。",
 	"voteExtended": {
 		"usages": [
-			""
+			"问"
 		],
 		"examples": [
-			""
+			"我是否应该实现 #anime 通道？"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"问",
+				"将要表决的问题。"
 			]
 		]
 	},
-	"voteContentNeeded": "",
-	"voteReactionBlocked": "",
+	"voteContentNeeded": "{{REDCROSS}} You must give a topic for the poll.",
+	"voteReactionBlocked": "{{REDCROSS}} I was not able to add the reactions necessary for this command to work because you have me blocked! 😢",
 	"whoisExtended": {
 		"usages": [
 			"",
-			""
+			"用户"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "获取任何服务器成员的信息。在许多其他机器人中也叫做`userinfo`。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"用户",
+				"要获取信息的用户。默认为您自己。"
 			]
 		]
 	},
-	"whoisMemberRoleListAndMore": ""
+	"whoisMemberRoleListAndMore": "{{count}} more."
 }
