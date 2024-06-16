@@ -1,1 +1,14 @@
-[]
+{
+	"messageDelete": "Meddelande raderat • {{channel}}",
+	"messageDeleteUnknown": "Okänt meddelande raderat • {{channel}}",
+	"messageUpdate": "Meddelande redigerat • {{channel}}",
+	"messageUpdateUnknown": "Okänt meddelande redigerat • {{channel}}",
+	"messageNotFound": "Okänt meddelande",
+	"messageDeleteBulk_one": "{{count}} meddelande raderat i {{channel}} av {{author}}",
+	"messageDeleteBulk_other": "{{count}} meddelanden raderade i {{channel}} av {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} meddelande raderat i {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} meddelanden raderade i {{channel}}",
+	"messageDeleteBulkFooter": "Flera meddelanden borttagna",
+	"voiceActivityFooter": "Röstaktivitet",
+	"jumpToContext": "Hoppa till kontext"
+}
