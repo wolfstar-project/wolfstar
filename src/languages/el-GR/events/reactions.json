@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Reacted with {{emoji}} on {{message}}",
+	"reactionFooter": "Προστέθηκε Πρώτη Αντίδραση",
+	"filterFooter": "Φιλτραρισμένη Αντίδραση",
+	"filter": "{{REDCROSS}} Hey {{user}}, παρακαλώ μην προσθέσετε αυτή την αντίδραση!",
+	"selfRoleHierarchy": "{{REDCROSS}} My role needs to be higher than all self-assignable roles, otherwise I can't grant them to people!"
+}
