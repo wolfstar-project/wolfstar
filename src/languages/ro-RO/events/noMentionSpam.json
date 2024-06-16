@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Ai grija sa mentionezi mai mult, pentru ca esti pe cale sa fii banat pentru a depasi acest prag de mentionare al serverului.",
+	"message": "Banhammer a aterizat și acum utilizatorul {{userTag}} cu id {{userId}} este interzis pentru a menționa spam.\nNu vă faceți griji! Sunt aici pentru a vă ajuta! 😄",
+	"modlog": "[NOMENTIONSPAM] Automat: Mention Spam prag depășit.\nPrag: {{threshold}}."
+}
