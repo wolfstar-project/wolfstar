@@ -1,7 +1,7 @@
 {
-	"deprecatedMessage": "",
+	"deprecatedMessage": "Meddelandebaserade kommandon är **föråldrade**, och kommer att tas bort i framtiden. Du bör använda kommandot {{command}} slash istället!",
 	"slashOnlyDetailedDescription": {
-		"extendedHelp": ""
+		"extendedHelp": "Detta kommando är endast tillgängligt via slash-kommandon. Använd slash-kommandot istället."
 	},
-	"slashOnlyErrorMessage": ""
+	"slashOnlyErrorMessage": "Detta kommando är endast tillgängligt via slash-kommandon. Använd slash-kommandot istället."
 }
