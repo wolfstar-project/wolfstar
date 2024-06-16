@@ -1,0 +1,107 @@
+{
+	"confUpdated": "La clé **{{key}}** a été mise à jour avec succès : {{response}}",
+	"confGetNoExt": "La clé **{{key}}** n'existe pas.",
+	"confGet": "La valeur de la clé **{{key}}** est : `{{value}}`",
+	"confReset": "La clé **{{key}}** a été réinitialisée à : `{{value}}`",
+	"confNochange": "La valeur de **{{key}}** est déjà cette valeur.",
+	"confServerDescription": "Définir les paramètres par serveur",
+	"confServerExtended": {
+		"usages": [
+			"définir la valeur NameOfKey pour la clé",
+			"afficher",
+			"afficher le nom de la clé",
+			"supprimer la valeur NameOfKey pour la clé",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "Vous permet de configurer WolfStar de Discord, comme une alternative rapide au [tableau de bord web](https://wolfstar.rocks).",
+		"examples": [
+			"définir la langue fr-FR",
+			"définir channels.moderation-logs #moderation-logs",
+			"afficher",
+			"afficher les canaux",
+			"supprimer le modérateur de rôle",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Il y a des clés et des groupes, les clés qui se trouvent dans un groupe sont nommées par `GroupName.KeyName`."
+	},
+	"confServer": "**Configuration du serveur {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` ne peut être configuré que via le tableau de bord web ",
+	"confSettingNotSet": "Non défini",
+	"rolesetDescription": "Gérer les jeux de rôles uniques.",
+	"rolesetExtended": {
+		"usages": [
+			"définir RoleSetName Role1 Role2 Role3...",
+			"supprimer RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"liste",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "A role set is a group of roles WolfStar identifies as unique for all members in the server, i.e. a roleset named `region` could have the roles `Africa`, `America`, `Asia`, and `Europe`, and members will only be able to have one of them. This is like a kind of \"rule\" that is applied in the three following situations:\n\n- When somebody claims a role via the `roles` command.\n- When somebody claims a role via reaction roles.\n- When somebody receives a role either manually or from another bot.",
+		"explainedUsage": [
+			[
+				"Ajouter",
+				"Créez un nouveau rôle ou ajoutez un rôle à un rôle existant."
+			],
+			[
+				"Enlever",
+				"Retirer un rôle d'un rôle existant."
+			],
+			[
+				"reset",
+				"Supprime tous les rôles d'un rôle ou, si ce n'est pas spécifié, tous les rôles existants."
+			],
+			[
+				"liste",
+				"Liste tous les rôles."
+			],
+			[
+				"Automatique",
+				"Ajoute ou supprime un rôle."
+			],
+			[
+				"RoleSetName",
+				"Le nom du rôle"
+			],
+			[
+				"Rôle1 rôle2 rôle3",
+				"Les rôles à ajouter au rôle"
+			]
+		],
+		"examples": [
+			"ajouter des régions américaines",
+			"ajouter des régions Afrique Amérique Asie Europe",
+			"supprimer les régions de l'Amérique",
+			"reset",
+			"réinitialiser les régions",
+			"liste",
+			"régions américaines",
+			"régions Afrique Amérique Asie Europe"
+		],
+		"reminder": "Cette commande peut ajouter et/ou supprimer plusieurs rôles en même temps."
+	},
+	"rolesetCreated": "Le jeu de rôles unique {{name}} a été créé avec les rôles suivants : {{roles, list(conjunction)}}",
+	"rolesetAdded": "Le jeu de rôles unique {{name}} a été mis à jour, il a maintenant les rôles suivants : {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Le jeu de rôles unique {{name}} n'inclura plus les rôles suivants : {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} There are no rolesets configured in this group.",
+	"rolesetResetAll": "{{GREENTICK}} a supprimé tous les rôles avec succès.",
+	"rolesetResetNotExists": "{{REDCROSS}} Le rôle `{{name}}` n'existe pas dans ce serveur.",
+	"rolesetResetGroup": "{{GREENTICK}} a supprimé avec succès le rôle `{{name}}` de ce serveur.",
+	"rolesetUpdated": "Le jeu de rôles unique {{name}} a été mis à jour.",
+	"rolesetNoRolesets": "Vous n'avez aucun rôle.",
+	"confMenuRenderAtFolder": "Actuellement à : 📁 {{path}}",
+	"confMenuRenderAtPiece": "Actuellement à: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Il n'y a pas de clé configurable pour ce dossier",
+	"confMenuRenderSelect": "Veuillez saisir un des noms d'entrées suivants",
+	"confMenuRenderUpdate": "• Mettre à jour la valeur → `définir <value>`",
+	"confMenuRenderRemove": "• Supprimer valeur → `remove <value>`",
+	"confMenuRenderReset": "• Réinitialiser la valeur → `reset`",
+	"confMenuRenderUndo": "• Annuler la mise à jour → `Annuler`",
+	"confMenuRenderCvalue": "Valeur actuelle : **``{{value}}``**",
+	"confMenuRenderBack": "Appuyez sur ◀️ pour revenir en arrière",
+	"confMenuInvalidKey": "Clé invalide, veuillez réessayer avec l'une des options suivantes.",
+	"confMenuInvalidAction": "Action invalide, veuillez réessayer avec l'une des options suivantes.",
+	"confMenuSaved": "Toutes les modifications ont été enregistrées avec succès."
+}
