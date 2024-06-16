@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Een categorie per pagina weergeven. Hebt u problemen met de embed? Voer dan `{{prefix}}help --all` uit voor een volledige lijst in DMs.",
+	"helpCommandCount_one": "{{count}} opdracht",
+	"helpCommandCount_other": "{{count}} commando's",
+	"helpData": {
+		"footer": "Commando hulp voor {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Toont alle commando's of de beschrijving van één.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categorieën",
+			"--alles",
+			"CategorieNaam",
+			"Pagina",
+			"CommandNaam"
+		],
+		"extendedHelp": "Het help commando toont een gepagineerde lijst van alle commando's door hun categorieën, of de uitgebreide informatie van een command indien gespecificeerd.\n\nAls u `--categories` of `--cat`, kunt u de lijst van alle categorieën en de hoeveelheid commando's die elk van hen heeft krijgen.",
+		"reminder": "Het help commando **alleen** toont de commando's die je kunt gebruiken. Bezoek <https://wolfstar.rocks/commands> voor de volledige lijst.",
+		"examples": [
+			"--kat",
+			"--alles",
+			"Moderatie",
+			"12",
+			"Help"
+		]
+	},
+	"helpDm": "📥 ・De lijst met commando's waartoe u toegang heeft is verstuurd naar uw DMs.",
+	"helpNodm": "{{REDCROSS}} ########Je hebt DM's gedeactiveerd, dus ik kon je de lijst met commando's niet sturen.",
+	"v7Description": "Haalt de informatie over Skyra v7 op",
+	"v7Extended": {
+		"extendedHelp": "Dit is een **verborgen** commando dat uitsluitend wordt gebruikt voor het verzenden van een kennisgeving aan iedereen die commando's probeert te gebruiken die zijn verwijderd volgens [SKyra v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) plannen."
+	},
+	"v7Message": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
+	"v7NayreMessage": "Hallo daar! Ik dank u echter voor het gebruik van dit commando, het is verwijderd en zal ofwel worden herontworpen als onderdeel van de Nayre Akriss RPG zoals vermeld in [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)-plannen.\n\nSorry voor het ongemak, en bedankt voor het gebruik van WolfStar. 💖"
+}
