@@ -1,8 +1,8 @@
 {
-	"snipeEmpty": "",
-	"snipeTitle": "",
-	"snipeDescription": "",
+	"snipeEmpty": "Det finns inga krypterade meddelanden i denna kanal.",
+	"snipeTitle": "Snippat meddelande",
+	"snipeDescription": "Hämta det senaste raderade meddelandet från en kanal",
 	"snipeExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "Detta skickar bara det sista raderade meddelandet från denna kanal, någon missköter sig? Detta kommer att fånga dem."
 	}
 }
