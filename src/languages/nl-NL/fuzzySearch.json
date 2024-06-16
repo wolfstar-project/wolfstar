@@ -1,0 +1,6 @@
+{
+	"aborted": "De vraag is succesvol afgebroken.",
+	"invalidIndex": "Dat nummer was buiten bereik, waardoor het niet meer snel ging.",
+	"invalidNumber": "Ik verwachtte dat je me een (één cijfer) nummer zou geven, een aardappel zou krijgen.",
+	"matches": "Ik heb meerdere wedstrijden gevonden! **Kies een nummer binnen 0 en {{matches}}**:\n{{codeblock}}\nSchrijf **ABORT** als je de vraag wil verlaten."
+}
