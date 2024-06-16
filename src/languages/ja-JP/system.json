@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Discordをメッセージングするときにネットワークエラーが発生しました。もう一度このコマンドを実行してください！",
+	"fetchBansFail": "禁止事項の取得に失敗しました。**{{ADMINISTRATOR, permissions}}** 権限がありますか？",
+	"helpTitles": {
+		"aliases": "🖇️ | **エイリアス**",
+		"usages": "📝 | **コマンド使用法**",
+		"extendedHelp": "🔍 | **Extended Help**",
+		"explainedUsage": "⚙️ | **説明付き**",
+		"possibleFormats": "🔢 | **可能な形式**",
+		"examples": "🔗 | **例**",
+		"reminders": "⏰ | **リマインダー**"
+	},
+	"jumpTo": "メッセージへ移動<unk>",
+	"loading": [
+		"{{LOADING}} ハムスターを見ています...",
+		"{{LOADING}} 隠れて探す人を探しています...",
+		"{{LOADING}} このコマンドを理解しようとしています...",
+		"{{LOADING}} クラウドからデータを取得しています...",
+		"{{LOADING}} レンズをキャリブレーション中...",
+		"{{LOADING}} 岩、紙、はさみを演奏中...",
+		"{{LOADING}} 正しい周波数にチューニング中...",
+		"{{LOADING}} 網状スプライン..."
+	],
+	"prefixReminder": "このサーバーのプレフィックスは以下に設定されています: `{{prefix}}`"
+}
