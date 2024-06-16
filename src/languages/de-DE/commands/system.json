@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Evaluiert beliebiges Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Ausdruck"
+		],
+		"extendedHelp": "Der eval Befehl bewertet den Code als In, jeder Fehler, der von ihm verursacht wird, wird bearbeitet.\nEr verwendet auch die Flaggen-Funktion. Schreibe --silent, --depth=number oder --async um die Ausgabe anzupassen.\nDas --wait-Flag ändert die Laufzeit des Mittelalters. Standardmäßig 60 Sekunden. Akzeptiert Zeit in Millisekunden.\nDas --silent Flag gibt nichts aus.\nDas --depth Flag akzeptiert eine Zahl, zum Beispiel --depth=2, um die Tiefe von util.inspect anzupassen.\nDas --async Flag wird den Code in eine async-Funktion einbinden, wo Sie den Gebrauch von warten können Wenn Sie etwas zurückgeben wollen, benötigen Sie das Rückgabe-Schlüsselwort\nDas --showHidden Flag aktiviert die showHidden Option in util. nspect.\nDie Flags --lang und --language erlauben unterschiedliche Syntaxhervorhebung für die Ausgabe.\nDas --json Flag konvertiert die Ausgabe in json\nDas --no-timeout Flag deaktiviert das Timeout\nwenn die Ausgabe zu groß ist es wird die Ausgabe als Datei senden.",
+		"explainedUsage": [
+			[
+				"Ausdruck",
+				"Der Ausdruck, der bewertet werden soll"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Reserviert für Bot-Eigentümer."
+	},
+	"evalTimeout": "TIMEOUT: länger als {{seconds}} Sekunden.",
+	"evalError": "**Fehler**:{{output}}\n**Typ**:{{type}}\n{{time}}",
+	"dmNotSent": "Ich kann dir keine Nachricht in DM schicken, hast du mich blockiert?",
+	"dmSent": "Ich habe Ihnen die Nachricht in DM geschickt.",
+	"reboot": "{{LOADING}} Neustart...",
+	"rebootDescription": "Startet den Bot neu.",
+	"rebootExtended": {
+		"extendedHelp": "Der Bot geht Boom, dann geht der Bot wieder auf.",
+		"reminder": "Reserviert für Bot-Eigentümer."
+	}
+}
