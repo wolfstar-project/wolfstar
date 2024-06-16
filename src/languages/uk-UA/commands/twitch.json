@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "На жаль, {{REDCROSS}} я не зміг знайти стрічки. Ви впевнені, що правильно його написали?",
+	"twitchSubscriptionStatusValues": [
+		"в мережі",
+		"не в мережі"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah there! Я очікував \"онлайн\" або \"офлайн\", але я не можу зрозуміти, що ви мені дали.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Ви вже підписані до цієї стрічки в цьому каналі для цього статусу.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} успішно! Кожного разу, коли {{name}} оффлайн, я відправлю нове повідомлення в {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} успішно! Кожного разу, коли {{name}} піде в живу, я опублікую нове повідомлення в {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} I'm sorry but it is required to provide a message when making an offline subscription.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} I'm sorry but you are not subscribed to any streamers, mission abort!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "На жаль, {{REDCROSS}} я не можу відписатися від {{streamer}} , тому що ви не підписалися на них.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} I'm sorry; while you're subscribed to this streamer and streaming status, their subscriptions is not posted to {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} I'm sorry, but it looks like you're not getting {{status}} notifications for {{streamer}}. We support \"online\" and \"offline\" notifications.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Success! I will no longer post messages to {{channel}} whenever {{name}} goes offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Success! I will no longer post messages to {{channel}} whenever {{name}} goes live.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Success! {{count}} subscription has been removed from this server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} успішно! {{count}} підписки були видалені з цього сервера.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Ви хотіли бачити всі підписки від цього потоку, але їх немає!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Наживо",
+		"offline": "В автономному режимі"
+	},
+	"twitchSubscriptionShowUnknownUser": "Не вказано",
+	"twitchSubscriptionDescription": "Керуйте підписками для вашого серверу.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"додавати стан каналу стрімера",
+			"додавати стан каналу стрімера",
+			"видалити статус каналу Streamer",
+			"скинути стрімер",
+			"reset",
+			"показати",
+			""
+		],
+		"extendedHelp": "Управління підписками для цього сервера.\n__Online Notifications__\nУсі наявні дані будуть показані в дуже приємному поєднанні, які вказують вам, до якого струмера доступний.\n\n__Offline Notifications__\nВам потрібно написати ваше власне повідомлення, яке буде опубліковано, коли потік переходить в режим офлайн. Він буде відображатися у красивому багряному повідомленні Twitch.",
+		"explainedUsage": [
+			[
+				"додавати/видалити/скинути/показати",
+				"Whether to\n　- Add a new Twitch subscription.\n　- Remove an existing Twitch subscription\n　- Reset all twitch subscription, or those for a specific streamer\n　- Show all current Twitch subscriptions"
+			],
+			[
+				"Стример",
+				"Ім'я Twitch для отримання сповіщень."
+			],
+			[
+				"Канал",
+				"Канал Discord, у якому потрібно публікувати сповіщення."
+			],
+			[
+				"Статус",
+				"Статус, який стримера Twitch має отримати для сповіщення, одного з онлайн або оффлайн."
+			],
+			[
+				"Зміст",
+				"Повідомлення, яке надсилає до чату Discord. Потрібно для оффлайн сповіщень, не обов'язково для онлайн."
+			]
+		],
+		"examples": [
+			"додати фавну #twitch онлайн",
+			"додати favna #twitch офлайн Favna в автономному режимі. Попрощайте 👋!",
+			"видалити kyranet #twitch онлайн",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"показати"
+		]
+	}
+}
