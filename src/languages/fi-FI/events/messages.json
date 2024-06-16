@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Viesti Poistettu • {{channel}}",
+	"messageDeleteUnknown": "Tuntematon Viesti Poistettu • {{channel}}",
+	"messageUpdate": "Viestiä Muokattu • {{channel}}",
+	"messageUpdateUnknown": "Tuntematon Viesti Muokattu • {{channel}}",
+	"messageNotFound": "Tuntematon Viesti",
+	"messageDeleteBulk_one": "{{count}} message deleted in {{channel}} by {{author}}",
+	"messageDeleteBulk_other": "{{count}} messages deleted in {{channel}} by {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} message deleted in {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} messages deleted in {{channel}}",
+	"messageDeleteBulkFooter": "Useita Viestejä Poistettu",
+	"voiceActivityFooter": "Äänen Toiminta",
+	"jumpToContext": "Siirry kontekstiin"
+}
