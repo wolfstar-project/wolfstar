@@ -1,0 +1,5 @@
+{
+	"embedDescription": "{{userName}} がライブ中です！",
+	"embedDescriptionWithGame": "{{userName}} がライブ配信されました - {{gameName}}！",
+	"offlinePostfix": "WolfStar Twitch通知"
+}
