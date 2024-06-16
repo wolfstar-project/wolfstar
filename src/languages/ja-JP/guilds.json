@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "無効",
+	"explicitContentFilterMembersWithoutRoles": "役割を持たないメンバー",
+	"explicitContentFilterAllMembers": "すべてのメンバー",
+	"defaultMessageNotificationsAllMessages": "すべてのメッセージ",
+	"defaultMessageNotificationsOnlyMentions": "@メンションのみ",
+	"SuppressJoinNotifications": "メンバー参加の通知",
+	"SuppressJoinNotificationReplies": "メンバー参加ステッカーの返信ボタン",
+	"SuppressPremiumSubscriptions": "サーバーブースト通知",
+	"SuppressGuildReminderNotifications": "サーバーセットアップのヒント",
+	"SuppressRoleSubscriptionPurchaseNotifications": "ロールサブスクリプションの購読通知を無効にする",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "ロールサブスクリプション購入の通知に対する返信を抑制する"
+}
