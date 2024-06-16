@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Zpráva smazána • {{channel}}",
+	"messageDeleteUnknown": "Neznámá zpráva smazána • {{channel}}",
+	"messageUpdate": "Zpráva upravena • {{channel}}",
+	"messageUpdateUnknown": "Neznámá zpráva upravena • {{channel}}",
+	"messageNotFound": "Neznámá zpráva",
+	"messageDeleteBulk_one": "{{count}} zpráva smazána v {{channel}} {{author}}",
+	"messageDeleteBulk_other": "{{count}} zprávy smazány v {{channel}} {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} zpráva smazána v {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} zprávy smazány v {{channel}}",
+	"messageDeleteBulkFooter": "Odstraněno více zpráv",
+	"voiceActivityFooter": "Hlasová aktivita",
+	"jumpToContext": "Přejít na kontext"
+}
