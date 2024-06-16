@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Tive um pequeno erro de rede ao enviar mensagens para o Discord, por favor, execute este comando novamente!",
+	"fetchBansFail": "Falha ao buscar bans. Eu tenho a permissão **{{ADMINISTRATOR, permissions}}**?",
+	"helpTitles": {
+		"aliases": "🖇️ ¶**Apelidos**",
+		"usages": "📝 £**Uso de Comando**",
+		"extendedHelp": "🔍 →**Ajuda estendida**",
+		"explainedUsage": "⚙️ Common **Uso Explicado**",
+		"possibleFormats": "🔢 ¶**Possíveis formatos**",
+		"examples": "🔗 £**Exemplos**",
+		"reminders": "⏰ ¶**Lembrete**"
+	},
+	"jumpTo": "Pular para a Mensagem ►",
+	"loading": [
+		"{{LOADING}} Executando hamsters...",
+		"{{LOADING}} Encontrando pessoas ao esconder-e-Procurar...",
+		"{{LOADING}} Tentando descobrir esse comando...",
+		"Obtendo dados da nuvem de {{LOADING}}...",
+		"{{LOADING}} Calibrando lentes...",
+		"{{LOADING}} Brincando pedra, papel, tesoura...",
+		"{{LOADING}} {{LOADING}} ajustando-se às frequências corretas...",
+		"{{LOADING}} Reticulando splins..."
+	],
+	"prefixReminder": "O prefixo neste servidor está definido como: `{{prefix}}`"
+}
