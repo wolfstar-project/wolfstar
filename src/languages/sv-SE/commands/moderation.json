@@ -1,889 +1,889 @@
 {
-	"permissions": "",
-	"permissionsAll": "",
-	"slowmodeSet": "",
-	"slowmodeReset": "",
-	"banNotBannable": "",
-	"dehoistStarting": "",
-	"dehoistProgress": "",
+	"permissions": "Behörigheter för {{username}} ({{id}})",
+	"permissionsAll": "Alla behörigheter",
+	"slowmodeSet": "Nedkylningen för denna kanal har satts till {{cooldown, duration}}.",
+	"slowmodeReset": "Nedkylningen för denna kanal har återställts.",
+	"banNotBannable": "Målet är inte bannlyst för mig.",
+	"dehoistStarting": "Jag kommer att börja dehoisting {{count}} medlemmar...",
+	"dehoistProgress": "Dehoisted {{count}} medlemmar hittills! ({{percentage}}%)",
 	"dehoistEmbed": {
-		"title": "",
-		"descriptionNoone": "",
-		"descriptionWithError": "",
-		"descriptionWithMultipleErrors": "",
-		"description": "",
-		"descriptionMultipleMembers": "",
-		"fieldErrorTitle": ""
+		"title": "Avslutade dehoisting {{users}} medlemmar",
+		"descriptionNoone": "Inga medlemmar var dehoisted. En runda applåder för era laglydiga användare!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} medlem var dehoisted. Vi försökte också att dehoist ytterligare en {{errored}} medlem, men de felade",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} medlemmar var dehoisted. Vi försökte också att dehoist ytterligare {{errored}} medlemmar, men de felade",
+		"description": "{{dehoistedMemberCount}} medlem dehoisted",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} medlemmar dehoisted",
+		"fieldErrorTitle": "De användare vi stötte på ett fel för:"
 	},
-	"kickNotKickable": "",
-	"lockdownLock": "",
-	"lockdownLocking": "",
-	"lockdownLocked": "",
-	"lockdownUnlocked": "",
-	"lockdownOpen": "",
-	"muteMuted": "",
-	"muteUserNotMuted": "",
-	"restrictLowlevel": "",
-	"pruneAlert_one": "",
-	"pruneAlert_other": "",
-	"pruneInvalidPosition": "",
-	"pruneNoDeletes": "",
-	"pruneLogHeader": "",
-	"toggleModerationDmToggledEnabled": "",
-	"toggleModerationDmToggledDisabled": "",
-	"moderationOutput_one": "",
-	"moderationOutput_other": "",
-	"moderationOutputWithReason_one": "",
-	"moderationOutputWithReason_other": "",
-	"moderationFailed_one": "",
-	"moderationFailed_other": "",
-	"moderationDmFooter": "",
-	"moderationDmDescription": "",
-	"moderationDmDescriptionWithReason": "",
-	"moderationDmDescriptionWithDuration": "",
-	"moderationDmDescriptionWithReasonWithDuration": "",
-	"slowmodeDescription": "",
+	"kickNotKickable": "Målet är inte kickable för mig.",
+	"lockdownLock": "Kanalen {{channel}} är nu låst.",
+	"lockdownLocking": "{{LOADING}} Låser kanalen {{channel}}... Jag kanske inte kan svara efter detta.",
+	"lockdownLocked": "Kanalen {{channel}} var redan låst.",
+	"lockdownUnlocked": "Kanalen {{channel}} var inte låst.",
+	"lockdownOpen": "Låsningen för kanalen {{channel}} har släppts.",
+	"muteMuted": "Målanvändaren är redan tystad.",
+	"muteUserNotMuted": "Den här användaren är inte tystad.",
+	"restrictLowlevel": "{{REDCROSS}} Jag är ledsen, det finns ingen begränsningsroll konfigurerad. Be en administratör eller serverägaren att konfigurera den.",
+	"pruneAlert_one": "{{count}} meddelande från {{total}} raderades.",
+	"pruneAlert_other": "Lyckades ta bort {{count}} meddelanden från {{total}}.",
+	"pruneInvalidPosition": "{{REDCROSS}} Position måste vara en av \"före\" eller \"efter\".",
+	"pruneNoDeletes": "Inget meddelande har tagits bort, inget meddelande matchar filtret eller så är de över 14 dagar gamla.",
+	"pruneLogHeader": "Följande meddelanden har genererats på begäran av en moderator.\nDatumformateringen är av \"$t(globals:dateFormat) hh:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} Lyckad aktivering av modererings-DMs.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Avstängde modereringsDMs framgångsrikt",
+	"moderationOutput_one": "{{GREENTICK}} Skapat fall {{range}} <unk> {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Skapade ärenden {{range}} <unk> {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Skapat fall {{range}} <unk> {{users, list(conjunction)}}.\nMed anledning av: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Skapade ärenden {{range}} <unk> {{users, list(conjunction)}}.\nMed anledning av: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Misslyckades att moderera användare:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Misslyckades att moderera användare:\n{{users}}",
+	"moderationDmFooter": "För att inaktivera moderering DMs, skriv `toggleModerationDM`.",
+	"moderationDmDescription": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Anledning**: Inget specificerat",
+	"moderationDmDescriptionWithReason": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Anledning**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Varaktighet**: {{duration, duration}}\n**<unk> Anledning**: Ingen specificerad",
+	"moderationDmDescriptionWithReasonWithDuration": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Varaktighet**: {{duration, duration}}\n**<unk> Anledning**: {{reason}}",
+	"slowmodeDescription": "Ställ in kanalens slowmode värde i sekunder.",
 	"slowmodeExtended": {
 		"usages": [
-			""
+			"återställ/sekunder/varaktighet"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_CHANNELS, permissions}}** och kommer att ändra kanalens ratelimit per användare till valfritt värde mellan 0 och 6 timmar.",
 		"examples": [
-			"",
-			"",
-			""
+			"0",
+			"reset",
+			"4 m"
 		],
-		"reminder": ""
+		"reminder": "För att återställa en kanals ratelimit per användare kan du använda antingen 0 eller \"återställ\"."
 	},
-	"banDescription": "",
+	"banDescription": "Hit någon med förbudet hammare.",
 	"banExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning",
+			"Användare --seconds=S --minutes=M --hours=H --days=D"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att bannlysa. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid detta förbud bör pågå. Till exempel 24h i 24 timmar. Användaren (er) kommer automatiskt att avbrytas efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till bannlysningen. Detta kommer också att visas i serverns granskningsloggar."
 			],
 			[
-				"",
-				""
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Mängden tid meddelanden att ta bort, varje flagga är valfri och kan kombineras. Upp till 7 dagar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{BanMembers, permissions}}**, och endast medlemmar med lägre rollhierarki kan bannlysas av mig.\nNej, serverns ägare kan inte bannlysas.\nDen här åtgärden kan eventuellt tidsinställd för att skapa en tillfällig bannlysning.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spamming alla kanaler.",
+			"@Pete @Jack @John 24h Raiding"
 		]
 	},
-	"dehoistDescription": "",
+	"dehoistDescription": "Skjut alla med Dehoistinator 3000",
 	"dehoistExtended": {
-		"extendedHelp": "",
-		"reminder": ""
+		"extendedHelp": "Handlingen av hissning innebär att lägga till specialtecken framför ditt smeknamn för att visas högre i medlemslistan.\nDetta kommando ersätter varje medlems smeknamn som innehåller dessa specialtecken med ett speciellt tecken som drar dem till botten av listan.",
+		"reminder": "Detta kommando kräver **{{ManageNicknames, permissions}}**, och endast medlemmar med lägre rollhierarki kan dehoisteras."
 	},
-	"kickDescription": "",
+	"kickDescription": "Hit någon med 👢.",
 	"kickExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till användare"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{KickMembers, permissions}}**, och bara medlemmar med lägre rollhierarki kan sparkas av mig. Nej, serverns ägare kan inte sparkas.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren som sparkar. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till kicken. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
 		"examples": [
-			"",
-			""
+			"@Sarah",
+			"@Sarah Spamming allmän chatt."
 		]
 	},
-	"lockdownDescription": "",
+	"lockdownDescription": "Stäng grindarna för denna kanal!",
 	"lockdownExtended": {
 		"usages": [
 			"",
-			"",
-			"",
-			""
+			"Lås TextChannel varaktighet",
+			"låsa upp rolltextkanal",
+			"Rollens textkanallängd"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_CHANNELS, permissions}}** för att kunna hantera behörigheterna för en kanal.\nDetta kommando tar bort behörigheten **{{SEND_MESSAGES, permissions}}** till rollen `@everyone` så att ingen utom medlemmarna med roller som har egna åsidosättningar (förutom administratörer, som förbigår kanalöverskridande) kan skicka meddelanden.\nAlternativt kan du passera tid som andra argument.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"lås/låsa upp",
+				"Om du vill låsa eller låsa upp kanalen. Standardinställningen för att låsa om kanalen är upplåst eller \"låsa upp\" om den är låst."
 			],
 			[
-				"",
-				""
+				"Roll",
+				"Rollen att låsa. Standardinställningen är `@everyone` -rollen."
 			],
 			[
-				"",
-				""
+				"Textkanal",
+				"Kanalen att låsa. Standardvärdet är den aktuella kanalen."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som låset ska hålla. Standardvärdet är oändligt."
 			]
 		],
 		"examples": [
 			"",
-			"",
-			"",
-			"",
-			""
+			"#allmän",
+			"lås #allmän 5m",
+			"lås upp",
+			"lås medlemmar #general"
 		],
-		"reminder": ""
+		"reminder": "Om dina medlemmar behöver en roll som \"medlem\" för att skicka meddelanden i kanalen för att börja med kommer detta kommando inte att fungera. Det är i vår eftersläpning av arbetet att lägga göra den roll som bör låsas konfigurerbar."
 	},
-	"muteDescription": "",
+	"muteDescription": "Tysta en användare i all text och röstkanaler.",
 	"muteExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användare att tysta. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna tystning ska pågå. Till exempel 24h i 24 timmar. Användaren kommer automatiskt att avtystas efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till tystningen. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägare kan inte tystas.\nDenna åtgärd kan eventuellt tidsinställd för att skapa en tillfällig tystning. Denna åtgärd sparar en medlems roller tillfälligt och kommer att beviljas användaren efter avtystningen.\nDen dämpade rollen är **klibbig**, om användaren försöker ta bort den genom att återgå till servern kommer den att läggas till igen.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Alphonse",
+			"@Alphonse Spamming alla kanaler",
+			"@Alphonse 24h Spamming alla kanaler"
 		]
 	},
-	"setNicknameDescription": "",
+	"setNicknameDescription": "Ändra smeknamnet på en användare.",
 	"setNicknameExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användarnamn 1",
+			"Användar1 varaktighet",
+			"User1 User2 Smeknamn Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren till smeknamnet. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Smeknamn",
+				"Det nya smeknamnet som ska anges. Inkluderar inte detta kommer detta kommando göra standard till användarens användarnamn."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid detta smeknamn förändring bör pågå. Till exempel 24h i 24 timmar. Användaren kommer automatiskt att få tillbaka sitt nuvarande namn efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till detta smeknamn ändring. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_NICKNAMES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägares smeknamn kan inte ändras.",
 		"examples": [
-			"",
-			""
+			"@Pete peeehteeerrr",
+			"@<unk> e<unk> e<unk> Pete Onämnbart namn"
 		],
-		"reminder": ""
+		"reminder": "Om du lämnar det nya smeknamnet kommer det att återställas till användarens användarnamn"
 	},
-	"addRoleDescription": "",
+	"addRoleDescription": "Lägger till en roll för en användare.",
 	"addRoleExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 roll",
+			"Användar1 varaktighet",
+			"User1 User2 roll Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att lägga till en roll till. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Roll",
+				"Den nya rollen att tilldela"
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna roll ska vara på den här användaren. Till exempel 24h i 24 timmar. Användaren kommer automatiskt att få rollen borttagen efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna roll. Detta kommer också att visas i serverns revisionsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägarroller kan inte ändras.",
 		"examples": [
-			"",
-			""
+			"@John medlem",
+			"@John medlem Gör John till medlem"
 		]
 	},
-	"removeroleDescription": "",
+	"removeroleDescription": "Tar bort en roll från en användare",
 	"removeroleExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 roll",
+			"Användar1 varaktighet",
+			"User1 User2 roll Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att ta bort en roll från. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Roll",
+				"Rollen att ta bort"
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid denna roll bör tas bort från den här användaren. Till exempel 24h i 24 timmar. Användaren kommer automatiskt att återfå rollen efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att ta bort denna roll. Detta kommer också att visas i serverns revisionsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägarroller kan inte ändras.",
 		"examples": [
-			"",
-			""
+			"@Paula medlem",
+			"@Paula medlem Ta bort medlemsbehörigheter från Paula"
 		]
 	},
-	"pruneDescription": "",
+	"pruneDescription": "Tar bort en viss mängd meddelanden w/o filter.",
 	"pruneExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Antal flaggor Användare",
+			"Belopp flaggor efter/före meddelande",
+			"Antal användare",
+			"Antal användare efter/före meddelande",
+			"Belopp --tyst"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando tar bort den angivna mängden meddelanden som ges ett filter i de senaste 100 meddelandena som skickats i kanalen kommandot har körts.\nAlternativt kan du lägga till `--silent` för att säga till WolfStar att inte skicka ett svarsmeddelande.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Belopp",
+				"Mängden meddelanden att ta bort."
 			],
 			[
-				"",
-				""
+				"--f/fil/filer",
+				"Tar bort meddelanden med bilagor."
 			],
 			[
-				"",
-				""
+				"--a/författare",
+				"Tar bort dina meddelanden."
 			],
 			[
-				"",
-				""
+				"--b/bot/bots",
+				"Tar bort meddelanden som skickas av robotar."
 			],
 			[
-				"",
-				""
+				"--h/människa/människor",
+				"Tar bort meddelanden som skickas av användare."
 			],
 			[
-				"",
-				""
+				"--i/inbjudan/inbjudningar",
+				"Tar bort meddelanden som innehåller inbjudningslänkar."
 			],
 			[
-				"",
-				""
+				"--l/länk/länkar",
+				"Tar bort meddelanden som innehåller någon länk."
 			],
 			[
-				"",
-				""
+				"--/du",
+				"Tar bort mina meddelanden."
 			],
 			[
-				"",
-				""
+				"--age=Varaktighet",
+				"Tar bort något meddelande nyare än varaktighet."
 			],
 			[
-				"",
-				""
+				"--include/contain=Ord",
+				"Tar bort meddelanden som innehåller ord."
 			],
 			[
-				"",
-				""
+				"--p/pin/pins",
+				"Tar bort fästa meddelanden, om inte anges, inga andra filter tar bort stift."
 			],
 			[
-				"",
-				""
+				"Användare",
+				"Tar bort meddelanden som skickas av den angivna användaren."
 			],
 			[
-				"",
-				""
+				"Position: efter",
+				"Tar bort meddelanden som skickats efter det angivna meddelandet."
 			],
 			[
-				"",
-				""
+				"Position: före",
+				"Tar bort meddelanden som skickats före det angivna meddelandet."
 			],
 			[
-				"",
-				""
+				"--s/tyst",
+				"Huruvida ett svarsmeddelande ska skickas eller inte, detta kommer också att ta bort ditt kommando meddelande om det var mindre än 100 meddelanden filtrerade."
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"50 --a",
+			"75 @kyra",
+			"20 --bottar",
+			"60 --humans --files före 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --tyst"
 		],
-		"reminder": ""
+		"reminder": "På grund av en Discord-begränsning kan robotar inte ta bort meddelanden som är äldre än 14 dagar."
 	},
-	"permissionsDescription": "",
+	"permissionsDescription": "Kontrollera behörigheten för en medlem eller din.",
 	"permissionsExtended": {
 		"usages": [
 			"",
-			""
+			"Användare"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användare",
+				"Användaren som du vill kontrollera behörigheterna för. Standard är dig själv."
 			]
 		],
-		"extendedHelp": ""
+		"extendedHelp": "Perfekt om du vill veta vilka behörigheter som beviljas en medlem när de har en viss uppsättning roller."
 	},
-	"restrictAttachmentDescription": "",
+	"restrictAttachmentDescription": "Begränsa en användare från att skicka bilagor i alla kanaler.",
 	"restrictAttachmentExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att begränsa bilagor för. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna begränsning bör vara på den här användaren. Till exempel 24h i 24 timmar. Användaren (er) kommer automatiskt att få restriktionen hävd efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna begränsning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägare kan inte begränsas.\nDenna åtgärd kan valfritt tidsinställd för att skapa en tillfällig begränsning.\nDen begränsade rollen är **klibbig**, om användaren försöker ta bort den genom att återgå till servern kommer den att läggas till igen.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete skickar konstiga bilder",
+			"@Pete 24h Skickar NSFW-bilder"
 		]
 	},
-	"restrictEmbedDescription": "",
+	"restrictEmbedDescription": "Begränsa en användare från att bifoga bäddar i alla kanaler.",
 	"restrictEmbedExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att begränsa bäddar för. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna begränsning bör vara på den här användaren. Till exempel 24h i 24 timmar. Användaren (er) kommer automatiskt att få restriktionen hävd efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna begränsning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägare kan inte begränsas.\nDenna åtgärd kan valfritt tidsinställd för att skapa en tillfällig begränsning.\nDen begränsade rollen är **klibbig**, om användaren försöker ta bort den genom att återgå till servern kommer den att läggas till igen.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete skickar konstiga länkar",
+			"@Pete 24h skickade en skräppostlänk"
 		],
-		"reminder": ""
+		"reminder": "Embeds är till exempel när en användare skickar en video den blir inbäddad i chatten."
 	},
-	"restrictEmojiDescription": "",
+	"restrictEmojiDescription": "Begränsa en användare från att använda externa emojis i alla kanaler.",
 	"restrictEmojiExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att begränsa externa emojis för. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna begränsning bör vara på den här användaren. Till exempel 24h i 24 timmar. Användaren (er) kommer automatiskt att få restriktionen hävd efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna begränsning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägare kan inte begränsas.\nDenna åtgärd kan valfritt tidsinställd för att skapa en tillfällig begränsning.\nDen begränsade rollen är **klibbig**, om användaren försöker ta bort den genom att återgå till servern kommer den att läggas till igen.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spamming extern emojis",
+			"@Pete 24h Postad cringe"
 		],
-		"reminder": ""
+		"reminder": "Detta kommer bara att förhindra användningen av externa emojis och så kommer inte att ha någon effekt för icke-nitro användare, din egen server emojis och regelbunden bygga in twemojis kan fortfarande användas av medlemmar med denna roll."
 	},
-	"restrictReactionDescription": "",
+	"restrictReactionDescription": "Begränsa en användare från att reagera på meddelanden i alla kanaler.",
 	"restrictReactionExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att begränsa reaktionen på meddelanden för. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna begränsning bör vara på den här användaren. Till exempel 24h i 24 timmar. Användaren (er) kommer automatiskt att få restriktionen hävd efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna begränsning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägare kan inte begränsas.\nDenna åtgärd kan valfritt tidsinställd för att skapa en tillfällig begränsning.\nDen begränsade rollen är **klibbig**, om användaren försöker ta bort den genom att återgå till servern kommer den att läggas till igen.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spamming reaktioner",
+			"@Pete 24h Posta konstiga reaktioner"
 		]
 	},
-	"restrictVoiceDescription": "",
+	"restrictVoiceDescription": "Begränsa en användare från att ansluta någon röstkanal.",
 	"restrictVoiceExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att begränsa röst kanal interaktion för. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna begränsning bör vara på den här användaren. Till exempel 24h i 24 timmar. Användaren (er) kommer automatiskt att få restriktionen hävd efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna begränsning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}**, och endast medlemmar med lägre rollhierarki kan hanteras av mig.\nNej, serverns ägare kan inte begränsas.\nDenna åtgärd kan valfritt tidsinställd för att skapa en tillfällig begränsning.\nDen begränsade rollen är **klibbig**, om användaren försöker ta bort den genom att återgå till servern kommer den att läggas till igen.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Earraping i allmänna röstkanaler",
+			"@Pete 24h Att göra konstiga ljud"
 		]
 	},
-	"softBanDescription": "",
+	"softBanDescription": "Hit någon med förbudet hammare, förstöra alla sina meddelanden för några dagar, och unban det.",
 	"softBanExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1",
+			"Användare --seconds=S --minutes=M --hours=H --days=D"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) till softban. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till softban. Detta kommer också att visas i serverns granskningsloggar."
 			],
 			[
-				"",
-				""
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Mängden tid meddelanden att ta bort, varje flagga är valfri och kan kombineras. Upp till 7 dagar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{BanMembers, permissions}}**, och endast medlemmar med lägre rollhierarki kan bannlysas av mig.\nNej, serverns ägare kan inte förbjudas.\nAvstängningsfunktionen från Discord har en funktion som tillåter moderatorn att ta bort alla meddelanden från alla kanaler som har skickats under de senaste 'x' dagarna, att vara ett tal mellan 0 (inga dagar) och 7.\nAnvändaren blir obannad direkt efter förbudet, så det är som en kick, men det kan beskära många många meddelanden.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spamming alla kanaler",
+			"@Pete 7 Alla meddelanden som skickas in 7 är borta nu, YEE HAH!"
 		]
 	},
-	"timeoutApplyDescription": "",
+	"timeoutApplyDescription": "Tid ut en användare.",
 	"timeoutApplyExtended": {
 		"usages": [
-			"",
-			""
+			"Varaktighet användare",
+			"Orsak till varaktighet"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Varaktighet",
+				"Varaktigheten av timeout. Till exempel 24h för 24 timmar."
 			],
 			[
-				"",
-				""
+				"Användare",
+				"Användaren till dags dato."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Orsaken till timeout. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
 		"examples": [
-			"",
-			""
+			"30-tal @Pete",
+			"2h @Pete Spamming alla kanaler"
 		]
 	},
-	"timeoutUndoDescription": "",
+	"timeoutUndoDescription": "Ta bort en tid från en användare.",
 	"timeoutUndoExtended": {
 		"usages": [
-			"",
-			""
+			"Användare",
+			"Anledning till användare"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användare",
+				"Användaren till dags dato."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Orsaken till timeout. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete visade sig att han inte var den som spammade alla kanaler 🤷"
 		]
 	},
-	"timeoutNotModeratable": "",
-	"toggleModerationDmDescription": "",
+	"timeoutNotModeratable": "Målet kan inte tidsinställas av mig.",
+	"toggleModerationDmDescription": "Växla måttlighet DMs.",
 	"toggleModerationDmExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "Detta kommando låter dig växla mellan moderering DMs. Som standard är de på, vilket innebär att alla modereringsåtgärder (automatisk eller manuell) kommer DM dig, men du kan inaktivera dem med detta kommando."
 	},
-	"unbanDescription": "",
+	"unbanDescription": "Avblockera någon från denna server.",
 	"unbanExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att unban. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till bannlysningen. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{BanMembers, permissions}}**. Det får bokstavligen någon från soptunnan, rensar upp dem, och tillåter passet till serverns portar.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete visade sig att han inte var den som spammade alla kanaler 🤷"
 		]
 	},
-	"unmuteDescription": "",
+	"unmuteDescription": "Ta bort scotch-tejpen från en användare.",
 	"unmuteExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användare att avtysta. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att stänga av tystningen. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}** och tar bort en användare från listan över dämpade personer. och ger tillbaka de gamla rollerna om användaren hade dem.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete (Infoga slumpmässigt skämt här)."
 		]
 	},
-	"unrestrictAttachmentDescription": "",
+	"unrestrictAttachmentDescription": "Ta bort begränsningen för bilagor från en eller flera användare.",
 	"unrestrictAttachmentExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att ta bort bilagor begränsningar från.Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till borttagningen av bilagans begränsning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}** och tar bort en användare från listan med begränsade personer.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictEmbedDescription": "",
+	"unrestrictEmbedDescription": "Ta bort inbäddningsbegränsningen från en eller flera användare.",
 	"unrestrictEmbedExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att ta bort inbäddade begränsningar från.Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till borttagningen av inbäddningsbegränsningen, detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}** och tar bort en användare från listan med begränsade personer.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictEmojiDescription": "",
+	"unrestrictEmojiDescription": "Ta bort den externa emoji-begränsningen från en eller flera användare.",
 	"unrestrictEmojiExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att ta bort emoji begränsningar från.Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till borttagningen av emoji-begränsningen, vilket också kommer att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}** och tar bort en användare från listan med begränsade personer.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictReactionDescription": "",
+	"unrestrictReactionDescription": "Ta bort reaktionsbegränsningen från en eller flera användare.",
 	"unrestrictReactionExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att ta bort reaktionsbegränsningar från.Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Orsaken till borttagningen av reaktionsbegränsningen, detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}** och tar bort en användare från listan med begränsade personer.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictVoiceDescription": "",
+	"unrestrictVoiceDescription": "Ta bort röstbegränsningen från en eller flera användare.",
 	"unrestrictVoiceExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att ta bort röstbegränsningar från.Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till borttagningen av röstbegränsningen kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MANAGE_ROLES, permissions}}** och tar bort en användare från listan med begränsade personer.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unwarnDescription": "",
+	"unwarnDescription": "Överklaga en varning logg fall.",
 	"unwarnExtended": {
 		"usages": [
-			"",
-			""
+			"Fall",
+			"Orsak till fall"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Fall",
+				"Ärendenumret att ändra. Du kan hitta ärendenumren genom kommandot `historik` eller genom att titta i din modereringsloggkanal"
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att ta bort denna varning."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando vädjar en varning, det kräver inga tillstånd, du bara ge mig måttlig logg fall att överklaga och anledningen.",
 		"examples": [
-			"",
-			""
+			"0 Hoppsan, fel snubbe.",
+			"42 visade sig detta var definitionen av livet."
 		]
 	},
-	"vmuteDescription": "",
+	"vmuteDescription": "Kasta någons mikrofon ut genom fönstret.",
 	"vmuteExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att tysta i röstkanaler. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid denna röst tysta ska ansöka om. Till exempel 24h för 24 timmar. Användaren kommer automatiskt att få rösttystningen lyfts efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att lägga till denna röstdämpning. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MUTE_MEMBERS, permissions}}**, och bara medlemmar med lägre rollhierarki kan tystas av mig.\nNej, serverns ägare kan inte tystas.\nDenna åtgärd kan eventuellt tidsinställd för att skapa en tillfällig röstdämpning.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete sjunger för högt",
+			"@Pete 24h Sjung bokstavligen öronvåldtäkt"
 		]
 	},
-	"voiceKickDescription": "",
+	"voiceKickDescription": "Hit någon med 👢 för att sjunga så dåligt och högt.",
 	"voiceKickExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1",
+			"Anledning till User1 User2"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användare att sparka från sin nuvarande röstkanal. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att sparka användare från röstkanalen. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver behörigheterna **{{MANAGE_CHANNELS, permissions}}** för att skapa en temporär (dold) röstkanal, och **{{MOVE_MEMBERS, permissions}}** för att flytta användaren till den tillfälliga kanalen.\nEfter detta tas kanalen snabbt bort, vilket gör att användaren lämnar röstkanalen.\nFör skrämda moderatorer har detta kommando nästan ingen inverkan på den genomsnittliga användaren, eftersom kanalen skapas på ett sätt som bara jag och den valda användaren kan se och gå med, sedan snabbt raderas.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete Spamming alla kanaler"
 		]
 	},
-	"vunmuteDescription": "",
+	"vunmuteDescription": "Få tillbaka någons mikrofon så att de kan prata.",
 	"vunmuteExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Anledning till User1"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användaren (er) att avstänga i röstkanaler. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till att rösten tystas bort. Detta kommer också att visas i serverns granskningsloggar."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando kräver **{{MUTE_MEMBERS, permissions}}**, och bara medlemmar med lägre rollhierarki kan vara otystade av mig.\nNej, serverns ägare kan inte tystas upp.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete Överklagade sina gånger underteckna höra våldtäkt."
 		]
 	},
-	"warnDescription": "",
+	"warnDescription": "Lämna in en varning till någon.",
 	"warnExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Användare",
+			"User1 User2 User3...User10",
+			"Användar1 varaktighet",
+			"User1 User2 Varaktighet Anledning"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användar/User1/User2",
+				"Användare att varna. Kan vara upp till totalt 10 användare."
 			],
 			[
-				"",
-				""
+				"Varaktighet",
+				"Den tid som denna varning gäller. Till exempel 24h i 24 timmar. Användaren kommer automatiskt att få varningen borttagen efter denna tid."
 			],
 			[
-				"",
-				""
+				"Anledning",
+				"Anledningen till denna varning."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Detta kommando filar en varning till en användare.\nDenna typ av varning är tänkt att vara **formella varningar**, eftersom de kommer att visas i kommandot \"varningar\".\nDet är en bra metod att göra en informell varning innan du använder detta kommando.",
 		"examples": [
-			""
+			"@Pete Försök att nämna alla."
 		]
 	}
 }
