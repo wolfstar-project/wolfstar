@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Wyłączone",
+	"explicitContentFilterMembersWithoutRoles": "Członkowie bez ról",
+	"explicitContentFilterAllMembers": "Wszyscy członkowie",
+	"defaultMessageNotificationsAllMessages": "Wszystkie wiadomości",
+	"defaultMessageNotificationsOnlyMentions": "Tylko @wzmianki",
+	"SuppressJoinNotifications": "Powiadomienia o dołączeniu użytkownika",
+	"SuppressJoinNotificationReplies": "Przyciski odpowiedzi dołączane do naklejki",
+	"SuppressPremiumSubscriptions": "Powiadomienia o podbiciu serwera",
+	"SuppressGuildReminderNotifications": "Wskazówki dotyczące konfiguracji serwera",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Wyłącz powiadomienia o zakupie subskrypcji roli",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Usuń odpowiedzi dla powiadomień o zakupie subskrypcji ról"
+}
