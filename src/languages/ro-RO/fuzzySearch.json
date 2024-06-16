@@ -1,0 +1,6 @@
+{
+	"aborted": "Cererea a fost abandonată cu succes.",
+	"invalidIndex": "Acest număr a fost în afara razei de acțiune, anulând promptitudinea.",
+	"invalidNumber": "Mă aşteptam să-mi dai un număr (o singură cifră), un cartof.",
+	"matches": "Am găsit mai multe meciuri! **Vă rugăm să selectați un număr în 0 și {{matches}}**:\n{{codeblock}}\nScrieți **ABORT** dacă doriți să ieșiți din specificație."
+}
