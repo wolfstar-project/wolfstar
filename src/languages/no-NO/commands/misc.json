@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Det er ingen hentede meldinger i denne kanalen.",
+	"snipeTitle": "Videresendt melding",
+	"snipeDescription": "Hent den siste slettede meldingen fra en kanal",
+	"snipeExtended": {
+		"extendedHelp": "Dette sender bare den siste slettede meldingen fra denne kanalen, noen nærmer seg? Dette vil fange dem."
+	}
+}
