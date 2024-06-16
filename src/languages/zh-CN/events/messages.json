@@ -1,1 +1,14 @@
-[]
+{
+	"messageDelete": "Message Deleted • {{channel}}",
+	"messageDeleteUnknown": "Unknown Message Deleted • {{channel}}",
+	"messageUpdate": "Message Edited • {{channel}}",
+	"messageUpdateUnknown": "Unknown Message Edited • {{channel}}",
+	"messageNotFound": "未知消息",
+	"messageDeleteBulk_one": "{{count}} message deleted in {{channel}} by {{author}}",
+	"messageDeleteBulk_other": "{{count}} messages deleted in {{channel}} by {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} message deleted in {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} messages deleted in {{channel}}",
+	"messageDeleteBulkFooter": "多条消息已删除",
+	"voiceActivityFooter": "语音活动",
+	"jumpToContext": "跳转到上下文..."
+}
