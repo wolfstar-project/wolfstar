@@ -1,0 +1,15 @@
+{
+	"name": "whois",
+	"description": "Παρέχει πληροφορίες σχετικά με έναν χρήστη του Discord",
+	"contextMenuName": "Λήψη Πληροφοριών",
+	"userName": "χρήστης",
+	"userDescription": "Ο χρήστης που θα λάβει πληροφορίες σχετικά με",
+	"rolesTitle_one": "Ρόλος [1]",
+	"rolesTitle_other": "Ρόλοι [{{count, number}}]",
+	"permissionsTitle": "Δικαιώματα Κλειδιού",
+	"permissionsAll": "Όλα Τα Δικαιώματα",
+	"embedDescription": "**User Since**: {{createdAt}}",
+	"embedMemberDescription": "**Member Since**: {{joinedAt}}",
+	"buttonAvatar": "Άβαταρ",
+	"buttonProfile": "Προφίλ"
+}
