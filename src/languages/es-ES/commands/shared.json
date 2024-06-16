@@ -1,7 +1,7 @@
 {
-	"deprecatedMessage": "",
+	"deprecatedMessage": "Los comandos basados en mensajes están **desaprobados**, y se eliminarán en el futuro. ¡Deberías usar el comando de barra slash {{command}} en su lugar!",
 	"slashOnlyDetailedDescription": {
-		"extendedHelp": ""
+		"extendedHelp": "Este comando sólo está disponible a través de comandos slash. Por favor, utilice el comando slash."
 	},
-	"slashOnlyErrorMessage": ""
+	"slashOnlyErrorMessage": "Este comando sólo está disponible a través de comandos slash. Por favor, utilice el comando slash."
 }
