@@ -1,1 +1,18 @@
-[]
+{
+	"genericUnknownChannel": "Jag är ledsen, jag försökte utföra en åtgärd för en kanal som är okänd för Discord och misslyckades, detta fel har rapporterats till utvecklarna.",
+	"genericUnknownGuild": "Jag är ledsen, jag försökte utföra en åtgärd för en server som är okänd för Discord och misslyckades, detta fel har rapporterats till utvecklarna.",
+	"genericUnknownMember": "Jag är ledsen, jag försökte utföra en åtgärd för en medlem som är okänd för Discord och misslyckades, detta fel har rapporterats till utvecklarna.",
+	"genericUnknownMessage": "Jag är ledsen, jag försökte utföra en åtgärd för ett meddelande som är okänt för Discord och misslyckades, detta fel har rapporterats till utvecklarna.",
+	"genericUnknownRole": "Jag är ledsen, jag försökte utföra en åtgärd för en roll som är okänd för Discord och misslyckades, detta fel har rapporterats till utvecklarna.",
+	"genericMissingAccess": "Jag är ledsen, jag försökte utföra en åtgärd för en resurs utan nödvändiga behörigheter och misslyckades, detta fel har rapporterats till utvecklarna.",
+	"genericDiscordInternalServerError": "Hoppsan, Discord bröt sig, försök igen senare.",
+	"genericDiscordGateway": "Hoppsan, nätverket kämpar för att kommunicera med Discord, försök igen senare.",
+	"genericDiscordUnavailable": "Hoppsan, Discord är inte tillgänglig, försök igen senare.",
+	"guildBansEmpty": "Det finns inga bannlysningar registrerade på denna server.",
+	"guildBansNotFound": "Jag försökte och misslyckades med att hitta denna användare från bannlysningslistan. Är du säker på att den här användaren är bannad?",
+	"guildMemberNotVoicechannel": "Jag kan inte utföra denna åtgärd i en medlem som inte är ansluten till en röstkanal.",
+	"guildWarnNotFound": "Jag lyckades inte hämta den varningen. Antingen existerar den inte, är inte typvarning, eller så har den överklagats.",
+	"modlogTimed": "Denna modereringslogg är redan tidsinställd. Förfaller i {{remaining, duration}}",
+	"unexpectedIssue": "Ett oväntat fel dök upp! Avbryter detta kommando...",
+	"userNotInGuild": "Denna användare är inte i den här servern."
+}
