@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Скасовано",
+	"permissionNodesHigher": "{{REDCROSS}} , не можна змінювати і попередній перегляд дозволених вузлів для цієї цілі.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Ви не можете дозволити команди для ролі `@everyone`.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Неправильний тип, очікувалось або `allow` або `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} успішно додано команду до вузла дозволу.",
+	"permissionNodesNodeNotExists": "Вибраний вузол дозволу {{REDCROSS}} не існує.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Обрана команда не існує в вузлі дозволу.",
+	"permissionNodesRemove": "{{GREENTICK}} успішно видалив команду з вузла дозволу.",
+	"permissionNodesReset": "{{GREENTICK}} успішно видалив всі команди з вузла дозволу.",
+	"permissionNodesShowName": "Дозволи для: __{{name}}__",
+	"permissionNodesShowAllow": "**Дозволити**: {{allow}}",
+	"permissionNodesShowDeny": "**Заборонити**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Канали",
+		"MEMBERS": "Члени",
+		"OTHER": "Інше"
+	},
+	"guildInfoChannels": "• **{{text}}** Тест, **{{voice}}** Голос, **{{categories}}** категорії.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** після **{{afkTime}}**хв",
+	"guildInfoMembers": "• **{{memberCount, number}}** member(s)\n• Owner: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Ролі: **{{size}}**\n• Створено: **{{createdAt}}**\n• Рівень перевірки: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "Зображення банеру",
+	"guildInfoIcon": "Зображення значка",
+	"guildInfoSplash": "Сплеск зображення",
+	"guildInfoDiscoverySplash": "Сплеш відкриттів",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Дозволи"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nName: **{{role.name}}**\nColor: **{{role.hexColor}}**\nHoisted: **{{hoisted}}**\nPosition: **{{role.rawPosition}}**\nMentionable: **{{mentionable}}**",
+	"roleInfoAll": "Всі дозволи надані.",
+	"roleInfoNoPermissions": "Дозволів не надано.",
+	"manageCommandAutoDeleteShowEmpty": "Наразі не налаштовано команду автовидалення.",
+	"manageCommandAutoDeleteShow": "Всі налаштування команд автовидалення конфігурації:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Успіхів! Всі успішні команди в {{channel}} буде видалено після {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} успішно! Команди не будуть автоматично видалені в {{channel}}!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Канал {{channel}} не був налаштований автоматично на видалення повідомлень!",
+	"manageCommandAutoDeleteReset": "Всі видалення команди були скинуті.",
+	"manageCommandChannelShow": "Список відключених команд в {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Список відключених команд для вказаного каналу порожній!",
+	"manageCommandChannelAddAlreadyset": "Команду, яку ви намагаєтеся вимкнути вже відключено!",
+	"manageCommandChannelAdd": "Успішно вимкнута команда {{command}} для каналу {{channel}}!",
+	"manageCommandChannelRemoveNotset": "Команду, яку ви намагаєтесь увімкнути не було вимкнено для {{channel}}.",
+	"manageCommandChannelRemove": "Успішно включена команда {{command}} для каналу {{channel}}!",
+	"manageCommandChannelResetEmpty": "Цей канал не вимкнув команду, тому я вирішив нічого не робити.",
+	"manageCommandChannelReset": "Вдало ввімкнено всі вимкнені команди в {{channel}}, насолоджуйтесь!",
+	"manageReactionRolesShowEmpty": "На цьому сервері не налаштовано жодної реакції.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} успішно! Я зараз дам роль, коли люди реагують з {{emoji}} на будь-яке повідомлення від {{channel}}",
+	"manageReactionRolesAddPrompt": "Слухає зараз! Будь ласка, відреагуйте на повідомлення і я пов'язую реакцію з рол!",
+	"manageReactionRolesAddMissing": "Я чекав, але, здається, ти не відреагувала на повідомлення.",
+	"manageReactionRolesAdd": "{{GREENTICK}} успішно! Я зараз дам роль, коли люди реагують з {{emoji}} в {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Роль реакції, яку ви вказали, не існує.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Success! I will not longer give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesResetEmpty": "Не налаштовано жодної ролі реакції.",
+	"manageReactionRolesReset": "{{GREENTICK}} успішно видалив усі ролі в реакції.",
+	"configurationEquals": "Успішно налаштовано: не було внесено змін.",
+	"setIgnoreChannelsSet": "Ігнорування всіх введених команд від {{channel}}.",
+	"setIgnoreChannelsRemoved": "Прослуховування всіх вхідних команд від {{channel}}.",
+	"setImageLogsSet": "Успішно встановлено канал журналу зображень на {{channel}}.",
+	"setMemberAddLogsSet": "Успішно встановлено канал журналів користувачів на {{channel}}.",
+	"setMemberRemoveLogsSet": "Успішно встановлено канал видалення журналів на {{channel}}.",
+	"setMessageUpdateLogsSet": "Успішно встановлено канал журналу оновлення на {{channel}}.",
+	"setMessageDeleteLogsSet": "Повідомлення успішно встановлено канал видалення журналів на {{channel}}.",
+	"setModLogsSet": "Успішно встановлено канал журналів модів на {{channel}}.",
+	"setPrefixSet": "Успішно встановлено префікс на `{{prefix}}`. Використовуйте `{{prefix}}setPrefix NewPrefix\", щоб змінити його знову.",
+	"stickyRolesNotExists": "Користувач {{user}} не має ніяких прикріплених ролей або не має вказаної ролі.",
+	"stickyRolesReset": "Вдало видалили всі стіккі ролі з {{user}}.",
+	"stickyRolesRemove": "Успiшно вiдмiйсно видалити вказану роль з {{user}}.",
+	"stickyRolesAdd": "Успішно додано вказану роль як липку до {{user}}.",
+	"stickyRolesShowEmpty": "Немає липких ролей для відображення.",
+	"stickyRolesShowSingle": "Важкі ролі для **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Підготуйте заглушену систему.",
+	"createMuteExtended": {
+		"extendedHelp": "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role."
+	},
+	"permissionNodesDescription": "Налаштувати вузли дозволів для цього сервера.",
+	"permissionNodesExtended": {
+		"usages": [
+			"додати команду по ролі/Члену",
+			"видалити команду 'Дозволити/заборони' Роль/Учасника",
+			"reset Role/Member",
+			"показати роль/учасника",
+			"показати",
+			"Роль/Учасник"
+		],
+		"extendedHelp": "Вузли дозволів надані користувачеві і перевизначення ролі. Вони використовуються, коли вбудованої системи дозволів недостатньо.\nНаприклад, на деяких серверах вони хочуть дати співробітникам права на використання звуку і попередження, але не блокувати і інші (зарезервовані для модераторів), і попередження є доступним лише для дозволів рівня персоналу, що налаштовується, тому ви можете сказати мені, щоб дозволити заглушити команду для ролі персоналу зараз.",
+		"explainedUsage": [
+			[
+				"Дія",
+				"Або `додати`, `remove`, `reset`, or `Show`. За замовчуванням `показати`."
+			],
+			[
+				"Target",
+				"Або ім'я ролі, або назва користувача, що дозволяє також вказувати на ID та згадки."
+			],
+			[
+				"Тип",
+				"Або `allow` або `deny`."
+			],
+			[
+				"Команда",
+				"Ім'я команди, що дозволяється або відхиляє."
+			]
+		],
+		"examples": [
+			"додати співробітника дозволити попередження",
+			"додати блокування модераторів",
+			"видалити співробітника дозволити попередження",
+			"скинути персонал",
+			"показати персонал"
+		],
+		"reminder": "Власник сервера не може мати будь-яких дій, так як роль \"everyone\" може містити команди."
+	},
+	"managecommandautodeleteDescription": "Керування таймером видалення для окремих каналів.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"додати секунди TextChannel",
+			"видалити TextChannel",
+			"reset",
+			"показати",
+			""
+		],
+		"extendedHelp": "Ця команда керує таймером автоматичного видалення для кожного каналу на цьому сервері, його команда добре подає доступ до очищення каналу від команд.",
+		"explainedUsage": [
+			[
+				"додати",
+				"Додати таймер автовидалення для вказаного каналу."
+			],
+			[
+				"видалити",
+				"Видаліть автотаймер із вказаного каналу."
+			],
+			[
+				"reset",
+				"Очист. всі таймери."
+			],
+			[
+				"показати",
+				"Показати таймер автовидалення для всіх каналів."
+			]
+		],
+		"reminder": "Аргумент каналу необов'язковий, він вітає з каналом повідомлення, але використовує нечіткий пошук, коли це можливо.",
+		"examples": [
+			"показати",
+			"додати #Загальні 4 сек",
+			"видалити #загальні",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Керування списком заблокованих команд окремим каналом.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"додати команду в TextChannel",
+			"видалити команду TextChannel",
+			"скинути TextChannel",
+			"показати TextChannel"
+		],
+		"extendedHelp": "Ця команда керує списком команд для кожного каналу цього сервера, він добре служить для вимкнення певних команд, які ви не хочете використовувати в певних каналах (щоб вимкнути команду глобально, використовуйте ключ налаштувань `disabledCommands`, щоб вимкнути в усіх каналах.",
+		"explainedUsage": [
+			[
+				"показати [channel]",
+				"Відображати список команд, заблокованих у вказаному каналі."
+			],
+			[
+				"add [channel] <command>",
+				"Додати команду до списку заблокованих команд зазначеного каналу."
+			],
+			[
+				"remove [channel] <command>",
+				"Видалити команду із списку заблокованих команд."
+			],
+			[
+				"reset [channel]",
+				"Очистити список команд, заблокованих у зазначеному каналі."
+			]
+		],
+		"reminder": "Аргумент каналу є необов'язковим, але він використовує нечіткий пошук, коли це можливо.",
+		"examples": [
+			"додати #загальний профіль",
+			"видалити #загальний профіль",
+			"скидання #загальні",
+			"показати #загальні"
+		]
+	},
+	"manageReactionRolesDescription": "Управління реакційними ролями для цього сервера.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"додати роль",
+			"додати Emoji TextChannel",
+			"видалити повідомлення ролі",
+			"reset",
+			"показати"
+		],
+		"extendedHelp": "Seamlessly set up reaction roles in your server! When adding reaction roles, I listen to your reactions for 5 minutes and I bind the first reaction from you alongside the channel and the message, with the specified role.\nOtherwise, if a channel is specified, a prompt will not be created, and the reaction role will be bound to all of the channel's messages.\n\nThe best way to add new reaction roles is by using `add @role`. If you prefer not binding the reaction to a specific message then use `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"показати",
+				"Отримати список всіх ролей реакції."
+			],
+			[
+				"add <role>",
+				"Додає роль реакції зв'язування першого реагування з моменту виконання ролі."
+			],
+			[
+				"remove <role> <message>",
+				"Видаляє роль реакції, використовуйте `show`, щоб отримати список їх."
+			],
+			[
+				"reset",
+				"Видалення всіх ролей реакції."
+			]
+		],
+		"examples": [
+			"додати @роль",
+			"додати @role #каналу emoji",
+			"видалити @role 123456789012345678",
+			"reset",
+			"показати"
+		]
+	},
+	"rolesAdded": "Наступні ролі були додані у ваш профіль: `{{roles}}`",
+	"rolesAuditlog": "Авторизовано: Керування публічними ролями | Команди 'Ролі'.",
+	"rolesListEmpty": "Цей сервер не має ролі, вказаної як державна роль.",
+	"rolesListTitle": "Список публічних ролей",
+	"rolesNotManageable": "Наведені ролі не можуть бути отримані мною внаслідок позиціювання ієрархічної ролі: `{{roles}}`",
+	"rolesNotPublic": "The following roles are not public: `{{roles}}`",
+	"rolesRemoved": "Наступні ролі були видалені з вашого профілю: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Встановіть канал для ігнорування списку каналів.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use WolfStar's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, WolfStar is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.",
+		"explainedUsage": [
+			[
+				"канал",
+				"TextChannel. Ви можете поставити назву каналу, додати його тег або \"тут\", щоб вибрати канал, який було надіслане повідомлення."
+			]
+		],
+		"reminder": "Ви не можете встановити один і той же канал двічі, натомість, ВольфСтар видалить його.",
+		"examples": [
+			"#загальні",
+			"сюди"
+		]
+	},
+	"setImageLogsDescription": "Налаштуйте канал журналів зображень.",
+	"setImageLogsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "Ця команда допомагає налаштовувати канал журналу зображення. Всякий раз, коли учасник відправляє вкладене зображення, воно відправить повідомлення з вкладенням повторно завантажено.\nВсі повідомлення в вбудованих файлах, тому вам потрібно буде включити дозвіл **{{EMBED_LINKS, permissions}}** для WolfStar.",
+		"explainedUsage": [
+			[
+				"канал",
+				"TextChannel. Ви можете поставити назву каналу, додати його тег або \"тут\", щоб вибрати канал, який було надіслане повідомлення."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"сюди"
+		]
+	},
+	"setMemberAddLogsDescription": "Встановити канал додавання блогів.",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "Ця команда допоможе вам налаштувати журнал подій учасника , який отримає повідомлення щоразу при приєднанні користувачів.\nЯкщо приглушений користувач приєднується, в ньому буде надіслано спеціальну подію \"Приглушеного учасника\".",
+		"explainedUsage": [
+			[
+				"канал",
+				"TextChannel. Ви можете поставити назву каналу, додати його тег або \"тут\", щоб вибрати канал, який було надіслане повідомлення."
+			]
+		],
+		"examples": [
+			"#member-logs",
+			"сюди"
+		],
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Встановити канал видалення журналів.",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "Ця команда допоможе вам налаштувати канал видалення журналу, який отримуватиме повідомлення кожного разу при виході користувача, викинуте або забанено.\nУ випадку з останніми двома, він відправить спеціальні \"Вигнання користувача\" або \"Заблокувати користувача\" заходу.",
+		"explainedUsage": [
+			[
+				"канал",
+				"Текстовий канал. Ви можете поставити назву каналу, позначити її або ввести \"тут\", щоб налаштувати канал, який використовувалась ця команда."
+			]
+		],
+		"examples": [
+			"#member-logs",
+			"сюди"
+		],
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Встановіть канал для оновлення повідомлень.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "Ця команда допоможе вам налаштувати канал журналу оновлень, який отримуватиме повідомлення кожного разу при редагуванні повідомлення.",
+		"explainedUsage": [
+			[
+				"канал",
+				"Текстовий канал. Ви можете поставити назву каналу, позначити її або ввести \"тут\", щоб налаштувати канал, який використовувалась ця команда."
+			]
+		],
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.",
+		"examples": [
+			"#повідомлення-блоги",
+			"сюди"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Встановіть канал видалення повідомлення.",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "Ця команда допоможе вам налаштувати канал видалення повідомлення, який отримає повідомлення кожного разу після видалення повідомлення.",
+		"explainedUsage": [
+			[
+				"канал",
+				"Текстовий канал. Ви можете поставити назву каналу, позначити її або ввести \"тут\", щоб налаштувати канал, який використовувалась ця команда."
+			]
+		],
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nDue to Discord limitations, WolfStar cannot know who deleted a message.",
+		"examples": [
+			"#повідомлення-блоги",
+			"сюди"
+		]
+	},
+	"setmodlogsDescription": "Встановити канал \"лог\" модів.",
+	"setmodlogsExtended": {
+		"usages": [
+			"тут/Текстовий канал"
+		],
+		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
+		"explainedUsage": [
+			[
+				"канал",
+				"TextChannel. Ви можете поставити назву каналу, додати його тег або \"тут\", щоб вибрати канал, який було надіслане повідомлення."
+			]
+		],
+		"reminder": "У зв'язку з обмеженнями Discord, автоматичне виявлення не виявляє копань. Вам необхідно використовувати команду \"викик\", якщо ви хочете позначити їх як форму журналу модерації.",
+		"examples": [
+			"#mod-logs",
+			"сюди"
+		]
+	},
+	"setprefixDescription": "Встановити префікс Вольфґра.",
+	"setprefixExtended": {
+		"usages": [
+			"Префікс"
+		],
+		"extendedHelp": "This command helps you setting up WolfStar's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget WolfStar's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Префікс",
+				"Префікс, який потрібно встановити. Типовий у Вольфзірці - `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Ваш префікс повинен містити лише символи, які можуть писати та тип.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Перевірте інформацію про сервер.",
+	"guildInfoExtended": {
+		"extendedHelp": "Команда на сервері відображає інформацію про сервер, яку було надіслано.\nпоказує кількість каналів, з кількістю для кожної категорії, кількість учасників (від API), власник зі своїм ID користувача, кількість ролей, реєстрація, рівень підтвердження. . між іншими."
+	},
+	"roleInfoDescription": "Перевірка інформації для ролі.",
+	"roleInfoExtended": {
+		"usages": [
+			"Роль",
+			""
+		],
+		"extendedHelp": "Команда ролети відображає інформацію для ролі, такої як її id, ім'я, колір, чи він приховується (відображає окремо) чи ні, вона є посадою в ієрархії, згадується чи ні, скільки членів сказали роль та її права.\nВін відправляє вбудоване повідомлення з кольором ролі.",
+		"explainedUsage": [
+			[
+				"Роль",
+				"Ім'я, назва ролі, згадка або ідентифікатор."
+			]
+		],
+		"examples": [
+			"Адміністратор",
+			"Модератор",
+			""
+		]
+	},
+	"stickyRolesDescription": "Управління приліпленими ролями для користувачів.",
+	"stickyRolesExtended": {
+		"usages": [
+			"додати роль користувача",
+			"видалити роль користувача",
+			"скидання користувача",
+			"показати користувача",
+			"Користувач"
+		],
+		"extendedHelp": "Команда стіконічних ролей дозволяє керувати прикріпленими ролями, вони - це ролі, які зберігаються навіть при від'їзді і застосовуються як тільки вони приєднуються.",
+		"explainedUsage": [
+			[
+				"Дія",
+				"Або ви хочете перевірити стікерні ролі, додайте один, видалити або видалити всі їх."
+			],
+			[
+				"Користувач",
+				"Ціль користувача у всіх діях."
+			],
+			[
+				"Роль",
+				"Роль для додавання або видалення."
+			]
+		],
+		"examples": [
+			"додати Вольфзірку богиня",
+			"show WolfStar",
+			"видалити Вольфзоряного богиня",
+			"reset WolfStar"
+		],
+		"reminder": "Роль членів не буде змінена цією командою, ви повинні додати або видалити їх."
+	},
+	"rolesDescription": "Складіть, отримайте публічні ролі на цьому сервері.",
+	"rolesExtended": {
+		"usages": [
+			"Роль",
+			""
+		],
+		"extendedHelp": "Public roles are roles that are available for everyone.\nAn administrator must configure them with the configuration command.",
+		"explainedUsage": [
+			[
+				"ролей",
+				"Список ролей, які можна не зазначити або не зарахувати. Залиште це поле порожнім, щоб отримати список доступних ролей."
+			]
+		],
+		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.",
+		"examples": [
+			"Програміст дизайнера",
+			"Дизайнер"
+		]
+	}
+}
