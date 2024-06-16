@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} har ikke blitt lokalisert for en-USA ennå.",
+	"defaultLanguage": "Standard språk",
+	"no": "Nei",
+	"none": "Ingen",
+	"unknown": "ukjent",
+	"yes": "Ja",
+	"paginatedMessagePage": "Side",
+	"paginatedMessageWrongUserInteractionReply": "Fjern knappene på denne meldingen. De er bare for {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "DD/MM/ÅÅÅÅ",
+	"dateFormatExplanation": "Måned/dag/år"
+}
