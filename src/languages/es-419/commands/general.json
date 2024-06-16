@@ -27,10 +27,10 @@
 	},
 	"helpDm": "📥 | La lista de comandos a los que tienes acceso ha sido enviada a tus mensajes directos.",
 	"helpNodm": "{{REDCROSS}} | Tienes los mensajes directos deshabilitados, por lo que no pude enviarte la lista de comandos.",
-	"v7Description": "",
+	"v7Description": "Gets the information regarding Skyra v7",
 	"v7Extended": {
-		"extendedHelp": ""
+		"extendedHelp": "This is a **hidden** command used exclusively to send a notice to everyone who tries to use commands that have been removed according to [SKyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) plans."
 	},
-	"v7Message": "",
-	"v7NayreMessage": ""
+	"v7Message": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
+	"v7NayreMessage": "Hello there! Thank you for using this command, however, it was removed and will be either redesigned as part of Nayre's Acryss RPG as mentioned in [WolfStar v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖"
 }
