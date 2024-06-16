@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Wyświetlanie jednej kategorii na stronie. Masz problemy z osadzoną? Uruchom `{{prefix}}help --all` dla pełnej listy w DM.",
+	"helpCommandCount_one": "Polecenie {{count}}",
+	"helpCommandCount_other": "Komendy {{count}}",
+	"helpData": {
+		"footer": "Polecenie dla {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Wyświetla wszystkie polecenia lub opis jednego.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--kategorie",
+			"--all",
+			"Nazwa Kategorii",
+			"Strona",
+			"Nazwa komendy"
+		],
+		"extendedHelp": "Polecenie pomocy pokazuje paginowaną listę wszystkich poleceń według ich kategorii lub rozszerzone informacje komendy jeśli są określone.\n\nJeśli używasz `--categories` lub `--cat`, możesz uzyskać listę wszystkich kategorii i liczbę poleceń, z których każdy ma do dyspozycji.",
+		"reminder": "Komenda pomocy **tylko** pokazuje polecenia, których możesz użyć. Aby uzyskać pełną listę, odwiedź <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--kot",
+			"--all",
+			"Moderacja",
+			"12",
+			"pomoc"
+		]
+	},
+	"helpDm": "📥 | Lista poleceń, do których masz dostęp, została wysłana do DM.",
+	"helpNodm": "{{REDCROSS}} | Masz wyłączone DM, więc nie mogłem wysłać Ci listy poleceń.",
+	"v7Description": "Pobiera informacje dotyczące Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "To **ukryte** polecenie używane wyłącznie do wysyłania powiadomienia do każdego, kto próbuje użyć poleceń, które zostały usunięte zgodnie z [SKyra v7](https://skyra. plany otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)."
+	},
+	"v7Message": "Witaj! Dziękujemy za użycie tego polecenia, jednak zostało ono usunięte z powodu planów [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). Link zawiera wyjaśnienie dlaczego `{{command}}` został usunięty.\n\nPrzepraszamy za niedogodności i dziękujemy za używanie WolfStar. 💖",
+	"v7NayreMessage": "Witaj! Dziękuję jednak za skorzystanie z tej komendy został usunięty i zostanie przeprojektowany jako część RPG Acryss Nayre, jak wspomniano w [WolfStar v7](https://skyra. plany otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8).\n\nPrzepraszamy za niedogodności i dziękujemy za używanie WolfStar. 💖"
+}
