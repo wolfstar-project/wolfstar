@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Displaying one category per page. Have issues with the embed? Run `{{prefix}}help --all` for a full list in DMs.",
+	"helpCommandCount_one": "{{count}} kommando",
+	"helpCommandCount_other": "{{count}} kommandoer",
+	"helpData": {
+		"footer": "Kommando hjelp for {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Viser alle kommandoer eller beskrivelse av en.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--kategorier",
+			"Alle",
+			"KategoriNavn",
+			"Side",
+			"Kommandonavn"
+		],
+		"extendedHelp": "Hjelpekommandoen viser en paginert liste over alle kommandoer etter deres kategorier, eller utvidet informasjon for en kommando hvis spesifisert.\n\nHvis du bruker `--categories` eller `--cat`, kan du få listen over alle kategorier, og antall kommandoer hver av dem har.",
+		"reminder": "Hjelpekommandoen **bare** viser kommandoene du kan bruke. For full liste, besøk <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--katt",
+			"Alle",
+			"Moderering",
+			"12",
+			"hjelp"
+		]
+	},
+	"helpDm": "📥 Listen over kommandoer du har tilgang til har blitt sendt til din DMs.",
+	"helpNodm": "Du har deaktivert feilmeldinger i {{REDCROSS}} slik at jeg ikke kunne sende deg lista med kommandoer.",
+	"v7Description": "Henter informasjonen om Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Dette er en **skjulte** kommando som brukes utelukkende til å sende en melding til alle som prøver å bruke kommandoer som har blitt fjernet i henhold til [SKyra v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) planer."
+	},
+	"v7Message": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
+	"v7NayreMessage": "Hei der! Takk for at du bruker denne kommandoen Den ble fjernet og vil enten bli redesignet som en del av Nayre's Acryss RPG som nevnt i [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s planer.\n\nBeklager ulempen, og takk for din bruk av WolfStar. 💖"
+}
