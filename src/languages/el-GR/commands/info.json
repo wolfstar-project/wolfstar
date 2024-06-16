@@ -1,0 +1,15 @@
+{
+	"name": "πληροφορίες",
+	"description": "Παρέχει πληροφορίες σχετικά με μένα, και συνδέσμους για την προσθήκη του bot και τη συμμετοχή στο διακομιστή υποστήριξης",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) Το {{VERSION}} είναι ένα bot σχεδιασμένο για να βοηθήσει στον έλεγχο του διακομιστή σας. Χρησιμοποιώ το [Πλαίσιο Sapphire (https://sapphirejs.dev) για τη βιβλιοθήκη [Discord.js library](https://discord. s.org).\n- [Πολιτική Απορρήτου](https://wolfstar.rocks/privacy) format@@4[Όροι Υπηρεσίας](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "Στατιστικά",
+	"embedFieldApplicationValue": "- **Χρήστες**: {{users, number}}\n- **Διακομιστές**: {{guilds, number}}\n- **Κανάλια **: {{channels, number}}\n- **Discord. s**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "Χρόνος",
+	"embedFieldUptimeValue": "- **Host**: {{host}}\n- **Client**: {{client}}",
+	"embedFieldServerUsageTitle": "Χρήση Διακομιστή",
+	"embedFieldServerUsageValue": "- **CPU Usage**: {{cpu}}\n- **Memory**: {{heapUsed}}MB (Total: {{heapTotal}}MB)",
+	"buttonInvite": "Πρόσθεσέ με στον διακομιστή σου!",
+	"buttonSupport": "Διακομιστής υποστήριξης",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "Δωρεά"
+}
