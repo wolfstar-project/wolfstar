@@ -1,0 +1,6 @@
+{
+	"aborted": "Kehys keskeytettiin onnistuneesti.",
+	"invalidIndex": "Tämä luku oli vaihteluvälin ulkopuolella, keskeytettiin nopea.",
+	"invalidNumber": "Odotin sinun antavan minulle (yhden numeron) numeron, sai perunan.",
+	"matches": "Löysin useita otteluja! **Valitse numero sisällä 0 ja {{matches}}**:\n{{codeblock}}\nKirjoita **ABORT** jos haluat poistua kehotteesta."
+}
