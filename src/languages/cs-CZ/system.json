@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Při zasílání zpráv Discordu jsem měl malou chybu v síti, prosím spusťte tento příkaz znovu!",
+	"fetchBansFail": "Nepodařilo se načíst zákazy. Mám oprávnění **{{ADMINISTRATOR, permissions}}**?",
+	"helpTitles": {
+		"aliases": "🖇️ | **Aliasy**",
+		"usages": "📝 | **použití příkazu**",
+		"extendedHelp": "🔍 | **Rozšířená nápověda**",
+		"explainedUsage": "⚙️ | **Vysvětlené použití**",
+		"possibleFormats": "🔢 | **Možné formáty**",
+		"examples": "🔗 | **Příklady**",
+		"reminders": "⏰ | **Připomenut**"
+	},
+	"jumpTo": "Přejít na zprávu <unk>",
+	"loading": [
+		"{{LOADING}} Watching hamsters run...",
+		"{{LOADING}} Nalezení lidí na skryt a hledat...",
+		"{{LOADING}} se pokouší přijít na tento příkaz...",
+		"{{LOADING}} Načítání dat z cloudu...",
+		"{{LOADING}} Kalibrace čoček...",
+		"{{LOADING}} Přehrává skále, papír, nůžky...",
+		"{{LOADING}} Tuning in to the right frequencies...",
+		"{{LOADING}} Zmírnění štětů..."
+	],
+	"prefixReminder": "Prefix na tomto serveru je nastaven na: `{{prefix}}`"
+}
