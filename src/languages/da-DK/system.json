@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Jeg havde en lille netværksfejl under beskeder til Discord, kør venligst denne kommando igen!",
+	"fetchBansFail": "Kunne ikke hente bans. Har jeg **{{ADMINISTRATOR, permissions}}** tilladelsen?",
+	"helpTitles": {
+		"aliases": "🖇️ ¤ **Aliaser**",
+		"usages": "📝 - **Kommandobrug**",
+		"extendedHelp": ":magnifying_glass_tilted_left **Udvidet Hjælp**",
+		"explainedUsage": ":gear **Forklaret brug**",
+		"possibleFormats": "🔢 ¤ **Mulige formater**",
+		"examples": "🔗 ● **Eksempler**",
+		"reminders": ":alarm_ur: ¤ **Påmindelse**"
+	},
+	"jumpTo": "Gå til Besked ►",
+	"loading": [
+		"{{LOADING}} Ser hamstere kører...",
+		"{{LOADING}} Find personer på skjul...",
+		"{{LOADING}} Prøver at finde ud af denne kommando...",
+		"{{LOADING}} Henter data fra skyen...",
+		"{{LOADING}} Kalibrerer linser...",
+		"{{LOADING}} Spille rock, papir, saks...",
+		"{{LOADING}} Tuning ind til de rigtige frekvenser...",
+		"{{LOADING}} Reticulating splines..."
+	],
+	"prefixReminder": "Præfikset på denne server er sat til: `{{prefix}}`"
+}
