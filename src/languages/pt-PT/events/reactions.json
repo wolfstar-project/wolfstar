@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Reagiu com {{emoji}} em {{message}}",
+	"reactionFooter": "Primeira Reação Adicionada",
+	"filterFooter": "Reação filtrada",
+	"filter": "{{REDCROSS}} Olá {{user}}, por favor não adicione essa reação!",
+	"selfRoleHierarchy": "{{REDCROSS}} Meu cargo precisa ser mais alto que todas as funções autoatribuíveis, caso contrário não posso concedê-los para pessoas!"
+}
