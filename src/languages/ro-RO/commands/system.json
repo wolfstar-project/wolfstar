@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Evaluează arbitrar Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Expresie"
+		],
+		"extendedHelp": "Comanda eval evaluează codul ca înăuntru, orice eroare aruncată de el va fi gestionată.\nDe asemenea, folosește și caracteristica steagurilor. Scrie --silent, --depth=number or --async pentru a personaliza outputul.\nSteagul --wait schimbă timpul pe care îl va rula evalul. Implicit este de 60 de secunde. Acceptă timpul în milisecunde.\nSteagul --silențios va face ca acesta să nu fie afișat nimic.\nSteagul --depth acceptă un număr, de exemplu, --depth=2, pentru a personaliza adâncimea util.inspect.\nSteagul --async va împacheta codul într-o funcţie async unde te poţi bucura de utilizarea aşteptării, totuşi, dacă vrei să returnezi ceva, vei avea nevoie de cuvântul cheie de returnare\nSteagul --showHidden va activa opțiunea afișată în utilizare. nespecifică.\nSteagurile de limbă și --lang permit diferite evidențieri de sintaxă pentru ieșire.\nSteagul --json converteşte ieşirea în json\nSteagul --no-timeout dezactivează expirarea\nDacă rezultatul este prea mare, va trimite rezultatul sub formă de fișier.",
+		"explainedUsage": [
+			[
+				"Expresie",
+				"Expresia de evaluat"
+			]
+		],
+		"examples": [
+			"msg.autor.username;",
+			"1 + 1;"
+		],
+		"reminder": "Rezervat pentru proprietarii de bot."
+	},
+	"evalTimeout": "ATENȚIE: A trecut mai mult decât {{seconds}} secunde.",
+	"evalError": "**Eroare**:{{output}}\n**Tip**:{{type}}\n{{time}}",
+	"dmNotSent": "Nu vă pot trimite un mesaj în mesajele personale, m-ați blocat?",
+	"dmSent": "V-am trimis mesajul în mesajele personale.",
+	"reboot": "{{LOADING}} Repornire...",
+	"rebootDescription": "Repornește botul.",
+	"rebootExtended": {
+		"extendedHelp": "Botul bate bum, apoi botul se reînvie.",
+		"reminder": "Rezervat pentru proprietarii de bot."
+	}
+}
