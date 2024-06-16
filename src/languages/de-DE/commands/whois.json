@@ -1,0 +1,15 @@
+{
+	"name": "wer",
+	"description": "Stellt Informationen über einen Discord Benutzer bereit",
+	"contextMenuName": "Informationen abrufen",
+	"userName": "benutzer",
+	"userDescription": "Der Benutzer, über den Informationen erhalten werden",
+	"rolesTitle_one": "Rolle [1]",
+	"rolesTitle_other": "Rollen [{{count, number}}]",
+	"permissionsTitle": "Schlüsselberechtigungen",
+	"permissionsAll": "Alle Berechtigungen",
+	"embedDescription": "**Benutzer sind**: {{createdAt}}",
+	"embedMemberDescription": "**Mitglied sind**: {{joinedAt}}",
+	"buttonAvatar": "Avatar",
+	"buttonProfile": "Profil"
+}
