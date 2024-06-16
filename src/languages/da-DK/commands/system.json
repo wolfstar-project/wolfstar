@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Evaluerer vilkårlig Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Udtryk"
+		],
+		"extendedHelp": "Den eval kommando evaluerer kode som-in, enhver fejl smidt fra den vil blive håndteret.\nDen bruger også flags funktion. Skriv -- silent, -- depth=number or -- async to customize the output.\nThe -- wait flag changes the time the eval will run. (Automatic Copy) Standard er 60 sekunder. Accepterer tid i millisekunder.\n-- silent flag vil gøre det output intet.\n--depth flaget accepterer et nummer, for eksempel, --depth=2, for at tilpasse util.inspect's dybde.\n-- async flaget vil ombryde koden til en async funktion, hvor du kan nyde brugen af vente, dog, Hvis du ønsker at returnere noget, skal du bruge returnøgleordet\nDet -- showHidden flag vil aktivere den showHidden indstilling i util. ikke spect.\nflagene --lang og --language tillader forskellige syntaksfremhævninger for output.\n--json flaget konverterer output til json\nflaget --no-timeout deaktiverer timeout\nHvis outputtet er for stort, det vil sende output som en fil.",
+		"explainedUsage": [
+			[
+				"Udtryk",
+				"Udtrykket der skal evalueres"
+			]
+		],
+		"examples": [
+			"msg.author.username",
+			"1 + 1;"
+		],
+		"reminder": "Reserveret til bot ejere."
+	},
+	"evalTimeout": "TIDDER: Tager længere end {{seconds}} sekunder.",
+	"evalError": "**Fejl**:{{output}}\n**Type**:{{type}}\n{{time}}",
+	"dmNotSent": "Jeg kan ikke sende dig en besked i DMs, blokerede du mig?",
+	"dmSent": "Jeg har sendt dig beskeden i DMs.",
+	"reboot": "{{LOADING}} Genstarter...",
+	"rebootDescription": "Genstarter boten.",
+	"rebootExtended": {
+		"extendedHelp": "Den bot går boom, så bot går genoplive.",
+		"reminder": "Reserveret til bot ejere."
+	}
+}
