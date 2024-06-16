@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Utilisateur rejoint",
+	"guildMemberAddDescription": "{{user}} a rejoint Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Rôles ajoutés**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Rôle ajouté**: {{addedRoles}}",
+	"guildMemberAddMute": "Utilisateur muet a rejoint",
+	"guildMemberBanned": "Utilisateur banni",
+	"guildMemberKicked": "Utilisateur expulsé",
+	"guildMemberNoUpdate": "Aucune mise à jour détectée",
+	"guildMemberRemove": "Utilisateur à gauche",
+	"guildMemberRemoveDescription": "{{user}} a rejoint ce serveur *il y a une heure inconnue*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} a rejoint ce serveur {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Rôles supprimés** : {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Rôle supprimé** : {{removedRoles}}",
+	"guildMemberSoftBanned": "Utilisateur Softban",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Suivant** : `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Précédent** : Désactivé",
+	"nameUpdatePreviousWasSet": "**Précédent** : `{{previousName}}`",
+	"nicknameUpdate": "Pseudo modifié",
+	"roleUpdate": "Rôles modifiés",
+	"usernameUpdate": "Nom d'utilisateur modifié"
+}
