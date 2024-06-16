@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Je suis désolé, j'ai essayé d'effectuer une action pour un salon inconnu de Discord et a échoué, cette erreur a été signalée aux développeurs.",
+	"genericUnknownGuild": "Je suis désolé, j'ai essayé d'effectuer une action pour un serveur inconnu de Discord et a échoué, cette erreur a été signalée aux développeurs.",
+	"genericUnknownMember": "Je suis désolé, j'ai essayé d'effectuer une action pour un membre inconnu de Discord et a échoué, cette erreur a été signalée aux développeurs.",
+	"genericUnknownMessage": "Je suis désolé, j'ai essayé d'effectuer une action pour un message inconnu de Discord et a échoué, cette erreur a été signalée aux développeurs.",
+	"genericUnknownRole": "Je suis désolé, j'ai essayé d'effectuer une action pour un rôle inconnu de Discord et a échoué, cette erreur a été signalée aux développeurs.",
+	"genericMissingAccess": "Je suis désolé, j'ai essayé d'effectuer une action pour une ressource sans les permissions nécessaires et a échoué, cette erreur a été signalée aux développeurs.",
+	"genericDiscordInternalServerError": "Oups, Discord s'est cassé, veuillez réessayer plus tard.",
+	"genericDiscordGateway": "Oups, le réseau a du mal à communiquer avec Discord, veuillez réessayer plus tard.",
+	"genericDiscordUnavailable": "Oups, Discord est actuellement indisponible, veuillez réessayer plus tard.",
+	"guildBansEmpty": "Il n'y a aucun bannissement enregistré sur ce serveur.",
+	"guildBansNotFound": "J'ai essayé et je n'ai pas trouvé cet utilisateur dans la liste des bannissements. Êtes-vous sûr que cet utilisateur est banni ?",
+	"guildMemberNotVoicechannel": "Je ne peux pas exécuter cette action dans un membre qui n'est pas connecté à un salon vocal.",
+	"guildWarnNotFound": "Je n'ai pas réussi à récupérer cet avertissement. Soit il n'existe pas, soit il n'est pas de type avertissement, soit il a été appelé.",
+	"modlogTimed": "Ce journal de modération est déjà expiré. Expire dans {{remaining, duration}}",
+	"unexpectedIssue": "Une erreur inattendue est apparue ! Annulation sécurisée de cette commande ...",
+	"userNotInGuild": "Cet utilisateur n'est pas sur ce serveur."
+}
