@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Het spijt me, ik probeerde een actie uit te voeren voor een kanaal onbekend naar Discord en is mislukt, deze fout is gerapporteerd aan de ontwikkelaars.",
+	"genericUnknownGuild": "Het spijt me, ik heb geprobeerd een actie uit te voeren voor een bij Discord onbekende server en is mislukt, deze fout is gemeld aan de ontwikkelaars.",
+	"genericUnknownMember": "Het spijt me, ik probeerde een actie uit te voeren voor een lid onbekend aan Discord en is mislukt, deze fout is gerapporteerd aan de ontwikkelaars.",
+	"genericUnknownMessage": "Het spijt me, ik probeerde een actie uit te voeren voor een bericht onbekend aan Discord en is mislukt, deze fout is gerapporteerd aan de ontwikkelaars.",
+	"genericUnknownRole": "Het spijt me, ik probeerde een actie uit te voeren voor een rol die onbekend is aan Discord en is mislukt, deze fout is gemeld aan de ontwikkelaars.",
+	"genericMissingAccess": "Het spijt me, ik heb geprobeerd een actie voor een resource uit te voeren zonder de benodigde machtigingen en is mislukt, deze fout is gemeld aan de ontwikkelaars.",
+	"genericDiscordInternalServerError": "Oeps, Discord is kapot, probeer het later opnieuw.",
+	"genericDiscordGateway": "Oeps, het netwerk heeft moeite om te communiceren met Discord, probeer het later opnieuw.",
+	"genericDiscordUnavailable": "Oeps, Discord is momenteel niet beschikbaar, probeer het later opnieuw.",
+	"guildBansEmpty": "Er zijn geen bans geregistreerd in deze server.",
+	"guildBansNotFound": "Ik heb geprobeerd en het is niet gelukt om deze gebruiker uit de bloklijst te vinden. Weet je zeker dat deze gebruiker geblokkeerd is?",
+	"guildMemberNotVoicechannel": "Ik kan deze actie niet uitvoeren in een lid dat niet verbonden is met een spraakkanaal.",
+	"guildWarnNotFound": "Ik ben er niet in geslaagd om die waarschuwing te krijgen. Of het bestaat niet, het is niet van het type waarschuwing, of het is in beroep gegaan.",
+	"modlogTimed": "Deze moderatie log is al getimed. Verloopt in {{remaining, duration}}",
+	"unexpectedIssue": "Er is een onverwachte fout opgepakt! Deze opdracht wordt vernietigd...",
+	"userNotInGuild": "Deze gebruiker is niet in deze server."
+}
