@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Abandonată",
+	"permissionNodesHigher": "{{REDCROSS}} Nu puteți modifica sau previzualiza nodurile de permisiune pentru această țintă.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Nu puteți permite comenzi pentru rolul `@everyone`.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Tip nevalid, se aștepta fie de `allow` sau `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} a adăugat comanda în modulul de permisiune cu succes.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Modulul de permisiune selectat nu există.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Comanda selectată nu există în modulul de permis.",
+	"permissionNodesRemove": "{{GREENTICK}} a eliminat comanda din modulul de permisiune cu succes.",
+	"permissionNodesReset": "{{GREENTICK}} a eliminat cu succes toate comenzile din modulul permisiune.",
+	"permissionNodesShowName": "Permisiuni pentru: __{{name}}__",
+	"permissionNodesShowAllow": "**Permis**: {{allow}}",
+	"permissionNodesShowDeny": "**Interzis**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Canale",
+		"MEMBERS": "Membri",
+		"OTHER": "Altele"
+	},
+	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Voce, **{{categories}}** categorii.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** după **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** member(s)\n• Owner: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Roluri: **{{size}}**\n• Creat: **{{createdAt}}**\n• Nivel de verificare: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "Imagine Banner",
+	"guildInfoIcon": "Imagine Pictograma",
+	"guildInfoSplash": "Imagine Splash",
+	"guildInfoDiscoverySplash": "Imagine Splash Descoperă",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Permisiuni"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nNume: **{{role.name}}**\nCuloare: **{{role.hexColor}}**\nHoisted: **{{hoisted}}**\nPoziţie: **{{role.rawPosition}}**\nMenționabil: **{{mentionable}}**",
+	"roleInfoAll": "Toate permisiunile acordate.",
+	"roleInfoNoPermissions": "Permisiuni neacordate.",
+	"manageCommandAutoDeleteShowEmpty": "Nu există nici o comandă autoștergere configurată acum.",
+	"manageCommandAutoDeleteShow": "Toate comenzile autoșterse configurate:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Succes! Toate comenzile de succes în {{channel}} vor fi șterse după {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Succes! Comenzile nu vor mai fi șterse automat în {{channel}}!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Canalul {{channel}} nu a fost configurat pentru a șterge automat mesajele!",
+	"manageCommandAutoDeleteReset": "Toate stergerile automate de comandă au fost resetate.",
+	"manageCommandChannelShow": "Lista comenzilor dezactivate în {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Lista de comenzi dezactivate pentru canalul specificat este goală!",
+	"manageCommandChannelAddAlreadyset": "Comanda pe care încercați să o dezactivați este deja dezactivată!",
+	"manageCommandChannelAdd": "Comanda {{command}} a fost dezactivată cu succes pentru canalul {{channel}}!",
+	"manageCommandChannelRemoveNotset": "Comanda pe care încercați să o activați nu a fost dezactivată pentru {{channel}}.",
+	"manageCommandChannelRemove": "Comanda {{command}} a fost activată cu succes pentru canalul {{channel}}!",
+	"manageCommandChannelResetEmpty": "Acest canal nu avea nicio comandă dezactivată, așa că am decis să nu fac nimic.",
+	"manageCommandChannelReset": "Ai activat cu succes toate comenzile dezactivate în {{channel}}, bucură-te de el!",
+	"manageReactionRolesShowEmpty": "Nu există roluri de reacție configurate în acest server.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Succes! Acum voi da rolul când oamenii reacționează cu {{emoji}} la orice mesaj de la {{channel}}!",
+	"manageReactionRolesAddPrompt": "Ascultă acum! Te rog reacționează la un mesaj și voi lega reacția cu rolul!",
+	"manageReactionRolesAddMissing": "Am aşteptat, dar se pare că nu aţi reacţionat la un mesaj.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Succes! Acum voi da rolul când oamenii reacționează cu {{emoji}} la {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Rolul de reacție pe care l-ați specificat nu există.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Succes! Nu voi mai da rolul când oamenii reacționează cu {{emoji}} la {{url}}!",
+	"manageReactionRolesResetEmpty": "Nu au fost configurate roluri de reacție.",
+	"manageReactionRolesReset": "{{GREENTICK}} a eliminat cu succes toate rolurile de reacție.",
+	"configurationEquals": "Configurat cu succes: nu au fost făcute modificări.",
+	"setIgnoreChannelsSet": "Se ignoră acum toate intrările de comenzi de la {{channel}}.",
+	"setIgnoreChannelsRemoved": "Ascultă toate intrările de comenzi de la {{channel}} acum.",
+	"setImageLogsSet": "Setarea cu succes a canalului de jurnale imagini în {{channel}}.",
+	"setMemberAddLogsSet": "Setarea cu succes a canalului de adăugare de jurnale la {{channel}}.",
+	"setMemberRemoveLogsSet": "Setarea cu succes a canalului de ștergere a jurnalelor la {{channel}}.",
+	"setMessageUpdateLogsSet": "Setarea cu succes a canalului de actualizare a jurnalelor de mesaje în {{channel}}.",
+	"setMessageDeleteLogsSet": "Setarea cu succes a canalului de ștergere a mesajelor în {{channel}}.",
+	"setModLogsSet": "Setarea cu succes a canalului de modlog-uri la {{channel}}.",
+	"setPrefixSet": "Setat cu succes prefixul la `{{prefix}}`. Utilizează `{{prefix}}setare Prefix NewPrefix` pentru a-l schimba din nou.",
+	"stickyRolesNotExists": "Utilizatorul {{user}} nu are roluri lipicioase sau nu are unul specificat.",
+	"stickyRolesReset": "Toate rolurile lipicioase au fost eliminate cu succes din {{user}}.",
+	"stickyRolesRemove": "Rolul specificat a fost eliminat cu succes din {{user}}.",
+	"stickyRolesAdd": "Rolul specificat a fost adăugat cu succes la {{user}}.",
+	"stickyRolesShowEmpty": "Nu sunt roluri lipicioase de afișat.",
+	"stickyRolesShowSingle": "Roluri lipicioase pentru **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Pregătiți sistemul de amuțire.",
+	"createMuteExtended": {
+		"extendedHelp": "Această comandă pregătește sistemul de mute prin crearea unui rol numit `muted`, și configurarea lui în setările serverului. Această comandă modifică, de asemenea, toate canalele (dacă este posibil) permisiuni și dezactivează permisiunea **{{SEND_MESSAGES, permissions}}** în canalele de text și **{{CONNECT, permissions}}** în canalele de voce pentru rolul menționat."
+	},
+	"permissionNodesDescription": "Configurați nodurile de permisiune pentru acest server.",
+	"permissionNodesExtended": {
+		"usages": [
+			"adaugă rolul/membrul permite/refuzul comenzii",
+			"elimină rolul/membrul permite/refuzul comenzii",
+			"reset Role/Member",
+			"arată rolul/membrul",
+			"arată",
+			"Rol/Membru"
+		],
+		"extendedHelp": "Nodurile de permisiuni sunt suprascrieri per utilizator și per rol. Ele sunt utilizate atunci când sistemul de permisiuni inclus nu este suficient.\nDe exemplu, pe unele servere doresc să dea personalului permisiunea de a folosi amuțitul și avertizarea, dar nu interzic și altele (rezervate moderatorilor); si doar avertizare este disponibila pentru configurarea permisiunii la nivel de personal, asa ca imi poti spune sa permit comanda de mute pentru rolul de membru al echipei acum.",
+		"explainedUsage": [
+			[
+				"Acțiune",
+				"Fie `add`, `remove`, `reset`, fie `show`. Implicit la `show`."
+			],
+			[
+				"Target",
+				"Fie un nume de rol, fie un nume de utilizator, care permite ID-uri și menționări pentru fii."
+			],
+			[
+				"Tip",
+				"Fie `allow` fie `deny`."
+			],
+			[
+				"Comanda",
+				"Numele comenzii pentru a permite sau refuza."
+			]
+		],
+		"examples": [
+			"adaugă personal permite avertizarea",
+			"adaugă moderatori refuzați interzicerea",
+			"înlătură avertizarea de autorizare a personalului",
+			"resetează personalul",
+			"arată personalul"
+		],
+		"reminder": "Proprietarul serverului nu poate avea nici o acțiune, nici rolul `fiecăruia` nu poate avea comenzi."
+	},
+	"managecommandautodeleteDescription": "Gestionați temporizatorul de ștergere pe canal.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"adaugă TextChannel Secunde",
+			"elimina TextChannel",
+			"reset",
+			"arată",
+			""
+		],
+		"extendedHelp": "Această comandă gestionează comanda pe canal a acestui server auto-ștergere cronometru, acesta servește bine pentru a lăsa un canal curat din comenzi.",
+		"explainedUsage": [
+			[
+				"adaugă",
+				"Adăugați un temporizator de ștergere automată pentru canalul specificat."
+			],
+			[
+				"elimină",
+				"Elimină auto-cronometrul din canalul specificat."
+			],
+			[
+				"reset",
+				"Șterge toate temporizatoarele pentru ștergerea automată."
+			],
+			[
+				"arată",
+				"Arată cronometrul ștergerii automate pentru toate canalele."
+			]
+		],
+		"reminder": "Argumentul canalului este opțional, implicit la canalul mesajului, dar folosește căutarea neclară atunci când este posibil.",
+		"examples": [
+			"arată",
+			"adaugă 4s #general",
+			"elimină #general",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Gestionați lista de comenzi blocate per canal.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"adaugă comanda TextChannel",
+			"elimina comanda TextChannel",
+			"resetare TextChannel",
+			"arată canalul TextChannel"
+		],
+		"extendedHelp": "Această comandă gestionează lista de comenzi blocată a acestui server pe canal, servește bine pentru a dezactiva anumite comenzi pe care nu doriți să le utilizați în anumite canale (pentru a dezactiva o comandă la nivel global, utilizaţi cheia de setări `disabledCommands` pentru a dezactiva în toate canalele.",
+		"explainedUsage": [
+			[
+				"arată [channel]",
+				"Arată lista de comenzi blocate în canalul specificat."
+			],
+			[
+				"adaugă [channel] <command>",
+				"Adaugă o comandă la lista de comenzi blocate a canalului specificat."
+			],
+			[
+				"elimină [channel] <command>",
+				"Elimină o comandă din lista de comenzi blocate a canalului specificat."
+			],
+			[
+				"reset [channel]",
+				"Șterge lista de comenzi blocate în canalul specificat."
+			]
+		],
+		"reminder": "Argumentul canalului este opțional, dar folosește căutarea neclară atunci când este posibil.",
+		"examples": [
+			"adaugă #profil general",
+			"elimină profilul #general",
+			"resetare #generală",
+			"arată #general"
+		]
+	},
+	"manageReactionRolesDescription": "Gestionează rolurile de reacție pentru acest server.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"adaugă rol",
+			"adaugă Rol TextChannel Emoji",
+			"elimină Mesaj Rol",
+			"reset",
+			"arată"
+		],
+		"extendedHelp": "Setează perfect rolurile de reacție în serverul tău! La adăugarea rolurilor de reacție, Vă ascult reacţiile timp de 5 minute şi legez prima reacţie de la voi alături de canal şi de mesaj; cu rolul specificat.\nÎn caz contrar, dacă un canal este specificat, nu va fi creat un prompt, iar rolul de reacție va fi legat de toate mesajele canalului.\n\nCea mai bună modalitate de a adăuga noi roluri de reacție este folosind `add @role`. Dacă preferați să nu legați reacția la un anumit mesaj, atunci folosiți `add @rol #canal emoji`",
+		"explainedUsage": [
+			[
+				"arată",
+				"Recuperează lista cu toate rolurile de reacție."
+			],
+			[
+				"adaugă <role>",
+				"Adaugă un rol de reacție care leagă primul mesaj reacționat de la executarea cu rolul."
+			],
+			[
+				"elimină <role> <message>",
+				"Elimină un rol de reacție, folosiți `show` pentru a obține o listă cu ei."
+			],
+			[
+				"reset",
+				"Elimină toate rolurile de reacție."
+			]
+		],
+		"examples": [
+			"adaugă @rol",
+			"adaugă @rol emoji",
+			"elimină @rol 123456789012345678",
+			"reset",
+			"arată"
+		]
+	},
+	"rolesAdded": "Următoarele roluri au fost adăugate la profilul dumneavoastră: `{{roles}}`",
+	"rolesAuditlog": "Autorizat: comanda de management al rolului public - Roluri.",
+	"rolesListEmpty": "Acest server nu are un rol dat ca un rol public.",
+	"rolesListTitle": "Lista rolurilor publice",
+	"rolesNotManageable": "Următoarele roluri nu pot fi date de mine din cauza poziției lor de rol ierarhic: `{{roles}}`",
+	"rolesNotPublic": "Următoarele roluri nu sunt publice: `{{roles}}`",
+	"rolesRemoved": "Următoarele roluri au fost eliminate din profilul dumneavoastră: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Setaţi un canal la lista de canale ignorate. (Automatic Translation)",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configurați canale ignorate. Un canal ignorat este un canal în care nimeni în afară de moderatori nu pot utiliza comenzile WolfStar.\nSpre deosebire de eliminarea permisiunii **{{SEND_MESSAGES, permissions}}**, WolfStar mai poate trimite (și, prin urmare, să execute comenzi), care permite moderatorilor să folosească comenzi de moderare în canal.\nFolosește acest lucru dacă dorești să interzici utilizarea comenzilor de către bot într-un canal specific.",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poţi pune numele canalului, eticheta sau scrie \"aici\" pentru a selecta canalul pe care a fost trimis mesajul."
+			]
+		],
+		"reminder": "Nu poți seta același canal de două ori, WolfStar îl va elimina.",
+		"examples": [
+			"#general",
+			"aici"
+		]
+	},
+	"setImageLogsDescription": "Setaţi jurnalul de imagini canal.",
+	"setImageLogsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configurați canalul de jurnal al imaginii. Ori de câte ori un membru trimite o imagine atașată, va trimite un mesaj încorporat cu reîncărcarea atașamentului.\nToate mesajele sunt în încorporări așa că va trebui să activați permisiunea **{{EMBED_LINKS, permissions}}** pentru WolfStar.",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poţi pune numele canalului, eticheta sau scrie \"aici\" pentru a selecta canalul pe care a fost trimis mesajul."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"aici"
+		]
+	},
+	"setMemberAddLogsDescription": "Setaţi membrul pentru a adăuga jurnale. (Automatic Translation)",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configurați membrul adaugă jurnalul canal, care va primi un mesaj de fiecare dată când un utilizator se alătură.\nDacă un utilizator amuțit se alătură, acesta va trimite un eveniment special \"Muted Membru alăturat\".",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poţi pune numele canalului, eticheta sau scrie \"aici\" pentru a selecta canalul pe care a fost trimis mesajul."
+			]
+		],
+		"examples": [
+			"#membri-log-uri",
+			"aici"
+		],
+		"reminder": "Toate mesajele sunt în încorporări așa că va trebui să activați permisiunea **{{EMBED_LINKS, permissions}}** pentru WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Setaţi membrul şterge jurnalul. (Automatic Translation)",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configuraţi membrul pentru a şterge jurnalul, care va primi un mesaj de fiecare dată când un utilizator pleacă, este dat afară sau este interzis.\nÎn cazul ultimelor două, acesta va trimite un eveniment special \"Kicked\" sau \"Utilizator interzis\".",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poți fie să pui numele canalului, să îl etichetezi sau să tastezi \"aici\" pentru a configura canalul în care a fost folosită comanda."
+			]
+		],
+		"examples": [
+			"#membri-log-uri",
+			"aici"
+		],
+		"reminder": "Toate mesajele sunt în încorporări așa că va trebui să activați permisiunea **{{EMBED_LINKS, permissions}}** pentru WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Setaţi jurnalul de actualizări pentru mesaje. (Automatic Translation)",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configurați canalul de actualizare a mesajelor, care va primi un mesaj de fiecare dată când un mesaj este editat.",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poți fie să pui numele canalului, să îl etichetezi sau să tastezi \"aici\" pentru a configura canalul în care a fost folosită comanda."
+			]
+		],
+		"reminder": "Toate mesajele sunt în încorporări așa că va trebui să activați permisiunea **{{EMBED_LINKS, permissions}}** pentru WolfStar.",
+		"examples": [
+			"#mesaje-log-uri",
+			"aici"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Setaţi jurnalul de ştergere mesaje. (Automatic Translation)",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configurați canalul de jurnal pentru ștergerea mesajelor, care va primi un mesaj de fiecare dată când un mesaj este șters.",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poți fie să pui numele canalului, să îl etichetezi sau să tastezi \"aici\" pentru a configura canalul în care a fost folosită comanda."
+			]
+		],
+		"reminder": "Toate mesajele sunt în încorporări așa că va trebui să activați permisiunea **{{EMBED_LINKS, permissions}}** pentru WolfStar.\nDin cauza limitărilor Discord, WolfStar nu poate ști cine a șters un mesaj.",
+		"examples": [
+			"#mesaje-log-uri",
+			"aici"
+		]
+	},
+	"setmodlogsDescription": "Setaţi modul jurnal. (Automatic Translation)",
+	"setmodlogsExtended": {
+		"usages": [
+			"aici/TextChannel"
+		],
+		"extendedHelp": "Această comandă vă ajută să configuraţi modul jurnal canal. Un canal de jurnal de mostre trimite doar rapoarte de caz indexate de un număr de cazuri și cu motive de reclamație și moderatori.\nAcest canal nu este un must și puteți întotdeauna să preluați anumite modlog-uri cu comanda `case`.\nToate mesajele sunt în încorporări așa că va trebui să activați permisiunea **{{EMBED_LINKS, permissions}}** pentru WolfStar.\nPentru autodetecție, trebuie să setați individual \"evenimentele\" pe care doriți să le ascultați: `events.ban-add`, `events.ban-remove` prin comanda `config`.",
+		"explainedUsage": [
+			[
+				"canal",
+				"Un TextChannel. Poţi pune numele canalului, eticheta sau scrie \"aici\" pentru a selecta canalul pe care a fost trimis mesajul."
+			]
+		],
+		"reminder": "Din cauza limitărilor Discord, detectarea automată nu detectează kick-uri. Trebuie să utilizați comanda `kick` dacă doriți să o înregistrați ca pe un caz formal de jurnal de moderare.",
+		"examples": [
+			"#mod-logs",
+			"aici"
+		]
+	},
+	"setprefixDescription": "Setează prefixul lui WolfStar.",
+	"setprefixExtended": {
+		"usages": [
+			"Prefix"
+		],
+		"extendedHelp": "Această comandă te ajută să setezi prefixul lui WolfStar. Un prefix este un affix care este adăugat în fața cuvântului, în acest caz, mesajul.\npermite boților să facă diferența între un mesaj obișnuit și o comandă. Prin natura sa, prefixul între ar trebui să fie diferit pentru a evita conflictele.\nDacă uitați prefixul lui WolfStar, menționați-l doar cu nimic altceva și vă va spune prefixul actual.\nAlternativ, poți prefixa comenzile cu numele ei și o virgulă (de exemplu, `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Prefix",
+				"Prefixul de setat. Cel implicit în WolfStar este `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Prefixul dvs. ar trebui să conțină doar caractere pe care oricine le poate scrie și tipa.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Verificați informațiile de pe server.",
+	"guildInfoExtended": {
+		"extendedHelp": "Comanda de informații a server-ului afișează informațiile pentru serverul pe care mesajul a fost trimis.\nafișează cantitatea de canale, cu numărul pentru fiecare categorie, numărul de membri (dat de API), proprietarul împreună cu utilizatorul său, cantitatea de roluri, regiune, data creării, nivelul de verificare. . între alții."
+	},
+	"roleInfoDescription": "Verificați informațiile pentru un rol.",
+	"roleInfoExtended": {
+		"usages": [
+			"Rol",
+			""
+		],
+		"extendedHelp": "Comanda de informații roleinfo afișează informații pentru un rol, cum ar fi idul, numele, culoarea, dacă este arborat (afișează separat) sau nu, este o poziţie ierarhică, fie că este menţionată sau nu, câţi membri au spus rolul şi permisiunile sale.\ntrimite un mesaj încorporat cu culoarea rolului.",
+		"explainedUsage": [
+			[
+				"Rol",
+				"Numele rolului, numele, mentiune sau id."
+			]
+		],
+		"examples": [
+			"Administrator",
+			"Moderator",
+			""
+		]
+	},
+	"stickyRolesDescription": "Gestionează roluri lipicioase pentru utilizatori.",
+	"stickyRolesExtended": {
+		"usages": [
+			"adaugă rol utilizator",
+			"elimină rolul utilizatorului",
+			"resetare utilizator",
+			"arată utilizator",
+			"Utilizator"
+		],
+		"extendedHelp": "Comanda stickyRoles vă permite să gestionați rolurile lipicioase ale fiecărui membru, sunt roluri care sunt păstrate chiar și atunci când plecați, și sunt aplicate înapoi de îndată ce se alătură.",
+		"explainedUsage": [
+			[
+				"Acțiune",
+				"Fie vrei să verifici rolurile lipicioase, să adaugi unul, să elimini sau să le elimini pe toate."
+			],
+			[
+				"Utilizator",
+				"Ținta utilizatorului pentru toate acțiunile."
+			],
+			[
+				"Rol",
+				"Rolul de adăugat sau eliminat."
+			]
+		],
+		"examples": [
+			"adaugă WolfStar Goddess",
+			"show WolfStar",
+			"elimină dl WolfStar Goddess",
+			"reset WolfStar"
+		],
+		"reminder": "Rolurile membrului nu vor fi modificate de această comandă, trebuie să le adăugați sau să le ștergeți."
+	},
+	"rolesDescription": "Listă, reclamă sau unchează roluri publice în acest server.",
+	"rolesExtended": {
+		"usages": [
+			"Rol",
+			""
+		],
+		"extendedHelp": "Rolurile publice sunt disponibile pentru toată lumea.\nUn administrator trebuie să le configureze cu comanda de configurare.",
+		"explainedUsage": [
+			[
+				"roluri",
+				"Lista rolurilor de revendicat. Lăsați acest gol pentru a obține o listă de roluri disponibile."
+			]
+		],
+		"reminder": "Când pretinzi sau necolectezi roluri, poți oferi un singur sau mai multe roluri.\nPentru a revendica mai multe roluri, trebuie să le separi prin virgulă, de exemplu `roșu,verde`.\nPuteți specifica rolurile pe care le doriți furnizând ID-ul rolului, numele sau o subsecțiune a numelui.\n\nAdministratorii pot adăuga roluri publice folosind `{{prefix}}conf setat roles.public ExamplePublicRole\".",
+		"examples": [
+			"Programator de design",
+			"Designer"
+		]
+	}
+}
