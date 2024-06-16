@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Olen pahoillani, yritin suorittaa Discordille tuntemattoman kanavan toiminnon ja epäonnistui, tämä virhe on raportoitu kehittäjille.",
+	"genericUnknownGuild": "Olen pahoillani, yritin suorittaa toiminnon Discordille tuntemattomalle palvelimelle ja epäonnistui, tämä virhe on raportoitu kehittäjille.",
+	"genericUnknownMember": "Olen pahoillani, yritin suorittaa toiminnon jäsenelle, joka on tuntematon Discordille, ja epäonnistui, tämä virhe on raportoitu kehittäjille.",
+	"genericUnknownMessage": "Olen pahoillani, yritin suorittaa toiminnon Discordille tuntemattoman viestin varalta, ja epäonnistuin, tämä virhe on raportoitu kehittäjille.",
+	"genericUnknownRole": "Olen pahoillani, yritin suorittaa Discordille tuntemattoman roolin hyväksi ja epäonnistunut, tämä virhe on raportoitu kehittäjille.",
+	"genericMissingAccess": "Olen pahoillani, olen yrittänyt suorittaa toiminnon resurssi ilman tarvittavia oikeuksia ja epäonnistui, tämä virhe on raportoitu kehittäjille.",
+	"genericDiscordInternalServerError": "Hups, Discord rikkoi itsensä, yritä myöhemmin uudelleen.",
+	"genericDiscordGateway": "Hups, verkko kamppailee kommunikoidakseen Discordin kanssa, yritä myöhemmin uudelleen.",
+	"genericDiscordUnavailable": "Hups, Discord ei ole tällä hetkellä käytettävissä, yritä myöhemmin uudelleen.",
+	"guildBansEmpty": "Tällä palvelimella ei ole rekisteröityjä kieltoja.",
+	"guildBansNotFound": "Yritin ja en löytänyt tätä käyttäjää porttikiellosta. Oletko varma, että tämä käyttäjä on kielletty?",
+	"guildMemberNotVoicechannel": "En voi suorittaa tätä toimintoa jäsenellä, joka ei ole yhteydessä äänikanavaan.",
+	"guildWarnNotFound": "En onnistunut hakemaan varoitusta. Joko sitä ei ole olemassa, ei ole tyyppistä varoitusta, tai siihen on vedottu.",
+	"modlogTimed": "Tämä moderointiloki on jo ajoitettu. Vanhentuu {{remaining, duration}}",
+	"unexpectedIssue": "Odottamaton virhe! Turvallisesti keskeytetään tämä komento...",
+	"userNotInGuild": "Tämä käyttäjä ei ole tällä palvelimella."
+}
