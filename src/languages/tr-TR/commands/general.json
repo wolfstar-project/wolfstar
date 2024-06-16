@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Displaying one category per page. Have issues with the embed? Run `{{prefix}}help --all` for a full list in DMs.",
+	"helpCommandCount_one": "{{count}} command",
+	"helpCommandCount_other": "{{count}} commands",
+	"helpData": {
+		"footer": "Command help for {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Displays all commands or the description of one.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--all",
+			"CategoryName",
+			"Page",
+			"CommandName"
+		],
+		"extendedHelp": "The help command shows a paginated list of all commands by their categories, or the extended information of a command if specified.\n\nIf you use `--categories` or `--cat`, you can get the list of all categories and the amount of commands each one of them have.",
+		"reminder": "The help command **only** shows the commands you can use. For the full list, please visit <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--cat",
+			"--all",
+			"Moderation",
+			"12",
+			"help"
+		]
+	},
+	"helpDm": "📥 | The list of commands you have access to has been sent to your DMs.",
+	"helpNodm": "{{REDCROSS}} | You have DMs disabled so I couldn't send you the list of commands.",
+	"v7Description": "Gets the information regarding Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "This is a **hidden** command used exclusively to send a notice to everyone who tries to use commands that have been removed according to [SKyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) plans."
+	},
+	"v7Message": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
+	"v7NayreMessage": "Hello there! Thank you for using this command, however, it was removed and will be either redesigned as part of Nayre's Acryss RPG as mentioned in [WolfStar v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖"
+}
