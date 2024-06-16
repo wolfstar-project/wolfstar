@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "V tomto kanálu nejsou žádné vyčerpané zprávy.",
+	"snipeTitle": "Vymazaná zpráva",
+	"snipeDescription": "Načíst poslední odstraněnou zprávu z kanálu",
+	"snipeExtended": {
+		"extendedHelp": "Toto právě odešle poslední odstraněnou zprávu z tohoto kanálu, někdo se chová špatně? To je zachytí."
+	}
+}
