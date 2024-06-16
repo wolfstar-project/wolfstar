@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} еще не локализован для ru-US.",
+	"defaultLanguage": "Язык по умолчанию",
+	"no": "Нет",
+	"none": "Нет",
+	"unknown": "неизвестно",
+	"yes": "Да",
+	"paginatedMessagePage": "Страница",
+	"paginatedMessageWrongUserInteractionReply": "Пожалуйста, прекратите нажатие кнопок на этом сообщении. Они предназначены только для {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "ДД/ММ/ГГГГ",
+	"dateFormatExplanation": "Месяц/день/год"
+}
