@@ -1,0 +1,7 @@
+{
+	"escaperopeDescription": "Käytä Pokemonin pakoköysiä.",
+	"escaperopeExtended": {
+		"extendedHelp": "**Susi** käytti **pakokartta**."
+	},
+	"escaperopeOutput": "**{{user}}** käyttää **Escape Roope**"
+}
