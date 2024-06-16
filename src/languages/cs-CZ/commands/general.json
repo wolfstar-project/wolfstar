@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Zobrazuje se jedna kategorie na stránku. Máte problémy se vložením? Spustit `{{prefix}}help --all` pro úplný seznam v DM.",
+	"helpCommandCount_one": "Příkaz {{count}}",
+	"helpCommandCount_other": "{{count}} příkazy",
+	"helpData": {
+		"footer": "Příkazová nápověda pro {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Zobrazí všechny příkazy nebo jejich popis.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--all",
+			"Název kategorie",
+			"Stránka",
+			"Název příkazu"
+		],
+		"extendedHelp": "Příkaz nápovědy zobrazuje stránkovaný seznam všech příkazů podle jejich kategorií nebo rozšířenou informaci příkazu, pokud je určen.\n\nPokud použijete `--categories` nebo `--cat`, můžete získat seznam všech kategorií a množství příkazů, které každý z nich má.",
+		"reminder": "Příkaz nápovědy **pouze** zobrazuje příkazy, které můžeš použít. Pro úplný seznam navštiv <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--cat",
+			"--all",
+			"Moderace",
+			"12",
+			"Nápověda"
+		]
+	},
+	"helpDm": "📥 | Seznam příkazů, k nimž máte přístup, byl odeslán do vašich DM.",
+	"helpNodm": "{{REDCROSS}} | Máte zakázané hry, takže jsem vám nemohl poslat seznam příkazů.",
+	"v7Description": "Získá informace o Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Toto je **skrytý** příkaz, který se používá výhradně k zasílání upozornění každému, kdo se snaží použít příkazy, které byly odstraněny podle [SKyra v7](https://skyra. plány otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)."
+	},
+	"v7Message": "Ahoj! Děkujeme, že použiješ tento příkaz, ale byl odstraněn kvůli plánům [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). Odkaz obsahuje vysvětlení proč byl odstraněn `{{command}}.\n\nOmlouváme se za nepříjemnosti a děkujeme, že používáte WolfStar. 💖",
+	"v7NayreMessage": "Ahoj! Děkujeme vám za použití tohoto příkazu. byl odstraněn a bude buď překonstruován jako součást Nayreho Acryss RPG, jak je uvedeno v [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)).\n\nOmlouváme se za nepříjemnosti a děkujeme, že používáte WolfStar. 💖"
+}
