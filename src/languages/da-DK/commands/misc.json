@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Der er ingen sniped beskeder i denne kanal.",
+	"snipeTitle": "Sniped Besked",
+	"snipeDescription": "Hent den sidst slettede meddelelse fra en kanal",
+	"snipeExtended": {
+		"extendedHelp": "Dette sender bare den sidste slettede besked fra denne kanal, nogen opfører sig forkert? Dette vil fange dem."
+	}
+}
