@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Se en nogens avatar i fuld størrelse.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Bruger"
+		],
+		"extendedHelp": "Som denne kommandos navn siger, det viser nogles avatar.",
+		"explainedUsage": [
+			[
+				"Bruger",
+				"Brugeren til at få avataren for. Standard til dig selv."
+			]
+		],
+		"reminder": "Brug flaget -- size til at ændre avatarens størrelse."
+	},
+	"avatarNone": "Brugeren har ikke et avatar sæt.",
+	"voteDescription": "Forenklet afstemningsbaseret reaktion.",
+	"voteExtended": {
+		"usages": [
+			"Spørgsmål"
+		],
+		"examples": [
+			"Skal jeg implementere #anime kanal?"
+		],
+		"explainedUsage": [
+			[
+				"Spørgsmål",
+				"Det spørgsmål, der skal stemmes."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Du skal angive et emne til afstemningen.",
+	"voteReactionBlocked": "{{REDCROSS}} Jeg var ikke i stand til at tilføje de reaktioner, der er nødvendige for, at denne kommando kan virke, fordi du har blokeret! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Bruger"
+		],
+		"extendedHelp": "Henter oplysninger om ethvert servermedlem. Også kendt som `userinfo` i mange andre bots.",
+		"explainedUsage": [
+			[
+				"Bruger",
+				"Brugeren til at få oplysninger om. Standard til dig selv."
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} mere."
+}
