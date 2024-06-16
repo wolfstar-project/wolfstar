@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Ne pare rău, nu am putut găsi stream-ul. Ești sigur că ai scris corect numele lor?",
+	"twitchSubscriptionStatusValues": [
+		"online",
+		"deconectat"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah acolo! M-am aşteptat la \"online\" sau \"offline\", dar nu pot înţelege ce mi-aţi dat.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Sunteți deja abonat la acel streamer din acest canal pentru acea stare.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Succes! Ori de câte ori {{name}} se deconectează, voi posta un mesaj nou în {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Succes! Ori de câte ori {{name}} intră în direct, voi posta un mesaj nou în {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} îmi pare rău, dar este necesar să furnizezi un mesaj atunci când faci un abonament offline.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} îmi pare rău, dar nu sunteți abonat la niciun streamer, renunțați la misiune!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} îmi pare rău, nu vă puteți dezabona de la {{streamer}} deoarece nu sunteți abonat la ele.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} îmi pare rău; în timp ce sunteți abonat la acest streamer și la statutul de streaming, abonamentele lor nu sunt publicate în {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} îmi pare rău, dar se pare că nu primiți notificări {{status}} pentru {{streamer}}. Oferim notificări \"online\" și \"offline\".",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Succes! Nu voi mai posta mesaje pentru {{channel}} ori de câte ori {{name}} se deconectează.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Succes! Nu voi mai posta mesaje pentru {{channel}} ori de câte ori {{name}} este viu.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Succes! {{count}} abonament a fost eliminat de pe acest server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Succes! {{count}} abonamente au fost eliminate de pe acest server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Ați vrut să vedeți toate abonamentele din acest streamer, dar nu există niciunul!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Live",
+		"offline": "Offline"
+	},
+	"twitchSubscriptionShowUnknownUser": "Necunoscut",
+	"twitchSubscriptionDescription": "Gestionează abonamentele pentru serverul tău.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"adaugă starea canalului de streaming",
+			"adaugă starea canalului de streaming",
+			"elimină starea canalului Streamer",
+			"resetează Streamerul",
+			"reset",
+			"arată",
+			""
+		],
+		"extendedHelp": "Administreaza abonamentele pentru acest server.\n__Online Notifications__\nToate datele disponibile vor apărea într-un foarte frumos embed care vă va spune exact la ce se află streamerul.\n\n__Offline Notifications__\nTrebuie să-ți scrii propriul mesaj care va fi postat atunci când streamerul se deconectează. Acesta va fi afișat într-un frumos Mesaj Twitch-mople integrat.",
+		"explainedUsage": [
+			[
+				"adaugare/stergere/resetare/afisare",
+				"Dacă la\n- Adaugă un nou abonament Twitch.\n- Elimină un abonament Twitch\n- Resetează tot abonamentul la twitch, sau cele pentru un anumit streamer\n- Afișează toate abonamentele curente pe Twitch"
+			],
+			[
+				"Streaming",
+				"Numele de utilizator Twitch al streamer-ului pentru a primi notificări."
+			],
+			[
+				"Canal",
+				"Un canal Discord unde să posteze notificările."
+			],
+			[
+				"Status",
+				"Starea pe care streamer-ul Twitch ar trebui să o primească pentru o notificare, una online sau offline."
+			],
+			[
+				"Conținut",
+				"Mesajul de trimis în chat-ul Discord. Necesar pentru notificări offline, opțional pentru notificări online."
+			]
+		],
+		"examples": [
+			"adaugă favora #twitch online",
+			"adaugă favna #twitch offline Favna este acum offline. Spune la revedere 👋!",
+			"elimină kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"arată"
+		]
+	}
+}
