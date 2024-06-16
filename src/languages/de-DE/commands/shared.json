@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Nachrichtenbasierte Befehle sind **veraltet** und werden in Zukunft entfernt. Sie sollten stattdessen den {{command}} Schrägstrich Befehl verwenden!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Dieser Befehl ist nur über Slash Befehle verfügbar. Bitte verwenden Sie stattdessen den Schrägstrich Befehl."
+	},
+	"slashOnlyErrorMessage": "Dieser Befehl ist nur über Slash Befehle verfügbar. Bitte verwenden Sie stattdessen den Schrägstrich Befehl."
+}
