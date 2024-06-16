@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Vær forsiktig når du nevner mer enn du er i ferd med å bli utestengt for å overskride denne serverens nevnt terskel.",
+	"message": "Bannhammeren har landet og nå brukeren {{userTag}} med id {{userId}} er utestengt for nevnt spam.\nIkke bekymre deg! Jeg er her for å hjelpe deg! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatisk: MeningsSpam terskel overskredet.\nTerskel: {{threshold}}."
+}
