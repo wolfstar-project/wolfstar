@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Να είστε προσεκτικοί αναφέροντας πια, καθώς πρόκειται να απαγορευτεί η υπέρβαση του ορίου αναφοράς αυτού του διακομιστή.",
+	"message": "The banhammer has landed and now the user {{userTag}} with id {{userId}} is banned for mention spam.\nDo not worry! I'm here to help you! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatic: Mention Spam threshold exceeded.\nThreshold: {{threshold}}."
+}
