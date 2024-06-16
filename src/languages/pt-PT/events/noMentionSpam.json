@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Tenha cuidado ao mencionar mais, já que você está prestes a ser banido por exceder o limite de menção deste servidor.",
+	"message": "O martelo desembarcou e agora o usuário {{userTag}} com ajuda {{userId}} é banido por mencionar spam.\nNão se preocupe! Estou aqui para ajudá-lo! 😄",
+	"modlog": "[NOMENTIONSPAM] Automático: Mencionar Spam excedido.\nLimite: {{threshold}}."
+}
