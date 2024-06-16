@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Podczas wysyłania wiadomości na Discordzie wystąpił mały błąd sieciowy, proszę uruchomić to polecenie ponownie!",
+	"fetchBansFail": "Nie udało się pobrać banów. Czy mam uprawnienia **{{ADMINISTRATOR, permissions}}**?",
+	"helpTitles": {
+		"aliases": "🖇️ | **Aliasy**",
+		"usages": "📝 | **Użycie poleceń**",
+		"extendedHelp": "🔍 | **Rozszerzona Pomoc**",
+		"explainedUsage": "⚙️ | **Wyjaśnione użycie**",
+		"possibleFormats": "🔢 | **Możliwe formaty**",
+		"examples": "🔗 | **Przykłady**",
+		"reminders": "⏰ | **Przypomnienie**"
+	},
+	"jumpTo": "Przejdź do wiadomości ►",
+	"loading": [
+		"{{LOADING}} Ogląda na biegające chomiki...",
+		"{{LOADING}} Znajdowanie ludzi w ukrytym poszukiwaniu...",
+		"{{LOADING}} Próbuje znaleźć to polecenie...",
+		"{{LOADING}} Pobieranie danych z chmury...",
+		"{{LOADING}} Kalibracja soczewek...",
+		"{{LOADING}} Gra w kamień, papier, nożyce...",
+		"Dostrajanie {{LOADING}} do prawej częstotliwości...",
+		"{{LOADING}} Okręgi kulinarne..."
+	],
+	"prefixReminder": "Prefiks na tym serwerze jest ustawiony na: `{{prefix}}`"
+}
