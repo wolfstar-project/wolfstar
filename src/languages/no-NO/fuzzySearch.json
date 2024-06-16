@@ -1,0 +1,6 @@
+{
+	"aborted": "Vellykket avbrutt ledeteksten.",
+	"invalidIndex": "Dette tallet var utenfor rekkevidde, avbryter ledeteksten.",
+	"invalidNumber": "Jeg forventet at du skulle gi et (tall med ett tall), fikk en potet.",
+	"matches": "Jeg fant flere treff! **Vennligst velg et nummer innenfor 0 og {{matches}}**:\n{{codeblock}}\nSkriv **ABORT ** hvis du vil avslutte ledeteksten."
+}
