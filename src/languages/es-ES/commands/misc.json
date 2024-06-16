@@ -1,8 +1,8 @@
 {
-	"snipeEmpty": "",
-	"snipeTitle": "",
-	"snipeDescription": "",
+	"snipeEmpty": "No hay mensajes con francotiradores en este canal.",
+	"snipeTitle": "Mensaje disfrazado",
+	"snipeDescription": "Recuperar el último mensaje eliminado de un canal",
 	"snipeExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "Esto sólo envía el último mensaje eliminado de este canal, ¿alguien está equivocado? Esto los atrapará."
 	}
 }
