@@ -1,1 +1,5 @@
-[]
+{
+	"embedDescription": "{{userName}} is now live!",
+	"embedDescriptionWithGame": "{{userName}} is now live - Streaming {{gameName}}!",
+	"offlinePostfix": "Wolfstar Twitch 通知"
+}
