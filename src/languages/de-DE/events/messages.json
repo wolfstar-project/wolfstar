@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Nachricht gelöscht • {{channel}}",
+	"messageDeleteUnknown": "Unbekannte Nachricht gelöscht • {{channel}}",
+	"messageUpdate": "Nachricht bearbeitet • {{channel}}",
+	"messageUpdateUnknown": "Unbekannte Nachricht bearbeitet • {{channel}}",
+	"messageNotFound": "Unbekannte Nachricht",
+	"messageDeleteBulk_one": "{{count}} Nachricht gelöscht in {{channel}} von {{author}}",
+	"messageDeleteBulk_other": "{{count}} Nachrichten in {{channel}} von {{author}} gelöscht",
+	"messageDeleteBulkUnknown_one": "{{count}} Nachricht gelöscht in {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} Nachrichten gelöscht in {{channel}}",
+	"messageDeleteBulkFooter": "Mehrere Nachrichten gelöscht",
+	"voiceActivityFooter": "Sprachaktivität",
+	"jumpToContext": "Zum Kontext springen"
+}
