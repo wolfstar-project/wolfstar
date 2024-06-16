@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Näytä jonkun hahmo täydessä koossa.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Käyttäjä"
+		],
+		"extendedHelp": "Kuten tämän käskyn nimi sanoo, se näyttää jonkun hahmon.",
+		"explainedUsage": [
+			[
+				"Käyttäjä",
+				"Käyttäjä voi saada hahmo. Oletuksena sinulle itse."
+			]
+		],
+		"reminder": "Käytä --size lippua muuttaaksesi hahmon kokoa."
+	},
+	"avatarNone": "Käyttäjällä ei ole avatariasetusta.",
+	"voteDescription": "Yksinkertaistettu reaktioihin perustuva äänestys.",
+	"voteExtended": {
+		"usages": [
+			"Kysymys"
+		],
+		"examples": [
+			"Pitäisikö minun toteuttaa #anime kanava?"
+		],
+		"explainedUsage": [
+			[
+				"Kysymys",
+				"Kysymys, josta on äänestettävä."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Sinun täytyy antaa aihe kyselyä varten.",
+	"voteReactionBlocked": "{{REDCROSS}} En pystynyt lisäämään tämän komennon tarvitsemia reaktioita toimimaan, koska olet minut estetty! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Käyttäjä"
+		],
+		"extendedHelp": "Saat tiedot palvelimen jäseneltä. Tunnetaan myös nimellä `userinfo` monissa muissa botteissa.",
+		"explainedUsage": [
+			[
+				"Käyttäjä",
+				"Käyttäjä saa tietoja. Oletuksena sinulle itse."
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} enemmän."
+}
