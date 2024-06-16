@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Afgebroken",
+	"permissionNodesHigher": "{{REDCROSS}} U kunt de machtigingnodes voor dit doel niet wijzigen of bekijken.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Je kunt geen commando's toestaan voor de `@everyone` rol.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Ongeldig type, verwacht van `allow` of `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} heeft het commando succesvol toegevoegd aan het toestemmingsknooppunt.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Het geselecteerde toestemmingsknooppunt bestaat niet.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} De geselecteerde opdracht bestaat niet in het permision-knooppunt.",
+	"permissionNodesRemove": "{{GREENTICK}} Succesvol het commando verwijderd van het toestemmingsknooppunt.",
+	"permissionNodesReset": "{{GREENTICK}} Alle commando's succesvol verwijderd van het toestemmingsknooppunt.",
+	"permissionNodesShowName": "Permissies voor: __{{name}}__",
+	"permissionNodesShowAllow": "**Toestaan**: {{allow}}",
+	"permissionNodesShowDeny": "**Weiger**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Kanalen",
+		"MEMBERS": "leden",
+		"OTHER": "anders"
+	},
+	"guildInfoChannels": "• **{{text}}** Tekst, **{{voice}}** Voice, **{{categories}}** categorieën.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** na **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** lid(s)\n• Eigenaar: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Rollen: **{{size}}**\n• Gemaakt: **{{createdAt}}**\n• Verificatie Level: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "Banner afbeelding",
+	"guildInfoIcon": "Pictogram afbeelding",
+	"guildInfoSplash": "Spattende afbeelding",
+	"guildInfoDiscoverySplash": "Spattende afbeelding ontdekt",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Machtigingen"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nNaam: **{{role.name}}**\nKleur: **{{role.hexColor}}**\nHosten: **{{hoisted}}**\nPositie: **{{role.rawPosition}}**\nMentionable: **{{mentionable}}**",
+	"roleInfoAll": "Alle machtigingen zijn verleend.",
+	"roleInfoNoPermissions": "Machtigingen zijn niet verleend.",
+	"manageCommandAutoDeleteShowEmpty": "Er zijn op dit moment geen automatische commando's geconfigureerd.",
+	"manageCommandAutoDeleteShow": "Alle opdracht-autodeletes geconfigureerd:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Succes! Alle succesvolle opdrachten in {{channel}} zal worden verwijderd na {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Succes! Opdrachten zullen niet automatisch worden verwijderd in {{channel}}!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Het kanaal {{channel}} is niet geconfigureerd om automatisch berichten te verwijderen!",
+	"manageCommandAutoDeleteReset": "Alle opdracht-autodeletes zijn gereset.",
+	"manageCommandChannelShow": "Lijst van uitgeschakelde commando's in {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "De lijst met uitgeschakelde commando's voor het opgegeven kanaal is leeg!",
+	"manageCommandChannelAddAlreadyset": "De opdracht die je probeert uit te schakelen is al uitgeschakeld!",
+	"manageCommandChannelAdd": "Succesvol het commando {{command}} voor kanaal {{channel}} uitgeschakeld!",
+	"manageCommandChannelRemoveNotset": "De opdracht die u probeert in te schakelen is niet uitgeschakeld voor {{channel}}.",
+	"manageCommandChannelRemove": "Het commando {{command}} voor kanaal {{channel}} is succesvol ingeschakeld!",
+	"manageCommandChannelResetEmpty": "Dit kanaal had geen commando uitgeschakeld, dus heb ik besloten niets te doen.",
+	"manageCommandChannelReset": "Succesvol alle commando's uitgeschakeld in {{channel}}, geniet ervan!",
+	"manageReactionRolesShowEmpty": "Er zijn geen reactie rollen ingesteld in deze server.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Succes! Ik geef nu de rol wanneer mensen met {{emoji}} reageren op een bericht van {{channel}}!",
+	"manageReactionRolesAddPrompt": "Luister nu! Reageer op een bericht en ik koppel de reactie aan de rol!",
+	"manageReactionRolesAddMissing": "Ik wacht, maar u leek niet te hebben gereageerd op een bericht.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Succes! Ik zal nu de rol geven wanneer mensen reageren met {{emoji}} in {{url}}!",
+	"manageReactionRolesRemoveNotExists": "De reactierol die u hebt opgegeven bestaat niet.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Gelukt! Ik geef de rol niet langer wanneer mensen met {{emoji}} in {{url}} reageren!",
+	"manageReactionRolesResetEmpty": "Er zijn geen reactierollen ingesteld.",
+	"manageReactionRolesReset": "{{GREENTICK}} Alle reactiefuncties verwijderd.",
+	"configurationEquals": "Succesvol geconfigureerd: er zijn geen wijzigingen aangebracht.",
+	"setIgnoreChannelsSet": "Alle commando-invoer van {{channel}} wordt nu genegeerd.",
+	"setIgnoreChannelsRemoved": "Nu alle commando-invoer van {{channel}} horen.",
+	"setImageLogsSet": "Het log kanaal met succes op {{channel}} gezet.",
+	"setMemberAddLogsSet": "Lid heeft succesvol log-kanaal ingesteld op {{channel}}.",
+	"setMemberRemoveLogsSet": "Lid verwijderen log-kanaal succesvol op {{channel}} gezet.",
+	"setMessageUpdateLogsSet": "Het berichten-update log-kanaal succesvol ingesteld op {{channel}}.",
+	"setMessageDeleteLogsSet": "Het log-kanaal voor verwijderen van berichten is ingesteld op {{channel}}.",
+	"setModLogsSet": "Het mod log-kanaal met succes op {{channel}} gezet.",
+	"setPrefixSet": "De prefix is succesvol ingesteld op `{{prefix}}`. Gebruik `{{prefix}}setPrefix NewPrefix` om hem opnieuw te veranderen.",
+	"stickyRolesNotExists": "De gebruiker {{user}} heeft geen sticky rollen of heeft de gespecificeerde rollen.",
+	"stickyRolesReset": "Succesvol alle sticky rollen van {{user}} verwijderd.",
+	"stickyRolesRemove": "Succesvol de opgegeven rol van {{user}} verwijderd.",
+	"stickyRolesAdd": "De opgegeven rol als sticky naar {{user}} is succesvol toegevoegd.",
+	"stickyRolesShowEmpty": "Er zijn geen sticky rollen om weer te geven.",
+	"stickyRolesShowSingle": "Sticky rol(len) voor **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Bereid het mute systeem voor.",
+	"createMuteExtended": {
+		"extendedHelp": "Deze opdracht bereidt het mute systeem voor door een rol te creëren met de naam 'muted' en het te configureren naar de server instellingen. Deze opdracht wijzigt ook alle kanalen (waar mogelijk) permissies en schakelt de permissie **{{SEND_MESSAGES, permissions}}** in tekstkanalen en **{{CONNECT, permissions}}** in gesprekskanalen voor de genoemde rol uit."
+	},
+	"permissionNodesDescription": "Configureer permissie nodes voor deze server.",
+	"permissionNodesExtended": {
+		"usages": [
+			"Rol/lid toestaan/weigeren opdracht toevoegen",
+			"Rol/lid toestaan/weigeren opdracht verwijderen",
+			"reset Role/Member",
+			"toon rol/lid",
+			"toon",
+			"Rol/lid"
+		],
+		"extendedHelp": "Permissieknodes zijn per gebruiker en per rol overrides. Ze worden gebruikt wanneer het ingebouwde permissies systeem niet genoeg is.\nBijvoorbeeld, op sommige servers willen ze een medewerkerrol geven om mute en waarschuwing te gebruiken, maar niet ban en anderen (gereserveerd voor moderatoren), en alleen waarschuwen is beschikbaar voor de configureerbare medewerkerstoestemming zodat u mij kunt vertellen dat het mute commando voor de medewerkerrol nu moet worden toegestaan.",
+		"explainedUsage": [
+			[
+				"actie",
+				"`add`, `remove`, `reset`, of `show`. Standaard `show`."
+			],
+			[
+				"Target",
+				"Of een rolnaam of een gebruikersnaam, staat IDs toe en vermeldt ook wel."
+			],
+			[
+				"Type",
+				"`toestaan` of `deny`."
+			],
+			[
+				"Opdracht",
+				"De naam van het commando om toe te staan of te weigeren."
+			]
+		],
+		"examples": [
+			"waarschuwing toevoegen aan personeel",
+			"moderators ontzeggen ban toevoegen",
+			"verwijder personeel waarschuwing toestaan",
+			"reset personeel",
+			"toon personeel"
+		],
+		"reminder": "De server eigenaar kan geen acties hebben, noch de `iedereen` rol kan toegestane commando's hebben."
+	},
+	"managecommandautodeleteDescription": "Beheer automatisch verwijderen per kanaal timer.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"voeg TextChannel Seconden toe",
+			"verwijder TextChannel",
+			"reset",
+			"toon",
+			""
+		],
+		"extendedHelp": "Dit commando beheert het automatisch verwijderen van de timer per kanaal van deze server, het is goed om een kanaal leeg te laten aan commando's.",
+		"explainedUsage": [
+			[
+				"toevoegen",
+				"Voeg een auto-verwijder timer toe voor het opgegeven kanaal."
+			],
+			[
+				"verwijderen",
+				"Verwijder de auto-timer van het opgegeven kanaal."
+			],
+			[
+				"reset",
+				"Wis alle automatisch verwijderen timers."
+			],
+			[
+				"toon",
+				"Toon de auto-verwijder timer van alle kanalen."
+			]
+		],
+		"reminder": "Het kanaalargument is optioneel, standaard is het kanaal van het bericht, maar het gebruikt sluimerend zoeken wanneer mogelijk.",
+		"examples": [
+			"toon",
+			"voeg #algemene 4s toe",
+			"verwijder #general",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Beheer per-channel geblokkeerde opdrachtlijst.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"TextChannel opdracht toevoegen",
+			"verwijder TextChannel opdracht",
+			"reset TextChannel",
+			"toon TekstChannel"
+		],
+		"extendedHelp": "Dit commando beheert de geblokkeerde lijst per kanaal van deze server het dient goed om bepaalde commando's die je niet wilt gebruiken in bepaalde kanalen uit te schakelen (om een commando wereldwijd uit te schakelen gebruik de `disabledCommands` instellingen toets om uit te schakelen in alle kanalen.",
+		"explainedUsage": [
+			[
+				"toon [channel]",
+				"Toon de lijst met geblokkeerde commando's in het opgegeven kanaal."
+			],
+			[
+				"voeg [channel] <command> toe",
+				"Voeg een opdracht toe aan de geblokkeerde commando's lijst van het opgegeven kanaal."
+			],
+			[
+				"verwijder [channel] <command>",
+				"Verwijder een opdracht uit de geblokkeerde commando's lijst van het opgegeven kanaal."
+			],
+			[
+				"reset [channel]",
+				"Wis de lijst met geblokkeerde commando's in het opgegeven kanaal."
+			]
+		],
+		"reminder": "Het kanaalargument is optioneel, maar gebruikt een fuzzy zoekopdracht wanneer mogelijk.",
+		"examples": [
+			"voeg #general profiel toe",
+			"verwijder #algemeen profiel",
+			"reset #algemene",
+			"toon #algemeen"
+		]
+	},
+	"manageReactionRolesDescription": "Beheer de reactierollen van deze server.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"rol toevoegen",
+			"Rol TekstChannel Emoji toevoegen",
+			"Rol bericht verwijderen",
+			"reset",
+			"toon"
+		],
+		"extendedHelp": "Stel reactie rollen naadloos op in jouw server! Bij het toevoegen van reactierollen, Ik luister naar uw reacties voor vijf minuten en koppel de eerste reactie van u aan de zijde van het kanaal en de boodschap. met de opgegeven rol.\nanders, als een kanaal is opgegeven, zal een prompt niet worden aangemaakt. en de reactie zal worden gebonden aan alle boodschappen van het kanaal.\n\nDe beste manier om nieuwe reactie-rollen toe te voegen is door `add @role` te gebruiken. Als je de reactie liever niet koppelt aan een specifiek bericht gebruik dan `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"toon",
+				"Haal de lijst op met alle reactiefuncties."
+			],
+			[
+				"toevoegen <role>",
+				"Voegt een reactie-rol toe die het eerste reacties bericht verbindt sinds de uitvoering met de rol."
+			],
+			[
+				"verwijder <role> <message>",
+				"Verwijdert een reactie rol, gebruik `show` om een lijst van hen te krijgen."
+			],
+			[
+				"reset",
+				"Verwijdert alle reactierollen."
+			]
+		],
+		"examples": [
+			"voeg @rol toe",
+			"voeg @role #channel emoji toe",
+			"verwijder @role 123456789012345678",
+			"reset",
+			"toon"
+		]
+	},
+	"rolesAdded": "De volgende rollen zijn toegevoegd aan je profiel: `{{roles}}`",
+	"rolesAuditlog": "Geautoriseerd: Publieke Rol Management ization 'Rollen' Commando.",
+	"rolesListEmpty": "Deze server heeft geen rol vermeld als openbare rol.",
+	"rolesListTitle": "Lijst met openbare rollen",
+	"rolesNotManageable": "De volgende rollen kunnen niet door mij gegeven worden vanwege hun hiërarchie rol positie: `{{roles}}`",
+	"rolesNotPublic": "De volgende rollen zijn niet openbaar: `{{roles}}`",
+	"rolesRemoved": "De volgende rollen zijn verwijderd uit je profiel: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Zet een kanaal op de negeerlijst.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Dit commando helpt je met het opzetten van genegeerde kanalen. Een genegeerd kanaal is een kanaal waar niemand behalve moderators WolfStar's commando's kan gebruiken.\nIn tegenstelling tot het verwijderen van de **{{SEND_MESSAGES, permissions}}** permissie, is WolfStar nog steeds in staat om berichten te verzenden (en daarom commando's uit te voeren) waarmee moderators moderatie commando's kunnen gebruiken in het kanaal.\nGebruik dit als je commandogebruik van de bot wilt verbannen in een specifiek kanaal.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een TextChannel. Je kunt de naam van het kanaal plakken, het taggen, of \"hier\" typen om het kanaal te selecteren dat het bericht is verzonden."
+			]
+		],
+		"reminder": "Je kunt niet twee keer hetzelfde kanaal instellen, want WolfStar zal het verwijderen.",
+		"examples": [
+			"#Algemeen",
+			"Hier"
+		]
+	},
+	"setImageLogsDescription": "Stel het afbeeldingslog-kanaal in.",
+	"setImageLogsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Deze opdracht helpt je om het afbeeldingslogkanaal op te zetten. Wanneer een lid een afbeeldingsbijlage verstuurt, wordt een embed bericht met de bijlage opnieuw geüpload.\nAlle berichten staan in embedds dus je moet de permissie **{{EMBED_LINKS, permissions}}** inschakelen voor WolfStar.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een TextChannel. Je kunt de naam van het kanaal plakken, het taggen, of \"hier\" typen om het kanaal te selecteren dat het bericht is verzonden."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"Hier"
+		]
+	},
+	"setMemberAddLogsDescription": "Stel het leden log-kanaal in.",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Deze opdracht helpt je met het opzetten van een deelnemer log kanaal, dat elke keer dat een gebruiker lid wordt een bericht ontvangt.\nAls een gedempte gebruiker lid wordt, stuurt het een speciaal \"Gedempte leden\" evenement.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een TextChannel. Je kunt de naam van het kanaal plakken, het taggen, of \"hier\" typen om het kanaal te selecteren dat het bericht is verzonden."
+			]
+		],
+		"examples": [
+			"#leden-logs",
+			"Hier"
+		],
+		"reminder": "Alle berichten staan in embedds dus je moet de permissie **{{EMBED_LINKS, permissions}}** inschakelen voor WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Stel het verwijderen log-kanaal voor leden in.",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Deze opdracht helpt u bij het opzetten van het logboek kanaal voor het verwijderen van leden, die een bericht ontvangt telkens wanneer een gebruiker vertrekt, wordt gekicked, of wordt geblokkeerd.\nIn het geval van de laatste twee gebeurt er een speciale \"Gebruiker Kicked\" of \"Gebruikers Verbannen\" evenement.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een Tekstkanaal. Je kunt de naam van het kanaal invoeren, deze taggen, of \"hier\" typen om het kanaal te configureren waarin deze opdracht is gebruikt."
+			]
+		],
+		"examples": [
+			"#leden-logs",
+			"Hier"
+		],
+		"reminder": "Alle berichten staan in embedds dus je moet de permissie **{{EMBED_LINKS, permissions}}** inschakelen voor WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Stel het bericht-update log-kanaal in.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Dit commando helpt je met het instellen van het bericht-update-log-kanaal, dat een bericht ontvangt telkens wanneer een bericht wordt bewerkt.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een Tekstkanaal. Je kunt de naam van het kanaal invoeren, deze taggen, of \"hier\" typen om het kanaal te configureren waarin deze opdracht is gebruikt."
+			]
+		],
+		"reminder": "Alle berichten staan in embedds dus je moet de permissie **{{EMBED_LINKS, permissions}}** inschakelen voor WolfStar.",
+		"examples": [
+			"#berichten-logs",
+			"Hier"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Stel het verwijder log-kanaal van het bericht in.",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Dit commando helpt je met het instellen van het log kanaal voor het verwijderen van berichten, dat een bericht ontvangt telkens wanneer een bericht wordt verwijderd.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een Tekstkanaal. Je kunt de naam van het kanaal invoeren, deze taggen, of \"hier\" typen om het kanaal te configureren waarin deze opdracht is gebruikt."
+			]
+		],
+		"reminder": "Alle berichten staan in embedds dus je moet de permissie **{{EMBED_LINKS, permissions}}** inschakelen voor WolfStar.\nDoor Discord-beperkingen kan WolfStar niet weten wie een bericht heeft verwijderd.",
+		"examples": [
+			"#berichten-logs",
+			"Hier"
+		]
+	},
+	"setmodlogsDescription": "Stel het mod logs kanaal in.",
+	"setmodlogsExtended": {
+		"usages": [
+			"hier/Tekstkanaal"
+		],
+		"extendedHelp": "Deze opdracht helpt je bij het instellen van het log-kanaal. Een mod log kanaal stuurt alleen case reports geïndexeerd door een nummer en met \"claimable\" redenen en moderators.\nDit kanaal is geen must en je kunt altijd specifieke modlogs ophalen met het `case` commando.\nAlle berichten staan in embeds dus je moet de permissie **{{EMBED_LINKS, permissions}}** inschakelen voor WolfStar.\nVoor automatische detectie moet je individueel de \"events\" instellen die je wilt luisteren: `events.ban-add`, `events.ban-remove` via het `config` commando.",
+		"explainedUsage": [
+			[
+				"kanaal",
+				"Een TextChannel. Je kunt de naam van het kanaal plakken, het taggen, of \"hier\" typen om het kanaal te selecteren dat het bericht is verzonden."
+			]
+		],
+		"reminder": "Vanwege Discord-beperkingen detecteert de auto-detectie geen kicken. Je moet het `kick` commando gebruiken als je ze wilt documenteren als een formele moderatie log.",
+		"examples": [
+			"#mod-logs",
+			"Hier"
+		]
+	},
+	"setprefixDescription": "Stel WolfStar's voorvoegsel in.",
+	"setprefixExtended": {
+		"usages": [
+			"Voorvoegsel"
+		],
+		"extendedHelp": "Dit commando helpt je om WolfStar's voorvoegsel op te zetten. Een voorvoegsel is een affix die voor het woord wordt toegevoegd, in dit geval de boodschap.\nHet staat bots toe om een regelmatig bericht en commando te onderscheiden. De prefix tussen dit bericht moet van nature verschillend zijn om conflicten te voorkomen.\nAls je het prefix van Wolfstar vergeet, vertel haar dan niets anders en ze zal u het huidige voorvoegsel vertellen.\nAls alternatief kunt u de commando's prefix met haar naam en een komma (bijvoorbeeld `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Voorvoegsel",
+				"De prefix die moet worden ingesteld. Standaard één in WolfStar is `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Je voorvoegsel mag alleen tekens bevatten die iedereen kan schrijven en typen.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Controleer de informatie van de server.",
+	"guildInfoExtended": {
+		"extendedHelp": "Het serverinfo commando geeft informatie weer voor de server die het bericht is verstuurd.\nHet toont het aantal kanalen, met het aantal deelnemers per categorie, het aantal leden (gegeven via de API), de eigenaar met zijn gebruikers-id, het aantal rollen, regio, creatie datum, verificatieniveau. . tussen anderen."
+	},
+	"roleInfoDescription": "Controleer de informatie voor een rol.",
+	"roleInfoExtended": {
+		"usages": [
+			"Functie",
+			""
+		],
+		"extendedHelp": "Het rolinfo commando toont informatie voor een rol, zoals zijn id, naam, kleur, of het nu is gehat (wordt afzonderlijk weergegeven) of niet. het is de rol hiërarchie positie, of het nu vermeldbaar is of niet, hoeveel leden hebben gezegd de rol en de permissies.\nHet stuurt een ingesloten bericht met de kleur van de rol.",
+		"explainedUsage": [
+			[
+				"Functie",
+				"De rolnaam, naam of id"
+			]
+		],
+		"examples": [
+			"Beheerder",
+			"Moderator",
+			""
+		]
+	},
+	"stickyRolesDescription": "Beheer sticky rollen voor gebruikers.",
+	"stickyRolesExtended": {
+		"usages": [
+			"voeg gebruikersrol toe",
+			"verwijder gebruikersrol",
+			"Gebruiker resetten",
+			"toon gebruiker",
+			"Gebruiker"
+		],
+		"extendedHelp": "Met de stickyRoles opdracht kan je per lid de sticky rollen beheren Het zijn rollen die ook bij het verlaten van de weg worden behouden en na de toetreding weer worden toegepast.",
+		"explainedUsage": [
+			[
+				"actie",
+				"Of je wilt de sticky rollen controleren, er een toevoegen, verwijder er een of verwijder ze allemaal."
+			],
+			[
+				"Gebruiker",
+				"Het doel van de gebruiker voor alle acties."
+			],
+			[
+				"Functie",
+				"De rol toe te voegen of te verwijderen."
+			]
+		],
+		"examples": [
+			"voeg WolfStar Godden toe",
+			"show WolfStar",
+			"verwijder WolfStar Godden",
+			"reset WolfStar"
+		],
+		"reminder": "De rollen van het lid zullen niet worden gewijzigd door deze opdracht, je moet ze toevoegen of verwijderen."
+	},
+	"rolesDescription": "Opgeven, claimen of ongedaan maken van publieke rollen in deze server.",
+	"rolesExtended": {
+		"usages": [
+			"Functie",
+			""
+		],
+		"extendedHelp": "Publieke rollen zijn rollen die beschikbaar zijn voor iedereen.\nEen beheerder moet ze configureren met de configuratie opdracht.",
+		"explainedUsage": [
+			[
+				"rollen",
+				"De lijst met rollen om op te eisen of ongedaan te maken. Laat dit leeg om een lijst met beschikbare rollen te krijgen."
+			]
+		],
+		"reminder": "Wanneer u een enkele of meerdere rol(len) opvraagt of niet claimt kunt u een enkele of meerdere rollen geven.\nOm meerdere rollen op te eisen, moet je ze scheiden door een komma, bijvoorbeeld `rood,groen`.\nJe kunt aangeven welke rollen je wilt door het rol-ID, naam of een subsectie van de naam op te geven.\n\nAdministrators kunnen openbare rollen toevoegen met behulp van `{{prefix}}conf set rolles.public ExamplePublicRole`.",
+		"examples": [
+			"Ontwerper Programma",
+			"Ontwerper"
+		]
+	}
+}
