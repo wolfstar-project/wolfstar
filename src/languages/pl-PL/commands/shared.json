@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Komendy oparte na wiadomościach są **przestarzałe** i zostaną usunięte w przyszłości. Zamiast tego powinieneś użyć komendy {{command}}!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Ta komenda jest dostępna tylko za pomocą poleceń ukośnych. Zamiast tego użyj polecenia ukośnika."
+	},
+	"slashOnlyErrorMessage": "Ta komenda jest dostępna tylko za pomocą poleceń ukośnych. Zamiast tego użyj polecenia ukośnika."
+}
