@@ -1,4 +1,12 @@
 {
+	"customCommandInvalidAliases": "La propiedad \"aliases\" debe ser un array de cadenas.",
+	"customCommandInvalidColor": "La propiedad \"color\" debe ser un número.",
+	"customCommandInvalidContent": "La propiedad \"contenido\" debe ser una cadena.",
+	"customCommandInvalidEmbed": "La propiedad \"incrustad\" debe ser un booleano.",
+	"customCommandInvalidId": "La propiedad \"id\" debe ser una cadena.",
+	"customCommandInvalidType_one": "El tipo {{tag.type}} no es válido, debe ser el siguiente: {{possibles, orList}}",
+	"customCommandInvalidType_other": "El tipo {{tag.type}} no es válido, debe ser uno de los siguientes: {{possibles, orList}}",
+	"customCommandMissingParameter": "¡Necesitas escribir otro parámetro!\n\n> **Consejo**: El tipo para el siguiente argumento es `{{type}}`!",
 	"disabledCommandChannelsChannelsCommandDoesNotExist": "El comando `{{name}}` no existe.",
 	"disabledCommandChannelsChannelsDoesNotExist": "Ese canal de chat no existe.",
 	"invalidBool": "{{name}} debe ser verdadero o falso.",
