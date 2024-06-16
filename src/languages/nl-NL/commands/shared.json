@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Bericht gebaseerde commando's zijn **verouderd**, en zullen in de toekomst verwijderd worden. In plaats daarvan moet je het {{command}} slash commando gebruiken!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Dit commando is alleen beschikbaar via slash commando's. Gebruik in plaats daarvan het slash commando."
+	},
+	"slashOnlyErrorMessage": "Dit commando is alleen beschikbaar via slash commando's. Gebruik in plaats daarvan het slash commando."
+}
