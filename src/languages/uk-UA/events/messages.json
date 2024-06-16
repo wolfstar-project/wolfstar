@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Повідомлення видалено • {{channel}}",
+	"messageDeleteUnknown": "Невідоме повідомлення видалено • {{channel}}",
+	"messageUpdate": "Повідомлення відредаговано • {{channel}}",
+	"messageUpdateUnknown": "Невідоме повідомлення відредаговане • {{channel}}",
+	"messageNotFound": "Невідоме повідомлення",
+	"messageDeleteBulk_one": "{{count}} message deleted in {{channel}} by {{author}}",
+	"messageDeleteBulk_other": "{{count}} messages deleted in {{channel}} by {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} message deleted in {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} messages deleted in {{channel}}",
+	"messageDeleteBulkFooter": "Кілька повідомлень видалено",
+	"voiceActivityFooter": "Активація голосом",
+	"jumpToContext": "Перейти до контексту"
+}
