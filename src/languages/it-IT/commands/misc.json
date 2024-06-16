@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Non ci sono messaggi sniped in questo canale.",
+	"snipeTitle": "Messaggio Sniped",
+	"snipeDescription": "Recupera l'ultimo messaggio eliminato da un canale",
+	"snipeExtended": {
+		"extendedHelp": "Questo invia solo l'ultimo messaggio eliminato da questo canale, qualcuno è in malessere? Questo li catturerà."
+	}
+}
