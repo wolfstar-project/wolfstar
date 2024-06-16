@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Er zijn geen gesniped berichten in dit kanaal.",
+	"snipeTitle": "Gesniped Bericht",
+	"snipeDescription": "Het laatst verwijderde bericht van een kanaal ophalen",
+	"snipeExtended": {
+		"extendedHelp": "Dit verstuurt gewoon het laatst verwijderde bericht van dit kanaal, iemand gedraagt zich mis? Dit pakt ze op."
+	}
+}
