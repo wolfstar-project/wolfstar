@@ -1,0 +1,3 @@
+{
+	"expectedNonThreadChannel": "Očekáván normální textový kanál, ale místo toho jsem obdržel kanál vlákna {{channel}}."
+}
