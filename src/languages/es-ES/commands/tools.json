@@ -1,49 +1,49 @@
 {
-	"avatarDescription": "",
+	"avatarDescription": "Ver el avatar de alguien en tamaño completo.",
 	"avatarExtended": {
 		"usages": [
 			"",
-			""
+			"Usuario"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Como dice el nombre de este comando, muestra el avatar de alguien.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Usuario",
+				"El usuario para obtener el avatar. Por defecto para usted mismo."
 			]
 		],
-		"reminder": ""
+		"reminder": "Use el parámetro --size para cambiar el tamaño del avatar."
 	},
-	"avatarNone": "",
-	"voteDescription": "",
+	"avatarNone": "El usuario no tiene un conjunto de avatares.",
+	"voteDescription": "Sencillamente el voto basado en reacciones.",
 	"voteExtended": {
 		"usages": [
-			""
+			"Pregunta"
 		],
 		"examples": [
-			""
+			"¿Debería implementar el canal #anime?"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Pregunta",
+				"La cuestión sobre la que votar."
 			]
 		]
 	},
-	"voteContentNeeded": "",
-	"voteReactionBlocked": "",
+	"voteContentNeeded": "{{REDCROSS}} Debes dar un tema para la encuesta.",
+	"voteReactionBlocked": "¡{{REDCROSS}} no pude añadir las reacciones necesarias para que este comando funcionara porque me has bloqueado ya! 😢",
 	"whoisExtended": {
 		"usages": [
 			"",
-			""
+			"Usuario"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Obtiene información sobre cualquier miembro del servidor. También conocido como `userinfo` en muchos otros bots.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Usuario",
+				"El usuario sobre el que obtener información. Por defecto usted mismo."
 			]
 		]
 	},
-	"whoisMemberRoleListAndMore": ""
+	"whoisMemberRoleListAndMore": "{{count}} más."
 }
