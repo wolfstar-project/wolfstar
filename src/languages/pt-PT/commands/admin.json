@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Chave **{{key}}**: {{response}} atualizada com sucesso",
+	"confGetNoExt": "A chave **{{key}}** parece não existir.",
+	"confGet": "O valor para a chave **{{key}}** é: `{{value}}`",
+	"confReset": "A chave **{{key}}** foi redefinida para: `{{value}}`",
+	"confNochange": "O valor para **{{key}}** já era esse valor.",
+	"confServerDescription": "Definir configurações por servidor.",
+	"confServerExtended": {
+		"usages": [
+			"defina NameOfKey Valor para a Chave",
+			"mostrar",
+			"mostrar NameOfKey",
+			"remover NameOfKey Valor para a Chave",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "Permite que você configure o WolfStar do Discord, como uma alternativa rápida ao [Painel de Controle Web](https://wolfstar.rocks).",
+		"examples": [
+			"definir idioma pt-BR",
+			"definir canais.moderation-logs #moderation-logs",
+			"mostrar",
+			"mostrar canais",
+			"remover funções de moderador.moderador",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Existem chaves e grupos, chaves que estão dentro de um grupo são nomeadas por `GroupName.KeyName`."
+	},
+	"confServer": "**Configuração do Servidor {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` só pode ser configurado através do painel da web ",
+	"confSettingNotSet": "Não definido",
+	"rolesetDescription": "Gerenciar conjuntos de funções exclusivas.",
+	"rolesetExtended": {
+		"usages": [
+			"definir RoleSetName Função 1 Função 2...",
+			"remover RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"lista",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "A role set is a group of roles WolfStar identifies as unique for all members in the server, i.e. a roleset named `region` could have the roles `Africa`, `America`, `Asia`, and `Europe`, and members will only be able to have one of them. This is like a kind of \"rule\" that is applied in the three following situations:\n\n- When somebody claims a role via the `roles` command.\n- When somebody claims a role via reaction roles.\n- When somebody receives a role either manually or from another bot.",
+		"explainedUsage": [
+			[
+				"adicionar",
+				"Crie um novo conjunto de papéis ou adicione um cargo a um existente."
+			],
+			[
+				"Remover",
+				"Remover um cargo de um grupo existente."
+			],
+			[
+				"reset",
+				"Remove todos os papéis de um conjunto de funções ou, se não especificado, todos os papéis existentes."
+			],
+			[
+				"lista",
+				"Lista todos os papéis."
+			],
+			[
+				"automático",
+				"Adiciona ou remove um cargo."
+			],
+			[
+				"RoleSetName",
+				"O nome do papel"
+			],
+			[
+				"Função 1, Função 2 3",
+				"Os papéis a serem adicionados para o conjunto de funções"
+			]
+		],
+		"examples": [
+			"adicionar regiões America",
+			"acrescente a Europa Ásia, Ásia, África",
+			"remova regiões da América",
+			"reset",
+			"redefinir regiões",
+			"lista",
+			"América das regiões",
+			"Europa: Ásia, Ásia, Região Africana"
+		],
+		"reminder": "Este comando pode adicionar e/ou remover vários cargos ao mesmo tempo."
+	},
+	"rolesetCreated": "O conjunto de funções {{name}} único foi criado com as seguintes funções: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Atualizado o conjunto de função única do {{name}} , ele agora tem as seguintes funções: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "O conjunto de funções {{name}} não incluirá mais os seguintes cargos: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Não há nenhum cargo configurado neste grupo.",
+	"rolesetResetAll": "{{GREENTICK}} removido com sucesso todos os papéis.",
+	"rolesetResetNotExists": "{{REDCROSS}} O Cargo `{{name}}` não existe neste servidor.",
+	"rolesetResetGroup": "{{GREENTICK}} removido com sucesso as funções `{{name}}` deste servidor.",
+	"rolesetUpdated": "O conjunto de funções {{name}} único foi atualizado.",
+	"rolesetNoRolesets": "Você não tem papéis.",
+	"confMenuRenderAtFolder": "Atualmente em: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Atualmente em: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Não há chaves configuráveis para esta pasta",
+	"confMenuRenderSelect": "Digite qualquer um dos nomes das seguintes entradas",
+	"confMenuRenderUpdate": "• Atualizar o valor → `definir <value>`",
+	"confMenuRenderRemove": "• Remover Valor → `remover <value>`",
+	"confMenuRenderReset": "• Redefinir o Valor → `redefinir`",
+	"confMenuRenderUndo": "• Desfazer Atualização → `desfazer`",
+	"confMenuRenderCvalue": "Valor Atual: **``{{value}}``**",
+	"confMenuRenderBack": "Pressione ◀️ para voltar",
+	"confMenuInvalidKey": "Chave inválida, por favor tente novamente com qualquer uma das opções a seguir.",
+	"confMenuInvalidAction": "Ação inválida, por favor, tente novamente com qualquer uma das opções a seguir.",
+	"confMenuSaved": "Salvo todas as alterações com sucesso."
+}
