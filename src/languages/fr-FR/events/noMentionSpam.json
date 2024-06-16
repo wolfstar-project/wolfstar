@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Soyez prudent en mentionnant plus, car vous êtes sur le point d'être banni pour avoir dépassé le seuil de mention de ce serveur.",
+	"message": "Le banhammer a atterri et maintenant l'utilisateur {{userTag}} avec l'id {{userId}} est banni pour spam de mentionnation.\nNe vous inquiétez pas ! Je suis là pour vous aider ! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatique : Seuil de spam mention dépassé.\nSeuil : {{threshold}}."
+}
