@@ -1,0 +1,15 @@
+{
+	"name": "情報",
+	"description": "ボットを追加し、サポートサーバーに参加するためのリンクを提供します。",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} is a bot designed to help moderating your server. I use the [Sapphire Framework](https://sapphirejs.dev) for the [Discord.js library](https://discord.js.org).\n- [Privacy Policy](https://wolfstar.rocks/privacy) | [Terms of Service](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "統計情報",
+	"embedFieldApplicationValue": "- **ユーザー**: {{users, number}}\n- **サーバー**: {{guilds, number}}\n- **チャンネル**: {{channels, number}}\n- **Discord. s**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "稼働時間",
+	"embedFieldUptimeValue": "- **ホスト**: {{host}}\n- **クライアント**: {{client}}",
+	"embedFieldServerUsageTitle": "サーバーの使用状況",
+	"embedFieldServerUsageValue": "- **CPU 使用率**: {{cpu}}\n- **メモリ**: {{heapUsed}}MB (合計: {{heapTotal}}MB)",
+	"buttonInvite": "サーバーに私を追加してください！",
+	"buttonSupport": "サポートサーバー",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "寄付"
+}
