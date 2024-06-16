@@ -1,1 +1,18 @@
-[]
+{
+	"genericUnknownChannel": "对不起，我试图对Discord不知道的频道执行操作，失败了，这个错误已经报告给开发者。",
+	"genericUnknownGuild": "对不起，我试图为Discord不知道的服务器执行一个动作并失败了，这个错误已被报告给开发人员。",
+	"genericUnknownMember": "对不起，我试图为Discord未知的成员执行一个操作，失败了，这个错误已被报告给开发人员。",
+	"genericUnknownMessage": "对不起，我试图对Discord未知的消息进行操作并失败，这个错误已经报告给开发人员。",
+	"genericUnknownRole": "对不起，我试图为Discord未知的角色执行一个动作，并且失败了，这个错误已经报告给开发者。",
+	"genericMissingAccess": "很抱歉，我试图在没有必要权限的情况下对资源执行操作，失败了，这个错误已经报告给开发者。",
+	"genericDiscordInternalServerError": "哎呀，Discord打破了自己，请稍后再试。",
+	"genericDiscordGateway": "哎呀，网络正在与Discord进行沟通，请稍后再试。",
+	"genericDiscordUnavailable": "哎呀，Discord目前不可用，请稍后再试。",
+	"guildBansEmpty": "此服务器上没有注册封禁。",
+	"guildBansNotFound": "我试图并未从禁止列表中找到这个用户。你确定这个用户已被禁止吗？",
+	"guildMemberNotVoicechannel": "我不能在未连接到语音频道的成员中执行此操作。",
+	"guildWarnNotFound": "我未能获取此警告。要么它不存在，要么类型警告，要么它已被上诉。",
+	"modlogTimed": "这个审核日志已经超时。到期时间是{remaining, duration}}",
+	"unexpectedIssue": "出现意外错误！安全中止此命令...",
+	"userNotInGuild": "此用户不在此服务器。"
+}
