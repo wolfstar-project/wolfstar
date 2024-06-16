@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "J'ai eu une petite erreur de réseau lors de la messagerie Discord, veuillez relancer cette commande !",
+	"fetchBansFail": "Impossible de récupérer les bannissements. Ai-je la permission **{{ADMINISTRATOR, permissions}}** ?",
+	"helpTitles": {
+		"aliases": "🖇️ | **Aliases**",
+		"usages": "📝 | **Utilisation de la commande**",
+		"extendedHelp": "🔍 | **Aide étendue**",
+		"explainedUsage": "⚙️ | **Utilisation explicite**",
+		"possibleFormats": "🔢 | **Formats possibles**",
+		"examples": "🔗 | **Exemples**",
+		"reminders": "⏰ | **Rappel**"
+	},
+	"jumpTo": "Saut au Message ・",
+	"loading": [
+		"{{LOADING}} Surveillance des hamsters en cours...",
+		"{{LOADING}} Finding people at hide-and-seek...",
+		"{{LOADING}} Tentative de trouver cette commande...",
+		"{{LOADING}} Récupération des données depuis le nuage...",
+		"{{LOADING}} Calibrage des lentilles...",
+		"{{LOADING}} Joue à la pierre, au papier, aux ciseaux...",
+		"{{LOADING}} Réglage aux fréquences droites...",
+		"{{LOADING}} des écharpes réticulaires..."
+	],
+	"prefixReminder": "Le préfixe de ce serveur est défini à : `{{prefix}}`"
+}
