@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Anteeksi, en löytänyt suoratoistoa. Oletko varma, että kirjoitit heidän nimensä oikein?",
+	"twitchSubscriptionStatusValues": [
+		"verkossa",
+		"offline-tilassa"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah siellä! Odotin \"online\" tai \"offline\", mutta en ymmärrä, mitä annoit sen sijaan.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Olet jo tilannut tuon suoratoiston tällä kanavalla tälle tilalle.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Success! Whenever {{name}} goes offline, I will post a new message in {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Success! Whenever {{name}} goes live, I will post a new message in {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} Olen pahoillani, mutta sen on annettava viesti tehdessään offline-tilauksen.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Olen pahoillani, mutta et ole tilannut yhtään suoratoistoa, missio keskeytetty!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} I'm sorry, you cannot unsubscribe from {{streamer}} because you are not subscribed to them.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} I'm sorry; while you're subscribed to this streamer and streaming status, their subscriptions is not posted to {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} I'm sorry, but it looks like you're not getting {{status}} notifications for {{streamer}}. We support \"online\" and \"offline\" notifications.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Success! I will no longer post messages to {{channel}} whenever {{name}} goes offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Success! I will no longer post messages to {{channel}} whenever {{name}} goes live.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Success! {{count}} subscription has been removed from this server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Success! {{count}} subscriptions have been removed from this server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Halusit nähdä kaikki tilaukset tältä striimiltä, mutta niitä ei ole!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Suora",
+		"offline": "Offline-tilassa"
+	},
+	"twitchSubscriptionShowUnknownUser": "Tuntematon",
+	"twitchSubscriptionDescription": "Hallitse palvelimesi tilauksia. @ info",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"lisää Streamer-kanavan tila",
+			"lisää Streamer-kanavan tila",
+			"Poista Streamer-kanavan tila",
+			"nollaa Lähettäjä",
+			"reset",
+			"näytä",
+			""
+		],
+		"extendedHelp": "Hallitse tämän palvelimen tilauksia.\n__Online Notifications__\nKaikki saatavilla olevat tiedot näkyvät erittäin mukavassa upotuksessa ja kertovat tarkalleen mitä suoratoistin on valmis.\n\n__Offline Ilmoitukset__ _\nSinun täytyy kirjoittaa oma viesti, joka lähetetään kun streamer siirtyy offline-tilaan. Se näytetään mukavassa Twitch-violetti viestissä.",
+		"explainedUsage": [
+			[
+				"lisää/poista/nollaa/näytä",
+				"Onko\n- Lisää uusi Twitch-tilaus.\n- Poista olemassa oleva Twitch-tilaus\n- Palauta kaikki twitch-tilaus, tai jos kyseessä on tietty streamer\n- Näytä kaikki nykyiset Twitch-tilaukset"
+			],
+			[
+				"Lähettäjä",
+				"Nauhoittajan Twitchin käyttäjänimi saadaksesi ilmoituksia. @ info"
+			],
+			[
+				"Kanava",
+				"Discord-kanava, johon ilmoitukset lähetetään. @ info"
+			],
+			[
+				"Tila",
+				"Tila, jonka Twitchin streamerin pitäisi saada ilmoitus, yksi verkossa tai offline-tilassa."
+			],
+			[
+				"Sisältö",
+				"Lähetettävä viesti Discord chat. Vaaditaan offline-ilmoituksia, valinnainen online ilmoituksia."
+			]
+		],
+		"examples": [
+			"lisää favna #twitch online",
+			"lisää favna #twitch offline Favna on nyt offline-tilassa. Sano hyvästit 👋!",
+			"poista kyranet #twitch verkossa",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"näytä"
+		]
+	}
+}
