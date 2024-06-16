@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "{{emoji}} で {{message}} にリアクション",
+	"reactionFooter": "最初のリアクションが追加されました",
+	"filterFooter": "フィルタされた反応",
+	"filter": "{{REDCROSS}} やあ {{user}}、その反応を追加しないでください！",
+	"selfRoleHierarchy": "{{REDCROSS}} 私の役割はすべての自己割り当て可能な役割よりも高くする必要があります。そうしないと、人々に与えることはできません！"
+}
