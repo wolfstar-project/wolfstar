@@ -1,1 +1,23 @@
-[]
+{
+	"guildMemberAdd": "Användare ansluten",
+	"guildMemberAddDescription": "{{user}} anslöt till Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Lade till roller**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Lade till roll**: {{addedRoles}}",
+	"guildMemberAddMute": "Dämpad användare anslöt",
+	"guildMemberBanned": "Användare bannad",
+	"guildMemberKicked": "Användaren sparkade",
+	"guildMemberNoUpdate": "Ingen uppdatering upptäckt",
+	"guildMemberRemove": "Användare kvar",
+	"guildMemberRemoveDescription": "{{user}} anslöt till denna server *en okänd tid sedan*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} anslöt till denna server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Tog bort roller**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Tog bort roll**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Användaren är avstängd",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Nästa**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Föregående**: Ångra",
+	"nameUpdatePreviousWasSet": "**Föregående**: `{{previousName}}`",
+	"nicknameUpdate": "Smeknamn redigerat",
+	"roleUpdate": "Roller redigerade",
+	"usernameUpdate": "Användarnamn redigerat"
+}
