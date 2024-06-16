@@ -1,445 +1,445 @@
 {
-	"commandHandlerAborted": "",
-	"permissionNodesHigher": "",
-	"permissionNodesCannotAllowEveryone": "",
-	"permissionNodesInvalidType": "",
-	"permissionNodesAdd": "",
-	"permissionNodesNodeNotExists": "",
-	"permissionNodesCommandNotExists": "",
-	"permissionNodesRemove": "",
-	"permissionNodesReset": "",
-	"permissionNodesShowName": "",
-	"permissionNodesShowAllow": "",
-	"permissionNodesShowDeny": "",
+	"commandHandlerAborted": "中止",
+	"permissionNodesHigher": "{{REDCROSS}} You cannot modify nor preview the permission nodes for this target.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} You cannot allow commands for the `@everyone` role.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Invalid type, expected either of `allow` or `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} Successfully added the command to the permission node.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} The selected permission node does not exist.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} The selected command does not exist in the permision node.",
+	"permissionNodesRemove": "{{GREENTICK}} Successfully removed the command from the permission node.",
+	"permissionNodesReset": "{{GREENTICK}} Successfully removed all commands from the permission node.",
+	"permissionNodesShowName": "Permissions for: __{{name}}__",
+	"permissionNodesShowAllow": "**Allow**: {{allow}}",
+	"permissionNodesShowDeny": "**Deny**: {{deny}}",
 	"guildInfoTitles": {
-		"CHANNELS": "",
-		"MEMBERS": "",
-		"OTHER": ""
+		"CHANNELS": "频道",
+		"MEMBERS": "成员",
+		"OTHER": "其他"
 	},
-	"guildInfoChannels": "",
-	"guildInfoChannelsAfkChannelText": "",
-	"guildInfoMembers": "",
-	"guildInfoOther": "",
-	"guildInfoBanner": "",
-	"guildInfoIcon": "",
-	"guildInfoSplash": "",
-	"guildInfoDiscoverySplash": "",
+	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Voice, **{{categories}}** categories.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** after **{{afkTime}}**min",
+	"guildInfoMembers": "• **很抱歉{memberCount, number}}** 成员\n• 所有者：**很抱歉{ownerTag}}**\n  (ID：**很好{ownerId}}**)",
+	"guildInfoOther": "• Roles: **{{size}}**\n• Created: **{{createdAt}}**\n• Verification Level: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "横幅图像",
+	"guildInfoIcon": "图标图像",
+	"guildInfoSplash": "Splash 图像",
+	"guildInfoDiscoverySplash": "发现喷溅型图像",
 	"roleInfoTitles": {
-		"PERMISSIONS": ""
+		"PERMISSIONS": "权限"
 	},
-	"roleInfoData": "",
-	"roleInfoAll": "",
-	"roleInfoNoPermissions": "",
-	"manageCommandAutoDeleteShowEmpty": "",
-	"manageCommandAutoDeleteShow": "",
-	"manageCommandAutoDeleteAdd": "",
-	"manageCommandAutoDeleteRemove": "",
-	"manageCommandAutoDeleteRemoveNotset": "",
-	"manageCommandAutoDeleteReset": "",
-	"manageCommandChannelShow": "",
-	"manageCommandChannelShowEmpty": "",
-	"manageCommandChannelAddAlreadyset": "",
-	"manageCommandChannelAdd": "",
-	"manageCommandChannelRemoveNotset": "",
-	"manageCommandChannelRemove": "",
-	"manageCommandChannelResetEmpty": "",
-	"manageCommandChannelReset": "",
-	"manageReactionRolesShowEmpty": "",
-	"manageReactionRolesAddChannel": "",
-	"manageReactionRolesAddPrompt": "",
-	"manageReactionRolesAddMissing": "",
-	"manageReactionRolesAdd": "",
-	"manageReactionRolesRemoveNotExists": "",
-	"manageReactionRolesRemove": "",
-	"manageReactionRolesResetEmpty": "",
-	"manageReactionRolesReset": "",
-	"configurationEquals": "",
-	"setIgnoreChannelsSet": "",
-	"setIgnoreChannelsRemoved": "",
-	"setImageLogsSet": "",
-	"setMemberAddLogsSet": "",
-	"setMemberRemoveLogsSet": "",
-	"setMessageUpdateLogsSet": "",
-	"setMessageDeleteLogsSet": "",
-	"setModLogsSet": "",
-	"setPrefixSet": "",
-	"stickyRolesNotExists": "",
-	"stickyRolesReset": "",
-	"stickyRolesRemove": "",
-	"stickyRolesAdd": "",
-	"stickyRolesShowEmpty": "",
-	"stickyRolesShowSingle": "",
-	"createMuteDescription": "",
+	"roleInfoData": "ID: **{{role.id}}**\nName: **{{role.name}}**\nColor: **{{role.hexColor}}**\nHoisted: **{{hoisted}}**\nPosition: **{{role.rawPosition}}**\nMentionable: **{{mentionable}}**",
+	"roleInfoAll": "所有权限已授予。",
+	"roleInfoNoPermissions": "权限未授予。",
+	"manageCommandAutoDeleteShowEmpty": "现在没有配置命令自动删除。",
+	"manageCommandAutoDeleteShow": "All command autodeletes configured:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Success! All successful commands in {{channel}} will be deleted after {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Success! Commands will not be automatically deleted in {{channel}} anymore!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} The channel {{channel}} was not configured to automatically delete messages!",
+	"manageCommandAutoDeleteReset": "所有命令自动删除已被重置。",
+	"manageCommandChannelShow": "List of disabled commands in {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "指定通道的禁用命令列表为空！",
+	"manageCommandChannelAddAlreadyset": "您正在尝试禁用的命令已被禁用！",
+	"manageCommandChannelAdd": "Successfully disabled the command {{command}} for the channel {{channel}}!",
+	"manageCommandChannelRemoveNotset": "The command you are trying to enable was not disabled for {{channel}}.",
+	"manageCommandChannelRemove": "Successfully enabled the command {{command}} for the channel {{channel}}!",
+	"manageCommandChannelResetEmpty": "这个频道没有禁用指令，所以我决定不做任何事情。",
+	"manageCommandChannelReset": "Successfully enabled all disabled commands in {{channel}}, enjoy!",
+	"manageReactionRolesShowEmpty": "在此服务器上没有设置响应角色。",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} to any message from {{channel}}!",
+	"manageReactionRolesAddPrompt": "正在聆听！请对消息做出反应，我将把反应绑定到角色！",
+	"manageReactionRolesAddMissing": "我等着，但你似乎没有对一个信息作出反应。",
+	"manageReactionRolesAdd": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesRemoveNotExists": "您指定的反应角色不存在。",
+	"manageReactionRolesRemove": "{{GREENTICK}} Success! I will not longer give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesResetEmpty": "没有建立反应作用。",
+	"manageReactionRolesReset": "{{GREENTICK}} Successfully removed all reaction roles.",
+	"configurationEquals": "配置成功：未做任何更改。",
+	"setIgnoreChannelsSet": "Ignoring all command input from {{channel}} now.",
+	"setIgnoreChannelsRemoved": "Listening all command input from {{channel}} now.",
+	"setImageLogsSet": "Successfully set the image logs channel to {{channel}}.",
+	"setMemberAddLogsSet": "Successfully set the member add logs channel to {{channel}}.",
+	"setMemberRemoveLogsSet": "Successfully set the member remove logs channel to {{channel}}.",
+	"setMessageUpdateLogsSet": "Successfully set the message update logs channel to {{channel}}.",
+	"setMessageDeleteLogsSet": "Successfully set the message delete logs channel to {{channel}}.",
+	"setModLogsSet": "Successfully set the mod logs channel to {{channel}}.",
+	"setPrefixSet": "Successfully set the prefix to `{{prefix}}`. Use `{{prefix}}setPrefix NewPrefix` to change it again.",
+	"stickyRolesNotExists": "The user {{user}} does not have any sticky roles or does not have the specified one.",
+	"stickyRolesReset": "Successfully removed all sticky roles from {{user}}.",
+	"stickyRolesRemove": "Successfully removed the specified role from {{user}}.",
+	"stickyRolesAdd": "Successfully added the specified role as sticky to {{user}}.",
+	"stickyRolesShowEmpty": "没有可显示的粘性角色。",
+	"stickyRolesShowSingle": "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "准备静音系统。",
 	"createMuteExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role."
 	},
-	"permissionNodesDescription": "",
+	"permissionNodesDescription": "配置此服务器的权限节点。",
 	"permissionNodesExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"添加角色/会员允许/拒绝命令",
+			"删除角色/会员允许/拒绝命令",
+			"reset Role/Member",
+			"显示角色/成员",
+			"显示",
+			"角色/成员"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "权限节点被每个用户和每个角色覆盖。当内置的权限系统不足时，它们会被使用。\n例如，在某些服务器中，他们想赋予员工角色使用静音和警告的权限， 但不封禁和其他(保留给版主)， 并且只有可配置的员工一级的权限有警告，所以你可以告诉我现在允许员工角色的静音命令。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"行 动",
+				"要么`add`, `remove`, `remove`, `reset`, or `show`。默认值为`show'。"
 			],
 			[
-				"",
-				""
+				"Target",
+				"角色名称或用户名允许ID和提及其中任何一个。"
 			],
 			[
-				"",
-				""
+				"类型",
+				"是 `allow` 或 `deny` 。"
 			],
 			[
-				"",
-				""
+				"命令",
+				"允许或拒绝的命令名称。"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"添加员工允许警告",
+			"添加版主拒绝封禁",
+			"移除员工允许警告",
+			"重置工作人员",
+			"显示工作人员"
 		],
-		"reminder": ""
+		"reminder": "服务器所有者不能有任何动作，所有者角色也可以允许命令。"
 	},
-	"managecommandautodeleteDescription": "",
+	"managecommandautodeleteDescription": "管理每个频道的自动删除计时器。",
 	"managecommandautodeleteExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
+			"添加 TextChanne秒",
+			"删除文本频道",
+			"reset",
+			"显示",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "此命令管理此服务器的每个通道命令自动删除计时器，它很适合从命令中清理通道。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"添加",
+				"为指定的频道添加自动删除计时器。"
 			],
 			[
-				"",
-				""
+				"移除",
+				"从指定的频道中删除自动计时器。"
 			],
 			[
-				"",
-				""
+				"reset",
+				"清除所有自动删除计时器。"
 			],
 			[
-				"",
-				""
+				"显示",
+				"显示所有频道的自动删除计时器。"
 			]
 		],
-		"reminder": "",
+		"reminder": "频道参数是可选的，默认设置为消息的频道，但可能时会使用模糊搜索。",
 		"examples": [
-			"",
-			"",
-			"",
-			""
+			"显示",
+			"添加 #general 4s",
+			"删除 #general",
+			"reset"
 		]
 	},
-	"manageCommandChannelDescription": "",
+	"manageCommandChannelDescription": "管理每个频道阻止的命令列表。",
 	"manageCommandChannelExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"添加 TextChannel 命令",
+			"删除 TextChannel 命令",
+			"重置文本频道",
+			"显示文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "此命令管理此服务器的单个通道阻止命令列表。 它很适合禁用您不想在某些频道中使用的某些命令 (在全局禁用命令)。 使用 \"禁用命令\" 设置键禁用所有频道。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"显示 [channel]",
+				"在指定通道中显示被屏蔽的命令列表。"
 			],
 			[
-				"",
-				""
+				"添加 [channel] <command>",
+				"将命令添加到指定频道的黑名单命令中。"
 			],
 			[
-				"",
-				""
+				"删除 [channel] <command>",
+				"从指定通道的黑名单中删除一个命令。"
 			],
 			[
-				"",
-				""
+				"reset [channel]",
+				"清除在指定通道中被阻止的命令列表。"
 			]
 		],
-		"reminder": "",
+		"reminder": "频道参数是可选的，但可能时使用模糊搜索。",
 		"examples": [
-			"",
-			"",
-			"",
-			""
+			"添加 #通用配置文件",
+			"删除 #通用配置文件",
+			"重置 #General",
+			"显示 #general"
 		]
 	},
-	"manageReactionRolesDescription": "",
+	"manageReactionRolesDescription": "管理此服务器的反应角色。",
 	"manageReactionRolesExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"添加角色",
+			"添加角色文字频道表情",
+			"删除角色消息",
+			"reset",
+			"显示"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "在您的服务器上无缝设置反应作用！ 添加反应作用时， 我聆听您5分钟的反应，将您的第一个反应绑在频道和消息旁边， 具有指定的角色。\n否则，如果指定了频道，提示将不会被创建。 并且响应作用将绑定到所有频道的消息。\n\n添加新的反应作用的最佳方式是使用 \"add @role\"。 如果您喜欢不绑定对特定消息的反应，请使用 \"添加 @role #channel emoji\"",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"显示",
+				"获取所有反应作用列表。"
 			],
 			[
-				"",
-				""
+				"添加 <role>",
+				"添加一个反应作用绑定自执行以来第一个响应信息与角色。"
 			],
 			[
-				"",
-				""
+				"删除 <role> <message>",
+				"移除反应角色，使用 \"show\" 获取他们的列表。"
 			],
 			[
-				"",
-				""
+				"reset",
+				"移除所有反应作用。"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"添加 @role",
+			"添加 @role 角色 #頻道 emoji",
+			"移除 @role 123456789012345678",
+			"reset",
+			"显示"
 		]
 	},
-	"rolesAdded": "",
-	"rolesAuditlog": "",
-	"rolesListEmpty": "",
-	"rolesListTitle": "",
-	"rolesNotManageable": "",
-	"rolesNotPublic": "",
-	"rolesRemoved": "",
-	"setIgnoreChannelsDescription": "",
+	"rolesAdded": "The following roles have been added to your profile: `{{roles}}`",
+	"rolesAuditlog": "授权：公共角色管理 | '角色' 命令。",
+	"rolesListEmpty": "此服务器没有列为公共角色的角色。",
+	"rolesListTitle": "公共角色列表",
+	"rolesNotManageable": "The following roles cannot be given by me due to their hierarchy role position: `{{roles}}`",
+	"rolesNotPublic": "The following roles are not public: `{{roles}}`",
+	"rolesRemoved": "The following roles have been removed from your profile: `{{roles}}`",
+	"setIgnoreChannelsDescription": "设置忽略频道列表。",
 	"setIgnoreChannelsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use WolfStar's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, WolfStar is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。您可以放置频道的名称、标记或输入“这里”来选择发送消息的频道。"
 			]
 		],
-		"reminder": "",
+		"reminder": "你不能设置两次相同的频道，而是WolfStar会删除它。",
 		"examples": [
-			"",
-			""
+			"#概况",
+			"在这里"
 		]
 	},
-	"setImageLogsDescription": "",
+	"setImageLogsDescription": "设置图像日志频道。",
 	"setImageLogsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。您可以放置频道的名称、标记或输入“这里”来选择发送消息的频道。"
 			]
 		],
 		"examples": [
-			"",
-			""
+			"#image-logs",
+			"在这里"
 		]
 	},
-	"setMemberAddLogsDescription": "",
+	"setMemberAddLogsDescription": "设置会员添加日志频道。",
 	"setMemberAddLogsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "此命令帮助您设置会员添加日志通道，每次用户加入时将收到一条消息。\n如果静音用户加入，它将发送一个特殊的“静音成员加入”事件。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。您可以放置频道的名称、标记或输入“这里”来选择发送消息的频道。"
 			]
 		],
 		"examples": [
-			"",
-			""
+			"#会员日志",
+			"在这里"
 		],
-		"reminder": ""
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar."
 	},
-	"setMemberRemoveLogsDescription": "",
+	"setMemberRemoveLogsDescription": "设置会员删除日志频道。",
 	"setMemberRemoveLogsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "此命令帮助您设置成员移除日志通道， 每次用户离开、被踢出或被禁止的消息都会收到消息。\n在最后两种情况下，它将发送一个特殊的“用户踢出”或“用户封禁”事件。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。 您可以放置频道的名称、标记它，也可以输入“这里”来配置此命令所使用的频道。"
 			]
 		],
 		"examples": [
-			"",
-			""
+			"#会员日志",
+			"在这里"
 		],
-		"reminder": ""
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar."
 	},
-	"setMessageUpdateLogsDescription": "",
+	"setMessageUpdateLogsDescription": "设置消息更新日志频道。",
 	"setMessageUpdateLogsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "此命令帮助您设置消息更新日志通道，每次编辑消息时都会收到消息。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。 您可以放置频道的名称、标记它，也可以输入“这里”来配置此命令所使用的频道。"
 			]
 		],
-		"reminder": "",
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.",
 		"examples": [
-			"",
-			""
+			"#消息日志",
+			"在这里"
 		]
 	},
-	"setMessageDeleteLogsDescription": "",
+	"setMessageDeleteLogsDescription": "设置消息删除日志频道。",
 	"setMessageDeleteLogsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "此命令帮助您设置消息删除日志通道，每次删除消息时，该通道都会收到消息。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。 您可以放置频道的名称、标记它，也可以输入“这里”来配置此命令所使用的频道。"
 			]
 		],
-		"reminder": "",
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nDue to Discord limitations, WolfStar cannot know who deleted a message.",
 		"examples": [
-			"",
-			""
+			"#消息日志",
+			"在这里"
 		]
 	},
-	"setmodlogsDescription": "",
+	"setmodlogsDescription": "设置模组日志通道。",
 	"setmodlogsExtended": {
 		"usages": [
-			""
+			"此处/文本频道"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"频道",
+				"TextChannel。您可以放置频道的名称、标记或输入“这里”来选择发送消息的频道。"
 			]
 		],
-		"reminder": "",
+		"reminder": "由于Discord的限制，自动检测不会检测到踢出。 你需要使用 `kick` 命令才能将它们作为正式的审核日志案例。",
 		"examples": [
-			"",
-			""
+			"#mod-logs",
+			"在这里"
 		]
 	},
-	"setprefixDescription": "",
+	"setprefixDescription": "设置WolfStar的前缀。",
 	"setprefixExtended": {
 		"usages": [
-			""
+			"前缀"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "This command helps you setting up WolfStar's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget WolfStar's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `WolfStar, ping`).",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"前缀",
+				"The prefix to set. Default one in WolfStar is `{{DEFAULT_PREFIX}}`."
 			]
 		],
-		"reminder": "",
+		"reminder": "您的前缀只能包含每个人都能写入和输入的字符。",
 		"examples": [
-			"",
-			""
+			"&",
+			"="
 		]
 	},
-	"guildInfoDescription": "",
+	"guildInfoDescription": "检查服务器的信息。",
 	"guildInfoExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "服务器信息命令显示消息发送的服务器信息。\n它显示频道的数量，每个类别的计数、成员数量 (从 API 给出) 拥有用户 id 的所有者，角色数量、区域、创建日期、验证等级。 。"
 	},
-	"roleInfoDescription": "",
+	"roleInfoDescription": "检查角色的信息。",
 	"roleInfoExtended": {
 		"usages": [
-			"",
+			"作用",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "roleinfo 命令显示角色信息，例如它的 id、名称、颜色，无论它是否热门(单独显示) 它的角色等级地位，不管它是否提及，它有多少成员说了角色，以及它的权限。\n发送带有角色颜色的嵌入消息。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"作用",
+				"角色名称、名称、提及或id。"
 			]
 		],
 		"examples": [
-			"",
-			"",
+			"管理员",
+			"版主",
 			""
 		]
 	},
-	"stickyRolesDescription": "",
+	"stickyRolesDescription": "管理用户的粘性角色。",
 	"stickyRolesExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"添加用户角色",
+			"删除用户角色",
+			"重置用户",
+			"显示用户",
+			"用户"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "StickyRoles 命令允许您管理每个成员的粘性角色。 即使在你离开时他们仍然是他们的角色，他们一旦加入就会被重新使用。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"行 动",
+				"要么检查粘性角色，要么添加一个，要么移除一个，要么移除所有。"
 			],
 			[
-				"",
-				""
+				"用户",
+				"所有操作的用户目标。"
 			],
 			[
-				"",
-				""
+				"作用",
+				"要添加或删除的角色。"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			""
+			"添加 WolfStar Godess",
+			"show WolfStar",
+			"移除 WolfStar Godess",
+			"reset WolfStar"
 		],
-		"reminder": ""
+		"reminder": "会员角色将不会被此命令修改。您需要添加或删除它们。"
 	},
-	"rolesDescription": "",
+	"rolesDescription": "列表、要求或取消在此服务器中的公共角色。",
 	"rolesExtended": {
 		"usages": [
-			"",
+			"作用",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "公共角色是所有人都可以使用的角色。\n管理员必须用配置命令配置它们。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"角色",
+				"要声明或取消声明的角色列表。留空以获取可用角色列表。"
 			]
 		],
-		"reminder": "",
+		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.",
 		"examples": [
-			"",
-			""
+			"设计程序员",
+			"设计师"
 		]
 	}
 }
