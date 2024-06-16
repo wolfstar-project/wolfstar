@@ -1,25 +1,25 @@
 {
-	"discordAbortError": "",
-	"fetchBansFail": "",
+	"discordAbortError": "Jag hade ett litet nätverksfel när meddelande Discord, kör detta kommando igen!",
+	"fetchBansFail": "Det gick inte att hämta bannlysningar. Har jag behörigheten **{{ADMINISTRATOR, permissions}}**?",
 	"helpTitles": {
-		"aliases": "",
-		"usages": "",
-		"extendedHelp": "",
-		"explainedUsage": "",
-		"possibleFormats": "",
-		"examples": "",
-		"reminders": ""
+		"aliases": "🖇️ <unk> **Alias**",
+		"usages": "📝 <unk> **Kommandoanvändning**",
+		"extendedHelp": "🔍 <unk> **Utökad hjälp**",
+		"explainedUsage": "⚙️ <unk> **Förklarad användning**",
+		"possibleFormats": "🔢 <unk> **Möjliga format**",
+		"examples": "🔗 <unk> **Exempel**",
+		"reminders": "⏰ <unk> **Påminnelse**"
 	},
-	"jumpTo": "",
+	"jumpTo": "Hoppa till meddelande ►",
 	"loading": [
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
+		"{{LOADING}} Titta på hamstrarna körde...",
+		"{{LOADING}} Hitta personer på gömma...",
+		"{{LOADING}} Försöker lista ut detta kommando...",
+		"{{LOADING}} Hämtar data från molnet...",
+		"{{LOADING}} Kalibrerar linser...",
+		"{{LOADING}} Spelar rock, papper, sax...",
+		"{{LOADING}} Ställa in till rätt frekvenser...",
+		"{{LOADING}} Förankrande splines..."
 	],
-	"prefixReminder": ""
+	"prefixReminder": "Prefixet på den här servern är satt till: `{{prefix}}`"
 }
