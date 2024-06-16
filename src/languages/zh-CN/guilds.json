@@ -1,1 +1,13 @@
-[]
+{
+	"explicitContentFilterDisabled": "已禁用",
+	"explicitContentFilterMembersWithoutRoles": "没有角色的成员",
+	"explicitContentFilterAllMembers": "所有成员",
+	"defaultMessageNotificationsAllMessages": "所有消息",
+	"defaultMessageNotificationsOnlyMentions": "仅@提到的",
+	"SuppressJoinNotifications": "会员加入通知",
+	"SuppressJoinNotificationReplies": "会员加入贴纸回复按钮",
+	"SuppressPremiumSubscriptions": "服务器提升通知",
+	"SuppressGuildReminderNotifications": "服务器设置提示",
+	"SuppressRoleSubscriptionPurchaseNotifications": "禁止角色订阅购买通知",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "禁止角色订阅购买通知回复"
+}
