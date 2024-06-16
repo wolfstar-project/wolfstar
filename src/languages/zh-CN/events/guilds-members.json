@@ -1,1 +1,23 @@
-[]
+{
+	"guildMemberAdd": "用户加入",
+	"guildMemberAddDescription": "{{user}} joined Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Added roles**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Added role**: {{addedRoles}}",
+	"guildMemberAddMute": "静音用户已加入",
+	"guildMemberBanned": "禁止用户",
+	"guildMemberKicked": "用户踢出",
+	"guildMemberNoUpdate": "未检测到更新",
+	"guildMemberRemove": "用户左侧",
+	"guildMemberRemoveDescription": "{{user}} joined this server *an unknown time ago*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} joined this server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Removed roles**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Removed role**: {{removedRoles}}",
+	"guildMemberSoftBanned": "用户软封了",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Next**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**上一个**：未设置",
+	"nameUpdatePreviousWasSet": "**Previous**: `{{previousName}}`",
+	"nicknameUpdate": "昵称已编辑",
+	"roleUpdate": "角色已编辑",
+	"usernameUpdate": "用户名已编辑"
+}
