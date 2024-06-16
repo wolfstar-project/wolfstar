@@ -1,49 +1,49 @@
 {
-	"avatarDescription": "",
+	"avatarDescription": "Visa någons avatar i full storlek.",
 	"avatarExtended": {
 		"usages": [
 			"",
-			""
+			"Användare"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Som detta kommandos namn säger, det visar någons avatar.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användare",
+				"Användaren för att få avataren för. Standard till dig själv."
 			]
 		],
-		"reminder": ""
+		"reminder": "Använd flaggan --size för att ändra avatarens storlek."
 	},
-	"avatarNone": "",
-	"voteDescription": "",
+	"avatarNone": "Användaren har inte en avatar inställd.",
+	"voteDescription": "Förenklad reaktionsbaserad omröstning.",
 	"voteExtended": {
 		"usages": [
-			""
+			"Fråga"
 		],
 		"examples": [
-			""
+			"Ska jag implementera #anime-kanalen?"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Fråga",
+				"Frågan att rösta om."
 			]
 		]
 	},
-	"voteContentNeeded": "",
-	"voteReactionBlocked": "",
+	"voteContentNeeded": "{{REDCROSS}} Du måste ange ett ämne för omröstningen.",
+	"voteReactionBlocked": "{{REDCROSS}} Jag kunde inte lägga till de reaktioner som krävs för att detta kommando skulle fungera eftersom du har mig blockerad! 😢",
 	"whoisExtended": {
 		"usages": [
 			"",
-			""
+			"Användare"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Hämtar information om någon servermedlem. Även känd som `userinfo` i många andra bots.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Användare",
+				"Användaren för att få information om. Standardvärden för dig själv."
 			]
 		]
 	},
-	"whoisMemberRoleListAndMore": ""
+	"whoisMemberRoleListAndMore": "{{count}} mer."
 }
