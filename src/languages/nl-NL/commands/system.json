@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Evalueert willekeurig Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Expressie"
+		],
+		"extendedHelp": "Het eval commando evalueert code als-in, elke fout die ervanuit wordt gegooid.\nHet gebruikt ook de vlaggen-functie. Schrijf --silent, --depth=number of --async om de output aan te passen.\nDe --wacht vlag verandert de tijd die het eval zal uitvoeren. Standaard 60 seconden. Accepteert tijd in milliseconden.\nDe --stille vlag zal niets opleveren.\nDe --depth vlag accepteert bijvoorbeeld een nummer, --depth=2, om het util.inspect's diepte aan te passen.\nDe --async vlag omvormt de code in een async functie waar u echter van het gebruik van het wachten kunt genieten. als je iets wilt teruggeven, heb je het retoursleutelwoord\nnodig. De --showVerborgen vlag zal de showVerborgen optie in gebruik maken. Nspect.\nDe --lang en --taal markeringen maken verschillende syntaxis mogelijk voor de uitvoer.\nDe --json vlag zet de output om naar json\nDe --no-timeout vlag schakelt de timeout\nals de output te groot is het stuurt de uitvoer als een bestand.",
+		"explainedUsage": [
+			[
+				"Expressie",
+				"De te evalueren expressie"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Gereserveerd voor bot eigenaren."
+	},
+	"evalTimeout": "TIMEOUT: Beëindig langer dan {{seconds}} seconden.",
+	"evalError": "**Fout**:{{output}}\n**Type**:{{type}}\n{{time}}",
+	"dmNotSent": "Ik kan je geen bericht in DM's sturen, heb je me geblokkeerd?",
+	"dmSent": "Ik heb u het bericht in DM's gestuurd.",
+	"reboot": "{{LOADING}} herstarten...",
+	"rebootDescription": "Herlaadt de bot.",
+	"rebootExtended": {
+		"extendedHelp": "De bot gaat boom, dan gaat de bot tot leven komen.",
+		"reminder": "Gereserveerd voor bot eigenaren."
+	}
+}
