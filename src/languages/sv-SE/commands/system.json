@@ -1,30 +1,30 @@
 {
-	"evalDescription": "",
+	"evalDescription": "Utvärderar godtyckligt Javascript.",
 	"evalExtended": {
 		"usages": [
-			""
+			"Uttryck"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Det uråldriga kommandot utvärderar koden as-in, eventuella fel som kastas från den kommer att hanteras.\nDet använder också flaggorna funktionen. Skriv --silent, --depth=number eller --async för att anpassa utgången.\n--wait-flaggan ändrar tiden som den tida kommer att köras. Standardvärdet är 60 sekunder. Accepterar tiden i millisekunder.\n--den tysta flaggan kommer att göra att den inte kommer ut någonting.\n--depth flaggan accepterar ett nummer, till exempel, --depth=2, för att anpassa util.inspect's djup.\nDen --async flaggan kommer att linda in koden i en async funktion där du kan njuta av användningen av vänta, dock, Om du vill returnera något, behöver du returnera sökordet\n--showHidden flaggan kommer att aktivera showHidden alternativet i util. nspect.\nThe --lang and --language flags allow different syntax highlight for the output.\n--json flaggan konverterar utdata till json\n--no-timeout flaggan inaktiverar timeout\nOm utdata är för stor, kommer att skicka utdata som en fil.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Uttryck",
+				"Uttrycket att utvärdera"
 			]
 		],
 		"examples": [
-			"",
-			""
+			"msg.author.username",
+			"1 + 1;"
 		],
-		"reminder": ""
+		"reminder": "Reserverat för bot ägare."
 	},
-	"evalTimeout": "",
-	"evalError": "",
-	"dmNotSent": "",
-	"dmSent": "",
-	"reboot": "",
-	"rebootDescription": "",
+	"evalTimeout": "TIDIG: Tog längre tid än {{seconds}} sekunder.",
+	"evalError": "**Fel**:{{output}}\n**Type**:{{type}}\n{{time}}",
+	"dmNotSent": "Jag kan inte skicka dig ett meddelande i DMs, blockerade du mig?",
+	"dmSent": "Jag har skickat dig meddelandet i DMs.",
+	"reboot": "{{LOADING}} Starta om...",
+	"rebootDescription": "Starta om boten.",
 	"rebootExtended": {
-		"extendedHelp": "",
-		"reminder": ""
+		"extendedHelp": "Botten blir bomm, sedan boten blir återupplivad.",
+		"reminder": "Reserverat för bot ägare."
 	}
 }
