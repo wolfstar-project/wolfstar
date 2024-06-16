@@ -1,0 +1,15 @@
+{
+	"name": "informaţii",
+	"description": "Oferă informații despre mine, și link-uri pentru adăugarea botului și alăturarea serverului de asistență",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} este un bot conceput pentru a ajuta la moderarea serverului. Folosesc [Sapphire Framework](https://sapphirejs.dev) pentru [biblioteca Discord.js](https://discord. s.org).\n- [Politica de Confidențialitate](https://wolfstar.rocks/privacy) <unk> [Termenii de utilizare](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "Statistici",
+	"embedFieldApplicationValue": "- **Utilizatori**: {{users, number}}\n- **Server**: {{guilds, number}}\n- **Channels**: {{channels, number}}\n- **Discord. s**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "Uptime",
+	"embedFieldUptimeValue": "- **Gazdă**: {{host}}\n- **Client**: {{client}}",
+	"embedFieldServerUsageTitle": "Utilizare server",
+	"embedFieldServerUsageValue": "- **utilizarea procesorului**: {{cpu}}\n- **memorie**: {{heapUsed}}MB (Total: {{heapTotal}}MB)",
+	"buttonInvite": "Adaugă pe serverul tău!",
+	"buttonSupport": "Server de asistență",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "Donează"
+}
