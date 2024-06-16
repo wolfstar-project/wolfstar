@@ -21,7 +21,7 @@
 	"hardActionKick": "Expulsar",
 	"hardActionMute": "Silenciar",
 	"hardActionNone": "Ninguno",
-	"hardActionSoftban": "SoftBan",
+	"hardActionSoftban": "Ban Soft",
 	"hardActionWarning": "Advertencia",
 	"softActionAlert": "Notificación",
 	"softActionDelete": "Borrar",
