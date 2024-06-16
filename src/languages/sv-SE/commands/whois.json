@@ -1,1 +1,15 @@
-[]
+{
+	"name": "whois",
+	"description": "Provides information about a Discord user",
+	"contextMenuName": "Get Information",
+	"userName": "user",
+	"userDescription": "The user to get information about",
+	"rolesTitle_one": "Role [1]",
+	"rolesTitle_other": "Roles [{{count, number}}]",
+	"permissionsTitle": "Key Permissions",
+	"permissionsAll": "All Permissions",
+	"embedDescription": "**User Since**: {{createdAt}}",
+	"embedMemberDescription": "**Member Since**: {{joinedAt}}",
+	"buttonAvatar": "Avatar",
+	"buttonProfile": "Profile"
+}
