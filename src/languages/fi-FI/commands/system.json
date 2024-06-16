@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Arvioi mielivaltaista Javascriptiä.",
+	"evalExtended": {
+		"usages": [
+			"Lauseke"
+		],
+		"extendedHelp": "Eval komento arvioi koodin as-in, minkä tahansa sen heittämän virheen käsitellään.\nSe käyttää myös liput ominaisuutta. Kirjoita --silent, --depth=number tai --async muokataksesi ulostuloa.\n--wait -merkki muuttaa aikaa, jolloin eval suoritetaan. Oletukset 60 sekuntia. Hyväksyy aikaa millisekunteissa.\n--hiljainen lippu ei tee siitä mitään.\n--depth -lippu hyväksyy esimerkiksi numeron --depth=2, jotta voit muokata util.inspectin syvyyttä.\n--async lippu kääri koodin async funktioon, jossa voit kuitenkin nauttia odotetusta käytöstä. jos haluat palauttaa jotakin, tarvitset paluuhakusanan\n--showPiilotettu lippu otetaan käyttöön piilotettu valinta in util. nspect.\n--lang ja --language liput sallivat erilaisen syntaksin korostuksen tulostukselle.\n--json lippu muuntaa ulostulon\n--no-timeout lippu poistaa aikakatteen\nJos ulostulo on liian suuri, se lähettää tulosteen tiedostona.",
+		"explainedUsage": [
+			[
+				"Lauseke",
+				"Teksti arvioitavaksi"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Varattu botin omistajille."
+	},
+	"evalTimeout": "AIKA: Pitkä kuin {{seconds}} sekuntia.",
+	"evalError": "**Error**:{{output}}\n**Type**:{{type}}\n{{time}}",
+	"dmNotSent": "En voi lähettää sinulle viestiä DM-viesteissä, esititkö sinä minut?",
+	"dmSent": "Olen lähettänyt sinulle viestin DM:ssä.",
+	"reboot": "{{LOADING}} Käynnistetään Uudelleen...",
+	"rebootDescription": "Käynnistää botin uudelleen.",
+	"rebootExtended": {
+		"extendedHelp": "Botti puhuu, sitten botti herää henkiin.",
+		"reminder": "Varattu botin omistajille."
+	}
+}
