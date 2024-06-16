@@ -1,1 +1,15 @@
-[]
+{
+	"name": "谁是",
+	"description": "提供关于Discord用户的信息",
+	"contextMenuName": "获取信息",
+	"userName": "用户",
+	"userDescription": "要获取有关信息的用户",
+	"rolesTitle_one": "角色 [1]",
+	"rolesTitle_other": "角色[主席{count, number}}]",
+	"permissionsTitle": "密钥权限",
+	"permissionsAll": "所有权限",
+	"embedDescription": "**User Since**: {{createdAt}}",
+	"embedMemberDescription": "**Member Since**: {{joinedAt}}",
+	"buttonAvatar": "头像",
+	"buttonProfile": "个人信息"
+}
