@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Es gibt keine geschnitzten Nachrichten in diesem Kanal.",
+	"snipeTitle": "Schnipste Nachricht",
+	"snipeDescription": "Abrufen der zuletzt gelöschten Nachricht aus einem Kanal",
+	"snipeExtended": {
+		"extendedHelp": "Dies sendet nur die zuletzt gelöschte Nachricht aus diesem Kanal, jemand verhält sich falsch? Dies wird sie fangen."
+	}
+}
