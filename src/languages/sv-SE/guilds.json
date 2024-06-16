@@ -1,1 +1,13 @@
-[]
+{
+	"explicitContentFilterDisabled": "Inaktiverad",
+	"explicitContentFilterMembersWithoutRoles": "Medlemmar utan roller",
+	"explicitContentFilterAllMembers": "Alla medlemmar",
+	"defaultMessageNotificationsAllMessages": "Alla meddelanden",
+	"defaultMessageNotificationsOnlyMentions": "Endast @omnämnanden",
+	"SuppressJoinNotifications": "Medlemmar går med i aviseringar",
+	"SuppressJoinNotificationReplies": "Svarsknappar för medlemmens anslutning",
+	"SuppressPremiumSubscriptions": "Server boost notifikationer",
+	"SuppressGuildReminderNotifications": "Serverns inställningstips",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Släpp notiser om köp av rollabonnemang",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Undertrycka svar för rollprenumeration inköpsmeddelanden"
+}
