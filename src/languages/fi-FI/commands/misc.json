@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Tällä kanavalla ei ole viilennettyjä viestejä.",
+	"snipeTitle": "Viesti Leikkaa",
+	"snipeDescription": "Hae viimeksi poistettu viesti kanavalta",
+	"snipeExtended": {
+		"extendedHelp": "Tämä lähettää juuri viimeksi poistetun viestin tältä kanavalta, joku on väärässä? Tämä saalis heidät."
+	}
+}
