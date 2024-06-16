@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Відповів з {{emoji}} на {{message}}",
+	"reactionFooter": "Додано першу реакцію",
+	"filterFooter": "Відфільтрована реакція",
+	"filter": "{{REDCROSS}} Hey {{user}}, please do not add that reaction!",
+	"selfRoleHierarchy": "{{REDCROSS}} Моя роль повинна бути вище, ніж всі самопризначені ролі, інакше я не можу надати їм людей!"
+}
