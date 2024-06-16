@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Viestipohjaiset komennot ovat **vanhentuneita**, ja ne poistetaan tulevaisuudessa. Sinun tulee käyttää sen sijaan komentoa {{command}} kautta!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Tämä komento on käytettävissä vain kauttaviivakomentojen kautta. Käytä sen sijaan kauttaviivakomentoa."
+	},
+	"slashOnlyErrorMessage": "Tämä komento on käytettävissä vain kauttaviivakomentojen kautta. Käytä sen sijaan kauttaviivakomentoa."
+}
