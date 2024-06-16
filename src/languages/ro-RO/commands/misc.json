@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Nu există mesaje împuşcate în acest canal.",
+	"snipeTitle": "Mesaj Sniped",
+	"snipeDescription": "Recuperează ultimul mesaj șters dintr-un canal",
+	"snipeExtended": {
+		"extendedHelp": "Asta trimite ultimul mesaj șters de pe acest canal, cineva se comportă greșit? Asta îi va prinde."
+	}
+}
