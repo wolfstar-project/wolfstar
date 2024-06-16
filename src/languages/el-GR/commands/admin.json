@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Επιτυχής ενημέρωση του κλειδιού **{{key}}**: {{response}}",
+	"confGetNoExt": "Το κλειδί ** Το{{key}}** δεν φαίνεται να υπάρχει.",
+	"confGet": "Η τιμή για το κλειδί **{{key}}** είναι: `{{value}}`",
+	"confReset": "Το κλειδί **{{key}}** έχει επαναφερθεί σε: `{{value}}`",
+	"confNochange": "Η τιμή για **{{key}}** ήταν ήδη αυτή η τιμή.",
+	"confServerDescription": "Ορισμός ρυθμίσεων ανά διακομιστή.",
+	"confServerExtended": {
+		"usages": [
+			"ορισμός τιμής NameOfKey για το κλειδί",
+			"εμφάνιση",
+			"εμφάνιση NameOfKey",
+			"κατάργηση της τιμής NameOfKey για το κλειδί",
+			"reset NameOfKey",
+			"μενού"
+		],
+		"extendedHelp": "Σας επιτρέπει να ρυθμίσετε το WolfStar από το Discord, ως μια γρήγορη εναλλακτική λύση στο [web ταμπλό](https://wolfstar.rocks).",
+		"examples": [
+			"ορισμός γλώσσας el-GR",
+			"ορισμός channels.moderation-logs #moderation-logs",
+			"εμφάνιση",
+			"εμφάνιση καναλιών",
+			"αφαιρέστε τον συντονιστή ρόλων",
+			"reset roles.moderator",
+			"μενού"
+		],
+		"reminder": "Υπάρχουν κλειδιά και ομάδες, κλειδιά που βρίσκονται μέσα σε μια ομάδα που ονομάζονται από το `GroupName.KeyName`."
+	},
+	"confServer": "**Server Setting {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` μπορεί να ρυθμιστεί μόνο μέσω του πίνακα ελέγχου ",
+	"confSettingNotSet": "Δεν Έχει ρυθμιστεί",
+	"rolesetDescription": "Διαχείριση μοναδικών συνόλων ρόλων.",
+	"rolesetExtended": {
+		"usages": [
+			"όρισε RoleSetName Role1 Role2 Role3...",
+			"αφαίρεσε RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"λίστα",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Ένα σύνολο ρόλων είναι μια ομάδα ρόλων WolfStar προσδιορίζει ως μοναδικό για όλα τα μέλη του διακομιστή, δηλαδή ένας ρόλος που ονομάζεται «περιοχή» θα μπορούσε να έχει τους ρόλους «Αφρική», «Αμερική», «Ασία», και «Ευρώπη», και τα μέλη θα μπορούν να έχουν μόνο έναν από αυτούς. Αυτό είναι σαν ένα είδος «κανόνα» που εφαρμόζεται στις τρεις ακόλουθες περιπτώσεις:\n\n- Όταν κάποιος ισχυρίζεται ένα ρόλο μέσω της εντολής «ρόλοι».\n- Όταν κάποιος ισχυρίζεται ένα ρόλο μέσω των ρόλων αντίδρασης.\n- Όταν κάποιος λαμβάνει ένα ρόλο είτε χειροκίνητα είτε από άλλο bot.",
+		"explainedUsage": [
+			[
+				"προσθήκη",
+				"Δημιουργήστε ένα νέο ρόλο ή προσθέστε έναν ρόλο σε έναν υπάρχοντα."
+			],
+			[
+				"Κατάργηση",
+				"Αφαιρέστε ένα ρόλο από έναν υπάρχοντα ρόλο."
+			],
+			[
+				"reset",
+				"Αφαιρεί όλους τους ρόλους από έναν ρόλους ή, αν δεν καθορίζεται, από όλους τους υπάρχοντες ρόλους."
+			],
+			[
+				"λίστα",
+				"Παραθέτει όλους τους ρόλους."
+			],
+			[
+				"αυτόματο",
+				"Προσθέτει ή αφαιρεί έναν ρόλο."
+			],
+			[
+				"RoleSetName",
+				"Το όνομα του ρόλου"
+			],
+			[
+				"Role1 Role2 Role3",
+				"Οι ρόλοι για να προσθέσετε στον ρόλο"
+			]
+		],
+		"examples": [
+			"προσθέστε περιοχές Αμερική",
+			"add regions Αφρική America Ασία Ευρώπη",
+			"αφαίρεσε περιοχές Αμερικής",
+			"reset",
+			"επαναφορά περιοχών",
+			"λίστα",
+			"περιοχές της Αμερικής",
+			"περιοχές Αφρική Αμερική Ασία Ευρώπη"
+		],
+		"reminder": "Αυτή η εντολή μπορεί να προσθέσει ή/και να αφαιρέσει πολλαπλούς ρόλους ταυτόχρονα."
+	},
+	"rolesetCreated": "Το σετ {{name}} μοναδικού ρόλου έχει δημιουργηθεί με τους ακόλουθους ρόλους: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Updated the {{name}} unique role set, it now has the following roles: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "The {{name}} unique role set will no longer include the following roles: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} There are no rolesets configured in this group.",
+	"rolesetResetAll": "Το {{GREENTICK}} με επιτυχία αφαίρεσε όλους τους ρόλους.",
+	"rolesetResetNotExists": "{{REDCROSS}} Ο ρόλος `{{name}}` δεν υπάρχει σε αυτόν τον διακομιστή.",
+	"rolesetResetGroup": "Το {{GREENTICK}} αφαιρέθηκε με επιτυχία ο ρόλος `{{name}}` από αυτόν τον διακομιστή.",
+	"rolesetUpdated": "Το σύνολο {{name}} μοναδικού ρόλου έχει ενημερωθεί.",
+	"rolesetNoRolesets": "Δεν έχετε ρόλους.",
+	"confMenuRenderAtFolder": "Αυτή τη στιγμή στο: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Αυτή τη στιγμή στο: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Δεν υπάρχουν ρυθμιζόμενα κλειδιά για αυτόν το φάκελο",
+	"confMenuRenderSelect": "Παρακαλώ πληκτρολογήστε οποιαδήποτε από τις ακόλουθες καταχωρήσεις",
+	"confMenuRenderUpdate": "• Ενημέρωση Τιμής → `set <value>`",
+	"confMenuRenderRemove": "• Αφαίρεση Τιμής → `remove <value>`",
+	"confMenuRenderReset": "• Επαναφορά Τιμής → `reset`",
+	"confMenuRenderUndo": "• Αναίρεση Ενημέρωσης → `undo`",
+	"confMenuRenderCvalue": "Τρέχουσα Τιμή: **``{{value}}``**",
+	"confMenuRenderBack": "Πατήστε ◀️ για να επιστρέψετε",
+	"confMenuInvalidKey": "Μη έγκυρο κλειδί, παρακαλώ δοκιμάστε ξανά με οποιαδήποτε από τις ακόλουθες επιλογές.",
+	"confMenuInvalidAction": "Μη έγκυρη ενέργεια, παρακαλώ προσπαθήστε ξανά με οποιαδήποτε από τις ακόλουθες επιλογές.",
+	"confMenuSaved": "Επιτυχής αποθήκευση όλων των αλλαγών."
+}
