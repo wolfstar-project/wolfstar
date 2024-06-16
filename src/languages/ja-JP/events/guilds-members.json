@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "ユーザーが参加しました",
+	"guildMemberAddDescription": "{{user}} が Discord {{relativeTime}} に参加しました",
+	"guildMemberAddedRoles_other": "**役割を追加**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**役割を追加**: {{addedRoles}}",
+	"guildMemberAddMute": "ミュートされたユーザーが参加しました",
+	"guildMemberBanned": "僅用於中文",
+	"guildMemberKicked": "ユーザーがキックされました",
+	"guildMemberNoUpdate": "アップデートは検出されませんでした",
+	"guildMemberRemove": "ユーザーが退出しました",
+	"guildMemberRemoveDescription": "{{user}} がこのサーバー *不明な時間前* に参加しました",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} がこのサーバー {{relativeTime}} に参加しました",
+	"guildMemberRemovedRoles_other": "**削除された役割**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**削除された役割**: {{removedRoles}}",
+	"guildMemberSoftBanned": "ユーザーのSoftbaned",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**次へ**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**以前**: 未設定",
+	"nameUpdatePreviousWasSet": "**前**: `{{previousName}}`",
+	"nicknameUpdate": "ニックネームが編集されました",
+	"roleUpdate": "役割が編集されました",
+	"usernameUpdate": "ユーザー名が編集されました"
+}
