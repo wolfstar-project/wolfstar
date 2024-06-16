@@ -1,107 +1,107 @@
 {
-	"confUpdated": "",
-	"confGetNoExt": "",
-	"confGet": "",
-	"confReset": "",
-	"confNochange": "",
-	"confServerDescription": "",
+	"confUpdated": "Successfully updated the key **{{key}}**: {{response}}",
+	"confGetNoExt": "The key **{{key}}** does not seem to exist.",
+	"confGet": "The value for the key **{{key}}** is: `{{value}}`",
+	"confReset": "The key **{{key}}** has been reset to: `{{value}}`",
+	"confNochange": "The value for **{{key}}** was already that value.",
+	"confServerDescription": "Define per-server settings.",
 	"confServerExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"set NameOfKey Value for Key",
+			"show",
+			"show NameOfKey",
+			"remove NameOfKey Value for Key",
+			"reset NameOfKey",
+			"menu"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Allows you to configure WolfStar from Discord, as a quick alternative to the [web dashboard](https://wolfstar.rocks).",
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"set language en-GB",
+			"set channels.moderation-logs #moderation-logs",
+			"show",
+			"show channels",
+			"remove roles.moderator Moderator",
+			"reset roles.moderator",
+			"menu"
 		],
-		"reminder": ""
+		"reminder": "There are keys and groups, keys that are within a group are named by `GroupName.KeyName`."
 	},
-	"confServer": "",
-	"confDashboardOnlyKey": "",
-	"confSettingNotSet": "",
-	"rolesetDescription": "",
+	"confServer": "**Server Setting {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` can only be configured through the web dashboard ",
+	"confSettingNotSet": "Not Set",
+	"rolesetDescription": "Manage unique role sets.",
 	"rolesetExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"set RoleSetName Role1 Role2 Role3...",
+			"remove RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"邮件列表",
+			"RoleSetName Role1 Role2 Role3"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "角色集合是WolfStar识别为服务器中所有成员独特的角色组，即： 一个名为“区域”的角色可以是非洲`、`美洲`、`亚洲`和`欧洲`，成员只能有其中一个角色。 这就像一种适用于以下三种情况的“规则”：\n\n- 当有人通过“角色”命令要求角色。\n- 当某人通过反应角色要求角色时，\n- 当某人手动或从另一个机器人接收角色时。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"添加",
+				"创建一个新的角色或添加一个角色到一个现有的角色。"
 			],
 			[
-				"",
-				""
+				"移除",
+				"从现有角色中删除角色。"
 			],
 			[
-				"",
-				""
+				"reset",
+				"从角色集中移除所有角色，如果未指定，则移除所有已有角色。"
 			],
 			[
-				"",
-				""
+				"邮件列表",
+				"列出所有角色。"
 			],
 			[
-				"",
-				""
+				"auto",
+				"添加或删除一个角色。"
 			],
 			[
-				"",
-				""
+				"RoleSetName",
+				"角色名称"
 			],
 			[
-				"",
-				""
+				"角色1 角色2 角色3",
+				"要添加到角色的角色"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"增列区域 America",
+			"亚洲及太平洋经济社会委员会",
+			"美国清除地区",
+			"reset",
+			"重置区域",
+			"邮件列表",
+			"美洲区域",
+			"非洲、亚洲和欧洲区域"
 		],
-		"reminder": ""
+		"reminder": "此命令可以同时添加和/或删除多个角色。"
 	},
-	"rolesetCreated": "",
-	"rolesetAdded": "",
-	"rolesetRemoved": "",
-	"rolesetResetEmpty": "",
-	"rolesetResetAll": "",
-	"rolesetResetNotExists": "",
-	"rolesetResetGroup": "",
-	"rolesetUpdated": "",
-	"rolesetNoRolesets": "",
-	"confMenuRenderAtFolder": "",
-	"confMenuRenderAtPiece": "",
-	"confMenuRenderNokeys": "",
-	"confMenuRenderSelect": "",
-	"confMenuRenderUpdate": "",
-	"confMenuRenderRemove": "",
-	"confMenuRenderReset": "",
-	"confMenuRenderUndo": "",
-	"confMenuRenderCvalue": "",
-	"confMenuRenderBack": "",
-	"confMenuInvalidKey": "",
-	"confMenuInvalidAction": "",
-	"confMenuSaved": ""
+	"rolesetCreated": "The {{name}} unique role set has been created with the following roles: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Updated the {{name}} unique role set, it now has the following roles: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "The {{name}} unique role set will no longer include the following roles: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} There are no rolesets configured in this group.",
+	"rolesetResetAll": "{{GREENTICK}} Successfully removed all rolesets.",
+	"rolesetResetNotExists": "{{REDCROSS}} The roleset `{{name}}` does not exist in this server.",
+	"rolesetResetGroup": "{{GREENTICK}} Successfully removed the roleset `{{name}}` from this server.",
+	"rolesetUpdated": "The {{name}} unique role set has been updated.",
+	"rolesetNoRolesets": "您没有角色。",
+	"confMenuRenderAtFolder": "Currently at: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Currently at: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "此文件夹没有可配置的密钥",
+	"confMenuRenderSelect": "请输入以下条目名称",
+	"confMenuRenderUpdate": "• 更新值 -> `set <value>`",
+	"confMenuRenderRemove": "• 删除值 -> `删除 <value>`",
+	"confMenuRenderReset": "• 重置值 -> `reset`",
+	"confMenuRenderUndo": "• 撤消更新 → `撤消`",
+	"confMenuRenderCvalue": "Current Value: **``{{value}}``**",
+	"confMenuRenderBack": "按 :reverse_buton: 返回",
+	"confMenuInvalidKey": "无效的密钥，请使用以下选项再试一次。",
+	"confMenuInvalidAction": "无效的操作，请使用以下选项再试一次。",
+	"confMenuSaved": "成功保存所有更改。"
 }
