@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Сообщение удалено • {{channel}}",
+	"messageDeleteUnknown": "Неизвестное сообщение удалено • {{channel}}",
+	"messageUpdate": "Сообщение изменено • {{channel}}",
+	"messageUpdateUnknown": "Неизвестное сообщение изменено • {{channel}}",
+	"messageNotFound": "Неизвестное сообщение",
+	"messageDeleteBulk_one": "{{count}} сообщение удалено в {{channel}} {{author}}",
+	"messageDeleteBulk_other": "{{count}} сообщения удалены в {{channel}} {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} сообщение удалено в {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} сообщений удалено в {{channel}}",
+	"messageDeleteBulkFooter": "Несколько удаленных сообщений",
+	"voiceActivityFooter": "Активность голоса",
+	"jumpToContext": "Перейти к контексту"
+}
