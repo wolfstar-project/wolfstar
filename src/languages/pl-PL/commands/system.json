@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Oceń dowolny Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Wyrażenie"
+		],
+		"extendedHelp": "Unikalne polecenie ocenia kod jako-in, każdy wyrzucony z niego błąd będzie obsługiwany.\nUżywa również funkcji flag. Napisz --silent, --depth=number lub --async, aby dostosować dane wyjściowe.\n--oczekiwanie flaga zmienia czas, w którym wydarzenie zostanie uruchomione. Domyślnie do 60 sekund. Akceptuje czas w milisekundach.\n--cicha flaga sprawi, że nic się nie pojawi.\nFlaga --depth akceptuje liczbę, na przykład --depth=2, aby dostosować głębokość inspekcji.\nFlaga --async wpakuje kod w funkcję asynchroniczną, jednak możesz cieszyć się używaniem oczekiwania. jeśli chcesz coś zwrócić, będziesz potrzebować zwrotnego słowa kluczowego\n--showHidden flaga włączy opcję showHidden w util. nspekt.\nFlagi --lang i --language pozwalają na wyróżnienie składni dla wyjścia.\nFlaga --json konwertuje dane wyjściowe na json\n--no-timeout flaga wyłącza limit czasu\nJeśli dane wyjściowe są zbyt duże, wyśle dane wyjściowe jako plik.",
+		"explainedUsage": [
+			[
+				"Wyrażenie",
+				"Wyrażenie do oceny"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Zarezerwowane dla właścicieli botów."
+	},
+	"evalTimeout": "TERMINA: Zajęto dłużej niż {{seconds}} sekund.",
+	"evalError": "**Błąd**:{{output}}\n**Typ**:{{type}}\n{{time}}",
+	"dmNotSent": "Nie mogę wysłać Ci wiadomości w DM, czy mnie zablokowałeś?",
+	"dmSent": "Wysłałem ci wiadomość w DM.",
+	"reboot": "{{LOADING}} restartowanie...",
+	"rebootDescription": "Uruchamia ponownie bota.",
+	"rebootExtended": {
+		"extendedHelp": "Bot wraca booma, a bot wraca.",
+		"reminder": "Zarezerwowane dla właścicieli botów."
+	}
+}
