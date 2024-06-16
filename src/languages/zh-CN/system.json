@@ -1,25 +1,25 @@
 {
-	"discordAbortError": "",
-	"fetchBansFail": "",
+	"discordAbortError": "I had a small network error when messaging Discord, please run this command again!",
+	"fetchBansFail": "Failed to fetch bans. Do I have the **{{ADMINISTRATOR, permissions}}** permission?",
 	"helpTitles": {
-		"aliases": "",
-		"usages": "",
-		"extendedHelp": "",
-		"explainedUsage": "",
-		"possibleFormats": "",
-		"examples": "",
-		"reminders": ""
+		"aliases": "🖇️ | **Aliases**",
+		"usages": "📝 | **Command Usage**",
+		"extendedHelp": "🔍 | **Extended Help**",
+		"explainedUsage": "⚙ | **Explained usage**",
+		"possibleFormats": "🔢 | **Possible formats**",
+		"examples": "🔗 | **Examples**",
+		"reminders": "⏰ | **Reminder**"
 	},
-	"jumpTo": "",
+	"jumpTo": "Jump to Message ►",
 	"loading": [
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
+		"{{LOADING}} Watching hamsters run...",
+		"{{LOADING}} Finding people at hide-and-seek...",
+		"{{LOADING}} Trying to figure out this command...",
+		"{{LOADING}} Fetching data from the cloud...",
+		"{{LOADING}} Calibrating lenses...",
+		"{{LOADING}} Playing rock, paper, scissors...",
+		"{{LOADING}} Tuning in to the right frequencies...",
+		"{{LOADING}} Reticulating splines..."
 	],
-	"prefixReminder": ""
+	"prefixReminder": "The prefix in this server is set to: `{{prefix}}`"
 }
