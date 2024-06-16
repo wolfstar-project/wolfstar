@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Przerwano",
+	"permissionNodesHigher": "{{REDCROSS}} Nie możesz modyfikować ani podglądać węzłów uprawnień dla tego celu.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} nie możesz zezwolić na polecenia dla roli `@everyone`.",
+	"permissionNodesInvalidType": "{{REDCROSS}} nieprawidłowy typ, oczekiwany dla `allow` lub `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} pomyślnie dodał polecenie do węzła uprawnień.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Wybrany węzeł uprawnień nie istnieje.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Wybrane polecenie nie istnieje w węźle permizacji.",
+	"permissionNodesRemove": "{{GREENTICK}} pomyślnie usunął polecenie z węzła uprawnień.",
+	"permissionNodesReset": "{{GREENTICK}} pomyślnie usunięto wszystkie polecenia z węzła uprawnień.",
+	"permissionNodesShowName": "Uprawnienia dla: __{{name}}__",
+	"permissionNodesShowAllow": "**Zezwalaj**: {{allow}}",
+	"permissionNodesShowDeny": "**Zabójstwo**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Kanały",
+		"MEMBERS": "Członkowie",
+		"OTHER": "Inne"
+	},
+	"guildInfoChannels": "• **{{text}}** Tekst, **{{voice}}** Głos **{{categories}}** kategorie.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** po **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** użytkowników\n• Właściciel: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Rola: **{{size}}**\n• Utworzono: **{{createdAt}}**\n• Poziom weryfikacji: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "Obraz banera",
+	"guildInfoIcon": "Obraz ikony",
+	"guildInfoSplash": "Obraz powitalny",
+	"guildInfoDiscoverySplash": "Odkryj obraz powitalny",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Uprawnienia"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nNazwa: **{{role.name}}**\nKolor: **{{role.hexColor}}**\nSkładano: **{{hoisted}}**\nPozycja: **{{role.rawPosition}}**\nMentionable: **{{mentionable}}**",
+	"roleInfoAll": "Wszystkie uprawnienia przyznane.",
+	"roleInfoNoPermissions": "Uprawnienia nie zostały przyznane.",
+	"manageCommandAutoDeleteShowEmpty": "W tej chwili nie ma skonfigurowanych poleceń.",
+	"manageCommandAutoDeleteShow": "Wszystkie polecenia skonfigurowane autodeletes :{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Sukces! Wszystkie udane polecenia w {{channel}} zostaną usunięte po {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Sukces! Polecenia nie zostaną już automatycznie usunięte w {{channel}}!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Kanał {{channel}} nie został skonfigurowany do automatycznego usuwania wiadomości!",
+	"manageCommandAutoDeleteReset": "Wszystkie polecenia zostały zresetowane.",
+	"manageCommandChannelShow": "Lista wyłączonych poleceń w {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Lista wyłączonych poleceń dla określonego kanału jest pusta!",
+	"manageCommandChannelAddAlreadyset": "Polecenie, które próbujesz wyłączyć, jest już wyłączone!",
+	"manageCommandChannelAdd": "Pomyślnie wyłączono komendę {{command}} dla kanału {{channel}}!",
+	"manageCommandChannelRemoveNotset": "Polecenie, które próbujesz włączyć, nie zostało wyłączone dla {{channel}}.",
+	"manageCommandChannelRemove": "Pomyślnie włączono polecenie {{command}} dla kanału {{channel}}!",
+	"manageCommandChannelResetEmpty": "Ten kanał nie miał wyłączonych poleceń, więc zdecydowałem się nic nie robić.",
+	"manageCommandChannelReset": "Pomyślnie włączono wszystkie wyłączone komendy w {{channel}}, ciesz się!",
+	"manageReactionRolesShowEmpty": "Nie ma ustawionych ról reakcji na tym serwerze.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Sukces! Teraz nadam rolę kiedy ludzie zareagują z {{emoji}} na dowolną wiadomość od {{channel}}!",
+	"manageReactionRolesAddPrompt": "Słucham teraz! Proszę zareagować na wiadomość i połączę reakcję z rolą!",
+	"manageReactionRolesAddMissing": "Czekam, ale wydaje się, że nie zareagował pan na przesłanie.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Sukces! Teraz nadam rolę kiedy ludzie zareagują z {{emoji}} w {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Określona rola reakcji nie istnieje.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Sukces! Nie będę już dawał roli, kiedy ludzie reagują z {{emoji}} w {{url}}!",
+	"manageReactionRolesResetEmpty": "Nie ustawiono ról reakcji.",
+	"manageReactionRolesReset": "{{GREENTICK}} pomyślnie usunięto wszystkie role reakcji.",
+	"configurationEquals": "Pomyślnie skonfigurowano: nie dokonano żadnych zmian.",
+	"setIgnoreChannelsSet": "Ignorowanie wszystkich poleceń od {{channel}} teraz.",
+	"setIgnoreChannelsRemoved": "Nasłuchiwanie wszystkich poleceń od {{channel}} teraz.",
+	"setImageLogsSet": "Pomyślnie ustawiono kanał dziennika obrazów na {{channel}}.",
+	"setMemberAddLogsSet": "Pomyślnie ustawiono kanał dodawania logów do {{channel}}.",
+	"setMemberRemoveLogsSet": "Pomyślnie ustawiono kanał usuwania logów na {{channel}}.",
+	"setMessageUpdateLogsSet": "Pomyślnie ustawiono kanał dziennika aktualizacji wiadomości na {{channel}}.",
+	"setMessageDeleteLogsSet": "Pomyślnie ustawiono kanał usuwania logów na {{channel}}.",
+	"setModLogsSet": "Pomyślnie ustawiono kanał logów modyfikacji na {{channel}}.",
+	"setPrefixSet": "Pomyślnie ustawiono prefiks na `{{prefix}}`. Użyj `{{prefix}}setPrefix NewPrefix` aby zmienić go ponownie.",
+	"stickyRolesNotExists": "Użytkownik {{user}} nie posiada żadnych przylepnych ról lub nie posiada podanych ról.",
+	"stickyRolesReset": "Pomyślnie usunięto wszystkie lepkie role z {{user}}.",
+	"stickyRolesRemove": "Pomyślnie usunięto określoną rolę z {{user}}.",
+	"stickyRolesAdd": "Pomyślnie dodano określoną rolę jako przyklejoną do {{user}}.",
+	"stickyRolesShowEmpty": "Nie ma przyklejonych ról do pokazania.",
+	"stickyRolesShowSingle": "Przyklejona rola(y) dla **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Przygotuj system wyciszeń.",
+	"createMuteExtended": {
+		"extendedHelp": "Ta komenda przygotowuje system wyciszenia, tworząc rolę o nazwie `wyciszone`, i konfigurując ją do ustawień serwera. Ta komenda modyfikuje również uprawnienia wszystkich kanałów (w miarę możliwości) i wyłącza uprawnienia **{{SEND_MESSAGES, permissions}}** w kanałach tekstowych i **{{CONNECT, permissions}}** w kanałach głosowych dla tej roli."
+	},
+	"permissionNodesDescription": "Skonfiguruj węzły uprawnień dla tego serwera.",
+	"permissionNodesExtended": {
+		"usages": [
+			"dodaj Rolę/Członek Zezwalaj/Odmów Polecenia",
+			"usuń Rolę/Członek Zezwalaj/Odmów Polecenia",
+			"reset Role/Member",
+			"pokaż Rolę/Członek",
+			"pokaż",
+			"Rola/Członek"
+		],
+		"extendedHelp": "Węzły uprawnień są nadpisywane przez użytkownika i dla roli. Są one używane, gdy wbudowany system uprawnień nie wystarczy.\nNa przykład na niektórych serwerach chcą nadać personelowi uprawnienia do używania wyciszenia i ostrzeżenia, ale nie zakaz i inne (zarezerwowane dla moderatorów), i tylko ostrzeżenie jest dostępne dla konfigurowalnych uprawnień na poziomie personelu, więc możesz mi powiedzieć, że pozwala na wyciszenie dla roli administratora.",
+		"explainedUsage": [
+			[
+				"Akcja",
+				"`add`, `remove`, `reset`, lub `show`. Domyślnie `show`."
+			],
+			[
+				"Target",
+				"Nazwa roli lub nazwa użytkownika, które umożliwiają identyfikatory i wzmianki."
+			],
+			[
+				"Typ",
+				"`allow` lub `deny`."
+			],
+			[
+				"Polecenie",
+				"Nazwa komendy do zezwolenia lub odrzucenia."
+			]
+		],
+		"examples": [
+			"dodaj zapis zezwalający na ostrzeżenie",
+			"dodaj blokowanie moderatorów",
+			"usuń zezwolenie na ostrzeżenie",
+			"zresetuj personel",
+			"pokaż personel"
+		],
+		"reminder": "Właściciel serwera nie może mieć żadnych działań, ani rola `everyone` nie może mieć dozwolonych poleceń."
+	},
+	"managecommandautodeleteDescription": "Zarządzaj wskaźnikiem automatycznego usuwania dla każdego kanału.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"dodaj Sekundy kanałów tekstowych",
+			"usuń Kanał Tekstowy",
+			"reset",
+			"pokaż",
+			""
+		],
+		"extendedHelp": "Ta komenda zarządza tym serwerem polecenia automatycznego usuwania przez kanał, dobrze służy do pozostawienia kanału czyszczenia z poleceń.",
+		"explainedUsage": [
+			[
+				"dodaj",
+				"Dodaj timer automatycznego usuwania dla określonego kanału."
+			],
+			[
+				"usuń",
+				"Usuń auto-timera z określonego kanału."
+			],
+			[
+				"reset",
+				"Wyczyść wszystkie czasomierze automatycznego usuwania."
+			],
+			[
+				"pokaż",
+				"Pokaż timer automatycznego usuwania dla wszystkich kanałów."
+			]
+		],
+		"reminder": "Argument kanału jest opcjonalny, domyślnie dla kanału wiadomości, ale w miarę możliwości używa niezrozumiałego wyszukiwania.",
+		"examples": [
+			"pokaż",
+			"dodaj #generalne 4s",
+			"usuń #general",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Zarządzaj listą poleceń zablokowanych przez kanał.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"dodaj komendę TextChannel",
+			"usuń komendę TextChannel",
+			"resetuj Kanał Tekstowy",
+			"pokaż Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda zarządza listą poleceń dla tego serwera blokowanych kanałów, dobrze służy do wyłączenia niektórych poleceń, których nie chcesz używać w niektórych kanałach (aby wyłączyć komendę globalnie, użyj klawisza \"disabledCommands\", aby wyłączyć na wszystkich kanałach.",
+		"explainedUsage": [
+			[
+				"pokaż [channel]",
+				"Pokaż listę zablokowanych poleceń na określonym kanale."
+			],
+			[
+				"dodaj [channel] <command>",
+				"Dodaj polecenie do listy zablokowanych poleceń."
+			],
+			[
+				"usuń [channel] <command>",
+				"Usuń polecenie z listy zablokowanych poleceń."
+			],
+			[
+				"reset [channel]",
+				"Wyczyść listę poleceń zablokowanych na określonym kanale."
+			]
+		],
+		"reminder": "Argument kanału jest opcjonalny, ale w miarę możliwości używa nieprecyzyjnego wyszukiwania.",
+		"examples": [
+			"dodaj #ogólny profil",
+			"usuń #ogólny profil",
+			"resetuj #general",
+			"pokaż #general"
+		]
+	},
+	"manageReactionRolesDescription": "Zarządzaj rolami reakcji dla tego serwera.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"dodaj rolę",
+			"dodaj Emoji Role TextChannel",
+			"usuń wiadomość o roli",
+			"reset",
+			"pokaż"
+		],
+		"extendedHelp": "Bezproblemowo ustaw role reakcji na swoim serwerze! Podczas dodawania ról reakcji, Słucham państwa reakcji przez 5 minut i wiążę pierwszą reakcję od państwa obok kanału i wiadomości, z określoną rolą.\nW przeciwnym razie, jeśli kanał jest określony, nie zostanie utworzony monit, a rola reakcji będzie powiązana z wszystkimi wiadomościami kanału.\n\nNajlepszym sposobem na dodanie nowych ról reakcji jest użycie `add @role`. Jeśli wolisz nie powiązać reakcji z konkretną wiadomością, użyj `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"pokaż",
+				"Pobierz listę wszystkich ról reakcji."
+			],
+			[
+				"dodaj <role>",
+				"Dodaje rolę reakcji wiążącą pierwszą odpowiedź od czasu wykonania z rolą."
+			],
+			[
+				"usuń <role> <message>",
+				"Usuwa rolę reakcji, użyj `show` aby uzyskać ich listę."
+			],
+			[
+				"reset",
+				"Usuwa wszystkie role reakcji."
+			]
+		],
+		"examples": [
+			"dodaj @role",
+			"dodaj @role #kanał emoji",
+			"usuń @role 123456789012345678",
+			"reset",
+			"pokaż"
+		]
+	},
+	"rolesAdded": "Następujące role zostały dodane do Twojego profilu: `{{roles}}`",
+	"rolesAuditlog": "Autoryzowane: Zarządzanie rolami publicznymi | Polecenie \"Roles\".",
+	"rolesListEmpty": "Ten serwer nie posiada roli jako rola publiczna.",
+	"rolesListTitle": "Lista ról publicznych",
+	"rolesNotManageable": "Następujące role nie mogą być przez mnie nadane ze względu na ich pozycję hierarchii roli: `{{roles}}`",
+	"rolesNotPublic": "Następujące role nie są publiczne: `{{roles}}`",
+	"rolesRemoved": "Następujące role zostały usunięte z Twojego profilu: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Ustaw kanał na listę ignorowanych kanałów.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "To polecenie pomaga Ci skonfigurować zignorowane kanały. Zignorowany kanał to kanał, w którym nikt oprócz moderatorów nie może używać poleceń WolfStara.\nW przeciwieństwie do usunięcia uprawnienia **{{SEND_MESSAGES, permissions}}**, WolfStar jest nadal w stanie wysyłać wiadomości (i w związku z tym wykonywać polecenia), która pozwala moderatorom na używanie poleceń moderacji w kanale.\nUżyj tego, jeśli chcesz zbanować użycie komend od bota na określonym kanale.",
+		"explainedUsage": [
+			[
+				"kanał",
+				"TekstChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby wybrać kanał, który wiadomość została wysłana."
+			]
+		],
+		"reminder": "Nie możesz ustawić tego samego kanału dwukrotnie, WolfStar usunie go.",
+		"examples": [
+			"#ogólny",
+			"tutaj"
+		]
+	},
+	"setImageLogsDescription": "Ustaw kanał dziennika obrazów.",
+	"setImageLogsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować kanał dziennika obrazów. Za każdym razem, gdy członek wysyła załącznik obrazu, wyśle on wiadomość osadzoną z ponownie przesłanym załącznikiem.\nWszystkie wiadomości są w osadzonych wiadomościach, więc musisz włączyć uprawnienie **{{EMBED_LINKS, permissions}}** dla WilfStar.",
+		"explainedUsage": [
+			[
+				"kanał",
+				"TekstChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby wybrać kanał, który wiadomość została wysłana."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"tutaj"
+		]
+	},
+	"setMemberAddLogsDescription": "Ustaw kanał dodawania logów przez członka.",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować dodawanie kanału dziennika, który będzie odbierał wiadomość za każdym razem, gdy użytkownik dołącza.\nJeśli użytkownik zostanie wyciszony, wyśle specjalne zdarzenie \"Wyciszony członek dołączył\".",
+		"explainedUsage": [
+			[
+				"kanał",
+				"TekstChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby wybrać kanał, który wiadomość została wysłana."
+			]
+		],
+		"examples": [
+			"#logi użytkownika",
+			"tutaj"
+		],
+		"reminder": "Wszystkie wiadomości są w osadzonych wiadomościach, więc musisz włączyć uprawnienia **{{EMBED_LINKS, permissions}}** dla WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Ustaw kanał usuwania logów dla użytkownika.",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować kanał dziennika usunięcia użytkownika który otrzyma wiadomość za każdym razem, gdy użytkownik opuszcza, zostanie wyrzucony lub jest zbanowany.\nW przypadku ostatnich dwóch wyślemy specjalne zdarzenie \"Użytkownik wyrzucony\" lub \"Użytkownik zbanowany\".",
+		"explainedUsage": [
+			[
+				"kanał",
+				"Kanał TextChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby skonfigurować kanał, w którym to polecenie było używane."
+			]
+		],
+		"examples": [
+			"#logi użytkownika",
+			"tutaj"
+		],
+		"reminder": "Wszystkie wiadomości są w osadzonych wiadomościach, więc musisz włączyć uprawnienia **{{EMBED_LINKS, permissions}}** dla WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Ustaw kanał dziennika aktualizacji wiadomości.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować kanał dziennika aktualizacji wiadomości, który będzie odbierał wiadomość za każdym razem, gdy wiadomość jest edytowana.",
+		"explainedUsage": [
+			[
+				"kanał",
+				"Kanał TextChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby skonfigurować kanał, w którym to polecenie było używane."
+			]
+		],
+		"reminder": "Wszystkie wiadomości są w osadzonych wiadomościach, więc musisz włączyć uprawnienia **{{EMBED_LINKS, permissions}}** dla WolfStar.",
+		"examples": [
+			"#wiadomość-logi",
+			"tutaj"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Ustaw kanał usuwania dzienników wiadomości.",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować kanał usuwania wiadomości z dziennika, który będzie odbierał wiadomość za każdym razem, gdy wiadomość zostanie usunięta.",
+		"explainedUsage": [
+			[
+				"kanał",
+				"Kanał TextChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby skonfigurować kanał, w którym to polecenie było używane."
+			]
+		],
+		"reminder": "Wszystkie wiadomości są w osadzonych wiadomościach, więc musisz włączyć uprawnienia **{{EMBED_LINKS, permissions}}** dla WolfStar.\nZe względu na ograniczenia Discorda, WolfStar nie może wiedzieć, kto usunął wiadomość.",
+		"examples": [
+			"#wiadomość-logi",
+			"tutaj"
+		]
+	},
+	"setmodlogsDescription": "Ustaw kanał logów modów.",
+	"setmodlogsExtended": {
+		"usages": [
+			"tutaj/Kanał Tekstowy"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować kanał dziennika modyfikacji. Kanał logów modów wysyła raporty przypadków indeksowane przez liczbę przypadków i z przyczynami \"możliwymi\" i moderatorami.\nTen kanał nie jest musi i zawsze możesz pobrać określone modyfikacje za pomocą komendy `case`.\nWszystkie wiadomości są w osadzonych wiadomościach, więc musisz włączyć uprawnienie **{{EMBED_LINKS, permissions}}** dla WilfStar.\nAby automatycznie wykryć, musisz indywidualnie ustawić \"events\" które chcesz słuchać: `events.ban-add`, `events.ban-remove` za pomocą komendy `config`.",
+		"explainedUsage": [
+			[
+				"kanał",
+				"TekstChannel. Możesz umieścić nazwę kanału, oznaczyć go lub wpisać \"tutaj\", aby wybrać kanał, który wiadomość została wysłana."
+			]
+		],
+		"reminder": "Ze względu na ograniczenia Discorda, automatyczne wykrywanie nie wykrywa wyrzuceń. Musisz użyć komendy `kick` jeśli chcesz je udokumentować jako formalny dziennik moderacji.",
+		"examples": [
+			"#mod-logs",
+			"tutaj"
+		]
+	},
+	"setprefixDescription": "Ustaw prefiks WolfStara.",
+	"setprefixExtended": {
+		"usages": [
+			"Prefiks"
+		],
+		"extendedHelp": "Ta komenda pomaga skonfigurować prefiks WolfStara. Prefiks to napis dodany przed słowem, w tym przypadku wiadomości.\nPozwala botom na rozróżnienie między regularną wiadomością a poleceniem. Z natury prefiks między nimi powinien być różny, aby uniknąć konfliktów.\nJeśli zapomnisz o prefiksie WolfStara, po prostu wspomnę o niej z niczym innym i powiem ci bieżący prefiks.\nAlternatywnie możesz przedrostek poleceń z jej imieniem i przecinkiem (na przykład `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Prefiks",
+				"Prefiks do ustawiania. Domyślnym w WolfStar jest `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Twój prefiks powinien zawierać tylko znaki, każdy może pisać i pisać.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Sprawdź informacje o serwerze.",
+	"guildInfoExtended": {
+		"extendedHelp": "Komenda serwera wyświetla informacje o serwerze, na którym wiadomość została wysłana.\nPokazuje ilość kanałów, z ilością dla każdej kategorii, liczbę członków (podanych z API), właściciel z identyfikatorem użytkownika, ilość ról, region, datę utworzenia, poziom weryfikacji. . między innymi."
+	},
+	"roleInfoDescription": "Sprawdź informacje o roli.",
+	"roleInfoExtended": {
+		"usages": [
+			"Rola",
+			""
+		],
+		"extendedHelp": "Poleinfo wyświetla informacje o roli, takie jak jej identyfikator, nazwa, kolor, czy jest podwieszany (wyświetlany oddzielnie) czy nie, jego pozycja hierarchii ról bez względu na to, czy jest wymienialna czy nie, ilu członków powiedziało rolę i jej uprawnienia.\nWysyła wbudowaną wiadomość o kolorze roli.",
+		"explainedUsage": [
+			[
+				"Rola",
+				"Nazwa roli, wzmianka lub identyfikator."
+			]
+		],
+		"examples": [
+			"Administrator",
+			"Moderator",
+			""
+		]
+	},
+	"stickyRolesDescription": "Zarządzaj lepkimi rolami dla użytkowników.",
+	"stickyRolesExtended": {
+		"usages": [
+			"dodaj rolę użytkownika",
+			"usuń rolę użytkownika",
+			"zresetuj użytkownika",
+			"pokaż użytkownika",
+			"Użytkownik"
+		],
+		"extendedHelp": "Przyklejona komenda pozwala zarządzać lepkimi rolami poszczególnych członków, są to role, które są trzymane nawet podczas wyjeżdżania i są stosowane od razu po przystąpieniu do UE.",
+		"explainedUsage": [
+			[
+				"Akcja",
+				"Albo chcesz sprawdzić lepką rolę, dodaj jeden, usuń jeden, albo usuń wszystkie z nich."
+			],
+			[
+				"Użytkownik",
+				"Cel użytkownika dla wszystkich działań."
+			],
+			[
+				"Rola",
+				"Rola do dodania lub usunięcia."
+			]
+		],
+		"examples": [
+			"dodaj Bogactwo WolfStar",
+			"show WolfStar",
+			"usuń Bogactwo WolfStar",
+			"reset WolfStar"
+		],
+		"reminder": "Role użytkownika nie będą modyfikowane przez to polecenie, musisz je dodać lub usunąć."
+	},
+	"rolesDescription": "Lista, włącz lub anuluj publiczne role na tym serwerze.",
+	"rolesExtended": {
+		"usages": [
+			"Rola",
+			""
+		],
+		"extendedHelp": "Role publiczne to role dostępne dla wszystkich.\nAdministrator musi skonfigurować je z poleceniem konfiguracyjnym.",
+		"explainedUsage": [
+			[
+				"role",
+				"Lista ról do włości lub niewłaszczenia. Pozostaw to puste, aby uzyskać listę dostępnych ról."
+			]
+		],
+		"reminder": "Przy odbieraniu lub niezgłaszaniu ról można podać pojedynczą lub wielokrotną rolę.\nAby przejąć wiele ról musisz oddzielić je przecinkiem, na przykład `red,green`.\nMożesz określić, które role chcesz podając identyfikator roli, nazwę lub podsekcję nazwy.\n\nAdministratorzy mogą dodawać role publiczne używając `{{prefix}}conf set roles.public Przykłady PublicRole`.",
+		"examples": [
+			"Programista projektantów",
+			"Projektant"
+		]
+	}
+}
