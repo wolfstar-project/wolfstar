@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Besked Slettet • {{channel}}",
+	"messageDeleteUnknown": "Ukendt Besked Slettet • {{channel}}",
+	"messageUpdate": "Besked Redigeret • {{channel}}",
+	"messageUpdateUnknown": "Ukendt Besked Redigeret • {{channel}}",
+	"messageNotFound": "Ukendt Besked",
+	"messageDeleteBulk_one": "{{count}} besked slettet i {{channel}} af {{author}}",
+	"messageDeleteBulk_other": "{{count}} beskeder slettet i {{channel}} af {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} besked slettet i {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} beskeder slettet fra {{channel}}",
+	"messageDeleteBulkFooter": "Flere Beskeder Slettet",
+	"voiceActivityFooter": "Stemme Aktivitet",
+	"jumpToContext": "Hop til kontekst"
+}
