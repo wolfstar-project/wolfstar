@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Pois Käytöstä",
+	"explicitContentFilterMembersWithoutRoles": "Jäsenet ilman rooleja",
+	"explicitContentFilterAllMembers": "Kaikki jäsenet",
+	"defaultMessageNotificationsAllMessages": "Kaikki Viestit",
+	"defaultMessageNotificationsOnlyMentions": "Vain @maininnat",
+	"SuppressJoinNotifications": "Jäsenen liittymä ilmoitukset",
+	"SuppressJoinNotificationReplies": "Jäsenen liittymän tarran vastauspainikkeet",
+	"SuppressPremiumSubscriptions": "Palvelimen tehostusilmoitukset",
+	"SuppressGuildReminderNotifications": "Palvelimen asetusten vinkit",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Rajoita roolin tilauksen osto-ilmoituksia",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Rajoita vastaukset roolin tilauksen osto-ilmoituksiin"
+}
