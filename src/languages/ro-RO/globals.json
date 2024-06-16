@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} nu a fost localizat pentru ro-SUA încă.",
+	"defaultLanguage": "Limba implicită",
+	"no": "Nr",
+	"none": "Niciunul",
+	"unknown": "necunoscut",
+	"yes": "Da",
+	"paginatedMessagePage": "Pagină",
+	"paginatedMessageWrongUserInteractionReply": "Nu mai faceți clic pe butoanele acestui mesaj. Acestea sunt doar pentru {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "ZZZ/LL/AAAA",
+	"dateFormatExplanation": "Lună/zi/an"
+}
