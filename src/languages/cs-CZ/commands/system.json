@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Vyhodnotí libovolný Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Výraz"
+		],
+		"extendedHelp": "Evální příkaz vyhodnotí kód jako, jakákoliv chyba, která je z něj vržena, bude řešena.\nTaké používá funkci vlajek. Napište --ticent, --depth=number nebo --async pro přizpůsobení výstupu.\n--wait flag změní čas, kdy bude eval spuštěn. Výchozí nastavení je 60 sekund. Přijímá čas v milisekundách.\nZnak --ticho nic neudělá.\n--depth flag přijímá číslo například --depth=2, aby přizpůsobil hloubku util.inspect.\nVlajka --async kód zalomí do funkce async, kde si můžete vychutnat očekávání, ale pokud chcete něco vrátit, budete potřebovat klíčové slovo\n--showHidden bude ve vystřeleném stavu povolena volba showHidden. nspect.\nKódy --lang a --language umožňují různé zvýraznění syntaxe výstupu.\nThe --json flag převede výstup na json\nThe --no-timeout flag vypne timeout\nPokud je výstup příliš velký, bude posílat výstup jako soubor.",
+		"explainedUsage": [
+			[
+				"Výraz",
+				"Výraz k vyhodnocení"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Vyhrazeno pro majitele botů."
+	},
+	"evalTimeout": "TIMEOUT: Byl delší než {{seconds}} sekund.",
+	"evalError": "**Chyba**:{{output}}\n**Typ**:{{type}}\n{{time}}",
+	"dmNotSent": "Nemohu ti poslat zprávu v DM, jsi mě zablokoval?",
+	"dmSent": "Poslal jsem vám zprávu v DMs.",
+	"reboot": "Restartování {{LOADING}}...",
+	"rebootDescription": "Rebojí bota.",
+	"rebootExtended": {
+		"extendedHelp": "Bot se rozrůstá, pak se bot oživuje.",
+		"reminder": "Vyhrazeno pro majitele botů."
+	}
+}
