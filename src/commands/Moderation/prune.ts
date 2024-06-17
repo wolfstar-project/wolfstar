@@ -9,7 +9,16 @@ import { getImageUrl } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Args, Argument, CommandOptionsRunTypeEnum } from '@sapphire/framework';
 import { filterNullAndUndefined, isNullish } from '@sapphire/utilities';
-import { Collection, PermissionFlagsBits, RESTJSONErrorCodes, Message, type PartialMessage, TextChannel, type Snowflake } from 'discord.js';
+import {
+	Collection,
+	PermissionFlagsBits,
+	RESTJSONErrorCodes,
+	Message,
+	type PartialMessage,
+	TextChannel,
+	type Snowflake,
+	DiscordAPIError
+} from 'discord.js';
 import { chunk } from '@sapphire/iterator-utilities';
 import { setTimeout } from 'node:timers/promises';
 
@@ -156,6 +165,7 @@ export class UserCommand extends WolfSubcommand {
 			[position]: targetMessage.id,
 			filter
 		});
+		console.log(messages);
 
 		if (messages.size === 0) this.error(LanguageKeys.Commands.Moderation.PruneNoDeletes);
 
@@ -196,16 +206,12 @@ export class UserCommand extends WolfSubcommand {
 				} catch (error) {
 					logger.prune.unset(message.channelId);
 					hasError = true;
-					if ((error as any).code !== RESTJSONErrorCodes.UnknownMessage) throw error;
+					if ((error as DiscordAPIError).code !== RESTJSONErrorCodes.UnknownMessage) throw error;
 				} finally {
 					if (!hasError) {
-						const messages = await Promise.all(
-							messagesBulked.filter(filterNullAndUndefined).map(async (msg) => (msg.partial ? msg.fetch() : msg))
-						);
+						const messages = new Collection(await Promise.all(messagesBulked.filter(filterNullAndUndefined)));
 
-						const msgs = new Collection(messages.map((msg) => [msg.id, msg]));
-
-						msgs.reduce((col, message) => col.set(message.id, message), msgDeleted);
+						msgDeleted.concat(messages);
 					}
 				}
 			}
