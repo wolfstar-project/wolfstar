@@ -1,25 +1,25 @@
 {
 	"discordAbortError": "Ho avuto un piccolo errore di rete durante la messaggistica di Discord, eseguire nuovamente questo comando!",
-	"fetchBansFail": "Impossibile recuperare i bans. Ho il permesso **{{ADMINISTRATOR, permissions}}**?",
+	"fetchBansFail": "Recupero dei ban non riuscito. Ho il permesso di **{{ADMINISTRATOR, permissions}}**?",
 	"helpTitles": {
-		"aliases": "🖇️ <unk> **Aliases**",
-		"usages": "📝 <unk> **Uso Dei Comandi**",
-		"extendedHelp": "🔍 <unk> **Extended Help**",
-		"explainedUsage": "⚙️ <unk> **Uso spiegato**",
-		"possibleFormats": "🔢 <unk> **Formati possibili**",
-		"examples": "🔗 <unk> **Esempi**",
-		"reminders": "⏰ <unk> **Promemoria**"
+		"aliases": "🖇️ | **Pseudonimi**",
+		"usages": "📝 | **Utilizzo del Comando**",
+		"extendedHelp": "🔍 | **Aiuto Esteso**",
+		"explainedUsage": "⚙ | **Uso spiegato**",
+		"possibleFormats": "🔢 | **Possibili formati**",
+		"examples": "🔗 | **Esempi**",
+		"reminders": "⏰ | **Promemoria**"
 	},
 	"jumpTo": "Vai al messaggio ►",
 	"loading": [
-		"{{LOADING}} Guardando i criceti in esecuzione...",
-		"{{LOADING}} Trovare persone a nascondere...",
+		"{{LOADING}} Guardare i criceti correre...",
+		"{{LOADING}} Trovare persone a nascondino...",
 		"{{LOADING}} Tentativo di capire questo comando...",
 		"{{LOADING}} Recupero dati dal cloud...",
 		"{{LOADING}} Calibrazione lenti...",
-		"{{LOADING}} Riproduzione di rock, carta, forbici...",
+		"{{LOADING}} Giocando roccia, carta, forbici...",
 		"{{LOADING}} Sintonizzazione alle frequenze giuste...",
-		"{{LOADING}} Reticolando le splines..."
+		"{{LOADING}} Reticolazione delle spine..."
 	],
 	"prefixReminder": "Il prefisso in questo server è impostato su: `{{prefix}}`"
 }
