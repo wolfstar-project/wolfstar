@@ -2,7 +2,7 @@
 	"discordAbortError": "Tuve un pequeño error de red al enviar el mensaje a Discord, ¡por favor ejecuta este comando de nuevo!",
 	"fetchBansFail": "Error al obtener la información de los baneos. ¿Tengo el permiso **{{ADMINISTRATOR, permissions}}**?",
 	"helpTitles": {
-		"aliases": "🖇️ | **Alias**",
+		"aliases": "🖇️ | **Aliases**",
 		"usages": "📝 | **Uso de Comando**",
 		"extendedHelp": "🔍 | **Ayuda Extendida**",
 		"explainedUsage": "⚙ | **Uso explicado**",
