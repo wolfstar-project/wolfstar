@@ -77,6 +77,7 @@ export const PruneAlert = FT<{ count: number; total: number }>('commands/moderat
 export const PruneInvalidPosition = T('commands/moderation:pruneInvalidPosition');
 export const PruneNoDeletes = T('commands/moderation:pruneNoDeletes');
 export const PruneLogHeader = T('commands/moderation:pruneLogHeader');
+export const PruneNotSubcommandSameOFSameFlag = T('commands/moderation:pruneNotSubcommandSameOFSameFlag');
 export const ToggleModerationDmToggledEnabled = T('commands/moderation:toggleModerationDmToggledEnabled');
 export const ToggleModerationDmToggledDisabled = T('commands/moderation:toggleModerationDmToggledDisabled');
 export const VmuteUserNotMuted = T('commands/moderation:vmuteUserNotMuted');
