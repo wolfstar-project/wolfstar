@@ -138,6 +138,7 @@ declare module '@skyra/env-utilities' {
 		API_ORIGIN: string;
 		API_PORT: IntegerString;
 		API_PREFIX: string;
+		API_HOST: string;
 
 		OAUTH_COOKIE: string;
 		OAUTH_DOMAIN_OVERWRITE: string;

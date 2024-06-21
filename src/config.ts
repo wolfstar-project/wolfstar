@@ -66,7 +66,7 @@ function parseApi(): ServerOptions | undefined {
 		auth: parseApiAuth(),
 		prefix: envParseString('API_PREFIX', '/'),
 		origin: envParseString('API_ORIGIN'),
-		listenOptions: { port: envParseInteger('API_PORT') }
+		listenOptions: { port: envParseInteger('API_PORT'), host: envParseString('API_HOST', 'localhost') }
 	};
 }
 
