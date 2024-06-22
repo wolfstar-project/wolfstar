@@ -6,15 +6,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<AnalyticsListener.Options>({ event: Events.AnalyticsSync })
 export class UserAnalyticsEvent extends AnalyticsListener {
 	public async run(guilds: number, users: number) {
-		const dbSet = this.container.db;
-		const twitchSubscriptionCount = await dbSet.twitchSubscriptions.count();
-
-		this.writePoints([
-			this.syncGuilds(guilds),
-			this.syncUsers(users),
-			this.syncTwitchSubscriptions(twitchSubscriptionCount),
-			this.syncMessageCount()
-		]);
+		this.writePoints([this.syncGuilds(guilds), this.syncUsers(users), this.syncMessageCount()]);
 
 		return this.container.client.analytics!.writeApi.flush();
 	}
@@ -35,12 +27,6 @@ export class UserAnalyticsEvent extends AnalyticsListener {
 				// TODO: Adjust for traditional sharding
 				.intField('value', value)
 		);
-	}
-
-	private syncTwitchSubscriptions(value: number) {
-		return new Point(Points.TwitchSubscriptions) //
-			.tag(Tags.Action, Actions.Sync)
-			.intField('count', value);
 	}
 
 	private syncMessageCount() {

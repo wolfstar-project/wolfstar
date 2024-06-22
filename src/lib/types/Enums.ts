@@ -40,9 +40,6 @@ export const enum Events {
 	ResourceAnalyticsSync = 'resourceAnalyticsSync',
 	SettingsUpdate = 'settingsUpdate',
 	TaskError = 'taskError',
-	TwitchStreamHookedAnalytics = 'twitchStreamHookedAnalytics',
-	TwitchStreamOffline = 'twitchStreamOffline',
-	TwitchStreamOnline = 'twitchStreamOnline',
 	UnhandledRejection = 'unhandledRejection',
 	UserMessage = 'userMessage'
 }

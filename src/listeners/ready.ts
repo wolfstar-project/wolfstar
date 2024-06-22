@@ -16,7 +16,6 @@ export class UserListener extends Listener {
 
 			// Setup the stat updating task
 			await this.initPostStatsTask().catch((error) => this.container.logger.fatal(error));
-			// Setup the Twitch subscriptions refresh task
 		} catch (error) {
 			this.container.logger.fatal(error);
 		}

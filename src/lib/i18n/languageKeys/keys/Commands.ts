@@ -11,5 +11,4 @@ export * as Moderation from '#lib/i18n/languageKeys/keys/commands/Moderation';
 export * as Shared from '#lib/i18n/languageKeys/keys/commands/Shared';
 export * as System from '#lib/i18n/languageKeys/keys/commands/System';
 export * as Tools from '#lib/i18n/languageKeys/keys/commands/Tools';
-export * as Twitch from '#lib/i18n/languageKeys/keys/commands/Twitch';
 export * as Whois from '#lib/i18n/languageKeys/keys/commands/Whois';
