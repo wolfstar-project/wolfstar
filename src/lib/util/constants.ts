@@ -73,8 +73,7 @@ export const enum Urls {
 
 export const enum CdnUrls {
 	EscapeRopeGif = 'https://cdn.wolfstar.rocks/wolfstar-assets/escape_rope.gif',
-	RevolvingHeartTwemoji = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@v14.0.2/assets/72x72/1f49e.png',
-	TwitchLogo = 'https://cdn.wolfstar.rocks/wolfstar-assets/twitch_logo.png'
+	RevolvingHeartTwemoji = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@v14.0.2/assets/72x72/1f49e.png'
 }
 
 export const enum Invites {

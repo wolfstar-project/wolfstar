@@ -1,4 +1,4 @@
-import { Table, TableColumn, type MigrationInterface, type QueryRunner } from 'typeorm';
+/* import { Table, TableColumn, type MigrationInterface, type QueryRunner } from 'typeorm';
 
 export class V80RemoveOldTables1712481816866 implements MigrationInterface {
 	public async up(queryRunner: QueryRunner): Promise<void> {
@@ -36,4 +36,4 @@ export class V80RemoveOldTables1712481816866 implements MigrationInterface {
 			})
 		);
 	}
-}
+} */
