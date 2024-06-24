@@ -8,10 +8,13 @@ export const HelpDescription = T('commands/general:helpDescription');
 export const HelpDm = T('commands/general:helpDm');
 export const HelpExtended = T<LanguageHelpDisplayOptions>('commands/general:helpExtended');
 export const HelpNoDm = T('commands/general:helpNodm');
-export const V7Description = T('commands/general:v7Description');
-export const V7Extended = T<LanguageHelpDisplayOptions>('commands/general:v7Extended');
-export const V7Message = FT<{ command: string }>('commands/general:v7Message');
+export const V7SkyraDescription = T('commands/general:v7SkyraDescription');
+export const V7SkyraExtended = T<LanguageHelpDisplayOptions>('commands/general:v7SkyraExtended');
+export const V7SkyraMessage = FT<{ command: string }>('commands/general:v7SkyraMessage');
 export const V7NayreMessage = FT<{ command: string }>('commands/general:v7NayreMessage');
+export const V7Description = T('commands/general:v7SkyraDescription');
+export const V7Extended = T<LanguageHelpDisplayOptions>('commands/general:v7SExtended');
+export const V7Message = FT<{ command: string }>('commands/general:v7Message');
 
 export interface InfoComponentLabels {
 	addToServer: string;

@@ -1,6 +1,6 @@
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
-import { ButtonInviteArtiel, ButtonWolfV7, createDeprecatedList, makeReplacedMessage, makeRow } from '#utils/deprecate';
+import { ButtonInviteArtiel, ButtonSkyraV7, createDeprecatedList, makeReplacedMessage, makeRow } from '#utils/deprecate';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { Message } from 'discord.js';
@@ -50,7 +50,7 @@ const list = createDeprecatedList({
 	]
 });
 
-const row = makeRow(ButtonInviteArtiel, ButtonWolfV7);
+const row = makeRow(ButtonInviteArtiel, ButtonSkyraV7);
 
 @ApplyOptions<WolfCommand.Options>({
 	name: '\u200Bv7-artiel',

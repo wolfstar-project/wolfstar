@@ -9,35 +9,40 @@ export const LongWidthSpace = '\u3000';
 
 export const EmojiData = {
 	MessageAttachmentIcon: { id: '1006096566270033940', name: 'MessageAttachmentIcon', animated: false },
-	IntegrationIcon: { id: '1200230554440843264', name: 'IntegrationIcon', animated: false },
+	IntegrationIcon: { id: '1251906194759749653', name: 'IntegrationIcon', animated: false },
 	MembersIcon: { id: '1200212636441260103', name: 'MembersIcon', animated: false }
 } as const;
 
 export const enum Emojis {
-	ArrowB = '<:ArrowB:694594285269680179>',
-	ArrowBL = '<:ArrowBL:694594285118685259>',
-	ArrowBR = '<:ArrowBR:694594285445578792>',
-	ArrowL = '<:ArrowL:694594285521207436>',
-	ArrowR = '<:ArrowR:694594285466812486>',
-	ArrowT = '<:ArrowT:694594285487652954>',
-	ArrowTL = '<:ArrowTL:694594285625933854>',
-	ArrowTR = '<:ArrowTR:694594285412155393>',
-	BoostLevel1 = '<:boostlvl1:764841388243681322>',
-	BoostLevel2 = '<:boostlvl2:764841388449071134>',
-	BoostLevel3 = '<:boostlvl3:764841388029902891>',
-	BoostLevel4 = '<:boostlvl4:764841388336349225>',
-	BoostLevel5 = '<:boostlvl5:764841388449202198>',
-	BoostLevel6 = '<:boostlvl6:764841388445532200>',
-	BoostLevel7 = '<:boostlvl7:764841388150882305>',
-	BoostLevel8 = '<:boostlvl8:764841388462178344>',
-	BoostLevel9 = '<:boostlvl9:764841388470698014>',
+	// ArrowB = '<:ArrowB:694594285269680179>',
+	// ArrowBL = '<:ArrowBL:694594285118685259>',
+	// ArrowBR = '<:ArrowBR:694594285445578792>',
+	// ArrowL = '<:ArrowL:694594285521207436>',
+	// ArrowR = '<:ArrowR:694594285466812486>',
+	// ArrowT = '<:ArrowT:694594285487652954>',
+	// ArrowTL = '<:ArrowTL:694594285625933854>',
+	// ArrowTR = '<:ArrowTR:694594285412155393>',
+	ArrowLeft = '<:ArrowL:973978245580075069>',
+	ArrowRight = '<:ArrowR:973978026536747008>',
+	ArrowLeftFast = '<:ArrowFastL:973976973120528484>',
+	ArrowRightFast = '<:ArrowFastR:973977208978800640>',
+	Stop = '<:Stop:973961000313303060>',
+	BoostLevel1 = '<:boostlvl1:935169049523019786>',
+	BoostLevel2 = '<:boostlvl2:935169110311063612>',
+	BoostLevel3 = '<:boostlvl3:935169145056686101>',
+	BoostLevel4 = '<:boostlvl4:935169181362569246>',
+	BoostLevel5 = '<:boostlvl5:935170651117998080>',
+	BoostLevel6 = '<:boostlvl6:935170683653193788>',
+	BoostLevel7 = '<:boostlvl7:935170720365944942>',
+	BoostLevel8 = '<:boostlvl8:935170763894439996>',
+	BoostLevel9 = '<:boostlvl9:935170794374447184>',
 	Bot = '<:bot:764788923851079702>',
-	IntegrationIcon = '<:IntegrationIcon:1200230554440843264>',
+	IntegrationIcon = '<:IntegrationIcon:1251906194759749653>',
 	Frame = '<:frame:764845055356698644>',
-	GreenTick = '<:greenTick:637706251253317669>',
-	GreenTickSerialized = 's637706251253317669',
+	GreenTick = '<:greenTick:1043562833905987685>',
+	GreenTickSerialized = 's1043562833905987685',
 	Loading = '<a:sloading:656988867403972629>',
-	RedCross = '<:redCross:637706251257511973>',
+	RedCross = '<:redCross:1043562794336919605>',
 	Calendar = '<:calendar_icon:1218607529702068294>',
 	Hourglass = '<:hourglass:1226106863574323230>',
 	Member = '<:member:1200212636441260103>',
@@ -50,7 +55,7 @@ export const enum Emojis {
 	ReplyInactive = '<:reply_inactive:1225386832146075739>',
 	Flag = '<:flag:1225386828152963122>',
 	FlagInactive = '<:flag_inactive:1225386829558186028>',
-	Timer = '<:timer:1225500654399918170>',
+	Timer = '<:timer:985524723490381826>',
 	Bucket = '<:bucket:1225500653212930160>',
 	Delete = '<:delete:1225386833307766854>',
 	DeleteInactive = '<:delete_inactive:1225386834394353675>',
@@ -61,8 +66,8 @@ export const enum Emojis {
 }
 
 export const enum BrandingColors {
-	Primary = 0x1e88e5,
-	Secondary = 0xff9d01
+	Primary = 0x050505,
+	Secondary = 0xfd171b
 }
 
 export const enum Urls {
@@ -78,6 +83,7 @@ export const enum CdnUrls {
 }
 
 export const enum Invites {
+	Skyra = 'https://discord.com/api/oauth2/authorize?client_id=266624760782258186&permissions=292557286486&scope=bot%20applications.commands',
 	Dragonite = 'https://discord.com/api/oauth2/authorize?client_id=931264626614763530&permissions=81920&scope=bot%20applications.commands',
 	Iriss = 'https://discord.com/api/oauth2/authorize?client_id=948377113457745990&permissions=326417868864&scope=bot%20applications.commands',
 	Nekokai = 'https://discord.com/api/oauth2/authorize?client_id=939613684592934992&permissions=16384&scope=bot%20applications.commands',
