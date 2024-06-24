@@ -139,8 +139,6 @@ declare module '@skyra/env-utilities' {
 		OAUTH_SCOPE: ArrayString;
 		OAUTH_SECRET: string;
 
-		TWITCH_CALLBACK: string;
-
 		PGSQL_DATABASE_URL: string;
 		TYPEORM_DEBUG_LOGS: BooleanString;
 
@@ -163,8 +161,5 @@ declare module '@skyra/env-utilities' {
 		DISCORD_BOTS_TOKEN: string;
 		SENTRY_URL: string;
 		TOP_GG_TOKEN: string;
-		TWITCH_CLIENT_ID: string;
-		TWITCH_EVENTSUB_SECRET: string;
-		TWITCH_TOKEN: string;
 	}
 }
