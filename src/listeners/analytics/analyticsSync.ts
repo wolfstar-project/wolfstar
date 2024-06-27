@@ -5,6 +5,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 
 @ApplyOptions<AnalyticsListener.Options>({ event: Events.AnalyticsSync })
 export class UserAnalyticsEvent extends AnalyticsListener {
+	// eslint-disable-next-line @typescript-eslint/require-await
 	public async run(guilds: number, users: number) {
 		this.writePoints([this.syncGuilds(guilds), this.syncUsers(users), this.syncMessageCount()]);
 
