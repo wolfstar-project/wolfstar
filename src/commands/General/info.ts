@@ -94,10 +94,10 @@ export class UserCommand extends WolfCommand {
 		const url = this.getInvite();
 		const support = this.getSupportComponent(t);
 		const github = this.getGitHubComponent(t);
-		const donate = this.getDonateComponent(t);
+		// const donate = this.getDonateComponent(t);
 		const data = url
-			? [this.getActionRow(support, this.getInviteComponent(t, url)), this.getActionRow(github, donate)]
-			: [this.getActionRow(support, github, donate)];
+			? [this.getActionRow(support, this.getInviteComponent(t, url)), this.getActionRow(github /* , donate */)]
+			: [this.getActionRow(support, github /* , donate */)];
 
 		return data;
 	}
@@ -112,7 +112,7 @@ export class UserCommand extends WolfCommand {
 			style: ButtonStyle.Link,
 			label: t(Root.ButtonSupport),
 			emoji: { name: '🆘' },
-			url: 'https://discord.gg/6gakFR2'
+			url: 'https://join.wolfstar.rocks'
 		};
 	}
 
@@ -136,6 +136,7 @@ export class UserCommand extends WolfCommand {
 		};
 	}
 
+	/*
 	private getDonateComponent(t: TFunction): APIMessageActionRowComponent {
 		return {
 			type: ComponentType.Button,
@@ -145,7 +146,7 @@ export class UserCommand extends WolfCommand {
 			url: 'https://donate.wolfstar.rocks'
 		};
 	}
-
+*/
 	private formatCpuInfo({ times }: CpuInfo) {
 		return `${Math.round(((times.user + times.nice + times.sys + times.irq) / times.idle) * 10000) / 100}%`;
 	}
