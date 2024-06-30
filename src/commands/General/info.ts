@@ -112,7 +112,7 @@ export class UserCommand extends WolfCommand {
 			style: ButtonStyle.Link,
 			label: t(Root.ButtonSupport),
 			emoji: { name: '🆘' },
-			url: 'https://discord.gg/6gakFR2'
+			url: 'https://join.wolfstar.rocks'
 		};
 	}
 
