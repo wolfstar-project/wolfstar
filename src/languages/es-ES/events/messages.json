@@ -1,4 +1,14 @@
 {
 	"messageDelete": "Mensaje eliminado • {{channel}}",
-	"messageUpdate": "Mensaje Editado • {{channel}}"
+	"messageDeleteUnknown": "Mensaje desconocido eliminado • {{channel}}",
+	"messageUpdate": "Mensaje Editado • {{channel}}",
+	"messageUpdateUnknown": "Mensaje desconocido editado • {{channel}}",
+	"messageNotFound": "Mensaje desconocido",
+	"messageDeleteBulk_one": "Mensaje {{count}} eliminado en {{channel}} por {{author}}",
+	"messageDeleteBulk_other": "Mensajes {{count}} eliminados en {{channel}} por {{author}}",
+	"messageDeleteBulkUnknown_one": "Mensaje {{count}} eliminado en {{channel}}",
+	"messageDeleteBulkUnknown_other": "Mensajes {{count}} eliminados en {{channel}}",
+	"messageDeleteBulkFooter": "Múltiples mensajes borrados",
+	"voiceActivityFooter": "Actividad de voz",
+	"jumpToContext": "Ir al contexto"
 }

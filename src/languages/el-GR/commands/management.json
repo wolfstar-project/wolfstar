@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Ματαιώθηκε",
+	"permissionNodesHigher": "{{REDCROSS}} Δεν μπορείτε να τροποποιήσετε ούτε να δείτε τους κόμβους δικαιωμάτων για αυτόν τον στόχο.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} You cannot allow commands for the `@everyone` role.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Μη έγκυρος τύπος, αναμενόμενος είτε από `allow` είτε από `deny`.",
+	"permissionNodesAdd": "Το {{GREENTICK}} πρόσθεσε επιτυχώς την εντολή στον κόμβο δικαιωμάτων.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Ο επιλεγμένος κόμβος δικαιωμάτων δεν υπάρχει.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Η επιλεγμένη εντολή δεν υπάρχει στον κόμβο permision.",
+	"permissionNodesRemove": "{{GREENTICK}} Διαγράφθηκε επιτυχώς η εντολή από τον κόμβο δικαιωμάτων.",
+	"permissionNodesReset": "{{GREENTICK}} Successfully removed all commands from the permission node.",
+	"permissionNodesShowName": "Permissions for: __{{name}}__",
+	"permissionNodesShowAllow": "**Allow**: {{allow}}",
+	"permissionNodesShowDeny": "**Deny**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Κανάλια",
+		"MEMBERS": "Μέλη",
+		"OTHER": "Άλλο"
+	},
+	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Voice, **{{categories}}** categories.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** μετά τον **{{afkTime}}**λεπτό",
+	"guildInfoMembers": "• **mptom{memberCount, number}}** member(s)\n• Ιδιοκτήτης: **{{ownerTag}} **\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Ρόλοι: **{{size}}**\n• Δημιουργήθηκε: **{{createdAt}}**\n• Επίπεδο Επαλήθευσης: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "Εικόνα Banner",
+	"guildInfoIcon": "Εικόνα Εικονιδίου",
+	"guildInfoSplash": "Εικόνα Εκκίνησης",
+	"guildInfoDiscoverySplash": "Ανακάλυψη Εικόνας Splash",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Δικαιώματα"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nΌνομα: **{{role.name}}**\nΧρώμα: **{{role.hexColor}}**\nΑνοιχτό: **{{hoisted}}**\nΘέση: **{{role.rawPosition}}**\nΑναφερόμενο: **{{mentionable}}**",
+	"roleInfoAll": "Όλα τα δικαιώματα χορηγήθηκαν.",
+	"roleInfoNoPermissions": "Δεν χορηγήθηκαν δικαιώματα.",
+	"manageCommandAutoDeleteShowEmpty": "Δεν έχει ρυθμιστεί αυτόματη διαγραφή εντολών αυτή τη στιγμή.",
+	"manageCommandAutoDeleteShow": "Ρυθμίστηκαν όλες οι αυτόματες διαγραφές εντολών:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Επιτυχία! Όλες οι επιτυχημένες εντολές στο {{channel}} θα διαγραφούν μετά από {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Success! Commands will not be automatically deleted in {{channel}} anymore!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} The channel {{channel}} was not configured to automatically delete messages!",
+	"manageCommandAutoDeleteReset": "Όλες οι αυτόματες διαγραφές εντολών έχουν επαναφερθεί.",
+	"manageCommandChannelShow": "Λίστα απενεργοποιημένων εντολών στο {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Η λίστα απενεργοποιημένων εντολών για το συγκεκριμένο κανάλι είναι κενή!",
+	"manageCommandChannelAddAlreadyset": "Η εντολή που προσπαθείτε να απενεργοποιήσετε είναι ήδη απενεργοποιημένη!",
+	"manageCommandChannelAdd": "Επιτυχής απενεργοποίηση της εντολής {{command}} για το κανάλι {{channel}}!",
+	"manageCommandChannelRemoveNotset": "Η εντολή που προσπαθείτε να ενεργοποιήσετε δεν απενεργοποιήθηκε για το {{channel}}.",
+	"manageCommandChannelRemove": "Ενεργοποιήθηκε με επιτυχία η εντολή {{command}} για το κανάλι {{channel}}!",
+	"manageCommandChannelResetEmpty": "Αυτό το κανάλι δεν είχε απενεργοποιημένη εντολή, γι 'αυτό αποφάσισα να μην κάνω τίποτα.",
+	"manageCommandChannelReset": "Ενεργοποιήθηκε με επιτυχία όλες οι απενεργοποιημένες εντολές στο {{channel}}, απολαύστε!",
+	"manageReactionRolesShowEmpty": "Δεν έχουν ρυθμιστεί ρόλοι αντίδρασης σε αυτόν το διακομιστή.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} to any message from {{channel}}!",
+	"manageReactionRolesAddPrompt": "Ακούγοντας τώρα! Παρακαλώ αντιδράστε σε ένα μήνυμα και θα δεσμεύσω την αντίδραση με τον ρόλο!",
+	"manageReactionRolesAddMissing": "Περίμενα αλλά δεν φαίνεται να αντιδράσατε σε κάποιο μήνυμα.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Ο ρόλος αντίδρασης που καθορίσατε δεν υπάρχει.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Success! I will not longer give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesResetEmpty": "Δεν δημιουργήθηκαν ρόλοι αντίδρασης.",
+	"manageReactionRolesReset": "Το {{GREENTICK}} με επιτυχία αφαίρεσε όλους τους ρόλους αντίδρασης.",
+	"configurationEquals": "Επιτυχής ρύθμιση: δεν έγιναν αλλαγές.",
+	"setIgnoreChannelsSet": "Αγνόηση όλων των εντολών εισόδου από το {{channel}} τώρα.",
+	"setIgnoreChannelsRemoved": "Ακούγοντας όλες τις εντολές εισόδου από το {{channel}} τώρα.",
+	"setImageLogsSet": "Επιτυχής ορισμός του καναλιού καταγραφής εικόνων στο {{channel}}.",
+	"setMemberAddLogsSet": "Ορίστηκε με επιτυχία το μέλος προσθέστε το κανάλι καταγραφής στο {{channel}}.",
+	"setMemberRemoveLogsSet": "Ορίστηκε με επιτυχία το κανάλι logs αφαίρεσης μέλους στο {{channel}}.",
+	"setMessageUpdateLogsSet": "Ορίστηκε με επιτυχία το κανάλι καταγραφής ενημερώσεων μηνυμάτων στο {{channel}}.",
+	"setMessageDeleteLogsSet": "Ορίστηκε με επιτυχία το κανάλι καταγραφής διαγραφής μηνύματος στο {{channel}}.",
+	"setModLogsSet": "Ορίστηκε με επιτυχία το κανάλι καταγραφής mod στο {{channel}}.",
+	"setPrefixSet": "Ορίστηκε με επιτυχία το πρόθεμα `{{prefix}}`. Χρησιμοποίησε `{{prefix}}setPrefix NewPrefix` για να το αλλάξεις ξανά.",
+	"stickyRolesNotExists": "Ο χρήστης {{user}} δεν έχει κανέναν κολλώδη ρόλο ή δεν έχει τον καθορισμένο.",
+	"stickyRolesReset": "Αφαιρέθηκε με επιτυχία όλοι οι κολλώδεις ρόλοι από τον {{user}}.",
+	"stickyRolesRemove": "Αφαιρέθηκε με επιτυχία ο καθορισμένος ρόλος από το {{user}}.",
+	"stickyRolesAdd": "Επιτυχής προσθήκη του καθορισμένου ρόλου ως κολλώδους στο {{user}}.",
+	"stickyRolesShowEmpty": "Δεν υπάρχουν κολλώδεις ρόλοι για εμφάνιση.",
+	"stickyRolesShowSingle": "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Προετοιμάστε το σύστημα σίγασης.",
+	"createMuteExtended": {
+		"extendedHelp": "Αυτή η εντολή προετοιμάζει το σύστημα σίγασης δημιουργώντας ένα ρόλο που ονομάζεται `muted`, και ρυθμίζοντάς το στις ρυθμίσεις του διακομιστή. Αυτή η εντολή τροποποιεί επίσης όλα τα κανάλια (όπου είναι δυνατόν) δικαιώματα και απενεργοποιεί την άδεια **{{SEND_MESSAGES, permissions}}** στα κανάλια κειμένου και **{{CONNECT, permissions}}** στα κανάλια φωνής για τον εν λόγω ρόλο."
+	},
+	"permissionNodesDescription": "Ρύθμιση των κόμβων δικαιωμάτων για αυτόν το διακομιστή.",
+	"permissionNodesExtended": {
+		"usages": [
+			"add Role/Member allow/deny Command",
+			"αφαίρεσε την εντολή Role/Member allow/deny",
+			"reset Role/Member",
+			"Εμφάνιση Ρόλου/Μέλους",
+			"εμφάνιση",
+			"Ρόλος/Μέλος"
+		],
+		"extendedHelp": "Permission nodes are per-user and per-role overrides. They are used when the built-in permissions system is not enough.\nFor example, in some servers they want to give a staff role the permissions to use mute and warn, but not ban and others (reserved to moderators), and only warn is available for the configurable staff-level permission, so you can tell me to allow the mute command for the staff role now.",
+		"explainedUsage": [
+			[
+				"Ενέργεια",
+				"Είτε `add`, `remove`, `reset`, είτε `show`. Προκαθορισμένα να `show`."
+			],
+			[
+				"Target",
+				"Είτε ένα όνομα ρόλου είτε ένα όνομα χρήστη, επιτρέποντας ταυτότητες και αναφέρει επίσης."
+			],
+			[
+				"Τύπος",
+				"Είτε `allow` είτε `deny`."
+			],
+			[
+				"Εντολή",
+				"Το όνομα της εντολής που επιτρέπεται ή απορρίπτεται."
+			]
+		],
+		"examples": [
+			"προσθήκη προσωπικού επιτρέπουν προειδοποίηση",
+			"προσθήκη συντονιστών άρνησης απαγόρευσης",
+			"αφαιρέστε το προσωπικό επιτρέπουν προειδοποίηση",
+			"επαναφορά προσωπικού",
+			"εμφάνιση προσωπικού"
+		],
+		"reminder": "Ο ιδιοκτήτης του διακομιστή δεν μπορεί να έχει καμία ενέργεια, ούτε ο ρόλος \"όλοι\" μπορεί να έχει επιτρεπόμενες εντολές."
+	},
+	"managecommandautodeleteDescription": "Διαχείριση χρονομέτρου αυτόματης διαγραφής ανά κανάλι.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"προσθήκη δευτερολέπτων καναλιών TextChannel",
+			"αφαίρεση καναλιού TextChannel",
+			"reset",
+			"εμφάνιση",
+			""
+		],
+		"extendedHelp": "Αυτή η εντολή διαχειρίζεται το χρονοδιακόπτη αυτόματης διαγραφής εντολών ανά κανάλι αυτού του διακομιστή, χρησιμεύει καλά για να αφήσει ένα κανάλι καθαρό από τις εντολές.",
+		"explainedUsage": [
+			[
+				"προσθήκη",
+				"Προσθήκη χρονομέτρου αυτόματης διαγραφής για το συγκεκριμένο κανάλι."
+			],
+			[
+				"Κατάργηση",
+				"Αφαίρεση του αυτόματου χρονομέτρου από το συγκεκριμένο κανάλι."
+			],
+			[
+				"reset",
+				"Εκκαθάριση όλων των χρονομέτρων αυτόματης διαγραφής."
+			],
+			[
+				"εμφάνιση",
+				"Εμφάνιση χρονομέτρου αυτόματης διαγραφής για όλα τα κανάλια."
+			]
+		],
+		"reminder": "Η παράμετρος του καναλιού είναι προαιρετική, προεπιλογή για το κανάλι του μηνύματος, αλλά χρησιμοποιεί ασαφή αναζήτηση όταν είναι δυνατόν.",
+		"examples": [
+			"εμφάνιση",
+			"προσθέστε #γενικό 4s",
+			"αφαίρεσε #γενικά",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Διαχείριση λίστας αποκλεισμένων εντολών ανά κανάλι.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"προσθήκη Εντολής Καναλιού TextChannel",
+			"αφαίρεση εντολής καναλιού κειμένου",
+			"επαναφορά καναλιού TextChannel",
+			"Εμφάνιση καναλιού Κειμένου"
+		],
+		"extendedHelp": "Αυτή η εντολή διαχειρίζεται την μπλοκαρισμένη λίστα εντολών ανά κανάλι, εξυπηρετεί καλά να απενεργοποιήσει ορισμένες εντολές που δεν θέλετε να χρησιμοποιηθεί σε ορισμένα κανάλια (για να απενεργοποιήσετε μια εντολή παγκοσμίως, χρησιμοποιήστε το πλήκτρο ρυθμίσεων `disabledCommands` για να απενεργοποιήσετε όλα τα κανάλια.",
+		"explainedUsage": [
+			[
+				"show [channel]",
+				"Εμφάνιση της λίστας των αποκλεισμένων εντολών στο συγκεκριμένο κανάλι."
+			],
+			[
+				"προσθέστε [channel] <command>",
+				"Προσθέστε μια εντολή στη λίστα αποκλεισμένων εντολών του συγκεκριμένου καναλιού."
+			],
+			[
+				"αφαίρεσε [channel] <command>",
+				"Αφαιρέστε μια εντολή από τη λίστα αποκλεισμένων εντολών του συγκεκριμένου καναλιού."
+			],
+			[
+				"reset [channel]",
+				"Εκκαθάριση της λίστας των εντολών που αποκλείονται στο συγκεκριμένο κανάλι."
+			]
+		],
+		"reminder": "Η παράμετρος του καναλιού είναι προαιρετική, αλλά χρησιμοποιεί ασαφή αναζήτηση όταν είναι δυνατόν.",
+		"examples": [
+			"προσθήκη #γενικού προφίλ",
+			"αφαίρεση #γενικού προφίλ",
+			"επαναφορά #γενικά",
+			"εμφάνιση #γενικά"
+		]
+	},
+	"manageReactionRolesDescription": "Διαχειριστείτε τους ρόλους αντίδρασης για αυτόν το διακομιστή.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"προσθήκη Ρόλου",
+			"προσθήκη Emoji καναλιών του Ρόλου",
+			"αφαίρεση μηνύματος ρόλου",
+			"reset",
+			"εμφάνιση"
+		],
+		"extendedHelp": "Seamlessly set up reaction roles in your server! When adding reaction roles, I listen to your reactions for 5 minutes and I bind the first reaction from you alongside the channel and the message, with the specified role.\nOtherwise, if a channel is specified, a prompt will not be created, and the reaction role will be bound to all of the channel's messages.\n\nThe best way to add new reaction roles is by using `add @role`. If you prefer not binding the reaction to a specific message then use `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"εμφάνιση",
+				"Ανάκτηση της λίστας όλων των ρόλων αντίδρασης."
+			],
+			[
+				"add <role>",
+				"Προσθέτει έναν ρόλο αντίδρασης που δεσμεύει το πρώτο αντιδρώμενο μήνυμα από την εκτέλεση με το ρόλο."
+			],
+			[
+				"αφαίρεσε <role> <message>",
+				"Αφαιρεί έναν ρόλο αντίδρασης, χρησιμοποίησε το `show` για να πάρεις μια λίστα από αυτούς."
+			],
+			[
+				"reset",
+				"Αφαιρεί όλους τους ρόλους αντίδρασης."
+			]
+		],
+		"examples": [
+			"προσθήκη @ρόλου",
+			"προσθήκη @role #channel emoji",
+			"αφαιρέστε @role 123456789012345678",
+			"reset",
+			"εμφάνιση"
+		]
+	},
+	"rolesAdded": "Οι ακόλουθοι ρόλοι έχουν προστεθεί στο προφίλ σας: `{{roles}}`",
+	"rolesAuditlog": "Εξουσιοδοτημένος: Διαχείριση Δημόσιου Ρόλου - 'Roles' Command.",
+	"rolesListEmpty": "Αυτός ο διακομιστής δεν έχει ρόλο που αναφέρεται ως δημόσιος ρόλος.",
+	"rolesListTitle": "Κατάλογος δημόσιων ρόλων",
+	"rolesNotManageable": "Οι ακόλουθοι ρόλοι δεν μπορούν να δοθούν από εμένα λόγω της θέσης του ρόλου ιεραρχίας: `{{roles}}`",
+	"rolesNotPublic": "Οι ακόλουθοι ρόλοι δεν είναι δημόσιοι: `{{roles}}`",
+	"rolesRemoved": "Οι ακόλουθοι ρόλοι έχουν αφαιρεθεί από το προφίλ σας: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Ορίστε ένα κανάλι στη λίστα αγνόησης καναλιών.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "Αυτή η εντολή σας βοηθά να ρυθμίσετε τα αγνοημένα κανάλια. Ένα αγνοημένο κανάλι είναι ένα κανάλι όπου κανείς δεν μπορεί να χρησιμοποιήσει τις εντολές του WolfStar.\nΣε αντίθεση με την αφαίρεση της άδειας **{{SEND_MESSAGES, permissions}}**, ο WolfStar εξακολουθεί να μπορεί να στείλει μηνύματα (και επομένως να εκτελέσει εντολές), που επιτρέπει στους συντονιστές να χρησιμοποιούν εντολές μετριοπάθειας στο κανάλι.\nΧρησιμοποιήστε το αν θέλετε να απαγορεύσετε οποιαδήποτε χρήση εντολών από το bot σε ένα συγκεκριμένο κανάλι.",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα κανάλι κειμένου. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ή να πληκτρολογήσετε \"εδώ\" για να επιλέξετε το κανάλι που στάλθηκε το μήνυμα."
+			]
+		],
+		"reminder": "Δεν μπορείτε να ορίσετε δύο φορές το ίδιο κανάλι, αντ' αυτού, ο WolfStar θα το αφαιρέσει.",
+		"examples": [
+			"#γενικά",
+			"εδώ"
+		]
+	},
+	"setImageLogsDescription": "Ορίστε το κανάλι καταγραφής εικόνας.",
+	"setImageLogsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "Αυτή η εντολή σας βοηθά να ρυθμίσετε το κανάλι καταγραφής εικόνας. Κάθε φορά που ένα μέλος στέλνει ένα συνημμένο εικόνας, θα στείλει ένα ενσωματωμένο μήνυμα με το συνημμένο να ξαναφορτωθεί.\nΌλα τα μηνύματα είναι ενσωματωμένα έτσι θα πρέπει να ενεργοποιήσετε το δικαίωμα **{{EMBED_LINKS, permissions}}** για το WolfStar.",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα κανάλι κειμένου. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ή να πληκτρολογήσετε \"εδώ\" για να επιλέξετε το κανάλι που στάλθηκε το μήνυμα."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"εδώ"
+		]
+	},
+	"setMemberAddLogsDescription": "Ορίστε το μέλος προσθέστε το κανάλι καταγραφής.",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "Αυτή η εντολή σας βοηθά να ρυθμίσετε το μέλος προσθέστε κανάλι καταγραφής, το οποίο θα λαμβάνει ένα μήνυμα κάθε φορά που ένας χρήστης συνδέεται.\nΕάν ένας χρήστης συνδεθεί σε σίγαση, θα στείλει ένα ειδικό συμβάν \"Muted Member Joined\".",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα κανάλι κειμένου. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ή να πληκτρολογήσετε \"εδώ\" για να επιλέξετε το κανάλι που στάλθηκε το μήνυμα."
+			]
+		],
+		"examples": [
+			"#member-logs",
+			"εδώ"
+		],
+		"reminder": "Όλα τα μηνύματα είναι ενσωματωμένα ώστε να πρέπει να ενεργοποιήσετε το δικαίωμα **{{EMBED_LINKS, permissions}}** για το WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Όρισε το κανάλι καταγραφής από το μέλος.",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "This command helps you setting up the member remove log channel, which will receive a message each time a user leaves, is kicked, or is banned.\nIn the case of the last two, it will send a special \"User Kicked\" or \"User Banned\" event.",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα Κανάλι TextChannel. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ετικέτα, είτε να πληκτρολογήσετε \"εδώ\" για να ρυθμίσετε το κανάλι στο οποίο χρησιμοποιήθηκε αυτή η εντολή."
+			]
+		],
+		"examples": [
+			"#member-logs",
+			"εδώ"
+		],
+		"reminder": "Όλα τα μηνύματα είναι ενσωματωμένα ώστε να πρέπει να ενεργοποιήσετε το δικαίωμα **{{EMBED_LINKS, permissions}}** για το WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Ορίστε το κανάλι καταγραφής ενημερώσεων μηνυμάτων.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "Αυτή η εντολή σας βοηθά να ρυθμίσετε το κανάλι καταγραφής ενημερώσεων μηνυμάτων, το οποίο θα λαμβάνει ένα μήνυμα κάθε φορά που επεξεργάζεται ένα μήνυμα.",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα Κανάλι TextChannel. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ετικέτα, είτε να πληκτρολογήσετε \"εδώ\" για να ρυθμίσετε το κανάλι στο οποίο χρησιμοποιήθηκε αυτή η εντολή."
+			]
+		],
+		"reminder": "Όλα τα μηνύματα είναι ενσωματωμένα ώστε να πρέπει να ενεργοποιήσετε το δικαίωμα **{{EMBED_LINKS, permissions}}** για το WolfStar.",
+		"examples": [
+			"#μηνύματα καταγραφής",
+			"εδώ"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Ορίστε το κανάλι καταγραφής διαγραφής μηνύματος.",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "Αυτή η εντολή σας βοηθά να ρυθμίσετε το κανάλι καταγραφής διαγραφής, το οποίο θα λαμβάνει ένα μήνυμα κάθε φορά που ένα μήνυμα διαγράφεται.",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα Κανάλι TextChannel. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ετικέτα, είτε να πληκτρολογήσετε \"εδώ\" για να ρυθμίσετε το κανάλι στο οποίο χρησιμοποιήθηκε αυτή η εντολή."
+			]
+		],
+		"reminder": "Όλα τα μηνύματα είναι ενσωματωμένα ώστε να πρέπει να ενεργοποιήσετε το δικαίωμα **{{EMBED_LINKS, permissions}}** για το WolfStar.\nΛόγω περιορισμών του Discord, το WolfStar δεν μπορεί να γνωρίζει ποιος διέγραψε ένα μήνυμα.",
+		"examples": [
+			"#μηνύματα καταγραφής",
+			"εδώ"
+		]
+	},
+	"setmodlogsDescription": "Ορίστε το κανάλι καταγραφής mod.",
+	"setmodlogsExtended": {
+		"usages": [
+			"εδώ/Κανάλι κειμένου"
+		],
+		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
+		"explainedUsage": [
+			[
+				"κανάλι",
+				"Ένα κανάλι κειμένου. Μπορείτε είτε να βάλετε το όνομα του καναλιού, να το τοποθετήσετε ή να πληκτρολογήσετε \"εδώ\" για να επιλέξετε το κανάλι που στάλθηκε το μήνυμα."
+			]
+		],
+		"reminder": "Λόγω περιορισμών του Discord, η αυτόματη ανίχνευση δεν ανιχνεύει κλωτσιές. Θα πρέπει να χρησιμοποιήσετε την εντολή `kick` αν θέλετε να την τεκμηριώσετε ως επίσημη περίπτωση καταγραφής μεσολάβησης.",
+		"examples": [
+			"#mod-logs",
+			"εδώ"
+		]
+	},
+	"setprefixDescription": "Ορισμός προθέματος WolfStar.",
+	"setprefixExtended": {
+		"usages": [
+			"Πρόθεμα"
+		],
+		"extendedHelp": "Αυτή η εντολή σας βοηθά να ρυθμίσετε το πρόθεμα του WolfStar. Ένα πρόθεμα είναι μια επίθεση που προστίθεται μπροστά από τη λέξη, σε αυτή την περίπτωση, το μήνυμα.\nΕπιτρέπει στα bots να κάνουν διάκριση μεταξύ ενός κανονικού μηνύματος και μιας εντολής. Από τη φύση του το πρόθεμα πρέπει να είναι διαφορετικό για την αποφυγή συγκρούσεων.\nΑν ξεχάσετε το πρόθεμα του WolfStar, απλά να την αναφέρετε με τίποτα άλλο και θα σας πει το τρέχον πρόθεμα.\nΕναλλακτικά, μπορείτε να διορθώσετε τις εντολές με το όνομά της και ένα κόμμα (για παράδειγμα `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Πρόθεμα",
+				"Το πρόθεμα που θα ορίσετε. Το προκαθορισμένο στο WolfStar είναι `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Το πρόθεμα σας πρέπει να περιέχει μόνο χαρακτήρες που ο καθένας μπορεί να γράψει και να πληκτρολογήσει.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Ελέγξτε τις πληροφορίες του διακομιστή.",
+	"guildInfoExtended": {
+		"extendedHelp": "Η εντολή serverinfo εμφανίζει πληροφορίες για το διακομιστή που έλαβε το μήνυμα.\nΔείχνει το ποσό των καναλιών, με την καταμέτρηση για κάθε κατηγορία, το ποσό των μελών (δίνεται από το API), ο ιδιοκτήτης με το id χρήστη, το ποσό των ρόλων, περιοχή, ημερομηνία δημιουργίας, επίπεδο επαλήθευσης. . μεταξύ άλλων."
+	},
+	"roleInfoDescription": "Ελέγξτε τις πληροφορίες για έναν ρόλο.",
+	"roleInfoExtended": {
+		"usages": [
+			"Ρόλος",
+			""
+		],
+		"extendedHelp": "The roleinfo command displays information for a role, such as its id, name, color, whether it's hoisted (displays separately) or not, it's role hierarchy position, whether it's mentionable or not, how many members have said role, and its permissions.\nIt sends an embedded message with the color of the role.",
+		"explainedUsage": [
+			[
+				"Ρόλος",
+				"Το όνομα του ρόλου, το όνομα, την αναφορά ή το αναγνωριστικό."
+			]
+		],
+		"examples": [
+			"Διαχειριστής",
+			"Συντονιστής",
+			""
+		]
+	},
+	"stickyRolesDescription": "Διαχείριση κολλωδών ρόλων για τους χρήστες.",
+	"stickyRolesExtended": {
+		"usages": [
+			"Προσθήκη Ρόλου Χρήστη",
+			"κατάργηση ρόλου χρήστη",
+			"επαναφορά Χρήστη",
+			"εμφάνιση Χρήστη",
+			"Χρήστης"
+		],
+		"extendedHelp": "Η εντολή stickyRoles σας επιτρέπει να διαχειριστείτε τους κολλώδεις ρόλους ανά μέλος, είναι οι ρόλοι που διατηρούνται ακόμη και όταν φύγετε, και εφαρμόζονται πίσω μόλις ενταχθούν.",
+		"explainedUsage": [
+			[
+				"Ενέργεια",
+				"Είτε θέλετε να ελέγξετε τους κολλώδεις ρόλους, προσθέστε ένα, αφαιρέστε έναν ή αφαιρέστε όλους αυτούς."
+			],
+			[
+				"Χρήστης",
+				"Ο στόχος του χρήστη για όλες τις ενέργειες."
+			],
+			[
+				"Ρόλος",
+				"Ο ρόλος για προσθήκη ή αφαίρεση."
+			]
+		],
+		"examples": [
+			"προσθέστε WolfStar Goddess",
+			"show WolfStar",
+			"αφαιρέστε WolfStar Goddess",
+			"reset WolfStar"
+		],
+		"reminder": "Οι ρόλοι των μελών δεν θα τροποποιηθούν από αυτήν την εντολή, θα πρέπει να τους προσθέσετε ή να τους αφαιρέσετε."
+	},
+	"rolesDescription": "Καταχωρήστε, διεκδικήστε ή καταργήστε δημόσιους ρόλους σε αυτόν τον διακομιστή.",
+	"rolesExtended": {
+		"usages": [
+			"Ρόλος",
+			""
+		],
+		"extendedHelp": "Public roles are roles that are available for everyone.\nAn administrator must configure them with the configuration command.",
+		"explainedUsage": [
+			[
+				"ρόλοι",
+				"Η λίστα των ρόλων για διεκδίκηση ή ακύρωση. Αφήστε αυτό το κενό για να πάρετε μια λίστα με τους διαθέσιμους ρόλους."
+			]
+		],
+		"reminder": "Κατά την διεκδίκηση ή την αποποίηση ρόλων μπορείτε να παράσχετε έναν ή περισσότερους ρόλους.\nΓια να διεκδικήσετε πολλαπλούς ρόλους, πρέπει να τους διαχωρίσετε με κόμμα, για παράδειγμα «κόκκινο,πράσινο».\nΜπορείτε να καθορίσετε ποιους ρόλους θέλετε παρέχοντας το αναγνωριστικό ρόλου, το όνομα ή μια υπο-ενότητα του ονόματος.\n\nΟι διαχειριστές μπορούν να προσθέσουν δημόσιους ρόλους χρησιμοποιώντας το `{{prefix}}conf set roles.public ExamplePublicRole`.",
+		"examples": [
+			"Προγραμματιστής Σχεδιαστών",
+			"Σχεδιαστής"
+		]
+	}
+}

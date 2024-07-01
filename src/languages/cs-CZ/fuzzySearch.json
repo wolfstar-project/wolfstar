@@ -1,0 +1,6 @@
+{
+	"aborted": "Výzva byla přerušena.",
+	"invalidIndex": "Toto číslo bylo mimo dosah, potrat rychle.",
+	"invalidNumber": "Očekával jsem, že mi dáš číslo (jedno číslice), dostal bramboru.",
+	"matches": "Našel jsem více shod! **Prosím vyberte číslo do 0 a {{matches}}**:\n{{codeblock}}\nNapište **ABORT**."
+}

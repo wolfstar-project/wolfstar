@@ -1,0 +1,15 @@
+{
+	"name": "whois",
+	"description": "Giver information om en Discord bruger",
+	"contextMenuName": "Hent Information",
+	"userName": "bruger",
+	"userDescription": "Brugeren til at få information om",
+	"rolesTitle_one": "Rolle [1]",
+	"rolesTitle_other": "Roller [{{count, number}}]",
+	"permissionsTitle": "Nøgle Tilladelser",
+	"permissionsAll": "Alle Tilladelser",
+	"embedDescription": "**Bruger Siden **: {{createdAt}}",
+	"embedMemberDescription": "**Medlem Søg**: {{joinedAt}}",
+	"buttonAvatar": "Profilbillede",
+	"buttonProfile": "Profil"
+}

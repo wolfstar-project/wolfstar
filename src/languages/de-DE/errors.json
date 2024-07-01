@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Tut mir leid, ich habe versucht, eine Aktion für einen Kanal durchzuführen, der Discord unbekannt ist und fehlgeschlagen ist, dieser Fehler wurde an die Entwickler gemeldet.",
+	"genericUnknownGuild": "Tut mir leid, ich habe versucht, eine Aktion für einen Server durchzuführen, der Discord unbekannt ist und fehlgeschlagen ist, dieser Fehler wurde an die Entwickler gemeldet.",
+	"genericUnknownMember": "Tut mir leid, ich habe versucht, eine Aktion für ein Mitglied durchzuführen, das Discord unbekannt ist und fehlgeschlagen ist, dieser Fehler wurde an die Entwickler gemeldet.",
+	"genericUnknownMessage": "Tut mir leid, ich habe versucht, eine Aktion für eine Nachricht auszuführen, die Discord unbekannt ist und fehlgeschlagen ist, dieser Fehler wurde an die Entwickler gemeldet.",
+	"genericUnknownRole": "Tut mir leid, ich habe versucht, eine Aktion für eine unbekannte Rolle auszuführen, die Discord unbekannt ist und fehlgeschlagen ist, dieser Fehler wurde den Entwicklern gemeldet.",
+	"genericMissingAccess": "Es tut mir leid, ich habe versucht, eine Aktion für eine Ressource ohne die nötigen Berechtigungen durchzuführen und ist fehlgeschlagen, dieser Fehler wurde an die Entwickler gemeldet.",
+	"genericDiscordInternalServerError": "Hoppla, Discord ist kaputt, bitte versuche es später erneut.",
+	"genericDiscordGateway": "Hoppla, das Netzwerk hat Schwierigkeiten, mit Discord zu kommunizieren, bitte versuche es später erneut.",
+	"genericDiscordUnavailable": "Hoppla, Discord ist derzeit nicht verfügbar, bitte versuche es später erneut.",
+	"guildBansEmpty": "Es gibt keine Sperrungen, die auf diesem Server registriert sind.",
+	"guildBansNotFound": "Ich habe versucht und konnte diesen Benutzer von der Sperrliste nicht finden. Sind Sie sicher, dass dieser Benutzer verboten ist?",
+	"guildMemberNotVoicechannel": "Ich kann diese Aktion nicht in einem Mitglied ausführen, das nicht mit einem Sprachkanal verbunden ist.",
+	"guildWarnNotFound": "Ich habe diese Warnung nicht abgerufen. Entweder existiert sie nicht, sie ist keine Typwarnung oder sie wurde aufgerufen.",
+	"modlogTimed": "Dieses Moderationsprotokoll ist bereits abgelaufen. Läuft ab in {{remaining, duration}}",
+	"unexpectedIssue": "Ein unerwarteter Fehler ist aufgetreten! Dieser Befehl wird sicher abgebrochen...",
+	"userNotInGuild": "Dieser Benutzer ist nicht auf diesem Server."
+}

@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Przepraszam, próbowałem wykonać akcję dla kanału nieznanego Discordowi i nie powiodło się, ten błąd został zgłoszony programistom.",
+	"genericUnknownGuild": "Przepraszam, próbowałem wykonać akcję dla serwera nieznanego Discordowi i nie powiodło się, ten błąd został zgłoszony programistom.",
+	"genericUnknownMember": "Przepraszam, próbowałem wykonać akcję dla członka nieznanego Discorda i nie powiodło się, ten błąd został zgłoszony programistom.",
+	"genericUnknownMessage": "Przepraszam, próbowałem wykonać akcję dla wiadomości nieznanej Discordowi i nie powiodło się, ten błąd został zgłoszony programistom.",
+	"genericUnknownRole": "Przepraszam, próbowałem wykonać akcję dla nieznanej roli Discorda i nie powiodło się, ten błąd został zgłoszony programistom.",
+	"genericMissingAccess": "Przepraszam, próbowałem wykonać akcję dla zasobu bez niezbędnych uprawnień i nie powiodło się, ten błąd został zgłoszony programistom.",
+	"genericDiscordInternalServerError": "Ups, Discord się złamał, spróbuj ponownie później.",
+	"genericDiscordGateway": "Ups, sieć ma trudności z komunikacją z Discordem, spróbuj ponownie później.",
+	"genericDiscordUnavailable": "Ups, Discord jest obecnie niedostępny, spróbuj ponownie później.",
+	"guildBansEmpty": "Brak banów zarejestrowanych na tym serwerze.",
+	"guildBansNotFound": "Próbowałem znaleźć tego użytkownika z listy banów. Czy jesteś pewien, że ten użytkownik jest zbanowany?",
+	"guildMemberNotVoicechannel": "Nie mogę wykonać tej akcji w członku, który nie jest podłączony do kanału głosowego.",
+	"guildWarnNotFound": "Nie udało mi się pobrać ostrzeżenia. Albo nie istnieje, nie jest ostrzeżeniem typu, albo został odwołany.",
+	"modlogTimed": "Ten dziennik moderacji jest już zakończony. Wygasa za {{remaining, duration}}",
+	"unexpectedIssue": "Wystąpił nieoczekiwany błąd! Bezpieczne przerwanie tej komendy...",
+	"userNotInGuild": "Ten użytkownik nie jest na tym serwerze."
+}

@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Reagováno s {{emoji}} na {{message}}",
+	"reactionFooter": "První reakce byla přidána",
+	"filterFooter": "Filtrovaná reakce",
+	"filter": "{{REDCROSS}} Hey {{user}}, please do not add that reaction!",
+	"selfRoleHierarchy": "{{REDCROSS}} Moje role musí být vyšší než všechny seřazitelné role, jinak je nemohu udělit lidem!"
+}

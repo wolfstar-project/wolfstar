@@ -1,1 +1,6 @@
-[]
+{
+	"aborted": "Avbröt prompten framgångsrikt.",
+	"invalidIndex": "Det antalet var utom räckhåll och avbryts snabbt.",
+	"invalidNumber": "Jag förväntade mig att du skulle ge mig ett (enda siffra) nummer, fick en potatis.",
+	"matches": "Jag hittade flera matchningar! **Välj ett nummer inom 0 och {{matches}}**:\n{{codeblock}}\nSkriv **ABORT** om du vill avsluta prompten."
+}

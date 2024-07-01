@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "誰かのアバターをフルサイズで表示します。",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"ユーザー"
+		],
+		"extendedHelp": "このコマンドの名前が示すように、それは誰かのアバターを示しています。",
+		"explainedUsage": [
+			[
+				"ユーザー",
+				"アバターを取得するユーザー。デフォルトはあなた自身です。"
+			]
+		],
+		"reminder": "アバターのサイズを変更するには、--size フラグを使用します。"
+	},
+	"avatarNone": "ユーザーにはアバターが設定されていません。",
+	"voteDescription": "反応ベースの投票を簡素化しました。",
+	"voteExtended": {
+		"usages": [
+			"質問"
+		],
+		"examples": [
+			"#animeチャンネルを実装するべきですか?"
+		],
+		"explainedUsage": [
+			[
+				"質問",
+				"投票するべき質問。"
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} アンケートにはトピックを指定する必要があります。",
+	"voteReactionBlocked": "{{REDCROSS}} 私がブロックされているので、このコマンドを動作させるために必要な反応を追加することができませんでした! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"ユーザー"
+		],
+		"extendedHelp": "サーバーメンバーの情報を取得します。他の多くのボットでも「userinfo」として知られています。",
+		"explainedUsage": [
+			[
+				"ユーザー",
+				"情報を取得するユーザー。デフォルトはあなた自身です。"
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} more."
+}

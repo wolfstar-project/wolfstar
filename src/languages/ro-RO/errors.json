@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Îmi pare rău, am încercat să efectuez o acțiune pentru un canal necunoscut pentru Discord și eșuat, această eroare a fost raportată dezvoltatorilor.",
+	"genericUnknownGuild": "Îmi pare rău, am încercat să efectuez o acțiune pentru un server necunoscut pentru Discord și eșuat, această eroare a fost raportată dezvoltatorilor.",
+	"genericUnknownMember": "Îmi pare rău, am încercat să efectuez o acțiune pentru un membru necunoscut pentru Discord și eșuat, această eroare a fost raportată dezvoltatorilor.",
+	"genericUnknownMessage": "Îmi pare rău, am încercat să efectuez o acțiune pentru un mesaj necunoscut către Discord și eșuat, această eroare a fost raportată dezvoltatorilor.",
+	"genericUnknownRole": "Îmi pare rău, am încercat să efectuez o acțiune pentru un rol necunoscut Discord și eșuat, această eroare a fost raportată dezvoltatorilor.",
+	"genericMissingAccess": "Îmi pare rău, am încercat să efectuez o acțiune pentru o resursă fără permisiunile necesare și am eșuat, această eroare a fost raportată dezvoltatorilor.",
+	"genericDiscordInternalServerError": "Hopa, Discord s-a stricat, te rugăm să încerci din nou mai târziu.",
+	"genericDiscordGateway": "Ups, rețeaua se luptă să comunice cu Discord, te rugăm încearcă mai târziu.",
+	"genericDiscordUnavailable": "Ups, Discord este indisponibil momentan, te rugăm să încerci din nou mai târziu.",
+	"guildBansEmpty": "There are no bans registered in this server. (Automatic Copy)",
+	"guildBansNotFound": "Am încercat și nu am reușit să găsesc acest utilizator din lista de interdicții. Ești sigur că acest utilizator este interzis?",
+	"guildMemberNotVoicechannel": "Nu pot executa această acțiune într-un membru care nu este conectat la un canal vocal.",
+	"guildWarnNotFound": "Nu am reușit să transmit acel avertisment. Fie nu există, fie avertizează de tip, fie a fost apelat.",
+	"modlogTimed": "Acest jurnal de moderare este deja temporizat. Expiră în {{remaining, duration}}",
+	"unexpectedIssue": "A apărut o eroare neașteptată! Antrenează în siguranță această comandă...",
+	"userNotInGuild": "Acest utilizator nu este pe acest server."
+}

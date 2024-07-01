@@ -1,0 +1,6 @@
+{
+	"aborted": "Prompt erfolgreich abgebrochen.",
+	"invalidIndex": "Diese Zahl war außerhalb der Reichweite und breche die Eingabeaufforderung.",
+	"invalidNumber": "Ich erwartete, dass Sie mir eine (einzige Ziffern) Zahl, bekam eine Kartoffel.",
+	"matches": "Ich habe mehrere Übereinstimmungen gefunden! **Bitte wähle eine Zahl innerhalb von 0 und {{matches}}**:\n{{codeblock}}\nSchreibe **ABORT** wenn du die Eingabeaufforderung verlassen möchtest."
+}

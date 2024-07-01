@@ -1,0 +1,14 @@
+{
+	"messageDelete": "Mesaj șters • {{channel}}",
+	"messageDeleteUnknown": "Mesaj necunoscut șters • {{channel}}",
+	"messageUpdate": "Mesaj editat • {{channel}}",
+	"messageUpdateUnknown": "Mesaj necunoscut editat • {{channel}}",
+	"messageNotFound": "Mesaj necunoscut",
+	"messageDeleteBulk_one": "{{count}} mesaj șters în {{channel}} de către {{author}}",
+	"messageDeleteBulk_other": "{{count}} mesaje șterse în {{channel}} de {{author}}",
+	"messageDeleteBulkUnknown_one": "{{count}} mesaj șters în {{channel}}",
+	"messageDeleteBulkUnknown_other": "{{count}} mesaje șterse în {{channel}}",
+	"messageDeleteBulkFooter": "Mai multe mesaje șterse",
+	"voiceActivityFooter": "Activitate vocală",
+	"jumpToContext": "Salt la context"
+}

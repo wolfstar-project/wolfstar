@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Bądź ostrożny wspominając już o tym, że zostaniesz zbanowany za przekroczenie progu wzmianki o tym serwerze.",
+	"message": "Banmer wylądował i teraz użytkownik {{userTag}} z id {{userId}} jest zbanowany na spam wzmianki.\nNie martw się! Jestem tutaj, aby Ci pomóc! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatycznie: Próg spamu został przekroczony.\nPróg: {{threshold}}."
+}

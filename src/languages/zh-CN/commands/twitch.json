@@ -1,70 +1,70 @@
 {
-	"twitchSubscriptionStreamerNotFound": "",
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Sorry, I could not find the streamer. Are you sure you wrote their name correctly?",
 	"twitchSubscriptionStatusValues": [
-		"",
-		""
+		"在线",
+		"离线的"
 	],
-	"twitchSubscriptionInvalidStatus": "",
-	"twitchSubscriptionAddDuplicated": "",
-	"twitchSubscriptionAddSuccessOffline": "",
-	"twitchSubscriptionAddSuccessLive": "",
-	"twitchSubscriptionAddMessageForOfflineRequired": "",
-	"twitchSubscriptionRemoveOrResetEmpty": "",
-	"twitchSubscriptionRemoveStreamerNotSubscribed": "",
-	"twitchSubscriptionRemoveNotToProvidedChannel": "",
-	"twitchSubscriptionRemoveStreamerStatusNotMatch": "",
-	"twitchSubscriptionRemoveSuccessOffline": "",
-	"twitchSubscriptionRemoveSuccessLive": "",
-	"twitchSubscriptionResetSuccess_one": "",
-	"twitchSubscriptionResetSuccess_other": "",
-	"twitchSubscriptionShowStreamerNotSubscribed": "",
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah there! I expected \"online\" or \"offline\", but I cannot understand what you gave me instead.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} You're already subscribed to that streamer in this channel for that status.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Success! Whenever {{name}} goes offline, I will post a new message in {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Success! Whenever {{name}} goes live, I will post a new message in {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} I'm sorry but it is required to provide a message when making an offline subscription.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} I'm sorry but you are not subscribed to any streamers, mission abort!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} I'm sorry, you cannot unsubscribe from {{streamer}} because you are not subscribed to them.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} I'm sorry; while you're subscribed to this streamer and streaming status, their subscriptions is not posted to {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} I'm sorry, but it looks like you're not getting {{status}} notifications for {{streamer}}. We support \"online\" and \"offline\" notifications.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Success! I will no longer post messages to {{channel}} whenever {{name}} goes offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Success! I will no longer post messages to {{channel}} whenever {{name}} goes live.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Success! {{count}} subscription has been removed from this server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Success! {{count}} subscriptions have been removed from this server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} You wanted to see all subscriptions from this streamer, but there are none!",
 	"twitchSubscriptionShowStatus": {
-		"live": "",
-		"offline": ""
+		"live": "实时模式",
+		"offline": "离线的"
 	},
-	"twitchSubscriptionShowUnknownUser": "",
-	"twitchSubscriptionDescription": "",
+	"twitchSubscriptionShowUnknownUser": "未知的",
+	"twitchSubscriptionDescription": "管理您的服务器的订阅。",
 	"twitchSubscriptionExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
+			"添加流频道状态",
+			"添加流频道状态",
+			"删除流频道状态",
+			"重置串流",
+			"reset",
+			"显示",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "管理此服务器的订阅。\n__Online Notifications_\n所有可用数据都会出现在非常好的嵌入中，告诉您准确的流到哪里。\n\n__离线通知__\n您需要写您自己的消息，在串流离线时会被发布。 它将显示在一个漂亮的Twitch-purple MessageEmbed中。",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"添加/移除/重置/显示",
+				"Whether to\n　- Add a new Twitch subscription.\n　- Remove an existing Twitch subscription\n　- Reset all twitch subscription, or those for a specific streamer\n　- Show all current Twitch subscriptions"
 			],
 			[
-				"",
-				""
+				"主播者",
+				"流的 Twitch 用户名获取通知。"
 			],
 			[
-				"",
-				""
+				"频道",
+				"一个Discord频道在哪里发布通知。"
 			],
 			[
-				"",
-				""
+				"状态",
+				"Twitch 串流应该获得通知的状态，在线或离线通知。"
 			],
 			[
-				"",
-				""
+				"内容",
+				"要在 Discord 聊天中发送的消息。离线通知所需，可在线通知。"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"在线添加 favna #twitch",
+			"添加 favigna #twitch 离线Favna 现已离线。说吧：waving_hand:！",
+			"在线删除 kyranet #twitch",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"显示"
 		]
 	}
 }

@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} ei ole vielä lokalisoitu fi- US-versioon.",
+	"defaultLanguage": "Oletus Kieli",
+	"no": "Ei",
+	"none": "Ei Mitään",
+	"unknown": "tuntematon",
+	"yes": "Kyllä",
+	"paginatedMessagePage": "Sivu",
+	"paginatedMessageWrongUserInteractionReply": "Lopeta painikkeiden klikkaaminen tässä viestissä. Ne ovat vain {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "KK/PP/VVVV",
+	"dateFormatExplanation": "Kuukausi/päivä/vuosi"
+}

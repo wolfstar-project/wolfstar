@@ -1,0 +1,889 @@
+{
+	"permissions": "Machtigingen voor {{username}} ({{id}})",
+	"permissionsAll": "Alle rechten",
+	"slowmodeSet": "De cooldown voor dit kanaal is ingesteld op {{cooldown, duration}}.",
+	"slowmodeReset": "De cooldown voor dit kanaal is gereset.",
+	"banNotBannable": "Het doelwit is niet verboden voor mij.",
+	"dehoistStarting": "Ik zal dehoisting {{count}} leden starten...",
+	"dehoistProgress": "Tot nu toe verdrongen {{count}} leden ({{percentage}}%)",
+	"dehoistEmbed": {
+		"title": "Dehoisting {{users}} leden voltooid",
+		"descriptionNoone": "Er waren geen leden getreuzeld. Een applaus voor uw rechtspersonen!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} lid was gedehoisterd. We probeerden ook een extra {{errored}} lid te onthosten, maar ze hebben een fout gemaakt",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} leden waren gedehosten. We probeerden ook een extra {{errored}} leden te ontspoelen, maar ze hebben een fout gemaakt",
+		"description": "{{dehoistedMemberCount}} lid was gedempt",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} leden zijn gedempt",
+		"fieldErrorTitle": "De gebruikers waarmee we een fout tegenkwamen voor:"
+	},
+	"kickNotKickable": "Het doelwit is niet kickable voor mij.",
+	"lockdownLock": "Het kanaal {{channel}} is nu vergrendeld.",
+	"lockdownLocking": "{{LOADING}} Vergrendelen van kanaal {{channel}}... Misschien kan ik hierna niet reageren.",
+	"lockdownLocked": "Het kanaal {{channel}} was al vergrendeld.",
+	"lockdownUnlocked": "Het kanaal {{channel}} is niet vergrendeld.",
+	"lockdownOpen": "De vergrendeling voor het kanaal {{channel}} is vrijgegeven.",
+	"muteMuted": "De doelgebruiker is al gedempt.",
+	"muteUserNotMuted": "Deze gebruiker is niet gedempt.",
+	"restrictLowlevel": "{{REDCROSS}} Het spijt me, er is geen beperkende rol geconfigureerd. Vraag een beheerder of de servereigenaar om het in te stellen.",
+	"pruneAlert_one": "Succesvol {{count}} bericht verwijderd van {{total}}.",
+	"pruneAlert_other": "Succesvol {{count}} berichten verwijderd van {{total}}.",
+	"pruneInvalidPosition": "{{REDCROSS}} Positie moet een van \"voor\" of \"na\" zijn.",
+	"pruneNoDeletes": "Geen bericht is verwijderd, geen overeenkomende berichten met het filter of ze zijn ouder dan 14 dagen.",
+	"pruneLogHeader": "De volgende berichten zijn gegenereerd door een verzoek van een moderator.\nDe datumopmaak is van \"$t(globals:dateFormat) hh:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} heeft moderatie DM's ingeschakeld.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Succesvol moderatiegesprekken uitgeschakeld",
+	"moderationOutput_one": "{{GREENTICK}} Gemaakt case {{range}} ½ {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Gemaakt gevallen {{range}} ½ {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} heeft de zaak {{range}} aangemaakt {{users, list(conjunction)}}.\nMet de reden: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Gemaakt cases {{range}} × {{users, list(conjunction)}}.\nMet de reden: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Mislukt om gebruiker te modereren:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Mislukt om de gebruikers te modereren:\n{{users}}",
+	"moderationDmFooter": "Om moderatie DM's uit te schakelen, schrijf `toggleModerationDM`.",
+	"moderationDmDescription": "**・Server**: {{guild}}\n**## Type**: {{title}}\n**・Reden**: Geen gespecificeerd",
+	"moderationDmDescriptionWithReason": "**・Server**: {{guild}}\n**## Type**: {{title}}\n**・Reden**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**→Server**: {{guild}}\n**Perhaps Type**: {{title}}\n**## Duration**: {{duration, duration}}\n**(2) Reden**: Geen gespecificeerd",
+	"moderationDmDescriptionWithReasonWithDuration": "**ūServer**: {{guild}}\n**Perhaps Type**: {{title}}\n**## Duration**: {{duration, duration}}\n**0 Reden**: {{reason}}",
+	"slowmodeDescription": "Stel de slowmode van het kanaal in seconden in.",
+	"slowmodeExtended": {
+		"usages": [
+			"resett/Seconde/Duur"
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_CHANNELS, permissions}}** en wijzigt de ratelimit per gebruiker tot elke waarde tussen 0 en 6 uur.",
+		"examples": [
+			"0",
+			"reset",
+			"4m"
+		],
+		"reminder": "Om een kanaal zijn ratelimit per gebruiker te resetten, kunt u 0 of 'reset' gebruiken."
+	},
+	"banDescription": "Raak iemand met de hamer.",
+	"banExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1",
+			"Gebruiker --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te verbannen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze ban moet duren. Bijvoorbeeld 24u gedurende 24 uur. De gebruiker(s) zullen na deze tijd automatisch unbanned worden."
+			],
+			[
+				"Reden",
+				"De reden voor de ban. Dit zal ook getoond worden in de auditlogboeken van de server."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"De hoeveelheid berichten die je nog wilt verwijderen is optioneel en kan worden gecombineerd. Tot 7 dagen."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{BanMembers, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij verbannen.\nNee, de eigenaar van de server kan niet worden verbannen.\nDeze actie kan optioneel worden getimed om een tijdelijke ban te maken.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamt alle kanalen.",
+			"@Pete @Jack @John 24h Raiding"
+		]
+	},
+	"dehoistDescription": "Schiet iedereen met de Dehoistinator 3000",
+	"dehoistExtended": {
+		"extendedHelp": "De akte van het hief bestaat uit het toevoegen van speciale tekens voor de bijnaam om hoger te worden weergegeven in de ledenlijst.\nDit commando vervangt de bijnaam van een lid die de speciale tekens bevat met een speciaal teken dat ze onderaan de lijst trekt.",
+		"reminder": "Dit commando vereist **{{ManageNicknames, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen worden onthoed."
+	},
+	"kickDescription": "Raak iemand met de :woman's_boot:.",
+	"kickExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van gebruiker"
+		],
+		"extendedHelp": "Dit commando vereist **{{KickMembers, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden gekickt. Nee, de eigenaar van de server kan niet verwijderd worden.",
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) die verwijderd moeten worden. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor de aftrap wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"examples": [
+			"@Sarah",
+			"@Sarah Spammmende algemene chat."
+		]
+	},
+	"lockdownDescription": "Sluit de poorten voor dit kanaal!",
+	"lockdownExtended": {
+		"usages": [
+			"",
+			"vergrendel Rol TekstKanaal duur",
+			"ontgrendel Role TekstChannel",
+			"Rol TekstKanaal duur"
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_CHANNELS, permissions}}** om de machtigingen voor een kanaal te kunnen beheren.\nDit commando verwijdert de permissie **{{SEND_MESSAGES, permissions}}** aan de `@everyone` rol zodat niemand behalve de leden met rollen die hun eigen overrides hebben (naast administrators, wie kanaaloverschrijvingen omzeilt kan berichten verzenden.\nOptioneel, je kunt tijd doorgeven als tweede argument.",
+		"explainedUsage": [
+			[
+				"vergrendelen/ontgrendelen",
+				"Of je het kanaal wilt vergrendelen of ontgrendelen. Standaard \"vergrendelen\" als het kanaal momenteel ontgrendeld is, of \"ontgrendeld\" als het momenteel vergrendeld is."
+			],
+			[
+				"Functie",
+				"De rol om te vergrendelen. Standaard ingesteld op de `@everyone` rol."
+			],
+			[
+				"Tekstkanaal",
+				"Het kanaal wordt vergrendeld. Standaard het huidige kanaal."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze vergrendeling moet duren. Standaard oneindig."
+			]
+		],
+		"examples": [
+			"",
+			"#Algemeen",
+			"vergrendel #algemene 5m",
+			"ontgrendelen #general",
+			"vergrendel leden #algemeen"
+		],
+		"reminder": "Als je leden een rol nodig hebben zoals \"leden\" om berichten te sturen in het kanaal om te beginnen dan zal dit commando niet werken. Het staat op onze werkplek om de rol die moet worden vergrendeld configureerbaar te maken."
+	},
+	"muteDescription": "Demp een gebruiker in alle tekst- en spraakkanalen.",
+	"muteExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te dempen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze demping moet duren. Bijvoorbeeld 24u gedurende 24 uur. De gebruiker(s) zullen automatisch geactiveerd worden na deze tijd."
+			],
+			[
+				"Reden",
+				"De reden voor de demping. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaar van de server kan niet worden gedempt.\nDeze actie kan optioneel worden getimed om een tijdelijke demping te maken. Deze actie bespaart tijdelijk de rollen van een lid en zal worden toegekend aan de gebruiker na de unmute.\nDe gedempte rol is **sticky**, als de gebruiker het probeert te verwijderen door de server opnieuw te betreden, zal het terug worden toegevoegd.",
+		"examples": [
+			"@Alphonse",
+			"@Alphonse Spamming van alle kanalen",
+			"@Alphonse 24u Spamming van alle kanalen"
+		]
+	},
+	"setNicknameDescription": "Wijzig de bijnaam van een gebruiker.",
+	"setNicknameExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruikersnaam van gebruiker 1",
+			"Gebruiker1 duur",
+			"User 1 User2 Nickname Duur"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) tot nickname. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Gebruikersnaam",
+				"De nieuwe bijnaam om in te stellen. Niet inclusief dit wordt de standaard naam van de gebruiker."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze nicknamewijziging moet duren. Bijvoorbeeld 24 uur gedurende 24 uur. De gebruiker(s) zullen automatisch hun huidige naam terug krijgen na deze tijd."
+			],
+			[
+				"Reden",
+				"De reden voor deze nicknamewijziging. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_NICKNAMES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de gebruikersnaam van de server kan niet worden gewijzigd.",
+		"examples": [
+			"@Pete peeehteeerrr",
+			"@000000e000000e000000Pete Onvermelbare naam"
+		],
+		"reminder": "Als je de nieuwe bijnaam weglaat, wordt deze teruggezet naar de gebruikersnaam van de gebruiker"
+	},
+	"addRoleDescription": "Voegt een rol toe aan een gebruiker.",
+	"addRoleExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruikers1 Rol",
+			"Gebruiker1 duur",
+			"User 1 User 2 role Duur"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) waaraan een rol moet worden toegevoegd. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Functie",
+				"De nieuwe rol toe te wijzen"
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze rol moet hebben is op deze gebruiker. Bijvoorbeeld 24 uur lang. Na deze tijd zal de rol automatisch verwijderd worden."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze rol. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaarsrollen van de server kunnen niet worden gewijzigd.",
+		"examples": [
+			"@John lid",
+			"@John Maak van John een lid"
+		]
+	},
+	"removeroleDescription": "Verwijdert een rol van een gebruiker",
+	"removeroleExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruikers1 Rol",
+			"Gebruiker1 duur",
+			"User 1 User 2 role Duur"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) van welke een rol verwijderd wordt. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Functie",
+				"De rol te verwijderen"
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze rol moet worden verwijderd van deze gebruiker. Bijvoorbeeld 24 uur lang. De gebruiker(s) zullen automatisch de rol heroveren na deze tijd."
+			],
+			[
+				"Reden",
+				"De reden voor het verwijderen van deze rol. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaarsrollen van de server kunnen niet worden gewijzigd.",
+		"examples": [
+			"@Paula lid",
+			"@Paula lid Verwijder leden permissies van Paula"
+		]
+	},
+	"pruneDescription": "Schoont een bepaald aantal berichten zonder of o filter.",
+	"pruneExtended": {
+		"usages": [
+			"Bedrag vlaggen gebruiker",
+			"Hoeveelheid markeringen na/voor bericht",
+			"Bedrag gebruiker",
+			"Bedrag gebruiker na/voor bericht",
+			"Bedrag --stil"
+		],
+		"extendedHelp": "Deze opdracht verwijdert het aantal berichten dat een filter krijgt in de laatste 100 berichten die zijn verzonden in het kanaal dat het commando is uitgevoerd.\nOptioneel, je kunt `--silent` toevoegen om WolfStar te vertellen geen reactie te sturen.",
+		"explainedUsage": [
+			[
+				"Hoeveelheid",
+				"Het aantal berichten om te verwijderen."
+			],
+			[
+				"--f/bestand/bestanden",
+				"Verwijdert berichten met bijlagen."
+			],
+			[
+				"--/auteur",
+				"Verwijdert uw berichten."
+			],
+			[
+				"--b/bot/bots",
+				"Verwijdert berichten van bots."
+			],
+			[
+				"--h/mens/mensen",
+				"Verwijdert berichten verzonden door gebruikers."
+			],
+			[
+				"--i/invite/uitnodigingen",
+				"Verwijdert berichten die uitnodigingslinks bevatten."
+			],
+			[
+				"--l/link/links",
+				"Verwijdert berichten die een link bevatten."
+			],
+			[
+				"--j/u",
+				"Verwijdert mijn berichten."
+			],
+			[
+				"--leeftijd=Duur",
+				"Verwijdert elk bericht nieuwer dan de duur."
+			],
+			[
+				"--include/contain=Word",
+				"Verwijdert berichten die woorden bevatten."
+			],
+			[
+				"--p/pin/pinnen",
+				"Verwijdert vastgezette berichten, tenzij gespecificeerd, geen andere filter verwijdert pinnen."
+			],
+			[
+				"Gebruiker",
+				"Verwijdert berichten van de opgegeven gebruiker."
+			],
+			[
+				"Positie: na",
+				"Verwijdert berichten die zijn verzonden na het opgegeven bericht."
+			],
+			[
+				"Positie: voor",
+				"Verwijdert berichten die zijn verzonden voor het opgegeven bericht."
+			],
+			[
+				"--/stil",
+				"Of er wel of niet een reactiebericht moet worden verzonden, dit zal ook uw opdrachtbericht verwijderen als er minder dan 100 berichten zijn gefilterd."
+			]
+		],
+		"examples": [
+			"50 --a",
+			"75 @kyra",
+			"20 --bots",
+			"60 --mensen--bestanden voor 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --stil"
+		],
+		"reminder": "Vanwege een Discord-beperking kunnen bots berichten die ouder zijn dan 14 dagen niet verwijderen."
+	},
+	"permissionsDescription": "Controleer de toestemming voor een lid of de jouwe.",
+	"permissionsExtended": {
+		"usages": [
+			"",
+			"Gebruiker"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker",
+				"De gebruiker voor wie u de machtigingen wilt controleren. Standaard u zelf."
+			]
+		],
+		"extendedHelp": "Ideaal als je wilt weten welke machtigingen aan een lid worden verleend wanneer deze een bepaalde rol heeft."
+	},
+	"restrictAttachmentDescription": "Beperk het versturen van bijlagen door een gebruiker in alle kanalen.",
+	"restrictAttachmentExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om bijlagen te beperken. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze beperking moet hebben is op deze gebruiker. Bijvoorbeeld 24 uur lang. Na deze tijd zal de beperking automatisch worden opgeheven."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze beperking. Dit zal ook worden weergegeven in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaar kan niet worden beperkt.\nDeze actie kan optioneel worden getimed om een tijdelijke beperking te creëren.\nDe beperkte rol is **sticky**, als de gebruiker het probeert te verwijderen door opnieuw lid te worden van de server, zal het terug worden toegevoegd.",
+		"examples": [
+			"@Pete",
+			"@Pete verzending vreemde afbeeldingen",
+			"@Pete 24h verzenden van NSFW-afbeeldingen"
+		]
+	},
+	"restrictEmbedDescription": "Beperk een gebruiker niet om embeds aan te sluiten in alle kanalen.",
+	"restrictEmbedExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om embeds in te perken. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze beperking moet hebben is op deze gebruiker. Bijvoorbeeld 24 uur lang. Na deze tijd zal de beperking automatisch worden opgeheven."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze beperking. Dit zal ook worden weergegeven in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaar kan niet worden beperkt.\nDeze actie kan optioneel worden getimed om een tijdelijke beperking te creëren.\nDe beperkte rol is **sticky**, als de gebruiker het probeert te verwijderen door opnieuw lid te worden van de server, zal het terug worden toegevoegd.",
+		"examples": [
+			"@Pete",
+			"@Pete verzenden rare links",
+			"@Pete 24u heeft een spamlink geplaatst"
+		],
+		"reminder": "Embeds zijn bijvoorbeeld wanneer een gebruiker een video verstuurt die wordt ingebed in de chat."
+	},
+	"restrictEmojiDescription": "Beperk een gebruiker voor het gebruik van externe emojis in alle kanalen.",
+	"restrictEmojiExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om externe emojis te beperken. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze beperking moet hebben is op deze gebruiker. Bijvoorbeeld 24 uur lang. Na deze tijd zal de beperking automatisch worden opgeheven."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze beperking. Dit zal ook worden weergegeven in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaar kan niet worden beperkt.\nDeze actie kan optioneel worden getimed om een tijdelijke beperking te creëren.\nDe beperkte rol is **sticky**, als de gebruiker het probeert te verwijderen door opnieuw lid te worden van de server, zal het terug worden toegevoegd.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming externe emojis",
+			"@Pete 24u Posted cringe"
+		],
+		"reminder": "Dit voorkomt alleen het gebruik van externe emojis en heeft dus geen effect voor niet-nitro-gebruikers. je eigen server emojis en regelmatige bouw in twemojis kan nog steeds gebruikt worden door leden met deze rol."
+	},
+	"restrictReactionDescription": "Beperk een gebruiker om te reageren op berichten in alle kanalen.",
+	"restrictReactionExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te beperken tot reacties op berichten. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze beperking moet hebben is op deze gebruiker. Bijvoorbeeld 24 uur lang. Na deze tijd zal de beperking automatisch worden opgeheven."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze beperking. Dit zal ook worden weergegeven in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaar kan niet worden beperkt.\nDeze actie kan optioneel worden getimed om een tijdelijke beperking te creëren.\nDe beperkte rol is **sticky**, als de gebruiker het probeert te verwijderen door opnieuw lid te worden van de server, zal het terug worden toegevoegd.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming reacties",
+			"@Pete 24h rare reacties posten"
+		]
+	},
+	"restrictVoiceDescription": "Beperk een gebruiker om zich aan te sluiten bij een spraakkanaal.",
+	"restrictVoiceExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) voor het beperken van de spraakkanaal interactie. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze beperking moet hebben is op deze gebruiker. Bijvoorbeeld 24 uur lang. Na deze tijd zal de beperking automatisch worden opgeheven."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze beperking. Dit zal ook worden weergegeven in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden beheerd.\nNee, de eigenaar kan niet worden beperkt.\nDeze actie kan optioneel worden getimed om een tijdelijke beperking te creëren.\nDe beperkte rol is **sticky**, als de gebruiker het probeert te verwijderen door opnieuw lid te worden van de server, zal het terug worden toegevoegd.",
+		"examples": [
+			"@Pete",
+			"@Pete Oorraping in algemene spraakkanalen",
+			"@Pete 24h rare geluiden maken"
+		]
+	},
+	"softBanDescription": "Raak iemand met de hamer van het verbod, vernietig al zijn boodschappen voor een paar dagen en breek de ban uit.",
+	"softBanExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1",
+			"Gebruiker --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te softbannen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor de softban. Dit zal ook getoond worden in de auditlogboeken van de server."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"De hoeveelheid berichten die je nog wilt verwijderen is optioneel en kan worden gecombineerd. Tot 7 dagen."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{BanMembers, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij verbannen.\nNee, de eigenaar van de server kan niet verbannen worden.\nDe ban-functie van Discord heeft een functie waarmee de moderator alle berichten kan verwijderen van alle kanalen die zijn verzonden in de laatste 'x' dagen. is een getal tussen 0 (geen dagen) en 7.\nDe gebruiker wordt direct na de ban gedeblokkeerd, dus het is als een kick, maar dat kan veel berichten verwijderen.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming alle kanalen",
+			"@Pete 7 Alle berichten in 7 zijn nu verwijderd, JE HAH!"
+		]
+	},
+	"timeoutApplyDescription": "Tijd over een gebruiker.",
+	"timeoutApplyExtended": {
+		"usages": [
+			"Duur gebruiker",
+			"Reden voor tijdsduur"
+		],
+		"explainedUsage": [
+			[
+				"Duur",
+				"De duur van de time-out. Bijvoorbeeld 24 uur voor 24 uur."
+			],
+			[
+				"Gebruiker",
+				"De gebruiker die uitkomt."
+			],
+			[
+				"Reden",
+				"De reden voor de time-out. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"examples": [
+			"30s @Pete",
+			"2h @Pete Spamming alle kanalen"
+		]
+	},
+	"timeoutUndoDescription": "Verwijder een time-out van een gebruiker.",
+	"timeoutUndoExtended": {
+		"usages": [
+			"Gebruiker",
+			"Reden van gebruiker"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker",
+				"De gebruiker die uitkomt."
+			],
+			[
+				"Reden",
+				"De reden voor de time-out. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"examples": [
+			"@Pete",
+			"@Pete schakelt uit, hij was niet degene die alle kanalen heeft spamd: person_shrugging:"
+		]
+	},
+	"timeoutNotModeratable": "Het doel kan niet door mij worden uitgelopen.",
+	"toggleModerationDmDescription": "Wissel moderatie DMs.",
+	"toggleModerationDmExtended": {
+		"extendedHelp": "Met deze opdracht kunt u moderatie DM's in-/uitschakelen Standaard staan ze aan, wat betekent dat elke moderatie actie (automatisch of handmatig) je zal DM geven, maar je kunt ze uitschakelen met dit commando."
+	},
+	"unbanDescription": "Deblokkeer iemand van deze server.",
+	"unbanExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te unbannen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor de verbanning. Dit zal ook in de auditlogboeken van de server worden weergegeven."
+			]
+		],
+		"extendedHelp": "Deze opdracht vereist **{{BanMembers, permissions}}**. Het stuurt letterlijk iemand van de prullenbak en schoont hem op, en staat de route naar de poorten van deze server toe.",
+		"examples": [
+			"@Pete",
+			"@Pete schakelt uit, hij was niet degene die alle kanalen heeft spamd: person_shrugging:"
+		]
+	},
+	"unmuteDescription": "Verwijder de schotband van een gebruiker.",
+	"unmuteExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te dempen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor de demping. Dit wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}** en verwijdert een gebruiker van de gedempte lijst van mensen en geeft de oude rollen terug als de gebruiker ze had.",
+		"examples": [
+			"@Pete",
+			"@Pete (Voeg willekeurige grap hier in)."
+		]
+	},
+	"unrestrictAttachmentDescription": "Verwijder de bijlage beperking van één of meer gebruikers.",
+	"unrestrictAttachmentExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) van welke bijlage beperkingen worden verwijderd. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor het verwijderen van de bijlage beperking. Dit zal ook getoond worden in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}** en verwijdert een gebruiker van de lijst met beperkte personen.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmbedDescription": "Verwijder de beperking voor insluitingen van één of meer gebruikers.",
+	"unrestrictEmbedExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) waarvan de insluitingsbeperkingen worden verwijderd. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor het verwijderen van de embed-beperking. Dit zal ook zichtbaar zijn in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}** en verwijdert een gebruiker van de lijst met beperkte personen.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmojiDescription": "Verwijder de externe emoji beperking van één of meer gebruikers.",
+	"unrestrictEmojiExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om emoji beperkingen te verwijderen. Kan maximaal 10 gebruikers in totaal."
+			],
+			[
+				"Reden",
+				"De reden voor het opheffen van de emoji-beperking. Dit zal ook getoond worden in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}** en verwijdert een gebruiker van de lijst met beperkte personen.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictReactionDescription": "Verwijder de reactiebeperking van één of meer gebruikers.",
+	"unrestrictReactionExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) waarvandaan een reactie wordt beperkt. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor het opheffen van de reactiebeperking. Dit zal ook zichtbaar zijn in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}** en verwijdert een gebruiker van de lijst met beperkte personen.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictVoiceDescription": "Verwijder de beperking van spraakverbindingen van één of meer gebruikers.",
+	"unrestrictVoiceExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) waarvandaan de stem restricties verwijderd worden. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor het verwijderen van de spraakbeperking. Dit zal ook worden getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MANAGE_ROLES, permissions}}** en verwijdert een gebruiker van de lijst met beperkte personen.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unwarnDescription": "Appeal een waarschuwing moderation log case.",
+	"unwarnExtended": {
+		"usages": [
+			"Zaak",
+			"Reden van zaak"
+		],
+		"explainedUsage": [
+			[
+				"Zaak",
+				"Het casestud nummer om te wijzigen. Je kunt de casestudnummers vinden via het `history` commando of door te zoeken in je moderation logs kanaal"
+			],
+			[
+				"Reden",
+				"De reden om deze waarschuwing te verwijderen."
+			]
+		],
+		"extendedHelp": "Dit commando roept een waarschuwing in, het vereist geen toestemming en u geeft mij alleen een moderatielogboek voor beroep en de reden.",
+		"examples": [
+			"0 Oeps, een fout plan.",
+			"42 keer op keer was dat de definitie van het leven."
+		]
+	},
+	"vmuteDescription": "Gooi iemands microfoon uit het raam.",
+	"vmuteExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te dempen in gesprekskanalen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd waarop deze stem gedempt moet van toepassing zijn. Bijvoorbeeld 24 uur voor 24 uur. De mute van de stem zal automatisch worden opgeheven na deze tijd."
+			],
+			[
+				"Reden",
+				"De reden voor het toevoegen van deze voice demping. Dit zal ook worden getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MUTE_MEMBERS, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij worden gedegradeerd.\nNee, de eigenaar van de server kan niet stilgezet worden.\nDeze actie kan optioneel getimed worden om een tijdelijke stem demping te maken.",
+		"examples": [
+			"@Pete",
+			"@Pete zingen te luid",
+			"@Pete 24u Letterlijk zang oorverkrachting"
+		]
+	},
+	"voiceKickDescription": "Raak iemand met de :woms_boot: voor het zingen zo slecht en hardop.",
+	"voiceKickExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om hun huidige spraakkanaal te kicken. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor het verwijderen van de gebruiker(s) uit het spraakkanaal. Dit wordt ook weergegeven in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist de machtigingen **{{MANAGE_CHANNELS, permissions}}** om een tijdelijk (verborgen) spraakkanaal te maken, en **{{MOVE_MEMBERS, permissions}}** om de gebruiker naar het tijdelijke kanaal te verplaatsen.\nNa dit is het kanaal snel verwijderd, waardoor de gebruiker het spraakkanaal verlaat.\nVoor gevreesde moderators heeft dit commando bijna geen invloed op de gemiddelde gebruiker, omdat het kanaal alleen op een manier wordt gemaakt en de geselecteerde gebruiker kan zien en toetreden, en dan snel verwijderd.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming alle kanalen"
+		]
+	},
+	"vunmuteDescription": "Haal iemands microfoon terug zodat ze kunnen praten.",
+	"vunmuteExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Reden van User1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te dempen in gesprekskanalen. Kan maximaal 10 gebruikers zijn."
+			],
+			[
+				"Reden",
+				"De reden voor het verwijderen van de spraakdemping. Deze wordt ook getoond in de auditlogboeken van de server."
+			]
+		],
+		"extendedHelp": "Dit commando vereist **{{MUTE_MEMBERS, permissions}}**, en alleen leden met een lagere rol hiërarchie positie kunnen door mij ongesierd worden.\nNee, de eigenaar van de server kan niet uitgeschakeld worden.",
+		"examples": [
+			"@Pete",
+			"@Pete schreef zijn tijden om verkrachting te horen."
+		]
+	},
+	"warnDescription": "Geef iemand een waarschuwing.",
+	"warnExtended": {
+		"usages": [
+			"Gebruiker",
+			"User1 User2 Gebruiker3...Gebruiker10",
+			"Gebruiker1 duur",
+			"Reden voor tijdsduur gebruiker 1"
+		],
+		"explainedUsage": [
+			[
+				"Gebruiker/Gebruiker1/Gebruiker2",
+				"De gebruiker(s) om te waarschuwen kunnen oplopen tot maximaal 10 gebruikers."
+			],
+			[
+				"Duur",
+				"De hoeveelheid tijd die deze waarschuwing aanvraagt. Bijvoorbeeld 24 uur gedurende 24 uur. De gebruiker (s) zullen de waarschuwing automatisch laten verwijderen."
+			],
+			[
+				"Reden",
+				"De reden voor deze waarschuwing."
+			]
+		],
+		"extendedHelp": "Dit commando geeft een waarschuwing aan een gebruiker.\nDit soort waarschuwing is bedoeld om **formele waarschuwingen** te zijn, zoals ze getoond worden in het 'waarschuwingen' commando.\nHet is een goede praktijk om een informele waarschuwing te doen voordat je dit commando gebruikt.",
+		"examples": [
+			"@Pete heeft geprobeerd iedereen te noemen."
+		]
+	}
+}

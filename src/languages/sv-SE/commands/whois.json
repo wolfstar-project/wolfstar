@@ -1,1 +1,15 @@
-[]
+{
+	"name": "vemhelst",
+	"description": "Ger information om en Discord-användare",
+	"contextMenuName": "Hämta information",
+	"userName": "användare",
+	"userDescription": "Användaren för att få information om",
+	"rolesTitle_one": "Roll [1]",
+	"rolesTitle_other": "Roller [{{count, number}}]",
+	"permissionsTitle": "Nyckelbehörigheter",
+	"permissionsAll": "Alla behörigheter",
+	"embedDescription": "**Användarrad**: {{createdAt}}",
+	"embedMemberDescription": "**Medlem sedan**: {{joinedAt}}",
+	"buttonAvatar": "Profilbild",
+	"buttonProfile": "Profil"
+}

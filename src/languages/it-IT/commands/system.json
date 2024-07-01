@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Valuta Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Espressione"
+		],
+		"extendedHelp": "Il comando eval valuta il codice come-in, ogni errore generato da esso verrà gestito.\nUtilizza anche la funzione flags. Scrivi --silent, --depth=number o --async per personalizzare l'output.\nIl flag --wait cambia il tempo in cui verrà eseguito l'eval. Il valore predefinito è di 60 secondi. Accetta il tempo in millisecondi.\nIl flag --silent non lo farà emettere nulla.\nIl flag --depth accetta un numero, ad esempio --depth=2, per personalizzare la profondità di util.inspect.\nIl flag --async avvolgerà il codice in una funzione asincronica in cui puoi goderti l'uso dell'attesa, tuttavia, se vuoi restituire qualcosa, avrai bisogno della parola chiave di ritorno\nLa bandiera --showHidden attiverà l'opzione showHidden in utile. nspect.\nI flag --lang e --language consentono di evidenziare diverse sintassi per l'output.\nIl flag --json converte l'output in json\nIl flag --no-timeout disabilita il timeout\nSe l'output è troppo grande, invierà l'output come file.",
+		"explainedUsage": [
+			[
+				"Espressione",
+				"L'espressione da valutare"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Riservato ai proprietari di bot."
+	},
+	"evalTimeout": "TIMEOUT: Ha preso più di {{seconds}} secondi.",
+	"evalError": "**Errore**:{{output}}\n**Tipo**:{{type}}\n{{time}}",
+	"dmNotSent": "Non posso inviarti un messaggio in DM, mi hai bloccato?",
+	"dmSent": "Ti ho inviato il messaggio in DMs.",
+	"reboot": "{{LOADING}} Riavvio...",
+	"rebootDescription": "Riavvia il bot.",
+	"rebootExtended": {
+		"extendedHelp": "Il bot va in boom, poi il bot si rianima.",
+		"reminder": "Riservato ai proprietari di bot."
+	}
+}

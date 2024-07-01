@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Os comandos baseados em mensagens estão **obsoletos** e serão removidos no futuro. Você deve usar o comando {{command}} em vez disso!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Este comando só está disponível por meio de comandos de barra. Por favor, use o comando de barra em vez disso."
+	},
+	"slashOnlyErrorMessage": "Este comando só está disponível por meio de comandos de barra. Por favor, use o comando de barra em vez disso."
+}

@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Gewijzigd met {{emoji}} op {{message}}",
+	"reactionFooter": "Eerste Reactie Toegevoegd",
+	"filterFooter": "Gefilterde actie",
+	"filter": "{{REDCROSS}} Hallo {{user}}, voeg die reactie niet toe!",
+	"selfRoleHierarchy": "{{REDCROSS}} Mijn rol moet hoger zijn dan alle zelf toewijsbare rollen, anders kan ik ze niet aan mensen toekennen!"
+}

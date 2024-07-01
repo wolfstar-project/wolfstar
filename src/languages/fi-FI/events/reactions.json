@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Reacted with {{emoji}} on {{message}}",
+	"reactionFooter": "Ensimmäinen Reaktio Lisätty",
+	"filterFooter": "Suodatettu Reaktio",
+	"filter": "{{REDCROSS}} Hey {{user}}, please do not add that reaction!",
+	"selfRoleHierarchy": "{{REDCROSS}} Minun roolini on oltava korkeampi kuin kaikki itse siirrettävät roolit, muuten en voi antaa niitä ihmisille!"
+}

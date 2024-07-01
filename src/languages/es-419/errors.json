@@ -1,4 +1,13 @@
 {
+	"genericUnknownChannel": "Lo siento, intenté realizar una acción para un canal desconocido para Discord y falló, este error ha sido reportado a los desarrolladores.",
+	"genericUnknownGuild": "Lo siento, intenté realizar una acción para un servidor desconocido para Discord y falló, este error ha sido reportado a los desarrolladores.",
+	"genericUnknownMember": "Lo siento, intenté realizar una acción para un miembro desconocido para Discord y falló, este error ha sido reportado a los desarrolladores.",
+	"genericUnknownMessage": "Lo siento, intenté realizar una acción para un mensaje desconocido para Discord y falló, este error ha sido reportado a los desarrolladores.",
+	"genericUnknownRole": "Lo siento, intenté realizar una acción para un rol desconocido para Discord y falló, este error ha sido reportado a los desarrolladores.",
+	"genericMissingAccess": "Lo siento, intenté realizar una acción para un recurso sin los permisos necesarios y falló, este error ha sido reportado a los desarrolladores.",
+	"genericDiscordInternalServerError": "Vaya, Discord se rompió a sí mismo, por favor inténtalo de nuevo más tarde.",
+	"genericDiscordGateway": "Vaya, la red está luchando por comunicarse con Discord, por favor inténtalo de nuevo más tarde.",
+	"genericDiscordUnavailable": "Vaya, Discord no está disponible actualmente, por favor inténtalo de nuevo más tarde.",
 	"guildBansEmpty": "No hay baneos registrados en este servidor.",
 	"guildBansNotFound": "Lo he intentado y no he podido encontrar a este usuario de la lista de baneos. ¿Estás seguro de que este usuario está baneado?",
 	"guildMemberNotVoicechannel": "No puedo ejecutar esta acción en un miembro que no está conectado a un canal de voz.",

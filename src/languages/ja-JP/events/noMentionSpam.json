@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "このサーバーのメンションしきい値を超えることが禁止されようとしているので、これ以上言及するように注意してください。",
+	"message": "The banhammer has landed and now the user {{userTag}} with id {{userId}} is banned for mention spam.\nDo not worry! I'm here to help you! 😄",
+	"modlog": "[NOMENTIONSPAM] 自動: メンションスパムしきい値を超えました.\nしきい値: {{threshold}}."
+}

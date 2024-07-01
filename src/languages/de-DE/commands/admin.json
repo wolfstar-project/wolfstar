@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Schlüssel **{{key}}**: {{response}} erfolgreich aktualisiert",
+	"confGetNoExt": "Der Schlüssel **{{key}}** scheint nicht existieren.",
+	"confGet": "Der Wert für den Schlüssel **{{key}}** ist: `{{value}}`",
+	"confReset": "Der Schlüssel **{{key}}** wurde zurückgesetzt auf: `{{value}}`",
+	"confNochange": "Der Wert für **{{key}}** war bereits dieser Wert.",
+	"confServerDescription": "Einstellungen pro Server definieren.",
+	"confServerExtended": {
+		"usages": [
+			"setze NameOfKey Wert für Key",
+			"zeigen",
+			"zeige NameOfKey",
+			"entferne NameOfKey Wert für Key",
+			"reset NameOfKey",
+			"menü"
+		],
+		"extendedHelp": "Erlaubt dir, WolfStar von Discord aus als schnelle Alternative zu [Web-Dashboard](https://wolfstar.rocks) zu konfigurieren.",
+		"examples": [
+			"setze Sprache en-GB",
+			"setze Channels.moderation-logs #moderation-logs",
+			"zeigen",
+			"zeige Kanäle",
+			"roles.moderator Moderator entfernen",
+			"reset roles.moderator",
+			"menü"
+		],
+		"reminder": "Es gibt Schlüssel und Gruppen, Schlüssel, die innerhalb einer Gruppe sind, sind von `GroupName.KeyName` benannt."
+	},
+	"confServer": "**Server Einstellung {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` kann nur über das Web-Dashboard konfiguriert werden ",
+	"confSettingNotSet": "Nicht gesetzt",
+	"rolesetDescription": "Eindeutige Rollensätze verwalten.",
+	"rolesetExtended": {
+		"usages": [
+			"setzen RoleSetName Role1 Role2 Role3...",
+			"RoleSetName Role1 Role2 Role3 entfernen...",
+			"reset",
+			"reset RoleSetName",
+			"liste",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Ein Rollenset ist eine Gruppe von Rollen, die WolfStar als einzigartig für alle Mitglieder des Servers identifiziert, d.h. ein roleset namens `region` könnte die Rollen `Africa`, `America`, `Asia` und `Europe` haben, und Mitglieder können nur eine von ihnen haben. Dies ist wie eine Art \"Regel\", die in den drei folgenden Situationen angewendet wird:\n\n- Wenn jemand eine Rolle über den \"Rollen\"-Befehl beansprucht.\n- Wenn jemand eine Rolle als Reaktionsrollen beansprucht.\n- Wenn jemand eine Rolle erhält, entweder manuell oder von einem anderen Bot.",
+		"explainedUsage": [
+			[
+				"hinzufügen",
+				"Erstellen Sie eine neue Rolle oder fügen Sie eine Rolle zu einer existierenden hinzu."
+			],
+			[
+				"entfernen",
+				"Entfernen Sie eine Rolle aus einem bestehenden Rollen."
+			],
+			[
+				"reset",
+				"Entfernt alle Rollen von einem Rollenset oder, wenn nicht spezifiziert, alle vorhandenen Rollen."
+			],
+			[
+				"liste",
+				"Listet alle Rollen auf."
+			],
+			[
+				"auto",
+				"Fügt ein Rollenset hinzu oder entfernt es."
+			],
+			[
+				"RoleSetName",
+				"Der Name des Rollensatzes"
+			],
+			[
+				"Rolle1 Rolle2 Rolle3",
+				"Die Rollen, die dem Rollensatz hinzugefügt werden sollen"
+			]
+		],
+		"examples": [
+			"füge Regionen Amerika hinzu",
+			"Regionen Afrika Amerika Asien Europa hinzufügen",
+			"entferne Regionen Amerika",
+			"reset",
+			"Regionen zurücksetzen",
+			"liste",
+			"die Regionen Amerika",
+			"Regionen Afrika Amerika Asien Europa"
+		],
+		"reminder": "Dieser Befehl kann mehrere Rollen gleichzeitig hinzufügen und/oder entfernen."
+	},
+	"rolesetCreated": "Der {{name}} einzigartige Rollensatz wurde mit den folgenden Rollen erstellt: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Die eindeutige Rolle von {{name}} wurde aktualisiert. Sie hat nun folgende Rollen: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Das einzigartige Rollenset {{name}} wird nicht mehr die folgenden Rollen enthalten: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Es sind keine Rollensets in dieser Gruppe konfiguriert.",
+	"rolesetResetAll": "{{GREENTICK}} Alle Rollen erfolgreich entfernt.",
+	"rolesetResetNotExists": "{{REDCROSS}} Die roleset `{{name}}` existiert nicht auf diesem Server.",
+	"rolesetResetGroup": "{{GREENTICK}} Erfolgreich die roleset `{{name}}` von diesem Server entfernt.",
+	"rolesetUpdated": "Der {{name}} eindeutige Rollensatz wurde aktualisiert.",
+	"rolesetNoRolesets": "Du hast keine Rollen.",
+	"confMenuRenderAtFolder": "Aktuell: 📁 {{path}}",
+	"confMenuRenderAtPiece": "Momentan ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Es gibt keine konfigurierbaren Schlüssel für diesen Ordner",
+	"confMenuRenderSelect": "Bitte geben Sie einen der folgenden Namen ein",
+	"confMenuRenderUpdate": "• Update-Wert → `set <value>`",
+	"confMenuRenderRemove": "• Wert entfernen → `Entfernen <value>`",
+	"confMenuRenderReset": "• Wert zurücksetzen → `reset`",
+	"confMenuRenderUndo": "• Update rückgängig → `rückgängig machen`",
+	"confMenuRenderCvalue": "Aktueller Wert: **``{{value}}``**",
+	"confMenuRenderBack": "Drücke ◀️ um zurückzugehen",
+	"confMenuInvalidKey": "Ungültiger Schlüssel, bitte versuchen Sie es erneut mit einer der folgenden Optionen.",
+	"confMenuInvalidAction": "Ungültige Aktion, bitte versuchen Sie es erneut mit einer der folgenden Optionen.",
+	"confMenuSaved": "Alle Änderungen erfolgreich gespeichert."
+}

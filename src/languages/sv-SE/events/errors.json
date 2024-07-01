@@ -1,1 +1,5 @@
-[]
+{
+	"string": "{{REDCROSS}} Dear {{mention}}, {{message}}",
+	"unexpectedError": "{{REDCROSS}} Jag hittade ett oväntat fel, vänligen rapportera de steg du har tagit till mina utvecklare!",
+	"unexpectedErrorWithContext": "$t(händelser/fel:unexpectedError)\nDu kan lägga till `{{report}}` till rapporten så att de kan se vilket fel som utlöstes."
+}

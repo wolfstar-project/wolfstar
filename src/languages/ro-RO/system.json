@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Am avut o mică eroare de rețea când am trimis mesaje, te rog să rulezi această comandă din nou!",
+	"fetchBansFail": "Nu am reuşit să preiau banurile. Am permisiunea **{{ADMINISTRATOR, permissions}}**?",
+	"helpTitles": {
+		"aliases": "🖇️ <unk> **Aliases**",
+		"usages": "📝 <unk> **Utilizarea comenzilor**",
+		"extendedHelp": "🔍 <unk> **Ajutor extins**",
+		"explainedUsage": "⚙️ <unk> **Utilizarea explicată**",
+		"possibleFormats": "🔢 <unk> **Formate posibile**",
+		"examples": "🔗 <unk> **Exemple**",
+		"reminders": "⏰ • **Memento**"
+	},
+	"jumpTo": "Sari la Mesaj Cu",
+	"loading": [
+		"{{LOADING}} Se uită hamsterii alergați...",
+		"{{LOADING}} Cautare persoane la ascunderea si cautare...",
+		"{{LOADING}} Încearcă să descifreze această comandă...",
+		"{{LOADING}} Preluarea datelor din cloud...",
+		"{{LOADING}} Lentile de calibrare...",
+		"{{LOADING}} Joc, hârtie, foarfec...",
+		"{{LOADING}} Se conectează la frecvențele corecte...",
+		"{{LOADING}} Reticulare spline..."
+	],
+	"prefixReminder": "Prefixul acestui server este setat la: `{{prefix}}`"
+}

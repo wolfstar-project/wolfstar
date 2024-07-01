@@ -1,0 +1,7 @@
+{
+	"reactionDescription": "Mit {{emoji}} auf {{message}} reagiert",
+	"reactionFooter": "Erste Reaktion hinzugefügt",
+	"filterFooter": "Gefilterte Reaktion",
+	"filter": "{{REDCROSS}} Hey {{user}}, bitte fügen Sie diese Reaktion nicht hinzu!",
+	"selfRoleHierarchy": "{{REDCROSS}} Meine Rolle muss höher sein als alle selbstzuweisbaren Rollen, sonst kann ich sie den Leuten nicht gewähren!"
+}

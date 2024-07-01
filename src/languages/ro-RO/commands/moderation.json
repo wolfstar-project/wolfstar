@@ -1,0 +1,889 @@
+{
+	"permissions": "Permisiuni pentru {{username}} ({{id}})",
+	"permissionsAll": "Toate permisiunile",
+	"slowmodeSet": "Gândirea pentru acest canal a fost setată în {{cooldown, duration}}.",
+	"slowmodeReset": "Corectarea acestui canal a fost resetată.",
+	"banNotBannable": "Ținta nu poate fi interzisă pentru mine.",
+	"dehoistStarting": "Voi începe să deghizez {{count}} membri...",
+	"dehoistProgress": "{{count}} membri până acum! ({{percentage}}%)",
+	"dehoistEmbed": {
+		"title": "S-a terminat deturnarea {{users}} membri",
+		"descriptionNoone": "Niciun membru nu a fost dezrădăcinat. O rundă de aplauze pentru utilizatorii care respectă legea!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} membru a fost dezgrozav. Am încercat de asemenea să dehoist încă un membru {{errored}} , dar au șters",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} membri au fost dezamăgiți. Am încercat de asemenea să deturnăm alți membri {{errored}} , dar au șters",
+		"description": "{{dehoistedMemberCount}} membru a fost dezgropat",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} membri au fost desființați",
+		"fieldErrorTitle": "Utilizatorii la care am întâmpinat o eroare pentru:"
+	},
+	"kickNotKickable": "Ținta nu poate fi atinsă pentru mine.",
+	"lockdownLock": "Canalul {{channel}} este acum blocat.",
+	"lockdownLocking": "{{LOADING}} Blocând canalul {{channel}}... S-ar putea să nu pot răspunde după asta.",
+	"lockdownLocked": "Canalul {{channel}} a fost deja blocat.",
+	"lockdownUnlocked": "Canalul {{channel}} nu a fost blocat.",
+	"lockdownOpen": "Blocarea pentru canalul {{channel}} a fost eliberată.",
+	"muteMuted": "Utilizatorul țintă este deja amuțit.",
+	"muteUserNotMuted": "Acest utilizator nu este amuțit.",
+	"restrictLowlevel": "{{REDCROSS}} îmi pare rău, nu există nici un rol de restricţie configurat. Vă rugăm să cereţi unui administrator sau proprietarului serverului să-l configureze.",
+	"pruneAlert_one": "Successfully deleted {{count}} message from {{total}}.",
+	"pruneAlert_other": "{{count}} mesaje de la {{total}} au fost șterse cu succes.",
+	"pruneInvalidPosition": "{{REDCROSS}} Poziția trebuie să fie una dintre \"înainte de\" sau \"după\".",
+	"pruneNoDeletes": "Nici un mesaj nu a fost şters, nici un mesaj nu se potriveşte filtrului sau au mai mult de 14 zile.",
+	"pruneLogHeader": "Următoarele mesaje au fost generate de cererea unui moderator.\nFormatarea datei este \"$t(globals:dateFormat) hh:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} moderare activată cu succes.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Mediere dezactivată cu succes",
+	"moderationOutput_one": "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Eroare la moderarea utilizatorului:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Nu s-au putut modera utilizatorii:\n{{users}}",
+	"moderationDmFooter": "Pentru a dezactiva moderarea DM-urilor, scrie `toggleModerationDM`.",
+	"moderationDmDescription": "**<unk> Server**: {{guild}}\n**Tip**: {{title}}\n**<unk> Motiv**: Niciuna specificată",
+	"moderationDmDescriptionWithReason": "**<unk> Server**: {{guild}}\n**Tip**: {{title}}\n**<unk> Motiv**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Duration**: {{duration, duration}}\n**<unk> Motiv**: Niciunul nu este specificat",
+	"moderationDmDescriptionWithReasonWithDuration": "**<unk> Server**: {{guild}}\n**<unk> Type**: {{title}}\n**<unk> Duration**: {{duration, duration}}\n**<unk> Reason**: {{reason}}",
+	"slowmodeDescription": "Setează valoarea lentă a canalului în secunde.",
+	"slowmodeExtended": {
+		"usages": [
+			"resetare/secunde/Durata"
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_CHANNELS, permissions}}** şi va modifica rata canalului per utilizator la orice valoare între 0 şi 6 ore.",
+		"examples": [
+			"0",
+			"reset",
+			"4m"
+		],
+		"reminder": "Pentru a reseta rata unui canal per utilizator, puteţi utiliza fie 0 sau 'reseta'."
+	},
+	"banDescription": "Apucaţi pe cineva cu ciocanul de interdicţie.",
+	"banExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei",
+			"Utilizator --secunde=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) de interzis. Poate fi un total de 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pe care această interdicție ar trebui să o dureze. De exemplu, 24h pentru 24 de ore. Utilizatorul/utilizatorii vor fi debanați automat după această dată."
+			],
+			[
+				"Motiv",
+				"Motivul interdicției. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Timpul de ștergere a mesajelor pentru fiecare steag, este opțional și poate fi combinat. Până la 7 zile."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{BanMembers, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi banați de mine.\nNu, proprietarul serverului nu poate fi interzis.\nAceastă acțiune poate fi programată opțional pentru a crea o interdicție temporară.",
+		"examples": [
+			"@Pete",
+			"@Pete Spam toate canalele.",
+			"@Pete @Jack @John 24h Raiding"
+		]
+	},
+	"dehoistDescription": "Trage pe toată lumea cu Dehoistinatorul 3000",
+	"dehoistExtended": {
+		"extendedHelp": "Acţiunea de planare implică adăugarea de caractere speciale în faţa poreclei pentru a apărea mai sus în lista de membri.\nAceastă comandă înlocuiește porecla oricărui membru care include acele caractere speciale cu un caracter special, care le trage în partea de jos a listei.",
+		"reminder": "Această comandă necesită **{{ManageNicknames, permissions}}**, și numai membrii cu ierarhie de rol mai mică pot fi deturnați."
+	},
+	"kickDescription": "Apasa pe cineva cu :womans_boot:.",
+	"kickExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Motivul utilizatorului"
+		],
+		"extendedHelp": "Această comandă necesită **{{KickMembers, permissions}}**, și numai membrii cu o ierarhie de rol inferioară pot fi dați afară de mine. Nu, proprietarul serverului nu poate fi exclus.",
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii(le) de dat kick. Poate fi până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care ai dat kick. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"examples": [
+			"@Sara",
+			"@Sarah Spamming General Chat."
+		]
+	},
+	"lockdownDescription": "Închide porțile acestui canal!",
+	"lockdownExtended": {
+		"usages": [
+			"",
+			"Durată Rol TextChannel",
+			"deblochează TextChannel Role",
+			"Durată TextChannel Role"
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_CHANNELS, permissions}}** pentru a putea gestiona permisiunile pentru un canal.\nAceastă comandă elimină permisiunea **{{SEND_MESSAGES, permissions}}** la rolul `@everyone` astfel încât nimeni în afară de membrii cu roluri care au propriile suprascrieri (pe lângă administratori, care ocolesc suprascrierile canalelor) pot trimite mesaje.\nOpţional, puteţi trece timpul ca al doilea argument.",
+		"explainedUsage": [
+			[
+				"blocare/deblocare",
+				"Fie că este să blocați sau să deblocați canalul. Implicit la \"blocare\" dacă canalul este în prezent deblocat, sau \"deblochează\" dacă acesta este în prezent blocat."
+			],
+			[
+				"Rol",
+				"Rolul de blocat. Implicit la rolul `@everyone`."
+			],
+			[
+				"Canal",
+				"Canalul de blocat. Implicit este canalul curent."
+			],
+			[
+				"Durată",
+				"Timpul pe care acest blocaj ar trebui să îl dureze. Implicit este infinit."
+			]
+		],
+		"examples": [
+			"",
+			"#general",
+			"Blochează #general 5m",
+			"deblochează #general",
+			"blochează membri #generali"
+		],
+		"reminder": "Dacă membrii tăi au nevoie de un rol cum ar fi \"Membru\" pentru a trimite mesaje în canal pentru a începe cu atunci această comandă nu va funcționa. Este în jurnalul nostru de activitate să adăugăm rolul care ar trebui să fie blocat configurabil."
+	},
+	"muteDescription": "Amuțește un utilizator în toate canalele de text și voce.",
+	"muteExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) de dezactivat. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Timpul pe care acest sunet trebuie să îl dureze. De exemplu 24h pentru 24 de ore. Utilizatorul(ele) va fi automat deblocat(e) după această dată."
+			],
+			[
+				"Motiv",
+				"Motivul pentru mut. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, proprietarul serverului nu poate fi amuțit.\nAceastă acțiune poate fi opțional sincronizată pentru a crea o mutare temporară. Această acțiune salvează temporar rolurile unui membru și va fi acordată utilizatorului după mutare.\nRolul amuțit este **sticky**, dacă utilizatorul încearcă să-l elimine prin realăturarea serverului, acesta va fi adăugat înapoi.",
+		"examples": [
+			"@Alphonse",
+			"@Alphonse Spamming toate canalele",
+			"@Alphonse 24h Spamming toate canalele"
+		]
+	},
+	"setNicknameDescription": "Schimbă porecla unui utilizator.",
+	"setNicknameExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 porecla",
+			"Utilizator1 Durata",
+			"User1 User2 Nickname Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii(le) nickname. Poate fi în total până la 10 utilizatori."
+			],
+			[
+				"Porecla",
+				"Noua poreclă setată. Nu include acest lucru va face comanda implicită la numele de utilizator al utilizatorului."
+			],
+			[
+				"Durată",
+				"Timpul în care această poreclă se schimbă trebuie să dureze. De exemplu, 24h pentru 24 ore. Utilizatorul/utilizatorii vor primi automat numele lor curent după această dată."
+			],
+			[
+				"Motiv",
+				"Motivul acestei modificări a numelui. Aceasta va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_NICKNAMES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, porecla proprietarului serverului nu poate fi schimbată.",
+		"examples": [
+			"@Pete peeehteeerrr",
+			"@ğe<unk> Pete nume de neverificabil"
+		],
+		"reminder": "Dacă ieșiți din noua poreclă o să o resetați înapoi la numele de utilizator al utilizatorului"
+	},
+	"addRoleDescription": "Adaugă un rol unui utilizator.",
+	"addRoleExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Rol utilizator1",
+			"Utilizator1 Durata",
+			"User1 User2 rol Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(i) pentru a adăuga un rol. Poate fi până la un total de 10 utilizatori."
+			],
+			[
+				"Rol",
+				"Noul rol de atribuit"
+			],
+			[
+				"Durată",
+				"Timpul în care acest rol ar trebui să fie pe acest utilizator. De exemplu, 24h pentru 24 ore. Utilizatorul(ele) va avea automat rolul eliminat după această perioadă."
+			],
+			[
+				"Motiv",
+				"Motivul pentru a adăuga acest rol. Acest lucru va apărea şi în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, rolurile de proprietar ale serverului nu pot fi schimbate.",
+		"examples": [
+			"Membru @John",
+			"@John membru Fă-l pe John un membru"
+		]
+	},
+	"removeroleDescription": "Elimină un rol de la un utilizator",
+	"removeroleExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Rol utilizator1",
+			"Utilizator1 Durata",
+			"User1 User2 rol Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(ele) de a elimina un rol. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Rol",
+				"Rolul de eliminat"
+			],
+			[
+				"Durată",
+				"Timpul în care acest rol ar trebui să fie eliminat de la acest utilizator. De exemplu, 24h pentru 24 ore. Utilizatorul/utilizatorii vor recâștiga automat rolul după această perioadă."
+			],
+			[
+				"Motiv",
+				"Motivul pentru eliminarea acestui rol. Acest lucru va apărea şi în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, rolurile de proprietar ale serverului nu pot fi schimbate.",
+		"examples": [
+			"Membru @Paula",
+			"@Paula membru elimină permisiunile membrilor din Paula"
+		]
+	},
+	"pruneDescription": "Prune o anumită cantitate de mesaje fără filtru.",
+	"pruneExtended": {
+		"usages": [
+			"Utilizator steag Sumă",
+			"Sumă steaguri după/înainte de mesaj",
+			"Sumă utilizator",
+			"Cantați utilizatorul după/înainte de mesaj",
+			"Sumă --silențios"
+		],
+		"extendedHelp": "Această comandă șterge cantitatea dată de mesaje date dat un filtru în ultimele 100 de mesaje trimise în canalul pe care comanda a fost executată.\nOpțional, puteți adăuga `--silent` pentru a spune lui WolfStar să nu trimită un mesaj de răspuns.",
+		"explainedUsage": [
+			[
+				"Sumă",
+				"Cantitatea de mesaje de șters."
+			],
+			[
+				"--f/fișier/fișiere",
+				"Şterge mesajele cu ataşamente."
+			],
+			[
+				"--/autor",
+				"Şterge mesajele."
+			],
+			[
+				"--b/bot/bots",
+				"Șterge mesajele trimise de boți."
+			],
+			[
+				"--h/uman/om",
+				"Şterge mesajele trimise de utilizatori."
+			],
+			[
+				"--i/invitați/invitați",
+				"Şterge mesajele care conţin link-uri de invitaţie."
+			],
+			[
+				"--l/link-uri/link-uri",
+				"Şterge mesajele care conţin orice link."
+			],
+			[
+				"--/tu",
+				"Şterge mesajele mele."
+			],
+			[
+				"--age=Durata",
+				"Şterge orice mesaj mai nou decât Duraţia."
+			],
+			[
+				"--include/conţine=Word",
+				"Şterge mesajele care conţin cuvinte."
+			],
+			[
+				"--p/pin/pins",
+				"Şterge mesajele fixate, dacă nu este specificat, nici un alt filtru nu şterge penii."
+			],
+			[
+				"Utilizator",
+				"Şterge mesajele trimise de utilizatorul specificat."
+			],
+			[
+				"Poziție: după",
+				"Şterge mesajele trimise după mesajul specificat."
+			],
+			[
+				"Poziție: înainte",
+				"Şterge mesajele trimise înainte de mesajul specificat."
+			],
+			[
+				"--/silențios",
+				"Dacă un mesaj de răspuns ar trebui sau nu să fie trimis, acest lucru va șterge și mesajul de comandă dacă au fost filtrate, mai puțin de 100 de mesaje."
+			]
+		],
+		"examples": [
+			"50 -a",
+			"75 @kyra",
+			"20 --boți",
+			"60 --om --fişiere înainte de 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --silenţios"
+		],
+		"reminder": "Din cauza unei limitări Discord, boții nu pot șterge mesaje mai vechi de 14 zile."
+	},
+	"permissionsDescription": "Verifică permisiunea pentru un membru sau al tău.",
+	"permissionsExtended": {
+		"usages": [
+			"",
+			"Utilizator"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator",
+				"Utilizatorul pentru care doriți să verificați permisiunile. Implicit vă aparține."
+			]
+		],
+		"extendedHelp": "Ideal dacă doriţi să ştiţi ce permisiuni sunt acordate unui membru atunci când acesta are un anumit set de roluri."
+	},
+	"restrictAttachmentDescription": "Restricționează un utilizator de la trimiterea atașamentelor în toate canalele.",
+	"restrictAttachmentExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii pentru a restricționa atașamentele. Poate fi de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pe care această restricție ar trebui să o aibă pe acest utilizator. De exemplu, 24 de ore pentru 24 de ore. La acest moment restricția va fi ridicată automat utilizatorul."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care se adaugă această restricție. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, proprietarul serverului nu poate fi restricționat.\nAceastă acțiune poate fi programată opțional pentru a crea o restricție temporară.\nRolul restricționat este **sticky**, dacă utilizatorul încearcă să-l elimine prin realăturarea serverului, acesta va fi adăugat înapoi.",
+		"examples": [
+			"@Pete",
+			"@Pete Transmițând imagini ciudate",
+			"@Pete 24h imagini NSFW în așteptare"
+		]
+	},
+	"restrictEmbedDescription": "Restricționează un utilizator de la atașarea încorporărilor în toate canalele.",
+	"restrictEmbedExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii pentru a restricționa încorporările. Poate fi de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pe care această restricție ar trebui să o aibă pe acest utilizator. De exemplu, 24 de ore pentru 24 de ore. La acest moment restricția va fi ridicată automat utilizatorul."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care se adaugă această restricție. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, proprietarul serverului nu poate fi restricționat.\nAceastă acțiune poate fi programată opțional pentru a crea o restricție temporară.\nRolul restricționat este **sticky**, dacă utilizatorul încearcă să-l elimine prin realăturarea serverului, acesta va fi adăugat înapoi.",
+		"examples": [
+			"@Pete",
+			"@Pete în așteptarea link-urilor ciudate",
+			"@Pete 24h a postat un link de spam"
+		],
+		"reminder": "De exemplu, încorporate sunt atunci când un utilizator trimite un videoclip pe care îl încorporează în chat."
+	},
+	"restrictEmojiDescription": "Restricționează un utilizator de la utilizarea emoji-urilor externe în toate canalele.",
+	"restrictEmojiExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(ele) pentru a restricționa emojis extern. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pe care această restricție ar trebui să o aibă pe acest utilizator. De exemplu, 24 de ore pentru 24 de ore. La acest moment restricția va fi ridicată automat utilizatorul."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care se adaugă această restricție. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, proprietarul serverului nu poate fi restricționat.\nAceastă acțiune poate fi programată opțional pentru a crea o restricție temporară.\nRolul restricționat este **sticky**, dacă utilizatorul încearcă să-l elimine prin realăturarea serverului, acesta va fi adăugat înapoi.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming extern emojis",
+			"@Pete 24h postat cringe"
+		],
+		"reminder": "Acest lucru va împiedica doar utilizarea emoji-urilor externe și, prin urmare, nu va avea niciun efect pentru utilizatorii care nu sunt nitro, emoji-urile serverului și construcția regulată în twemojis pot fi folosite de membrii cu acest rol."
+	},
+	"restrictReactionDescription": "Restricționează un utilizator de la a reacționa la mesajele din toate canalele.",
+	"restrictReactionExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii să restricționeze reacția la mesaje. Poate fi de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pe care această restricție ar trebui să o aibă pe acest utilizator. De exemplu, 24 de ore pentru 24 de ore. La acest moment restricția va fi ridicată automat utilizatorul."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care se adaugă această restricție. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, proprietarul serverului nu poate fi restricționat.\nAceastă acțiune poate fi programată opțional pentru a crea o restricție temporară.\nRolul restricționat este **sticky**, dacă utilizatorul încearcă să-l elimine prin realăturarea serverului, acesta va fi adăugat înapoi.",
+		"examples": [
+			"@Pete",
+			"Reacții de spam @Pete",
+			"@Pete 24h Postând reacții ciudate"
+		]
+	},
+	"restrictVoiceDescription": "Restricționează un utilizator de la a se alătura oricărui canal de voce.",
+	"restrictVoiceExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(ele) pentru a restricționa interacțiunea canalului de voce. Poate fi de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pe care această restricție ar trebui să o aibă pe acest utilizator. De exemplu, 24 de ore pentru 24 de ore. La acest moment restricția va fi ridicată automat utilizatorul."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care se adaugă această restricție. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi gestionați de mine.\nNu, proprietarul serverului nu poate fi restricționat.\nAceastă acțiune poate fi programată opțional pentru a crea o restricție temporară.\nRolul restricționat este **sticky**, dacă utilizatorul încearcă să-l elimine prin realăturarea serverului, acesta va fi adăugat înapoi.",
+		"examples": [
+			"@Pete",
+			"@Pete Câștigare în canalele vocale generale",
+			"@Pete 24h Creând zgomote ciudate"
+		]
+	},
+	"softBanDescription": "Apucaţi pe cineva cu ciocanul de interdicţie, distrugându-şi toate mesajele timp de câteva zile şi debanând-o.",
+	"softBanExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv",
+			"Utilizator --secunde=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii softban. Poate fi un total de 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul pentru softban. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Timpul de ștergere a mesajelor pentru fiecare steag, este opțional și poate fi combinat. Până la 7 zile."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{BanMembers, permissions}}**, și numai membrii cu o ierarhie de rol mai mică pot fi banați de mine.\nNu, proprietarul serverului nu poate fi interzis.\nFuncția de interdicție de pe Discord are o funcție care permite moderatorului să elimine toate mesajele de pe toate canalele care au fost trimise în ultimele zile 'x', fiind un număr între 0 (fără zile) și 7.\nUtilizatorul primește interdicție imediat după banare, așa că este ca un kick, dar asta poate modifica multe mesaje.",
+		"examples": [
+			"@Pete",
+			"Spamming toate canalele @Pete",
+			"@Pete 7 Toate mesajele trimise în 7 sunt trimise acum, YEE HAH!"
+		]
+	},
+	"timeoutApplyDescription": "Timp expirat un utilizator.",
+	"timeoutApplyExtended": {
+		"usages": [
+			"Durată Utilizator",
+			"Motivul Utilizatorului Durată"
+		],
+		"explainedUsage": [
+			[
+				"Durată",
+				"Durata perioadei de expirare. De exemplu, 24 de ore timp de 24 de ore."
+			],
+			[
+				"Utilizator",
+				"Utilizatorul a expirat."
+			],
+			[
+				"Motiv",
+				"Motivul expirării termenului. Acest lucru va apărea şi în jurnalele de audit ale serverului."
+			]
+		],
+		"examples": [
+			"30s @Pete",
+			"2h @Pete Spamming toate canalele"
+		]
+	},
+	"timeoutUndoDescription": "Elimină un timp de la un utilizator.",
+	"timeoutUndoExtended": {
+		"usages": [
+			"Utilizator",
+			"Motivul utilizatorului"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator",
+				"Utilizatorul a expirat."
+			],
+			[
+				"Motiv",
+				"Motivul expirării termenului. Acest lucru va apărea şi în jurnalele de audit ale serverului."
+			]
+		],
+		"examples": [
+			"@Pete",
+			"@Pete Se prezintă că nu a fost cel care a împrăștiat toate canalele 🤷"
+		]
+	},
+	"timeoutNotModeratable": "Obiectivul nu poate fi întrerupt de mine.",
+	"toggleModerationDmDescription": "Comută moderarea DM-urilor.",
+	"toggleModerationDmExtended": {
+		"extendedHelp": "Această comandă vă permite să comutați moderarea DM-urilor. În mod implicit, acestea sunt active, însemnând că orice acțiune de moderare (automată sau manuală) vă va DM, dar le puteți dezactiva cu această comandă."
+	},
+	"unbanDescription": "Debaneaza pe cineva de pe acest server.",
+	"unbanExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) de deblocat. Poate fi până la un total de 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul eliminării interdicției. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{BanMembers, permissions}}**. Primește pe cineva de la coșul de gunoi, le curăță și permite trecerea la porțile acestui server.",
+		"examples": [
+			"@Pete",
+			"@Pete Se prezintă că nu a fost cel care a împrăștiat toate canalele 🤷"
+		]
+	},
+	"unmuteDescription": "Eliminaţi banda de linguriţă de la un utilizator.",
+	"unmuteExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii(le) să se deconecteze. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul pentru eliminarea amuțirii. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}** și elimină un utilizator din lista oamenilor amuțiți, şi dă vechile roluri înapoi în cazul în care utilizatorul le-a avut.",
+		"examples": [
+			"@Pete",
+			"@Pete (Introduceți o glumă aleatorie aici)."
+		]
+	},
+	"unrestrictAttachmentDescription": "Eliminați restricția de atașare de la unul sau mai mulți utilizatori.",
+	"unrestrictAttachmentExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii să elimine restricţiile de ataşare. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul eliminării restricției de atașament. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}** și elimină un utilizator din lista persoanelor restricționate.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmbedDescription": "Eliminați restricția încorporată de la unul sau mai mulți utilizatori.",
+	"unrestrictEmbedExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) pentru a elimina restricțiile de încorporare. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul eliminării restricției de încorporare. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}** și elimină un utilizator din lista persoanelor restricționate.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmojiDescription": "Elimină restricția externă a emoji-urilor de la unul sau mai mulți utilizatori.",
+	"unrestrictEmojiExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii(ele) pentru a elimina restricțiile emoji-urilor. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul eliminării restricției de emoji-uri. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}** și elimină un utilizator din lista persoanelor restricționate.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictReactionDescription": "Eliminați restricția de reacție de la unul sau mai mulți utilizatori.",
+	"unrestrictReactionExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul/utilizatorii să elimine restricțiile de reacție. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul eliminării restricției de reacție. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}** și elimină un utilizator din lista persoanelor restricționate.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictVoiceDescription": "Eliminați restricția de voce de la unul sau mai mulți utilizatori.",
+	"unrestrictVoiceExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) de la care se elimină restricțiile de voce. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul eliminării restricției de voce. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MANAGE_ROLES, permissions}}** și elimină un utilizator din lista persoanelor restricționate.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unwarnDescription": "Recurs la un caz de jurnal de moderare de avertizare.",
+	"unwarnExtended": {
+		"usages": [
+			"Caz",
+			"Motivul cauzei"
+		],
+		"explainedUsage": [
+			[
+				"Caz",
+				"Numărul cazului de modificat. Puteţi găsi numerele de caz prin comanda `istory` sau căutând în canalul de loguri de moderare"
+			],
+			[
+				"Motiv",
+				"Motivul pentru eliminarea acestui avertisment."
+			]
+		],
+		"extendedHelp": "Această comandă face apel la un avertisment, nu necesită permisiuni, îmi dați doar dosarul de moderare pentru a face recurs și motivul.",
+		"examples": [
+			"0 Whoops, un dud greșit.",
+			"42 Se pare că aceasta a fost definiţia vieţii."
+		]
+	},
+	"vmuteDescription": "Aruncați microfonul cuiva pe fereastră.",
+	"vmuteExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) pentru a dezactiva în canalele de voce. Poate fi un total de până la 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pentru care trebuie să se aplice acest sunet vocal. De exemplu, 24 de ore pentru 24 de ore. Utilizatorul (utilizatorii) vor face ca blocarea vocii să fie ridicată automat după această dată."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care adăugați această mutare vocală. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MUTE_MEMBERS, permissions}}**, și numai membrii cu ierarhie de rol mai mică pot fi reduși la tăcere de mine.\nNu, proprietarul serverului nu poate fi amuțit.\nAceastă acțiune poate fi opțional sincronizată pentru a crea un sunet vocal temporar.",
+		"examples": [
+			"@Pete",
+			"@Pete Cântă prea tare",
+			"@Pete 24h Ceară literalmente a cântat"
+		]
+	},
+	"voiceKickDescription": "Apucaţi pe cineva cu 👢 pentru că cântă atât de rău şi tare.",
+	"voiceKickExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv",
+			"Utilizator1 Motivul utilizatorului 2"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) de pe canalul lor de voce curent. Poate fi de până la 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul pentru care utilizatorul (utilizatorii) de pe canalul de voce. Acest lucru va apărea, de asemenea, în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită permisiunile **{{MANAGE_CHANNELS, permissions}}** pentru a crea un canal de voce temporar (ascuns), şi **{{MOVE_MEMBERS, permissions}}** pentru a muta utilizatorul la canalul temporar.\nDupă aceasta, canalul este șters rapid, făcându-l pe utilizator să părăsească canalul de voce.\nPentru moderatorii speriați, această comandă nu are aproape niciun impact în utilizatorul mediu, deoarece canalul este creat într-un mod în care doar eu și utilizatorul selectat mă pot vedea și alătura, apoi rapid șters.",
+		"examples": [
+			"@Pete",
+			"Spamming toate canalele @Pete"
+		]
+	},
+	"vunmuteDescription": "Ia microfonul cuiva înapoi pentru a putea vorbi.",
+	"vunmuteExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Motiv"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) pentru a se debloca în canalele de voce. Poate fi până la un total de 10 utilizatori."
+			],
+			[
+				"Motiv",
+				"Motivul pentru eliminarea sunetului vocal. Acest lucru va apărea și în jurnalele de audit ale serverului."
+			]
+		],
+		"extendedHelp": "Această comandă necesită **{{MUTE_MEMBERS, permissions}}**, și numai membrii cu ierarhie de rol mai mică pot fi fără tăcere de la mine.\nNu, proprietarul serverului nu poate fi decuplat.",
+		"examples": [
+			"@Pete",
+			"@Pete Apel și-a înregistrat vremurile când a semnat violul."
+		]
+	},
+	"warnDescription": "Fă un avertisment cuiva.",
+	"warnExtended": {
+		"usages": [
+			"Utilizator",
+			"Utilizator1 Utilizator2 Utilizator3...Utilizator10",
+			"Utilizator1 Durata",
+			"User1 User2 Motivul duratei"
+		],
+		"explainedUsage": [
+			[
+				"Utilizator/Utilizator1/utilizator2",
+				"Utilizatorul(utilizatorii) de avertizat. Poate fi un total de 10 utilizatori."
+			],
+			[
+				"Durată",
+				"Perioada de timp pentru care se aplică această avertizare. De exemplu, 24h pentru 24 de ore. Utilizatorul (utilizatorii) vor avea automat avertismentul eliminat după această dată."
+			],
+			[
+				"Motiv",
+				"Motivul acestui avertisment."
+			]
+		],
+		"extendedHelp": "Această comandă trimite un avertisment unui utilizator.\nAcest tip de avertisment este menit să fie **avertismente oficiale**, așa cum vor fi afișate în comanda 'avertisment'.\nEste o bună practică să faci un avertisment neoficial înainte de a folosi această comandă.",
+		"examples": [
+			"@Pete a încercat să menționeze pe toată lumea."
+		]
+	}
+}

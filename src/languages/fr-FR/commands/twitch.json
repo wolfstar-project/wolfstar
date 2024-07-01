@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Désolé, je n'ai pas pu trouver le streamer. Êtes-vous sûr d'avoir écrit son nom correctement ?",
+	"twitchSubscriptionStatusValues": [
+		"en ligne",
+		"hors-ligne"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah là! Je m'attendais à \"en ligne\" ou \"hors ligne\", mais je ne comprends pas ce que vous m'avez donné à la place.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} You're already subscribed to that streamer in this channel for that status.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Succès ! À chaque fois que {{name}} se déconnecte, je vais poster un nouveau message dans {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Succès ! À chaque fois que {{name}} sera en direct, je posterai un nouveau message dans {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} I'm sorry but it is required to provide a message when making an offline subscription.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} I'm sorry but you are not subscribed to any streamers, mission abort!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} I'm sorry, you cannot unsubscribe from {{streamer}} because you are not subscribed to them.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} I'm sorry; while you're subscribed to this streamer and streaming status, their subscriptions is not posted to {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Je suis désolé, mais il semble que vous ne receviez pas de notifications {{status}} pour {{streamer}}. Nous prenons en charge les notifications \"en ligne\" et \"hors ligne\".",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Réussi ! Je ne publierai plus de messages à {{channel}} dès que {{name}} se déconnecte.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Réussi ! Je ne publierai plus de messages à {{channel}} chaque fois que {{name}} sera en ligne.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Succès ! L'abonnement {{count}} a été supprimé de ce serveur.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} réussi ! Les abonnements {{count}} ont été supprimés de ce serveur.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} You wanted to see all subscriptions from this streamer, but there are none!",
+	"twitchSubscriptionShowStatus": {
+		"live": "En direct",
+		"offline": "Hors ligne"
+	},
+	"twitchSubscriptionShowUnknownUser": "Inconnu",
+	"twitchSubscriptionDescription": "Gérer les abonnements pour votre serveur.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"Ajouter le statut du salon Streamer",
+			"Ajouter le statut du salon Streamer",
+			"supprimer le statut du salon Streamer",
+			"réinitialiser le Streamer",
+			"reset",
+			"afficher",
+			""
+		],
+		"extendedHelp": "Gérer les abonnements pour ce serveur.\n__Notifications en ligne__\nToutes les données disponibles apparaîtront dans une très belle intégration vous indiquant exactement ce que le streamer fait.\n\n__Notifications hors ligne__\nVous devez écrire votre propre message qui sera posté lorsque le streamer sera déconnecté. Il sera affiché dans un joli message violet de Twitch.",
+		"explainedUsage": [
+			[
+				"ajouter/supprimer/réinitialiser/afficher",
+				"Si à\n- Ajouter un nouvel abonnement Twitch.\n- Supprimer un abonnement Twitch existant\n- Réinitialiser tous les abonnements twitch, ou ceux pour un streamer spécifique\n- Afficher tous les abonnements Twitch actuels"
+			],
+			[
+				"Streamer",
+				"Le nom d'utilisateur Twitch du streamer pour obtenir des notifications."
+			],
+			[
+				"Chaîne",
+				"Un salon Discord où poster les notifications."
+			],
+			[
+				"Statut",
+				"Le statut que le streamer Twitch devrait obtenir pour une notification, un de en ligne ou hors ligne."
+			],
+			[
+				"Contenus",
+				"Le message à envoyer dans le chat Discord. Requis pour les notifications hors ligne, optionnel pour les notifications en ligne."
+			]
+		],
+		"examples": [
+			"Ajouter favna #twitch en ligne",
+			"add favna #twitch offline Favna est maintenant hors ligne. Dites adieu 👋!",
+			"supprimer kyranet #twitch en ligne",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"afficher"
+		]
+	}
+}

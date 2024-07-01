@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Vær forsigtig med at nævne mere, som du er ved at blive forbudt for at overskride denne servers nævne tærskel.",
+	"message": "Banhammeren er landet og nu er brugeren {{userTag}} med id {{userId}} forbudt for omtale spam.\nMå ikke bekymre dig! Jeg er her for at hjælpe dig! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatisk: Omtale Spam tærskel overskredet.\nTærskel: {{threshold}}."
+}

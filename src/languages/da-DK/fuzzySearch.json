@@ -1,0 +1,6 @@
+{
+	"aborted": "Succesfuldt afbrudt prompten.",
+	"invalidIndex": "Dette antal var uden for rækkevidde, afbrød prompt.",
+	"invalidNumber": "Jeg forventede, at du gav mig et (enkelt cifre) nummer, fik en kartoffel.",
+	"matches": "Jeg fandt flere matches! **Vælg et tal inden for 0 og {{matches}}**:\n{{codeblock}}\nSkriv **ABORT** hvis du ønsker at afslutte prompten."
+}

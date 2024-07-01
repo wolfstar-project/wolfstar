@@ -1,1 +1,6 @@
-[]
+{
+	"aborted": "成功中止提示。",
+	"invalidIndex": "这个数字超出范围，中止提示。",
+	"invalidNumber": "我希望你给我一个数字，给我一个马铃薯。",
+	"matches": "I found multiple matches! **Please select a number within 0 and {{matches}}**:\n{{codeblock}}\nWrite **ABORT** if you want to exit the prompt."
+}

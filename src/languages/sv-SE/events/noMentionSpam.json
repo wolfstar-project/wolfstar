@@ -1,1 +1,6 @@
-[]
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Var försiktig med att nämna längre, eftersom du är på väg att bli bannad för att överskrida denna servers omnämnande tröskel.",
+	"message": "The banhammer has landed and now the user {{userTag}} with id {{userId}} is banned for mention spam.\nDo not worry! I'm here to help you! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatiskt: Nämn Spam tröskel överskrids.\nTröskelvärd: {{threshold}}."
+}

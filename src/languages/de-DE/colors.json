@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Die Farbe muss im Bereich 0 - 16777215 (0xFFFF) liegen, aber sie muss `{{value}} ` erhalten haben.",
+	"invalidHexRed": "Ungültiger Roter Bereich. Muss zwischen '00' und 'ff' sein, aber erhalten `{{value}}`.",
+	"invalidHexGreen": "Ungültiger Grün-Bereich. Muss zwischen '00' und 'ff' sein, aber `{{value}}`.",
+	"invalidHexBlue": "Ungültiger blauer Bereich. Muss zwischen '00' und 'ff' sein, aber `{{value}}`.",
+	"invalidHslHue": "Ungültiger Hue Bereich. Muss zwischen 0 und 360 sein, aber erhalten `{{value}}`.",
+	"invalidHslSaturation": "Ungültiger Sättigungsbereich. Muss zwischen 0 und 100 sein, aber erhalten `{{value}}`.",
+	"invalidHslLightness": "Ungültiger Lightness-Bereich. Muss zwischen 0 und 100 sein, aber erhalten `{{value}}`.",
+	"invalidRgbRed": "Ungültiger Roter Bereich. Muss zwischen 0 und 255 sein, aber erhalten `{{value}}`.",
+	"invalidRgbGreen": "Ungültiger Grüner Bereich. Muss zwischen 0 und 255 sein, aber du hast `{{value}}`.",
+	"invalidRgbBlue": "Ungültiger blauer Bereich. Muss zwischen 0 und 255 sein, aber du hast `{{value}}`."
+}

@@ -1,0 +1,889 @@
+{
+	"permissions": "Δικαιώματα για το {{username}} ({{id}})",
+	"permissionsAll": "Όλα Τα Δικαιώματα",
+	"slowmodeSet": "Ο χρόνος επαναφόρτισης για αυτό το κανάλι έχει οριστεί να {{cooldown, duration}}.",
+	"slowmodeReset": "Ο χρόνος επαναφόρτισης για αυτό το κανάλι έχει επαναφερθεί.",
+	"banNotBannable": "Ο στόχος δεν είναι απαγορευτικός για μένα.",
+	"dehoistStarting": "Θα ξεκινήσω την απέχθεια {{count}} μέλη...",
+	"dehoistProgress": "Dehoisted {{count}} members so far! ({{percentage}}%)",
+	"dehoistEmbed": {
+		"title": "Ολοκληρώθηκε το dehoisting {{users}} μέλη",
+		"descriptionNoone": "Ένα γύρο χειροκροτήσεων για τους νομοταγείς χρήστες σας!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} member was dehoisted. We also tried to dehoist an additional {{errored}} member, but they errored out",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} members were dehoisted. We also tried to dehoist an additional {{errored}} members, but they errored out",
+		"description": "{{dehoistedMemberCount}} member was dehoisted",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} τα μέλη ήταν ερημωμένα",
+		"fieldErrorTitle": "Οι χρήστες που αντιμετωπίσαμε ένα σφάλμα για:"
+	},
+	"kickNotKickable": "Ο στόχος δεν είναι για μένα.",
+	"lockdownLock": "Το κανάλι {{channel}} είναι τώρα κλειδωμένο.",
+	"lockdownLocking": "{{LOADING}} Κλείδωμα του καναλιού {{channel}}... Ίσως να μην μπορώ να απαντήσω μετά από αυτό.",
+	"lockdownLocked": "Το κανάλι {{channel}} ήταν ήδη κλειδωμένο.",
+	"lockdownUnlocked": "Το κανάλι {{channel}} δεν ήταν κλειδωμένο.",
+	"lockdownOpen": "Το κλείδωμα για το κανάλι {{channel}} έχει κυκλοφορήσει.",
+	"muteMuted": "Ο χρήστης προορισμού είναι ήδη σε σίγαση.",
+	"muteUserNotMuted": "Αυτός ο χρήστης δεν είναι σε σίγαση.",
+	"restrictLowlevel": "{{REDCROSS}} I'm sorry, there is no restriction role configured. Please ask an Administrator or the server owner to set it up.",
+	"pruneAlert_one": "Επιτυχής διαγραφή μηνύματος {{count}} από τον {{total}}.",
+	"pruneAlert_other": "Successfully deleted {{count}} messages from {{total}}.",
+	"pruneInvalidPosition": "Η θέση {{REDCROSS}} πρέπει να είναι μία από τις \"πριν\" ή \"μετά\".",
+	"pruneNoDeletes": "Κανένα μήνυμα δεν έχει διαγραφεί, είτε κανένα μήνυμα δεν ταιριάζει με το φίλτρο είτε είναι πάνω από 14 ημέρες.",
+	"pruneLogHeader": "Τα ακόλουθα μηνύματα έχουν παραχθεί από το αίτημα ενός συντονιστή.\nΗ ημερομηνία μορφοποίησης είναι του \"$t(globals:dateFormat) hh:mm:ss\".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} Επιτυχής ενεργοποίηση DM μετριοπάθειας.",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Επιτυχής απενεργοποίηση DM μετριοπάθειας",
+	"moderationOutput_one": "{{GREENTICK}} Δημιουργήθηκε περίπτωση {{range}} \" {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Δημιουργήθηκε περιπτώσεις {{range}} \" {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Δημιουργήθηκε περίπτωση {{range}} \" {{users, list(conjunction)}}.\nΜε την αιτία: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Δημιουργήθηκε περιπτώσεις {{range}} \" {{users, list(conjunction)}}.\nΜε την αιτία: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Αποτυχία μέτριου χρήστη:\n{{users}}",
+	"moderationFailed_other": "Το {{REDCROSS}} απέτυχε να μετριάσει τους χρήστες:\n{{users}}",
+	"moderationDmFooter": "Για να απενεργοποιήσετε την ρύθμιση DM, γράψτε `toggleModerationDM`.",
+	"moderationDmDescription": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified",
+	"moderationDmDescriptionWithReason": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**\"Διακομιστής**: {{guild}}\n**Type**: {{title}}\n**\"Διάρκεια**: {{duration, duration}}\n**\"Λόγος**: Δεν έχει καθοριστεί",
+	"moderationDmDescriptionWithReasonWithDuration": "**\"Διακομιστής**: {{guild}}\n**Type**: {{title}}\n**\"Διάρκεια**: {{duration, duration}}\n**\"Λόγος**: {{reason}}",
+	"slowmodeDescription": "Ορίστε την τιμή αργής λειτουργίας του καναλιού σε δευτερόλεπτα.",
+	"slowmodeExtended": {
+		"usages": [
+			"επαναφορά/δευτερόλεπτα/διάρκεια"
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{MANAGE_CHANNELS, permissions}}** και θα τροποποιήσει το όριο ρυθμού του καναλιού ανά χρήστη σε οποιαδήποτε τιμή μεταξύ 0 και 6 ωρών.",
+		"examples": [
+			"0",
+			"reset",
+			"4λ"
+		],
+		"reminder": "Για να επαναφέρετε το όριο ρυθμού ενός καναλιού ανά χρήστη, μπορείτε να χρησιμοποιήσετε είτε 0 είτε 'επαναφορά'."
+	},
+	"banDescription": "Χτύπησε κάποιον με το σφυρί απαγόρευσης.",
+	"banExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2",
+			"Χρήστης --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα απαγορεύσουν. Μπορεί να είναι μέχρι και 10 χρήστες."
+			],
+			[
+				"Διάρκεια",
+				"Ο χρόνος που πρέπει να διαρκέσει αυτή η απαγόρευση. Για παράδειγμα 24 ώρες για 24 ώρες. Οι χρήστες θα καταργηθούν αυτόματα μετά από αυτή τη φορά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την απαγόρευση. Αυτό θα δείξει επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Το χρονικό διάστημα αξίας των μηνυμάτων για διαγραφή, κάθε σημαία είναι προαιρετικό και μπορεί να συνδυαστεί. Μέχρι 7 ημέρες."
+			]
+		],
+		"extendedHelp": "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThis action can be optionally timed to create a temporary ban.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming όλα τα κανάλια.",
+			"@Pete @Jack @John 24 Ώρες Raiding"
+		]
+	},
+	"dehoistDescription": "Πυροβόλησε όλους με το Dehoistinator 3000",
+	"dehoistExtended": {
+		"extendedHelp": "Η πράξη της ανύψωσης περιλαμβάνει την προσθήκη ειδικών χαρακτήρων μπροστά από το ψευδώνυμό σας, προκειμένου να εμφανιστεί υψηλότερα στη λίστα μελών.\nΑυτή η εντολή αντικαθιστά το ψευδώνυμο κάθε μέλους που περιλαμβάνει αυτούς τους ειδικούς χαρακτήρες με έναν ειδικό χαρακτήρα που τους μεταφέρει στο κάτω μέρος της λίστας.",
+		"reminder": "This command requires **{{ManageNicknames, permissions}}**, and only members with lower role hierarchy position can be dehoisted."
+	},
+	"kickDescription": "Χτύπησε κάποιον με το 👢.",
+	"kickExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη"
+		],
+		"extendedHelp": "This command requires **{{KickMembers, permissions}}**, and only members with lower role hierarchy position can be kicked by me. No, the server's owner cannot be kicked.",
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Ο (οι) χρήστης(ες) για εκτέλεση. Μπορεί να είναι μέχρι και 10 χρήστες συνολικά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για το kick. Αυτό θα δείξει επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"examples": [
+			"@Sarah",
+			"@Sarah Spamming γενική συνομιλία."
+		]
+	},
+	"lockdownDescription": "Κλείστε τις πύλες για αυτό το κανάλι!",
+	"lockdownExtended": {
+		"usages": [
+			"",
+			"Κλείδωμα διάρκειας καναλιών TextChannel",
+			"ξεκλείδωμα καναλιού TextChannel",
+			"Διάρκεια Καναλιού Ρόλου"
+		],
+		"extendedHelp": "This command requires **{{MANAGE_CHANNELS, permissions}}** in order to be able to manage the permissions for a channel.\nThis command removes the permission **{{SEND_MESSAGES, permissions}}** to the `@everyone` role so nobody but the members with roles that have their own overrides (besides administrators, who bypass channel overrides) can send messages.\nOptionally, you can pass time as second argument.",
+		"explainedUsage": [
+			[
+				"κλείδωμα/ξεκλείδωμα",
+				"Αν θα κλειδωθεί ή θα ξεκλειδωθεί το κανάλι. Προεπιλογές \"κλειδώσει\" αν το κανάλι είναι προς το παρόν ξεκλείδωτο, ή \"ξεκλείδωτο\" αν είναι κλειδωμένο."
+			],
+			[
+				"Ρόλος",
+				"Ο ρόλος κλειδώματος. Προεπιλογή στον ρόλο `@everyone'."
+			],
+			[
+				"Κανάλι Κειμένου",
+				"Το κανάλι που θα κλειδωθεί. Προεπιλογή είναι το τρέχον κανάλι."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που θα διαρκέσει αυτό το κλειδώμα. Προεπιλογές είναι άπειρο."
+			]
+		],
+		"examples": [
+			"",
+			"#γενικά",
+			"κλειδαριά #γενικό 5m",
+			"ξεκλείδωμα #γενικά",
+			"Κλείδωμα Μελών #Γενικά"
+		],
+		"reminder": "Εάν τα μέλη σας χρειάζονται έναν ρόλο όπως \"μέλος\" για να στείλουν μηνύματα στο κανάλι για να ξεκινήσουν με τότε αυτή η εντολή δεν θα λειτουργήσει. Είναι στο πλαίσιο των εκκρεμών εργασιών μας να προσθέσουμε τον ρόλο που πρέπει να κλειδωθεί διαμορφώσιμο."
+	},
+	"muteDescription": "Σίγαση χρήστη σε όλα τα κανάλια κειμένου και φωνής.",
+	"muteExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα κάνουν σίγαση. Μπορεί να είναι μέχρι και 10 χρήστες."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που θα διαρκέσει αυτή η σίγαση. Για παράδειγμα 24 ώρες για 24 ώρες. Οι χρήστες θα απενεργοποιήσουν αυτόματα μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος της σίγασης. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be muted.\nThis action can be optionally timed to create a temporary mute. This action saves a member's roles temporarily and will be granted to the user after the unmute.\nThe muted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.",
+		"examples": [
+			"@Alphonse",
+			"@Alphonse Spamming όλα τα κανάλια",
+			"@Alphonse 24 ώρες Spamming όλα τα κανάλια"
+		]
+	},
+	"setNicknameDescription": "Αλλάξτε το ψευδώνυμο ενός χρήστη.",
+	"setNicknameExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Ψευδώνυμο Χρήστη 1",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 2 Ψευδώνυμου Χρήστη"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Ο (οι) χρήστης(ες) στο ψευδώνυμο. Μπορεί να είναι μέχρι και 10 χρήστες."
+			],
+			[
+				"Ψευδώνυμο",
+				"Το νέο ψευδώνυμο που θα ορίσετε. Δεν συμπεριλαμβάνεται αυτό θα κάνει αυτήν την εντολή προεπιλογή στο όνομα χρήστη του χρήστη."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που πρέπει να διαρκέσει αυτή η αλλαγή ψευδωνύμου. Για παράδειγμα 24 ώρες για 24 ώρες. Οι χρήστες θα πάρουν το τρέχον όνομα τους ξανά μετά από αυτή τη φορά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για αυτή την αλλαγή ψευδωνύμου. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_NICKNAMES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner nickname cannot be changed.",
+		"examples": [
+			"@Pete peeehteeerrr",
+			"@χεε ε πε μη αναφέρουμενο όνομα"
+		],
+		"reminder": "Αφήνοντας έξω το νέο ψευδώνυμο θα το επαναφέρετε στο όνομα χρήστη του χρήστη"
+	},
+	"addRoleDescription": "Προσθέτει ένα ρόλο σε έναν χρήστη.",
+	"addRoleExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Ρόλος Χρήστη 1",
+			"Διάρκεια Χρήστη1",
+			"Λόγος διάρκειας ρόλου χρήστη 1 χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα προσθέσουν ένα ρόλο. Μπορεί να είναι μέχρι και 10 χρήστες συνολικά."
+			],
+			[
+				"Ρόλος",
+				"Ο νέος ρόλος για εκχώρηση"
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο ρόλος θα πρέπει να είναι σε αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα αφαιρέσει αυτόματα το ρόλο μετά από αυτή τη φορά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτού του ρόλου. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner roles cannot be changed.",
+		"examples": [
+			"@John μέλος",
+			"@John μέλος Κάνει τον Ιωάννη ένα μέλος"
+		]
+	},
+	"removeroleDescription": "Αφαιρεί ένα ρόλο από έναν χρήστη",
+	"removeroleExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Ρόλος Χρήστη 1",
+			"Διάρκεια Χρήστη1",
+			"Λόγος διάρκειας ρόλου χρήστη 1 χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Ο (οι) χρήστης(ες) για να αφαιρέσετε ένα ρόλο. Μπορεί να είναι μέχρι και 10 χρήστες συνολικά."
+			],
+			[
+				"Ρόλος",
+				"Ο ρόλος που θα αφαιρεθεί"
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο ρόλος θα πρέπει να αφαιρεθεί από αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα ανακτήσει αυτόματα το ρόλο μετά από αυτή τη φορά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την κατάργηση αυτού του ρόλου. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner roles cannot be changed.",
+		"examples": [
+			"@Paula μέλος",
+			"@Paula μέλος Αφαιρέστε τα δικαιώματα μελών από την Paula"
+		]
+	},
+	"pruneDescription": "Εκτυπώνει μια συγκεκριμένη ποσότητα μηνυμάτων με φίλτρο w/o.",
+	"pruneExtended": {
+		"usages": [
+			"Σημαίες Ποσότητας Χρήστη",
+			"Ποσό σημαιών μετά/πριν από το μήνυμα",
+			"Χρήστης Ποσότητας",
+			"Ποσό Χρήστη μετά/πριν από το Μήνυμα",
+			"Ποσό -- Σιωπηλό"
+		],
+		"extendedHelp": "Αυτή η εντολή διαγράφει το δεδομένο ποσό των μηνυμάτων που δίνονται σε ένα φίλτρο μέσα στα τελευταία 100 μηνύματα που αποστέλλονται στο κανάλι που η εντολή έχει εκτελεστεί.\nΠροαιρετικά, μπορείτε να προσθέσετε `--silent` για να πείτε στο WolfStar να μην στέλνει μήνυμα απάντησης.",
+		"explainedUsage": [
+			[
+				"Ποσό",
+				"Το ποσό των μηνυμάτων που θα διαγραφούν."
+			],
+			[
+				"--f/αρχείο/αρχεία",
+				"Διαγράφει μηνύματα με συνημμένα."
+			],
+			[
+				"--a/συγγραφέας",
+				"Διαγράφει τα μηνύματα σας."
+			],
+			[
+				"--b/bot/bots",
+				"Διαγράφει μηνύματα που αποστέλλονται από bots."
+			],
+			[
+				"--h/human/humans",
+				"Διαγραφή μηνυμάτων που αποστέλλονται από τους χρήστες."
+			],
+			[
+				"--i/invite/invites",
+				"Διαγράφει μηνύματα που περιέχουν συνδέσμους πρόσκλησης."
+			],
+			[
+				"--l/link/links",
+				"Διαγράφει μηνύματα που περιέχουν οποιονδήποτε σύνδεσμο."
+			],
+			[
+				"--y/you",
+				"Διαγράφει τα μηνύματά μου."
+			],
+			[
+				"--age=Διάρκεια",
+				"Διαγράφει οποιοδήποτε μήνυμα νεότερο από τη Διάρκεια."
+			],
+			[
+				"--include/contain=Word",
+				"Διαγράφει μηνύματα που περιέχουν Word."
+			],
+			[
+				"--p/pin/pins",
+				"Διαγράφει τα καρφιτσωμένα μηνύματα, εκτός αν καθοριστεί, κανένα άλλο φίλτρο διαγράφει καρφίτσες."
+			],
+			[
+				"Χρήστης",
+				"Διαγράφει μηνύματα που αποστέλλονται από τον καθορισμένο χρήστη."
+			],
+			[
+				"Θέση: μετά",
+				"Διαγράφει τα μηνύματα που αποστέλλονται μετά το συγκεκριμένο μήνυμα."
+			],
+			[
+				"Θέση: πριν",
+				"Διαγράφει τα μηνύματα που αποστέλλονται πριν από το συγκεκριμένο μήνυμα."
+			],
+			[
+				"--s/αθόρυβο",
+				"Αν θα πρέπει να σταλεί ή όχι ένα μήνυμα απάντησης, αυτό θα διαγράψει επίσης το μήνυμα εντολής σας αν υπήρχαν λιγότερα από 100 μηνύματα φιλτραρισμένα."
+			]
+		],
+		"examples": [
+			"50 --a",
+			"75 @kyra",
+			"20 --bots",
+			"60 -- humans -- αρχεία πριν από 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --αθόρυβο"
+		],
+		"reminder": "Λόγω περιορισμού του Discord, τα bots δεν μπορούν να διαγράψουν μηνύματα παλαιότερα από 14 ημέρες."
+	},
+	"permissionsDescription": "Ελέγξτε τα δικαιώματα για ένα μέλος, ή δικό σας.",
+	"permissionsExtended": {
+		"usages": [
+			"",
+			"Χρήστης"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης",
+				"Ο χρήστης για τον οποίο θέλετε να ελέγξετε τα δικαιώματα. Προεπιλογές για εσάς τον εαυτό σας."
+			]
+		],
+		"extendedHelp": "Ιδανικό αν θέλετε να μάθετε τα δικαιώματα που χορηγούνται σε ένα μέλος όταν έχουν ένα συγκεκριμένο σύνολο ρόλων."
+	},
+	"restrictAttachmentDescription": "Περιορισμός ενός χρήστη από την αποστολή συνημμένων σε όλα τα κανάλια.",
+	"restrictAttachmentExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα περιορίσουν τα συνημμένα. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο περιορισμός θα πρέπει να είναι σε αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα έχει αυτόματα τον περιορισμό να αρθεί μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτού του περιορισμού. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.",
+		"examples": [
+			"@Pete",
+			"@Pete Αποστολή παράξενων εικόνων",
+			"@Pete 24 ώρες στέλνοντας εικόνες NSFW"
+		]
+	},
+	"restrictEmbedDescription": "Περιορίστε έναν χρήστη από την προσάρτηση ενσωματωμένων σε όλα τα κανάλια.",
+	"restrictEmbedExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα περιορίσουν τα ενσωματωμένα. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο περιορισμός θα πρέπει να είναι σε αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα έχει αυτόματα τον περιορισμό να αρθεί μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτού του περιορισμού. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.",
+		"examples": [
+			"@Pete",
+			"@Pete Αποστολή περίεργων συνδέσμων",
+			"@Pete 24h Καταχωρήθηκε ένας σύνδεσμος spam"
+		],
+		"reminder": "Ενσωματώσεις είναι, για παράδειγμα, όταν ένας χρήστης στέλνει ένα βίντεο που ενσωματώνεται στη συνομιλία."
+	},
+	"restrictEmojiDescription": "Περιορίστε έναν χρήστη από τη χρήση εξωτερικών emojis σε όλα τα κανάλια.",
+	"restrictEmojiExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες για τον περιορισμό των εξωτερικών emojis. Μπορεί να είναι έως και 10 χρήστες."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο περιορισμός θα πρέπει να είναι σε αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα έχει αυτόματα τον περιορισμό να αρθεί μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτού του περιορισμού. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming εξωτερικά emojis",
+			"@Pete 24η Δημοσιεύτηκε cringe"
+		],
+		"reminder": "Αυτό θα αποτρέψει μόνο τη χρήση των εξωτερικών emojis και έτσι θα έχει καμία επίδραση για τους μη νιτρικούς χρήστες, τα emojis του δικού σας διακομιστή και τακτική κατασκευή σε twemojis μπορούν ακόμα να χρησιμοποιηθούν από μέλη με αυτόν τον ρόλο."
+	},
+	"restrictReactionDescription": "Περιορισμός ενός χρήστη από την αντίδραση σε μηνύματα σε όλα τα κανάλια.",
+	"restrictReactionExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα περιορίσουν την αντίδραση στα μηνύματα. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο περιορισμός θα πρέπει να είναι σε αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα έχει αυτόματα τον περιορισμό να αρθεί μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτού του περιορισμού. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming αντιδράσεις",
+			"@Pete 24η Δημοσίευση περίεργων αντιδράσεων"
+		]
+	},
+	"restrictVoiceDescription": "Περιορισμός ενός χρήστη από τη συμμετοχή σε οποιοδήποτε κανάλι φωνής.",
+	"restrictVoiceExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα περιορίσουν την αλληλεπίδραση φωνητικών καναλιών. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα που αυτός ο περιορισμός θα πρέπει να είναι σε αυτόν τον χρήστη. Για παράδειγμα 24 ώρες για 24 ώρες. Ο (οι) χρήστης(ες) θα έχει αυτόματα τον περιορισμό να αρθεί μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτού του περιορισμού. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.",
+		"examples": [
+			"@Pete",
+			"@Pete Earraping γενικά φωνητικά κανάλια",
+			"@Pete 24 ώρες Κάνοντας περίεργους θορύβους"
+		]
+	},
+	"softBanDescription": "Χτύπησε κάποιον με το σφυρί απαγόρευσης, καταστρέφοντας όλα τα μηνύματά τους για μερικές ημέρες, και το άρωσε.",
+	"softBanExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1",
+			"Χρήστης --seconds=S --minutes=M --hours=H --days=D"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Ο (οι) χρήστης(ες) στο softban. Μπορεί να είναι μέχρι και 10 χρήστες."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για το softban. Αυτό θα δείξει επίσης στα αρχεία ελέγχου του διακομιστή."
+			],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"Το χρονικό διάστημα αξίας των μηνυμάτων για διαγραφή, κάθε σημαία είναι προαιρετικό και μπορεί να συνδυαστεί. Μέχρι 7 ημέρες."
+			]
+		],
+		"extendedHelp": "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThe ban feature from Discord has a feature that allows the moderator to remove all messages from all channels that have been sent in the last 'x' days, being a number between 0 (no days) and 7.\nThe user gets unbanned right after the ban, so it is like a kick, but that can prune many many messages.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming όλα τα κανάλια",
+			"@Pete 7 Όλα τα μηνύματα που αποστέλλονται σε 7 έχουν φύγει τώρα, YEE HAH!"
+		]
+	},
+	"timeoutApplyDescription": "Λήξη χρονικού ορίου από έναν χρήστη.",
+	"timeoutApplyExtended": {
+		"usages": [
+			"Διάρκεια Χρήστη",
+			"Διάρκεια Λόγος Χρήστη"
+		],
+		"explainedUsage": [
+			[
+				"Διάρκεια",
+				"Η διάρκεια του χρονικού διαστήματος. Για παράδειγμα 24 ώρες για 24 ώρες."
+			],
+			[
+				"Χρήστης",
+				"Ο χρήστης στο χρονικό όριο."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για το χρονικό όριο. Αυτό θα δείξει επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"examples": [
+			"30δ @Pete",
+			"2 ώρες @Pete Spamming όλα τα κανάλια"
+		]
+	},
+	"timeoutUndoDescription": "Αφαιρέστε ένα χρονικό διάστημα από έναν χρήστη.",
+	"timeoutUndoExtended": {
+		"usages": [
+			"Χρήστης",
+			"Λόγος Χρήστη"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης",
+				"Ο χρήστης στο χρονικό όριο."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για το χρονικό όριο. Αυτό θα δείξει επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"examples": [
+			"@Pete",
+			"@Pete Εμφανίζεται έξω δεν ήταν αυτός που spammed όλα τα κανάλια 🤷"
+		]
+	},
+	"timeoutNotModeratable": "Ο στόχος δεν μπορεί να λήξει από εμένα.",
+	"toggleModerationDmDescription": "Εναλλαγή ρύθμισης DMs.",
+	"toggleModerationDmExtended": {
+		"extendedHelp": "Αυτή η εντολή σας επιτρέπει να εναλλάξετε τη ρύθμιση DMs. Από προεπιλογή, είναι ενεργοποιημένοι, πράγμα που σημαίνει ότι οποιαδήποτε ενέργεια μετριοπάθειας (αυτόματη ή χειροκίνητη) θα σας DM, αλλά μπορείτε να τις απενεργοποιήσετε με αυτήν την εντολή."
+	},
+	"unbanDescription": "Αποαπαγόρευση κάποιου από αυτόν τον διακομιστή.",
+	"unbanExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Ο (οι) χρήστης(ες) προς αποαπαγόρευση. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την κατάργηση της απαγόρευσης. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{BanMembers, permissions}}**. Κυριολεκτικά παίρνει κάποιον από τον κάδο απορριμμάτων, τους καθαρίζει και επιτρέπει το πέρασμα στις πύλες αυτού του διακομιστή.",
+		"examples": [
+			"@Pete",
+			"@Pete Εμφανίζεται έξω δεν ήταν αυτός που spammed όλα τα κανάλια 🤷"
+		]
+	},
+	"unmuteDescription": "Αφαιρέστε την ταινία με κοτσίδα από έναν χρήστη.",
+	"unmuteExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες προς κατάργηση σίγασης. Μπορεί να είναι μέχρι και 10 χρήστες."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την αφαίρεση σίγασης. Αυτό θα δείξει επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the muted people's list, and gives the old roles back if the user had them.",
+		"examples": [
+			"@Pete",
+			"@Pete (Εισάγετε τυχαίο αστείο εδώ)."
+		]
+	},
+	"unrestrictAttachmentDescription": "Αφαιρέστε τον περιορισμό συνημμένων από έναν ή περισσότερους χρήστες.",
+	"unrestrictAttachmentExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα καταργήσουν τους περιορισμούς συνημμένων. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την κατάργηση του περιορισμού συνημμένου. Αυτό θα εμφανιστεί επίσης στα αρχεία ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{MANAGE_ROLES, permissions}}** και αφαιρεί έναν χρήστη από τη λίστα των περιορισμένων ατόμων.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmbedDescription": "Αφαιρέστε τον περιορισμό ενσωμάτωσης από έναν ή περισσότερους χρήστες.",
+	"unrestrictEmbedExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα καταργήσουν τους περιορισμούς ενσωμάτωσης. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την αφαίρεση του περιορισμού ενσωμάτωσης. Αυτό θα εμφανιστεί επίσης στα αρχεία ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{MANAGE_ROLES, permissions}}** και αφαιρεί έναν χρήστη από τη λίστα των περιορισμένων ατόμων.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictEmojiDescription": "Αφαιρέστε τον εξωτερικό περιορισμό emoji από έναν ή περισσότερους χρήστες.",
+	"unrestrictEmojiExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα καταργήσουν τους περιορισμούς emoji. Μπορεί να είναι μέχρι και 10 χρήστες."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την άρση του περιορισμού emoji. Αυτό θα δείξει επίσης στα αρχεία ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{MANAGE_ROLES, permissions}}** και αφαιρεί έναν χρήστη από τη λίστα των περιορισμένων ατόμων.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictReactionDescription": "Αφαιρέστε τον περιορισμό αντίδρασης από έναν ή περισσότερους χρήστες.",
+	"unrestrictReactionExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα καταργήσουν τους περιορισμούς αντίδρασης. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την άρση του περιορισμού αντίδρασης. Αυτό θα δείξει επίσης στα αρχεία ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{MANAGE_ROLES, permissions}}** και αφαιρεί έναν χρήστη από τη λίστα των περιορισμένων ατόμων.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unrestrictVoiceDescription": "Αφαιρέστε τον περιορισμό φωνής από έναν ή περισσότερους χρήστες.",
+	"unrestrictVoiceExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες από τους οποίους θα καταργηθούν οι περιορισμοί φωνής. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την αφαίρεση του περιορισμού φωνής. Αυτό θα εμφανιστεί επίσης στα αρχεία ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί **{{MANAGE_ROLES, permissions}}** και αφαιρεί έναν χρήστη από τη λίστα των περιορισμένων ατόμων.",
+		"examples": [
+			"@Pete"
+		]
+	},
+	"unwarnDescription": "Προσκαλέστε μια περίπτωση καταγραφής μετριοπάθειας προειδοποίησης.",
+	"unwarnExtended": {
+		"usages": [
+			"Περίπτωση",
+			"Λόγος Υπόθεσης"
+		],
+		"explainedUsage": [
+			[
+				"Περίπτωση",
+				"Ο αριθμός της υπόθεσης προς τροποποίηση. Μπορείτε να βρείτε τους αριθμούς των υποθέσεων μέσω της εντολής `history` ή κοιτάζοντας στο κανάλι καταγραφής της έγκρισής σας"
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την αφαίρεση αυτής της προειδοποίησης."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή εφιστά μια προειδοποίηση, δεν απαιτεί άδεια, μόνο να μου δώσετε το αρχείο καταγραφής μετριοπάθειας για να εφεσιβάλω και το λόγο.",
+		"examples": [
+			"0 Ουπς, λάθος dude.",
+			"42 Αποδεικνύεται αυτός ο ορισμός της ζωής."
+		]
+	},
+	"vmuteDescription": "Πετάξτε το μικρόφωνο κάποιου από το παράθυρο.",
+	"vmuteExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα κάνουν σίγαση στα φωνητικά κανάλια. Μπορεί να είναι μέχρι 10 χρήστες συνολικά."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα για το οποίο θα πρέπει να ισχύει αυτή η σίγαση φωνής. Για παράδειγμα 24 ώρες για 24 ώρες. Οι χρήστες θα έχουν αυτόματα τη σίγαση φωνής μετά από αυτό το χρονικό διάστημα."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την προσθήκη αυτής της φωνής σίγασης. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MUTE_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be silenced by me.\nNo, the server's owner cannot be silenced.\nThis action can be optionally timed to create a temporary voice mute.",
+		"examples": [
+			"@Pete",
+			"@Pete Τραγούδι πάρα πολύ δυνατά",
+			"@Pete 24 ώρες Κυριολεκτικά τραγούδησε βιασμό αυτί"
+		]
+	},
+	"voiceKickDescription": "Χτύπησε κάποιον με το 👢 για να τραγουδήσει τόσο κακό και δυνατά.",
+	"voiceKickExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1",
+			"Λόγος Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα βγάλουν από το τρέχον κανάλι φωνής. Μπορεί να είναι έως και 10 χρήστες."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την κλοπή των χρηστών από το κανάλι φωνής. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "Αυτή η εντολή απαιτεί δικαιώματα **{{MANAGE_CHANNELS, permissions}}** για να δημιουργήσετε ένα προσωρινό (κρυμμένο) φωνητικό κανάλι, και **{{MOVE_MEMBERS, permissions}}** για να μετακινήσετε το χρήστη στο προσωρινό κανάλι.\nΜετά από αυτό, το κανάλι διαγράφεται γρήγορα, κάνοντας το χρήστη να φύγει από το κανάλι φωνής.\nΓια τους φοβισμένους συντονιστές, αυτή η εντολή δεν έχει σχεδόν καμία επίπτωση στον μέσο χρήστη, καθώς το κανάλι δημιουργείται με έναν τρόπο μόνο εμένα και ο επιλεγμένος χρήστης μπορεί να δει και να ενταχθεί, τότε γρήγορα διαγράφεται.",
+		"examples": [
+			"@Pete",
+			"@Pete Spamming όλα τα κανάλια"
+		]
+	},
+	"vunmuteDescription": "Πάρτε πίσω το μικρόφωνο κάποιου, ώστε να μπορούν να μιλήσουν.",
+	"vunmuteExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Λόγος Χρήστη 1"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που θα καταργήσουν τη σίγαση στα φωνητικά κανάλια. Μπορεί να είναι έως και 10 χρήστες."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος για την αφαίρεση της σίγασης φωνής. Αυτό θα εμφανιστεί επίσης στα αρχεία καταγραφής ελέγχου του διακομιστή."
+			]
+		],
+		"extendedHelp": "This command requires **{{MUTE_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be un-silenced by me.\nNo, the server's owner cannot be un-silenced.",
+		"examples": [
+			"@Pete",
+			"@Pete Προσέφυγε φορές του υπογράφοντας ακούστε βιασμό."
+		]
+	},
+	"warnDescription": "Κάντε μια προειδοποίηση σε κάποιον.",
+	"warnExtended": {
+		"usages": [
+			"Χρήστης",
+			"User1 User2 User3...User10",
+			"Διάρκεια Χρήστη1",
+			"Λόγος Διάρκεια Χρήστη 1 Χρήστη 2"
+		],
+		"explainedUsage": [
+			[
+				"Χρήστης/Χρήστης1/Χρήστης2",
+				"Οι χρήστες που προειδοποιούν. Μπορεί να είναι έως και 10 χρήστες."
+			],
+			[
+				"Διάρκεια",
+				"Το χρονικό διάστημα για το οποίο ισχύει αυτή η προειδοποίηση. Για παράδειγμα 24 ώρες για 24 ώρες. Οι χρήστες θα αφαιρέσουν αυτόματα την προειδοποίηση μετά από αυτή τη φορά."
+			],
+			[
+				"Λόγος",
+				"Ο λόγος αυτής της προειδοποίησης."
+			]
+		],
+		"extendedHelp": "This command files a warning to a user.\nThis kind of warning is meant to be **formal warnings**, as they will be shown in the 'warnings' command.\nIt is a good practise to do an informal warning before using this command.",
+		"examples": [
+			"@Pete Προσπαθήστε να αναφέρετε όλους."
+		]
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Viser en kategori pr. side. Har du problemer med embed? Kør `{{prefix}}help --all` for en fuld liste i DMs.",
+	"helpCommandCount_one": "{{count}} kommando",
+	"helpCommandCount_other": "{{count}} kommandoer",
+	"helpData": {
+		"footer": "Kommando hjælp til {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Viser alle kommandoer eller beskrivelsen af én.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"-- all",
+			"KategoriNavn",
+			"Side",
+			"Kommandonavn"
+		],
+		"extendedHelp": "Hjælpe- kommandoen viser en pagineret liste over alle kommandoer efter deres kategorier, eller den udvidede information af en kommando hvis angivet.\n\nHvis du bruger `--categories` eller `--cat`, kan du få en liste over alle kategorier og antallet af kommandoer, som hver enkelt af dem har.",
+		"reminder": "Hjælpe kommandoen **kun** viser de kommandoer, du kan bruge. For den fulde liste, besøg venligst <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--cat",
+			"-- all",
+			"Moderation",
+			"12",
+			"hjælp"
+		]
+	},
+	"helpDm": "📥 ● Listen over kommandoer du har adgang til er blevet sendt til dine DM'er.",
+	"helpNodm": "{{REDCROSS}} Du har DMs deaktiveret, så jeg kunne ikke sende dig listen over kommandoer.",
+	"v7Description": "Henter oplysningerne om Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Dette er en **skjult** kommando der udelukkende bruges til at sende en meddelelse til alle, der forsøger at bruge kommandoer, der er blevet fjernet i henhold til [SKyra v7] (https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) planer."
+	},
+	"v7Message": "Hej der! Tak fordi du brugte denne kommando, men det blev fjernet på grund af [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s planer. Linket indeholder en forklaring på, hvorfor `{{command}}` blev fjernet.\n\nBeklager for ulejligheden, og tak for at bruge WolfStar. 💖",
+	"v7NayreMessage": "Hej der! Tak for at bruge denne kommando, dog, det blev fjernet og vil enten blive redesignet som en del af Nayre's Acryss RPG som nævnt i [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s planer.\n\nBeklager ulejligheden, og tak for at bruge WolfStar. 💖"
+}

@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} er ikke blevet lokaliseret til en-US endnu.",
+	"defaultLanguage": "Standard Sprog",
+	"no": "Nej",
+	"none": "Ingen",
+	"unknown": "ukendt",
+	"yes": "Ja",
+	"paginatedMessagePage": "Side",
+	"paginatedMessageWrongUserInteractionReply": "Stop med at klikke på knapperne på denne besked. De er kun for {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "MM/DD/ÅÅÅÅ",
+	"dateFormatExplanation": "Måned/Dag/År"
+}

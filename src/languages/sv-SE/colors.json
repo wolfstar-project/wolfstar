@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Färgen måste ligga inom intervallet 0 - 16777215 (0xFFFFFF), men mottaget `{{value}}`.",
+	"invalidHexRed": "Ogiltigt rött intervall. Måste vara mellan '00' och 'ff', men mottaget `{{value}}`.",
+	"invalidHexGreen": "Ogiltigt grönt intervall. Måste vara mellan '00' och 'ff', men mottaget `{{value}}`.",
+	"invalidHexBlue": "Ogiltigt blått intervall. Måste vara mellan '00' och 'ff', men mottaget `{{value}}`.",
+	"invalidHslHue": "Ogiltigt Hue range. Måste vara mellan 0 och 360, men mottaget `{{value}}`.",
+	"invalidHslSaturation": "Ogiltigt mättnadsintervall. Måste vara mellan 0 och 100, men mottaget `{{value}}`.",
+	"invalidHslLightness": "Ogiltigt ljusintervall. Måste vara mellan 0 och 100, men mottaget `{{value}}`.",
+	"invalidRgbRed": "Ogiltigt rött intervall. Måste vara mellan 0 och 255, men mottaget `{{value}}`.",
+	"invalidRgbGreen": "Ogiltigt grönt intervall. Måste vara mellan 0 och 255, men mottaget `{{value}}`.",
+	"invalidRgbBlue": "Ogiltigt blått intervall. Måste vara mellan 0 och 255, men mottaget `{{value}}`."
+}

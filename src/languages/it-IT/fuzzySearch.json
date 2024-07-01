@@ -1,0 +1,6 @@
+{
+	"aborted": "Chiave interrotta con successo.",
+	"invalidIndex": "Quel numero era fuori raggio, prompt di aborto.",
+	"invalidNumber": "Mi aspettavo che mi desse un numero (singola cifra), ottenuto una patata.",
+	"matches": "Ho trovato più partite! **Seleziona un numero entro 0 e {{matches}}**:\n{{codeblock}}\nScrivi **ABORT** se vuoi uscire dal prompt."
+}

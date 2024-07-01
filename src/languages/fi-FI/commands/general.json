@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Näytetään yksi kategoria per sivu. Onko ongelmia upotettuna? Suorita `{{prefix}}help --all` koko listalle DMs.",
+	"helpCommandCount_one": "{{count}} komento",
+	"helpCommandCount_other": "{{count}} komentoa",
+	"helpData": {
+		"footer": "Komentoohje {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Näyttää kaikki komennot tai yhden kuvauksen.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--all",
+			"Kategorian Nimi",
+			"Sivu",
+			"Command-nimi"
+		],
+		"extendedHelp": "Ohjekomennossa näytetään välilehti kaikista komennoista niiden kategorioiden mukaan tai komennon laajennetut tiedot, jos ne on määritelty.\n\nJos käytät `--categories` tai `--cat`, voit saada listan kaikista kategorioista ja komentojen määrän jokaisella niistä on.",
+		"reminder": "Ohjekomento **vain** näyttää komennot, joita voit käyttää. Ole hyvä ja vieraile <https://wolfstar.rocks/commands> koko listalla.",
+		"examples": [
+			"--kissa",
+			"--all",
+			"Moderointi",
+			"12",
+			"ohje"
+		]
+	},
+	"helpDm": "📥 The list of commands you have access to has been sent to your DMs.",
+	"helpNodm": "{{REDCROSS}} , You have DMs disabled so I cannot send you of commands. (Automatic Copy)",
+	"v7Description": "Hakee Skyra v7 -versiota koskevat tiedot",
+	"v7Extended": {
+		"extendedHelp": "Tämä on **piilotettu** komento, jota käytetään yksinomaan ilmoituksen lähettämiseen kaikille, jotka yrittävät käyttää komentoja, jotka on poistettu [SKyra v7](https://skyra). otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) suunnitelmat."
+	},
+	"v7Message": "Hei siellä! Kiitos tämän komennon käytöstä, kuitenkin se poistettiin [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)suunnitelmien vuoksi. Linkki sisältää selityksen siitä, miksi `{{command}}` poistettiin.\n\nPahoittelut, ja kiitos WolfStarin käytöstä. 💖",
+	"v7NayreMessage": "Hei siellä! Kiitos kuitenkin tämän komennon käyttämisestä. se poistettiin ja se joko suunnitellaan uudelleen osana Nayren Acryss RPG mainitaan [WolfStar v7](https://skyra). otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8 suunnitelmat.\n\nAnteeksi, ja kiitos WolfStarin käytöstä. 💖"
+}

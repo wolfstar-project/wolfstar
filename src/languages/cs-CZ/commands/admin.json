@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Úspěšně aktualizován klíč **{{key}}**: {{response}}",
+	"confGetNoExt": "Klíč **{{key}}** zřejmě neexistuje.",
+	"confGet": "Hodnota klíče **{{key}}** je: `{{value}}`",
+	"confReset": "Klíč **{{key}}** byl resetován na: `{{value}}`",
+	"confNochange": "Hodnota pro **{{key}}** již byla touto hodnotou.",
+	"confServerDescription": "Definujte nastavení na serveru.",
+	"confServerExtended": {
+		"usages": [
+			"nastavit hodnotu NameOfKey pro klíč",
+			"ukázat",
+			"zobrazit název klíče",
+			"odebrat hodnotu NameOfKey pro klíč",
+			"reset NameOfKey",
+			"Menu"
+		],
+		"extendedHelp": "Umožňuje nakonfigurovat WolfStar z Discordu, jako rychlou alternativu k [webovému dashboardu](https://wolfstar.rocks).",
+		"examples": [
+			"set language cs-CZ",
+			"nastavit kanály.mode-logy #modation-logs",
+			"ukázat",
+			"zobrazit kanály",
+			"odstranit role.moderátor moderátora",
+			"reset roles.moderator",
+			"Menu"
+		],
+		"reminder": "Klávesy a skupiny, klíče, které jsou ve skupině, jsou pojmenovány `GroupName.KeyName`."
+	},
+	"confServer": "**Server nastavuje {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` může být nakonfigurován pouze přes webový dashboard ",
+	"confSettingNotSet": "Nenastaveno",
+	"rolesetDescription": "Správa jedinečných rolí.",
+	"rolesetExtended": {
+		"usages": [
+			"nastavit RoleSetName Role1 Role2 Role3...",
+			"odstraní RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"seznam",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Skupina rolí je skupina rolí, které WolfStar identifikuje jako unikátní pro všechny členy serveru, tj. skupina rolí s názvem `region` by mohla mít roli `Africa`, `America`, `Asia` a `Europe` a členové budou mít pouze jednu z nich. Toto je jako \"pravidlo\", které se používá ve třech následujících situacích:\n\n- Když někdo požaduje roli prostřednictvím příkazu `role`.\n- Když někdo požaduje roli prostřednictvím reakčních rolí.\n- Když někdo obdrží roli buď manuálně, nebo od jiného bota.",
+		"explainedUsage": [
+			[
+				"přidat",
+				"Vytvořte novou roleset nebo přidejte roli do existujícího."
+			],
+			[
+				"odstranit",
+				"Odebrat roli z existujícího roleta."
+			],
+			[
+				"reset",
+				"Odstraní všechny role z rolesetu, nebo pokud není specifikováno, všechny existující roleety."
+			],
+			[
+				"seznam",
+				"Seznam všech rolí."
+			],
+			[
+				"automaticky",
+				"Přidá nebo odebere rolík."
+			],
+			[
+				"RoleSetName",
+				"Název roleset"
+			],
+			[
+				"Role Role2 Role3",
+				"Role pro přidání do roleset"
+			]
+		],
+		"examples": [
+			"přidat regiony Amerika",
+			"přidat regiony Afrika Amerika Asie Evropa",
+			"odstranit regiony Amerika",
+			"reset",
+			"resetovat regiony",
+			"seznam",
+			"regiony Amerika",
+			"regiony Afrika Amerika Asie Evropa"
+		],
+		"reminder": "Tento příkaz může současně přidat a/nebo odebrat více rolí."
+	},
+	"rolesetCreated": "Unikátní skupina rolí {{name}} byla vytvořena s následujícími roli: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Aktualizována jedinečná role {{name}} , nyní má následující role: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Unikátní sada {{name}} již nebude obsahovat následující role: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} V této skupině nejsou žádné rolesy.",
+	"rolesetResetAll": "{{GREENTICK}} úspěšně odstranil všechny rolíky.",
+	"rolesetResetNotExists": "{{REDCROSS}} Sada rolí `{{name}}` na tomto serveru neexistuje.",
+	"rolesetResetGroup": "{{GREENTICK}} úspěšně odstranil roleset `{{name}}` z tohoto serveru.",
+	"rolesetUpdated": "{{name}} jedinečná sada rolí byla aktualizována.",
+	"rolesetNoRolesets": "Nemáte žádné roli.",
+	"confMenuRenderAtFolder": "Aktuálně na: 📁 {{path}}",
+	"confMenuRenderAtPiece": "V současné době v: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Pro tuto složku nejsou žádné konfigurovatelné klíče",
+	"confMenuRenderSelect": "Zadejte prosím některé z následujících poznámek",
+	"confMenuRenderUpdate": "• Aktualizovat hodnotu → `nastavit <value>`",
+	"confMenuRenderRemove": "• Odebrat hodnotu → `odstranit <value>`",
+	"confMenuRenderReset": "• Resetovat hodnotu → `reset`",
+	"confMenuRenderUndo": "• Vrátit zpět aktualizaci → `vrácení`",
+	"confMenuRenderCvalue": "Současná hodnota: **``{{value}}``**",
+	"confMenuRenderBack": "Stiskněte ◀️ pro návrat zpět",
+	"confMenuInvalidKey": "Neplatný klíč, zkuste to prosím znovu s některou z následujících možností.",
+	"confMenuInvalidAction": "Neplatná akce, zkuste to prosím znovu s některou z následujících možností.",
+	"confMenuSaved": "Všechny změny byly úspěšně uloženy."
+}

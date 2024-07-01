@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Вимкнено",
+	"explicitContentFilterMembersWithoutRoles": "Члени без ролей",
+	"explicitContentFilterAllMembers": "Усі учасники",
+	"defaultMessageNotificationsAllMessages": "Всі повідомлення",
+	"defaultMessageNotificationsOnlyMentions": "Тільки @згадки",
+	"SuppressJoinNotifications": "Сповіщення користувача про приєднання",
+	"SuppressJoinNotificationReplies": "Кнопки відповіді для учасника приєднуються до наклейки",
+	"SuppressPremiumSubscriptions": "Сповіщення про прискорення сервера",
+	"SuppressGuildReminderNotifications": "Поради щодо налаштування сервера",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Вимкнути сповіщення про покупку підписки на роль",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Не відповідати на сповіщення про покупку ролі"
+}

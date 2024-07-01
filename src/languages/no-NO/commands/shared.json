@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Meldingsbaserte kommandoer er **foreldet**, og vil fjernes i fremtiden. Du skal bruke {{command}} slash-kommandoen i stedet!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Denne kommandoen er bare tilgjengelig via slash-kommandoer. Vennligst bruk slash-kommandoen i stedet."
+	},
+	"slashOnlyErrorMessage": "Denne kommandoen er bare tilgjengelig via slash-kommandoer. Vennligst bruk slash-kommandoen i stedet."
+}

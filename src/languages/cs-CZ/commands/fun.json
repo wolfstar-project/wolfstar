@@ -1,0 +1,7 @@
+{
+	"escaperopeDescription": "Použij únikové lano z Pokemonu.",
+	"escaperopeExtended": {
+		"extendedHelp": "**WolfStar** použil **Únikový režim**."
+	},
+	"escaperopeOutput": "**{{user}}** used **Escape Rope**"
+}

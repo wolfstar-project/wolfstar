@@ -1,0 +1,15 @@
+{
+	"name": "kuka",
+	"description": "Tarjoaa tietoa Discordin käyttäjästä",
+	"contextMenuName": "Hae Tietoja",
+	"userName": "käyttäjä",
+	"userDescription": "Käyttäjä joka saa tietoa",
+	"rolesTitle_one": "Rooli [1]",
+	"rolesTitle_other": "Roolit [{{count, number}}]",
+	"permissionsTitle": "Avaimen Oikeudet",
+	"permissionsAll": "Kaikki Oikeudet",
+	"embedDescription": "**Käyttäjä Vuodesta**: {{createdAt}}",
+	"embedMemberDescription": "**Jäsen Vuodesta**: {{joinedAt}}",
+	"buttonAvatar": "Hahmo",
+	"buttonProfile": "Profiili"
+}

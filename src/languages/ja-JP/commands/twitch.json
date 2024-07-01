@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} 申し訳ありませんが、ストリーマーが見つかりませんでした。名前を正しく書きましたか？",
+	"twitchSubscriptionStatusValues": [
+		"オンライン",
+		"オフライン"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} あそこ! 「オンライン」や「オフライン」を期待していましたが、あなたが私に何をくれたのかわかりません。",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} あなたはすでにこのチャンネルでそのストリーマーを購読しています。",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} 成功！ {{name}} がオフラインになると、新しいメッセージを {{channel}} に投稿します。",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} 成功！ {{name}} がライブになるたびに、新しいメッセージを {{channel}} に投稿します。",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} 申し訳ありませんが、オフラインサブスクリプションを行う際にメッセージを提供する必要があります。",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} 申し訳ありませんが、あなたはストリーマーを購読していません。ミッションは中止してください！",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} 申し訳ありませんが、購読していないため、 {{streamer}} の購読を解除できません。",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} 申し訳ありません。このストリーマーとストリーミングのステータスを購読している間、サブスクリプションは {{channel}} に投稿されません。",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} 申し訳ありませんが、 {{status}} の通知が {{streamer}}に届いていないようです。\"online\" と \"offline\" の通知をサポートしています。",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} 成功！ {{channel}} がオフラインになるたびにメッセージを {{name}} に投稿しなくなりました。",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} 成功！ {{channel}} がライブになるたびにメッセージを {{name}} に投稿しなくなりました。",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} 成功！ {{count}} サブスクリプションがこのサーバーから削除されました。",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} 成功！ {{count}} サブスクリプションがこのサーバーから削除されました。",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} あなたはこのストリーマーからのすべてのサブスクリプションを見たいと思っていましたが、ありません!",
+	"twitchSubscriptionShowStatus": {
+		"live": "ライブ",
+		"offline": "オフライン"
+	},
+	"twitchSubscriptionShowUnknownUser": "不明",
+	"twitchSubscriptionDescription": "サーバーのサブスクリプションを管理します。",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"ストリーマーチャンネルステータスを追加",
+			"ストリーマーチャンネルステータスを追加",
+			"配信者のチャンネルステータスを削除する",
+			"ストリーマーをリセット",
+			"reset",
+			"表示",
+			""
+		],
+		"extendedHelp": "Manage the subscriptions for this server.\n__Online Notifications__\nAll available data will show up in a very nice embed telling you exactly what the streamer is up to.\n\n__Offline Notifications__\nYou need to write your own message that will be posted when the streamer goes offline. It will be displayed in a nice Twitch-purple MessageEmbed.",
+		"explainedUsage": [
+			[
+				"追加/削除/リセット/表示",
+				"Whether to\n　- Add a new Twitch subscription.\n　- Remove an existing Twitch subscription\n　- Reset all twitch subscription, or those for a specific streamer\n　- Show all current Twitch subscriptions"
+			],
+			[
+				"Streamer",
+				"通知を取得するためのストリーマーのTwitchユーザー名。"
+			],
+			[
+				"チャンネル",
+				"通知を投稿するDiscordチャンネル。"
+			],
+			[
+				"ステータス",
+				"Twitchストリーマーがオンラインまたはオフラインのいずれかの通知を取得する必要があるステータス。"
+			],
+			[
+				"コンテンツ",
+				"Discordチャットで送信するメッセージ。オンライン通知ではオプションのオフライン通知に必要です。"
+			]
+		],
+		"examples": [
+			"favna #twitchをオンラインで追加",
+			"add favna #twitch offline Favna がオフラインになりました。さよならを言ってください 👋!",
+			"remove kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"表示"
+		]
+	}
+}

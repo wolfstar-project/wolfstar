@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Bruger Tilmeldt",
+	"guildMemberAddDescription": "{{user}} tilsluttet Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Tilføjet roller**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Tilføjet rolle**: {{addedRoles}}",
+	"guildMemberAddMute": "Lydløs bruger tilsluttet",
+	"guildMemberBanned": "Bruger Banned",
+	"guildMemberKicked": "Bruger Udsendt",
+	"guildMemberNoUpdate": "Ingen opdatering fundet",
+	"guildMemberRemove": "Bruger Til Venstre",
+	"guildMemberRemoveDescription": "{{user}} tilsluttede sig denne server *en ukendt tid siden*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} tilsluttede sig denne server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Fjernede roller**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Fjernet rolle**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Bruger Softbanned",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Næste**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Forrige**: Fjern",
+	"nameUpdatePreviousWasSet": "**Forrige**: `{{previousName}}`",
+	"nicknameUpdate": "Kaldenavn Redigeret",
+	"roleUpdate": "Roller Redigeret",
+	"usernameUpdate": "Brugernavn Redigeret"
+}

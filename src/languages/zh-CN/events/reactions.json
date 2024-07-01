@@ -1,1 +1,7 @@
-[]
+{
+	"reactionDescription": "Reacted with {{emoji}} on {{message}}",
+	"reactionFooter": "第一个响应已添加",
+	"filterFooter": "过滤后的反应",
+	"filter": "{{REDCROSS}} Hey {{user}}, please do not add that reaction!",
+	"selfRoleHierarchy": "{{REDCROSS}} My role needs to be higher than all self-assignable roles, otherwise I can't grant them to people!"
+}

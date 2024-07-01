@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "I comandi basati sui messaggi sono **deprecati**, e saranno rimossi in futuro. Dovresti usare il comando slash {{command}}!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Questo comando è disponibile solo tramite i comandi slash. Si prega di utilizzare il comando slash."
+	},
+	"slashOnlyErrorMessage": "Questo comando è disponibile solo tramite i comandi slash. Si prega di utilizzare il comando slash."
+}

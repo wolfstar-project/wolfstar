@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Er is een kleine netwerkfout opgetreden bij het versturen van Discord, voer deze opdracht alstublieft opnieuw uit!",
+	"fetchBansFail": "Mislukt om ban's op te halen. Heb ik de **{{ADMINISTRATOR, permissions}}** permissie?",
+	"helpTitles": {
+		"aliases": "🖇️ ・**Aliases**",
+		"usages": "📝 ľ**Command Gebruik**",
+		"extendedHelp": "🔍 /h **Uitgebreide hulp**",
+		"explainedUsage": "⚙️ ×**Uitgelegd gebruik**",
+		"possibleFormats": "🔢 ± **Mogelijke formaten**",
+		"examples": "🔗 ########**Voorbeelden**",
+		"reminders": "⏰ /h **Herinnering**"
+	},
+	"jumpTo": "Ga naar bericht Normal",
+	"loading": [
+		"{{LOADING}} hamsters Volgen Run...",
+		"{{LOADING}} mensen vinden op verstoppert...",
+		"{{LOADING}} probeert dit commando uit te zoeken...",
+		"{{LOADING}} gegevens ophalen uit de cloud...",
+		"{{LOADING}} glazen kalibreren...",
+		"{{LOADING}} Speelt steen, papier, schaar...",
+		"{{LOADING}} Aan het afstemmen op de rechterfrequenties...",
+		"{{LOADING}} Reticulerende splines..."
+	],
+	"prefixReminder": "De prefix in deze server is ingesteld op: `{{prefix}}`"
+}

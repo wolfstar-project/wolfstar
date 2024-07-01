@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} wurde noch nicht für de-US lokalisiert.",
+	"defaultLanguage": "Standardsprache",
+	"no": "Nein",
+	"none": "Keine",
+	"unknown": "unbekannt",
+	"yes": "Ja",
+	"paginatedMessagePage": "Seite",
+	"paginatedMessageWrongUserInteractionReply": "Bitte hören Sie auf, auf die Buttons auf dieser Nachricht zu klicken. Sie sind nur für {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "MM/TT/JJJJ",
+	"dateFormatExplanation": "Monat/Tag/Jahr"
+}

@@ -1,0 +1,15 @@
+{
+	"name": "cine",
+	"description": "Oferă informații despre un utilizator Discord",
+	"contextMenuName": "Obțineți informații",
+	"userName": "utilizator",
+	"userDescription": "Utilizatorul pentru a obține informații despre",
+	"rolesTitle_one": "Rolul [1]",
+	"rolesTitle_other": "Roluri [{{count, number}}]",
+	"permissionsTitle": "Permisiuni principale",
+	"permissionsAll": "Toate permisiunile",
+	"embedDescription": "**Utilizator după**: {{createdAt}}",
+	"embedMemberDescription": "**Membru după**: {{joinedAt}}",
+	"buttonAvatar": "Avatar",
+	"buttonProfile": "Profil"
+}

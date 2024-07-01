@@ -1,70 +1,70 @@
 {
-	"twitchSubscriptionStreamerNotFound": "",
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Lo siento, no he podido encontrar el streamer. ¿Estás seguro de que escribiste su nombre correctamente?",
 	"twitchSubscriptionStatusValues": [
-		"",
-		""
+		"en línea",
+		"fuera de línea"
 	],
-	"twitchSubscriptionInvalidStatus": "",
-	"twitchSubscriptionAddDuplicated": "",
-	"twitchSubscriptionAddSuccessOffline": "",
-	"twitchSubscriptionAddSuccessLive": "",
-	"twitchSubscriptionAddMessageForOfflineRequired": "",
-	"twitchSubscriptionRemoveOrResetEmpty": "",
-	"twitchSubscriptionRemoveStreamerNotSubscribed": "",
-	"twitchSubscriptionRemoveNotToProvidedChannel": "",
-	"twitchSubscriptionRemoveStreamerStatusNotMatch": "",
-	"twitchSubscriptionRemoveSuccessOffline": "",
-	"twitchSubscriptionRemoveSuccessLive": "",
-	"twitchSubscriptionResetSuccess_one": "",
-	"twitchSubscriptionResetSuccess_other": "",
-	"twitchSubscriptionShowStreamerNotSubscribed": "",
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} ¡Oye, esperaba \"online\" o \"offline\", pero no puedo entender lo que me diste en su lugar.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Ya estás suscrito a ese streamer en este canal para ese estado.",
+	"twitchSubscriptionAddSuccessOffline": "¡{{GREENTICK}} éxito! Cada vez que {{name}} se desconecte, publicaré un nuevo mensaje en {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "¡{{GREENTICK}} éxito! Cada vez que {{name}} se ponga en directo, publicaré un nuevo mensaje en {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} Lo siento, pero es necesario proporcionar un mensaje al crear una suscripción sin conexión.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Lo siento, pero no estás suscrito a ningún streamer, misión abortada!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Lo siento, no puedes darte de baja de {{streamer}} porque no estás suscrito a ellos.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} lo siento; mientras estás suscrito a este streamer y a este estado de streaming, sus suscripciones no se publican en {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Lo siento, pero parece que no estás recibiendo notificaciones {{status}} para {{streamer}}. Soportamos notificaciones \"online\" y \"offline\".",
+	"twitchSubscriptionRemoveSuccessOffline": "¡{{GREENTICK}} éxito! Ya no publicaré mensajes a {{channel}} cada vez que {{name}} se desconecte.",
+	"twitchSubscriptionRemoveSuccessLive": "¡{{GREENTICK}} éxito! Ya no publicaré mensajes a {{channel}} cada vez que {{name}} se vaya en directo.",
+	"twitchSubscriptionResetSuccess_one": "¡{{GREENTICK}} éxito! La suscripción a {{count}} ha sido eliminada de este servidor.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Success! {{count}} subscriptions have been removed from this server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} You wanted to see all subscriptions from this streamer, but there are none!",
 	"twitchSubscriptionShowStatus": {
-		"live": "",
-		"offline": ""
+		"live": "Vivo",
+		"offline": "Desconectado"
 	},
-	"twitchSubscriptionShowUnknownUser": "",
-	"twitchSubscriptionDescription": "",
+	"twitchSubscriptionShowUnknownUser": "Desconocido",
+	"twitchSubscriptionDescription": "Administra las suscripciones de tu servidor.",
 	"twitchSubscriptionExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
+			"añadir estado del canal Streamer",
+			"añadir estado del canal Streamer",
+			"remover Estado del Canal Streamer",
+			"reiniciar Streamer",
+			"reset",
+			"ver",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Administrar las suscripciones de este servidor.\n__Notificaciones en línea__\nTodos los datos disponibles aparecerán en una incrustación muy bonita que te indicará exactamente para qué sirve el streamer.\n\n__Notificaciones sin conexión__\nNecesitas escribir tu propio mensaje que se publicará cuando el streamer se desconecte. Se mostrará en un buen Twitch-purple MessageEmbed.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"añadir/eliminar/reset/mostrar",
+				"Si a\n- Añade una nueva suscripción a Twitch.\n- Eliminar una suscripción existente de Twitch\n- Restablecer toda la suscripción de twitch, o aquellos para un streamer específico\n- Mostrar todas las suscripciones actuales de Twitch"
 			],
 			[
-				"",
-				""
+				"Streamer",
+				"El nombre de usuario de Twitch del streamer para obtener notificaciones."
 			],
 			[
-				"",
-				""
+				"Canal",
+				"Un canal de Discord donde publicar las notificaciones."
 			],
 			[
-				"",
-				""
+				"Estado",
+				"El estado que el Streamer de Twitch debería obtener para una notificación, una de en línea o sin conexión."
 			],
 			[
-				"",
-				""
+				"Contenido",
+				"El mensaje para enviar en el chat de Discord. Requerido para notificaciones sin conexión, opcional para notificaciones en línea."
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"añadir favna #twitch en línea",
+			"add favna #twitch offline Favna ahora está desconectado. Di goodbye 👋!",
+			"eliminar kyranet #twitch en línea",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"ver"
 		]
 	}
 }

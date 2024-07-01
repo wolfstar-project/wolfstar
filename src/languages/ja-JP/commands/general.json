@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "ページごとに1つのカテゴリを表示します。埋め込みに問題がありますか？DMのリストを表示するには、`{{prefix}}ヘルプ ---all`を実行してください。",
+	"helpCommandCount_one": "{{count}} コマンド",
+	"helpCommandCount_other": "{{count}} コマンド",
+	"helpData": {
+		"footer": "{{footerName}} のコマンドヘルプ",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "すべてのコマンドまたは1つの説明を表示します。",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--all",
+			"カテゴリ名",
+			"ページ",
+			"コマンド名"
+		],
+		"extendedHelp": "helpコマンドは、全てのコマンドをカテゴリごとにページ化したリストを表示するか、コマンドの拡張情報を指定した場合に表示します。\n\n`--categories`または`--cat`を使用する場合、すべてのカテゴリのリストとそれぞれのコマンドの量を取得できます。",
+		"reminder": "ヘルプコマンド **のみ** は、使用できるコマンドを示しています。完全なリストについては、 <https://wolfstar.rocks/commands> を参照してください。",
+		"examples": [
+			"--cat",
+			"--all",
+			"モデレーション",
+			"12",
+			"ヘルプ"
+		]
+	},
+	"helpDm": "📥 | アクセスできるコマンドの一覧がDMに送信されました。",
+	"helpNodm": "{{REDCROSS}} | あなたはDMを無効にしているので、コマンドのリストを送信できませんでした。",
+	"v7Description": "Skyra v7に関する情報を取得します",
+	"v7Extended": {
+		"extendedHelp": "これは、[SKyra v7](https://skyra)に従って削除されたコマンドを使用しようとするすべての人に通知を送信するために使用される**非表示**コマンドです。 otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)計画。"
+	},
+	"v7Message": "こんにちは！ このコマンドを使用していただきありがとうございます。しかし、[Skyra v7](https://skyra.noation.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)の計画により削除されました。 The link includes an explanation for the `{{command}}` was removed.\n\n申し訳ありませんが、WolfStarをご利用いただきありがとうございます。 💖",
+	"v7NayreMessage": "こんにちは！ ただし、このコマンドを使用していただきありがとうございます。 それは削除され、[WolfStar v7](https://skyra)に記載されているように、ネイヤーのアクリスRPGの一部として再設計される予定です。 otion.site/skyra/v7-922ba06004654142a7b63347a92513a8)のプランです。\n\nご不便をおかけして申し訳ありませんが、WolfStarをご利用いただきありがとうございます。💖"
+}

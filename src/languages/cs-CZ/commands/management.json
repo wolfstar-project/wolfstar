@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Přerušeno",
+	"permissionNodesHigher": "{{REDCROSS}} Nemůžete upravit ani zobrazit náhled uzlů oprávnění pro tento cíl.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Nemůžete povolit příkazy pro roli `@everyone`.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Neplatný typ, očekáván buď `allow` nebo `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} úspěšně přidal příkaz do oprávněného uzlu.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Vybraný uzel oprávnění neexistuje.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Vybraný příkaz neexistuje v uzlu zviditelnění.",
+	"permissionNodesRemove": "{{GREENTICK}} úspěšně odstranil příkaz z uzlu oprávnění.",
+	"permissionNodesReset": "{{GREENTICK}} úspěšně odstranil všechny příkazy z uzlu oprávnění.",
+	"permissionNodesShowName": "Oprávnění pro: __{{name}}__",
+	"permissionNodesShowAllow": "**Povolit**: {{allow}}",
+	"permissionNodesShowDeny": "**Deny**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Kanály",
+		"MEMBERS": "Členové",
+		"OTHER": "Ostatní"
+	},
+	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Voice, **{{categories}}** categories.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** po **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** členů\n• majitel: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Role: **{{size}}**\n• Vytvořeno: **{{createdAt}}**\n• Úroveň ověření: **{{verificationLevel, humanLevels}}**",
+	"guildInfoBanner": "Obrázek banneru",
+	"guildInfoIcon": "Obrázek ikony",
+	"guildInfoSplash": "Obrázek splash",
+	"guildInfoDiscoverySplash": "Objevte Splash obrázek",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Práva"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nJméno: **{{role.name}}**\nbarva: **{{role.hexColor}}**\nVyhýbava: **{{hoisted}}**\nPozice: **{{role.rawPosition}}**\nVolitelný: **{{mentionable}}**",
+	"roleInfoAll": "Všechna oprávnění udělena.",
+	"roleInfoNoPermissions": "Oprávnění nebyla udělena.",
+	"manageCommandAutoDeleteShowEmpty": "Momentálně není nastaven žádný příkaz autodelete.",
+	"manageCommandAutoDeleteShow": "Všechny příkazy autodeletes nakonfigurovány:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Úspěch! Všechny úspěšné příkazy v {{channel}} budou smazány po {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Úspěch! Příkazy již nebudou automaticky smazány v {{channel}}.!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Kanál {{channel}} nebyl nakonfigurován pro automatické smazání zpráv!",
+	"manageCommandAutoDeleteReset": "Všechny příkazové řádky byly resetovány.",
+	"manageCommandChannelShow": "Seznam zakázaných příkazů v {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Seznam zakázaných příkazů pro zadaný kanál je prázdný!",
+	"manageCommandChannelAddAlreadyset": "Příkaz, který se pokoušíte zakázat, je již zakázán!",
+	"manageCommandChannelAdd": "Příkaz {{command}} pro kanál {{channel}} byl úspěšně zakázán!",
+	"manageCommandChannelRemoveNotset": "Příkaz, který se snažíte povolit, nebyl pro {{channel}} zakázán.",
+	"manageCommandChannelRemove": "Příkaz {{command}} byl úspěšně povolen pro kanál {{channel}}!",
+	"manageCommandChannelResetEmpty": "Tento kanál neměl žádný zakázaný příkaz, takže jsem se rozhodl nic neudělat.",
+	"manageCommandChannelReset": "Úspěšně povoleno všechny zakázané příkazy v {{channel}}, užívejte!",
+	"manageReactionRolesShowEmpty": "Na tomto serveru nejsou nastaveny žádné reakční role.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Úspěch! Nyní dám roli, když lidé zareagují s {{emoji}} na jakoukoliv zprávu z {{channel}}!",
+	"manageReactionRolesAddPrompt": "Poslouchejte teď! Prosím, zareagujte na zprávu a já budu reakci vázat na roli!",
+	"manageReactionRolesAddMissing": "Čekal jsem, ale nezdá se, že jste reagoval na vzkaz.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Úspěch! Nyní dám roli, když lidé zareagují s {{emoji}} na {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Zadaná role reakce neexistuje.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Úspěch! Už nebudu dávat roli, když lidé zareagují s {{emoji}} na {{url}}!",
+	"manageReactionRolesResetEmpty": "Nebyly nastaveny žádné reakční role.",
+	"manageReactionRolesReset": "{{GREENTICK}} úspěšně odstranil všechny reakční role.",
+	"configurationEquals": "Úspěšně nakonfigurováno: nebyly provedeny žádné změny.",
+	"setIgnoreChannelsSet": "Ignorování všech vstupních příkazů z {{channel}} nyní.",
+	"setIgnoreChannelsRemoved": "Poslouchám veškerý vstup od {{channel}} nyní.",
+	"setImageLogsSet": "Úspěšně nastaven kanál protokolů obrázků na {{channel}}.",
+	"setMemberAddLogsSet": "Úspěšně nastaveno členství přidávat kanál logů do {{channel}}.",
+	"setMemberRemoveLogsSet": "Úspěšně nastaveno odstranění kanálu logů na {{channel}}.",
+	"setMessageUpdateLogsSet": "Úspěšně nastaven kanál protokolů aktualizace na {{channel}}.",
+	"setMessageDeleteLogsSet": "Úspěšně nastaven kanál protokolů na {{channel}}.",
+	"setModLogsSet": "Kanál protokolů byl úspěšně nastaven na {{channel}}.",
+	"setPrefixSet": "Úspěšně nastaveno prefix na `{{prefix}}`. Použijte `{{prefix}}setPrefix NewPrefix` k opětovné změně.",
+	"stickyRolesNotExists": "Uživatel {{user}} nemá žádné složité role nebo nemá zadané role.",
+	"stickyRolesReset": "Z {{user}} úspěšně odebrány všechny lepivé role.",
+	"stickyRolesRemove": "Zvolená role byla úspěšně odstraněna z {{user}}.",
+	"stickyRolesAdd": "Zvolená role byla úspěšně přidána do {{user}}.",
+	"stickyRolesShowEmpty": "Neexistují žádné hezké role k zobrazení.",
+	"stickyRolesShowSingle": "Označená role pro **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Připravte ztišovací systém.",
+	"createMuteExtended": {
+		"extendedHelp": "Tento příkaz připravuje systém umlčení vytvořením role zvané `muted`, a jeho nastavením do nastavení serveru. Tento příkaz také upravuje všechna práva (kde je to možné) a zakáže oprávnění **{{SEND_MESSAGES, permissions}}** v textových kanálech a **{{CONNECT, permissions}}** v hlasových kanálech pro tuto roli."
+	},
+	"permissionNodesDescription": "Konfigurace uzlů oprávnění pro tento server.",
+	"permissionNodesExtended": {
+		"usages": [
+			"přidat příkaz/Povolit/zakázat příkaz člena",
+			"odstranit příkaz Role/člena povolení/zamítnutí",
+			"reset Role/Member",
+			"zobrazit roli/člena",
+			"ukázat",
+			"Role/Člen"
+		],
+		"extendedHelp": "Oprávněné uzly jsou přepsání pro uživatele a pro každou roli. Používají se v případě, že zabudovaný systém oprávnění nestačí.\nNapříklad na některých serverech chtějí dát zaměstnanci roli oprávnění k použití ztlumit a varovat, ale nikoli zákaz a další (vyhrazeno pro moderátory), a pouze varování je k dispozici pro konfigurovatelné oprávnění na úrovni zaměstnanců, takže mi můžete sdělit, že pro roli personálu nyní povolíte ztlumení.",
+		"explainedUsage": [
+			[
+				"Akce",
+				"Buď `add`, `remove`, `reset`, nebo `show`. Výchozí nastavení je `show`."
+			],
+			[
+				"Target",
+				"Buď jméno role nebo uživatelské jméno, které umožňuje také ID a zmínky."
+			],
+			[
+				"Typ",
+				"Buď `allow` nebo `deny`."
+			],
+			[
+				"Příkaz",
+				"Název příkazu, který chcete povolit nebo odepřít."
+			]
+		],
+		"examples": [
+			"přidat zaměstnance povolit varování",
+			"přidat zákazy moderátorů",
+			"odstranit upozornění pro povolení zaměstnanců",
+			"resetovat zaměstnance",
+			"ukázat zaměstnance"
+		],
+		"reminder": "Majitel serveru nemůže mít žádné akce, ani role `všechny` nemůže mít povolené příkazy."
+	},
+	"managecommandautodeleteDescription": "Spravovat časovač automatického mazání kanálu.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"přidat TextChannel sekundy",
+			"odstranit textový kanál",
+			"reset",
+			"ukázat",
+			""
+		],
+		"extendedHelp": "Tento příkaz spravuje tento server pro každý kanál automatického mazání časovače, funguje dobře, když nechá kanál čistit z příkazů.",
+		"explainedUsage": [
+			[
+				"přidat",
+				"Přidat časovač automatického mazání určeného kanálu."
+			],
+			[
+				"odstranit",
+				"Odstranit automatický časovač ze zadaného kanálu."
+			],
+			[
+				"reset",
+				"Vymazat všechny časovače automatického odstranění."
+			],
+			[
+				"ukázat",
+				"Zobrazit časovač automatického mazání všech kanálů."
+			]
+		],
+		"reminder": "Argument kanálu je volitelný, výchozí nastavení kanálu zprávy, ale pokud možno používá fuzzy vyhledávání.",
+		"examples": [
+			"ukázat",
+			"přidat #general 4 s",
+			"odstranit #general",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Spravovat seznam příkazů blokovaných každým kanálem.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"přidat příkaz TextChannel",
+			"odstranit příkaz TextChannel",
+			"resetovat textový kanál",
+			"zobrazit textový kanál"
+		],
+		"extendedHelp": "Tento příkaz spravuje tento server pro každý kanál blokovaný. slouží k vypnutí některých příkazů, které nechcete používat v určitých kanálech (zakázat příkaz globálně, pro zakázání ve všech kanálech použijte tlačítko `zakázané Commands`.",
+		"explainedUsage": [
+			[
+				"zobrazit [channel]",
+				"Zobrazit seznam příkazů blokovaných v zadaném kanálu."
+			],
+			[
+				"přidat [channel] <command>",
+				"Přidat příkaz do seznamu blokovaných příkazů zadaného kanálu."
+			],
+			[
+				"odstranit [channel] <command>",
+				"Odebrat příkaz ze seznamu blokovaných příkazů kanálu."
+			],
+			[
+				"reset [channel]",
+				"Vymaže seznam příkazů blokovaných v zadaném kanálu."
+			]
+		],
+		"reminder": "Argument kanálu je volitelný, ale pokud možno používá fuzzy vyhledávání.",
+		"examples": [
+			"přidat #obecný profil",
+			"odstranit #general profile",
+			"resetovat",
+			"zobrazit #general"
+		]
+	},
+	"manageReactionRolesDescription": "Správa reakčních rolí tohoto serveru.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"přidat roli",
+			"přidat roli TextChannel Emoji",
+			"odstranit zprávu role",
+			"reset",
+			"ukázat"
+		],
+		"extendedHelp": "Bezproblémově nastavte reakční role na vašem serveru! Při přidávání reakčních rolí, Naslouchám vašim reakcím po dobu 5 minut a zavazuji první reakci od vás vedle kanálu a zprávy, se zadanou roli.\nV opačném případě, pokud je kanál zadán, výzva nebude vytvořena, a reakční role bude vázána na všechny zprávy kanálu.\n\nNejlepší způsob, jak přidat nové reakční role je pomocí `add @role`. Pokud raději nezavazujete reakci na konkrétní zprávu, použijte `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"ukázat",
+				"Načíst seznam všech reakčních rolí."
+			],
+			[
+				"přidat <role>",
+				"Přidá reakční roli závaznou první reagovanou zprávu od spuštění role."
+			],
+			[
+				"odstranit <role> <message>",
+				"Odstraní reakční roli, použijte `show` pro jejich seznam."
+			],
+			[
+				"reset",
+				"Odstraní všechny reakční role."
+			]
+		],
+		"examples": [
+			"přidat @role",
+			"přidat @role #channel emoji",
+			"odebrat @role 123456789012345678",
+			"reset",
+			"ukázat"
+		]
+	},
+	"rolesAdded": "Následující role byly přidány do tvého profilu: `{{roles}}`",
+	"rolesAuditlog": "Autorizované: Správa veřejných rolí | 'role' příkaz.",
+	"rolesListEmpty": "Tento server nemá roli jako veřejná role.",
+	"rolesListTitle": "Seznam veřejných rolí",
+	"rolesNotManageable": "Následující role nemůžu přidělit kvůli jejich hierarchické pozici: `{{roles}}`",
+	"rolesNotPublic": "Následující role nejsou veřejné: `{{roles}}`",
+	"rolesRemoved": "Následující role byly odstraněny z tvého profilu: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Nastavit kanál na seznam ignorovaných kanálů.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz pomáhá nastavit ignorované kanály. Ignorovaný kanál je kanál, kde nikdo kromě moderátorů nemůže používat WolfStarovy příkazy.\nNa rozdíl od odstranění oprávnění **{{SEND_MESSAGES, permissions}}** je WolfStar stále schopen odesílat (a proto provádět příkazy), který umožňuje moderátorům používat v kanálu moderované příkazy.\nPoužij to, pokud chceš zabanovat libovolné použití příkazu od bota v určitém kanálu.",
+		"explainedUsage": [
+			[
+				"kanál",
+				"TextChannel. Můžete buď zadat název kanálu, označit jej nebo zadat \"zde\" pro výběr kanálu, který byla odeslána."
+			]
+		],
+		"reminder": "Nemůžete nastavit stejný kanál dvakrát, WolfStar jej odstraní.",
+		"examples": [
+			"#Obecné",
+			"zde"
+		]
+	},
+	"setImageLogsDescription": "Nastavte kanál logů obrázků.",
+	"setImageLogsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz vám pomůže nastavit kanál logů obrázků. Kdykoli člen odešle obrázkovou přílohu, odešle vloženou zprávu s znovu nahranou přílohou.\nVšechny zprávy jsou v vložení, takže budete muset povolit oprávnění **{{EMBED_LINKS, permissions}}** pro WolfStar.",
+		"explainedUsage": [
+			[
+				"kanál",
+				"TextChannel. Můžete buď zadat název kanálu, označit jej nebo zadat \"zde\" pro výběr kanálu, který byla odeslána."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"zde"
+		]
+	},
+	"setMemberAddLogsDescription": "Nastavte člen pro přidání logů. (Automatic Translation)",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz vám pomůže nastavit člen přidávat logovací kanál, který bude dostávat zprávu pokaždé, když se uživatel připojí.\nPokud se přidá ztlumený uživatel, odešle speciální akci \"Ztlumený člen\".",
+		"explainedUsage": [
+			[
+				"kanál",
+				"TextChannel. Můžete buď zadat název kanálu, označit jej nebo zadat \"zde\" pro výběr kanálu, který byla odeslána."
+			]
+		],
+		"examples": [
+			"Počet protokolů členů",
+			"zde"
+		],
+		"reminder": "Všechny zprávy jsou v vložení, takže budete muset povolit oprávnění **{{EMBED_LINKS, permissions}}** pro WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Nastavte člen pro odstranění logů. (Automatic Translation)",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz vám pomůže nastavit člen odstraňovat logovací kanál, která obdrží zprávu pokaždé, když uživatel opustí, je vyhozen nebo je zakázán.\nV případě posledních dvou odešle zvláštní událost \"Vyhodit uživatele\" nebo \"Zakázáno uživatele\".",
+		"explainedUsage": [
+			[
+				"kanál",
+				"Textchannel. Můžete buď zadat název kanálu, označit jej nebo napsat \"zde\" pro konfiguraci kanálu, ve kterém byl tento příkaz použit."
+			]
+		],
+		"examples": [
+			"Počet protokolů členů",
+			"zde"
+		],
+		"reminder": "Všechny zprávy jsou v vložení, takže budete muset povolit oprávnění **{{EMBED_LINKS, permissions}}** pro WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Nastavte kanál protokolů aktualizací zpráv.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz vám pomůže nastavit kanál protokolu aktualizací zpráv, který bude dostávat zprávu pokaždé, když bude zpráva upravena.",
+		"explainedUsage": [
+			[
+				"kanál",
+				"Textchannel. Můžete buď zadat název kanálu, označit jej nebo napsat \"zde\" pro konfiguraci kanálu, ve kterém byl tento příkaz použit."
+			]
+		],
+		"reminder": "Všechny zprávy jsou v vložení, takže budete muset povolit oprávnění **{{EMBED_LINKS, permissions}}** pro WolfStar.",
+		"examples": [
+			"#zprávy - logy",
+			"zde"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Nastavte kanál zpráv pro odstraňování protokolů.",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz vám pomůže nastavit kanál protokolu pro mazání zprávy, který bude dostávat zprávu pokaždé, když bude zpráva smazána.",
+		"explainedUsage": [
+			[
+				"kanál",
+				"Textchannel. Můžete buď zadat název kanálu, označit jej nebo napsat \"zde\" pro konfiguraci kanálu, ve kterém byl tento příkaz použit."
+			]
+		],
+		"reminder": "Všechny zprávy jsou v vložení, takže budete muset povolit oprávnění **{{EMBED_LINKS, permissions}}** pro WolfStar.\nZ důvodu omezení Discordu, WolfStar nemůže vědět, kdo zprávu odstranil.",
+		"examples": [
+			"#zprávy - logy",
+			"zde"
+		]
+	},
+	"setmodlogsDescription": "Nastavte kanál protokolů modů.",
+	"setmodlogsExtended": {
+		"usages": [
+			"zde/TextChannel"
+		],
+		"extendedHelp": "Tento příkaz vám pomůže nastavit kanál logů módu. Kanál logů modů odesílá pouze hlášení o případech indexovaná podle počtu případů a s \"nárokovými\" důvody a moderátory.\nTento kanál není nutné a vždy můžete načíst konkrétní modlogy příkazem `case`.\nVšechny zprávy jsou v embeddu, takže budete muset povolit oprávnění **{{EMBED_LINKS, permissions}}** pro WolfStar.\nPro automatickou detekci musíte nastavit \"události\", které chcete poslouchat: `events.ban-add`, `events.ban-remove` pomocí příkazu `config`.",
+		"explainedUsage": [
+			[
+				"kanál",
+				"TextChannel. Můžete buď zadat název kanálu, označit jej nebo zadat \"zde\" pro výběr kanálu, který byla odeslána."
+			]
+		],
+		"reminder": "Z důvodu omezení Discordu nedetekuje automatická detekce. Musíš použít příkaz `kick`, chceš-li je dokumentovat jako formální modeční bednu.",
+		"examples": [
+			"#mod-logs",
+			"zde"
+		]
+	},
+	"setprefixDescription": "Nastavit WolfStarovu prefix.",
+	"setprefixExtended": {
+		"usages": [
+			"Předpona"
+		],
+		"extendedHelp": "Tento příkaz ti pomůže nastavit WolfStar's prefix. Předpona je připojená před slovem, v tomto případě zpráva.\nUmožňuje botům rozlišovat mezi pravidelnou zprávou a příkazem. Předpona by se měla lišit, aby se předešlo konfliktům.\nPokud zapomeneš WolfStarovu prefix, jednoduše ji zmíním s ničím jiným a ona ti řekne aktuální prefix.\nPřípadně můžete prefixovat příkazy jejím jménem a čárkou (například `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Předpona",
+				"Nastavte prefix. Výchozí na WolfStar je `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Váš prefix by měl obsahovat pouze znaky, které mohou všichni psát a psát.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Zkontrolujte informace o serveru.",
+	"guildInfoExtended": {
+		"extendedHelp": "Příkaz serverinfo zobrazuje informace o serveru, který zpráva odeslána.\nZobrazuje počet kanálů, s počtem pro každou kategorii, počtem členů (přiděleným z API), vlastník se svým uživatelem id, množství rolí, regionu, datum vytvoření, úroveň ověření. . mezi ostatními."
+	},
+	"roleInfoDescription": "Zkontrolujte informace pro určitou roli.",
+	"roleInfoExtended": {
+		"usages": [
+			"Role",
+			""
+		],
+		"extendedHelp": "Příkaz roleinfo zobrazuje informace o roli, jako je jeho id, název, barva nebo bez ohledu na to, zda je zobrazen (zobrazuje se samostatně), je to hierarchická pozice, ať už je zmíněná nebo ne, kolik členů řeklo roli a jeho oprávnění.\nOdesílá vloženou zprávu s barvou role.",
+		"explainedUsage": [
+			[
+				"Role",
+				"Název role, název, zmínit nebo id."
+			]
+		],
+		"examples": [
+			"Administrátor",
+			"Moderátor",
+			""
+		]
+	},
+	"stickyRolesDescription": "Správa lepých rolí pro uživatele.",
+	"stickyRolesExtended": {
+		"usages": [
+			"přidat uživatelskou roli",
+			"odstranit uživatelskou roli",
+			"resetovat uživatele",
+			"zobrazit uživatele",
+			"Uživatel"
+		],
+		"extendedHelp": "Příkaz stickyRoles umožňuje spravovat lepivé role jednotlivých členů, jsou to role, které jsou udržovány i při odchodu a jsou aplikovány zpět, jakmile se připojí.",
+		"explainedUsage": [
+			[
+				"Akce",
+				"Buď chcete zkontrolovat lepkavé role, přidejte jeden, odstraňte nebo odstraňte všechny z nich."
+			],
+			[
+				"Uživatel",
+				"Uživatelský cíl pro všechny akce."
+			],
+			[
+				"Role",
+				"Role pro přidání nebo odstranění."
+			]
+		],
+		"examples": [
+			"přidat WolfStar Goddess",
+			"show WolfStar",
+			"odstraní WolfStar Goddess",
+			"reset WolfStar"
+		],
+		"reminder": "Role člena nebudou tímto příkazem upraveny, musíte je přidat nebo odebrat."
+	},
+	"rolesDescription": "Seznam, nárokovat nebo zrušit nárok na veřejné role na tomto serveru.",
+	"rolesExtended": {
+		"usages": [
+			"Role",
+			""
+		],
+		"extendedHelp": "Veřejné role jsou role, které jsou dostupné pro každého.\nAdministrátor je musí nakonfigurovat pomocí příkazu konfigurace.",
+		"explainedUsage": [
+			[
+				"role",
+				"Seznam rolí, které chcete nárokovat nebo zrušit. Ponechte prázdné pro získání seznamu dostupných rolí."
+			]
+		],
+		"reminder": "Při nárokování nebo zrušení nárokovacích rolí můžete zadat jednu nebo více úloh.\nChcete-li nárokovat více rolí, musíte je oddělit čárkou, například `červená,zeleně`.\nMůžete určit, které role chcete zadáním ID role, názvu nebo pododdílu jména.\n\nSprávci mohou přidávat veřejné role pomocí sady rolí `{{prefix}}conf.public ExamplePublicRole`.",
+		"examples": [
+			"Programátor designéra",
+			"Návrhář"
+		]
+	}
+}

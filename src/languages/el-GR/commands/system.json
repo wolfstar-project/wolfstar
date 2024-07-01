@@ -1,0 +1,30 @@
+{
+	"evalDescription": "Αξιολογεί αυθαίρετη Javascript.",
+	"evalExtended": {
+		"usages": [
+			"Έκφραση"
+		],
+		"extendedHelp": "The eval command evaluates code as-in, any error thrown from it will be handled.\nIt also uses the flags feature. Write --silent, --depth=number or --async to customize the output.\nThe --wait flag changes the time the eval will run. Defaults to 60 seconds. Accepts time in milliseconds.\nThe --silent flag will make it output nothing.\nThe --depth flag accepts a number, for example, --depth=2, to customize util.inspect's depth.\nThe --async flag will wrap the code into an async function where you can enjoy the use of await, however, if you want to return something, you will need the return keyword\nThe --showHidden flag will enable the showHidden option in util.inspect.\nThe --lang and --language flags allow different syntax highlight for the output.\nThe --json flag converts the output to json\nThe --no-timeout flag disables the timeout\nIf the output is too large, it'll send the output as a file.",
+		"explainedUsage": [
+			[
+				"Έκφραση",
+				"Η έκφραση αξιολόγησης"
+			]
+		],
+		"examples": [
+			"msg.author.username;",
+			"1 + 1;"
+		],
+		"reminder": "Δεσμευμένο για τους ιδιοκτήτες bot"
+	},
+	"evalTimeout": "TIMEOUT: Ζήτησε περισσότερο από το {{seconds}} δευτερόλεπτα.",
+	"evalError": "**Error**:{{output}}\n**Type**:{{type}}\n{{time}}",
+	"dmNotSent": "Δεν μπορώ να σας στείλω ένα μήνυμα σε DMs, δεν με μπλοκάρει?",
+	"dmSent": "Σας έστειλα το μήνυμα στα γερμανικά μάρκα.",
+	"reboot": "{{LOADING}} Rebooting...",
+	"rebootDescription": "Επανεκκινήστε το bot.",
+	"rebootExtended": {
+		"extendedHelp": "Το bot πηγαίνει μπούμα, τότε το bot αναζωπυρώνει.",
+		"reminder": "Δεσμευμένο για τους ιδιοκτήτες bot"
+	}
+}

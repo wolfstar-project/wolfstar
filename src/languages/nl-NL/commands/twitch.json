@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Sorry, ik kon de stream niet vinden. Weet je zeker dat je zijn naam correct hebt geschreven?",
+	"twitchSubscriptionStatusValues": [
+		"online",
+		"offline"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah daar! Ik verwachtte \"online\" of \"offline\", maar ik begrijp niet wat je me in plaats daarvan gegeven hebt.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Je bent al geabonneerd op die streamer in dit kanaal voor die status.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Succes! Wanneer {{name}} offline gaat, plaats ik een nieuw bericht in {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Succes! Wanneer {{name}} live gaat, zal ik een nieuw bericht plaatsen in {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} het spijt me, maar het is vereist om een bericht op te geven bij het maken van een offline abonnement.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Het spijt me, maar u bent niet geabonneerd op een streamer, missie afbreken!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Het spijt me, je kunt je niet uitschrijven van {{streamer}} omdat je er niet op geabonneerd bent.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} Sorry; terwijl je geabonneerd bent op deze streamer en streaming status, worden hun abonnementen niet geplaatst op {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Het spijt me, maar het lijkt erop dat je geen {{status}} meldingen krijgt voor {{streamer}}. We ondersteunen \"online\" en \"offline\" meldingen.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Succes! Ik zal niet langer berichten posten in {{channel}} wanneer {{name}} offline gaat.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Succes! Ik zal niet langer berichten posten in {{channel}} wanneer {{name}} live gaat.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} succesvol! {{count}} abonnement is verwijderd uit deze server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} succesvol! {{count}} abonnementen zijn verwijderd uit deze server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Je wilde alle abonnementen van deze streamer zien, maar er zijn geen!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Zichtbaar",
+		"offline": "Offline"
+	},
+	"twitchSubscriptionShowUnknownUser": "onbekend",
+	"twitchSubscriptionDescription": "Beheer de abonnementen van uw server.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"streamer Kanaal Status toevoegen",
+			"streamer Kanaal Status toevoegen",
+			"streamer Kanaalstatus verwijderen",
+			"streamer resetten",
+			"reset",
+			"toon",
+			""
+		],
+		"extendedHelp": "Beheer de abonnementen van deze server.\n__Online Meldingen__\nAlle beschikbare gegevens zullen in een erg mooie embed verschijnen en je precies vertellen wat de streamer tot hun recht komt.\n\n__Offline Notificaties__\nJe moet je eigen bericht schrijven dat geplaatst zal worden wanneer de streamer offline gaat. Het zal worden weergegeven in een leuke Twitch-purple MessageEmbed.",
+		"explainedUsage": [
+			[
+				"Toevoegen/verwijderen/reset/tonen",
+				"Of\n- Voeg een nieuw Twitch abonnement toe.\n- Verwijder een bestaand Twitch abonnement\n- Reset alle Twitch-abonnementen, of degenen voor een specifieke streamer\n- Toon alle huidige Twitch-abonnementen"
+			],
+			[
+				"Streamer",
+				"De Twitch gebruikersnaam van de streamer om meldingen voor te krijgen."
+			],
+			[
+				"Kanaal",
+				"Een Discord kanaal waar je notificaties kunt plaatsen."
+			],
+			[
+				"status",
+				"De status die de Twitch streamer zou moeten krijgen voor een melding, een van online of offline."
+			],
+			[
+				"Inhoud",
+				"Het bericht om te verzenden in Discord-chat. Vereist voor offline meldingen, optioneel voor online meldingen."
+			]
+		],
+		"examples": [
+			"favna #twitch online toevoegen",
+			"favna #twitch offline Favna is nu offline. Zeg gedag 👋!",
+			"verwijder kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"toon"
+		]
+	}
+}

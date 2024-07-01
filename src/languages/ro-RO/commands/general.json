@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Afişează o categorie pe pagină. Ai probleme cu embed? Rulează `{{prefix}}ajutor --all` pentru o listă completă în DM-uri.",
+	"helpCommandCount_one": "Comanda {{count}}",
+	"helpCommandCount_other": "{{count}} comenzi",
+	"helpData": {
+		"footer": "Ajutor de comandă pentru {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Afișează toate comenzile sau descrierea uneia.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categorii",
+			"--toate",
+			"CategorieNume",
+			"Pagină",
+			"Nume Comandă"
+		],
+		"extendedHelp": "Comanda de ajutor afișează o listă paginată a tuturor comenzilor după categoriile lor, sau informațiile extinse ale unei comenzi dacă este specificat.\n\nDacă utilizați `--categories` sau `--cat`, puteți obține lista tuturor categoriilor și numărul de comenzi pe care le are fiecare dintre ele.",
+		"reminder": "Comanda Ajutor **doar** afișează comenzile pe care le poți folosi. Pentru lista completă, te rugăm să vizitezi <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--pisica",
+			"--toate",
+			"Moderare",
+			"12",
+			"ajutor"
+		]
+	},
+	"helpDm": "📥 The list of commands to have access has been sent to your DM-s.",
+	"helpNodm": "{{REDCROSS}} <unk> Ați dezactivat DM-urile, așa că nu v-am putut trimite lista de comenzi.",
+	"v7Description": "Obține informațiile cu privire la Skyra v7",
+	"v7Extended": {
+		"extendedHelp": "Aceasta este o comandă **ascunsă** folosită exclusiv pentru a trimite o notificare tuturor celor care încearcă să folosească comenzi care au fost eliminate conform [SKyra v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) planuri."
+	},
+	"v7Message": "Bună ziua! Îți mulțumim că folosești această comandă, totuși, ea a fost eliminată din cauza planurilor [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8). Link-ul include o explicație pentru motivul pentru care `{{command}}` a fost eliminat.\n\nNe pare rău pentru neplăcerile suferite și îți mulțumim pentru că ai folosit WolfStar. 💖",
+	"v7NayreMessage": "Bună ziua! Vă mulțumim pentru utilizarea acestei comenzi, cu toate acestea, a fost eliminat și va fi fie reproiectat ca parte a RPG al lui Nayre, așa cum este menționat în [WolfStar v7](https://skyra. planurile otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8).\n\nNe pare rău pentru neplăcerile cauzate şi vă mulţumim pentru utilizarea WolfStar. 💖"
+}

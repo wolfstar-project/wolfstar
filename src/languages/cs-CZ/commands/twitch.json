@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Promiňte, nemohu najít streamer. Jste si jisti, že jste napsali jejich jméno správně?",
+	"twitchSubscriptionStatusValues": [
+		"online",
+		"offline"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah! Očekával jsem \"Online\" nebo \"offline\", ale nerozumím tomu, co jste mi dali místo toho.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Již jste přihlášeni k odběru tohoto streameru v tomto kanálu pro tento stav.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Úspěch! Kdykoli {{name}} půjde offline, pošlu novou zprávu do {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Úspěch! Kdykoli {{name}} zapne, pošlu novou zprávu v {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} Omlouvám se, ale je nutné poskytnout zprávu při vytváření offline předplatného.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Omlouvám se, ale nejste přihlášeni k odběru žádné streamery, mise abort!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Omlouvám se, nemůžete se odhlásit z {{streamer}} , protože nejste přihlášeni k odběru z {{streamer}}.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} Omlouvám se, zatímco jste přihlášeni k odběru tohoto streameru a statusu streamování, jejich předplatné není odesláno do {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Omlouvám se, ale zdá se, že nedostáváte {{status}} oznámení pro {{streamer}}. Podporujeme \"online\" a \"offline\".",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Úspěch! Již nebudu odesílat zprávy do {{channel}} , kdykoliv {{name}} přejde do režimu offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Úspěch! Už nebudu posílat zprávy do {{channel}} , kdykoliv {{name}} půjde živě.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Úspěšné! {{count}} předplatné bylo z tohoto serveru odebráno.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Úspěch! Z tohoto serveru byly odebrány odběry {{count}}.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Chtěli jste vidět všechny odběry z tohoto streameru, ale tam není nic!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Živé",
+		"offline": "Offline"
+	},
+	"twitchSubscriptionShowUnknownUser": "Neznámý",
+	"twitchSubscriptionDescription": "Spravovat předplatné pro váš server.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"přidat stav streamovacího kanálu",
+			"přidat stav streamovacího kanálu",
+			"odstraní stav streamovacího kanálu",
+			"resetovat Streamer",
+			"reset",
+			"ukázat",
+			""
+		],
+		"extendedHelp": "Spravovat předplatné pro tento server.\n__Online Notifications__\nVšechna dostupná data se zobrazí ve velmi pěkném vložení a přesně vám řekne, co je na fáborku.\n\n__Offline oznámení__\nMusíte napsat vlastní zprávu, která bude zveřejněna, když se streamer odpojí. Bude zobrazena v pěkné fialové zprávě.",
+		"explainedUsage": [
+			[
+				"přidat/odstranit/resetovat/zobrazit",
+				"Zda\n- Přidat nový Twitch odběr.\n- Odstranit existující Twitch předplatné\n- Obnovit všechny twitch předplatné, nebo pro konkrétní streamer\n- zobrazí všechny aktuální Twitch odběry"
+			],
+			[
+				"Streamátor",
+				"Twitch uživatelské jméno streameru pro získání oznámení."
+			],
+			[
+				"Kanál",
+				"Discord kanál, ve kterém se mají odesílat oznámení."
+			],
+			[
+				"Stav",
+				"Stav, který by měl streamer Twitch získat pro oznámení, jeden z online nebo offline."
+			],
+			[
+				"Obsah",
+				"Zpráva k odeslání do Discord chatu. Vyžaduje se pro offline oznámení, volitelné pro online oznámení."
+			]
+		],
+		"examples": [
+			"přidat favna online",
+			"přidat favna #twitch offline Favna je nyní offline. Řekněte rozloučení 👋!",
+			"odstranit kyranet online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"ukázat"
+		]
+	}
+}

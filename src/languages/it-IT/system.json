@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Ho avuto un piccolo errore di rete durante la messaggistica di Discord, eseguire nuovamente questo comando!",
+	"fetchBansFail": "Recupero dei ban non riuscito. Ho il permesso di **{{ADMINISTRATOR, permissions}}**?",
+	"helpTitles": {
+		"aliases": "🖇️ | **Pseudonimi**",
+		"usages": "📝 | **Utilizzo del Comando**",
+		"extendedHelp": "🔍 | **Aiuto Esteso**",
+		"explainedUsage": "⚙ | **Uso spiegato**",
+		"possibleFormats": "🔢 | **Possibili formati**",
+		"examples": "🔗 | **Esempi**",
+		"reminders": "⏰ | **Promemoria**"
+	},
+	"jumpTo": "Vai al messaggio ►",
+	"loading": [
+		"{{LOADING}} Guardare i criceti correre...",
+		"{{LOADING}} Trovare persone a nascondino...",
+		"{{LOADING}} Tentativo di capire questo comando...",
+		"{{LOADING}} Recupero dati dal cloud...",
+		"{{LOADING}} Calibrazione lenti...",
+		"{{LOADING}} Giocando roccia, carta, forbici...",
+		"{{LOADING}} Sintonizzazione alle frequenze giuste...",
+		"{{LOADING}} Reticolazione delle spine..."
+	],
+	"prefixReminder": "Il prefisso in questo server è impostato su: `{{prefix}}`"
+}

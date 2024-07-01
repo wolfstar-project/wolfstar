@@ -1,0 +1,107 @@
+{
+	"confUpdated": "S-a actualizat cu succes cheia **{{key}}**: {{response}}",
+	"confGetNoExt": "Cheia **{{key}}** pare să nu existe.",
+	"confGet": "Valoarea pentru cheia **{{key}}** este: `{{value}}`",
+	"confReset": "Cheia **{{key}}** a fost resetată la: `{{value}}`",
+	"confNochange": "Valoarea pentru **{{key}}** era deja acea valoare.",
+	"confServerDescription": "Definiți setările per server.",
+	"confServerExtended": {
+		"usages": [
+			"setează valoarea OfKey pentru Cheie",
+			"arată",
+			"arată Nume-Ofkey",
+			"elimina numele Ofkey valoarea cheii",
+			"reset NameOfKey",
+			"meniu"
+		],
+		"extendedHelp": "Vă permite să configurați WolfStar din Discord, ca o alternativă rapidă la [tabloul de bord web](https://wolfstar.rocks).",
+		"examples": [
+			"setează limba ro-RO",
+			"setează canale.moderation-logs #moderation-logs",
+			"arată",
+			"arată canalele",
+			"elimină roluri.moderator Moderator",
+			"reset roles.moderator",
+			"meniu"
+		],
+		"reminder": "Există chei şi grupuri, cheile din cadrul unui grup sunt numite de `GroupName.KeyName`."
+	},
+	"confServer": "**Setare server {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` poate fi configurat doar prin intermediul tabloului web ",
+	"confSettingNotSet": "Nu este setat",
+	"rolesetDescription": "Gestionați seturi unice de roluri.",
+	"rolesetExtended": {
+		"usages": [
+			"setează RoleSetName Role1 Role2 Role3...",
+			"elimină RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"listă",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Un set de roluri este un grup de roluri pe care WolfStar le identifică ca fiind unic pentru toți membrii din server, și anume: un roleset numit `region` ar putea avea rolurile `Africa`, `America`, `Asia` şi `Europa`, iar membrii vor putea avea doar unul dintre ei. Este ca un fel de \"regulă\" care se aplică în următoarele trei situaţii:\n\n- Când cineva pretinde un rol prin comanda `roluri`.\n- Când cineva pretinde un rol prin intermediul rolurilor de reacție.\n- Când cineva primește un rol fie manual, fie de la un alt bot.",
+		"explainedUsage": [
+			[
+				"adaugă",
+				"Creați un nou roleset sau adăugați un rol la unul existent."
+			],
+			[
+				"elimină",
+				"Elimină un rol dintr-un roleset existent."
+			],
+			[
+				"reset",
+				"Elimină toate rolurile dintr-un roleset sau, dacă nu este specificat, toate rolurile existente."
+			],
+			[
+				"listă",
+				"Listează toate rolurile."
+			],
+			[
+				"automat",
+				"Adaugă sau elimină un roleset."
+			],
+			[
+				"RoleSetName",
+				"Numele rolului"
+			],
+			[
+				"Rol1 Rol2 Rol3",
+				"Rolurile de adăugat la rol"
+			]
+		],
+		"examples": [
+			"adaugă regiuni America",
+			"adaugă regiuni Africa America Europa",
+			"elimină regiunile America",
+			"reset",
+			"resetează regiunile",
+			"listă",
+			"Regiuni America",
+			"regiuni Africa America Europa"
+		],
+		"reminder": "Această comandă poate adăuga și/sau elimina mai multe roluri în același timp."
+	},
+	"rolesetCreated": "Rolul unic stabilit de {{name}} a fost creat cu următoarele roluri: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Actualizat rolul unic {{name}} , acesta are acum următoarele roluri: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Rolul unic {{name}} nu va mai include următoarele roluri: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Nu există roluri configurate în acest grup.",
+	"rolesetResetAll": "{{GREENTICK}} Eliminat cu succes toate rolurile.",
+	"rolesetResetNotExists": "{{REDCROSS}} Roleset `{{name}}` nu există pe acest server.",
+	"rolesetResetGroup": "{{GREENTICK}} a eliminat cu succes rolul `{{name}}` de pe acest server.",
+	"rolesetUpdated": "Rolul unic al {{name}} a fost actualizat.",
+	"rolesetNoRolesets": "Nu ai roluri.",
+	"confMenuRenderAtFolder": "Momentan la: 📁 {{path}}",
+	"confMenuRenderAtPiece": "În prezent la: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Nu există chei configurabile pentru acest dosar",
+	"confMenuRenderSelect": "Vă rugăm să introduceți oricare dintre următoarele intrări",
+	"confMenuRenderUpdate": "• Actualizare Valoare → `setează <value>`",
+	"confMenuRenderRemove": "• Elimină Valoarea → `elimină <value>`",
+	"confMenuRenderReset": "• Resetare Valoare → `resetează`",
+	"confMenuRenderUndo": "• Anulează actualizarea → `undo`",
+	"confMenuRenderCvalue": "Valoarea curentă: **``{{value}}``**",
+	"confMenuRenderBack": "Apăsați ◀️ pentru a reveni înapoi",
+	"confMenuInvalidKey": "Cheie invalidă, te rugăm să încerci din nou cu oricare dintre următoarele opțiuni.",
+	"confMenuInvalidAction": "Acțiune invalidă, încercați din nou cu oricare dintre următoarele opțiuni.",
+	"confMenuSaved": "Salvat cu succes toate modificările."
+}

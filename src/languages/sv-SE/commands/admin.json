@@ -1,107 +1,107 @@
 {
-	"confUpdated": "",
-	"confGetNoExt": "",
-	"confGet": "",
-	"confReset": "",
-	"confNochange": "",
-	"confServerDescription": "",
+	"confUpdated": "Uppdaterade nyckeln **{{key}}**: {{response}}",
+	"confGetNoExt": "Nyckeln **{{key}}** verkar inte existera.",
+	"confGet": "Värdet för nyckeln **{{key}}** är: `{{value}}`",
+	"confReset": "Nyckeln **{{key}}** har återställts till: `{{value}}`",
+	"confNochange": "Värdet för **{{key}}** var redan det värdet.",
+	"confServerDescription": "Definiera inställningar för per-server.",
 	"confServerExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"ange NamnOfKey värde för nyckel",
+			"visa",
+			"visa NamnOfKey",
+			"ta bort NameOfKey Value for Key",
+			"reset NameOfKey",
+			"meny"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Låter dig konfigurera WolfStar från Discord, som ett snabbt alternativ till [webbkontrollpanelen](https://wolfstar.rocks).",
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"ange språk sv-SE",
+			"ange channels.moderation-logs #moderation-logs",
+			"visa",
+			"visa kanaler",
+			"ta bort roles.moderator moderator",
+			"reset roles.moderator",
+			"meny"
 		],
-		"reminder": ""
+		"reminder": "Det finns nycklar och grupper, nycklar som finns i en grupp namnges av `GroupName.KeyName`."
 	},
-	"confServer": "",
-	"confDashboardOnlyKey": "",
-	"confSettingNotSet": "",
-	"rolesetDescription": "",
+	"confServer": "**Serverinställningar {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` kan endast konfigureras via webbpanelen ",
+	"confSettingNotSet": "Inte inställd",
+	"rolesetDescription": "Hantera unika rolluppsättningar.",
 	"rolesetExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"set rollSetName roll1 roll2 roll3...",
+			"ta bort RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"lista",
+			"RoleSetName Role1 Role2 Role3"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "En rolluppsättning är en grupp roller som WolfStar identifierar som unik för alla medlemmar i servern, dvs en roleset som heter `region` kunde ha rollerna `Africa`, `Amerika`, `Asia`, och `Europe`, och medlemmar kommer bara att kunna ha en av dem. Detta är som en slags \"regel\" som tillämpas i de tre följande situationerna:\n\n- När någon kräver en roll via kommandot \"roller\".\n- När någon kräver en roll via reaktionsroller.\n- När någon får en roll antingen manuellt eller från en annan bot.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"lägg till",
+				"Skapa en ny roll eller lägg till en roll till en befintlig."
 			],
 			[
-				"",
-				""
+				"ta bort",
+				"Ta bort en roll från en befintlig roleset."
 			],
 			[
-				"",
-				""
+				"reset",
+				"Tar bort alla roller från en roleset eller, om det inte anges, alla befintliga roller."
 			],
 			[
-				"",
-				""
+				"lista",
+				"Listar alla roller."
 			],
 			[
-				"",
-				""
+				"automatiskt",
+				"Lägger till eller tar bort en roleset."
 			],
 			[
-				"",
-				""
+				"RoleSetName",
+				"Namnet på roleset"
 			],
 			[
-				"",
-				""
+				"Roll1 Roll2 Roll3",
+				"Rollerna att lägga till i rolllistan"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"lägg till regioner Amerika",
+			"lägga till regioner Afrika Amerika Asien Europa",
+			"ta bort regionerna Amerika",
+			"reset",
+			"återställ regioner",
+			"lista",
+			"Regioner Amerika",
+			"regioner Afrika Amerika Asien Europa"
 		],
-		"reminder": ""
+		"reminder": "Detta kommando kan lägga till och/eller ta bort flera roller samtidigt."
 	},
-	"rolesetCreated": "",
-	"rolesetAdded": "",
-	"rolesetRemoved": "",
-	"rolesetResetEmpty": "",
-	"rolesetResetAll": "",
-	"rolesetResetNotExists": "",
-	"rolesetResetGroup": "",
-	"rolesetUpdated": "",
-	"rolesetNoRolesets": "",
-	"confMenuRenderAtFolder": "",
-	"confMenuRenderAtPiece": "",
-	"confMenuRenderNokeys": "",
-	"confMenuRenderSelect": "",
-	"confMenuRenderUpdate": "",
-	"confMenuRenderRemove": "",
-	"confMenuRenderReset": "",
-	"confMenuRenderUndo": "",
-	"confMenuRenderCvalue": "",
-	"confMenuRenderBack": "",
-	"confMenuInvalidKey": "",
-	"confMenuInvalidAction": "",
-	"confMenuSaved": ""
+	"rolesetCreated": "Den unika rolluppsättningen {{name}} har skapats med följande roller: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Uppdaterade {{name}} unika rolluppsättningen, den har nu följande roller: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Den unika rolluppsättningen {{name}} kommer inte längre att innehålla följande roller: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Det finns inga rolesets konfigurerade i denna grupp.",
+	"rolesetResetAll": "{{GREENTICK}} Tog bort alla roller.",
+	"rolesetResetNotExists": "{{REDCROSS}} Rollen `{{name}}` finns inte i denna server.",
+	"rolesetResetGroup": "{{GREENTICK}} Tog framgångsrikt bort rollerna `{{name}}` från den här servern.",
+	"rolesetUpdated": "Den unika rolluppsättningen {{name}} har uppdaterats.",
+	"rolesetNoRolesets": "Du har inga roller.",
+	"confMenuRenderAtFolder": "För närvarande på: 📁 {{path}}",
+	"confMenuRenderAtPiece": "För närvarande på: ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Det finns inga konfigurerbara nycklar för den här mappen",
+	"confMenuRenderSelect": "Skriv in något av följande poster namn",
+	"confMenuRenderUpdate": "• Uppdatera värde → `set <value>`",
+	"confMenuRenderRemove": "• Ta bort värde → `Ta bort <value>`",
+	"confMenuRenderReset": "• Återställ värde → `reset`",
+	"confMenuRenderUndo": "• Ångra uppdatering → 'Ångra'",
+	"confMenuRenderCvalue": "Nuvarande värde: **``{{value}}``**",
+	"confMenuRenderBack": "Tryck :reverse<unk> för att gå tillbaka",
+	"confMenuInvalidKey": "Ogiltig nyckel, försök igen med något av följande alternativ.",
+	"confMenuInvalidAction": "Ogiltig åtgärd, försök igen med något av följande alternativ.",
+	"confMenuSaved": "Alla ändringar sparades framgångsrikt."
 }

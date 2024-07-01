@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Deaktiveret",
+	"explicitContentFilterMembersWithoutRoles": "Medlemmer uden roller",
+	"explicitContentFilterAllMembers": "Alle medlemmer",
+	"defaultMessageNotificationsAllMessages": "Alle Beskeder",
+	"defaultMessageNotificationsOnlyMentions": "Kun @mentions",
+	"SuppressJoinNotifications": "Medlem med notifikationer",
+	"SuppressJoinNotificationReplies": "Medlem deltage klistermærke svar knapper",
+	"SuppressPremiumSubscriptions": "Server boost-notifikationer",
+	"SuppressGuildReminderNotifications": "Server opsætningstips",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Undertryk notifikationer om rolleabonnement",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Undertryk svar for rolleabonnementsmeddelelser"
+}

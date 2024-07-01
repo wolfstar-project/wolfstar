@@ -1,0 +1,70 @@
+{
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Entschuldigung, ich konnte den Streamer nicht finden. Sind Sie sicher, dass Sie den Namen korrekt geschrieben haben?",
+	"twitchSubscriptionStatusValues": [
+		"online",
+		"offline"
+	],
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah da! Ich erwartete \"online\" oder \"offline\", aber ich kann nicht verstehen, was du mir stattdessen gegeben hast.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Du bist bereits in diesem Kanal für diesen Status abonniert.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Erfolg! Wann immer {{name}} offline geht, schreibe ich eine neue Nachricht in {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Erfolg! Wann immer {{name}} live geht, schreibe ich eine neue Nachricht in {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} Es tut mir leid, aber es ist notwendig, eine Nachricht bei einem Offline-Abonnement zu senden.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Es tut mir leid, aber Sie sind keine Streamers abonniert, Mission abgebrochen!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Es tut mir leid, Sie können {{streamer}} nicht abbestellen, weil Sie diese nicht abonniert haben.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} Es tut mir leid, während Sie diesen Streaming-Status abonniert haben, werden deren Abonnements nicht an {{channel}} gepostet.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Es tut mir leid, aber es sieht so aus, als würden Sie keine {{status}} Benachrichtigungen für {{streamer}}erhalten. Wir unterstützen \"online\" und \"offline\" Benachrichtigungen.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Erfolg! Ich werde keine Nachrichten mehr an {{channel}} verschicken, wenn {{name}} offline geht.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Erfolg! Ich werde keine Nachrichten mehr an {{channel}} verschicken, wenn {{name}} live geht.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Erfolg! {{count}} Abonnement wurde von diesem Server entfernt.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Erfolg! {{count}} Abonnements wurden von diesem Server entfernt.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Du wolltest alle Abonnements von diesem Streamer sehen, aber es gibt keine!",
+	"twitchSubscriptionShowStatus": {
+		"live": "Live",
+		"offline": "Offline"
+	},
+	"twitchSubscriptionShowUnknownUser": "Unbekannt",
+	"twitchSubscriptionDescription": "Verwalten Sie die Abonnements für Ihren Server.",
+	"twitchSubscriptionExtended": {
+		"usages": [
+			"Streamer Kanalstatus hinzufügen",
+			"Streamer Kanalstatus hinzufügen",
+			"Streamer Kanalstatus entfernen",
+			"streamer zurücksetzen",
+			"reset",
+			"zeigen",
+			""
+		],
+		"extendedHelp": "Verwalten Sie die Abonnements für diesen Server.\n__Online Benachrichtigungen__\nAlle verfügbaren Daten werden in einer sehr schönen Einbettung angezeigt, die dir genau sagt, was der Streamer macht.\n\n__Offline Benachrichtigungen__\nDu musst deine eigene Nachricht schreiben, die gepostet wird, wenn der Streamer offline geht. Es wird in einem netten Twitch-lila MessageEmbed angezeigt.",
+		"explainedUsage": [
+			[
+				"hinzufügen/entfernen/zurücksetzen/anzeigen",
+				"Ob\n- Füge ein neues Twitch-Abonnement hinzu.\n- Entferne ein bestehendes Twitch-Abonnement\n- Alle Twitch-Abonnements zurücksetzen, oder die für einen bestimmten Streamer\n- Zeige alle aktuellen Twitch-Abonnements"
+			],
+			[
+				"Streamer",
+				"Der Twitch-Benutzername des Streamers, um Benachrichtigungen zu erhalten."
+			],
+			[
+				"Kanal",
+				"Ein Discord-Kanal, in dem die Benachrichtigungen veröffentlicht werden sollen."
+			],
+			[
+				"Status",
+				"Der Status, den der Twitch-Streamer für eine Benachrichtigung erhalten sollte, entweder online oder offline."
+			],
+			[
+				"Inhalt",
+				"Die Nachricht, die im Discord Chat gesendet wird. Benötigt für Offline-Benachrichtigungen, optional für Online-Benachrichtigungen."
+			]
+		],
+		"examples": [
+			"favorisieren #twitch online",
+			"add favorna #twitch offline Favna ist jetzt offline. Sagen Sie Abschied 👋!",
+			"kyranet #twitch online entfernen",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"zeigen"
+		]
+	}
+}

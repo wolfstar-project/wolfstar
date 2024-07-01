@@ -1,0 +1,8 @@
+{
+	"snipeEmpty": "Na tym kanale nie ma żadnych snirowanych wiadomości.",
+	"snipeTitle": "Sniszowa wiadomość",
+	"snipeDescription": "Pobierz ostatnią usuniętą wiadomość z kanału",
+	"snipeExtended": {
+		"extendedHelp": "To tylko wysyła ostatnią usuniętą wiadomość z tego kanału, ktoś jest źle zachowany? To je złapie."
+	}
+}

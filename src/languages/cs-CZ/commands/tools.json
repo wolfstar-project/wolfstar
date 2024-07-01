@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Zobrazit ikonu někoho v plné velikosti.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Uživatel"
+		],
+		"extendedHelp": "Jak říká název tohoto příkazu, ukazuje někoho avatara.",
+		"explainedUsage": [
+			[
+				"Uživatel",
+				"Uživatel pro získání avatara. Výchozí nastavení je pro vás sami."
+			]
+		],
+		"reminder": "Pro změnu velikosti avatara použijte znak --size."
+	},
+	"avatarNone": "Uživatel nemá sadu avataru.",
+	"voteDescription": "Zjednodušené hlasování založené na reakci.",
+	"voteExtended": {
+		"usages": [
+			"Otázka"
+		],
+		"examples": [
+			"Mám implementovat #anime kanál?"
+		],
+		"explainedUsage": [
+			[
+				"Otázka",
+				"Otázka k hlasování."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Musíte zadat téma pro anketu.",
+	"voteReactionBlocked": "{{REDCROSS}} Nebyl jsem schopen přidat reakce potřebné k tomu, aby tento příkaz fungoval, protože jsi mě zablokován! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Uživatel"
+		],
+		"extendedHelp": "Zobrazí informace o jakémkoli členu serveru. Také známý jako `userinfo` v mnoha jiných botech.",
+		"explainedUsage": [
+			[
+				"Uživatel",
+				"Uživatel, o kterém chcete získat informace. Výchozí nastavení je pro Vás."
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} další."
+}

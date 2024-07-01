@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} ще не було локалізовано для en-США.",
+	"defaultLanguage": "Мова за замовчуванням",
+	"no": "Ні",
+	"none": "Без ефекту",
+	"unknown": "невідомо",
+	"yes": "Так",
+	"paginatedMessagePage": "Сторінка",
+	"paginatedMessageWrongUserInteractionReply": "Будь ласка, припиніть натискати кнопки на цьому повідомленні. Вони лише для {{user}}.",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "ММ/ДД/РРРР",
+	"dateFormatExplanation": "Місяць/День/Рік"
+}

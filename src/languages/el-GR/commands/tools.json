@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Δείτε το avatar κάποιου σε πλήρες μέγεθος.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Χρήστης"
+		],
+		"extendedHelp": "Όπως λέει το όνομα αυτής της εντολής, δείχνει το avatar κάποιου.",
+		"explainedUsage": [
+			[
+				"Χρήστης",
+				"Ο χρήστης για να πάρει το avatar. Προκαθορισμένα σε εσάς τον εαυτό σας."
+			]
+		],
+		"reminder": "Χρησιμοποίησε τη σημαία --size για να αλλάξεις το μέγεθος του avatar."
+	},
+	"avatarNone": "Ο χρήστης δεν έχει σετ avatar.",
+	"voteDescription": "Απλουστευμένη ψήφος βασισμένη στην αντίδραση.",
+	"voteExtended": {
+		"usages": [
+			"Ερώτηση"
+		],
+		"examples": [
+			"Θα πρέπει να εφαρμόσει το κανάλι #anime?"
+		],
+		"explainedUsage": [
+			[
+				"Ερώτηση",
+				"Το ερώτημα για την ψηφοφορία."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Πρέπει να δώσετε ένα θέμα για τη δημοσκόπηση.",
+	"voteReactionBlocked": "{{REDCROSS}} I was not able to add the reactions necessary for this command to work because you have me blocked! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Χρήστης"
+		],
+		"extendedHelp": "Λαμβάνει πληροφορίες για οποιοδήποτε μέλος του διακομιστή. Επίσης γνωστό ως `userinfo` σε πολλά άλλα bots.",
+		"explainedUsage": [
+			[
+				"Χρήστης",
+				"Ο χρήστης για να πάρει πληροφορίες. Προεπιλογές στον εαυτό σας."
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} more."
+}

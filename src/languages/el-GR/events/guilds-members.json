@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Συνδεδεμένος Χρήστης",
+	"guildMemberAddDescription": "Το Discord {{user}} εντάχθηκε στο Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Added roles**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Added role**: {{addedRoles}}",
+	"guildMemberAddMute": "Ο χρήστης σε σίγαση συνδέθηκε",
+	"guildMemberBanned": "Ο Χρήστης Αποβλήθηκε",
+	"guildMemberKicked": "Ο Χρήστης Αποβλήθηκε",
+	"guildMemberNoUpdate": "Δεν εντοπίστηκε ενημέρωση",
+	"guildMemberRemove": "Χρήστης Αριστερά",
+	"guildMemberRemoveDescription": "Το {{user}} μπήκε σε αυτόν τον διακομιστή *άγνωστο χρόνο πριν*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} joined this server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Removed roles**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Removed role**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Ο Χρήστης Με Αναγνωριστικό",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Next**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Προηγούμενη**: Απαγόρευση",
+	"nameUpdatePreviousWasSet": "**Previous**: `{{previousName}}`",
+	"nicknameUpdate": "Το Ψευδώνυμο Επεξεργάστηκε",
+	"roleUpdate": "Οι Ρόλοι Επεξεργάστηκαν",
+	"usernameUpdate": "Το Όνομα Χρήστη Επεξεργάστηκε"
+}

@@ -1,7 +1,7 @@
 {
-	"escaperopeDescription": "",
+	"escaperopeDescription": "Använd fly rep från Pokemon.",
 	"escaperopeExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "**WolfStar** används **Flyktingrep**."
 	},
-	"escaperopeOutput": ""
+	"escaperopeOutput": "**{{user}}** använde **Flyktningsrepet**"
 }

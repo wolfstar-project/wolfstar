@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Fargen må være innenfor området 0 - 16777215 (0xFFFFFFFF), men mottatt `{{value}}`.",
+	"invalidHexRed": "Ugyldig rødt område. Må være mellom '00' og 'ff', men mottatt '{{value}}`.",
+	"invalidHexGreen": "Ugyldig grønt område. Må være mellom '00' og 'ff', men mottatt '{{value}}`.",
+	"invalidHexBlue": "Ugyldig blått område. Må være mellom '00' og 'ff', men mottatt '{{value}}`.",
+	"invalidHslHue": "Ugyldig Hue-område. Må være mellom 0 og 360, men ha mottatt `{{value}}`.",
+	"invalidHslSaturation": "Ugyldig metningsintervall. Må være mellom 0 og 100, men ha mottatt `{{value}}`.",
+	"invalidHslLightness": "Ugyldig Lightness område. Må være mellom 0 og 100, men motta `{{value}}`.",
+	"invalidRgbRed": "Ugyldig rødt område. Må være mellom 0 og 255, men ha motatt `{{value}}`.",
+	"invalidRgbGreen": "Ugyldig grønt område. Må være mellom 0 og 255, men ha motatt `{{value}}`.",
+	"invalidRgbBlue": "Ugyldig blått område. Må være mellom 0 og 255, men motta `{{value}}`."
+}

@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Kolor musi mieścić się w zakresie 0 - 16777215 (0xFFFFFF), ale odebrano `{{value}}`.",
+	"invalidHexRed": "Nieprawidłowy czerwony zakres. Musi być pomiędzy '00' i 'ff', ale otrzymano `{{value}}`.",
+	"invalidHexGreen": "Nieprawidłowy zakres zielony. Musi być pomiędzy '00' a 'ff', ale otrzymano `{{value}}`.",
+	"invalidHexBlue": "Niepoprawny zakres niebieski. Musi znajdować się pomiędzy '00' i 'ff', ale otrzymano `{{value}}`.",
+	"invalidHslHue": "Nieprawidłowy zakres Hue (hue range). Musi być od 0 do 360, ale otrzymano `{{value}}`.",
+	"invalidHslSaturation": "Nieprawidłowy zakres nasycenia. Musi być pomiędzy 0 a 100, ale otrzymano `{{value}}`.",
+	"invalidHslLightness": "Nieprawidłowy zakres jasności. Musi być pomiędzy 0 a 100, ale otrzymano `{{value}}`.",
+	"invalidRgbRed": "Nieprawidłowy czerwony zakres. Musi być pomiędzy 0 a 255, ale otrzymano `{{value}}`.",
+	"invalidRgbGreen": "Nieprawidłowy zakres zielony. Musi być pomiędzy 0 a 255, ale otrzymano `{{value}}`.",
+	"invalidRgbBlue": "Nieprawidłowy zakres niebieski. Musi być pomiędzy 0 a 255, ale otrzymano `{{value}}`."
+}

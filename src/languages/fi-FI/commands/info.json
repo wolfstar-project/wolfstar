@@ -1,0 +1,15 @@
+{
+	"name": "tiedot",
+	"description": "Tarjoaa tietoa minusta, ja linkkejä botin lisäämiseen ja tukipalvelimen liittämiseen",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} on botti, joka on suunniteltu auttamaan palvelimen muokkaamisessa. Käytän [Sapphire Framework](https://sapphirejs.dev) [Discord.js library](https://discord. s.org).\n- [Tietosuojakäytäntö](https://wolfstar.rocks/privacy) •[Käyttöehdot](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "Tilastot",
+	"embedFieldApplicationValue": "- **Käyttäjät**: {{users, number}}\n- **Palvelimet**: {{guilds, number}}\n- **Kanavat**: {{channels, number}}\n- **Discord. s**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "Käyttöaika",
+	"embedFieldUptimeValue": "- **Palvelin**: {{host}}\n- **Asiakas**: {{client}}",
+	"embedFieldServerUsageTitle": "Palvelimen Käyttö",
+	"embedFieldServerUsageValue": "- **Suorittimen Käyttö**: {{cpu}}\n- **Muisti**: {{heapUsed}}Mt (Yhteensä: {{heapTotal}}Mt)",
+	"buttonInvite": "Lisää minut palvelimellesi!",
+	"buttonSupport": "Tuki palvelin",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "Lahjoita"
+}

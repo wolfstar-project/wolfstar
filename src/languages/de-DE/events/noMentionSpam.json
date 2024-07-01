@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Seien Sie vorsichtig und erwähnen Sie nicht mehr, da Sie wegen Überschreitung des Schwellenwertes für diesen Server gebannt werden.",
+	"message": "Der Banhammer ist gelandet und jetzt ist der Benutzer {{userTag}} mit Id {{userId}} wegen Erwähnungs-Spam verboten.\nKeine Sorge! Ich bin hier, um Ihnen zu helfen! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatisch: Erwähnungs-Spam-Schwelle überschritten.\nSchwellwert: {{threshold}}."
+}

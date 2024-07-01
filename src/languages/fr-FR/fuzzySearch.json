@@ -1,0 +1,6 @@
+{
+	"aborted": "L'invitation a été annulée avec succès.",
+	"invalidIndex": "Ce nombre était hors de portée, abandonnant l'prompt.",
+	"invalidNumber": "Je m'attendais à ce que vous me donniez un (chiffre unique), j'ai obtenu une pomme de terre.",
+	"matches": "J'ai trouvé plusieurs correspondances ! **Veuillez sélectionner un nombre dans 0 et {{matches}}**:\n{{codeblock}}\nÉcrivez **ABORT** si vous voulez quitter l'invite."
+}

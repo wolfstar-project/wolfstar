@@ -1,8 +1,8 @@
 {
-	"snipeEmpty": "",
-	"snipeTitle": "",
-	"snipeDescription": "",
+	"snipeEmpty": "此频道中没有狙击消息。",
+	"snipeTitle": "被狙击过的消息",
+	"snipeDescription": "从一个频道获取最后删除的消息",
 	"snipeExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "这只是发送此频道上最后删除的消息，某人的行为不正常？这会抓住他们。"
 	}
 }

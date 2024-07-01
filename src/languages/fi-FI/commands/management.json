@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Keskeytetty",
+	"permissionNodesHigher": "{{REDCROSS}} Et voi muokata tai esikatsella tämän kohteen käyttöoikeussolmuja.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Et voi sallia komentoja `@everyone`-roolille.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Virheellinen tyyppi, odotetaan joko `allow`- tai `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} lisäsi komennon onnistuneesti käyttöoikeussolmuun.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Valittua käyttöoikeussolmua ei ole olemassa.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Valittua komentoa ei ole olemassa käyttöoikeusnodissa.",
+	"permissionNodesRemove": "{{GREENTICK}} onnistuneesti poistettu komento käyttöoikeussolmulla.",
+	"permissionNodesReset": "{{GREENTICK}} onnistuneesti poistettu kaikki komennot käyttöoikeuspalvelimelta.",
+	"permissionNodesShowName": "Oikeudet kohteelle: __{{name}}__",
+	"permissionNodesShowAllow": "**Salli**: {{allow}}",
+	"permissionNodesShowDeny": "**Kielletty**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Kanavat",
+		"MEMBERS": "Jäsenet",
+		"OTHER": "Muu"
+	},
+	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Voice, **{{categories}}** categories.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** jälkeen **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** jäsentä\n• Omistaja: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Roolit: **{{size}}**\n• Luotu: **{{createdAt}}**\n• Verification Level: **{{verificationLevel, humanLevels}}",
+	"guildInfoBanner": "Bannerin Kuva",
+	"guildInfoIcon": "Kuvakkeen Kuva",
+	"guildInfoSplash": "Roiske Kuva",
+	"guildInfoDiscoverySplash": "Discovery Splash Image",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Käyttöoikeudet"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nNimi: **{{role.name}}**\nVäri: **{{role.hexColor}}**\nHoistetaan: **{{hoisted}}**\nAsema: **{{role.rawPosition}}**\nMaininnut: **{{mentionable}}",
+	"roleInfoAll": "Kaikki oikeudet myönnetty.",
+	"roleInfoNoPermissions": "Oikeuksia ei myönnetty.",
+	"manageCommandAutoDeleteShowEmpty": "Komentoa ei ole määritetty automaattisesti.",
+	"manageCommandAutoDeleteShow": "All command autodeletes configured:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Onnistui! Kaikki onnistuneet komennot kohteessa {{channel}} poistetaan {{time, duration}}! jälkeen",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Success! Commands will not be automatically deleted in {{channel}} anymore!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} The channel {{channel}} was not configured to automatically delete messages!",
+	"manageCommandAutoDeleteReset": "Kaikki komennon autodeletit on nollattu.",
+	"manageCommandChannelShow": "List of disabled commands in {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Valitun kanavan käytöstä poistetut komennot ovat tyhjiä!",
+	"manageCommandChannelAddAlreadyset": "Komento jota yrität poistaa käytöstä, on jo poistettu käytöstä!",
+	"manageCommandChannelAdd": "Onnistuneesti poistettiin komento {{command}} kanavalle {{channel}}!",
+	"manageCommandChannelRemoveNotset": "Komentoa, jota yrität ottaa käyttöön, ei ole poistettu käytöstä {{channel}} kohdalla.",
+	"manageCommandChannelRemove": "Komento {{command}} otettiin käyttöön kanavalle {{channel}}!",
+	"manageCommandChannelResetEmpty": "Tällä kanavalla ei ollut komentoa pois päältä, joten päätin tehdä mitään.",
+	"manageCommandChannelReset": "Onnistuneesti otettu käyttöön kaikki käytöstä poistetut komennot kohteessa {{channel}}, nauti!",
+	"manageReactionRolesShowEmpty": "Tällä palvelimella ei ole määritettyjä reaktiorooleja.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Onnistui! Annan nyt roolin, kun ihmiset reagoivat {{emoji}} mihin tahansa viestiin {{channel}}!",
+	"manageReactionRolesAddPrompt": "Kuuntele nyt! Ole hyvä ja reagoi viestiin ja sido reaktion roolilla!",
+	"manageReactionRolesAddMissing": "Odotin sitä, mutta te ette näyttänyt reagoineen viestiin.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Määritettyä reaktioroolia ei ole olemassa.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Success! I will not longer give the role when people react with {{emoji}} at {{url}}!",
+	"manageReactionRolesResetEmpty": "Vastausrooleja ei ollut asetettu.",
+	"manageReactionRolesReset": "{{GREENTICK}} Poistettiin onnistuneesti kaikki reaktioroolit.",
+	"configurationEquals": "Konfiguroitu onnistuneesti: muutoksia ei tehty.",
+	"setIgnoreChannelsSet": "Ohitetaan kaikki komennot tiedostosta {{channel}} nyt.",
+	"setIgnoreChannelsRemoved": "Kuunnellaan kaikkia komentoriviä {{channel}} nyt.",
+	"setImageLogsSet": "Kuvien lokikanava asetettu onnistuneesti arvoon {{channel}}.",
+	"setMemberAddLogsSet": "Onnistuneesti asetettu jäsen lisää lokit kanava {{channel}}.",
+	"setMemberRemoveLogsSet": "Onnistuneesti asetettu jäsen poistaa lokit kanavalta {{channel}}.",
+	"setMessageUpdateLogsSet": "Viestin päivityslokien kanava asetettu onnistuneesti arvoon {{channel}}.",
+	"setMessageDeleteLogsSet": "Onnistuneesti asetettu viestin poiston lokit kanavaksi {{channel}}.",
+	"setModLogsSet": "Mod logs kanava asetettu onnistuneesti {{channel}} -muotoon.",
+	"setPrefixSet": "Successfully set the prefix to `{{prefix}}`. Use `{{prefix}}setPrefix NewPrefix` to change it again.",
+	"stickyRolesNotExists": "Käyttäjällä {{user}} ei ole mitään tahmeita rooleja tai sillä ei ole määriteltyä roolia.",
+	"stickyRolesReset": "Kaikki tahmea roolit poistettiin onnistuneesti {{user}} -sovelluksesta.",
+	"stickyRolesRemove": "Onnistuneesti poistettu annettu rooli {{user}}.",
+	"stickyRolesAdd": "Onnistuneesti lisättiin määritelty rooli sticky kohteeseen {{user}}.",
+	"stickyRolesShowEmpty": "Ei ole tahmeita rooleja näyttää.",
+	"stickyRolesShowSingle": "Kiinni rooli **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Valmistele mykistysjärjestelmä.",
+	"createMuteExtended": {
+		"extendedHelp": "Tämä komento valmistelee mykistysjärjestelmän luomalla roolin nimeltä `mykistetty`, ja määrittämällä sen palvelimen asetuksille. Tämä komento muuttaa myös kaikkia kanavia (mikäli mahdollista) käyttöoikeuksia ja poistaa käyttöoikeuden **{{SEND_MESSAGES, permissions}}** tekstikanavissa ja **{{CONNECT, permissions}}** äänikanavissa mainitun roolin vuoksi."
+	},
+	"permissionNodesDescription": "Määritä tämän palvelimen käyttöoikeussolmut.",
+	"permissionNodesExtended": {
+		"usages": [
+			"lisää Rooli/jäsen allow/deny Command",
+			"Poista Rooli/jäsen allow/deny Command",
+			"reset Role/Member",
+			"näytä Rooli/jäsen",
+			"näytä",
+			"Rooli/jäsen"
+		],
+		"extendedHelp": "Käyttöoikeussolmut ovat käyttäjän ja roolin ylityksiä. Niitä käytetään, kun sisäänrakennettu käyttöoikeusjärjestelmä ei riitä.\nEsimerkiksi joissakin palvelimissa he haluavat antaa henkilöstön roolin oikeudet käyttää mykistää ja varoittaa, mutta ei kieltoa ja muita (varattu valvojille), ja vain varoitus on käytettävissä määritettävälle henkilöstötason luvalle, joten voit kertoa minulle salliaksesi mykistyskomennon henkilöstön rooliin nyt.",
+		"explainedUsage": [
+			[
+				"Toiminto",
+				"Joko `add`, `remove`, `reset`, tai `näytä`. Oletuksena on `show`."
+			],
+			[
+				"Target",
+				"Joko roolin nimi tai käyttäjätunnus, jolloin tunnukset ja maininnat joko."
+			],
+			[
+				"Tyyppi",
+				"Joko `allow` tai `deny`."
+			],
+			[
+				"Komento",
+				"Sallitun tai kieltävän komennon nimi."
+			]
+		],
+		"examples": [
+			"lisää henkilökunta salli varoituksen",
+			"lisää valvojien kielto",
+			"poista henkilökunta salli varoituksen",
+			"nollaa henkilökunta",
+			"näytä henkilökunta"
+		],
+		"reminder": "Palvelimen omistajalla ei voi olla toimintoja, eikä `everyone`-rooli ole voinut sallia komentoja."
+	},
+	"managecommandautodeleteDescription": "Hallitse kanavakohtaista automaattista ajastinta.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"lisää TextChannel Sekuntia",
+			"Poista TextChannel",
+			"reset",
+			"näytä",
+			""
+		],
+		"extendedHelp": "Tämä komento hallitsee tämän palvelimen kanavakohtaisen komennon automaattisen poiston ajastin, joka toimii hyvin jättääksesi kanavan puhtaaksi komennoista.",
+		"explainedUsage": [
+			[
+				"lisää",
+				"Lisää automaattisen poiston ajastin määritellylle kanavalle."
+			],
+			[
+				"poista",
+				"Poista automaattinen ajastin määritetystä kanavasta."
+			],
+			[
+				"reset",
+				"Poista kaikki ajastimet automaattisesti."
+			],
+			[
+				"näytä",
+				"Näytä automaattisen poiston ajastin kaikille kanaville."
+			]
+		],
+		"reminder": "Kanavan argumentti on valinnainen, oletusarvoinen viestin kanava, mutta se käyttää sumeaa hakua, kun se on mahdollista.",
+		"examples": [
+			"näytä",
+			"lisää #general 4s",
+			"poista #general",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Hallitse kanavakohtaisen estetyn komentojen luetteloa.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"lisää TextChannel Command",
+			"Poista TextChannel Command",
+			"nollaa TextChannel",
+			"näytä TextChannel"
+		],
+		"extendedHelp": "Tämä komento hallinnoi tämän palvelimen kanavakohtaista komentoryhmää, se palvelee hyvin poistaa tiettyjä komentoja, joita et halua käyttää tietyissä kanavissa (poistaa komennon käytöstä maailmanlaajuisesti, käytä `disabledCommands`-asetusnäppäintä poistaaksesi käytöstä kaikilla kanavilla.",
+		"explainedUsage": [
+			[
+				"näytä [channel]",
+				"Näytä luettelo komennoista, jotka on estetty määrätyssä kanavassa."
+			],
+			[
+				"lisää [channel] <command>",
+				"Lisää komento määritellyn kanavan estettyjen komentojen luetteloon."
+			],
+			[
+				"poista [channel] <command>",
+				"Poista komento määritellyn kanavan estettyjen komentojen luettelosta."
+			],
+			[
+				"reset [channel]",
+				"Tyhjennä määrätyssä kanavassa estettyjen komentojen luettelo."
+			]
+		],
+		"reminder": "Kanavan argumentti on valinnainen, mutta se käyttää sumeaa hakua, jos mahdollista.",
+		"examples": [
+			"lisää #general profile",
+			"poista #general profile",
+			"nollaa #general",
+			"näytä #general"
+		]
+	},
+	"manageReactionRolesDescription": "Hallitse tämän palvelimen reaktiorooleja.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"lisää Rooli",
+			"lisää Rooli TextChannel Emoji",
+			"Poista Rooli Viesti",
+			"reset",
+			"näytä"
+		],
+		"extendedHelp": "Seamlessly set up reaction roles in your server! Kun lisätään reaktiorooleja, Kuuntelen reaktioitanne 5 minuutin ajan ja sido ensimmäisen reaktion teiltä kanavan ja viestin rinnalla, jossa on määritelty rooli.\nMuussa tapauksessa, jos kanava on määritetty, komentoa ei luoda, ja reagoinnin rooli on sidottu kaikkiin kanavan viesteihin.\n\nParas tapa lisätä uusia reaktiorooleja on käyttää `add @role`. Jos et halua sitoa reaktiota tiettyyn viestiin, käytä `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"näytä",
+				"Hae luettelo kaikista reaktiorooleista."
+			],
+			[
+				"lisää <role>",
+				"Lisää reaktioroolin, joka sitoo ensimmäisen reagoidun viestin tehtävän suorittamisen jälkeen."
+			],
+			[
+				"poista <role> <message>",
+				"Poistaa reaktioroolin, käytä `show`ta saadaksesi listan niistä."
+			],
+			[
+				"reset",
+				"Poistaa kaikki reaktioroolit."
+			]
+		],
+		"examples": [
+			"lisää @role",
+			"lisää @role #kanava emoji",
+			"poista @role 123456789012345678",
+			"reset",
+			"näytä"
+		]
+	},
+	"rolesAdded": "Seuraavat roolit on lisätty profiiliisi: `{{roles}}`",
+	"rolesAuditlog": "Valtuutettu: Julkinen Roolien Hallinta, Roolien Komento.",
+	"rolesListEmpty": "Tällä palvelimella ei ole roolia, joka olisi listattu julkiseksi rooliksi.",
+	"rolesListTitle": "Luettelo julkisista rooleista",
+	"rolesNotManageable": "En voi antaa seuraavia rooleja niiden hierarkkisen rooliaseman vuoksi: `{{roles}}`",
+	"rolesNotPublic": "Seuraavat roolit eivät ole julkisia: `{{roles}}`",
+	"rolesRemoved": "Seuraavat roolit on poistettu profiilistasi: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Aseta kanava huomiotta jättävän kanavan luetteloon.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use WolfStar's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, WolfStar is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava. Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tästä\" valitaksesi kanavan, jonka viesti lähetettiin."
+			]
+		],
+		"reminder": "Et voi asettaa samaa kanavaa kahdesti, sen sijaan WolfStar poistaa sen.",
+		"examples": [
+			"#yleinen",
+			"täältä"
+		]
+	},
+	"setImageLogsDescription": "Set the image logs channe. (Automatic Copy)",
+	"setImageLogsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava. Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tästä\" valitaksesi kanavan, jonka viesti lähetettiin."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"täältä"
+		]
+	},
+	"setMemberAddLogsDescription": "Set the member add logs channel. (Automatic Copy)",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "Tämä komento auttaa sinua määrittämään jäsenen lisätä lokikanavan, joka vastaanottaa viestin joka kerta kun käyttäjä liittyy.\nJos mykistetty käyttäjä liittyy, se lähettää erityisen \"Mykistetty jäsen\" tapahtuman.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava. Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tästä\" valitaksesi kanavan, jonka viesti lähetettiin."
+			]
+		],
+		"examples": [
+			"#jäsenlokit",
+			"täältä"
+		],
+		"reminder": "Kaikki viestit ovat upoteissa, joten sinun täytyy ottaa käyttöön lupa **{{EMBED_LINKS, permissions}}** WolfStarille."
+	},
+	"setMemberRemoveLogsDescription": "Set the member remove logs channel. (Automatic Copy)",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "Tämä komento auttaa sinua määrittämään jäsenen poistaa lokikanavan, joka vastaanottaa viestin aina, kun käyttäjä lehdet, on potkittu, tai on kielletty.\nKun kyseessä on kaksi viimeistä, se lähettää erityinen \"Käyttäjä Potkatti\" tai \"Käyttäjä kielletty\" tapahtuma.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tähän\" määrittääksesi kanavan, jota tämä komento on käytetty."
+			]
+		],
+		"examples": [
+			"#jäsenlokit",
+			"täältä"
+		],
+		"reminder": "Kaikki viestit ovat upoteissa, joten sinun täytyy ottaa käyttöön lupa **{{EMBED_LINKS, permissions}}** WolfStarille."
+	},
+	"setMessageUpdateLogsDescription": "Aseta viestin päivityslokien kanava.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "Tämä komento auttaa sinua määrittämään viestin päivityslokikanavan, joka vastaanottaa viestin joka kerta kun viestiä muokataan.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tähän\" määrittääksesi kanavan, jota tämä komento on käytetty."
+			]
+		],
+		"reminder": "Kaikki viestit ovat upoteissa, joten sinun täytyy ottaa käyttöön lupa **{{EMBED_LINKS, permissions}}** WolfStarille.",
+		"examples": [
+			"#viestilokit",
+			"täältä"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Set the message delete logs channel. (Automatic Copy)",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "Tämä komento auttaa sinua määrittämään viestin poiston lokikanavan, joka vastaanottaa viestin joka kerta kun viesti poistetaan.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tähän\" määrittääksesi kanavan, jota tämä komento on käytetty."
+			]
+		],
+		"reminder": "Kaikki viestit ovat upoteissa, joten sinun täytyy ottaa käyttöön lupa **{{EMBED_LINKS, permissions}}** WolfStarille.\nDiscordin rajoitusten vuoksi WolfStar ei voi tietää kuka on poistanut viestin.",
+		"examples": [
+			"#viestilokit",
+			"täältä"
+		]
+	},
+	"setmodlogsDescription": "Aseta mod lokit kanava.",
+	"setmodlogsExtended": {
+		"usages": [
+			"here/TextChannel"
+		],
+		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
+		"explainedUsage": [
+			[
+				"kanava",
+				"Tekstikanava. Voit joko laittaa kanavan nimen, merkitä sen tai kirjoittaa \"tästä\" valitaksesi kanavan, jonka viesti lähetettiin."
+			]
+		],
+		"reminder": "Discordin rajoitusten vuoksi automaattitunnistus ei tunnista potkuja. Sinun täytyy käyttää `kick`-komentoa, jos haluat dokumentoida sen muodollisena moderointilokikotelona.",
+		"examples": [
+			"#mod-logs",
+			"täältä"
+		]
+	},
+	"setprefixDescription": "Aseta WolfStarin etuliite.",
+	"setprefixExtended": {
+		"usages": [
+			"Etuliite"
+		],
+		"extendedHelp": "Tämä komento auttaa sinua määrittämään WolfStarin etuliitteen. Etuliite on kiinnitys, joka on lisätty sanan eteen, tässä tapauksessa viesti.\nSen avulla botit voivat erottaa säännöllisen viestin ja komennon. Luonteeltaan etuliitteen välillä pitäisi olla erilainen ristiriitojen välttämiseksi.\nJos unohdat WolfStarin etuliitteen, mainitse hänet millään muulla tavalla ja hän kertoo sinulle nykyisen etuliitteen.\nVaihtoehtoisesti voit asettaa komentoja etuliitteeksi hänen nimellään ja pilkulla (esimerkiksi `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Etuliite",
+				"Asetettu etuliite. Oletus yksi WolfStarissa on `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Etuliitteessäsi pitäisi olla vain merkkejä, jotka kaikki voivat kirjoittaa ja kirjoittaa.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Tarkista palvelimen tiedot.",
+	"guildInfoExtended": {
+		"extendedHelp": "Serverinfo komento näyttää tiedot palvelimelle, jonka viesti lähetettiin.\nSe näyttää kanavien määrän, jossa on määrä kunkin luokan, jäsenten määrä (annetaan API), omistaja, jolla on käyttäjätunniste, roolien määrä, alue, luontipäivä, varmennustaso. . muiden välillä."
+	},
+	"roleInfoDescription": "Tarkista roolin sisältämät tiedot.",
+	"roleInfoExtended": {
+		"usages": [
+			"Rooli",
+			""
+		],
+		"extendedHelp": "Roleinfo komento näyttää roolin tiedot, kuten sen id, nimi, väri, onko se nostettu (näytöt erikseen) tai ei, se on rooli hierarkia asema, olipa se mainittu tai ei, kuinka monet jäsenet ovat sanoneet roolin, ja sen oikeudet.\nSe lähettää upotetun viestin, jossa on roolin väri.",
+		"explainedUsage": [
+			[
+				"Rooli",
+				"Roolin nimi, nimi, maininta tai nimi."
+			]
+		],
+		"examples": [
+			"Ylläpitäjä",
+			"Moderaattori",
+			""
+		]
+	},
+	"stickyRolesDescription": "Hallitse käyttäjien tahmeita rooleja.",
+	"stickyRolesExtended": {
+		"usages": [
+			"lisää käyttäjän rooli",
+			"poista käyttäjän rooli",
+			"nollaa käyttäjä",
+			"näytä Käyttäjä",
+			"Käyttäjä"
+		],
+		"extendedHelp": "stickyRoles komennon avulla voit hallita jäsenen tahmea rooleja, ne ovat rooleja, joita pidetään myös lähtiessäsi, ja niitä levitetään takaisin heti kun ne liittyvät.",
+		"explainedUsage": [
+			[
+				"Toiminto",
+				"Joko haluat tarkistaa tahmea rooleja, lisätä yksi, poistaa yksi tai poistaa kaikki niistä."
+			],
+			[
+				"Käyttäjä",
+				"Käyttäjä kohdistaa kaikki toiminnot."
+			],
+			[
+				"Rooli",
+				"Tehtävä lisätä tai poistaa."
+			]
+		],
+		"examples": [
+			"lisää WolfStar Goddess",
+			"show WolfStar",
+			"WolfStar Goddess poistaminen",
+			"reset WolfStar"
+		],
+		"reminder": "Jäsenen rooleja ei muokkaa tämä komento, sinun täytyy lisätä tai poistaa ne."
+	},
+	"rolesDescription": "Luettelo, väittää tai poistaa julkisen roolin tällä palvelimella.",
+	"rolesExtended": {
+		"usages": [
+			"Rooli",
+			""
+		],
+		"extendedHelp": "Julkiset roolit ovat kaikkien käytettävissä olevia rooleja.\nYlläpitäjän on määritettävä ne konfiguraatiokomennolla.",
+		"explainedUsage": [
+			[
+				"roolit",
+				"The list of roles to claim or unclaim. Jätä tämä tyhjäksi saadaksesi listan käytettävissä olevista rooleista."
+			]
+		],
+		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.",
+		"examples": [
+			"Suunnittelija Ohjelmoija",
+			"Suunnittelija"
+		]
+	}
+}

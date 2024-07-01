@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Gebruiker is aangesloten",
+	"guildMemberAddDescription": "{{user}} heeft Discord {{relativeTime}} toegetreden",
+	"guildMemberAddedRoles_other": "**Rollen toegevoegd**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Rol toegevoegd**: {{addedRoles}}",
+	"guildMemberAddMute": "Gedempte gebruiker toegetreden",
+	"guildMemberBanned": "Gebruiker verbannen",
+	"guildMemberKicked": "Gebruiker verwijderd",
+	"guildMemberNoUpdate": "Geen update gedetecteerd",
+	"guildMemberRemove": "Gebruiker weggegaan",
+	"guildMemberRemoveDescription": "{{user}} heeft zich aangesloten bij deze server *een onbekende tijd geleden*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} is toegetreden tot deze server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Rollen verwijderd**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Rol verwijderd**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Gebruiker Softbanned",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Volgende**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Vorige**: Ontzetten",
+	"nameUpdatePreviousWasSet": "**Vorige**: `{{previousName}}`",
+	"nicknameUpdate": "Bijnaam bewerkt",
+	"roleUpdate": "Rollen Bewerkt",
+	"usernameUpdate": "Gebruikersnaam gewijzigd"
+}

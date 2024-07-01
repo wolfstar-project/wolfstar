@@ -1,0 +1,6 @@
+{
+	"aborted": "Успішно перервано запит.",
+	"invalidIndex": "Це число було поза діапазоном, підказка про перерви.",
+	"invalidNumber": "Я очікував від вас надати мені одне цифрове число, має картоплю.",
+	"matches": "I found multiple matches! **Please select a number within 0 and {{matches}}**:\n{{codeblock}}\nWrite **ABORT** if you want to exit the prompt."
+}

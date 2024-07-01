@@ -1,30 +1,30 @@
 {
-	"evalDescription": "",
+	"evalDescription": "Evalúa Javascript arbitrario.",
 	"evalExtended": {
 		"usages": [
-			""
+			"Expresión"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "The eval command evaluates code as-in, any error thrown from it will be handled.\nIt also uses the flags feature. Write --silent, --depth=number or --async to customize the output.\nThe --wait flag changes the time the eval will run. Defaults to 60 seconds. Accepts time in milliseconds.\nThe --silent flag will make it output nothing.\nThe --depth flag accepts a number, for example, --depth=2, to customize util.inspect's depth.\nThe --async flag will wrap the code into an async function where you can enjoy the use of await, however, if you want to return something, you will need the return keyword\nThe --showHidden flag will enable the showHidden option in util.inspect.\nThe --lang and --language flags allow different syntax highlight for the output.\nThe --json flag converts the output to json\nThe --no-timeout flag disables the timeout\nIf the output is too large, it'll send the output as a file.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Expresión",
+				"La expresión a evaluar"
 			]
 		],
 		"examples": [
-			"",
-			""
+			"msg.autor.nombre;",
+			"1 + 1;"
 		],
-		"reminder": ""
+		"reminder": "Reservado para los propietarios del bot."
 	},
-	"evalTimeout": "",
-	"evalError": "",
-	"dmNotSent": "",
-	"dmSent": "",
-	"reboot": "",
-	"rebootDescription": "",
+	"evalTimeout": "TIMEOUT: Took más largo de {{seconds}} segundos.",
+	"evalError": "**Error**:{{output}}\n**Tipo**:{{type}}\n{{time}}",
+	"dmNotSent": "No puedo enviarte un mensaje en DMs, ¿me has bloqueado?",
+	"dmSent": "Te he enviado el mensaje en DMs.",
+	"reboot": "{{LOADING}} Rebooting...",
+	"rebootDescription": "Reinicia el bot.",
 	"rebootExtended": {
-		"extendedHelp": "",
-		"reminder": ""
+		"extendedHelp": "El bot va a la pluma, entonces el bot va a revivir.",
+		"reminder": "Reservado para los propietarios del bot."
 	}
 }

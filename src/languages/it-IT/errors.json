@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Mi dispiace, ho provato a eseguire un'azione per un canale sconosciuto a Discord e non riuscito, questo errore è stato segnalato agli sviluppatori.",
+	"genericUnknownGuild": "Mi dispiace, ho provato a eseguire un'azione per un server sconosciuto da Discord e non riuscito, questo errore è stato segnalato agli sviluppatori.",
+	"genericUnknownMember": "Mi dispiace, ho provato a eseguire un'azione per un membro sconosciuto a Discord e non riuscito, questo errore è stato segnalato agli sviluppatori.",
+	"genericUnknownMessage": "Mi dispiace, ho provato a eseguire un'azione per un messaggio sconosciuto a Discord e non riuscito, questo errore è stato segnalato agli sviluppatori.",
+	"genericUnknownRole": "Mi dispiace, ho cercato di eseguire un'azione per un ruolo sconosciuto a Discord e non riuscito, questo errore è stato segnalato agli sviluppatori.",
+	"genericMissingAccess": "Mi dispiace, ho provato a eseguire un'azione per una risorsa senza i permessi necessari e non riuscito, questo errore è stato segnalato agli sviluppatori.",
+	"genericDiscordInternalServerError": "Oops, Discord si è rotto, riprova più tardi.",
+	"genericDiscordGateway": "Oops, la rete sta lottando per comunicare con Discord, riprova più tardi.",
+	"genericDiscordUnavailable": "Oops, Discord non è attualmente disponibile, riprova più tardi.",
+	"guildBansEmpty": "Non ci sono divieti registrati in questo server.",
+	"guildBansNotFound": "Ho provato e non ho trovato questo utente dalla lista bann. Sei sicuro che questo utente è bandito?",
+	"guildMemberNotVoicechannel": "Non posso eseguire questa azione in un membro che non è connesso a un canale vocale.",
+	"guildWarnNotFound": "Non sono riuscito a prendere quell'avvertimento. O non esiste, non è di tipo avvertimento, o è stato appellato.",
+	"modlogTimed": "Questo registro della moderazione è già scaduto. Scade in {{remaining, duration}}",
+	"unexpectedIssue": "Si è verificato un errore imprevisto! Interruzione sicura di questo comando...",
+	"userNotInGuild": "Questo utente non è in questo server."
+}

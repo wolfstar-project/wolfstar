@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Käyttäjä Liittyi",
+	"guildMemberAddDescription": "{{user}} joined Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Lisätyt roolit**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Lisätty rooli**: {{addedRoles}}",
+	"guildMemberAddMute": "Mykistetty käyttäjä liittyi",
+	"guildMemberBanned": "Käyttäjä Bannattu",
+	"guildMemberKicked": "Käyttäjä Potkittu",
+	"guildMemberNoUpdate": "Päivitystä ei havaittu",
+	"guildMemberRemove": "Käyttäjä Vasen",
+	"guildMemberRemoveDescription": "{{user}} liittyi palvelimeen *tuntematon aika sitten*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} joined this server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Poistetut roolit**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Poistettu rooli**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Käyttäjä Pehmeäestetty",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Seuraava**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Edellinen**: Poista",
+	"nameUpdatePreviousWasSet": "**Edellinen**: `{{previousName}}`",
+	"nicknameUpdate": "Nimimerkkiä Muokattu",
+	"roleUpdate": "Roolit Muokattu",
+	"usernameUpdate": "Käyttäjätunnus Muokattu"
+}

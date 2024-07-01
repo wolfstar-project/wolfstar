@@ -1,36 +1,36 @@
 {
-	"helpAllFlag": "",
-	"helpCommandCount_one": "",
-	"helpCommandCount_other": "",
+	"helpAllFlag": "Visar en kategori per sida. Har du problem med inbädden? Kör `{{prefix}}help --all` för en fullständig lista i DMs.",
+	"helpCommandCount_one": "{{count}} kommando",
+	"helpCommandCount_other": "{{count}} kommandon",
 	"helpData": {
-		"footer": "",
-		"title": ""
+		"footer": "Kommandohjälp för {{footerName}}",
+		"title": "{{titleDescription}}"
 	},
-	"helpDescription": "",
+	"helpDescription": "Visar alla kommandon eller beskrivningen av ett.",
 	"helpExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"--cat/--kategorier",
+			"--alla",
+			"Kategorinamn",
+			"Sida",
+			"Kommandonamn"
 		],
-		"extendedHelp": "",
-		"reminder": "",
+		"extendedHelp": "Hjälpkommandot visar en paginerad lista över alla kommandon efter deras kategorier, eller den utökade informationen om ett kommando om det anges.\n\nOm du använder `--categories` eller `--cat`, kan du få en lista över alla kategorier och antalet kommandon var och en av dem har.",
+		"reminder": "Hjälpkommandot **bara** visar de kommandon du kan använda. För hela listan, besök <https://wolfstar.rocks/commands>.",
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"--katt",
+			"--alla",
+			"Moderering",
+			"12",
+			"hjälp"
 		]
 	},
-	"helpDm": "",
-	"helpNodm": "",
-	"v7Description": "",
+	"helpDm": "📥 <unk> Listan över kommandon du har tillgång till har skickats till dina DM:er.",
+	"helpNodm": "{{REDCROSS}} <unk> Du har DMs inaktiverat så jag kunde inte skicka listan över kommandon.",
+	"v7Description": "Hämtar information om Skyra v7",
 	"v7Extended": {
-		"extendedHelp": ""
+		"extendedHelp": "Detta är ett **dold** kommando som uteslutande används för att skicka ett meddelande till alla som försöker använda kommandon som har tagits bort enligt [SKyra v7](https://skyra. otion.planer/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) planer."
 	},
-	"v7Message": "",
-	"v7NayreMessage": ""
+	"v7Message": "Hej där! Tack för att du använder detta kommando, dock, det togs bort på grund av [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s planer. Länken innehåller en förklaring till varför `{{command}}` togs bort.\n\nLedsen för besväret, och tack för att du använder WolfStar. 💖",
+	"v7NayreMessage": "Hallå där! Tack för att du använder detta kommando, dock, den togs bort och kommer antingen att omkonstrueras som en del av Nayre's Acryss RPG som nämns i [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s planer.\n\nLedsen för besväret, och tack för att du använder WolfStar. 💖"
 }

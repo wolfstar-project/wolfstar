@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Dávejte si pozor na to, že jste již zakázáni, abyste překročili práh zmínění tohoto serveru.",
+	"message": "Bankovní kladivo přistálo a nyní je uživatel {{userTag}} s id {{userId}} pro zmínění spamu zakázán.\nNedělej si starosti! Jsem tady! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatick: překročen práh nevyžádané pošty.\nLimit: {{threshold}}."
+}

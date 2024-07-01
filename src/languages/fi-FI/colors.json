@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Värin on oltava alueella 0 - 16777215 (0xFFFFFFFF), mutta vastaanotettu `{{value}}`.",
+	"invalidHexRed": "Punainen alue ei kelpaa. On oltava välillä '00' ja 'ff', mutta vastaanotti `{{value}}`.",
+	"invalidHexGreen": "Vihreä alue ei kelpaa. Sen on oltava välillä '00' ja 'ff', mutta se on vastaanotettu `{{value}}`.",
+	"invalidHexBlue": "Virheellinen sininen alue. On oltava välillä '00' ja 'ff', mutta vastaanotti `{{value}}`.",
+	"invalidHslHue": "Virheellinen Hue-alue. On oltava välillä 0 - 360, mutta vastaanotti `{{value}}`.",
+	"invalidHslSaturation": "Virheellinen kylläisyysalue. Täytyy olla välillä 0 - 100, mutta vastaanotti `{{value}}`.",
+	"invalidHslLightness": "Väärä syttymisalue. On oltava välillä 0 - 100, mutta vastaanotti `{{value}}`.",
+	"invalidRgbRed": "Punainen alue ei kelpaa. On oltava välillä 0 - 255, mutta vastaanotettu `{{value}}`.",
+	"invalidRgbGreen": "Vihreä alue ei kelpaa. Sen on oltava välillä 0 - 255, mutta se on vastaanotettu `{{value}}`.",
+	"invalidRgbBlue": "Virheellinen sininen alue. On oltava välillä 0 - 255, mutta vastaanotti `{{value}}`."
+}

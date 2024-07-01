@@ -1,0 +1,36 @@
+{
+	"helpAllFlag": "Eine Kategorie pro Seite anzeigen. Probleme mit dem Einbetten? Führe `{{prefix}}help --all` aus, um eine vollständige Liste in DMs zu erhalten.",
+	"helpCommandCount_one": "{{count}} Befehl",
+	"helpCommandCount_other": "{{count}} Befehle",
+	"helpData": {
+		"footer": "Befehlshilfe für {{footerName}}",
+		"title": "{{titleDescription}}"
+	},
+	"helpDescription": "Zeigt alle Befehle oder die Beschreibung eines Befehls an.",
+	"helpExtended": {
+		"usages": [
+			"--cat/--categories",
+			"--alle",
+			"Kategoriename",
+			"Seite",
+			"Befehlsname"
+		],
+		"extendedHelp": "Der Hilfe-Befehl zeigt eine paginierte Liste aller Befehle nach ihren Kategorien oder die erweiterte Information eines Befehls, falls angegeben.\n\nWenn du `--categories` oder `--cat` verwendest, erhältst du die Liste aller Kategorien und die Anzahl der Befehle, die jeder von ihnen hat.",
+		"reminder": "Der Hilfe-Befehl **nur** zeigt die Befehle, die Sie verwenden können. Für die vollständige Liste besuchen Sie bitte <https://wolfstar.rocks/commands>.",
+		"examples": [
+			"--Katze",
+			"--alle",
+			"Moderation",
+			"12",
+			"helfen"
+		]
+	},
+	"helpDm": "📥 | Die Liste der Befehle, auf die Sie Zugriff haben, wurde an Ihre DMS gesendet.",
+	"helpNodm": "{{REDCROSS}} | Du hast DMs deaktiviert, sodass ich dir die Liste der Befehle nicht senden konnte.",
+	"v7Description": "Ruft die Informationen über Skyra v7 ab",
+	"v7Extended": {
+		"extendedHelp": "Dies ist ein **verstecktes** Befehl, der ausschließlich benutzt wird, um eine Nachricht an jeden zu senden, der versucht, Befehle zu verwenden, die gemäß [SKyra v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) plans."
+	},
+	"v7Message": "Hallo! Vielen Dank für die Verwendung dieses Befehls, aber er wurde aufgrund der Pläne [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)s entfernt. Der Link enthält eine Erklärung dafür, warum `{{command}}` entfernt wurde.\n\nSorry für die Unannehmlichkeiten und vielen Dank für die Verwendung von WolfStar. 💖",
+	"v7NayreMessage": "Hallo da! Danke, dass Sie diesen Befehl verwenden es wurde entfernt und wird entweder als Teil des Acryss RPG von Nayre neu gestaltet, wie in [WolfStar v7](https://skyra. otion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s Pläne.\n\nEntschuldigen Sie die Unannehmlichkeiten, und danke Ihnen für die Verwendung von WolfStar. 💖"
+}

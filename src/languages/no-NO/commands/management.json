@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Avbrutt",
+	"permissionNodesHigher": "{{REDCROSS}} Du kan ikke endre eller forhåndsvise rettigheter for dette målet.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Du kan ikke tillate kommandoer for rollen `@everyone`.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Ugyldig type, forventet \"allow\" eller \"deny\".",
+	"permissionNodesAdd": "{{GREENTICK}} ble lagt til kommandoen i denne noden.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Den valgte noden eksisterer ikke.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Den valgte kommandoen finnes ikke i tillatelsesnoden.",
+	"permissionNodesRemove": "{{GREENTICK}} ble fjernet som kommando fra tillatelse noden.",
+	"permissionNodesReset": "{{GREENTICK}} fjernet alle kommandoer fra permission noden.",
+	"permissionNodesShowName": "Rettigheter for: __{{name}}__",
+	"permissionNodesShowAllow": "**Tillatt **: {{allow}}",
+	"permissionNodesShowDeny": "**Nekt**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Kanaler",
+		"MEMBERS": "Medlemmer",
+		"OTHER": "Annet"
+	},
+	"guildInfoChannels": "• **{{text}}** Tekst, **{{voice}}** Stemme, **{{categories}}** kategorier.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** etter **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** medlemmer\n• Eier: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Roller: **{{size}}**\n• Opprettet: **{{createdAt}}**\n• Verifiseringsnivå: **{{verificationLevel, humanLevels}}",
+	"guildInfoBanner": "Banner bilde",
+	"guildInfoIcon": "Ikon bilde",
+	"guildInfoSplash": "Sprutende bilde",
+	"guildInfoDiscoverySplash": "Discovery Splash Image",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Tillatelser"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nNavn: **{{role.name}}**\nFarge: **{{role.hexColor}}**\nHeistet: **{{hoisted}}**\nPosisjon: **{{role.rawPosition}}**\nNevnbar **{{mentionable}}**",
+	"roleInfoAll": "Alle tillatelser gitt.",
+	"roleInfoNoPermissions": "Tillatelser ikke gitt.",
+	"manageCommandAutoDeleteShowEmpty": "Det er ikke konfigurert noen komandosettet akkurat nå.",
+	"manageCommandAutoDeleteShow": "Alle kommandoer-autodeletes konfigurert:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Suksess! Alle vellykkede kommandoer på {{channel}} vil slettes etter {{time, duration}}!",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} vellykket! Kommandoer vil ikke automatisk bli slettet i {{channel}} lenger!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Kanalen {{channel}} ble ikke konfigurert til å slette meldinger automatisk!",
+	"manageCommandAutoDeleteReset": "Alle kommandoens autodeletter har blitt tilbakestilt.",
+	"manageCommandChannelShow": "Liste over deaktiverte kommandoer i {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Listen over deaktiverte kommandoer for den angitte kanalen er tom!",
+	"manageCommandChannelAddAlreadyset": "Kommandoen du prøver å deaktivere er allerede deaktivert!",
+	"manageCommandChannelAdd": "Deaktiverte kommandoen {{command}} for kanalen {{channel}} vellykket!",
+	"manageCommandChannelRemoveNotset": "Kommandoen du prøver å aktivere ble ikke deaktivert for {{channel}}.",
+	"manageCommandChannelRemove": "Kommandoen {{command}} ble aktivert for kanalen {{channel}}",
+	"manageCommandChannelResetEmpty": "Kanalen hadde ikke deaktivert kommando, derfor bestemte jeg meg å ikke gjøre noe.",
+	"manageCommandChannelReset": "Alle deaktiverte kommandoer ble aktivert i {{channel}}, nytt!",
+	"manageReactionRolesShowEmpty": "Det er ingen reaksjonsroller satt opp i denne serveren.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Suksess! Jeg vil nå gi rollen når folk reagerer med {{emoji}} på enhver melding fra {{channel}}!",
+	"manageReactionRolesAddPrompt": "Lytter nå! Vennligst svar på en beskjed, så vil jeg binde reaksjonen med roten!",
+	"manageReactionRolesAddMissing": "Jeg ventet, men det ser ikke ut til å ha reagert på en melding.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Suksess! Jeg vil nå gi rollen når folk reagerer med {{emoji}} fra {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Reaksjonens rolle du angav eksisterer ikke.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Suksess! Jeg vil ikke lenger gi rollen når folk reagerer med {{emoji}} fra {{url}}!",
+	"manageReactionRolesResetEmpty": "Det var ingen reaksjonsroller opprettet.",
+	"manageReactionRolesReset": "{{GREENTICK}} fjernet alle reaksjoner rollene.",
+	"configurationEquals": "Konfigurering vellykket: ingen endringer ble gjort.",
+	"setIgnoreChannelsSet": "Ignorerer alle kommandoinndata fra {{channel}} nå.",
+	"setIgnoreChannelsRemoved": "Lytter alle kommando input fra {{channel}} nå.",
+	"setImageLogsSet": "Velges bildet logg-kanalen til {{channel}}.",
+	"setMemberAddLogsSet": "Velykket sett medlem legg til logg-kanalen til {{channel}}.",
+	"setMemberRemoveLogsSet": "Valgte medlem fjerne logg-kanalen til {{channel}}.",
+	"setMessageUpdateLogsSet": "Oppdateringen av meldingen ble satt til {{channel}}.",
+	"setMessageDeleteLogsSet": "Sletting av logger kanalen for meldingen til {{channel}}.",
+	"setModLogsSet": "Velges modens logger til {{channel}}.",
+	"setPrefixSet": "Prefikset en vellykket prefiks til `{{prefix}}`. Bruk `-{{prefix}}setprefix NewPrefix` for å endre den på nytt.",
+	"stickyRolesNotExists": "Brukeren {{user}} har ingen klebrige roller eller har ikke den angitte en.",
+	"stickyRolesReset": "Alle klissete roller ble fjernet fra {{user}}.",
+	"stickyRolesRemove": "Fjernet den angitte rollen fra {{user}}.",
+	"stickyRolesAdd": "Den angitte rollen som klissete til {{user}} ble lagt til.",
+	"stickyRolesShowEmpty": "Det er ingen klebrige roller å vise.",
+	"stickyRolesShowSingle": "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Klargjør dempingssystemet.",
+	"createMuteExtended": {
+		"extendedHelp": "Denne kommandoen forbereder det dempede systemet ved å opprette en rolle kalt `muted`, og konfigurerer det til serverinnstillingene. Denne kommandoen endrer også alle kanaler (hvor mulig) tillatelser og deaktiverer tillatelsen **{{SEND_MESSAGES, permissions}}** i tekstkanaler og **{{CONNECT, permissions}}** i talekanaler for nevnte rolle."
+	},
+	"permissionNodesDescription": "Konfigurer rettigheter for denne serveren.",
+	"permissionNodesExtended": {
+		"usages": [
+			"legge til rolle/medlem tillater/nekter kommando",
+			"fjerne rolle/medlem tillater/nekter kommando",
+			"reset Role/Member",
+			"vis rolle/medlem",
+			"vis",
+			"Rolle/Medlem"
+		],
+		"extendedHelp": "Tillatelsesnoder er per-bruker og per-rolleoverstyringer. De brukes når innebygget tilgangssystem ikke er nok.\nPå noen tjenere ønsker de for eksempel å gi en personalrolle rettigheter til å bruke demping og advarsel, men ikke forby eller andre (forbeholdt moderatorer), og advarer bare om den konfigurerbare tillatelsen på personalnivå, så du kan be meg om å la den tøffe kommandoen for personalet spille nå.",
+		"explainedUsage": [
+			[
+				"Handling",
+				"Enten `add`, `fjern`, `tilbakestill`, eller `show`. Standard å `show`."
+			],
+			[
+				"Target",
+				"Enten et rollenavn eller et brukernavn, så er det mulig å få ID-er og nevner for heller."
+			],
+			[
+				"Type:",
+				"Enten \"allow\" eller \"deny\"."
+			],
+			[
+				"Kommando",
+				"Navnet på kommandoen hvis du vil tillate eller nekte."
+			]
+		],
+		"examples": [
+			"legg til personale tillatt advarsel",
+			"legge til moderatorer avslå utestengelse",
+			"fjerne ansatte tillater advarsel",
+			"nullstill personalet",
+			"vis personale"
+		],
+		"reminder": "Server eieren kan ikke ha noen handlinger, eller `alle rollen kan ha tillatte kommandoer."
+	},
+	"managecommandautodeleteDescription": "Behandle automatisk sletting av per-kanaler.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"Legg til tekstkanal sekunder",
+			"Fjern tekstKanal",
+			"reset",
+			"vis",
+			""
+		],
+		"extendedHelp": "Denne kommandoen administrerer kommandoen sin per-kanal kommando auto-slett tid, den tjener godt for å la en kanal være ren fra kommandoer.",
+		"explainedUsage": [
+			[
+				"legg til",
+				"Legg til en automatisk sletteklokke for den angitte kanalen."
+			],
+			[
+				"fjern",
+				"Fjern auto-timer fra den angitte kanalen."
+			],
+			[
+				"reset",
+				"Fjern alle auto-slettingstidtakere."
+			],
+			[
+				"vis",
+				"Vis tidtakeren automatisk sletting for alle kanaler."
+			]
+		],
+		"reminder": "Kanalargumentet er valgfritt, som forbrukes for meldingskanalen, men bruker et unikt søk når det er mulig.",
+		"examples": [
+			"vis",
+			"legg til #general 4s",
+			"fjern generelle",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Behandle sperret kommando per-kanal listen.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"Legg til tekstkanal kommando",
+			"Fjern TextChannel kommando",
+			"Tilbakestill tekstKanal",
+			"Vis tekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen administrerer denne serverens per-kanal blokkerte kommandoeliste, den fungerer bra for å deaktivere visse kommandoer du ikke vil brukes i visse kanaler (for å deaktivere en kommando globalt, bruk knappen `disabledCommands` for å deaktivere i alle kanaler.",
+		"explainedUsage": [
+			[
+				"vis [channel]",
+				"Vis listen over kommandoer blokkert i den angitte kanalen."
+			],
+			[
+				"legg til [channel] <command>",
+				"Legg til en kommando til den angitte kanallisten over blokkerte kommandoer."
+			],
+			[
+				"fjern [channel] <command>",
+				"Fjerne en kommando fra den angitte kanallisten over blokkerte kommandoer."
+			],
+			[
+				"reset [channel]",
+				"Fjern listen over kommandoer blokkert i den angitte kanalen."
+			]
+		],
+		"reminder": "Kanalargumentet er valgfritt, men benytter seg av et sunt søk når det er mulig.",
+		"examples": [
+			"legg til generell profil",
+			"fjern generell profil",
+			"tilbakestill #general",
+			"vis #general"
+		]
+	},
+	"manageReactionRolesDescription": "Behandle reaksjonens roller for denne serveren.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"legg til rolle",
+			"Legg til Rolle TextChannel Emoji",
+			"fjern rollemelding",
+			"reset",
+			"vis"
+		],
+		"extendedHelp": "Sømløs sette opp reaksjonsroller i serveren din! Når du legger til reaksjonsroller, Jeg hører på deres reaksjoner i 5 minutter og jeg binder den første reaksjonen fra dere ved siden av kanalen og meldingen, med den spesifiserte rollen.\nEllers hvis en kanal er spesifisert, vil ikke en ledetekst bli opprettet, og reaksjonsrollen vil bli knyttet til alle kanalens meldinger.\n\nDen beste måten å legge til nye reaksjonsroller på er å bruke `legg til @role`. Hvis du foretrekker ikke å binde reaksjonen til en bestemt melding, bruk `legg til @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"vis",
+				"Hent listen over alle reaksjonsroller."
+			],
+			[
+				"legg til <role>",
+				"Legger til en reaksjonsrolle som bindende den første meldingen som ble reagert siden utførelsen med rollen."
+			],
+			[
+				"fjern <role> <message>",
+				"Fjerner en reaksjonsrolle, bruk `show` for å få en liste over dem."
+			],
+			[
+				"reset",
+				"Fjerner alle roller for reaksjon."
+			]
+		],
+		"examples": [
+			"legg til @role",
+			"legg til @role #channel emoji",
+			"fjern @role 123456789012345678",
+			"reset",
+			"vis"
+		]
+	},
+	"rolesAdded": "Følgende roller har blitt lagt til din profil: `{{roles}}`",
+	"rolesAuditlog": "Autorisert: Offentlig rolleforvaltning scheduled 'Roles' Kommando.",
+	"rolesListEmpty": "Denne serveren har ikke en rolle som oppført som offentlig rolle.",
+	"rolesListTitle": "Liste over offentlige roller",
+	"rolesNotManageable": "Følgende roller kan ikke gis av meg på grunn av deres hierarkiske rolleposisjon: `{{roles}}`",
+	"rolesNotPublic": "Følgende roller er ikke offentlige: `{{roles}}`",
+	"rolesRemoved": "Følgende roller har blitt fjernet fra din profil: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Angi en kanal til ignorert kanallisten.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp ignorerte kanaler. En ignorert kanal er en kanal hvor ingen er, men moderatorer kan bruke WolfStars kommandoer.\nI motsetning til å fjerne **{{SEND_MESSAGES, permissions}}** tillatelse, WolfStar kan fortsatt sende (og derfor utføre kommandoer) meldinger, som lar moderatorer bruke moderasjonskommandoer i kanalen.\nBruk dette hvis du ønsker å utestenge noen kommando fra botten i en bestemt kanal.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen eller skrive inn \"her\" for å velge kanalen meldingen ble sendt."
+			]
+		],
+		"reminder": "Du kan ikke angi samme kanal to ganger i stedet, WolfStar fjerner den.",
+		"examples": [
+			"#generell",
+			"her"
+		]
+	},
+	"setImageLogsDescription": "Velg bilde-logg-kanal.",
+	"setImageLogsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp bildeloggekanalen. Når et medlem sender et bilde-vedlegg, vil det sende en lagt inn melding med vedlegget på nytt.\nAlle meldinger er i embeds slik at du må aktivere tillatelsen **{{EMBED_LINKS, permissions}}** for UlfStar.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen eller skrive inn \"her\" for å velge kanalen meldingen ble sendt."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"her"
+		]
+	},
+	"setMemberAddLogsDescription": "Velg medlemmet legg til logg-kanal.",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp medlemmet legge til loggkanal, som vil motta en melding hver gang en bruker blir med.\nHvis en avgrenset bruker blir med, vil den sende et spesielt 'Muted Member Joined' arrangement.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen eller skrive inn \"her\" for å velge kanalen meldingen ble sendt."
+			]
+		],
+		"examples": [
+			"#Medlem-logger",
+			"her"
+		],
+		"reminder": "Alle meldinger er i lagt inn slik at du må aktivere tillatelsen **{{EMBED_LINKS, permissions}}** for WolfStar."
+	},
+	"setMemberRemoveLogsDescription": "Velg medlemmet fjerne logg-kanalen.",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp medlemmet med å fjerne loggkanalen. som vil motta en melding hver gang en bruker forlater seg, blir kastet eller er utestengt.\ni tilfelle av det to siste vil det sende en spesiell \"bruker kicked\" eller \"Bruker Bannet\" hendelsen.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen det, eller skrive inn \"her\" for å konfigurere kanalen kommandoen ble brukt i."
+			]
+		],
+		"examples": [
+			"#Medlem-logger",
+			"her"
+		],
+		"reminder": "Alle meldinger er i lagt inn slik at du må aktivere tillatelsen **{{EMBED_LINKS, permissions}}** for WolfStar."
+	},
+	"setMessageUpdateLogsDescription": "Velg oppdateringskanalen for melding.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp meldingsoppdateringskanalen, som vil motta en melding hver gang meldingen blir redigert.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen det, eller skrive inn \"her\" for å konfigurere kanalen kommandoen ble brukt i."
+			]
+		],
+		"reminder": "Alle meldinger er i lagt inn slik at du må aktivere tillatelsen **{{EMBED_LINKS, permissions}}** for WolfStar.",
+		"examples": [
+			"#message-log",
+			"her"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Sett melding sletting av logg-kanalen. (Automatic Translation)",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp meldingen \"Slett logg\" kanalen, som vil motta en melding hver gang meldingen slettes.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen det, eller skrive inn \"her\" for å konfigurere kanalen kommandoen ble brukt i."
+			]
+		],
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nDue to Discord limitations, WolfStar cannot know who deleted a message.",
+		"examples": [
+			"#message-log",
+			"her"
+		]
+	},
+	"setmodlogsDescription": "Velg kanalen for modifikasjon logger.",
+	"setmodlogsExtended": {
+		"usages": [
+			"Her/TekstKanal"
+		],
+		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"En TextChannel. Du kan enten sette navnet på kanalen, taggen eller skrive inn \"her\" for å velge kanalen meldingen ble sendt."
+			]
+		],
+		"reminder": "På grunn av Discord-begrensninger, oppdager ikke autodeteksjon kicks. Du må bruke kommandoen `kick` hvis du vil dokumentere dem som en formell moderasjonsloggsak.",
+		"examples": [
+			"#mod-logs",
+			"her"
+		]
+	},
+	"setprefixDescription": "Angi UlfStars prefiks.",
+	"setprefixExtended": {
+		"usages": [
+			"Prefiks"
+		],
+		"extendedHelp": "Denne kommandoen hjelper deg å sette opp WolfStars prefiks. Et prefiks er en feste som legges til foran ordet, i dette tilfellet meldingen.\nDet tillater botter å skille mellom en vanlig melding og en kommando. Av naturen skal prefikset mellom være forskjellige for å unngå konflikter.\nDersom du glemmer WolfStars prefiks, bare nevn henne med ingenting annet og hun vil fortelle deg den nåværende prefiksen.\nAlternativt kan du sette kommandoene inn med navnet hennes og et komma (for eksempel `WolfStar, ping`).",
+		"explainedUsage": [
+			[
+				"Prefiks",
+				"Prefikset som skal brukes. Standard i WolfStar er `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Prefikset ditt bør kun inneholde tegn alle kan skrive og skrive type.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Sjekk informasjon om serveren.",
+	"guildInfoExtended": {
+		"extendedHelp": "Server info-kommandoen viser informasjon for serveren meldingen ble sendt.\nDen viser antall kanaler, med antall for hver kategori, antall medlemmer (gitt fra API), eieren med sin brukerid, antall roller, region, opprettelsesdato, verifiseringsnivå. . mellom andre."
+	},
+	"roleInfoDescription": "Sjekk informasjonen for en rolle.",
+	"roleInfoExtended": {
+		"usages": [
+			"Rolle",
+			""
+		],
+		"extendedHelp": "Kommandoen for info viser informasjon for en rolle, for eksempel id navn, farge, om den er heist (viser separat) eller ikke, det er rollen hierarkiet posisjon, hvorvidt det er nevnbar eller ikke, hvor mange medlemmer har sagt rolle og dens rettigheter.\nDen sender en innebygd melding med fargen til rollen.",
+		"explainedUsage": [
+			[
+				"Rolle",
+				"Rollenavn, navnet, nevne eller id."
+			]
+		],
+		"examples": [
+			"Administratorsiden",
+			"Moderator",
+			""
+		]
+	},
+	"stickyRolesDescription": "Administrere klissete roller for brukere.",
+	"stickyRolesExtended": {
+		"usages": [
+			"Legg til brukerrolle",
+			"fjern brukerrolle",
+			"tilbakestill bruker",
+			"vis bruker",
+			"Bruker"
+		],
+		"extendedHelp": "Med den klebrige kommandoen kan du håndtere de klebrige rollene til hvert medlem, De er også roller som blir holdt når du reiser, og blir brukt igjen så snart de blir med.",
+		"explainedUsage": [
+			[
+				"Handling",
+				"Enten vil du sjekke de klebrige rollene, legge til en, fjerne en eller fjerne alle dem."
+			],
+			[
+				"Bruker",
+				"Brukermål for alle handlinger. (Automatic Translation)"
+			],
+			[
+				"Rolle",
+				"Rollen som skal legges til eller fjernes."
+			]
+		],
+		"examples": [
+			"legg til UlfStar Goddess",
+			"show WolfStar",
+			"Fjern UlfStar Goddess",
+			"reset WolfStar"
+		],
+		"reminder": "Medlemmets roller vil ikke bli endret av denne kommandoen, du må legge til eller fjerne dem."
+	},
+	"rolesDescription": "Liste, Krev eller fjern offentlige roller på denne serveren.",
+	"rolesExtended": {
+		"usages": [
+			"Rolle",
+			""
+		],
+		"extendedHelp": "Offentlige roller er tilgjengelige for alle.\nEn administrator må konfigurere dem med kommandoen konfigurasjon.",
+		"explainedUsage": [
+			[
+				"roller",
+				"Listen over roller for å kreve eller mangle. La dette stå tomt for å få en liste med tilgjengelige roller."
+			]
+		],
+		"reminder": "Når du hevder eller ikke hevder roller kan du gi én eller flere rolle(r).\nFor å kreve flere roller, må du skille dem med et komma, for eksempel `rød,green`.\nDu kan spesifisere hvilke roller du vil ved å tilby rollen ID, navn eller en underdel av navnet.\n\nAdministratorer kan legge til offentlige roller ved hjelp av `{{prefix}}conf set roles.public ExamplePublicRole`.",
+		"examples": [
+			"Designer Programmerer",
+			"Designer"
+		]
+	}
+}

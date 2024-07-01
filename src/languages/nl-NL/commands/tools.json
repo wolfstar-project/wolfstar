@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Bekijk iemands avatar in volledige grootte.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Gebruiker"
+		],
+		"extendedHelp": "Zoals de naam van dit commando zegt, toont het iemands avatar.",
+		"explainedUsage": [
+			[
+				"Gebruiker",
+				"De gebruiker om de avatar voor te krijgen. Standaard ingesteld op jezelf."
+			]
+		],
+		"reminder": "Gebruik de --grootte vlag om de grootte van de avatar te wijzigen."
+	},
+	"avatarNone": "De gebruiker heeft geen avatar ingesteld.",
+	"voteDescription": "Vereenvoudigd stemgedrag op basis van reactie.",
+	"voteExtended": {
+		"usages": [
+			"Vraag"
+		],
+		"examples": [
+			"Moet ik het #anime kanaal implementeren?"
+		],
+		"explainedUsage": [
+			[
+				"Vraag",
+				"De vraag waarover gestemd moet worden."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Je moet een topic geven voor de poll.",
+	"voteReactionBlocked": "{{REDCROSS}} Ik kon de reacties niet toevoegen die nodig waren om dit commando te laten werken, omdat je me hebt geblokkeerd! :kriing_face:",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Gebruiker"
+		],
+		"extendedHelp": "Haalt informatie op over elk serverlid. Ook bekend als `userinfo` in vele andere bots.",
+		"explainedUsage": [
+			[
+				"Gebruiker",
+				"De gebruiker om informatie over te krijgen. Standaard ingesteld op jezelf."
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} meer."
+}

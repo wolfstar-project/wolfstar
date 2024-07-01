@@ -1,0 +1,6 @@
+{
+	"aborted": "Pomyślnie przerwano żądanie.",
+	"invalidIndex": "Ta liczba była poza zakresem, przerwano szybkość.",
+	"invalidNumber": "Spodziewam się, że podasz mi (pojedynczą cyfrę), otrzymasz ziemniak.",
+	"matches": "Znalazłem wiele dopasowań! **Proszę wybrać liczbę w granicach 0 i {{matches}}**:\n{{codeblock}}\nNapisz **ABORT** jeśli chcesz wyjść z pytania."
+}

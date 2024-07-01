@@ -1,0 +1,445 @@
+{
+	"commandHandlerAborted": "Abgebrochen",
+	"permissionNodesHigher": "{{REDCROSS}} Sie können die Berechtigungsknoten für dieses Ziel weder ändern noch vorschlagen.",
+	"permissionNodesCannotAllowEveryone": "{{REDCROSS}} Du kannst keine Befehle für die Rolle `@everyone` zulassen.",
+	"permissionNodesInvalidType": "{{REDCROSS}} Ungültiger Typ, erwartet entweder `allow` oder `deny`.",
+	"permissionNodesAdd": "{{GREENTICK}} Erfolgreich den Befehl zum Berechtigungsknoten hinzugefügt.",
+	"permissionNodesNodeNotExists": "{{REDCROSS}} Der ausgewählte Berechtigungsknoten existiert nicht.",
+	"permissionNodesCommandNotExists": "{{REDCROSS}} Der ausgewählte Befehl existiert nicht im Permision-Knoten.",
+	"permissionNodesRemove": "{{GREENTICK}} Erfolgreich den Befehl vom Berechtigungsknoten entfernt.",
+	"permissionNodesReset": "{{GREENTICK}} Erfolgreich alle Befehle aus dem Berechtigungsknoten entfernt.",
+	"permissionNodesShowName": "Berechtigungen für: __{{name}}__",
+	"permissionNodesShowAllow": "**Erlauben**: {{allow}}",
+	"permissionNodesShowDeny": "**Ablehnen**: {{deny}}",
+	"guildInfoTitles": {
+		"CHANNELS": "Kanäle",
+		"MEMBERS": "Mitglieder",
+		"OTHER": "Andere"
+	},
+	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Stimme, **{{categories}}** Kategorien.\n• AFK: {{afkChannelText}}",
+	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** nach **{{afkTime}}**min",
+	"guildInfoMembers": "• **{{memberCount, number}}** Mitglied(en)\n• Besitzer: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
+	"guildInfoOther": "• Rollen: **{{size}}**\n• Erstellt: **{{createdAt}}**\n• Verifizierungsstufe: **{{verificationLevel, humanLevels}} ** **",
+	"guildInfoBanner": "Bannerbild",
+	"guildInfoIcon": "Icon-Bild",
+	"guildInfoSplash": "Splash-Bild",
+	"guildInfoDiscoverySplash": "Discovery Wurftaschenbild",
+	"roleInfoTitles": {
+		"PERMISSIONS": "Berechtigungen"
+	},
+	"roleInfoData": "ID: **{{role.id}}**\nName: **{{role.name}}**\nFarbe: **{{role.hexColor}}**\nGeistert: **{{hoisted}}**\nPosition: **{{role.rawPosition}}**\nErwähnbar: **{{mentionable}}**",
+	"roleInfoAll": "Alle Berechtigungen erteilt.",
+	"roleInfoNoPermissions": "Berechtigungen nicht erteilt.",
+	"manageCommandAutoDeleteShowEmpty": "Momentan ist kein Befehl autodelete konfiguriert.",
+	"manageCommandAutoDeleteShow": "Alle Befehle autodeletes konfiguriert:{{codeblock}}",
+	"manageCommandAutoDeleteAdd": "{{GREENTICK}} Erfolgreich! Alle erfolgreichen Befehle in {{channel}} werden nach {{time, duration}",
+	"manageCommandAutoDeleteRemove": "{{GREENTICK}} Erfolg! Befehle werden nicht mehr automatisch in {{channel}} gelöscht!",
+	"manageCommandAutoDeleteRemoveNotset": "{{REDCROSS}} Der Kanal {{channel}} wurde nicht so konfiguriert, dass Nachrichten automatisch gelöscht werden!",
+	"manageCommandAutoDeleteReset": "Alle automatischen Löschvorgänge wurden zurückgesetzt.",
+	"manageCommandChannelShow": "Liste der deaktivierten Befehle in {{channel}}: {{commands}}",
+	"manageCommandChannelShowEmpty": "Die Liste der deaktivierten Befehle für den angegebenen Kanal ist leer!",
+	"manageCommandChannelAddAlreadyset": "Der Befehl, den Sie deaktivieren möchten, ist bereits deaktiviert!",
+	"manageCommandChannelAdd": "Der Befehl {{command}} für den Channel {{channel}} wurde erfolgreich deaktiviert!",
+	"manageCommandChannelRemoveNotset": "Der Befehl, den Sie aktivieren möchten, wurde für {{channel}} nicht deaktiviert.",
+	"manageCommandChannelRemove": "Der Befehl {{command}} für den Kanal {{channel}} wurde erfolgreich aktiviert!",
+	"manageCommandChannelResetEmpty": "Dieser Kanal hatte keinen deaktivierten Befehl, daher habe ich mich entschlossen, nichts zu tun.",
+	"manageCommandChannelReset": "Alle deaktivierten Befehle erfolgreich in {{channel}}aktiviert, genießen!",
+	"manageReactionRolesShowEmpty": "Es gibt keine Reaktionsrollen in diesem Server.",
+	"manageReactionRolesAddChannel": "{{GREENTICK}} Erfolg! Ich gebe jetzt die Rolle, wenn Leute mit {{emoji}} auf jede Nachricht von {{channel}} reagieren!",
+	"manageReactionRolesAddPrompt": "Hören Sie jetzt zu! Bitte reagieren Sie auf eine Nachricht und ich werde die Reaktion mit der Rolle verbinden!",
+	"manageReactionRolesAddMissing": "Ich habe gewartet, aber Sie haben offenbar nicht auf eine Botschaft reagiert.",
+	"manageReactionRolesAdd": "{{GREENTICK}} Erfolg! Ich gebe jetzt die Rolle, wenn Leute mit {{emoji}} reagierennamed@@2 auf {{url}}!",
+	"manageReactionRolesRemoveNotExists": "Die von Ihnen angegebene Reaktionsrolle existiert nicht.",
+	"manageReactionRolesRemove": "{{GREENTICK}} Erfolg! Ich werde die Rolle nicht mehr geben, wenn jemand mit {{emoji}} reagiertnamed@@2 auf {{url}}!",
+	"manageReactionRolesResetEmpty": "Es wurden keine Reaktionsrollen eingerichtet.",
+	"manageReactionRolesReset": "{{GREENTICK}} Alle Reaktionsrollen erfolgreich entfernt.",
+	"configurationEquals": "Erfolgreich konfiguriert: keine Änderungen wurden vorgenommen.",
+	"setIgnoreChannelsSet": "Alle Befehlseingaben von {{channel}} jetzt ignorieren.",
+	"setIgnoreChannelsRemoved": "Alle Befehlseingaben von {{channel}} jetzt anhören.",
+	"setImageLogsSet": "Der Kanal für Bilderprotokolle wurde erfolgreich auf {{channel}} gesetzt.",
+	"setMemberAddLogsSet": "Der Log-Kanal wurde erfolgreich auf {{channel}} gesetzt.",
+	"setMemberRemoveLogsSet": "Der Logs Kanal wurde erfolgreich auf {{channel}} gesetzt.",
+	"setMessageUpdateLogsSet": "Benachrichtigungsprotokoll-Kanal erfolgreich auf {{channel}} gesetzt.",
+	"setMessageDeleteLogsSet": "Der Löschprotokoll-Kanal wurde erfolgreich auf {{channel}} gesetzt.",
+	"setModLogsSet": "Mod Logs Kanal erfolgreich auf {{channel}} gesetzt.",
+	"setPrefixSet": "Das Präfix wurde erfolgreich auf `{{prefix}}`gesetzt. Verwende `{{prefix}}setPrefix NewPrefix` um es erneut zu ändern.",
+	"stickyRolesNotExists": "Der Benutzer {{user}} hat keine klebrigen Rollen oder nicht die angegebene Rolle.",
+	"stickyRolesReset": "Alle klebrigen Rollen erfolgreich von {{user}} entfernt.",
+	"stickyRolesRemove": "Die angegebene Rolle wurde erfolgreich von {{user}} entfernt.",
+	"stickyRolesAdd": "Die angegebene Rolle wurde erfolgreich als klebrig zu {{user}} hinzugefügt.",
+	"stickyRolesShowEmpty": "Es gibt keine klebrigen Rollen zu zeigen.",
+	"stickyRolesShowSingle": "Fixierte Rolle(n) für **{{user}}**: {{roles, list(conjunction)}}.",
+	"createMuteDescription": "Bereiten Sie das Stummsystem vor.",
+	"createMuteExtended": {
+		"extendedHelp": "Dieser Befehl bereitet das Stummsystem vor, indem er eine Rolle mit dem Namen `muted` erstellt und es in den Servereinstellungen konfiguriert. Dieser Befehl ändert auch alle Berechtigungen (soweit möglich) und deaktiviert die Berechtigung **{{SEND_MESSAGES, permissions}}** in Textkanälen und **{{CONNECT, permissions}}** in Sprachkanälen für diese Rolle."
+	},
+	"permissionNodesDescription": "Konfigurieren Sie die Berechtigungsknoten für diesen Server.",
+	"permissionNodesExtended": {
+		"usages": [
+			"füge Rollen/Member allow/deny Befehl hinzu",
+			"Rollen entfernen/zulassen/verweigern Befehl",
+			"reset Role/Member",
+			"zeige Rolle/Mitglied",
+			"zeigen",
+			"Rolle/Mitglied"
+		],
+		"extendedHelp": "Berechtigungsknoten sind pro Benutzer und pro Rolle überschrieben. Sie werden verwendet, wenn das eingebaute Berechtigungssystem nicht ausreicht.\nAuf einigen Servern zum Beispiel wollen sie einer Personalrolle die Berechtigung geben, stumm zu verwenden und zu warnen, aber nicht sperren und andere (nur für Moderatoren) und nur warnen ist für die konfigurierbare Personalfreigabe verfügbar, so dass Sie mir sagen können, dass ich den Stummschaltbefehl für die Personalrolle jetzt erlauben soll.",
+		"explainedUsage": [
+			[
+				"Aktion",
+				"Entweder `add`, `remove`, `reset` oder `show`. Standard ist `show`."
+			],
+			[
+				"Target",
+				"Entweder ein Rollenname oder ein Benutzername, der IDs und Erwähnungen erlaubt."
+			],
+			[
+				"Typ",
+				"Entweder `allow` oder `deny`."
+			],
+			[
+				"Befehl",
+				"Der Name des Befehls, der erlaubt oder verweigert werden soll."
+			]
+		],
+		"examples": [
+			"Mitarbeiter erlauben Warnung hinzufügen",
+			"füge Moderatoren zu sperren",
+			"entferne Personal erlaube Warnung",
+			"Team zurücksetzen",
+			"zeige Personal"
+		],
+		"reminder": "Der Serverbesitzer kann keine Aktionen haben, auch die `everyone` Rolle kann keine erlaubten Befehle haben."
+	},
+	"managecommandautodeleteDescription": "Timer für jeden Kanal automatisch löschen.",
+	"managecommandautodeleteExtended": {
+		"usages": [
+			"TextChannel Sekunden hinzufügen",
+			"TextChannel entfernen",
+			"reset",
+			"zeigen",
+			""
+		],
+		"extendedHelp": "Dieser Befehl verwaltet den automatischen Löschvorgang dieses Servers pro Kanal und dient gut dazu, einen Kanal von Befehlen sauber zu lassen.",
+		"explainedUsage": [
+			[
+				"hinzufügen",
+				"Füge einen Auto-Lösch-Timer für den angegebenen Kanal hinzu."
+			],
+			[
+				"entfernen",
+				"Entfernen Sie den Auto-Timer aus dem angegebenen Kanal."
+			],
+			[
+				"reset",
+				"Lösche alle Timer automatisch."
+			],
+			[
+				"zeigen",
+				"Zeigt den Auto-Lösch-Timer für alle Kanäle an."
+			]
+		],
+		"reminder": "Das Argument des Kanals ist optional. Standardmäßig wird der Kanal der Nachricht verwendet, aber es verwendet unscharfe Suche, wenn möglich.",
+		"examples": [
+			"zeigen",
+			"füge #allgemeine 4 s hinzu",
+			"#General entfernen",
+			"reset"
+		]
+	},
+	"manageCommandChannelDescription": "Verwalten Sie die blockierte Befehlsliste pro Kanal.",
+	"manageCommandChannelExtended": {
+		"usages": [
+			"füge TextChannel Befehl hinzu",
+			"entferne TextChannel Befehl",
+			"Textkanal zurücksetzen",
+			"zeige Textkanal"
+		],
+		"extendedHelp": "Dieser Befehl verwaltet die gesperrte Liste dieses Servers pro Kanal es dient gut dazu, bestimmte Befehle zu deaktivieren, die Sie nicht in bestimmten Kanälen verwenden möchten (um einen Befehl global zu deaktivieren, benutze die `disabledCommands` Einstellungen-Taste um in allen Kanälen zu deaktivieren.",
+		"explainedUsage": [
+			[
+				"zeige [channel]",
+				"Zeigt die Liste der im angegebenen Kanal blockierten Befehle an."
+			],
+			[
+				"[channel] <command> hinzufügen",
+				"Füge einen Befehl zur Liste der blockierten Befehle des angegebenen Kanals hinzu."
+			],
+			[
+				"[channel] <command> entfernen",
+				"Entferne einen Befehl aus der Liste der blockierten Befehle des angegebenen Kanals."
+			],
+			[
+				"reset [channel]",
+				"Leere die Liste der im angegebenen Kanal blockierten Befehle."
+			]
+		],
+		"reminder": "Das Kanal-Argument ist optional, aber es verwendet unklare Suche, wenn möglich.",
+		"examples": [
+			"füge #allgemeines Profil hinzu",
+			"#Allgemeines Profil entfernen",
+			"zurücksetzen #Allgemein",
+			"zeige #Allgemein"
+		]
+	},
+	"manageReactionRolesDescription": "Verwalten Sie die Reaktionsrollen für diesen Server.",
+	"manageReactionRolesExtended": {
+		"usages": [
+			"füge Rolle hinzu",
+			"füge Rollen-TextChannel Emoji hinzu",
+			"Rollen-Nachricht entfernen",
+			"reset",
+			"zeigen"
+		],
+		"extendedHelp": "Richten Sie nahtlos Reaktionsrollen in Ihrem Server ein! Beim Hinzufügen von Reaktionsrollen Ich höre deine Reaktionen für 5 Minuten an und binde die erste Reaktion von dir neben dem Kanal und der Nachricht, mit der angegebenen Rolle.\nAndernfalls wird bei Angabe eines Kanals keine Abfrage erzeugt, und die Reaktionsrolle wird an alle Botschaften des Kanals gebunden.\n\nDer beste Weg, neue Reaktionsrollen hinzuzufügen, ist die Verwendung von `add @role`. Wenn du die Reaktion auf eine bestimmte Nachricht nicht binden möchtest, nutze `add @role #channel emoji`",
+		"explainedUsage": [
+			[
+				"zeigen",
+				"Ruft die Liste aller Reaktionsrollen ab."
+			],
+			[
+				"<role> hinzufügen",
+				"Fügt eine Reaktion Rolle binden die erste reagierte Nachricht seit der Ausführung mit der Rolle."
+			],
+			[
+				"<role> <message> entfernen",
+				"Entfernt eine Reaktionsrolle, verwende `show`, um eine Liste davon zu erhalten."
+			],
+			[
+				"reset",
+				"Entfernt alle Reaktionsrollen."
+			]
+		],
+		"examples": [
+			"@role hinzufügen",
+			"@role #channel emoji hinzufügen",
+			"entferne @role 123456789012345678",
+			"reset",
+			"zeigen"
+		]
+	},
+	"rolesAdded": "Die folgenden Rollen wurden deinem Profil hinzugefügt: `{{roles}}`",
+	"rolesAuditlog": "Autorisiert: Öffentliches Rollenmanagement | 'Roles' Befehl.",
+	"rolesListEmpty": "Dieser Server hat keine Rolle als öffentliche Rolle.",
+	"rolesListTitle": "Liste der öffentlichen Rollen",
+	"rolesNotManageable": "Die folgenden Rollen können von mir aufgrund ihrer Hierarchie Position nicht angegeben werden: `{{roles}}`",
+	"rolesNotPublic": "Die folgenden Rollen sind nicht öffentlich: `{{roles}}`",
+	"rolesRemoved": "Die folgenden Rollen wurden aus deinem Profil entfernt: `{{roles}}`",
+	"setIgnoreChannelsDescription": "Setze einen Kanal auf die Ignorieren-Kanalliste.",
+	"setIgnoreChannelsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Dieser Befehl hilft dir, ignorierte Kanäle einzurichten. Ein ignorierter Kanal ist ein Kanal, in dem niemand außer Moderatoren WolfStar-Befehle verwenden kann.\nIm Gegensatz zum Entfernen der **{{SEND_MESSAGES, permissions}}** Berechtigung ist WolfStar immer noch in der Lage, Nachrichten zu senden (und daher Befehle auszuführen) , was Moderatoren erlaubt, Moderationsbefehle im Kanal zu verwenden.\nVerwenden Sie dies, wenn Sie jede Verwendung von Befehlen vom Bot in einem bestimmten Kanal verbieten möchten.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Du kannst entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal auszuwählen, den die Nachricht gesendet wurde."
+			]
+		],
+		"reminder": "Du kannst den gleichen Kanal nicht zweimal setzen, sondern WolfStar wird ihn entfernen.",
+		"examples": [
+			"#Allgemein",
+			"hier"
+		]
+	},
+	"setImageLogsDescription": "Setze den Log-Kanal für Bilder.",
+	"setImageLogsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Mit diesem Befehl können Sie den Log-Kanal des Bildes einrichten. Jedes Mal, wenn ein Mitglied einen Bildanhang sendet, wird eine eingebettete Nachricht mit dem neu hochgeladenen Anhang gesendet.\nAlle Nachrichten sind in Einbetten, daher musst du die Berechtigung **{{EMBED_LINKS, permissions}}** für WolfStar aktivieren.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Du kannst entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal auszuwählen, den die Nachricht gesendet wurde."
+			]
+		],
+		"examples": [
+			"#image-logs",
+			"hier"
+		]
+	},
+	"setMemberAddLogsDescription": "Legen Sie den Mitglieder-Hinzufügen-Kanal fest.",
+	"setMemberAddLogsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Dieser Befehl hilft dir, den Mitgliederhinzufügenkanal einzurichten, der bei jedem Beitritt eine Nachricht erhält.\nWenn ein stummgeschalteter Benutzer beitritt, sendet es ein besonderes \"Muted Member Joined\" Event.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Du kannst entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal auszuwählen, den die Nachricht gesendet wurde."
+			]
+		],
+		"examples": [
+			"#Mitgliederprotokolle",
+			"hier"
+		],
+		"reminder": "Alle Nachrichten sind in Einbetten, daher müssen Sie die Berechtigung **{{EMBED_LINKS, permissions}}** für WolfStar aktivieren."
+	},
+	"setMemberRemoveLogsDescription": "Legen Sie den Logs-Kanal des Mitglieds fest.",
+	"setMemberRemoveLogsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Dieser Befehl hilft dir, den Mitgliederentfertigungskanal einzurichten, , die bei jedem Verlassen eines Benutzers eine Nachricht erhält oder gesperrt wird.\nIm Falle der letzten beiden wird ein besonderes \"User Kicked\" oder \"User Banned\" Event gesendet.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Sie können entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal zu konfigurieren, in dem dieser Befehl verwendet wurde."
+			]
+		],
+		"examples": [
+			"#Mitgliederprotokolle",
+			"hier"
+		],
+		"reminder": "Alle Nachrichten sind in Einbetten, daher müssen Sie die Berechtigung **{{EMBED_LINKS, permissions}}** für WolfStar aktivieren."
+	},
+	"setMessageUpdateLogsDescription": "Setze den Kanal für Aktualisierungsprotokolle.",
+	"setMessageUpdateLogsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Mit diesem Befehl können Sie den Log-Kanal für Nachrichten einrichten, der bei jedem Bearbeiten einer Nachricht eine Nachricht erhält.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Sie können entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal zu konfigurieren, in dem dieser Befehl verwendet wurde."
+			]
+		],
+		"reminder": "Alle Nachrichten sind in Einbetten, daher müssen Sie die Berechtigung **{{EMBED_LINKS, permissions}}** für WolfStar aktivieren.",
+		"examples": [
+			"#Nachrichtenprotokolle",
+			"hier"
+		]
+	},
+	"setMessageDeleteLogsDescription": "Legen Sie den Logskanal für die Löschung fest.",
+	"setMessageDeleteLogsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Mit diesem Befehl können Sie den Log-Kanal für das Löschen von Nachrichten einrichten, der bei jedem Löschen einer Nachricht eine Nachricht erhält.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Sie können entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal zu konfigurieren, in dem dieser Befehl verwendet wurde."
+			]
+		],
+		"reminder": "Alle Nachrichten sind in Einbetten, daher müssen Sie die Berechtigung **{{EMBED_LINKS, permissions}}** für WolfStar aktivieren.\nAufgrund von Discord Einschränkungen kann WolfStar nicht wissen, wer eine Nachricht gelöscht hat.",
+		"examples": [
+			"#Nachrichtenprotokolle",
+			"hier"
+		]
+	},
+	"setmodlogsDescription": "Setze den Mod Logs Kanal.",
+	"setmodlogsExtended": {
+		"usages": [
+			"hier/Textkanal"
+		],
+		"extendedHelp": "Dieser Befehl hilft dir, den Mod-Log-Kanal einzurichten. Ein Mod-Log-Kanal sendet nur Fallberichte, die nach einer Zahl indiziert sind, und mit \"anfechtbaren\" Gründen und Moderatoren.\nDieser Kanal ist kein Muss und du kannst immer bestimmte Modlogs mit dem `case`-Befehl abrufen.\nAlle Nachrichten sind in Einbetten, daher müssen Sie die Berechtigung **{{EMBED_LINKS, permissions}}** für WolfStar aktivieren.\nFür die automatische Erkennung musst du die \"Ereignisse\" individuell festlegen, die du hören möchtest: `events.ban-add`, `events.ban-remove` über den `config` Befehl.",
+		"explainedUsage": [
+			[
+				"kanal",
+				"Ein Textkanal. Du kannst entweder den Namen des Kanals angeben, ihn markieren oder \"hier\" tippen, um den Kanal auszuwählen, den die Nachricht gesendet wurde."
+			]
+		],
+		"reminder": "Aufgrund von Discord-Einschränkungen erkennt die automatische Erkennung keine Kicks. Du musst den `kick`-Befehl verwenden, wenn du sie als formellen Moderationsprotokoll dokumentieren möchtest.",
+		"examples": [
+			"#mod-logs",
+			"hier"
+		]
+	},
+	"setprefixDescription": "WolfStar's Präfix setzen.",
+	"setprefixExtended": {
+		"usages": [
+			"Präfix"
+		],
+		"extendedHelp": "Dieser Befehl hilft dir, WolfStar-Präfix einzurichten. Ein Präfix ist ein Anschluss, der vor dem Wort hinzugefügt wird, in diesem Fall die Nachricht.\nEs erlaubt es Bots zwischen einer regulären Nachricht und einem Befehl zu unterscheiden. Das Präfix sollte naturgemäß unterschiedlich sein, um Konflikte zu vermeiden.\nWenn Sie WolfStar's Präfix vergessen, erwähnen Sie sie einfach mit nichts anderem und sie wird Ihnen das aktuelle Präfix mitteilen.\nAlternativ können Sie die Befehle mit ihrem Namen und einem Komma (z.B. `WolfStar, ping`) vorstellen.",
+		"explainedUsage": [
+			[
+				"Präfix",
+				"Das zu setzende Präfix in WolfStar ist `{{DEFAULT_PREFIX}}`."
+			]
+		],
+		"reminder": "Dein Präfix sollte nur Zeichen enthalten, die jeder schreiben und schreiben kann.",
+		"examples": [
+			"&",
+			"="
+		]
+	},
+	"guildInfoDescription": "Prüfen Sie die Informationen des Servers.",
+	"guildInfoExtended": {
+		"extendedHelp": "Das serverinfo-Kommando zeigt Informationen für den Server an, den die Nachricht gesendet wurde.\nZeigt die Anzahl der Kanäle, mit der Anzahl für jede Kategorie, die Anzahl der Mitglieder (angegeben von der API), der Eigentümer mit seiner Benutzer-Id, die Anzahl der Rollen, Region, Erstellungsdatum, Verifikationsstufe. ."
+	},
+	"roleInfoDescription": "Überprüfen Sie die Informationen für eine Rolle.",
+	"roleInfoExtended": {
+		"usages": [
+			"Rolle",
+			""
+		],
+		"extendedHelp": "Der roleinfo Befehl zeigt Informationen für eine Rolle an, wie z. B. seine ID, Name, Farbe, ob sie angehoben wird (wird separat angezeigt) Es ist die Position der Rollenhierarchie, ob sie nun erwähnt wird oder nicht, wie viele Mitglieder die Rolle erwähnt haben, und ihre Berechtigungen.\nSendet eine eingebettete Nachricht mit der Farbe der Rolle.",
+		"explainedUsage": [
+			[
+				"Rolle",
+				"Der Rollenname, Name, Erwähnung oder Id."
+			]
+		],
+		"examples": [
+			"Administrator",
+			"Moderator",
+			""
+		]
+	},
+	"stickyRolesDescription": "Sticky Rollen für Benutzer verwalten.",
+	"stickyRolesExtended": {
+		"usages": [
+			"füge Benutzerrolle hinzu",
+			"entferne Benutzerrolle",
+			"Benutzer zurücksetzen",
+			"zeige Benutzer",
+			"Benutzer"
+		],
+		"extendedHelp": "Der Befehl StickyRoles erlaubt Ihnen, die klebrigen Rollen eines Mitglieds zu verwalten, sie sind Rollen, die auch beim Verlassen behalten werden, und werden zurückgewendet, sobald sie beitreten.",
+		"explainedUsage": [
+			[
+				"Aktion",
+				"Entweder möchtest du die klebrigen Rollen überprüfen, eine hinzufügen, eine entfernen, oder alle entfernen."
+			],
+			[
+				"Benutzer",
+				"Das Benutzerziel für alle Aktionen."
+			],
+			[
+				"Rolle",
+				"Die Rolle hinzufügen oder entfernen."
+			]
+		],
+		"examples": [
+			"füge WolfStar Göttin hinzu",
+			"show WolfStar",
+			"entferne WolfStar-Göttin",
+			"reset WolfStar"
+		],
+		"reminder": "Die Rollen des Mitglieds werden durch diesen Befehl nicht verändert, Sie müssen sie hinzufügen oder entfernen."
+	},
+	"rolesDescription": "Liste, beanspruche oder entzieht öffentliche Rollen auf diesem Server.",
+	"rolesExtended": {
+		"usages": [
+			"Rolle",
+			""
+		],
+		"extendedHelp": "Öffentliche Rollen sind Rollen, die für alle verfügbar sind.\nEin Administrator muss sie mit dem Konfigurationsbefehl konfigurieren.",
+		"explainedUsage": [
+			[
+				"rollen",
+				"Die Liste der zu beanspruchenden oder nicht beanspruchenden Rollen. Leer lassen um eine Liste der verfügbaren Rollen zu erhalten."
+			]
+		],
+		"reminder": "Wenn Sie Rollen beanspruchen oder nicht beanspruchen, können Sie eine einzelne oder mehrere Rolle(n) angeben.\nUm mehrere Rollen zu beanspruchen, musst du sie durch ein Komma trennen, zum Beispiel \"rot, grün\".\nSie können festlegen, welche Rollen Sie möchten, indem Sie die Rollen-ID, den Namen oder einen Unterabschnitt des Namens angeben.\n\nAdministratoren können öffentliche Rollen mit `{{prefix}}conf set roles.public ExamplePublicRole` hinzufügen.",
+		"examples": [
+			"Designer Programmierer",
+			"Designer"
+		]
+	}
+}

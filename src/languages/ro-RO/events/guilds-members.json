@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Utilizator alăturat",
+	"guildMemberAddDescription": "{{user}} s-a alăturat {{relativeTime}} Discord",
+	"guildMemberAddedRoles_other": "**Roluri adăugate**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Rol adăugat**: {{addedRoles}}",
+	"guildMemberAddMute": "Utilizator amuțit s-a alăturat",
+	"guildMemberBanned": "Utilizator interzis",
+	"guildMemberKicked": "Utilizator exclus",
+	"guildMemberNoUpdate": "Nicio actualizare detectată",
+	"guildMemberRemove": "Utilizator plecat",
+	"guildMemberRemoveDescription": "{{user}} s-a alăturat acestui server *un timp necunoscut acum",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} s-a alăturat acestui server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Roluri eliminate**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Rol eliminat**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Utilizator Softbanat",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Următorul**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Anterior**: Dezset",
+	"nameUpdatePreviousWasSet": "**Anton**: `{{previousName}}`",
+	"nicknameUpdate": "Poreclă editată",
+	"roleUpdate": "Roluri editate",
+	"usernameUpdate": "Nume utilizator editat"
+}

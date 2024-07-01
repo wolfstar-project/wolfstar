@@ -1,0 +1,49 @@
+{
+	"avatarDescription": "Vezi avatarul cuiva la dimensiunea maximă.",
+	"avatarExtended": {
+		"usages": [
+			"",
+			"Utilizator"
+		],
+		"extendedHelp": "Cum spune numele comenzii, arată avatarul cuiva.",
+		"explainedUsage": [
+			[
+				"Utilizator",
+				"Utilizatorul pentru a obține avatarul. Implicit este chiar tu însuți."
+			]
+		],
+		"reminder": "Utilizează steagul --size pentru a schimba dimensiunea avatarului."
+	},
+	"avatarNone": "Utilizatorul nu are un set de avatare.",
+	"voteDescription": "Votul simplificat bazat pe reacţii.",
+	"voteExtended": {
+		"usages": [
+			"Întrebare"
+		],
+		"examples": [
+			"Ar trebui să implementez canalul #anime?"
+		],
+		"explainedUsage": [
+			[
+				"Întrebare",
+				"Întrebarea asupra căreia trebuie să se voteze."
+			]
+		]
+	},
+	"voteContentNeeded": "{{REDCROSS}} Trebuie să daţi un subiect pentru sondaj.",
+	"voteReactionBlocked": "{{REDCROSS}} Nu am putut adăuga reacțiile necesare pentru ca această comandă să funcționeze pentru că m-ai blocat! 😢",
+	"whoisExtended": {
+		"usages": [
+			"",
+			"Utilizator"
+		],
+		"extendedHelp": "Primește informații despre orice membru al serverului. Cunoscut și ca `userinfo` în mulți alți boți.",
+		"explainedUsage": [
+			[
+				"Utilizator",
+				"Utilizatorul pentru a obţine informaţii. Implicit pentru tine. (Automatic Translation)"
+			]
+		]
+	},
+	"whoisMemberRoleListAndMore": "{{count}} mai mult."
+}

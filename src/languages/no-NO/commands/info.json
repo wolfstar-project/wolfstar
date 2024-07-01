@@ -1,0 +1,15 @@
+{
+	"name": "informasjon",
+	"description": "Gir informasjon om meg, og lenker for å legge til boten og bli med i supportserveren",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} er en bot designet for å hjelpe med å moderere din server. Jeg bruker [Sapphire Framework](https://sapphirejs.dev) for [Discord.js library](https://discord. s.org).\n- [Privacy Policy](https://wolfstar.rocks/privacy) github[Terms of Service](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "Statistikk",
+	"embedFieldApplicationValue": "- **brukere**: {{users, number}}\n- **servere**: {{guilds, number}\n- **Kanaler**: {{channels, number}}\n- **Discord. s**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "Oppetid",
+	"embedFieldUptimeValue": "- **Vert**: {{host}}\n- **Klient**: {{client}}",
+	"embedFieldServerUsageTitle": "Server bruk",
+	"embedFieldServerUsageValue": "- **CPU-bruk**: {{cpu}}\n- **Minne**: {{heapUsed}}MB (Totalt: {{heapTotal}}MB)",
+	"buttonInvite": "Legg meg til på serveren din!",
+	"buttonSupport": "Brukerstøtte server",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "Doner"
+}

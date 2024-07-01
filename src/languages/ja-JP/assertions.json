@@ -1,0 +1,3 @@
+{
+	"expectedNonThreadChannel": "通常のテキストチャンネルを想定していましたが、代わりにスレッドチャンネル {{channel}} を受け取りました。"
+}

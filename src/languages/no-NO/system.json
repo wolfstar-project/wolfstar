@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Jeg fikk en liten nettverksfeil når Discord, vennligst kjør denne kommandoen igjen!",
+	"fetchBansFail": "Kunne ikke hente utestengelser. Har jeg **{{ADMINISTRATOR, permissions}}** tillatelse?",
+	"helpTitles": {
+		"aliases": "🖇️ ause **Aliaser**",
+		"usages": "📝 ########**Kommandolébruk*",
+		"extendedHelp": "🔍 ε**Utvidet hjelp",
+		"explainedUsage": "⚙️ Explained usage**",
+		"possibleFormats": "🔢 descending **Mulige formater**",
+		"examples": "🔗 ∙**Eksempler**",
+		"reminders": "⏰ edre**Påminnelse"
+	},
+	"jumpTo": "Gå til Meldingslinjen",
+	"loading": [
+		"{{LOADING}} ser på hamstre som løper ...",
+		"{{LOADING}} finne personer på gjemt-og-søk...",
+		"{{LOADING}} Prøver å finne denne kommandoen...",
+		"{{LOADING}} Henter data fra skyen...",
+		"{{LOADING}} Kalibrerende linser...",
+		"{{LOADING}} Spille rock, papir, sakser...",
+		"{{LOADING}} Tuning til høyre frekvenser...",
+		"{{LOADING}} Fletter kurver..."
+	],
+	"prefixReminder": "Prefikset i denne serveren er satt til: `{{prefix}}`"
+}

@@ -1,0 +1,6 @@
+{
+	"aborted": "Cancelado com sucesso.",
+	"invalidIndex": "Aquele número estava fora do alcance, abortando o prompt.",
+	"invalidNumber": "Eu esperava que você me desse um número de (um único dígito), recebeu uma batata.",
+	"matches": "Eu encontrei várias correspondências! **Por favor, selecione um número entre 0 e {{matches}}**:\n{{codeblock}}\nEscreva **ABORT** se você quiser sair do prompt."
+}

@@ -1,0 +1,15 @@
+{
+	"name": "який",
+	"description": "Надає інформацію про користувача Discord",
+	"contextMenuName": "Отримати інформацію",
+	"userName": "користувач",
+	"userDescription": "Користувач про отримання інформації",
+	"rolesTitle_one": "Role [1]",
+	"rolesTitle_other": "Ролі [{{count, number}}]",
+	"permissionsTitle": "Права доступу до ключів",
+	"permissionsAll": "Всі дозволи",
+	"embedDescription": "**Користувач з ранком**: {{createdAt}}",
+	"embedMemberDescription": "**Member Since**: {{joinedAt}}",
+	"buttonAvatar": "Аватар",
+	"buttonProfile": "Анкета"
+}

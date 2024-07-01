@@ -1,0 +1,107 @@
+{
+	"confUpdated": "Successfully updated the key **{{key}}**: {{response}}",
+	"confGetNoExt": "Avain **{{key}}** ei näytä olevan olemassa.",
+	"confGet": "The value for the key **{{key}}** is: `{{value}}`",
+	"confReset": "The key **{{key}}** has been reset to: `{{value}}`",
+	"confNochange": "Arvolla **{{key}}** oli jo tuo arvo.",
+	"confServerDescription": "Määritä palvelinkohtaiset asetukset.",
+	"confServerExtended": {
+		"usages": [
+			"aseta NameOfKey arvo avaimelle",
+			"näytä",
+			"näytä NimiOfKey",
+			"poista näppäimen NameOfKey arvo",
+			"reset NameOfKey",
+			"valikko"
+		],
+		"extendedHelp": "Sallii sinun määrittää WolfStarin Discordista, nopeasti vaihtoehtona [web dashboard](https://wolfstar.rocks).",
+		"examples": [
+			"aseta kieli fi-FI",
+			"aseta channels.moderation-logs #moderation-logs",
+			"näytä",
+			"näytä kanavat",
+			"poista roles.moderaattori",
+			"reset roles.moderator",
+			"valikko"
+		],
+		"reminder": "Ryhmässä on avaimia ja ryhmiä, avaimia, jotka on nimetty `GroupName.KeyName`."
+	},
+	"confServer": "**Server Setting {{key}}**\n{{list}}",
+	"confDashboardOnlyKey": "`{{key}}` voidaan konfiguroida vain web-hallintapaneelin kautta ",
+	"confSettingNotSet": "Ei Asetettu",
+	"rolesetDescription": "Hallitse ainutlaatuisia rooliasetuksia.",
+	"rolesetExtended": {
+		"usages": [
+			"aseta rooleinSetname-rooli1 rooli2 rooli3...",
+			"poista RoleSetName Role1 Role2 Role3...",
+			"reset",
+			"reset RoleSetName",
+			"luettelo",
+			"RoleSetName Role1 Role2 Role3"
+		],
+		"extendedHelp": "Roolijoukko on ryhmä rooleja WolfStar tunnistaa ainutlaatuiseksi kaikille palvelimen jäsenille, eli roolit `Africa`, `America`, `Asia`, ja `Europe`, ja jäsenillä on vain yksi niistä. Tämä on kuin eräänlainen \"sääntö\", jota sovelletaan kolmessa seuraavassa tilanteessa:\n\n- Kun joku vaatii roolin `roles`-komennon kautta.\n- Kun joku vaatii roolia reaktioroolien kautta.\n- Kun joku saa roolin joko manuaalisesti tai toisesta botista.",
+		"explainedUsage": [
+			[
+				"lisää",
+				"Luo uusi rooleja tai lisää rooli olemassa olevaan rooliin."
+			],
+			[
+				"poista",
+				"Poista rooli olemassa olevasta roolista."
+			],
+			[
+				"reset",
+				"Poistaa kaikki roolit roolista tai, jos ei ole määritelty, kaikki olemassa olevat roolit."
+			],
+			[
+				"luettelo",
+				"Luettelee kaikki roolit."
+			],
+			[
+				"automaattinen",
+				"Lisää tai poistaa roolin."
+			],
+			[
+				"RoleSetName",
+				"The name of the roleset"
+			],
+			[
+				"Rooli1 Rooli2 Rooli3",
+				"Roolit, jotka lisätään rooleihin"
+			]
+		],
+		"examples": [
+			"lisää alueita Amerikka",
+			"lisää alueita Afrikka Amerikka Aasia Eurooppa",
+			"poista alueet Amerikka",
+			"reset",
+			"nollaa alueet",
+			"luettelo",
+			"alueet Amerikka",
+			"alueet Afrikka Amerikka Aasia Eurooppa"
+		],
+		"reminder": "Tämä komento voi lisätä ja/tai poistaa useita rooleja samanaikaisesti."
+	},
+	"rolesetCreated": "The {{name}} unique role set has been created with the following roles: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Updated the {{name}} unique role set, it now has the following roles: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "The {{name}} unique role set will longer include the following roles: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Tässä ryhmässä ei ole määritetty rooleja.",
+	"rolesetResetAll": "{{GREENTICK}} Poistettu kaikki roolit onnistuneesti.",
+	"rolesetResetNotExists": "{{REDCROSS}} The roleset `{{name}}` does not exist in this server.",
+	"rolesetResetGroup": "{{GREENTICK}} Successfully removed the roleset `{{name}}` from this server.",
+	"rolesetUpdated": "{{name}} ainutlaatuinen rooli on päivitetty.",
+	"rolesetNoRolesets": "Sinulla ei ole rooleja.",
+	"confMenuRenderAtFolder": "Tällä hetkellä 📁 {{path}}",
+	"confMenuRenderAtPiece": "Tällä hetkellä ⚙️ {{path}}",
+	"confMenuRenderNokeys": "Kansiolle ei ole muokattavia avaimia",
+	"confMenuRenderSelect": "Ole hyvä ja kirjoita mikä tahansa seuraavien merkintöjen nimistä",
+	"confMenuRenderUpdate": "• Päivitysarvo → `set <value>`",
+	"confMenuRenderRemove": "• Poista Arvo → `poista <value>`",
+	"confMenuRenderReset": "• Nollaa Arvo → `nollaus`",
+	"confMenuRenderUndo": "• Kumoa Päivitys → `undo`",
+	"confMenuRenderCvalue": "Nykyinen Arvo: **``{{value}}``**",
+	"confMenuRenderBack": "Paina ◀️ palataksesi",
+	"confMenuInvalidKey": "Virheellinen avain, yritä uudelleen millä tahansa seuraavista asetuksista.",
+	"confMenuInvalidAction": "Virheellinen toiminto, yritä uudelleen millä tahansa seuraavista vaihtoehdoista.",
+	"confMenuSaved": "Kaikki muutokset tallennettu onnistuneesti."
+}

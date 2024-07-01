@@ -1,0 +1,19 @@
+{
+	"default": "{{key}} はまだ en-US にローカライズされていません。",
+	"defaultLanguage": "デフォルトの言語",
+	"no": "いいえ",
+	"none": "なし",
+	"unknown": "不明",
+	"yes": "はい",
+	"paginatedMessagePage": "ページ",
+	"paginatedMessageWrongUserInteractionReply": "このメッセージのボタンをクリックするのをやめてください。これらは {{user}} 専用です。",
+	"durationValue": "{{value, duration}}",
+	"numberValue": "{{value, number}}",
+	"numberCompactValue": "{{value, numberCompact}}",
+	"dateTimeValue": "{{value, dateTime}}",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"andListValue": "{{value, list(conjunction)}}",
+	"orListValue": "{{value, orList}}",
+	"dateFormat": "YYYY/MM/DD",
+	"dateFormatExplanation": "月/日/年"
+}

@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Benutzer beigetreten",
+	"guildMemberAddDescription": "{{user}} trat Discord {{relativeTime}} bei",
+	"guildMemberAddedRoles_other": "**Rollen hinzugefügt**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Rolle hinzugefügt**: {{addedRoles}}",
+	"guildMemberAddMute": "Stummgeschalteter Benutzer beigetreten",
+	"guildMemberBanned": "Benutzer gesperrt",
+	"guildMemberKicked": "Benutzer gekickt",
+	"guildMemberNoUpdate": "Kein Update gefunden",
+	"guildMemberRemove": "Benutzer links",
+	"guildMemberRemoveDescription": "{{user}} ist diesem Server vor *unbekannter Zeit* beigetreten",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} joined this server {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Entfernte Rollen**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Rolle entfernt**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Benutzer Softgebannt",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Weiter**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Vorherig**: Nicht gesetzt",
+	"nameUpdatePreviousWasSet": "**Vorherig**: `{{previousName}}`",
+	"nicknameUpdate": "Spitzname bearbeitet",
+	"roleUpdate": "Rollen bearbeitet",
+	"usernameUpdate": "Benutzername bearbeitet"
+}

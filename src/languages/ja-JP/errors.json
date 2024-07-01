@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "申し訳ありませんが、Discordに不明なチャンネルに対してアクションを実行しようとして失敗しました。このエラーは開発者に報告されました。",
+	"genericUnknownGuild": "申し訳ありませんが、Discordに不明なサーバーに対してアクションを実行しようとして失敗しました。このエラーは開発者に報告されました。",
+	"genericUnknownMember": "申し訳ありませんが、Discordに不明なメンバーに対してアクションを実行しようとして失敗しました。このエラーは開発者に報告されました。",
+	"genericUnknownMessage": "申し訳ありませんが、Discordに不明なメッセージのアクションを実行しようとして失敗しました。このエラーは開発者に報告されました。",
+	"genericUnknownRole": "申し訳ありませんが、Discordに不明な役割のアクションを実行しようとして失敗しました。このエラーは開発者に報告されました。",
+	"genericMissingAccess": "申し訳ありませんが、必要な権限を持たないリソースに対してアクションを実行しようとして失敗しました。このエラーは開発者に報告されています。",
+	"genericDiscordInternalServerError": "おっと、Discordが壊れました。後でもう一度お試しください。",
+	"genericDiscordGateway": "ネットワークがDiscordとの通信に苦労しています。後でもう一度お試しください。",
+	"genericDiscordUnavailable": "おっと、Discordは現在利用できません。後でもう一度お試しください。",
+	"guildBansEmpty": "このサーバーに登録されているBANはありません。",
+	"guildBansNotFound": "BANリストからこのユーザーを見つけることができませんでした。このユーザーがBANされているのは確かですか？",
+	"guildMemberNotVoicechannel": "ボイスチャンネルに接続されていないメンバーでは、この操作は実行できません。",
+	"guildWarnNotFound": "その警告を取得できませんでした。存在しない、型警告ではないか、上訴されています。",
+	"modlogTimed": "このモデレーションログは既にタイミングが設定されています。Expires in {{remaining, duration}}",
+	"unexpectedIssue": "予期しないエラーが表示されました！このコマンドを安全に中止しています...",
+	"userNotInGuild": "このユーザーはこのサーバーにいません。"
+}

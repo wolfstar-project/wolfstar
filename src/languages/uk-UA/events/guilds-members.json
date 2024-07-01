@@ -1,0 +1,23 @@
+{
+	"guildMemberAdd": "Користувач приєднався",
+	"guildMemberAddDescription": "{{user}} приєднався до Discord {{relativeTime}}",
+	"guildMemberAddedRoles_other": "**Додані ролі**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_one": "**Додана роль**: {{addedRoles}}",
+	"guildMemberAddMute": "Приглушені користувачі приєдналися",
+	"guildMemberBanned": "Користувача заблоковано",
+	"guildMemberKicked": "Користувача викинуто",
+	"guildMemberNoUpdate": "Оновлення не виявлено",
+	"guildMemberRemove": "Користувач зліва",
+	"guildMemberRemoveDescription": "{{user}} приєднується до цього сервера *невідомий час тому*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} приєднується до цього сервера {{relativeTime}}",
+	"guildMemberRemovedRoles_other": "**Видалені ролі**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_one": "**Прибрана роль**: {{removedRoles}}",
+	"guildMemberSoftBanned": "Користувач Softban",
+	"nameUpdateNextWasNotSet": "**Next**: Unset",
+	"nameUpdateNextWasSet": "**Next**: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "**Попередній**: Видалено",
+	"nameUpdatePreviousWasSet": "**Previous**: `{{previousName}}`",
+	"nicknameUpdate": "Нік відредаговано",
+	"roleUpdate": "Ролі відредаговані",
+	"usernameUpdate": "Ім'я користувача відредаговано"
+}

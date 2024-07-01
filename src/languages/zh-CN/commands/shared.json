@@ -1,7 +1,7 @@
 {
-	"deprecatedMessage": "",
+	"deprecatedMessage": "Message based commands are **deprecated**, and will be removed in the future. You should use the {{command}} slash command instead!",
 	"slashOnlyDetailedDescription": {
-		"extendedHelp": ""
+		"extendedHelp": "此命令仅可通过 slash 命令使用。请使用 slash 命令。"
 	},
-	"slashOnlyErrorMessage": ""
+	"slashOnlyErrorMessage": "此命令仅可通过 slash 命令使用。请使用 slash 命令。"
 }

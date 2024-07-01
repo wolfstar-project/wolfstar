@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Fai attenzione a menzionare di più, in quanto stai per essere bannato per superare la soglia di menzione di questo server.",
+	"message": "Il martello è atterrato e ora l'utente {{userTag}} con id {{userId}} è bannato per lo spam menzionato.\nNon preoccuparti! Sono qui per aiutarti! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatico: Soglia di riferimento superata.\nSoglia: {{threshold}}."
+}

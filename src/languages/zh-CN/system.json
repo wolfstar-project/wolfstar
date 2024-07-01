@@ -1,25 +1,25 @@
 {
-	"discordAbortError": "",
-	"fetchBansFail": "",
+	"discordAbortError": "我在 Discord 消息时有一个小的网络错误，请重新运行此命令！",
+	"fetchBansFail": "Failed to fetch bans. Do I have the **{{ADMINISTRATOR, permissions}}** permission?",
 	"helpTitles": {
-		"aliases": "",
-		"usages": "",
-		"extendedHelp": "",
-		"explainedUsage": "",
-		"possibleFormats": "",
-		"examples": "",
-		"reminders": ""
+		"aliases": ":linked_papers: | **别名**",
+		"usages": "📝 | **Command Usage**",
+		"extendedHelp": "🔍 | 扩展帮助**",
+		"explainedUsage": "⚙️ | **解释用法**",
+		"possibleFormats": ":input_number: | **可能的格式**",
+		"examples": "🔗 | **示例**",
+		"reminders": "⏰ | **提醒**"
 	},
-	"jumpTo": "",
+	"jumpTo": "跳转到消息。”）",
 	"loading": [
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
+		"{{LOADING}} Watching hamsters run...",
+		"{{LOADING}} Finding people at hide-and-seek...",
+		"{{LOADING}} Trying to figure out this command...",
+		"{{LOADING}} Fetching data from the cloud...",
+		"{{LOADING}} Calibrating lenses...",
+		"{{LOADING}} Playing rock, paper, scissors...",
+		"{{LOADING}} Tuning in to the right frequencies...",
+		"{{LOADING}} Reticulating splines..."
 	],
-	"prefixReminder": ""
+	"prefixReminder": "The prefix in this server is set to: `{{prefix}}`"
 }

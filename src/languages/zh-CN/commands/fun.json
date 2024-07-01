@@ -1,7 +1,7 @@
 {
-	"escaperopeDescription": "",
+	"escaperopeDescription": "使用Pokemon的跳跃绳。",
 	"escaperopeExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "**WolfStar** 使用了**Escape Rope**。"
 	},
-	"escaperopeOutput": ""
+	"escaperopeOutput": "**{{user}}** used **Escape Rope**"
 }

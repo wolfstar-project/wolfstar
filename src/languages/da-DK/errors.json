@@ -1,0 +1,18 @@
+{
+	"genericUnknownChannel": "Beklager, jeg forsøgte at udføre en handling for en kanal ukendt for Discord og mislykkedes, denne fejl er blevet rapporteret til udviklerne.",
+	"genericUnknownGuild": "Beklager, jeg forsøgte at udføre en handling for en server ukendt for Discord og mislykkedes, denne fejl er blevet rapporteret til udviklerne.",
+	"genericUnknownMember": "Beklager, jeg forsøgte at udføre en handling for et medlem ukendt for Discord og mislykkedes, denne fejl er blevet rapporteret til udviklerne.",
+	"genericUnknownMessage": "Beklager, jeg forsøgte at udføre en handling for en besked ukendt for Discord og mislykkedes, denne fejl er blevet rapporteret til udviklerne.",
+	"genericUnknownRole": "Beklager, jeg forsøgte at udføre en handling for en rolle ukendt for Discord og mislykkedes, denne fejl er blevet rapporteret til udviklerne.",
+	"genericMissingAccess": "Beklager, jeg forsøgte at udføre en handling for en ressource uden de nødvendige tilladelser og mislykkedes, denne fejl er blevet rapporteret til udviklerne.",
+	"genericDiscordInternalServerError": "Ups, Discord brød sig selv, prøv igen senere.",
+	"genericDiscordGateway": "Hovsa, netværket kæmper for at kommunikere med Discord, prøv igen senere.",
+	"genericDiscordUnavailable": "Ups, Discord er i øjeblikket utilgængelig, prøv igen senere.",
+	"guildBansEmpty": "Der er ingen bans registreret på denne server.",
+	"guildBansNotFound": "Jeg prøvede og kunne ikke finde denne bruger fra bandlysningslisten. Er du sikker på, at denne bruger er bandlyst?",
+	"guildMemberNotVoicechannel": "Jeg kan ikke udføre denne handling i et medlem, der ikke er forbundet til en stemmekanal.",
+	"guildWarnNotFound": "Jeg kunne ikke hente denne advarsel. Enten findes den ikke, er den ikke af typen advarsel, eller også er den blevet appelleret.",
+	"modlogTimed": "Denne moderationslog er allerede timet. Udløber {{remaining, duration}}",
+	"unexpectedIssue": "En uventet fejl dukkede op! Sikker afbrydelse af denne kommando...",
+	"userNotInGuild": "Denne bruger er ikke på denne server."
+}

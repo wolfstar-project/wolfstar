@@ -1,0 +1,25 @@
+{
+	"discordAbortError": "Minulla oli pieni verkkovirhe, kun messaging Discord, suorita tämä komento uudelleen!",
+	"fetchBansFail": "Estojen noutaminen epäonnistui. Onko minulla **{{ADMINISTRATOR, permissions}}** käyttöoikeutta?",
+	"helpTitles": {
+		"aliases": "🖇️ Among **Aliases**",
+		"usages": "📝 • **Komentokäyttö**",
+		"extendedHelp": "🔍 ¶ **Laajennettu apu**",
+		"explainedUsage": "⚙️ ¶ **Selitetty käyttö**",
+		"possibleFormats": "🔢 - **Mahdolliset muodot**",
+		"examples": "🔗 ** Esimerkkejä**",
+		"reminders": "⏰ - **Muistutus**"
+	},
+	"jumpTo": "Siirry viestiin ►",
+	"loading": [
+		"{{LOADING}} Katselu hamstereita...",
+		"{{LOADING}} Etsitään ihmisiä piilottajalta...",
+		"{{LOADING}} Yritetään selvittää tämä komento...",
+		"{{LOADING}} Noudetaan tietoja pilvestä...",
+		"{{LOADING}} Linssien kalibrointia...",
+		"{{LOADING}} Pelaa rockia, paperia, saksia...",
+		"{{LOADING}} Viritetään oikeisiin taajuuksiin...",
+		"{{LOADING}} Reticulating piikkejä..."
+	],
+	"prefixReminder": "Etuliite tällä palvelimella on asetettu: `{{prefix}}`"
+}

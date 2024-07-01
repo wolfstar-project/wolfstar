@@ -1,0 +1,15 @@
+{
+	"name": "quemé",
+	"description": "Fornece informações sobre um usuário do Discord",
+	"contextMenuName": "Obter informações",
+	"userName": "usuário",
+	"userDescription": "O usuário para obter informações sobre",
+	"rolesTitle_one": "Função [1]",
+	"rolesTitle_other": "Funções [{{count, number}}]",
+	"permissionsTitle": "Permissões Chave",
+	"permissionsAll": "Permissões de Todos",
+	"embedDescription": "**Usuário desde: {{createdAt}}",
+	"embedMemberDescription": "**Membro desde: {{joinedAt}}",
+	"buttonAvatar": "Avatar",
+	"buttonProfile": "Perfil"
+}

@@ -1,0 +1,13 @@
+{
+	"explicitContentFilterDisabled": "Zakázáno",
+	"explicitContentFilterMembersWithoutRoles": "Členové bez rolí",
+	"explicitContentFilterAllMembers": "Všichni členové",
+	"defaultMessageNotificationsAllMessages": "Všechny zprávy",
+	"defaultMessageNotificationsOnlyMentions": "Pouze @zmínění",
+	"SuppressJoinNotifications": "Členství v oznámeních",
+	"SuppressJoinNotificationReplies": "Tlačítka pro odpověď člena",
+	"SuppressPremiumSubscriptions": "Upozornění na zesílení serveru",
+	"SuppressGuildReminderNotifications": "Tipy pro nastavení serveru",
+	"SuppressRoleSubscriptionPurchaseNotifications": "Potlačit oznámení o nákupu rolí",
+	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Potlačit odpovědi pro oznámení nákupu rolí"
+}

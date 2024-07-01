@@ -1,0 +1,7 @@
+{
+	"deprecatedMessage": "Beskedbaserede kommandoer er **forældet**, og vil blive fjernet i fremtiden. Du bør bruge {{command}} skråstregskommandoen i stedet!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "Denne kommando er kun tilgængelig via skråstregkommandoer. Brug skråstregskommandoen i stedet."
+	},
+	"slashOnlyErrorMessage": "Denne kommando er kun tilgængelig via skråstregkommandoer. Brug skråstregskommandoen i stedet."
+}

@@ -1,0 +1,15 @@
+{
+	"name": "kdo",
+	"description": "Poskytuje informace o Discord uživateli",
+	"contextMenuName": "Získat informace",
+	"userName": "uživatel",
+	"userDescription": "Uživatel má získat informace o",
+	"rolesTitle_one": "Role [1]",
+	"rolesTitle_other": "Role [{{count, number}}]",
+	"permissionsTitle": "Klíčová oprávnění",
+	"permissionsAll": "Všechna oprávnění",
+	"embedDescription": "**Uživatel od**: {{createdAt}}",
+	"embedMemberDescription": "**Člena od**: {{joinedAt}}",
+	"buttonAvatar": "Avatar",
+	"buttonProfile": "Profil"
+}

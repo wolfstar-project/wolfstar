@@ -1,0 +1,15 @@
+{
+	"name": "hvois",
+	"description": "Gir informasjon om en Discord bruker",
+	"contextMenuName": "Hent informasjon",
+	"userName": "bruker",
+	"userDescription": "Brukeren for å få informasjon om",
+	"rolesTitle_one": "Rolle [1]",
+	"rolesTitle_other": "Roller [{{count, number}}]",
+	"permissionsTitle": "Nøkkel tillatelser",
+	"permissionsAll": "Alle rettigheter",
+	"embedDescription": "**Bruker Since**: {{createdAt}}",
+	"embedMemberDescription": "**Medlem Sunn **: {{joinedAt}}",
+	"buttonAvatar": "Profilbilde",
+	"buttonProfile": "Profil"
+}

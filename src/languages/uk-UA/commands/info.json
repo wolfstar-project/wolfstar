@@ -1,0 +1,15 @@
+{
+	"name": "інформація",
+	"description": "Надає інформацію про мене та посилання для додавання бота та та приєднання до серверу підтримки",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} - це бот, розроблений для модерації вашого сервера. Я використовую [Sapphire Framework](https://sapphirejs.dev) для [бібліотеки Discord.js](https://discord. s.org).\n- [Політика конфіденційності](https://wolfstar.rocks/privacy) | [Умови використання](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "Статистика",
+	"embedFieldApplicationValue": "- **Users**: {{users, number}}\n- **Servers**: {{guilds, number}}\n- **Channels**: {{channels, number}}\n- **Discord.js**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "Час роботи",
+	"embedFieldUptimeValue": "- **Хост**: {{host}}\n- **Клієнт**: {{client}}",
+	"embedFieldServerUsageTitle": "Використання сервера",
+	"embedFieldServerUsageValue": "- **Використання ЦП**: {{cpu}}\n- **Пам'ять**: {{heapUsed}}MB (Всього: {{heapTotal}}Мб)",
+	"buttonInvite": "Додайте мене на твій сервер!",
+	"buttonSupport": "Сервер підтримки",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "Пожертвувати"
+}

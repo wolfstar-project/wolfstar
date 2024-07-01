@@ -1,0 +1,5 @@
+{
+	"embedDescription": "{{userName}} lever nu!",
+	"embedDescriptionWithGame": "{{userName}} er nu live - Streaming {{gameName}}!",
+	"offlinePostfix": "WolfStar Twitch Meddelelser"
+}

@@ -1,0 +1,6 @@
+{
+	"footer": "[NOMENTIONSPAM]",
+	"alert": "Wees voorzichtig met het noemen van nog meer, want je staat op het punt om verboden te worden voor het overschrijden van de drempel voor het vermelden van deze server.",
+	"message": "De banhamer is geland en nu is de gebruiker {{userTag}} met id {{userId}} verbannen voor vermelding van spam.\nMaak je geen zorgen! Ik ben hier om je te helpen! 😄",
+	"modlog": "[NOMENTIONSPAM] Automatisch: Droom voor vermeldingen is overschreden.\nDrempel: {{threshold}}."
+}

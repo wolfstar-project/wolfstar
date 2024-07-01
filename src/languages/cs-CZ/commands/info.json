@@ -1,0 +1,15 @@
+{
+	"name": "informace",
+	"description": "Poskytuje informace o mně a odkazy na přidání bota a připojení k serveru podpory",
+	"embedDescription": "[WolfStar](https://wolfstar.rocks) {{VERSION}} je bot, který pomáhá s modernizací tvého serveru. Používám [Sapphire Framework](https://sapphirejs.dev) pro [Discord.js library](https://discord. s.org).\n- [Zásady ochrany osobních údajů](https://wolfstar.rocks/privacy) | [Smluvní podmínky](https://github.com/wolfstar-project/wolfstar/blob/main/.github/TERMS_OF_SERVICE.md).",
+	"embedFieldApplicationTitle": "Statistiky",
+	"embedFieldApplicationValue": "- **Uživatelé**: {{users, number}}\n- **Servers**: {{guilds, number}}\n- **Kanály**: {{channels, number}}\n- **Discord. s**: {{versionDiscord}}\n- **Sapphire**: {{versionSapphire}}\n- **Node.js**: {{versionNode}}",
+	"embedFieldUptimeTitle": "Doba provozu",
+	"embedFieldUptimeValue": "- **Host**: {{host}}\n- **Klient**: {{client}}",
+	"embedFieldServerUsageTitle": "Využití serveru",
+	"embedFieldServerUsageValue": "- **využití CPU**: {{cpu}}\n- **paměť**: {{heapUsed}}MB (celkem: {{heapTotal}}MB)",
+	"buttonInvite": "Přidejte mě na svůj server!",
+	"buttonSupport": "Server podpory",
+	"buttonGitHub": "GitHub Repository",
+	"buttonDonate": "Přispět"
+}

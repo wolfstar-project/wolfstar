@@ -1,0 +1,7 @@
+{
+	"escaperopeDescription": "Використовуйте мотузку втечу з Покемона.",
+	"escaperopeExtended": {
+		"extendedHelp": "**WolfStar** використав **Втечу Ропе**."
+	},
+	"escaperopeOutput": "**{{user}}** використав **Втечу мотузку**"
+}

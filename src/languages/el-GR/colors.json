@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Το χρώμα πρέπει να είναι εντός του εύρους 0 - 16777215 (0xFFFFFFFF), αλλά έλαβε `{{value}}`.",
+	"invalidHexRed": "Invalid Red range. Must be between '00' and 'ff', but received `{{value}}`.",
+	"invalidHexGreen": "Μη έγκυρο πράσινο εύρος. Πρέπει να είναι μεταξύ '00' και 'ff', αλλά να έχει `{{value}}`.",
+	"invalidHexBlue": "Μη έγκυρο μπλε εύρος. Πρέπει να είναι μεταξύ '00' και 'ff', αλλά έλαβε `{{value}}`.",
+	"invalidHslHue": "Invalid Hue range. Must be between 0 and 360, but received `{{value}}`.",
+	"invalidHslSaturation": "Invalid Saturation range. Must be between 0 and 100, but received `{{value}}`.",
+	"invalidHslLightness": "Invalid Lightness range. Must be between 0 and 100, but received `{{value}}`.",
+	"invalidRgbRed": "Invalid Red range. Must be between 0 and 255, but received `{{value}}`.",
+	"invalidRgbGreen": "Invalid Green range. Must be between 0 and 255, but received `{{value}}`.",
+	"invalidRgbBlue": "Invalid Blue range. Must be between 0 and 255, but received `{{value}}`."
+}

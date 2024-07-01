@@ -1,70 +1,70 @@
 {
-	"twitchSubscriptionStreamerNotFound": "",
+	"twitchSubscriptionStreamerNotFound": "{{REDCROSS}} Tyvärr, jag kunde inte hitta streamern. Är du säker på att du skrev deras namn korrekt?",
 	"twitchSubscriptionStatusValues": [
-		"",
-		""
+		"online",
+		"offline"
 	],
-	"twitchSubscriptionInvalidStatus": "",
-	"twitchSubscriptionAddDuplicated": "",
-	"twitchSubscriptionAddSuccessOffline": "",
-	"twitchSubscriptionAddSuccessLive": "",
-	"twitchSubscriptionAddMessageForOfflineRequired": "",
-	"twitchSubscriptionRemoveOrResetEmpty": "",
-	"twitchSubscriptionRemoveStreamerNotSubscribed": "",
-	"twitchSubscriptionRemoveNotToProvidedChannel": "",
-	"twitchSubscriptionRemoveStreamerStatusNotMatch": "",
-	"twitchSubscriptionRemoveSuccessOffline": "",
-	"twitchSubscriptionRemoveSuccessLive": "",
-	"twitchSubscriptionResetSuccess_one": "",
-	"twitchSubscriptionResetSuccess_other": "",
-	"twitchSubscriptionShowStreamerNotSubscribed": "",
+	"twitchSubscriptionInvalidStatus": "{{REDCROSS}} Woah där! Jag förväntade mig \"online\" eller \"offline\", men jag kan inte förstå vad du gav mig istället.",
+	"twitchSubscriptionAddDuplicated": "{{REDCROSS}} Du prenumererar redan på den streamern i den här kanalen för den statusen.",
+	"twitchSubscriptionAddSuccessOffline": "{{GREENTICK}} Framgång! När {{name}} går offline kommer jag att lägga upp ett nytt meddelande i {{channel}}.",
+	"twitchSubscriptionAddSuccessLive": "{{GREENTICK}} Framgång! När {{name}} går live kommer jag att lägga upp ett nytt meddelande i {{channel}}.",
+	"twitchSubscriptionAddMessageForOfflineRequired": "{{REDCROSS}} Jag är ledsen, men det krävs för att ge ett meddelande när du gör en offline-prenumeration.",
+	"twitchSubscriptionRemoveOrResetEmpty": "{{REDCROSS}} Jag är ledsen men du prenumererar inte på några streamers, uppdraget avbryt!",
+	"twitchSubscriptionRemoveStreamerNotSubscribed": "{{REDCROSS}} Jag är ledsen, du kan inte avregistrera dig från {{streamer}} eftersom du inte prenumererar på dem.",
+	"twitchSubscriptionRemoveNotToProvidedChannel": "{{REDCROSS}} Jag är ledsen, medan du prenumererar på denna streamer och streaming-status läggs deras prenumerationer inte till {{channel}}.",
+	"twitchSubscriptionRemoveStreamerStatusNotMatch": "{{REDCROSS} Jag är ledsen, men det verkar som om du inte får {{status}} notifieringar för {{streamer}}. Vi stöder \"online\" och \"offline\" notifieringar.",
+	"twitchSubscriptionRemoveSuccessOffline": "{{GREENTICK}} Framgång! Jag kommer inte längre att skicka meddelanden till {{channel}} när {{name}} går offline.",
+	"twitchSubscriptionRemoveSuccessLive": "{{GREENTICK}} Framgång! Jag kommer inte längre att skicka meddelanden till {{channel}} när {{name}} går live.",
+	"twitchSubscriptionResetSuccess_one": "{{GREENTICK}} Framgång! {{count}} prenumeration har tagits bort från denna server.",
+	"twitchSubscriptionResetSuccess_other": "{{GREENTICK}} Klart! {{count}} prenumerationer har tagits bort från denna server.",
+	"twitchSubscriptionShowStreamerNotSubscribed": "{{REDCROSS}} Du ville se alla prenumerationer från denna streamer, men det finns ingen!",
 	"twitchSubscriptionShowStatus": {
-		"live": "",
-		"offline": ""
+		"live": "Live",
+		"offline": "Offline"
 	},
-	"twitchSubscriptionShowUnknownUser": "",
-	"twitchSubscriptionDescription": "",
+	"twitchSubscriptionShowUnknownUser": "Okänd",
+	"twitchSubscriptionDescription": "Hantera prenumerationer på din server.",
 	"twitchSubscriptionExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
+			"lägg till Streamer-kanalstatus",
+			"lägg till Streamer-kanalstatus",
+			"ta bort Streamer Channel Status",
+			"återställ Streamer",
+			"reset",
+			"visa",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Hantera prenumerationer för denna server.\n__Online-notifieringar__\nAlla tillgängliga data kommer att dyka upp i en mycket trevlig bädd som talar om för dig exakt vad streamern är upp till.\n\n__Offline-aviseringar__\nDu måste skriva ditt eget meddelande som kommer att postas när streamern går offline. Det kommer att visas i en trevlig Twitch-lila MessageEmbed.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Lägg till/ta bort/återställ/visa",
+				"Om du vill\n- Lägg till en ny Twitch-prenumeration.\n- Ta bort en befintlig Twitch-prenumeration\n- Återställ alla twitch-prenumerationer, eller för en specifik streamer\n- Visa alla nuvarande Twitch-prenumerationer"
 			],
 			[
-				"",
-				""
+				"Streamer",
+				"Twitch-användarnamnet för streamern för att få aviseringar för."
 			],
 			[
-				"",
-				""
+				"Kanal",
+				"En Discord-kanal var att posta notifikationer i."
 			],
 			[
-				"",
-				""
+				"Status",
+				"Status som Twitch streamer bör få för en anmälan, en av online eller offline."
 			],
 			[
-				"",
-				""
+				"Innehåll",
+				"Meddelandet att skicka i Discord-chatten. Krävs för offline-meddelanden, valfritt för online-meddelanden."
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"lägg till favna #twitch online",
+			"lägg till favna #twitch offline Favna är nu offline. Säg adjö 👋!",
+			"ta bort kyranet #twitch online",
+			"reset kyranet",
+			"reset",
+			"show kyranet",
+			"visa"
 		]
 	}
 }
