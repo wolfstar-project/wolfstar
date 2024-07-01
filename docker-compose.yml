@@ -60,7 +60,7 @@ services:
     container_name: wolfstar
     depends_on:
       - influx
-      - postgres
+      - postgres2
     env_file:
       - src/.env.development
       - src/.env.development.local

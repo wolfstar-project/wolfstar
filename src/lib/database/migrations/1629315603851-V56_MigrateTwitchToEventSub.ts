@@ -1,13 +1,14 @@
-import { Twitch } from '#lib/util/Notifications/Twitch';
-import { Table, TableColumn, TableForeignKey, TableUnique, type MigrationInterface, type QueryRunner } from 'typeorm';
-import { TwitchEventSubTypes } from '#lib/types/Twitch';
-
+// import { Twitch } from '#lib/util/Notifications/Twitch';
+// import { Table, TableColumn, TableForeignKey, TableUnique, type MigrationInterface, type QueryRunner } from 'typeorm';
+// import { TwitchEventSubTypes } from '#lib/types/Twitch';
+/*
 export class V56MigrateTwitchToEventSub1629315603851 implements MigrationInterface {
-	private twitch = new Twitch();
+	// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+	private twitch = new (class {})(); // new Twitch();
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
-			/* sql */ `CREATE TYPE "public"."twitch_subscriptions_subscription_type_enum" AS ENUM('stream.online', 'stream.offline');`
+			/* sql *\/ `CREATE TYPE "public"."twitch_subscriptions_subscription_type_enum" AS ENUM('stream.online', 'stream.offline');`
 		);
 
 		await queryRunner.createTable(
@@ -98,10 +99,10 @@ export class V56MigrateTwitchToEventSub1629315603851 implements MigrationInterfa
 		);
 
 		const oldTwitchSubscriptions = (await queryRunner.query(
-			/* sql */ `SELECT * FROM public."twitch_stream_subscription";`
+			/* sql *\/ `SELECT * FROM public."twitch_stream_subscription";`
 		)) as TwitchSubscriptionsOld[];
 
-		const oldGuildData = (await queryRunner.query(/* sql */ `
+		const oldGuildData = (await queryRunner.query(/* sql *\/ `
 			SELECT id, "notifications.streams.twitch.streamers" AS notificationData
 			FROM public."guilds"
 			WHERE jsonb_array_length("notifications.streams.twitch.streamers") > 0;
@@ -113,13 +114,13 @@ export class V56MigrateTwitchToEventSub1629315603851 implements MigrationInterfa
 		const stringifiedTwitchData = JSON.stringify([...transformedDataForTwitchSubscriptions.values()]).replace(/'/g, "''");
 		const stringifiedGuildData = JSON.stringify(transformedDataForGuildSubscriptions).replace(/'/g, "''");
 
-		await queryRunner.query(/* sql */ `
+		await queryRunner.query(/* sql *\/ `
 			INSERT INTO public."twitch_subscriptions"
 			SELECT * FROM json_populate_recordset(NULL::public."twitch_subscriptions", '${stringifiedTwitchData}')
 			ON CONFLICT DO NOTHING;
 		`);
 
-		await queryRunner.query(/* sql */ `
+		await queryRunner.query(/* sql *\/ `
 			INSERT INTO public."guild_subscription"
 			SELECT * FROM json_populate_recordset(NULL::public."guild_subscription", '${stringifiedGuildData}')
 			ON CONFLICT DO NOTHING;
@@ -132,7 +133,7 @@ export class V56MigrateTwitchToEventSub1629315603851 implements MigrationInterfa
 	public async down(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.dropTable('guild_subscription');
 		await queryRunner.dropTable('twitch_subscriptions');
-		await queryRunner.query(/* sql */ `drop type twitch_subscriptions_subscription_type_enum;`);
+		await queryRunner.query(/* sql *\/ `drop type twitch_subscriptions_subscription_type_enum;`);
 	}
 
 	private async mapOldTwitchDataToNewTwitchSubscriptions(oldData: TwitchSubscriptionsOld[]): Promise<Map<string, TwitchSubscriptionsNew>> {
@@ -141,17 +142,6 @@ export class V56MigrateTwitchToEventSub1629315603851 implements MigrationInterfa
 
 		let id = 1;
 
-		for (const streamer of allStreamerIds) {
-			const subscriptionId = await this.twitch.subscriptionsStreamHandle(streamer, TwitchEventSubTypes.StreamOnline);
-			streamerIdSubscriptionIdMap.set(streamer, {
-				id,
-				streamer_id: streamer,
-				subscription_id: subscriptionId,
-				subscription_type: TwitchEventSubTypes.StreamOnline
-			});
-
-			id++;
-		}
 
 		return streamerIdSubscriptionIdMap;
 	}
@@ -187,14 +177,14 @@ export class V56MigrateTwitchToEventSub1629315603851 implements MigrationInterfa
 		return newSubscriptions;
 	}
 }
-
+*/
 // #region Types
-
+/*
 interface TwitchSubscriptionsNew {
 	id: number;
 	streamer_id: string;
 	subscription_id: string;
-	subscription_type: TwitchEventSubTypes;
+	// subscription_type: TwitchEventSubTypes;
 }
 
 interface TwitchSubscriptionsOld {
@@ -232,5 +222,5 @@ interface NotificationsStreamsTwitchStreamer {
 }
 
 type NotificationsStreamTwitch = [streamerId: string, data: readonly NotificationsStreamsTwitchStreamer[]];
-
+*/
 // #endregion

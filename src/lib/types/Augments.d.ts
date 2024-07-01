@@ -4,12 +4,9 @@ import type { GuildMemberFetchQueue } from '#lib/discord/GuildMemberFetchQueue';
 import type { WorkerManager } from '#lib/moderation/workers/WorkerManager';
 import type { AnalyticsData, InviteCodeValidEntry, InviteStore, ScheduleManager, WolfCommand } from '#lib/structures';
 import type { Events } from '#lib/types';
-import type { TwitchStreamStatus } from '#lib/types/AnalyticsSchema';
 import type { TaskErrorPayload } from '#lib/types/Internals';
-import type { TwitchEventSubEvent, TwitchEventSubOnlineEvent } from '#lib/types/Twitch';
 import type { TypedFT, TypedT } from '#lib/types/Utils';
 import type { LLRCData, LongLivingReactionCollector } from '#utils/LongLivingReactionCollector';
-import type { Twitch } from '#utils/Notifications/Twitch';
 import type { EmojiObject } from '#utils/functions';
 import type { EmbedBuilder } from '@discordjs/builders';
 import type { API } from '@discordjs/core/http-only';
@@ -26,7 +23,6 @@ declare module 'discord.js' {
 		readonly invites: InviteStore;
 		readonly llrCollectors: Set<LongLivingReactionCollector>;
 		readonly schedules: ScheduleManager;
-		readonly twitch: Twitch;
 		readonly version: string;
 		readonly webhookError: WebhookClient | null;
 	}
@@ -103,9 +99,6 @@ declare module '@sapphire/framework' {
 		): boolean;
 		emit(event: Events.ReactionBlocked, data: LLRCData, emoji: string): boolean;
 		emit(event: Events.ResourceAnalyticsSync): boolean;
-		emit(event: Events.TwitchStreamHookedAnalytics, status: TwitchStreamStatus): boolean;
-		emit(event: Events.TwitchStreamOnline, data: TwitchEventSubOnlineEvent): boolean;
-		emit(event: Events.TwitchStreamOffline, data: TwitchEventSubEvent): boolean;
 		emit(event: Events.TaskError, error: Error, payload: TaskErrorPayload): boolean;
 		emit(event: string | symbol, ...args: any[]): boolean;
 	}
@@ -138,14 +131,13 @@ declare module '@skyra/env-utilities' {
 		API_ORIGIN: string;
 		API_PORT: IntegerString;
 		API_PREFIX: string;
+		API_HOST: string;
 
 		OAUTH_COOKIE: string;
 		OAUTH_DOMAIN_OVERWRITE: string;
 		OAUTH_REDIRECT_URI: string;
 		OAUTH_SCOPE: ArrayString;
 		OAUTH_SECRET: string;
-
-		TWITCH_CALLBACK: string;
 
 		PGSQL_DATABASE_URL: string;
 		TYPEORM_DEBUG_LOGS: BooleanString;
@@ -169,8 +161,5 @@ declare module '@skyra/env-utilities' {
 		DISCORD_BOTS_TOKEN: string;
 		SENTRY_URL: string;
 		TOP_GG_TOKEN: string;
-		TWITCH_CLIENT_ID: string;
-		TWITCH_EVENTSUB_SECRET: string;
-		TWITCH_TOKEN: string;
 	}
 }
