@@ -726,6 +726,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kaname-png/plugin-subcommands-advanced@portal:/codes/neko-plugins/packages/subcommands-advanced::locator=wolfstar%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@kaname-png/plugin-subcommands-advanced@portal:/codes/neko-plugins/packages/subcommands-advanced::locator=wolfstar%40workspace%3A."
+  dependencies:
+    "@sapphire/decorators": "npm:^6.1.0"
+    tslib: "npm:^2.6.3"
+  languageName: node
+  linkType: soft
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -8222,6 +8231,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:^2.6.3":
+  version: 2.6.3
+  resolution: "tslib@npm:2.6.3"
+  checksum: 10/52109bb681f8133a2e58142f11a50e05476de4f075ca906d13b596ae5f7f12d30c482feb0bff167ae01cfc84c5803e575a307d47938999246f5a49d174fc558c
+  languageName: node
+  linkType: hard
+
 "tty-browserify@npm:0.0.1":
   version: 0.0.1
   resolution: "tty-browserify@npm:0.0.1"
@@ -8728,6 +8744,7 @@ __metadata:
     "@discordjs/core": "npm:^1.2.0"
     "@influxdata/influxdb-client": "npm:^1.33.2"
     "@influxdata/influxdb-client-apis": "npm:^1.33.2"
+    "@kaname-png/plugin-subcommands-advanced": "npm:^2.4.4"
     "@sapphire/async-queue": "npm:^1.5.2"
     "@sapphire/bitfield": "npm:^1.2.2"
     "@sapphire/decorators": "npm:^6.1.0"

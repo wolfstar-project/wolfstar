@@ -63,7 +63,10 @@ export class WolfSubcommand extends Subcommand<WolfSubcommand.Args, WolfSubcomma
 
 	protected override parseConstructorPreConditions(options: WolfSubcommand.Options): void {
 		super.parseConstructorPreConditions(options);
-		implementWolfCommandParseConstructorPreConditionsPermissionLevel(this, options.permissionLevel);
+		implementWolfCommandParseConstructorPreConditionsPermissionLevel(
+			this as unknown as Command<WolfSubcommand.Args, WolfSubcommand.Options>,
+			options.permissionLevel
+		);
 	}
 
 	public static readonly PaginatedOptions = implementWolfCommandPaginatedOptions<WolfSubcommand.Options>;

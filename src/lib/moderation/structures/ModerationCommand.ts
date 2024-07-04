@@ -4,59 +4,28 @@ import { getAction, type ActionByType, type GetContextType } from '#lib/moderati
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { WolfCommand } from '#lib/structures/commands/WolfCommand';
-import { PermissionLevels, type GuildMessage, type TypedT } from '#lib/types';
+import { PermissionLevels, GuildMessage, type TypedT } from '#lib/types';
 import { asc, floatPromise, seconds } from '#utils/common';
 import { deleteMessage, isGuildOwner } from '#utils/functions';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { getImage, getTag, isUserSelf } from '#utils/util';
-import { Args, CommandOptionsRunTypeEnum, type Awaitable } from '@sapphire/framework';
+import { Args, CommandOptionsRunTypeEnum, type Awaitable, type ChatInputCommand } from '@sapphire/framework';
 import { free, send } from '@sapphire/plugin-editable-commands';
-import type { User } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember, Message, type User } from 'discord.js';
 
 const Root = LanguageKeys.Moderation;
 
 export abstract class ModerationCommand<Type extends TypeVariation, ValueType> extends WolfCommand {
-	/**
-	 * The moderation action this command applies.
-	 */
 	protected readonly action: ActionByType<Type>;
-
-	/**
-	 * Whether this command executes an undo action.
-	 */
 	protected readonly isUndoAction: boolean;
-
-	/**
-	 * The key for the action is active language key.
-	 */
 	protected readonly actionStatusKey: TypedT;
-
-	/**
-	 * Whether this command supports schedules.
-	 */
 	protected readonly supportsSchedule: boolean;
-
-	/**
-	 * The minimum duration for this command.
-	 */
 	protected readonly minimumDuration: number;
-
-	/**
-	 * The maximum duration for this command.
-	 */
 	protected readonly maximumDuration: number;
-
-	/**
-	 * Whether a member is required or not.
-	 */
 	protected readonly requiredMember: boolean;
-
-	/**
-	 * Whether a duration is required or not.
-	 */
 	protected readonly requiredDuration: boolean;
 
-	protected constructor(context: ModerationCommand.Context, options: ModerationCommand.Options<Type>) {
+	protected constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
 		super(context, {
 			cooldownDelay: seconds(5),
 			flags: ['no-author', 'authored', 'no-dm', 'dm'],
@@ -153,35 +122,86 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		return null;
 	}
 
-	/**
-	 * Handles an action before taking the moderation action.
-	 *
-	 * @param message - The message that triggered the command.
-	 * @param context - The context for the moderation command, shared for all targets.
-	 * @returns The value that will be set in {@linkcode ModerationCommand.HandlerParameters.preHandled}.
-	 */
-	protected preHandle(message: GuildMessage, context: ModerationCommand.Parameters): Awaitable<ValueType>;
-	protected preHandle() {
+	public override async chatInputRun(interaction: ChatInputCommandInteraction, context: ChatInputCommand.RunContext): Promise<void>;
+	public override async chatInputRun() {}
+
+	protected async resolveParameters(args: ModerationCommand.Args): Promise<ModerationCommand.Parameters> {
+		return {
+			targets: await this.resolveParametersUser(args),
+			duration: await this.resolveParametersDuration(args),
+			reason: await this.resolveParametersReason(args)
+		};
+	}
+
+	protected resolveInteractionParameters(interaction: ChatInputCommandInteraction): Promise<ModerationCommand.Parameters>;
+	protected resolveInteractionParameters(interaction: ChatInputCommandInteraction) {
+		const targets = [interaction.options.getUser('user', true)];
+		const duration = interaction.options.getInteger('duration');
+		const reason = interaction.options.getString('reason');
+
+		return {
+			targets,
+			duration: duration ? duration * 1000 : null, // Convert seconds to milliseconds
+			reason: reason || null
+		};
+	}
+
+	protected async checkTargetCanBeModerated(
+		source: GuildMessage | ChatInputCommandInteraction,
+		context: ModerationCommand.HandlerParameters<ValueType>
+	) {
+		const guild = source instanceof Message ? source.guild : source.guild!;
+		const member = source instanceof Message ? source.member : (source.member as GuildMember);
+
+		if (context.target.id === (source instanceof Message ? source.author.id : source.user.id)) {
+			throw context.args.t(Root.ActionTargetSelf);
+		}
+
+		if (context.target.id === guild.ownerId) {
+			throw context.args.t(Root.ActionTargetGuildOwner);
+		}
+
+		if (isUserSelf(context.target.id)) {
+			throw context.args.t(Root.ActionTargetWolf);
+		}
+
+		const targetMember = await guild.members.fetch(context.target.id).catch(() => {
+			if (this.requiredMember) throw context.args.t(LanguageKeys.Misc.UserNotInGuild);
+			return null;
+		});
+
+		if (targetMember) {
+			const targetHighestRolePosition = targetMember.roles.highest.position;
+
+			const me = await guild.members.fetchMe();
+			if (targetHighestRolePosition >= me.roles.highest.position) {
+				throw context.args.t(Root.ActionTargetHigherHierarchyWolf);
+			}
+
+			if (!isGuildOwner(member) && targetHighestRolePosition >= member.roles.highest.position) {
+				throw context.args.t(Root.ActionTargetHigherHierarchyAuthor);
+			}
+		}
+
+		return targetMember;
+	}
+
+	protected preHandle(source: GuildMessage | ChatInputCommandInteraction, context: ModerationCommand.Parameters): Awaitable<ValueType>;
+
+	protected preHandle(): Awaitable<ValueType> {
 		return null as ValueType;
 	}
 
-	/**
-	 * Handles the moderation action.
-	 *
-	 * @param message - The message that triggered the command.
-	 * @param context - The context for the moderation command, for a single target.
-	 */
-	protected handle(
-		message: GuildMessage,
+	protected async handle(
+		source: GuildMessage | ChatInputCommandInteraction,
 		context: ModerationCommand.HandlerParameters<ValueType>
-	): Promise<ModerationManager.Entry> | ModerationManager.Entry;
+	): Promise<ModerationManager.Entry> {
+		const guild = source instanceof Message ? source.guild : source.guild!;
+		const dataContext = this.getHandleDataContext(source, context);
 
-	protected async handle(message: GuildMessage, context: ModerationCommand.HandlerParameters<ValueType>) {
-		const dataContext = this.getHandleDataContext(message, context);
-
-		const options = this.resolveOptions(message, context);
-		const data = await this.getActionData(message, context.args, context.target, dataContext);
-		const isActive = await this.isActionActive(message, context, dataContext);
+		const options = this.resolveOptions(source, context);
+		const data = await this.getActionData(source, context.args, context.target, dataContext);
+		const isActive = await this.isActionActive(guild, context, dataContext);
 
 		if (this.isUndoAction) {
 			// If this command is an undo action, and the action is not active, throw an error.
@@ -199,110 +219,62 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		}
 
 		// @ts-expect-error mismatching types due to unions
-		return this.action.apply(message.guild, options, data);
+		return this.action.apply(guild, options, data);
 	}
 
-	/**
-	 * Gets the data context required for some actions, if any.
-	 *
-	 * @param message - The message that triggered the command.
-	 * @param context - The context for the moderation command, for a single target.
-	 */
-	protected getHandleDataContext(message: GuildMessage, context: ModerationCommand.HandlerParameters<ValueType>): GetContextType<Type>;
+	protected getHandleDataContext(
+		source: GuildMessage | ChatInputCommandInteraction,
+		context: ModerationCommand.HandlerParameters<ValueType>
+	): GetContextType<Type>;
+
 	protected getHandleDataContext(): GetContextType<Type> {
 		return null as GetContextType<Type>;
 	}
 
-	/**
-	 * Checks if the action is active.
-	 *
-	 * @param message - The message that triggered the command.
-	 * @param context - The context for the moderation command, for a single target.
-	 * @param dataContext - The data context required for some actions, if any.
-	 * @returns
-	 */
 	protected isActionActive(
-		message: GuildMessage,
+		guild: GuildMessage['guild'],
 		context: ModerationCommand.HandlerParameters<ValueType>,
 		dataContext: GetContextType<Type>
 	): Awaitable<boolean> {
-		return this.action.isActive(message.guild, context.target.id, dataContext as never);
+		return this.action.isActive(guild, context.target.id, dataContext as never);
 	}
 
-	/**
-	 * Gets the key for the action status language key.
-	 *
-	 * @remarks
-	 *
-	 * Unless overridden, this method just returns the value of {@linkcode ModerationCommand.actionStatusKey}.
-	 *
-	 * @param context - The context for the moderation command, for a single target.
-	 */
 	protected getActionStatusKey(context: ModerationCommand.HandlerParameters<ValueType>): TypedT;
 	protected getActionStatusKey(): TypedT {
 		return this.actionStatusKey;
 	}
 
-	/**
-	 * Handles an action after taking the moderation action.
-	 *
-	 * @param message - The message that triggered the command.
-	 * @param context - The context for the moderation command, shared for all targets.
-	 */
-	protected postHandle(message: GuildMessage, context: ModerationCommand.PostHandleParameters<ValueType>): unknown;
+	protected postHandle(source: GuildMessage | ChatInputCommandInteraction, context: ModerationCommand.PostHandleParameters<ValueType>): unknown;
 	protected postHandle() {
 		return null;
 	}
 
-	protected async checkTargetCanBeModerated(message: GuildMessage, context: ModerationCommand.HandlerParameters<ValueType>) {
-		if (context.target.id === message.author.id) {
-			throw context.args.t(Root.ActionTargetSelf);
-		}
-
-		if (context.target.id === message.guild.ownerId) {
-			throw context.args.t(Root.ActionTargetGuildOwner);
-		}
-
-		if (isUserSelf(context.target.id)) {
-			throw context.args.t(Root.ActionTargetWolf);
-		}
-
-		const member = await message.guild.members.fetch(context.target.id).catch(() => {
-			if (this.requiredMember) throw context.args.t(LanguageKeys.Misc.UserNotInGuild);
-			return null;
-		});
-
-		if (member) {
-			const targetHighestRolePosition = member.roles.highest.position;
-
-			// Wolf cannot moderate members with higher role position than her:
-			const me = await message.guild.members.fetchMe();
-			if (targetHighestRolePosition >= me.roles.highest.position) {
-				throw context.args.t(Root.ActionTargetHigherHierarchyWolf);
-			}
-
-			// A member who isn't a server owner is not allowed to moderate somebody with higher role than them:
-			if (!isGuildOwner(message.member) && targetHighestRolePosition >= message.member.roles.highest.position) {
-				throw context.args.t(Root.ActionTargetHigherHierarchyAuthor);
-			}
-		}
-
-		return member;
-	}
-
 	protected async getActionData(
-		message: GuildMessage,
+		source: GuildMessage | ChatInputCommandInteraction,
 		args: Args,
 		target: User,
 		context?: GetContextType<Type>
 	): Promise<ModerationAction.Data<GetContextType<Type>>> {
-		const [nameDisplay, enabledDM] = await readSettings(message.guild, [
+		const guild = source instanceof Message ? source.guild : source.guild!;
+		const [nameDisplay, enabledDM] = await readSettings(guild, [
 			GuildSettings.Messages.ModeratorNameDisplay,
 			GuildSettings.Messages.ModerationDM
 		]);
 
+		if (source instanceof ChatInputCommandInteraction) {
+			const moderator = source.options.getUser('authored') || nameDisplay ? source.user : null;
+			const sendDirectMessage =
+				!source.options.getBoolean('no-dm') &&
+				(source.options.getBoolean('dm') || enabledDM) &&
+				(await this.container.db.fetchModerationDirectMessageEnabled(target.id));
+			return {
+				moderator,
+				sendDirectMessage,
+				context
+			};
+		}
 		return {
-			moderator: args.getFlags('no-author') ? null : args.getFlags('authored') || nameDisplay ? message.author : null,
+			moderator: args.getFlags('no-author') ? null : args.getFlags('authored') || nameDisplay ? source.author : null,
 			sendDirectMessage:
 				// --no-dm disables
 				!args.getFlags('no-dm') &&
@@ -314,44 +286,23 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		};
 	}
 
-	protected resolveOptions(message: GuildMessage, context: ModerationCommand.HandlerParameters<ValueType>): ModerationAction.PartialOptions<Type> {
+	protected resolveOptions(
+		source: GuildMessage | ChatInputCommandInteraction,
+		context: ModerationCommand.HandlerParameters<ValueType>
+	): ModerationAction.PartialOptions<Type> {
 		return {
 			user: context.target,
-			moderator: message.author,
+			moderator: source instanceof Message ? source.author : source.user,
 			reason: context.reason,
-			imageURL: getImage(message),
+			imageURL: source instanceof Message ? getImage(source) : null,
 			duration: context.duration
 		};
 	}
 
-	/**
-	 * Resolves the overloads for the moderation command.
-	 *
-	 * @param args - The arguments for the moderation command.
-	 * @returns A promise that resolves to a CommandContext object containing the resolved targets, duration, and reason.
-	 */
-	protected async resolveParameters(args: ModerationCommand.Args): Promise<ModerationCommand.Parameters> {
-		return {
-			targets: await this.resolveParametersUser(args),
-			duration: await this.resolveParametersDuration(args),
-			reason: await this.resolveParametersReason(args)
-		};
-	}
-
-	/**
-	 * Resolves the value for {@linkcode Parameters.targets}.
-	 *
-	 * @param args - The arguments for the moderation command.
-	 */
 	protected resolveParametersUser(args: ModerationCommand.Args): Promise<User[]> {
 		return args.repeat('user', { times: 10 });
 	}
 
-	/**
-	 * Resolves the value for {@linkcode Parameters.duration}.
-	 *
-	 * @param args - The arguments for the moderation command.
-	 */
 	protected async resolveParametersDuration(args: ModerationCommand.Args) {
 		if (!this.requiredDuration) {
 			if (args.finished) return null;
@@ -368,11 +319,6 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		});
 	}
 
-	/**
-	 * Resolves the value for {@linkcode Parameters.reason}.
-	 *
-	 * @param args - The arguments for the moderation command.
-	 */
 	protected resolveParametersReason(args: ModerationCommand.Args): Promise<string | null> {
 		return args.finished ? Promise.resolve(null) : args.rest('string');
 	}
@@ -390,7 +336,7 @@ export namespace ModerationCommand {
 	}
 
 	export type Args = WolfCommand.Args;
-	export type Context = WolfCommand.LoaderContext;
+	export type LoaderContext = WolfCommand.LoaderContext;
 	export type RunContext = WolfCommand.RunContext;
 
 	export interface Parameters {
