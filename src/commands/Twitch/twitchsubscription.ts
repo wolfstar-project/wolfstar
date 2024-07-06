@@ -1,13 +1,13 @@
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand, WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
-import { ButtonWolfV7, makeRemovedMessage, makeRow } from '#utils/deprecate';
+import { ButtonWolfStarV7, makeRemovedMessage, makeRow } from '#utils/deprecate';
 import { ApplyOptions, RequiresClientPermissions } from '@sapphire/decorators';
 import { CommandOptionsRunTypeEnum } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import { PermissionFlagsBits } from 'discord.js';
 
-const row = makeRow(ButtonWolfV7);
+const row = makeRow(ButtonWolfStarV7);
 
 @ApplyOptions<WolfSubcommand.Options>({
 	aliases: ['twitch-subscription', 't-subscription', 't-sub'],
