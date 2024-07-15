@@ -43,6 +43,7 @@
 	"manageCommandChannelRemoveNotset": "The command you are trying to enable was not disabled for {{channel}}.",
 	"manageCommandChannelRemove": "Successfully enabled the command {{command}} for the channel {{channel}}!",
 	"manageCommandChannelResetEmpty": "This channel had no disabled command, so I decided to do nothing.",
+	"manageCommandChannelReset": "Successfully enabled all disabled commands in {{channel}}, enjoy!",
 	"manageReactionRolesShowEmpty": "There are no reaction roles set up in this server.",
 	"manageReactionRolesAddChannel": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} to any message from {{channel}}!",
 	"manageReactionRolesAddPrompt": "Listening now! Please react to a message and I will bind the reaction with the role!",
