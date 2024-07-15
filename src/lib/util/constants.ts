@@ -8,9 +8,9 @@ export const ZeroWidthSpace = '\u200B';
 export const LongWidthSpace = '\u3000';
 
 export const EmojiData = {
-	MessageAttachmentIcon: { id: '1006096566270033940', name: 'MessageAttachmentIcon', animated: false },
+	MessageAttachmentIcon: { id: '1262394450580340786', name: 'MessageAttachmentIcon', animated: false },
 	IntegrationIcon: { id: '1251906194759749653', name: 'IntegrationIcon', animated: false },
-	MembersIcon: { id: '1200212636441260103', name: 'MembersIcon', animated: false }
+	MembersIcon: { id: '1262394698287550474', name: 'MembersIcon', animated: false }
 } as const;
 
 export const enum Emojis {
@@ -36,33 +36,33 @@ export const enum Emojis {
 	BoostLevel7 = '<:boostlvl7:935170720365944942>',
 	BoostLevel8 = '<:boostlvl8:935170763894439996>',
 	BoostLevel9 = '<:boostlvl9:935170794374447184>',
-	Bot = '<:bot:764788923851079702>',
+	Bot = '<:bot:1262395021173456916>',
 	IntegrationIcon = '<:IntegrationIcon:1251906194759749653>',
-	Frame = '<:frame:764845055356698644>',
+	Frame = '<:frame:1262396085176107040>',
 	GreenTick = '<:greenTick:1043562833905987685>',
 	GreenTickSerialized = 's1043562833905987685',
-	Loading = '<a:sloading:656988867403972629>',
+	Loading = '<a:loading:1257373445151395901>',
 	RedCross = '<:redCross:1043562794336919605>',
-	Calendar = '<:calendar_icon:1218607529702068294>',
-	Hourglass = '<:hourglass:1226106863574323230>',
-	Member = '<:member:1200212636441260103>',
-	ShieldMember = '<:shield_member:1218601473664094399>',
-	Moderator = '<:moderator:1226106865021095977>',
+	Calendar = '<:calendar_icon:1262390721399492650>',
+	Hourglass = '<:hourglass:1262391693823578245>',
+	Member = '<:member:1262381522942558208>',
+	ShieldMember = '<:shield_member:1262389159155335198>',
+	Moderator = '<:moderator:1262383567388938240>',
 	AutoModerator = '<:auto_moderator:1226106862147993650>',
-	SpammerIcon = '<:spammer:1206893298292232245>',
-	QuarantinedIcon = '<:quarantined:1206899526447923210>',
-	Reply = '<:reply:1225386830829191188>',
-	ReplyInactive = '<:reply_inactive:1225386832146075739>',
-	Flag = '<:flag:1225386828152963122>',
-	FlagInactive = '<:flag_inactive:1225386829558186028>',
+	SpammerIcon = '<:spammer:1262395235640676353>',
+	QuarantinedIcon = '<:quarantined:1262395690143973396>',
+	Reply = '<:reply:1262387069909733406>',
+	ReplyInactive = '<:reply_inactive:1262386545529196568>',
+	Flag = '<:flag:1262387528774848522>',
+	FlagInactive = '<:flag_inactive:1262387790348419129>',
 	Timer = '<:timer:985524723490381826>',
-	Bucket = '<:bucket:1225500653212930160>',
-	Delete = '<:delete:1225386833307766854>',
-	DeleteInactive = '<:delete_inactive:1225386834394353675>',
-	Timeout = '<:timeout:1225498291131908178>',
-	Kick = '<:kick:1225498287092793427>',
-	Softban = '<:softban:1225498289131094016>',
-	Ban = '<:ban:1225498285637369916>'
+	Bucket = '<:bucket:1262384919783411813>',
+	Delete = '<:delete:1262382721276186704>',
+	DeleteInactive = '<:delete_inactive:1262382743115923478>',
+	Timeout = '<:timeout:1262379856470212659>',
+	Kick = '<:kick:1262378332633174017>',
+	Softban = '<:softban:1262384411245150208>',
+	Ban = '<:ban:1262378308050489468>'
 }
 
 export const enum BrandingColors {
