@@ -29,8 +29,12 @@
 	"helpNodm": "{{REDCROSS}} | You have DMs disabled so I couldn't send you the list of commands.",
 	"v7Description": "Gets the information regarding Skyra v7",
 	"v7Extended": {
-		"extendedHelp": "This is a **hidden** command used exclusively to send a notice to everyone who tries to use commands that have been removed according to [SKyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) plans."
+		"extendedHelp": "This is a **hidden** command used exclusively to send a notice to everyone who tries to use commands that have been removed according to [WolfStar v7](https://wolfstar.notion.site/wolfstar) plans."
 	},
-	"v7Message": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/WolfStar-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
-	"v7NayreMessage": "Hello there! Thank you for using this command, however, it was removed and will be either redesigned as part of Nayre's Acryss RPG as mentioned in [WolfStar v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖"
+	"v7SkyraDescription": "Gets the information regarding WolfStar v7",
+	"v7SkyraExtended": {
+		"extendedHelp": "This is a **hidden** command used exclusively to send a notice to everyone who tries to use commands that have been removed according to [Skyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8) plans."
+	},
+	"v7SkyraMessage": "Hello there! Thank you for using this command, however, it was removed due to [Skyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans. The link includes an explanation as for why `{{command}}` was removed.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖",
+	"v7NayreMessage": "Hello there! Thank you for using this command, however, it was removed and will be either redesigned as part of Nayre's Acryss RPG as mentioned in [Skyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)'s plans.\n\nSorry for the inconvenience, and thank you for using WolfStar. 💖"
 }

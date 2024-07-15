@@ -39,8 +39,13 @@ export function makeRow(...buttons: readonly ButtonBuilder[]) {
 	return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(...buttons);
 }
 
-export const ButtonWolfV7 = new ButtonBuilder() //
-	.setLabel('Blog Post')
+export const ButtonWolfStarV7 = new ButtonBuilder() //
+	.setLabel('Blog WolfStar Post')
+	.setStyle(ButtonStyle.Link)
+	.setURL('https://blog.wolfstar.rocks/wolfstar-v7');
+
+export const ButtonSkyraV7 = new ButtonBuilder() //
+	.setLabel('Blog Skyra Post')
 	.setStyle(ButtonStyle.Link)
 	.setURL('https://blog.skyra.pw/skyra-v7');
 
