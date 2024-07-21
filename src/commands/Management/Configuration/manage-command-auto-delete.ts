@@ -1,4 +1,4 @@
-import { GuildSettings, readSettings, writeSettings } from '#lib/database';
+import { readSettings, writeSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -28,7 +28,7 @@ export class UserCommand extends WolfSubcommand {
 		const time = await args.pick('timespan', { minimum: seconds(1), maximum: minutes(2) });
 
 		await writeSettings(message.guild, (settings) => {
-			const commandAutoDelete = settings[GuildSettings.CommandAutoDelete];
+			const { commandAutoDelete } = settings;
 			const index = commandAutoDelete.findIndex(([id]) => id === channel.id);
 			const value: readonly [string, number] = [channel.id, time];
 
@@ -43,7 +43,7 @@ export class UserCommand extends WolfSubcommand {
 	public async remove(message: GuildMessage, args: WolfSubcommand.Args) {
 		const channel = await args.pick('textChannelName');
 		await writeSettings(message.guild, (settings) => {
-			const commandAutoDelete = settings[GuildSettings.CommandAutoDelete];
+			const { commandAutoDelete } = settings;
 			const index = commandAutoDelete.findIndex(([id]) => id === channel.id);
 
 			if (index === -1) {
@@ -58,7 +58,7 @@ export class UserCommand extends WolfSubcommand {
 	}
 
 	public async reset(message: GuildMessage, args: WolfSubcommand.Args) {
-		await writeSettings(message.guild, [[GuildSettings.CommandAutoDelete, []]]);
+		await writeSettings(message.guild, [['commandAutoDelete', []]]);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandAutoDeleteReset);
 		return send(message, content);
