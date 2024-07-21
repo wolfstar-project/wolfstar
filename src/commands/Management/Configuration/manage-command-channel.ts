@@ -88,8 +88,9 @@ export class UserCommand extends WolfSubcommand {
 
 	public async show(message: GuildMessage, args: WolfSubcommand.Args) {
 		const channel = await args.pick('textChannelName');
-		const disabledCommandsChannels = await readSettings(message.guild, GuildSettings.DisabledCommandChannels);
+		const settings = await readSettings(message.guild);
 
+		const { disabledCommandsChannels } = settings;
 		const entry = disabledCommandsChannels.find((e) => e.channel === channel.id);
 		if (!entry?.commands.length) {
 			this.error(LanguageKeys.Commands.Management.ManageCommandChannelShowEmpty);
