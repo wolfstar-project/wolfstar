@@ -29,7 +29,7 @@ export class PermissionNodeManager implements IBaseManager {
 		return (target instanceof Role ? 'permissionsRoles' : 'permissionsUsers') satisfies keyof GuildEntity;
 	}
 
-	public run(member: GuildMember, command: SkyraCommand) {
+	public run(member: GuildMember, command: WolfCommand) {
 		return this.runUser(member, command) ?? this.runRole(member, command);
 	}
 
