@@ -153,9 +153,8 @@ declare module '@skyra/env-utilities' {
 		WORKER_COUNT: IntegerString;
 
 		DISCORD_TOKEN: string;
-		BOTLIST_SPACE_TOKEN: string;
+		VOID_BOTS_TOKEN: string;
 		BOTS_FOR_DISCORD_TOKEN: string;
-		BOTS_ON_DISCORD_TOKEN: string;
 		DISCORD_BOT_LIST_TOKEN: string;
 		DISCORD_BOTS_TOKEN: string;
 		SENTRY_URL: string;
