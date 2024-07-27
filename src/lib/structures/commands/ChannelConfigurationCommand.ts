@@ -27,7 +27,7 @@ export abstract class ChannelConfigurationCommand extends WolfCommand {
 	public override async messageRun(message: GuildMessage, args: WolfCommand.Args) {
 		const channel = await args.pick(ChannelConfigurationCommand.hereOrTextChannelResolver);
 
-		await using trx = await writeSettingsTransaction(message.guild);
+		using trx = await writeSettingsTransaction(message.guild);
 		if (trx.settings[this.settingsKey] === channel.id) {
 			this.error(LanguageKeys.Misc.ConfigurationEquals);
 		}
