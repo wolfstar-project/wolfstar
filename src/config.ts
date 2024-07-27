@@ -36,9 +36,11 @@ export const OWNERS = envParseArray('CLIENT_OWNERS');
 
 export function parseAnalytics(): ConnectionOptions {
 	const url = envParseString('INFLUX_URL');
+	const proxyUrl = envParseString('INFLUX_PROXY_URL');
 	const token = envParseString('INFLUX_TOKEN');
 
 	return {
+		proxyUrl,
 		url,
 		token
 	};

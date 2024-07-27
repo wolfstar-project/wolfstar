@@ -143,6 +143,7 @@ declare module '@skyra/env-utilities' {
 
 		INFLUX_ENABLED: BooleanString;
 		INFLUX_URL: string;
+		INFLUX_PROXY_URL: string;
 		INFLUX_TOKEN: string;
 		INFLUX_ORG: string;
 		INFLUX_ORG_ANALYTICS_BUCKET: string;
