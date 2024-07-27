@@ -1,9 +1,11 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
-import { WolfCommand, WolfPaginatedMessage } from '#lib/structures';
+import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
+import { minutes } from '#utils/common';
 import { getColor, sendLoadingMessage } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';
+import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { CommandOptionsRunTypeEnum } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { TFunction } from '@sapphire/plugin-i18next';
@@ -124,12 +126,13 @@ export class UserPaginatedMessageCommand extends WolfCommand {
 		// would filter and remove them all, causing this to be empty.
 		if (!roles.length) this.error(LanguageKeys.Commands.Management.RolesListEmpty);
 
-		const display = new WolfPaginatedMessage({
+		const display = new PaginatedMessage({
 			template: new EmbedBuilder() //
 				.setColor(getColor(message))
 				.setTitle(t(LanguageKeys.Commands.Management.RolesListTitle))
 		});
 
+		display.setIdle(minutes(5));
 		for (const page of chunk(roles, 10)) {
 			display.addPageEmbed((embed) => embed.setDescription(page.join('\n')));
 		}
