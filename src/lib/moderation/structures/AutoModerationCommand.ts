@@ -1,13 +1,14 @@
 import {
 	configurableKeys,
-	GuildEntity,
 	readSettings,
+	readSettingsAdder,
 	writeSettings,
 	type AdderKey,
 	type GuildData,
-	type GuildDataKey,
 	type GuildDataValue,
-	type GuildSettingsOfType
+	type GuildSettingsOfType,
+	type ReadonlyGuildEntity,
+	type SchemaDataKey
 } from '#lib/database';
 import type { Adder } from '#lib/database/utils/Adder';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
@@ -143,7 +144,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 			this.#punishmentThresholdDurationMaximum
 		);
 
-		const pairs: [GuildDataKey, GuildDataValue][] = [];
+		const pairs: [SchemaDataKey, GuildDataValue][] = [];
 		if (!isNullish(valueEnabled)) pairs.push([this.keyEnabled, valueEnabled]);
 		if (!isNullish(valueOnInfraction)) pairs.push([this.keyOnInfraction, valueOnInfraction]);
 		if (!isNullish(valuePunishment)) pairs.push([this.keyPunishment, valuePunishment]);
@@ -167,7 +168,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		return interaction.reply({ content, ephemeral: true });
 	}
 
-	protected async resetGetKeyValuePair(guild: Guild, key: ResetKey): Promise<readonly [GuildDataKey, GuildDataValue]> {
+	protected async resetGetKeyValuePair(guild: Guild, key: ResetKey): Promise<readonly [SchemaDataKey, GuildDataValue]> {
 		switch (key) {
 			case 'enabled':
 				return [this.keyEnabled, false];
@@ -190,12 +191,12 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		}
 	}
 
-	protected resetGetKeyValuePairFallback(guild: Guild, key: string): Awaitable<readonly [GuildDataKey, GuildDataValue]>;
+	protected resetGetKeyValuePairFallback(guild: Guild, key: string): Awaitable<readonly [SchemaDataKey, GuildDataValue]>;
 	protected resetGetKeyValuePairFallback(): never {
 		throw new Error('Unreachable');
 	}
 
-	protected resetGetValue<const Key extends GuildDataKey>(key: Key): GuildData[Key] {
+	protected resetGetValue<const Key extends SchemaDataKey>(key: Key): GuildData[Key] {
 		return configurableKeys.get(key)!.default as GuildData[Key];
 	}
 
@@ -211,7 +212,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 			.setTitle(t(Root.ShowDisabled));
 	}
 
-	protected showEnabled(t: TFunction, settings: GuildEntity) {
+	protected showEnabled(t: TFunction, settings: ReadonlyGuildEntity) {
 		const embed = new EmbedBuilder() //
 			.setColor(Colors.Green)
 			.setTitle(t(Root.ShowEnabled))
@@ -221,7 +222,12 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		if (!isNullishOrZero(punishment)) {
 			embed.addFields({
 				name: t(Root.ShowPunishmentTitle),
-				value: this.showEnabledOnPunishment(t, punishment, settings[this.keyPunishmentDuration], settings.adders[this.adderPropertyName])
+				value: this.showEnabledOnPunishment(
+					t,
+					punishment,
+					settings[this.keyPunishmentDuration],
+					readSettingsAdder(settings, this.adderPropertyName)
+				)
 			});
 		}
 

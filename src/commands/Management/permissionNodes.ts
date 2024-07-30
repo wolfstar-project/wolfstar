@@ -1,4 +1,4 @@
-import { PermissionNodeAction, readSettings, writeSettings, type PermissionsNode } from '#lib/database';
+import { PermissionNodeAction, readSettings, readSettingsPermissionNodes, writeSettings, type PermissionsNode } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -37,9 +37,10 @@ export class UserCommand extends WolfSubcommand {
 		}
 
 		const command = await args.pick('commandMatch', { owners: false });
-		await writeSettings(message.guild, (settings) => ({
-			[settings.permissionNodes.settingsPropertyFor(target)]: settings.permissionNodes.add(target, command, action)
-		}));
+		await writeSettings(message.guild, (settings) => {
+			const nodes = readSettingsPermissionNodes(settings);
+			return { [nodes.settingsPropertyFor(target)]: nodes.add(target, command, action) };
+		});
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesAdd);
 		return send(message, content);
@@ -52,9 +53,10 @@ export class UserCommand extends WolfSubcommand {
 
 		if (!this.checkPermissions(message, target)) this.error(LanguageKeys.Commands.Management.PermissionNodesHigher);
 
-		await writeSettings(message.guild, (settings) => ({
-			[settings.permissionNodes.settingsPropertyFor(target)]: settings.permissionNodes.remove(target, command, action)
-		}));
+		await writeSettings(message.guild, (settings) => {
+			const nodes = readSettingsPermissionNodes(settings);
+			return { [nodes.settingsPropertyFor(target)]: nodes.remove(target, command, action) };
+		});
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesRemove);
 		return send(message, content);
@@ -65,9 +67,10 @@ export class UserCommand extends WolfSubcommand {
 
 		if (!this.checkPermissions(message, target)) this.error(LanguageKeys.Commands.Management.PermissionNodesHigher);
 
-		await writeSettings(message.guild, (settings) => ({
-			[settings.permissionNodes.settingsPropertyFor(target)]: settings.permissionNodes.reset(target)
-		}));
+		await writeSettings(message.guild, (settings) => {
+			const nodes = readSettingsPermissionNodes(settings);
+			return { [nodes.settingsPropertyFor(target)]: nodes.reset(target) };
+		});
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesReset);
 		return send(message, content);
@@ -89,14 +92,14 @@ export class UserCommand extends WolfSubcommand {
 		const node = nodes.find((n) => n.id === target.id);
 		if (typeof node === 'undefined') this.error(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
 
-		return this.formatPermissionNode(args, node, isRole, target);
+		return this.formatPermissionNode(args, node as PermissionsNode, isRole, target);
 	}
 
 	private async showAll(message: GuildMessage, args: WolfSubcommand.Args) {
 		const settings = await readSettings(message.guild);
 		const [users, roles] = await Promise.all([
-			this.formatPermissionNodes(args, settings.permissionsUsers, false),
-			this.formatPermissionNodes(args, settings.permissionsRoles, true)
+			this.formatPermissionNodes(args, settings.permissionsUsers as readonly PermissionsNode[], false),
+			this.formatPermissionNodes(args, settings.permissionsRoles as readonly PermissionsNode[], true)
 		]);
 		const total = users.concat(roles);
 		if (total.length === 0) this.error(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);

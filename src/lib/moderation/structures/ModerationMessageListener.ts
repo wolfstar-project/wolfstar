@@ -1,4 +1,4 @@
-import { GuildEntity, readSettings, type AdderKey, type GuildSettingsOfType } from '#lib/database';
+import { readSettings, readSettingsAdder, type AdderKey, type GuildSettingsOfType, type ReadonlyGuildEntity } from '#lib/database';
 import type { AdderError } from '#lib/database/utils/Adder';
 import { getT } from '#lib/i18n';
 import { ModerationActions } from '#lib/moderation/actions/index';
@@ -22,7 +22,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	private readonly reasonLanguageKey: TypedT<string>;
 	private readonly reasonLanguageKeyWithMaximum: TypedFT<{ amount: number; maximum: number }, string>;
 
-	public constructor(context: ModerationMessageListener.Context, options: ModerationMessageListener.Options) {
+	public constructor(context: ModerationMessageListener.LoaderContext, options: ModerationMessageListener.Options) {
 		super(context, { ...options, event: Events.GuildUserMessage });
 
 		this.keyEnabled = options.keyEnabled;
@@ -52,7 +52,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 
 		if (this.hardPunishmentPath === null) return;
 
-		const adder = settings.adders[this.hardPunishmentPath.adder];
+		const adder = readSettingsAdder(settings, this.hardPunishmentPath.adder);
 		if (!adder) return this.processHardPunishment(message, t, 0, 0);
 
 		const points = typeof preProcessed === 'number' ? preProcessed : 1;
@@ -170,7 +170,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		return settings[this.keyEnabled] && this.checkMessageChannel(settings, message.channel) && this.checkMemberRoles(settings, message.member);
 	}
 
-	private checkMessageChannel(settings: GuildEntity, channel: GuildTextBasedChannelTypes) {
+	private checkMessageChannel(settings: ReadonlyGuildEntity, channel: GuildTextBasedChannelTypes) {
 		const globalIgnore = settings.selfmodIgnoreChannels;
 		if (globalIgnore.includes(channel.id)) return false;
 
@@ -180,7 +180,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		return true;
 	}
 
-	private checkMemberRoles(settings: GuildEntity, member: GuildMember | null) {
+	private checkMemberRoles(settings: ReadonlyGuildEntity, member: GuildMember | null) {
 		if (member === null) return false;
 
 		const ignoredRoles = settings[this.ignoredRolesPath];
@@ -212,5 +212,5 @@ export namespace ModerationMessageListener {
 		reasonLanguageKeyWithMaximum: TypedFT<{ amount: number; maximum: number }, string>;
 	}
 	export type JSON = Listener.JSON;
-	export type Context = Listener.Context;
+	export type LoaderContext = Listener.LoaderContext;
 }

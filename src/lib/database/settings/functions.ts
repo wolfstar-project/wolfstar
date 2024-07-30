@@ -1,5 +1,9 @@
 import { GuildEntity } from '#lib/database/entities/GuildEntity';
+import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
+import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
+import type { GuildData, ReadonlyGuildData, ReadonlyGuildEntity } from '#lib/database/settings/types';
 import { container, type Awaitable } from '@sapphire/framework';
+import { objectKeys } from '@sapphire/utilities';
 import { RWLock } from 'async-rwlock';
 import { Collection, type GuildResolvable, type Snowflake } from 'discord.js';
 
@@ -11,9 +15,10 @@ export function deleteSettingsCached(guild: GuildResolvable) {
 	const id = resolveGuildId(guild);
 	locks.delete(id);
 	cache.delete(id);
+	deleteSettingsContext(id);
 }
 
-export async function readSettings(guild: GuildResolvable): Promise<GuildEntity> {
+export async function readSettings(guild: GuildResolvable): Promise<ReadonlyGuildEntity> {
 	const id = resolveGuildId(guild);
 
 	const lock = locks.ensure(id, () => new RWLock());
@@ -29,39 +34,37 @@ export async function readSettings(guild: GuildResolvable): Promise<GuildEntity>
 	}
 }
 
-export function readSettingsCached(guild: GuildResolvable): GuildEntity | null {
+export function readSettingsAdder(settings: ReadonlyGuildEntity, key: AdderKey) {
+	return getSettingsContext(settings).adders[key];
+}
+
+export function readSettingsPermissionNodes(settings: ReadonlyGuildEntity) {
+	return getSettingsContext(settings).permissionNodes;
+}
+
+export function readSettingsNoMentionSpam(settings: ReadonlyGuildEntity) {
+	return getSettingsContext(settings).noMentionSpam;
+}
+
+export function readSettingsWordFilterRegExp(settings: ReadonlyGuildEntity) {
+	return getSettingsContext(settings).wordFilterRegExp;
+}
+
+export function readSettingsCached(guild: GuildResolvable): ReadonlyGuildEntity | null {
 	return cache.get(resolveGuildId(guild)) ?? null;
 }
 
 export async function writeSettings(
 	guild: GuildResolvable,
-	data: Readonly<Partial<GuildEntity>> | ((settings: Readonly<GuildEntity>) => Awaitable<Readonly<Partial<GuildEntity>>>)
+	data: Partial<ReadonlyGuildEntity> | ((settings: ReadonlyGuildEntity) => Awaitable<Partial<ReadonlyGuildEntity>>)
 ) {
-	const id = resolveGuildId(guild);
-	const lock = locks.ensure(id, () => new RWLock());
+	using trx = await writeSettingsTransaction(guild);
 
-	// Acquire a write lock:
-	await lock.writeLock();
-
-	// Fetch the entry:
-	const settings = cache.get(id) ?? (await unlockOnThrow(processFetch(id), lock));
-
-	try {
-		if (typeof data === 'function') {
-			data = await data(settings);
-		}
-
-		Object.assign(settings, data);
-
-		// Now we save, and return undefined:
-		await settings.save();
-		return settings;
-	} catch (error) {
-		await tryReload(settings);
-		throw error;
-	} finally {
-		lock.unlock();
+	if (typeof data === 'function') {
+		data = await data(trx.settings);
 	}
+
+	await trx.write(data).submit();
 }
 
 export async function writeSettingsTransaction(guild: GuildResolvable) {
@@ -78,11 +81,12 @@ export async function writeSettingsTransaction(guild: GuildResolvable) {
 }
 
 export class Transaction {
+	#changes = Object.create(null) as Partial<ReadonlyGuildData>;
 	#hasChanges = false;
 	#locking = true;
 
 	public constructor(
-		public readonly settings: Readonly<GuildEntity>,
+		public readonly settings: ReadonlyGuildEntity,
 		private readonly lock: RWLock
 	) {}
 
@@ -94,8 +98,8 @@ export class Transaction {
 		return this.#locking;
 	}
 
-	public write(data: Readonly<Partial<GuildEntity>>) {
-		Object.assign(this.settings, data);
+	public write(data: Partial<ReadonlyGuildData>) {
+		Object.assign(this.#changes, data);
 		this.#hasChanges = true;
 		return this;
 	}
@@ -105,13 +109,19 @@ export class Transaction {
 			throw new Error('Cannot submit a transaction without changes');
 		}
 
+		const original = this.#getOriginalValues();
 		try {
+			Object.assign(this.settings, this.#changes);
 			await this.settings.save();
+
 			this.#hasChanges = false;
+			updateSettingsContext(this.settings, this.#changes);
 		} catch (error) {
-			await tryReload(this.settings);
+			Object.assign(this.settings, original);
 			throw error;
 		} finally {
+			this.#changes = Object.create(null);
+
 			if (this.#locking) {
 				this.lock.unlock();
 				this.#locking = false;
@@ -119,39 +129,32 @@ export class Transaction {
 		}
 	}
 
-	public async abort() {
-		try {
-			await tryReload(this.settings);
-		} finally {
-			if (this.#locking) {
-				this.lock.unlock();
-				this.#locking = false;
-			}
-		}
-	}
-
-	public async dispose() {
-		if (!this.#hasChanges) {
-			await this.abort();
-		}
-
+	public abort() {
 		if (this.#locking) {
 			this.lock.unlock();
 			this.#locking = false;
 		}
 	}
 
-	public [Symbol.asyncDispose]() {
+	public dispose() {
+		if (this.#locking) {
+			this.lock.unlock();
+			this.#locking = false;
+		}
+	}
+
+	public [Symbol.dispose]() {
 		return this.dispose();
 	}
-}
 
-async function tryReload(entity: Readonly<GuildEntity>): Promise<void> {
-	try {
-		await entity.reload();
-	} catch (error) {
-		if (error instanceof Error && error.name === 'EntityNotFound') entity.resetAll();
-		else throw error;
+	#getOriginalValues() {
+		const data = Object.assign(Object.create(null), this.#changes) as Partial<GuildData>;
+		for (const key of objectKeys(data)) {
+			// @ts-expect-error Complex types
+			data[key] = this.settings[key];
+		}
+
+		return data;
 	}
 }
 
@@ -171,7 +174,9 @@ async function processFetch(id: string): Promise<GuildEntity> {
 	try {
 		const promise = fetch(id);
 		queue.set(id, promise);
-		return await promise;
+		const value = await promise;
+		getSettingsContext(value);
+		return value;
 	} finally {
 		queue.delete(id);
 	}

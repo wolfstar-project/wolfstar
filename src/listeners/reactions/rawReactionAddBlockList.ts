@@ -1,4 +1,4 @@
-import { readSettings, type GuildSettingsOfType } from '#lib/database';
+import { readSettings, readSettingsAdder, type GuildSettingsOfType } from '#lib/database';
 import { api } from '#lib/discord/Api';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { AutoModerationOnInfraction, ModerationListener, type HardPunishment } from '#lib/moderation';
@@ -21,7 +21,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { fetchT, resolveKey } from '@sapphire/plugin-i18next';
 import type { Nullish } from '@sapphire/utilities';
 
-type ArgumentType = [data: LLRCData, reaction: SerializedEmoji, channelId: string | Nullish, blockedReactions: string[]];
+type ArgumentType = [data: LLRCData, reaction: SerializedEmoji, channelId: string | Nullish, blockedReactions: readonly string[]];
 
 @ApplyOptions<ModerationListener.Options>({ event: Events.RawReactionAdd })
 export class UserModerationEvent extends ModerationListener<ArgumentType, unknown> {
@@ -53,7 +53,7 @@ export class UserModerationEvent extends ModerationListener<ArgumentType, unknow
 		const hardAction = settings.selfmodReactionsHardAction;
 		this.processSoftPunishment(args, preProcessed, AutoModerationOnInfraction.resolve(softAction));
 
-		const adder = settings.adders[this.hardPunishmentPath.adder];
+		const adder = readSettingsAdder(settings, this.hardPunishmentPath.adder);
 		if (!adder) return this.processHardPunishment(data.guild, data.userId, hardAction);
 
 		try {

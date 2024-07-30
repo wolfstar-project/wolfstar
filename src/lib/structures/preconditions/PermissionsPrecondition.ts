@@ -1,4 +1,4 @@
-import { readSettings } from '#lib/database/settings';
+import { readSettings, readSettingsPermissionNodes } from '#lib/database/settings';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { WolfCommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -22,7 +22,7 @@ export abstract class PermissionsPrecondition extends AllFlowsPrecondition {
 		// If it should skip, go directly to handle:
 		if (await this.shouldRun(message, command)) {
 			const settings = await readSettings(message.guild);
-			const nodes = settings.permissionNodes;
+			const nodes = readSettingsPermissionNodes(settings);
 			const result = nodes.run(message.member, command);
 			if (result) return this.ok();
 			if (result === false) return this.error({ identifier: LanguageKeys.Preconditions.PermissionNodes });
@@ -42,7 +42,11 @@ export abstract class PermissionsPrecondition extends AllFlowsPrecondition {
 		return this.ok();
 	}
 
-	public abstract handle(message: GuildMessage, command: WolfCommand, context: PermissionsPrecondition.Context): PermissionsPrecondition.Result;
+	public abstract handle(
+		message: GuildMessage,
+		command: WolfCommand,
+		context: PermissionsPrecondition.LoaderContext
+	): PermissionsPrecondition.Result;
 
 	private async shouldRun(message: GuildMessage, command: WolfCommand) {
 		// Guarded commands cannot be modified:
@@ -59,7 +63,7 @@ export abstract class PermissionsPrecondition extends AllFlowsPrecondition {
 }
 
 export namespace PermissionsPrecondition {
-	export type Context = Precondition.Context;
+	export type LoaderContext = Precondition.Context;
 	export type Result = Precondition.Result;
 	export type AsyncResult = Precondition.AsyncResult;
 	export interface Options extends PreconditionOptions {
