@@ -102,7 +102,6 @@ export class UserCommand extends WolfCommand {
 					},
 					database: {
 						...(await import('#lib/database')),
-						entities: await import('#lib/database/entities'),
 						settings: await import('#lib/database/settings')
 					},
 					moderation: {
@@ -224,7 +223,7 @@ export class UserCommand extends WolfCommand {
 		let result: unknown;
 
 		try {
-			result = await this.container.db.connection.query(sql);
+			result = await this.container.prisma.$queryRawUnsafe(sql);
 			time = stopwatch.toString();
 			success = true;
 		} catch (error) {

@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/unified-signatures */
-import type { DbSet, GuildSettingsOfType, SerializerStore, TaskStore } from '#lib/database';
+import type {
+	CommandAutoDelete,
+	DisabledCommandChannel,
+	GuildSettingsOfType,
+	PermissionsNode,
+	ReactionRole,
+	SerializerStore,
+	StickyRole,
+	TaskStore,
+	UniqueRoleSet
+} from '#lib/database';
 import type { GuildMemberFetchQueue } from '#lib/discord/GuildMemberFetchQueue';
 import type { WorkerManager } from '#lib/moderation/workers/WorkerManager';
 import type { AnalyticsData, InviteCodeValidEntry, InviteStore, ScheduleManager, WolfCommand } from '#lib/structures';
@@ -14,6 +24,17 @@ import type { Piece, Store } from '@sapphire/framework';
 import type { Awaitable, Nullish } from '@sapphire/utilities';
 import type { ArrayString, BooleanString, IntegerString } from '@skyra/env-utilities';
 import type { Guild, GuildChannel, NewsChannel, Role, Snowflake, TextChannel, User } from 'discord.js';
+
+declare global {
+	namespace PrismaJson {
+		export type PermissionNodeEntries = PermissionsNode[];
+		export type CommandAutoDeleteEntries = CommandAutoDelete[];
+		export type DisabledCommandChannelEntries = DisabledCommandChannel[];
+		export type StickyRoleEntries = StickyRole[];
+		export type ReactionRoleEntries = ReactionRole[];
+		export type UniqueRoleSetEntries = UniqueRoleSet[];
+	}
+}
 
 declare module 'discord.js' {
 	interface Client {
@@ -41,7 +62,6 @@ declare module 'discord.js' {
 declare module '@sapphire/pieces' {
 	interface Container {
 		api?: API;
-		db: DbSet;
 		schedule: ScheduleManager;
 		workers: WorkerManager;
 	}
@@ -137,10 +157,6 @@ declare module '@skyra/env-utilities' {
 		OAUTH_REDIRECT_URI: string;
 		OAUTH_SCOPE: ArrayString;
 		OAUTH_SECRET: string;
-
-		PGSQL_DATABASE_URL: string;
-		TYPEORM_DEBUG_LOGS: BooleanString;
-
 		INFLUX_ENABLED: BooleanString;
 		INFLUX_URL: string;
 		INFLUX_PROXY_URL: string;
@@ -160,5 +176,6 @@ declare module '@skyra/env-utilities' {
 		DISCORD_BOTS_TOKEN: string;
 		SENTRY_URL: string;
 		TOP_GG_TOKEN: string;
+		DATABASE_URL: string;
 	}
 }
