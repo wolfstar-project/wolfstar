@@ -7,12 +7,12 @@ import type {
 	ReactionRole,
 	SerializerStore,
 	StickyRole,
-	TaskStore,
 	UniqueRoleSet
 } from '#lib/database';
 import type { GuildMemberFetchQueue } from '#lib/discord/GuildMemberFetchQueue';
 import type { WorkerManager } from '#lib/moderation/workers/WorkerManager';
-import type { AnalyticsData, InviteCodeValidEntry, InviteStore, ScheduleManager, WolfCommand } from '#lib/structures';
+import type { ScheduleManager, TaskStore } from '#lib/schedule';
+import type { AnalyticsData, InviteCodeValidEntry, InviteStore, WolfCommand } from '#lib/structures';
 import type { Events } from '#lib/types';
 import type { TaskErrorPayload } from '#lib/types/Internals';
 import type { TypedFT, TypedT } from '#lib/types/Utils';
