@@ -1,6 +1,5 @@
 // Config must be the first to be loaded, as it sets the env:
 import '#root/config';
-import 'reflect-metadata';
 
 // Import everything else:
 import '#lib/setup/paginated-message';
