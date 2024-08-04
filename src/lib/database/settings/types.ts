@@ -12,13 +12,7 @@ export type GuildSettingsOfType<T> = PickByValue<GuildData, T>;
 import type { SerializedEmoji } from '#utils/functions';
 import type { Snowflake } from 'discord.js';
 
-export type {
-	Guild as GuildData,
-	GuildSubscription as GuildSubscriptionData,
-	Moderation as ModerationData,
-	TwitchSubscription as TwitchSubscriptionData,
-	User as UserData
-} from '@prisma/client';
+export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '@prisma/client';
 
 export interface PermissionsNode {
 	allow: readonly Snowflake[];

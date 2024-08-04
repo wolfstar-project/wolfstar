@@ -41,5 +41,3 @@ export class UserCommand extends WolfSubcommand {
 		return send(message, makeRemovedMessage(args.commandContext.commandName, row));
 	}
 }
-
-type Subscription = GuildSubscription & { subscription: TwitchSubscription };
