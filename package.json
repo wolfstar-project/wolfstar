@@ -12,7 +12,6 @@
 		"#utils/resolvers": "./dist/lib/util/resolvers/index.js",
 		"#utils/*": "./dist/lib/util/*.js",
 		"#lib/database/entities": "./dist/lib/database/entities/index.js",
-		"#lib/database/keys": "./dist/lib/database/keys/index.js",
 		"#lib/database/settings": "./dist/lib/database/settings/index.js",
 		"#lib/database": "./dist/lib/database/index.js",
 		"#lib/discord": "./dist/lib/discord/index.js",
@@ -22,6 +21,7 @@
 		"#lib/moderation/managers": "./dist/lib/moderation/managers/index.js",
 		"#lib/moderation/workers": "./dist/lib/moderation/workers/index.js",
 		"#lib/moderation": "./dist/lib/moderation/index.js",
+		"#lib/schedule": "./dist/lib/schedule/index.js",
 		"#lib/structures/data": "./dist/lib/structures/data/index.js",
 		"#lib/structures/managers": "./dist/lib/structures/managers/index.js",
 		"#lib/structures": "./dist/lib/structures/index.js",
@@ -38,6 +38,7 @@
 		"dev": "yarn build && yarn start",
 		"watch": "tsc -b src -w",
 		"watch:start": "tsc-watch -b src --onSuccess \"yarn start\"",
+		"prisma:generate": "yarn prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
@@ -47,19 +48,16 @@
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"scripts:migration": "node scripts/migrations.mjs",
 		"dockerps": "pwsh -NoLogo ./.docker/control.ps1",
-		"typeorm:schema:sync": "yarn build && yarn typeorm schema:sync -d ormconfig.js",
-		"typeorm:schema:resync": "docker container rm -f postgres2 && docker compose up -d postgres2 && sleep 3 && yarn typeorm:schema:sync",
-		"typeorm:migration:up": "yarn build && yarn typeorm migration:run -d ormconfig.js",
-		"typeorm:migration:down": "yarn build && yarn typeorm migration:revert -d ormconfig.js",
 		"update": "yarn upgrade-interactive"
 	},
 	"dependencies": {
 		"@discordjs/builders": "^1.8.2",
 		"@discordjs/collection": "^2.1.0",
 		"@discordjs/core": "^1.2.0",
-		"@influxdata/influxdb-client": "^1.33.2",
-		"@influxdata/influxdb-client-apis": "^1.33.2",
-		"@sapphire/async-queue": "^1.5.2",
+		"@influxdata/influxdb-client": "^1.34.0",
+		"@influxdata/influxdb-client-apis": "^1.34.0",
+		"@prisma/client": "^5.17.0",
+		"@sapphire/async-queue": "^1.5.3",
 		"@sapphire/bitfield": "^1.2.2",
 		"@sapphire/decorators": "^6.1.0",
 		"@sapphire/discord.js-utilities": "7.3.0",
@@ -76,7 +74,7 @@
 		"@sapphire/stopwatch": "^1.5.2",
 		"@sapphire/time-utilities": "^1.7.12",
 		"@sapphire/utilities": "^3.17.0",
-		"@sentry/node": "^8.19.0",
+		"@sentry/node": "^8.20.0",
 		"@skyra/ai": "^1.2.0",
 		"@skyra/char": "^1.0.3",
 		"@skyra/env-utilities": "^1.3.0",
@@ -86,12 +84,9 @@
 		"colorette": "^2.0.20",
 		"confusables": "^1.1.1",
 		"diff": "^5.2.0",
-		"discord-api-types": "^0.37.92",
+		"discord-api-types": "^0.37.93",
 		"discord.js": "^14.15.3",
 		"he": "^1.2.0",
-		"pg": "^8.12.0",
-		"typeorm": "0.3.20",
-		"typeorm-naming-strategies": "^4.1.0",
 		"zlib-sync": "^0.1.9"
 	},
 	"devDependencies": {
@@ -116,6 +111,8 @@
 		"eslint-plugin-prettier": "^5.2.1",
 		"lint-staged": "^15.2.7",
 		"prettier": "^3.3.3",
+		"prisma": "^5.17.0",
+		"prisma-json-types-generator": "^3.0.4",
 		"tsc-watch": "^6.2.0",
 		"typescript": "^5.4.5",
 		"vitest": "^1.6.0"
@@ -123,7 +120,7 @@
 	"resolutions": {
 		"@types/node": "20.11.5",
 		"ansi-regex": "^5.0.1",
-		"discord-api-types": "^0.37.92",
+		"discord-api-types": "^0.37.93",
 		"minimist": "^1.2.8"
 	},
 	"engines": {
@@ -151,6 +148,6 @@
 	"prettier": "@sapphire/prettier-config",
 	"packageManager": "yarn@4.3.1",
 	"volta": {
-		"node": "20.15.1"
+		"node": "20.16.0"
 	}
 }

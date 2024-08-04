@@ -94,6 +94,32 @@ export class UserCommand extends WolfCommand {
 						discord: await import('@sapphire/discord.js-utilities')
 					}
 				},
+				skyra: {
+					utils: {
+						common: await import('#utils/common'),
+						functions: await import('#utils/functions'),
+						resolvers: await import('#utils/resolvers')
+					},
+					database: {
+						...(await import('#lib/database')),
+						settings: await import('#lib/database/settings')
+					},
+					moderation: {
+						...(await import('#lib/moderation')),
+						actions: await import('#lib/moderation/actions'),
+						common: await import('#lib/moderation/common'),
+						managers: {
+							...(await import('#lib/moderation/managers')),
+							loggers: await import('#lib/moderation/managers/loggers')
+						},
+						workers: await import('#lib/moderation/workers')
+					},
+					structures: {
+						...(await import('#lib/structures')),
+						data: await import('#lib/structures/data'),
+						managers: await import('#lib/structures/managers')
+					}
+				},
 				container: this.container,
 				client: this.container.client,
 				command: this,
@@ -197,7 +223,7 @@ export class UserCommand extends WolfCommand {
 		let result: unknown;
 
 		try {
-			result = await this.container.db.connection.query(sql);
+			result = await this.container.prisma.$queryRawUnsafe(sql);
 			time = stopwatch.toString();
 			success = true;
 		} catch (error) {

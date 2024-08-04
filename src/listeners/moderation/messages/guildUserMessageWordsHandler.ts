@@ -1,4 +1,4 @@
-import { readSettings } from '#lib/database';
+import { readSettings, readSettingsWordFilterRegExp } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationMessageListener } from '#lib/moderation';
 import { IncomingType, OutgoingType } from '#lib/moderation/workers';
@@ -32,7 +32,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 		if (content === null) return null;
 
 		const settings = await readSettings(message.guild);
-		const regExp = settings.wordFilterRegExp;
+		const regExp = readSettingsWordFilterRegExp(settings);
 		if (regExp === null) return null;
 
 		const result = await this.container.workers.send({ type: IncomingType.RunRegExp, regExp, content }, 500);
@@ -41,7 +41,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 
 	protected async onDelete(message: GuildMessage, t: TFunction, value: FilterResults) {
 		floatPromise(deleteMessage(message));
-		if (message.content.length > 25 && (await this.container.db.fetchModerationDirectMessageEnabled(message.author.id))) {
+		if (message.content.length > 25 && (await this.container.prisma.user.fetchModerationDirectMessageEnabled(message.author.id))) {
 			await message.author.send(
 				t(LanguageKeys.Events.Moderation.Messages.WordFilterDm, { filtered: codeBlock('md', cutText(value.filtered, 1900)) })
 			);

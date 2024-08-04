@@ -1,12 +1,12 @@
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import {
-	configurableKeys,
+	getConfigurableKeys,
 	isSchemaKey,
 	readSettings,
 	writeSettingsTransaction,
-	type GuildDataKey,
 	type GuildDataValue,
-	type ReadonlyGuildEntity,
+	type ReadonlyGuildData,
+	type SchemaDataKey,
 	type Serializer
 } from '#lib/database';
 import { getT } from '#lib/i18n';
@@ -38,7 +38,7 @@ export class UserRoute extends Route {
 	@authenticated()
 	@ratelimit(seconds(1), 2, true)
 	public async [methods.PATCH](request: ApiRequest, response: ApiResponse) {
-		const requestBody = request.body as { guild_id: string; data: [GuildDataKey, GuildDataValue][] | undefined };
+		const requestBody = request.body as { guild_id: string; data: [SchemaDataKey, GuildDataValue][] | undefined };
 
 		if (!requestBody.guild_id || !Array.isArray(requestBody.data) || requestBody.guild_id !== request.params.guild) {
 			return response.status(HttpCodes.BadRequest).json(['Invalid body.']);
@@ -58,14 +58,14 @@ export class UserRoute extends Route {
 			const data = await this.validateAll(trx.settings, guild, entries);
 			await trx.write(Object.fromEntries(data)).submit();
 
-			return response.status(HttpCodes.OK).json(trx.settings.toJSON());
+			return response.status(HttpCodes.OK).json(trx.settings satisfies ReadonlyGuildData);
 		} catch (errors) {
 			return response.status(HttpCodes.BadRequest).json(errors);
 		}
 	}
 
-	private async validate(key: GuildDataKey, value: unknown, context: PartialSerializerUpdateContext) {
-		const entry = configurableKeys.get(key);
+	private async validate(key: SchemaDataKey, value: unknown, context: PartialSerializerUpdateContext) {
+		const entry = getConfigurableKeys().get(key);
 		if (!entry || !isSchemaKey(entry)) throw `${key}: The key ${key} does not exist in the current schema.`;
 		try {
 			// If null is passed, reset to default:
@@ -89,7 +89,7 @@ export class UserRoute extends Route {
 		return Promise.all(value.map((value) => serializer.isValid(value, ctx)));
 	}
 
-	private async validateAll(entity: ReadonlyGuildEntity, guild: Guild, pairs: readonly [GuildDataKey, GuildDataValue][]) {
+	private async validateAll(entity: ReadonlyGuildData, guild: Guild, pairs: readonly [SchemaDataKey, GuildDataValue][]) {
 		const context: PartialSerializerUpdateContext = {
 			entity,
 			guild,
@@ -107,7 +107,7 @@ export class UserRoute extends Route {
 		});
 
 		const results = await Promise.all(promises);
-		if (errors.length === 0) return cast<readonly [GuildDataKey, GuildDataValue][]>(results);
+		if (errors.length === 0) return cast<readonly [SchemaDataKey, GuildDataValue][]>(results);
 
 		throw errors;
 	}
