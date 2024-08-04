@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Publish Stable WolfStar Image
 
 on:
   workflow_dispatch:
