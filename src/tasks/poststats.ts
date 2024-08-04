@@ -8,12 +8,11 @@ import { Status } from 'discord.js';
 const header = blueBright('[POST STATS   ]');
 
 enum Lists {
-	BotListSpace = 'botlist.space',
 	Discords = 'discords.com',
 	DiscordBotList = 'discordbotlist.com',
 	TopGG = 'top.gg',
 	DiscordBotsGG = 'discord.bots.gg',
-	BotsOnDiscord = 'bots.ondiscord.xyz'
+	VoidBots = 'voidbots.net'
 }
 
 export class UserTask extends Task {
@@ -60,16 +59,10 @@ export class UserTask extends Task {
 					Lists.DiscordBotList
 				),
 				this.query(
-					`https://bots.ondiscord.xyz/bot-api/bots/${process.env.CLIENT_ID}/guilds`,
-					`{"guildCount":${guilds}}`,
-					process.env.BOTS_ON_DISCORD_TOKEN,
-					Lists.BotsOnDiscord
-				),
-				this.query(
-					`https://api.discordlist.space/v1/bots/${process.env.CLIENT_ID}`,
+					`https://api.voidbots.net/bot/stats/${process.env.CLIENT_ID}`,
 					`{"server_count":${guilds}}`,
-					process.env.BOTLIST_SPACE_TOKEN,
-					Lists.BotListSpace
+					process.env.VOID_BOTS_TOKEN,
+					Lists.VoidBots
 				)
 			])
 		).filter((value) => value !== null);
