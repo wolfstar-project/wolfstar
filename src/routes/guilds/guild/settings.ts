@@ -1,5 +1,15 @@
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import { configurableKeys, isSchemaKey, readSettings, writeSettings, type GuildEntity, type Serializer } from '#lib/database';
+import {
+	configurableKeys,
+	isSchemaKey,
+	readSettings,
+	writeSettingsTransaction,
+	type GuildDataKey,
+	type GuildDataValue,
+	type ReadonlyGuildEntity,
+	type Serializer
+} from '#lib/database';
+import { getT } from '#lib/i18n';
 import { seconds } from '#utils/common';
 import { cast } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -8,8 +18,6 @@ import type { Guild } from 'discord.js';
 
 @ApplyOptions<Route.Options>({ name: 'guildSettings', route: 'guilds/:guild/settings' })
 export class UserRoute extends Route {
-	private readonly kBlockList: string[] = ['commandUses'];
-
 	@authenticated()
 	@ratelimit(seconds(5), 2, true)
 	public async [methods.GET](request: ApiRequest, response: ApiResponse) {
@@ -23,13 +31,14 @@ export class UserRoute extends Route {
 
 		if (!(await canManage(guild, member))) return response.error(HttpCodes.Forbidden);
 
-		return readSettings(guild, (settings) => response.json(settings));
+		const settings = await readSettings(guild);
+		return response.json(settings);
 	}
 
 	@authenticated()
 	@ratelimit(seconds(1), 2, true)
 	public async [methods.PATCH](request: ApiRequest, response: ApiResponse) {
-		const requestBody = request.body as { guild_id: string; data: [string, unknown][] | undefined };
+		const requestBody = request.body as { guild_id: string; data: [GuildDataKey, GuildDataValue][] | undefined };
 
 		if (!requestBody.guild_id || !Array.isArray(requestBody.data) || requestBody.guild_id !== request.params.guild) {
 			return response.status(HttpCodes.BadRequest).json(['Invalid body.']);
@@ -44,26 +53,18 @@ export class UserRoute extends Route {
 		if (!(await canManage(guild, member))) return response.error(HttpCodes.Forbidden);
 
 		const entries = requestBody.data;
-		if (entries.some(([key]) => this.kBlockList.includes(key))) return response.error(HttpCodes.BadRequest);
-
 		try {
-			const settings = await writeSettings(guild, async (settings) => {
-				const pairs = await this.validateAll(settings, guild, entries);
+			await using trx = await writeSettingsTransaction(guild);
+			const data = await this.validateAll(trx.settings, guild, entries);
+			await trx.write(Object.fromEntries(data)).submit();
 
-				for (const [key, value] of pairs) {
-					Reflect.set(settings, key, value);
-				}
-
-				return settings.toJSON();
-			});
-
-			return response.status(HttpCodes.OK).json(settings);
+			return response.status(HttpCodes.OK).json(trx.settings.toJSON());
 		} catch (errors) {
 			return response.status(HttpCodes.BadRequest).json(errors);
 		}
 	}
 
-	private async validate(key: string, value: unknown, context: PartialSerializerUpdateContext) {
+	private async validate(key: GuildDataKey, value: unknown, context: PartialSerializerUpdateContext) {
 		const entry = configurableKeys.get(key);
 		if (!entry || !isSchemaKey(entry)) throw `${key}: The key ${key} does not exist in the current schema.`;
 		try {
@@ -88,11 +89,11 @@ export class UserRoute extends Route {
 		return Promise.all(value.map((value) => serializer.isValid(value, ctx)));
 	}
 
-	private async validateAll(entity: GuildEntity, guild: Guild, pairs: readonly [string, unknown][]) {
+	private async validateAll(entity: ReadonlyGuildEntity, guild: Guild, pairs: readonly [GuildDataKey, GuildDataValue][]) {
 		const context: PartialSerializerUpdateContext = {
 			entity,
 			guild,
-			t: entity.getLanguage()
+			t: getT(entity.language)
 		};
 
 		const errors: string[] = [];
@@ -106,7 +107,7 @@ export class UserRoute extends Route {
 		});
 
 		const results = await Promise.all(promises);
-		if (errors.length === 0) return cast<readonly [keyof GuildEntity, unknown][]>(results);
+		if (errors.length === 0) return cast<readonly [GuildDataKey, GuildDataValue][]>(results);
 
 		throw errors;
 	}

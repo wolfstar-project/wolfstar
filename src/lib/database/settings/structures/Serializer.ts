@@ -1,5 +1,5 @@
-import type { GuildEntity } from '#lib/database/entities/GuildEntity';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
+import type { ReadonlyGuildEntity } from '#lib/database/settings/types';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { translate } from '#lib/i18n/translate';
 import type { WolfArgs } from '#lib/structures';
@@ -32,7 +32,7 @@ export abstract class Serializer<T> extends AliasPiece {
 	 * @param guild The guild given for context in this call
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public stringify(data: T, _context: Serializer.UpdateContext): string {
+	public stringify(data: Readonly<T>, _context: Serializer.UpdateContext): string {
 		return String(data);
 	}
 
@@ -147,11 +147,41 @@ export namespace Serializer {
 	export type Options = AliasPiece.Options;
 	export type Args = WolfArgs;
 	export type UpdateContext = SerializerUpdateContext;
+
+	export type Name =
+		| 'boolean'
+		| 'categoryOrTextChannel'
+		| 'guildTextChannel'
+		| 'guildVoiceChannel'
+		| 'guildCategoryChannel'
+		| 'command'
+		| 'commandAutoDelete'
+		| 'commandMatch'
+		| 'disabledCommandChannel'
+		| 'emoji'
+		| 'guild'
+		| 'invite'
+		| 'language'
+		| 'notAllowed'
+		| 'number'
+		| 'integer'
+		| 'float'
+		| 'permissionNode'
+		| 'reactionRole'
+		| 'role'
+		| 'snowflake'
+		| 'stickyRole'
+		| 'string'
+		| 'timespan'
+		| 'uniqueRoleSet'
+		| 'url'
+		| 'user'
+		| 'word';
 }
 
 export interface SerializerUpdateContext {
 	entry: SchemaKey;
-	entity: GuildEntity;
+	entity: ReadonlyGuildEntity;
 	guild: Guild;
 	t: TFunction;
 }

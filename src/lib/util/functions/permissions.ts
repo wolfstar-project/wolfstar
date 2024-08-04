@@ -1,16 +1,20 @@
-import type { GuildEntity } from '#lib/database/entities';
-import { GuildSettings } from '#lib/database/keys';
-import { readSettings } from '#lib/database/settings';
+import { readSettings, type ReadonlyGuildEntity } from '#lib/database/settings';
 import { OWNERS } from '#root/config';
 import { hasAtLeastOneKeyInMap } from '@sapphire/utilities';
 import { GuildMember, PermissionFlagsBits } from 'discord.js';
 
-export function isModerator(member: GuildMember) {
-	return isGuildOwner(member) || readSettings(member, (settings) => checkModerator(member, settings) || checkAdministrator(member, settings));
+export async function isModerator(member: GuildMember) {
+	if (isGuildOwner(member)) return true;
+
+	const settings = await readSettings(member);
+	return checkModerator(member, settings) || checkAdministrator(member, settings);
 }
 
-export function isAdmin(member: GuildMember) {
-	return isGuildOwner(member) || readSettings(member, (settings) => checkAdministrator(member, settings));
+export async function isAdmin(member: GuildMember) {
+	if (isGuildOwner(member)) return true;
+
+	const settings = await readSettings(member);
+	return checkAdministrator(member, settings);
 }
 
 export function isGuildOwner(member: GuildMember) {
@@ -21,12 +25,12 @@ export function isOwner(member: GuildMember) {
 	return OWNERS.includes(member.id);
 }
 
-function checkModerator(member: GuildMember, settings: GuildEntity) {
-	const roles = settings[GuildSettings.Roles.Moderator];
+function checkModerator(member: GuildMember, settings: ReadonlyGuildEntity) {
+	const roles = settings.rolesModerator;
 	return roles.length === 0 ? member.permissions.has(PermissionFlagsBits.BanMembers) : hasAtLeastOneKeyInMap(member.roles.cache, roles);
 }
 
-function checkAdministrator(member: GuildMember, settings: GuildEntity) {
-	const roles = settings[GuildSettings.Roles.Admin];
+function checkAdministrator(member: GuildMember, settings: ReadonlyGuildEntity) {
+	const roles = settings.rolesAdmin;
 	return roles.length === 0 ? member.permissions.has(PermissionFlagsBits.ManageGuild) : hasAtLeastOneKeyInMap(member.roles.cache, roles);
 }

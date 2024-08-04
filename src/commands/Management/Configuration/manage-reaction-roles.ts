@@ -1,4 +1,4 @@
-import { GuildSettings, readSettings, writeSettings, type ReactionRole } from '#lib/database';
+import { readSettings, writeSettings, writeSettingsTransaction, type ReactionRole } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -40,9 +40,9 @@ export class UserCommand extends WolfSubcommand {
 				role: role.id
 			};
 
-			await writeSettings(message.guild, (settings) => {
-				settings[GuildSettings.ReactionRoles].push(reactionRole);
-			});
+			await writeSettings(message.guild, (settings) => ({
+				reactionRoles: settings.reactionRoles.concat(reactionRole)
+			}));
 
 			const content = args.t(LanguageKeys.Commands.Management.ManageReactionRolesAddChannel, {
 				emoji: getEmojiTextFormat(reactionRole.emoji),
@@ -65,9 +65,9 @@ export class UserCommand extends WolfSubcommand {
 			channel: reaction.channel.id,
 			role: role.id
 		};
-		await writeSettings(message.guild, (settings) => {
-			settings[GuildSettings.ReactionRoles].push(reactionRole);
-		});
+		await writeSettings(message.guild, (settings) => ({
+			reactionRoles: settings.reactionRoles.concat(reactionRole)
+		}));
 
 		const url = `<https://discord.com/channels/${message.guild.id}/${reactionRole.channel}/${reactionRole.message}>`;
 		const content = args.t(LanguageKeys.Commands.Management.ManageReactionRolesAdd, {
@@ -81,18 +81,12 @@ export class UserCommand extends WolfSubcommand {
 		const role = await args.pick('roleName');
 		const messageId = await args.pick('snowflake');
 
-		const reactionRole = await writeSettings(message.guild, (settings) => {
-			const reactionRoles = settings[GuildSettings.ReactionRoles];
+		await using trx = await writeSettingsTransaction(message.guild);
+		const index = trx.settings.reactionRoles.findIndex((entry) => (entry.message ?? entry.channel) === messageId && entry.role === role.id);
+		if (index === -1) this.error(LanguageKeys.Commands.Management.ManageReactionRolesRemoveNotExists);
 
-			const reactionRoleIndex = reactionRoles.findIndex((entry) => (entry.message ?? entry.channel) === messageId && entry.role === role.id);
-
-			if (reactionRoleIndex === -1) this.error(LanguageKeys.Commands.Management.ManageReactionRolesRemoveNotExists);
-
-			const removedReactionRole = reactionRoles[reactionRoleIndex];
-			reactionRoles.splice(reactionRoleIndex, 1);
-
-			return removedReactionRole;
-		});
+		const reactionRole = trx.settings.reactionRoles[index];
+		await trx.write({ reactionRoles: trx.settings.reactionRoles.toSpliced(index, 1) }).submit();
 
 		const url = reactionRole.message
 			? `<https://discord.com/channels/${message.guild.id}/${reactionRole.channel}/${reactionRole.message}>`
@@ -106,23 +100,15 @@ export class UserCommand extends WolfSubcommand {
 	}
 
 	public async reset(message: GuildMessage, args: WolfSubcommand.Args) {
-		await writeSettings(message.guild, (settings) => {
-			const reactionRoles = settings[GuildSettings.ReactionRoles];
-
-			if (reactionRoles.length === 0) {
-				this.error(LanguageKeys.Commands.Management.ManageReactionRolesResetEmpty);
-			}
-
-			reactionRoles.length = 0;
-		});
-
+		await writeSettings(message.guild, { reactionRoles: [] });
 		const content = args.t(LanguageKeys.Commands.Management.ManageReactionRolesReset);
 		return send(message, content);
 	}
 
 	@RequiresClientPermissions(PermissionFlagsBits.EmbedLinks)
 	public async show(message: GuildMessage, args: WolfSubcommand.Args) {
-		const reactionRoles = await readSettings(message.guild, GuildSettings.ReactionRoles);
+		const settings = await readSettings(message.guild);
+		const { reactionRoles } = settings;
 		if (reactionRoles.length === 0) {
 			this.error(LanguageKeys.Commands.Management.ManageReactionRolesShowEmpty);
 		}

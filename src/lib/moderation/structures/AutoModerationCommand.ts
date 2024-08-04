@@ -1,4 +1,14 @@
-import { configurableKeys, readSettings, writeSettings, type AdderKey, type GuildEntity, type GuildSettingsOfType } from '#lib/database';
+import {
+	configurableKeys,
+	readSettings,
+	writeSettings,
+	type AdderKey,
+	type GuildData,
+	type GuildDataKey,
+	type GuildDataValue,
+	type GuildSettingsOfType,
+	type ReadonlyGuildEntity
+} from '#lib/database';
 import type { Adder } from '#lib/database/utils/Adder';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { getSupportedUserLanguageT } from '#lib/i18n/translate';
@@ -12,7 +22,7 @@ import { CommandOptionsRunTypeEnum, type ApplicationCommandRegistry } from '@sap
 import { send } from '@sapphire/plugin-editable-commands';
 import { applyLocalizedBuilder, createLocalizedChoice, type TFunction } from '@sapphire/plugin-i18next';
 import { isNullish, isNullishOrEmpty, isNullishOrZero, type Awaitable } from '@sapphire/utilities';
-import { PermissionFlagsBits, chatInputApplicationCommandMention, strikethrough, type Guild } from 'discord.js';
+import { chatInputApplicationCommandMention, PermissionFlagsBits, strikethrough, type Guild } from 'discord.js';
 
 const Root = LanguageKeys.Commands.AutoModeration;
 const RootModeration = LanguageKeys.Moderation;
@@ -114,8 +124,10 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 	}
 
 	public async chatInputRunEdit(interaction: AutoModerationCommand.Interaction) {
+		const settings = await readSettings(interaction.guild);
+
 		const valueEnabled = interaction.options.getBoolean('enabled');
-		const valueOnInfraction = this.#getInfraction(interaction, await readSettings(interaction.guild, this.keyOnInfraction));
+		const valueOnInfraction = this.#getInfraction(interaction, settings[this.keyOnInfraction]);
 		const valuePunishment = interaction.options.getInteger('punishment');
 		const valuePunishmentDuration = this.#getDuration(
 			interaction,
@@ -131,7 +143,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 			this.#punishmentThresholdDurationMaximum
 		);
 
-		const pairs: [keyof GuildEntity, GuildEntity[keyof GuildEntity]][] = [];
+		const pairs: [GuildDataKey, GuildDataValue][] = [];
 		if (!isNullish(valueEnabled)) pairs.push([this.keyEnabled, valueEnabled]);
 		if (!isNullish(valueOnInfraction)) pairs.push([this.keyOnInfraction, valueOnInfraction]);
 		if (!isNullish(valuePunishment)) pairs.push([this.keyPunishment, valuePunishment]);
@@ -139,7 +151,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		if (!isNullish(valuePunishmentThreshold)) pairs.push([this.keyPunishmentThreshold, valuePunishmentThreshold]);
 		if (!isNullish(valuePunishmentThresholdDuration)) pairs.push([this.keyPunishmentThresholdPeriod, valuePunishmentThresholdDuration]);
 
-		await writeSettings(interaction.guild, pairs);
+		await writeSettings(interaction.guild, Object.fromEntries(pairs));
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = t(Root.EditSuccess);
@@ -148,14 +160,14 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 
 	public async chatInputRunReset(interaction: AutoModerationCommand.Interaction) {
 		const [key, value] = await this.resetGetKeyValuePair(interaction.guild, interaction.options.getString('key', true) as ResetKey);
-		await writeSettings(interaction.guild, [[key, value]]);
+		await writeSettings(interaction.guild, { [key]: value });
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = t(Root.EditSuccess);
 		return interaction.reply({ content, ephemeral: true });
 	}
 
-	protected async resetGetKeyValuePair(guild: Guild, key: ResetKey): Promise<readonly [keyof GuildEntity, GuildEntity[keyof GuildEntity]]> {
+	protected async resetGetKeyValuePair(guild: Guild, key: ResetKey): Promise<readonly [GuildDataKey, GuildDataValue]> {
 		switch (key) {
 			case 'enabled':
 				return [this.keyEnabled, false];
@@ -178,17 +190,18 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		}
 	}
 
-	protected resetGetKeyValuePairFallback(guild: Guild, key: string): Awaitable<readonly [keyof GuildEntity, GuildEntity[keyof GuildEntity]]>;
+	protected resetGetKeyValuePairFallback(guild: Guild, key: string): Awaitable<readonly [GuildDataKey, GuildDataValue]>;
 	protected resetGetKeyValuePairFallback(): never {
 		throw new Error('Unreachable');
 	}
 
-	protected resetGetValue<const Key extends keyof GuildEntity>(key: Key): GuildEntity[Key] {
-		return configurableKeys.get(key)!.default as GuildEntity[Key];
+	protected resetGetValue<const Key extends GuildDataKey>(key: Key): GuildData[Key] {
+		return configurableKeys.get(key)!.default as GuildData[Key];
 	}
 
 	protected async resetGetOnInfractionFlags(guild: Guild, bit: number) {
-		const bitfield = await readSettings(guild, this.keyOnInfraction);
+		const settings = await readSettings(guild);
+		const bitfield = settings[this.keyOnInfraction];
 		return AutoModerationOnInfraction.difference(bitfield, bit);
 	}
 
@@ -198,7 +211,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 			.setTitle(t(Root.ShowDisabled));
 	}
 
-	protected showEnabled(t: TFunction, settings: GuildEntity) {
+	protected showEnabled(t: TFunction, settings: ReadonlyGuildEntity) {
 		const embed = new EmbedBuilder() //
 			.setColor(Colors.Green)
 			.setTitle(t(Root.ShowEnabled))

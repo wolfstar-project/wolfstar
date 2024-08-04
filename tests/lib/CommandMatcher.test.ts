@@ -1,10 +1,10 @@
 import { CommandMatcher } from '#lib/database';
-import type { SkyraCommand } from '#lib/structures';
+import type { WolfCommand } from '#lib/structures';
 import { commands } from '../mocks/MockInstances.js';
 
 describe('CommandMatcher', () => {
-	const command = commands.get('ping') as SkyraCommand;
-	const commandWithSubCategory = commands.get('define') as SkyraCommand;
+	const command = commands.get('ping') as WolfCommand;
+	const commandWithSubCategory = commands.get('define') as WolfCommand;
 
 	describe('match', () => {
 		test('GIVEN match-all THEN always passes test', () => {

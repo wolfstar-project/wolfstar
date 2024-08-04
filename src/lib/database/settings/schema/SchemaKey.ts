@@ -1,69 +1,69 @@
-import type { GuildEntity } from '#lib/database/entities/GuildEntity';
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { Serializer } from '#lib/database/settings/structures/Serializer';
+import type { GuildDataKey, ReadonlyGuildEntity } from '#lib/database/settings/types';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { WolfArgs } from '#lib/structures';
 import type { TypedT } from '#lib/types';
 import { container } from '@sapphire/framework';
 import type { TFunction } from '@sapphire/plugin-i18next';
-import { isNullish, type NonNullObject } from '@sapphire/utilities';
+import { isNullish } from '@sapphire/utilities';
 
-export class SchemaKey<K extends keyof GuildEntity = keyof GuildEntity> implements ISchemaValue {
+export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchemaValue {
+	/**
+	 * The key that identifies this configuration key from the parent group.
+	 */
+	public readonly key: string;
+
 	/**
 	 * The i18n key for the configuration key.
 	 */
-	public description: TypedT<string>;
+	public readonly description: TypedT<string>;
 
 	/**
 	 * The maximum value for the configuration key.
 	 */
-	public maximum: number | null;
+	public readonly maximum: number | null;
 
 	/**
 	 * The minimum value for the configuration key.
 	 */
-	public minimum: number | null;
+	public readonly minimum: number | null;
 
 	/**
 	 * Whether or not the range checks are inclusive.
 	 */
-	public inclusive: boolean;
+	public readonly inclusive: boolean;
 
 	/**
 	 * The visible name of the configuration key.
 	 */
-	public name: string;
+	public readonly name: string;
 
 	/**
 	 * The property from the TypeORM entity.
 	 */
-	public property: K;
-
-	/**
-	 * The class this targets.
-	 */
-	public target: NonNullObject;
+	public readonly property: K;
 
 	/**
 	 * The type of the value this property accepts.
 	 */
-	public type: string;
+	public readonly type: Serializer.Name;
 
 	/**
 	 * Whether or not this accepts multiple values.
 	 */
-	public array: boolean;
+	public readonly array: boolean;
 
 	/**
 	 * The default value for this key.
 	 */
-	public default: unknown;
+	public readonly default: unknown;
 
 	/**
 	 * Whether this key should only be configurable on the dashboard
 	 */
-	public dashboardOnly: boolean;
+	public readonly dashboardOnly: boolean;
 
 	/**
 	 * The parent group that holds this key.
@@ -71,26 +71,26 @@ export class SchemaKey<K extends keyof GuildEntity = keyof GuildEntity> implemen
 	public parent: SchemaGroup | null = null;
 
 	public constructor(options: ConfigurableKeyValueOptions) {
+		this.key = options.key;
 		this.description = options.description;
 		this.maximum = options.maximum;
 		this.minimum = options.minimum;
 		this.inclusive = options.inclusive ?? false;
 		this.name = options.name;
 		this.property = options.property as K;
-		this.target = options.target;
 		this.type = options.type;
 		this.array = options.array;
 		this.default = options.default;
 		this.dashboardOnly = options.dashboardOnly ?? false;
 	}
 
-	public get serializer(): Serializer<GuildEntity[K]> {
-		const value = container.settings.serializers.get(this.type);
+	public get serializer(): Serializer<ReadonlyGuildEntity[K]> {
+		const value = container.stores.get('serializers').get(this.type);
 		if (typeof value === 'undefined') throw new Error(`The serializer for '${this.type}' does not exist.`);
-		return value as Serializer<GuildEntity[K]>;
+		return value as Serializer<ReadonlyGuildEntity[K]>;
 	}
 
-	public async parse(settings: GuildEntity, args: WolfArgs): Promise<GuildEntity[K]> {
+	public async parse(settings: ReadonlyGuildEntity, args: WolfArgs): Promise<ReadonlyGuildEntity[K]> {
 		const { serializer } = this;
 		const context = this.getContext(settings, args.t);
 
@@ -103,13 +103,13 @@ export class SchemaKey<K extends keyof GuildEntity = keyof GuildEntity> implemen
 		});
 	}
 
-	public stringify(settings: GuildEntity, t: TFunction, value: GuildEntity[K]): string {
+	public stringify(settings: ReadonlyGuildEntity, t: TFunction, value: ReadonlyGuildEntity[K]): string {
 		const { serializer } = this;
 		const context = this.getContext(settings, t);
 		return serializer.stringify(value, context);
 	}
 
-	public display(settings: GuildEntity, t: TFunction): string {
+	public display(settings: ReadonlyGuildEntity, t: TFunction): string {
 		const { serializer } = this;
 		const context = this.getContext(settings, t);
 
@@ -124,7 +124,7 @@ export class SchemaKey<K extends keyof GuildEntity = keyof GuildEntity> implemen
 		return isNullish(value) ? t(LanguageKeys.Commands.Admin.ConfSettingNotSet) : serializer.stringify(value, context);
 	}
 
-	public getContext(settings: GuildEntity, language: TFunction): Serializer.UpdateContext {
+	public getContext(settings: ReadonlyGuildEntity, language: TFunction): Serializer.UpdateContext {
 		return {
 			entity: settings,
 			guild: settings.guild,
@@ -136,5 +136,5 @@ export class SchemaKey<K extends keyof GuildEntity = keyof GuildEntity> implemen
 
 export type ConfigurableKeyValueOptions = Pick<
 	SchemaKey,
-	'description' | 'maximum' | 'minimum' | 'inclusive' | 'name' | 'property' | 'target' | 'type' | 'array' | 'default' | 'dashboardOnly'
+	'key' | 'description' | 'maximum' | 'minimum' | 'inclusive' | 'name' | 'property' | 'type' | 'array' | 'default' | 'dashboardOnly'
 >;

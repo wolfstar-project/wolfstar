@@ -1,4 +1,4 @@
-import { CommandMatcher, GuildEntity, GuildSettings, readSettings } from '#lib/database';
+import { CommandMatcher, readSettings, type ReadonlyGuildEntity } from '#lib/database';
 import type { WolfCommand } from '#lib/structures';
 import { isModerator } from '#utils/functions';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -51,7 +51,8 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		command: Command,
 		context: Precondition.Context
 	): Precondition.AsyncResult {
-		const disabled = await readSettings(guild, (settings) => this.checkGuildDisabled(settings, channelId, command as WolfCommand));
+		const settings = await readSettings(guild);
+		const disabled = this.checkGuildDisabled(settings, channelId, command as WolfCommand);
 		if (disabled) {
 			const canOverride = await isModerator(member);
 			if (!canOverride) return this.error({ context: { ...context, silent: true } });
@@ -60,11 +61,11 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		return this.runDM(command, context);
 	}
 
-	private checkGuildDisabled(settings: GuildEntity, channelId: string, command: WolfCommand) {
-		if (settings[GuildSettings.DisabledChannels].includes(channelId)) return true;
-		if (CommandMatcher.matchAny(settings[GuildSettings.DisabledCommands], command)) return true;
+	private checkGuildDisabled(settings: ReadonlyGuildEntity, channelId: string, command: WolfCommand) {
+		if (settings.disabledCommands.includes(channelId)) return true;
+		if (CommandMatcher.matchAny(settings.disabledCommands, command)) return true;
 
-		const entry = settings[GuildSettings.DisabledCommandChannels].find((d) => d.channel === channelId);
+		const entry = settings.disabledCommandsChannels.find((d) => d.channel === channelId);
 		if (entry === undefined) return false;
 
 		return CommandMatcher.matchAny(entry.commands, command);
