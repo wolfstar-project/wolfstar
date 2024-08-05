@@ -13,7 +13,7 @@ datasource db {
 }
 
 model Guild {
-  id                                   String   @id(map: "PK_b9b5166d213705956363efc912e") @db.VarChar(19)
+  id                                   String   @id(map: "PK_e7e7f2a51bd6d96a9ac2aa560f9") @db.VarChar(19)
   prefix                               String   @db.VarChar(10)
   language                             String   @default("en-US") @db.VarChar
   disableNaturalPrefix                 Boolean  @default(false) @map("disable-natural-prefix")
@@ -198,12 +198,12 @@ model Moderation {
   type        Int       @db.SmallInt
   metadata    Int       @default(0) @db.SmallInt
 
-  @@id([caseId, guildId], map: "PK_e9ec6c684894a7067a45b7ae4f6")
+  @@id([caseId, guildId], map: "PK_4054ed22fc0434ba8d5647e07cc")
   @@map("moderation")
 }
 
 model Schedule {
-  id        Int      @id(map: "PK_7ae10507a97b3a77d13d1a2bdd2") @default(autoincrement())
+  id        Int      @id(map: "PK_1c05e42aec7371641193e180046") @default(autoincrement())
   taskId    String   @map("task_id") @db.VarChar
   time      DateTime @db.Timestamp(6)
   recurring String?  @db.VarChar
@@ -214,7 +214,7 @@ model Schedule {
 }
 
 model User {
-  id           String  @id(map: "PK_03b91d2b8321aa7ba32257dc321") @db.VarChar(19)
+  id           String  @id(map: "PK_cace4a159ff9f2512dd42373760") @db.VarChar(19)
   moderationDM Boolean @default(true) @map("moderation_dm")
 
   @@map("user")

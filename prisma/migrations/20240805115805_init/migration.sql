@@ -154,7 +154,7 @@ CREATE TABLE "guilds" (
     "channels.ignore.voice-activity" VARCHAR(19)[] DEFAULT ARRAY[]::VARCHAR(19)[],
     "events.timeout" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "PK_b9b5166d213705956363efc912e" PRIMARY KEY ("id")
+    CONSTRAINT "PK_e7e7f2a51bd6d96a9ac2aa560f9" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -180,7 +180,7 @@ CREATE TABLE "moderation" (
     "type" SMALLINT NOT NULL,
     "metadata" SMALLINT NOT NULL DEFAULT 0,
 
-    CONSTRAINT "PK_e9ec6c684894a7067a45b7ae4f6" PRIMARY KEY ("case_id","guild_id")
+    CONSTRAINT "PK_4054ed22fc0434ba8d5647e07cc" PRIMARY KEY ("case_id","guild_id")
 );
 
 -- CreateTable
@@ -192,7 +192,7 @@ CREATE TABLE "schedule" (
     "catch_up" BOOLEAN NOT NULL DEFAULT true,
     "data" JSONB NOT NULL,
 
-    CONSTRAINT "PK_7ae10507a97b3a77d13d1a2bdd2" PRIMARY KEY ("id")
+    CONSTRAINT "PK_1c05e42aec7371641193e180046" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -200,5 +200,5 @@ CREATE TABLE "user" (
     "id" VARCHAR(19) NOT NULL,
     "moderation_dm" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "PK_03b91d2b8321aa7ba32257dc321" PRIMARY KEY ("id")
+    CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
 );
