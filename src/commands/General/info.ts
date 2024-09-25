@@ -40,7 +40,7 @@ export class UserCommand extends WolfCommand {
 		return send(message, { content });
 	}
 
-	public override async chatInputRun(interaction: WolfCommand.Interaction) {
+	public override async chatInputRun(interaction: WolfCommand.ChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
 		const embed = new EmbedBuilder()
 			.setDescription(t(Root.EmbedDescription))
