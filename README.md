@@ -21,8 +21,6 @@ A powerful bot designed to enhance your server experience.<br/>
 [![][github-stars-shield]][github-stars-link]
 [![][github-issues-shield]][github-issues-link]
 [![][github-license-shield]][github-license-link]<br>
-[![][github-sponsor-shield]][github-sponsor-link]
-![][github-sponsor-count]
 [![][pr-welcome-shield]][pr-welcome-link]
 
 **Share WolfStar Repository**
@@ -46,7 +44,7 @@ A powerful bot designed to enhance your server experience.<br/>
 -   [✨ Features](#-features)
 -   [🛳 Self-Hosting WolfStar](#-self-hosting-wolfstar)
 -   [🚀 Self-Hosting WolfStar Requirements](#-self-hosting-wolfstar-requirements)
--   [ Translating WolfStar](#-translating-wolfstar)
+-   [🉑 Translating WolfStar](#-translating-wolfstar)
 -   [⌨️ Local Development](#️-local-development)
 -   [🤝 Contributing](#-contributing)
 -   [❤️ Sponsor](#️-sponsor)
@@ -56,10 +54,15 @@ A powerful bot designed to enhance your server experience.<br/>
 <br/>
 
 </details>
+<div id="-welcome-to-wolfstar">
 
 ## 👋🏻 Welcome to WolfStar
 
 WolfStar is a powerful multi-purpose bot for moderation.
+
+</div>
+
+<div id="-features">
 
 ## ✨ Features
 
@@ -68,12 +71,19 @@ WolfStar is a powerful multi-purpose bot for moderation.
 -   **Multiple Language**: WolfStar features two languages, English and Spanish (though not completely finished), and will support more languages in the future.
 -   **Logging**: WolfStar features member logs, moderation logs, message logs, and so on. Alternatively, there is an option to set up a custom greeting and farewell message and channel with placeholders.
 
+</div>
+
+<div id="-self-hosting-wolfstar-requirements">
+
 ## 🚀 Self-Hosting WolfStar Requirements
 
 -   **Node.js**: WolfStar is built on Node.js, so you will need to have Node.js installed.
 -   **PostgreSQL**: WolfStar uses PostgreSQL as its database, so you will need to have a PostgreSQL server running.
 -   **InfluxDB**: WolfStar uses InfluxDB to keep anonymous metrics on bot usage. This is optional and can be disabled.
 -   **Sentry**: WolfStar uses Sentry to log errors. This is optional and can be disabled.
+</div>
+
+<div id="-self-hosting-wolfstar">
 
 ## 🛳 Self-Hosting WolfStar
 
@@ -87,13 +97,25 @@ In addition, WolfStar was built with a dependence on many services which need co
 
 With this in mind, it is also worth noting that WolfStar will in no way be capable of running on services such as [Glitch][glitch] or [Heroku][heroku]. A dedicated VPS (Virtual Private Server) is required in order to maintain the proper production environment.
 
-## Translating WolfStar <a href="https://translation.wolfstar.rocks" target="_blank"><img src="https://support.crowdin.com/assets/logos/crowdin-core-logo.png" align="right" width="30%"></a>
+</div>
+
+<div id="-translating-wolfstar">
+
+## 🉑 Translating WolfStar <a href="https://translation.wolfstar.rocks" target="_blank"><img src="https://support.crowdin.com/assets/logos/crowdin-core-logo.png" align="right" width="30%"></a>
 
 We use **Crowdin** to translate WolfStar's messages into different languages. If you'd like to help by contributing new translations or improving existing ones, [**click here**](https://translation.wolfstar.rocks). Thanks for any contributions!
+
+</div>
+
+<div id="️-local-development">
 
 ## ⌨️ Local Development
 
 Refer to [CONTRIBUTING.md][set-up - refer to contributing.md] for detailed setup instructions.
+
+</div>
+
+<div id="️-contributing">
 
 ## 🤝 Contributing
 
@@ -101,6 +123,10 @@ Thank you to all the people who already contributed to WolfStar Project!
 
 <a href="https://github.com/wolfstar-project/wolfstar/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=wolfstar-project/wolfstar" />
+</a>
+</div>
+
+<div id="️-sponsor">
 
 ## ❤️ Sponsor
 
@@ -111,6 +137,8 @@ If you like WolfStar and want to support the project, consider making a donation
 [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor%20on%20GitHub-ffcb47?style=for-the-badge&logo=github&logoColor=white)][github-sponsor-link]
 
 Thank you for your support!
+
+</div>
 
 <!-- LINK GROUP -->
 
@@ -162,9 +190,6 @@ This project is [Apache 2.0](./LICENSE) licensed.
 [github-releasedate-shield]: https://img.shields.io/github/release-date/wolfstar-project/wolfstar?labelColor=black&style=flat-square
 [github-stars-link]: https://github.com/wolfstar-project/wolfstar/network/stargazers
 [github-stars-shield]: https://img.shields.io/github/stars/wolfstar-project/wolfstar?color=ffcb47&labelColor=black&style=flat-square
-[github-sponsor-link]: https://
-[github-sponsor-shield]: https://img.shields.io/badge/sponsor-❤️-ffcb47?color=ffcb47&labelColor=black&style=for-the-badge
-[github-sponsor-count]: https://img.shields.io/github/sponsors/wolfstar-project?color=ea4aaa&labelColor=black&style=for-the-badge
 [issues-link]: https://img.shields.io/github/issues/wolfstar-project/wolfstar.svg?style=flat
 [official-site]: https://wolfstar.rocks
 [pr-welcome-link]: https://github.com/wolfstar-project/wolfstar/pulls
