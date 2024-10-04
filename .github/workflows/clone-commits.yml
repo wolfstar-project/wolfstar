@@ -39,6 +39,8 @@ jobs:
         run: |
           if [ -n "${{ steps.get_pr_branch.outputs.pr_branch }}" ]; then
             BRANCH_NAME="${{ steps.get_pr_branch.outputs.pr_branch }}"
+          if else [ -n " $PR_BRANCH"]; then
+            BRANCH_NAME="$PR_BRANCH"
           else
             BRANCH_NAME="original-branch-${{ github.event.inputs.commit }}"
             if [ -n "${{ github.event.inputs.branch }}" ]; then
