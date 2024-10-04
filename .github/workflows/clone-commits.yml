@@ -1,0 +1,68 @@
+name: Create Pull Request from Latest Commit
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'SHA of the commit to use'
+        required: true
+        default: ''
+      branch:
+        description: 'Name of the branch to create'
+        required: false
+        default: ''
+
+jobs:
+  CreatePullRequest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: skyra-project/skyra
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest commit
+        id: get_latest_commit
+        run: |
+          LATEST_COMMIT=$(git log -1 --pretty=format:"%H")
+          echo "::set-output name=latest_commit::$LATEST_COMMIT"
+
+      - name: Get PR branch name
+        id: get_pr_branch
+        run: |
+          PR_BRANCH=$(gh pr list --state closed --json headRefName,mergeCommitSha | jq -r --arg COMMIT "${{ github.event.inputs.commit }}" '.[] | select(.mergeCommitSha == $COMMIT) | .headRefName')
+          echo "::set-output name=pr_branch::$PR_BRANCH"
+
+      - name: Create new branch
+        run: |
+          if [ -n "${{ steps.get_pr_branch.outputs.pr_branch }}" ]; then
+            BRANCH_NAME="${{ steps.get_pr_branch.outputs.pr_branch }}"
+          else
+            BRANCH_NAME="original-branch-${{ github.event.inputs.commit }}"
+            if [ -n "${{ github.event.inputs.branch }}" ]; then
+              BRANCH_NAME="${{ github.event.inputs.branch }}"
+            fi
+          fi
+          git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
+
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: create pull request from commit ${{ github.event.inputs.commit }}'
+          branch: $BRANCH_NAME
+          title: 'chore: pull request from commit ${{ github.event.inputs.commit }}'
+          body: 'This pull request is created from commit ${{ github.event.inputs.commit }}.'
+
+      - name: Auto Merge
+        if: steps.create_pr.outputs.pull-request-number != ''
+        uses: pascalgn/automerge-action@v0.13.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+          commit-message: 'chore: auto merge pull request #${{ steps.create_pr.outputs.pull-request-number }}'
+          delete-branch: true
