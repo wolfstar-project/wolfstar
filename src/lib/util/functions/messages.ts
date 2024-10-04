@@ -1,13 +1,13 @@
 import type { WolfCommand } from '#lib/structures';
 import type { TypedFT, TypedT } from '#lib/types';
 import { floatPromise, minutes, resolveOnErrorCodes } from '#utils/common';
-import { canReact, canRemoveAllReactions } from '@sapphire/discord.js-utilities';
 import { container } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import { resolveKey, type TOptions } from '@sapphire/plugin-i18next';
 import type { NonNullObject } from '@sapphire/utilities';
 import { RESTJSONErrorCodes, type Message, type MessageCreateOptions, type UserResolvable } from 'discord.js';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
 
 const messageCommands = new WeakMap<Message, WolfCommand>();
 
@@ -144,32 +144,26 @@ export interface PromptConfirmationMessageOptions extends MessageCreateOptions {
 	time?: number;
 }
 
-const enum PromptConfirmationReactions {
-	Yes = '🇾',
-	No = '🇳'
-}
+async function promptConfirmationButton(message: Message, response: Message, options: PromptConfirmationMessageOptions) {
+	const yesButton = new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success);
 
-async function promptConfirmationReaction(message: Message, response: Message, options: PromptConfirmationMessageOptions) {
-	await response.react(PromptConfirmationReactions.Yes);
-	await response.react(PromptConfirmationReactions.No);
+	const noButton = new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger);
+
+	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(yesButton, noButton);
+
+	await response.edit({ components: [row] });
 
 	const target = container.client.users.resolveId(options.target ?? message.author)!;
-	const reactions = await response.awaitReactions({ filter: (__, user) => user.id === target, time: minutes(1), max: 1 });
+	const interaction = await response.awaitMessageComponent({
+		filter: (i) => i.user.id === target,
+		componentType: ComponentType.Button,
+		time: options.time ?? minutes(1)
+	});
 
-	// Remove all reactions if the user has permissions to do so
-	if (canRemoveAllReactions(response.channel)) {
-		floatPromise(response.reactions.removeAll());
-	}
+	// Remove all components after interaction
+	await interaction.update({ components: [] });
 
-	return reactions.size === 0 ? null : reactions.firstKey() === PromptConfirmationReactions.Yes;
-}
-
-const promptConfirmationMessageRegExp = /^y|yes?|yeah?$/i;
-async function promptConfirmationMessage(message: Message, response: Message, options: PromptConfirmationMessageOptions) {
-	const target = container.client.users.resolveId(options.target ?? message.author)!;
-	const messages = await response.channel.awaitMessages({ filter: (message) => message.author.id === target, time: minutes(1), max: 1 });
-
-	return messages.size === 0 ? null : promptConfirmationMessageRegExp.test(messages.first()!.content);
+	return interaction.customId === 'yes';
 }
 
 /**
@@ -181,11 +175,8 @@ async function promptConfirmationMessage(message: Message, response: Message, op
 export async function promptConfirmation(message: Message, options: string | PromptConfirmationMessageOptions) {
 	if (typeof options === 'string') options = { content: options };
 
-	// TODO: v13 | Switch to buttons only when available.
 	const response = await send(message, options);
-	return canReact(response.channel)
-		? promptConfirmationReaction(message, response, options)
-		: promptConfirmationMessage(message, response, options);
+	return promptConfirmationButton(message, response, options);
 }
 
 export async function promptForMessage(message: Message, sendOptions: string | MessageCreateOptions, time = minutes(1)): Promise<string | null> {
