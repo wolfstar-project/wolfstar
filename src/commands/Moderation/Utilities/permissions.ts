@@ -24,21 +24,33 @@ const Root = LanguageKeys.Commands.Permissions;
 })
 export class UserCommand extends WolfCommand {
 	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
-		registry.registerChatInputCommand((builder) =>
-			applyLocalizedBuilder(builder, Root.Name, Root.Description)
-				.setDMPermission(false)
-				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-				.addUserOption((option) => applyLocalizedBuilder(option, Root.OptionsUser))
-				.addBooleanOption((option) => applyLocalizedBuilder(option, Root.OptionsListAll))
-				.addBooleanOption((option) => applyLocalizedBuilder(option, Root.OptionsListMissing))
-				.addBooleanOption((option) => applyLocalizedBuilder(option, Root.OptionsShow))
+		registry.registerChatInputCommand(
+			(builder) =>
+				applyLocalizedBuilder(builder, Root.Name, Root.Description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+					.addUserOption((option) => applyLocalizedBuilder(option, Root.OptionsUser))
+					.addBooleanOption((option) => applyLocalizedBuilder(option, Root.OptionsListAll))
+					.addBooleanOption((option) => applyLocalizedBuilder(option, Root.OptionsListMissing))
+					.addBooleanOption((option) => applyLocalizedBuilder(option, Root.OptionsShow)),
+			{
+				idHints: [
+					'1288868398196981792' // wolfstar production
+				]
+			}
 		);
 
-		registry.registerContextMenuCommand((builder) =>
-			applyNameLocalizedBuilder(builder, Root.ContextMenuName)
-				.setType(ApplicationCommandType.User)
-				.setDMPermission(false)
-				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+		registry.registerContextMenuCommand(
+			(builder) =>
+				applyNameLocalizedBuilder(builder, Root.ContextMenuName)
+					.setType(ApplicationCommandType.User)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+			{
+				idHints: [
+					'1288868407055482986' // wolfstar production
+				]
+			}
 		);
 	}
 
