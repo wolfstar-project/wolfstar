@@ -31,5 +31,5 @@ jobs:
         with:
           push: true
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/arm64/v8
           tags: ghcr.io/wolfstar-project/wolfstar:latest
