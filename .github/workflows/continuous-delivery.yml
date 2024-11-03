@@ -15,5 +15,4 @@ jobs:
   ci:
     uses: wolfstar-project/.github/.github/workflows/reusable-publish-image.yml@main
     with:
-      registryImage: 'ghcr.io/wolfstar-project/wolfstar'
-      platforms: 'linux/amd64,linux/arm/v7,linux/arm/v6,linux/arm64/v8'
+      registryImage: 'wolfstar-project/wolfstar'

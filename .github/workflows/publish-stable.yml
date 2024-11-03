@@ -12,6 +12,6 @@ jobs:
   ci:
     uses: wolfstar-project/.github/.github/workflows/reusable-publish-image.yml@main
     with:
-      registryImage: 'ghcr.io/wolfstar-project/wolfstar'
+      registryImage: 'wolfstar-project/wolfstar'
       tag: 'stable'
       commitHash: ${{ github.event.inputs.commit }}
