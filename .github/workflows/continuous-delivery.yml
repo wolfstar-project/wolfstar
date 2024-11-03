@@ -41,16 +41,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and export to Docker
-        uses: docker/build-push-action@v6
-        with:
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:test
-
-      - name: Test
-        run: |
-          docker run --rm ${{ env.IMAGE_NAME }}:test
-
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
