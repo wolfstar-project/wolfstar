@@ -335,17 +335,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/core@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@discordjs/core@npm:1.2.0"
+"@discordjs/core@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@discordjs/core@npm:2.0.0"
   dependencies:
-    "@discordjs/rest": "npm:^2.3.0"
-    "@discordjs/util": "npm:^1.1.0"
-    "@discordjs/ws": "npm:^1.1.0"
+    "@discordjs/rest": "npm:^2.4.0"
+    "@discordjs/util": "npm:^1.1.1"
+    "@discordjs/ws": "npm:^2.0.0"
     "@sapphire/snowflake": "npm:^3.5.3"
-    "@vladfrangu/async_event_emitter": "npm:^2.2.4"
-    discord-api-types: "npm:0.37.83"
-  checksum: 10/24f8033318e150fdd434d51077c5880b87f18b0ec9af29b05c32509b4972b46656bdcffe129707d53921de4858b7df424fdbcb4fc3635b7ca8f7dd891870ea3a
+    "@vladfrangu/async_event_emitter": "npm:^2.4.6"
+    discord-api-types: "npm:0.37.97"
+  checksum: 10/a9b61ce2a9648fc6beac1f8be2a1724691808b18864f64f9750826c95cb0a804e462ed7da62b6d2fd111b04c7c0c76501501ef1a8772191805c079348b455146
   languageName: node
   linkType: hard
 
@@ -382,7 +382,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/ws@npm:1.1.1, @discordjs/ws@npm:^1.1.0":
+"@discordjs/ws@npm:1.1.1":
   version: 1.1.1
   resolution: "@discordjs/ws@npm:1.1.1"
   dependencies:
@@ -396,6 +396,23 @@ __metadata:
     tslib: "npm:^2.6.2"
     ws: "npm:^8.16.0"
   checksum: 10/d926fee9e6c6d9e01b574340bdec848baf620b08d34fa9d1547aadb806b5e25317707a82867b36ff6f75feefa373fa208648fac54e01038adb5dfc91c9e55349
+  languageName: node
+  linkType: hard
+
+"@discordjs/ws@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@discordjs/ws@npm:2.0.0"
+  dependencies:
+    "@discordjs/collection": "npm:^2.1.1"
+    "@discordjs/rest": "npm:^2.4.0"
+    "@discordjs/util": "npm:^1.1.1"
+    "@sapphire/async-queue": "npm:^1.5.3"
+    "@types/ws": "npm:^8.5.12"
+    "@vladfrangu/async_event_emitter": "npm:^2.4.6"
+    discord-api-types: "npm:0.37.97"
+    tslib: "npm:^2.6.3"
+    ws: "npm:^8.18.0"
+  checksum: 10/18289e39d28c5963262523775ab4661ab78e6a736cb660272011808e711fa4084652466d4c549d991a85cf4ed8ef4e98bb76778370b9599d34743fd0d5ef67b7
   languageName: node
   linkType: hard
 
@@ -1965,7 +1982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.5.10, @types/ws@npm:^8.5.13":
+"@types/ws@npm:^8.5.10, @types/ws@npm:^8.5.12, @types/ws@npm:^8.5.13":
   version: 8.5.13
   resolution: "@types/ws@npm:8.5.13"
   dependencies:
@@ -8341,7 +8358,7 @@ __metadata:
     "@commitlint/config-conventional": "npm:^19.5.0"
     "@discordjs/builders": "npm:^1.9.0"
     "@discordjs/collection": "npm:^2.1.1"
-    "@discordjs/core": "npm:^1.2.0"
+    "@discordjs/core": "npm:^2.0.0"
     "@influxdata/influxdb-client": "npm:^1.35.0"
     "@influxdata/influxdb-client-apis": "npm:^1.35.0"
     "@prisma/client": "npm:^5.21.1"
@@ -8448,7 +8465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.16.0":
+"ws@npm:^8.16.0, ws@npm:^8.18.0":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:
