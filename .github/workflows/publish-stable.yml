@@ -48,6 +48,7 @@ jobs:
         with:
           labels: ${{ steps.meta.outputs.labels }}
           context: .
+          platforms: linux/amd64,linux/arm64
           outputs: type=image,name=${{ env.IMAGE_NAME }},push=true
           tags: |
             ${{ env.STABLE_TAG }}
