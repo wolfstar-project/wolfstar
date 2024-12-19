@@ -1,12 +1,12 @@
 import type { WolfCommand } from '#lib/structures';
 import type { NonGroupMessage, TypedFT, TypedT } from '#lib/types';
 import { floatPromise, minutes, resolveOnErrorCodes } from '#utils/common';
-import { canReact, canRemoveAllReactions } from '@sapphire/discord.js-utilities';
 import { container } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import { resolveKey, type TOptions } from '@sapphire/plugin-i18next';
 import { RESTJSONErrorCodes, type Message, type MessageCreateOptions, type UserResolvable } from 'discord.js';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
 
 const messageCommands = new WeakMap<Message, WolfCommand>();
 
@@ -143,32 +143,28 @@ export interface PromptConfirmationMessageOptions extends MessageCreateOptions {
 	time?: number;
 }
 
-const enum PromptConfirmationReactions {
-	Yes = '🇾',
-	No = '🇳'
-}
-
-async function promptConfirmationReaction(message: NonGroupMessage, response: NonGroupMessage, options: PromptConfirmationMessageOptions) {
-	await response.react(PromptConfirmationReactions.Yes);
-	await response.react(PromptConfirmationReactions.No);
+async function promptConfirmationButton(message: NonGroupMessage, response: NonGroupMessage, options: PromptConfirmationMessageOptions) {
+	const yesButton = new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success);
+	const noButton = new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger);
 
 	const target = container.client.users.resolveId(options.target ?? message.author);
 	const reactions = await response.awaitReactions({ filter: (__, user) => user.id === target, time: minutes(1), max: 1 });
 
-	// Remove all reactions if the user has permissions to do so
-	if (canRemoveAllReactions(response.channel)) {
-		floatPromise(response.reactions.removeAll());
-	}
+	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(yesButton, noButton);
 
-	return reactions.size === 0 ? null : reactions.firstKey() === PromptConfirmationReactions.Yes;
-}
+	await response.edit({ components: [row] });
 
-const promptConfirmationMessageRegExp = /^y|yes?|yeah?$/i;
-async function promptConfirmationMessage(message: NonGroupMessage, response: NonGroupMessage, options: PromptConfirmationMessageOptions) {
-	const target = container.client.users.resolveId(options.target ?? message.author);
-	const messages = await response.channel.awaitMessages({ filter: (message) => message.author.id === target, time: minutes(1), max: 1 });
+	const target = container.client.users.resolveId(options.target ?? message.author)!;
+	const interaction = await response.awaitMessageComponent({
+		filter: (i) => i.user.id === target,
+		componentType: ComponentType.Button,
+		time: options.time ?? minutes(1)
+	});
 
-	return messages.size === 0 ? null : promptConfirmationMessageRegExp.test(messages.first()!.content);
+	// Remove all components after interaction
+	await interaction.update({ components: [] });
+
+	return interaction.customId === 'yes';
 }
 
 /**
@@ -180,11 +176,8 @@ async function promptConfirmationMessage(message: NonGroupMessage, response: Non
 export async function promptConfirmation(message: NonGroupMessage, options: string | PromptConfirmationMessageOptions) {
 	if (typeof options === 'string') options = { content: options };
 
-	// TODO: v13 | Switch to buttons only when available.
-	const response = (await send(message, options)) as NonGroupMessage;
-	return canReact(response.channel)
-		? promptConfirmationReaction(message, response, options)
-		: promptConfirmationMessage(message, response, options);
+	const response = await send(message, options);
+	return promptConfirmationButton(message, response, options);
 }
 
 export async function promptForMessage(
