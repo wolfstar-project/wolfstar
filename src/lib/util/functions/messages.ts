@@ -1,10 +1,9 @@
 import type { WolfCommand } from '#lib/structures';
-import type { TypedFT, TypedT } from '#lib/types';
+import type { NonGroupMessage, TypedFT, TypedT } from '#lib/types';
 import { floatPromise, minutes, resolveOnErrorCodes } from '#utils/common';
 import { container } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import { resolveKey, type TOptions } from '@sapphire/plugin-i18next';
-import type { NonNullObject } from '@sapphire/utilities';
 import { RESTJSONErrorCodes, type Message, type MessageCreateOptions, type UserResolvable } from 'discord.js';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
@@ -67,7 +66,7 @@ export async function deleteMessage(message: Message, time = 0): Promise<Message
 export async function sendTemporaryMessage(message: Message, options: string | MessageCreateOptions, timer = minutes(1)): Promise<Message> {
 	if (typeof options === 'string') options = { content: options };
 
-	const response = (await send(message, options)) as Message;
+	const response = await send(message, options);
 	floatPromise(deleteMessage(response, timer));
 	return response;
 }
@@ -115,7 +114,7 @@ export async function sendLocalizedMessage(message: Message, options: LocalizedS
 }
 
 type LocalizedSimpleKey = TypedT<string>;
-type LocalizedMessageOptions<TArgs extends object = NonNullObject> = Omit<MessageCreateOptions, 'content'> &
+type LocalizedMessageOptions<TArgs extends object = object> = Omit<MessageCreateOptions, 'content'> &
 	(
 		| {
 				key: LocalizedSimpleKey;
@@ -144,10 +143,12 @@ export interface PromptConfirmationMessageOptions extends MessageCreateOptions {
 	time?: number;
 }
 
-async function promptConfirmationButton(message: Message, response: Message, options: PromptConfirmationMessageOptions) {
+async function promptConfirmationButton(message: NonGroupMessage, response: NonGroupMessage, options: PromptConfirmationMessageOptions) {
 	const yesButton = new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success);
-
 	const noButton = new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger);
+
+	const target = container.client.users.resolveId(options.target ?? message.author);
+	const reactions = await response.awaitReactions({ filter: (__, user) => user.id === target, time: minutes(1), max: 1 });
 
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(yesButton, noButton);
 
@@ -172,14 +173,18 @@ async function promptConfirmationButton(message: Message, response: Message, opt
  * @param options The options for the message to be sent, alongside the prompt options.
  * @returns `null` if no response was given within the requested time, `boolean` otherwise.
  */
-export async function promptConfirmation(message: Message, options: string | PromptConfirmationMessageOptions) {
+export async function promptConfirmation(message: NonGroupMessage, options: string | PromptConfirmationMessageOptions) {
 	if (typeof options === 'string') options = { content: options };
 
 	const response = await send(message, options);
 	return promptConfirmationButton(message, response, options);
 }
 
-export async function promptForMessage(message: Message, sendOptions: string | MessageCreateOptions, time = minutes(1)): Promise<string | null> {
+export async function promptForMessage(
+	message: NonGroupMessage,
+	sendOptions: string | MessageCreateOptions,
+	time = minutes(1)
+): Promise<string | null> {
 	const response = await message.channel.send(sendOptions);
 	const responses = await message.channel.awaitMessages({ filter: (msg) => msg.author === message.author, time, max: 1 });
 	floatPromise(deleteMessage(response));

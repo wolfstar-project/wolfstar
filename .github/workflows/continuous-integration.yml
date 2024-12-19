@@ -9,17 +9,62 @@ on:
 jobs:
   Linting:
     name: Linting NodeJS
-    uses: wolfstar-project/.github/.github/workflows/reusable-lint.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Add problem matchers
+        run: echo "::add-matcher::.github/problemMatchers/eslint.json"
+      - name: Use Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - name: Install Dependencies
+        run: yarn --immutable
+      - name: Run ESLint
+        run: yarn lint --fix=false
 
   Building:
-    name: Building
-    uses: wolfstar-project/.github/.github/workflows/reusable-build.yml@main
+    name: Building NodeJS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Add problem matchers
+        run: echo "::add-matcher::.github/problemMatchers/tsc.json"
+      - name: Use Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - name: Install Dependencies
+        run: yarn --immutable
+      - name: Generate Prisma types
+        run: yarn prisma:generate
+      - name: Build code
+        run: yarn build
 
   UnitTesting:
     name: Unit Tests
-    uses: wolfstar-project/.github/.github/workflows/reusable-tests.yml@main
-    with:
-      enable-codecov: true
-      build: true
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Use Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - name: Install Dependencies
+        run: yarn --immutable
+      - name: Generate Prisma types
+        run: yarn prisma:generate
+      - name: Run unit tests
+        run: yarn test --coverage
+      - name: Codecov Upload
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/cobertura-coverage.xml
+          fail_ci_if_error: true
