@@ -1,4 +1,4 @@
-name: Publish Stable WolfStar Image
+name: Publish stable image WolfStar
 
 on:
   workflow_dispatch:
@@ -8,26 +8,47 @@ on:
         required: true
         description: The SHA256 commit hash to publish
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  STABLE_TAG: ghcr.io/${{ github.repository }}:latest
+
 jobs:
-  PublishWolfStar:
-    name: Publish WolfStar image to container registries
+  build:
+    name: Publish WolfStar stable image to container registry
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Project
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.commit }}
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3.6.1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3.3.0
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push WolfStar Docker image
-        uses: docker/build-push-action@v6.7.0
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          push: true
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          labels: ${{ steps.meta.outputs.labels }}
           context: .
-          tags: ghcr.io/wolfstar-project/wolfstar:stable
+          platforms: linux/amd64,linux/arm64
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push=true
+          tags: |
+            ${{ env.STABLE_TAG }}

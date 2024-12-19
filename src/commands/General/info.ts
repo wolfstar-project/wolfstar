@@ -30,7 +30,11 @@ const Root = LanguageKeys.Commands.Info;
 })
 export class UserCommand extends WolfCommand {
 	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
-		registry.registerChatInputCommand((command) => applyLocalizedBuilder(command, Root.Name, Root.Description));
+		registry.registerChatInputCommand((command) => applyLocalizedBuilder(command, Root.Name, Root.Description), {
+			idHints: [
+				'1239990526061711554' // wolfstar-prod production
+			]
+		});
 	}
 
 	public override messageRun(message: Message, args: WolfCommand.Args) {
@@ -40,7 +44,7 @@ export class UserCommand extends WolfCommand {
 		return send(message, { content });
 	}
 
-	public override async chatInputRun(interaction: WolfCommand.Interaction) {
+	public override async chatInputRun(interaction: WolfCommand.ChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
 		const embed = new EmbedBuilder()
 			.setDescription(t(Root.EmbedDescription))

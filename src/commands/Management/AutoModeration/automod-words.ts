@@ -37,7 +37,10 @@ const Root = LanguageKeys.Commands.AutoModeration;
 	keyPunishment: 'selfmodFilterHardAction',
 	keyPunishmentDuration: 'selfmodFilterHardActionDuration',
 	keyPunishmentThreshold: 'selfmodFilterThresholdMaximum',
-	keyPunishmentThresholdPeriod: 'selfmodFilterThresholdDuration'
+	keyPunishmentThresholdPeriod: 'selfmodFilterThresholdDuration',
+	idHints: [
+		'1239990625965834270' // wolfstar-prod production
+	]
 })
 export class UserAutoModerationCommand extends AutoModerationCommand {
 	/** @deprecated */

@@ -11,7 +11,13 @@ import {
 import { PermissionLevels, type TypedT } from '#lib/types';
 import { Command, UserError, type Awaitable, type MessageCommand } from '@sapphire/framework';
 import { first } from '@sapphire/iterator-utilities/first';
-import { ChatInputCommandInteraction, type Message, type Snowflake } from 'discord.js';
+import {
+	ChatInputCommandInteraction,
+	MessageContextMenuCommandInteraction,
+	UserContextMenuCommandInteraction,
+	type Message,
+	type Snowflake
+} from 'discord.js';
 
 /**
  * The base class for all Wolf commands.
@@ -21,8 +27,8 @@ export abstract class WolfCommand extends Command<WolfCommand.Args, WolfCommand.
 	public readonly guarded: boolean;
 	public readonly hidden: boolean;
 	public readonly permissionLevel: PermissionLevels;
-	public declare readonly detailedDescription: TypedT<LanguageHelpDisplayOptions>;
-	public declare readonly description: TypedT<string>;
+	declare public readonly detailedDescription: TypedT<LanguageHelpDisplayOptions>;
+	declare public readonly description: TypedT<string>;
 
 	public constructor(context: Command.LoaderContext, options: WolfCommand.Options) {
 		super(context, { ...WolfCommandConstructorDefaults, ...options });
@@ -75,5 +81,7 @@ export namespace WolfCommand {
 	export type LoaderContext = Command.LoaderContext;
 	export type RunContext = MessageCommand.RunContext;
 
-	export type Interaction = ChatInputCommandInteraction<'cached'>;
+	export type ChatInputInteraction = ChatInputCommandInteraction<'cached'>;
+	export type UserContextMenuInteraction = UserContextMenuCommandInteraction<'cached'>;
+	export type MessageContextMenuInteraction = MessageContextMenuCommandInteraction<'cached'>;
 }

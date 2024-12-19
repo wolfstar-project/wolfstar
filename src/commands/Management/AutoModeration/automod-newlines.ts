@@ -14,6 +14,9 @@ const Root = LanguageKeys.Commands.AutoModeration;
 	keyPunishment: 'selfmodNewlinesHardAction',
 	keyPunishmentDuration: 'selfmodNewlinesHardActionDuration',
 	keyPunishmentThreshold: 'selfmodNewlinesThresholdMaximum',
-	keyPunishmentThresholdPeriod: 'selfmodNewlinesThresholdDuration'
+	keyPunishmentThresholdPeriod: 'selfmodNewlinesThresholdDuration',
+	idHints: [
+		'1239990614796402820' // wolfstar-prod production
+	]
 })
 export class UserAutoModerationCommand extends AutoModerationCommand {}
