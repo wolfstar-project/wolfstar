@@ -164,6 +164,13 @@ model Guild {
   selfmodReactionsHardActionDuration   BigInt?  @map("selfmod.reactions.hard-action-duration")
   selfmodReactionsThresholdMaximum     Int      @default(10) @map("selfmod.reactions.threshold-maximum") @db.SmallInt
   selfmodReactionsThresholdDuration    Int      @default(60000) @map("selfmod.reactions.threshold-duration")
+//selfmodDehoistEnabled                Boolean  @default(false) @map("selfmod.dehoist.enabled")
+  selfmodDehoistAlerts                 Boolean  @default(false) @map("selfmod.dehoist.alerts")
+  selfmodDehoistSoftAction             Int      @default(0) @map("selfmod.dehoist.soft-action") @db.SmallInt
+  selfmodDehoistHardAction             Int      @default(0) @map("selfmod.dehoist.hard-action") @db.SmallInt
+  selfmodDehoistHardActionDuration     BigInt?  @map("selfmod.dehoist.hard-action-duration")
+  selfmodDehoistThresholdMaximum       Int      @default(10) @map("selfmod.dehoist.threshold-maximum") @db.SmallInt
+  selfmodDehoistThresholdDuration      Int      @default(60000) @map("selfmod.dehoist.threshold-duration")
   selfmodIgnoredChannels               String[] @default([]) @map("selfmod.ignored-channels") @db.VarChar(19)
   noMentionSpamEnabled                 Boolean  @default(false) @map("no-mention-spam.enabled")
   noMentionSpamAlerts                  Boolean  @default(false) @map("no-mention-spam.alerts")
@@ -173,6 +180,7 @@ model Guild {
   eventsIncludeBots                    Boolean  @default(false) @map("events.include-bots")
   channelsIgnoreVoiceActivity          String[] @default([]) @map("channels.ignore.voice-activity") @db.VarChar(19)
   eventsTimeout                        Boolean  @default(false) @map("events.timeout")
+  dehoist                              Boolean  @default(false) @map("dehoist")
 
   @@map("guilds")
 }

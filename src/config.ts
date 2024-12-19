@@ -107,6 +107,7 @@ function parseInternationalizationDefaultVariables() {
 		REDCROSS: Emojis.RedCross,
 		DEFAULT_PREFIX: process.env.CLIENT_PREFIX,
 		CLIENT_ID: process.env.CLIENT_ID,
+			DEHOIST_ENABLED: envParseBoolean('DEHOIST_ENABLED', false), // P2ba5
 		...parseInternationalizationDefaultVariablesPermissions()
 	};
 }
