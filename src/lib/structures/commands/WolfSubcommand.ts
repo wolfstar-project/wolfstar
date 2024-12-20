@@ -22,7 +22,7 @@ export class WolfSubcommand extends Subcommand<WolfSubcommand.Args, WolfSubcomma
 	public readonly guarded: boolean;
 	public readonly hidden: boolean;
 	public readonly permissionLevel: PermissionLevels;
-	public declare readonly detailedDescription: TypedT<LanguageHelpDisplayOptions>;
+	declare public readonly detailedDescription: TypedT<LanguageHelpDisplayOptions>;
 	public override readonly description: TypedT<string>;
 
 	public constructor(context: WolfSubcommand.LoaderContext, options: WolfSubcommand.Options) {
