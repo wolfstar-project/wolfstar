@@ -40,14 +40,14 @@ A powerful bot designed to enhance your server experience.<br/>
 
 #### TOC
 
--   [👋🏻 Welcome to WolfStar](#-welcome-to-wolfstar)
--   [✨ Features](#-features)
--   [🛳 Self-Hosting WolfStar](#-self-hosting-wolfstar)
--   [🚀 Self-Hosting WolfStar Requirements](#-self-hosting-wolfstar-requirements)
--   [🉑 Translating WolfStar](#-translating-wolfstar)
--   [⌨️ Local Development](#️-local-development)
--   [🤝 Contributing](#-contributing)
--   [❤️ Sponsor](#️-sponsor)
+- [👋🏻 Welcome to WolfStar](#-welcome-to-wolfstar)
+- [✨ Features](#-features)
+- [🛳 Self-Hosting WolfStar](#-self-hosting-wolfstar)
+- [🚀 Self-Hosting WolfStar Requirements](#-self-hosting-wolfstar-requirements)
+- [🉑 Translating WolfStar](#-translating-wolfstar)
+- [⌨️ Local Development](#️-local-development)
+- [🤝 Contributing](#-contributing)
+- [❤️ Sponsor](#️-sponsor)
 
 ####
 
@@ -66,10 +66,10 @@ WolfStar is a powerful multi-purpose bot for moderation.
 
 ## ✨ Features
 
--   **Role Management**: Easily manage roles and permissions.
--   **Moderation**: WolfStar features a large repository of 15 moderation actions plus some automated systems such as no mention spam, caps and attachment filters, and more.
--   **Multiple Language**: WolfStar features two languages, English and Spanish (though not completely finished), and will support more languages in the future.
--   **Logging**: WolfStar features member logs, moderation logs, message logs, and so on. Alternatively, there is an option to set up a custom greeting and farewell message and channel with placeholders.
+- **Role Management**: Easily manage roles and permissions.
+- **Moderation**: WolfStar features a large repository of 15 moderation actions plus some automated systems such as no mention spam, caps and attachment filters, and more.
+- **Multiple Language**: WolfStar features two languages, English and Spanish (though not completely finished), and will support more languages in the future.
+- **Logging**: WolfStar features member logs, moderation logs, message logs, and so on. Alternatively, there is an option to set up a custom greeting and farewell message and channel with placeholders.
 
 </div>
 
@@ -77,11 +77,11 @@ WolfStar is a powerful multi-purpose bot for moderation.
 
 ## 🚀 Self-Hosting WolfStar Requirements
 
--   **Node.js**: WolfStar is built on Node.js, so you will need to have Node.js installed.
--   **PostgreSQL**: WolfStar uses PostgreSQL as its database, so you will need to have a PostgreSQL server running.
--   **InfluxDB**: WolfStar uses InfluxDB to keep anonymous metrics on bot usage. This is optional and can be disabled.
--   **Sentry**: WolfStar uses Sentry to log errors. This is optional and can be disabled.
-</div>
+- **Node.js**: WolfStar is built on Node.js, so you will need to have Node.js installed.
+- **PostgreSQL**: WolfStar uses PostgreSQL as its database, so you will need to have a PostgreSQL server running.
+- **InfluxDB**: WolfStar uses InfluxDB to keep anonymous metrics on bot usage. This is optional and can be disabled.
+- **Sentry**: WolfStar uses Sentry to log errors. This is optional and can be disabled.
+  </div>
 
 <div id="-self-hosting-wolfstar">
 
@@ -91,9 +91,9 @@ The developer team does not support the idea of other self-hosted instances of W
 
 In addition, WolfStar was built with a dependence on many services which need consistent maintenance and oversight in order to function and behave properly. These include, but are not limited to:
 
--   **InfluxDB**: To keep anonymous metrics on bot usage.
--   **PostgreSQL**: As database.
--   Other external APIs, each requiring their own individual API keys.
+- **InfluxDB**: To keep anonymous metrics on bot usage.
+- **PostgreSQL**: As database.
+- Other external APIs, each requiring their own individual API keys.
 
 With this in mind, it is also worth noting that WolfStar will in no way be capable of running on services such as [Glitch][glitch] or [Heroku][heroku]. A dedicated VPS (Virtual Private Server) is required in order to maintain the proper production environment.
 
