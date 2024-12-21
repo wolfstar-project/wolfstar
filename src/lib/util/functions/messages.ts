@@ -147,9 +147,6 @@ async function promptConfirmationButton(message: NonGroupMessage, response: NonG
 	const yesButton = new ButtonBuilder().setCustomId('yes').setLabel('Yes').setStyle(ButtonStyle.Success);
 	const noButton = new ButtonBuilder().setCustomId('no').setLabel('No').setStyle(ButtonStyle.Danger);
 
-	const target = container.client.users.resolveId(options.target ?? message.author);
-	const reactions = await response.awaitReactions({ filter: (__, user) => user.id === target, time: minutes(1), max: 1 });
-
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(yesButton, noButton);
 
 	await response.edit({ components: [row] });
@@ -176,7 +173,7 @@ async function promptConfirmationButton(message: NonGroupMessage, response: NonG
 export async function promptConfirmation(message: NonGroupMessage, options: string | PromptConfirmationMessageOptions) {
 	if (typeof options === 'string') options = { content: options };
 
-	const response = await send(message, options);
+	const response = (await send(message, options)) as NonGroupMessage;
 	return promptConfirmationButton(message, response, options);
 }
 
