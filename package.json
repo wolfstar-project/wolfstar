@@ -34,10 +34,10 @@
 		"#root/*": "./dist/*.js"
 	},
 	"scripts": {
-		"build": "tsc -b src",
+		"build": "tsup",
 		"dev": "yarn build && yarn start",
-		"watch": "tsc -b src -w",
-		"watch:start": "tsc-watch -b src --onSuccess \"yarn start\"",
+		"watch": "tsup --watch",
+		"watch:start": "tsup --watch --onSuccess \"yarn start\"",
 		"prisma:generate": "yarn prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
@@ -112,7 +112,7 @@
 		"prettier": "^3.4.2",
 		"prisma": "^6.1.0",
 		"prisma-json-types-generator": "^3.2.2",
-		"tsc-watch": "^6.2.1",
+		"tsup": "^8.3.5",
 		"typescript": "~5.4.5",
 		"vitest": "^2.1.8"
 	},
