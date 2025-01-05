@@ -1571,16 +1571,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-api@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@sapphire/plugin-api@npm:7.0.3"
+"@sapphire/plugin-api@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@sapphire/plugin-api@npm:8.0.0"
   dependencies:
     "@types/ws": "npm:^8.5.13"
     "@vladfrangu/async_event_emitter": "npm:2.4.6"
     cookie-es: "npm:^1.2.2"
-    tldts: "npm:^6.1.58"
-    undici: "npm:^6.20.1"
-  checksum: 10/dc639238a770e6015fed5ac0c66a260698e490ac5498a18ccac196d39df81e4c43fd7c920d93cc0ca7c827595360766c3464bb2aafca21f23ac10aaee4705626
+    tldts: "npm:^6.1.70"
+    undici: "npm:^7.2.0"
+  checksum: 10/d823a137b4886b44d2a8341a6756d046628d14d85e8d7ad1a98439da573fd580df4f1e0b34465a211acccbe3d7fce4bc5ae20afd2ff2f8890a478a678b7901ef
   languageName: node
   linkType: hard
 
@@ -7880,21 +7880,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tldts-core@npm:^6.1.69":
-  version: 6.1.69
-  resolution: "tldts-core@npm:6.1.69"
-  checksum: 10/4f38497705dbb80e4d4d3cbdf6f931650371575fa27479ec6fba4e3527fb2929f703126a1026713674d882a7cb519ee1dd8f3f2d33c0dce284b3994e8b0177cc
+"tldts-core@npm:^6.1.70":
+  version: 6.1.70
+  resolution: "tldts-core@npm:6.1.70"
+  checksum: 10/c304a482d9ad65612db508822d9f30fc7c9e67918ce1b48b44bf7190d96ae523b84f5ba40ff38ad0452a1492441c61aecc3d68fc1cba50f25d9a132da0cd8fb2
   languageName: node
   linkType: hard
 
-"tldts@npm:^6.1.58":
-  version: 6.1.69
-  resolution: "tldts@npm:6.1.69"
+"tldts@npm:^6.1.70":
+  version: 6.1.70
+  resolution: "tldts@npm:6.1.70"
   dependencies:
-    tldts-core: "npm:^6.1.69"
+    tldts-core: "npm:^6.1.70"
   bin:
     tldts: bin/cli.js
-  checksum: 10/a918ca1020985d708aa79e139e7c7a0f4bdf634c10ca4d03cad04ddd6145d576832a76f2dfab0583c45f5ad0f3d17d2c812c8b39421d6a0273e22a05e4a9e083
+  checksum: 10/e69bd6c975c51ee477fc367f4d6e3fb1fee41a380d00c0050fcefaa9bfacb4a6bad39d018f423763719f5bf50550adb8f8ee602dfdf6af5a16f0e8524cb74c63
   languageName: node
   linkType: hard
 
@@ -8092,10 +8092,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.20.1":
-  version: 6.21.0
-  resolution: "undici@npm:6.21.0"
-  checksum: 10/c8ff80dcadfcf613e7fe697c37519fca070fcf1cfccc69ffb6a7080a22e225eb79d232e9f70e32b099b3e67ac4216e8fd615e188cfb792e09df9233471ec17e0
+"undici@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "undici@npm:7.2.0"
+  checksum: 10/35828910a11b8230e36147555ff6d65ce65c1a534ce6a92cb08a324b2c96fd52d7adb7a9864c877dea3149f678118fa233d43f4812eb8151678cf4aa6b4926d5
   languageName: node
   linkType: hard
 
@@ -8397,7 +8397,7 @@ __metadata:
     "@sapphire/fetch": "npm:^3.0.5"
     "@sapphire/framework": "npm:5.3.1"
     "@sapphire/iterator-utilities": "npm:^2.0.1"
-    "@sapphire/plugin-api": "npm:^7.0.3"
+    "@sapphire/plugin-api": "npm:^8.0.0"
     "@sapphire/plugin-editable-commands": "npm:^4.0.3"
     "@sapphire/plugin-i18next": "npm:^7.1.3"
     "@sapphire/plugin-logger": "npm:^4.0.2"
