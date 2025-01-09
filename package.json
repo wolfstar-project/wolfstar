@@ -57,8 +57,8 @@
 		"build": "tsup",
 		"dev": "npm-run-all build start",
 		"watch": "tsup --watch",
-		"watch:start": "tsup --watch --onSuccess \"yarn start\"",
-		"prisma:generate": "yarn prisma generate",
+		"watch:start": "tsup --watch --onSuccess \"pnpm run start\"",
+		"prisma:generate": "pnpm run prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
@@ -68,7 +68,7 @@
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"scripts:migration": "node scripts/migrations.mjs",
 		"dockerps": "pwsh -NoLogo ./.docker/control.ps1",
-		"update": "yarn upgrade-interactive"
+		"prepare": "is-ci || husky"
 	},
 	"dependencies": {
 		"@discordjs/builders": "^1.10.0",
@@ -129,6 +129,8 @@
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-prettier": "^5.2.1",
+		"husky": "^9.1.7",
+		"is-ci": "^4.1.0",
 		"lint-staged": "^15.3.0",
 		"npm-run-all2": "^7.0.2",
 		"prettier": "^3.4.2",
@@ -144,7 +146,8 @@
 		"minimist": "^1.2.8"
 	},
 	"engines": {
-		"node": "^22.11.0"
+		"node": "^22.11.0",
+		"pnpm": ">=9.5.0"
 	},
 	"repository": {
 		"type": "git",
@@ -165,7 +168,7 @@
 		}
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "yarn@4.6.0",
+	"packageManager": "pnpm@9.5.0",
 	"volta": {
 		"node": "22.12.0"
 	}
