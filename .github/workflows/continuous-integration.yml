@@ -67,7 +67,7 @@ jobs:
       - name: Generate Prisma types
         run: pnpm run prisma:generate
       - name: Run unit tests
-        run: pnpm run test --coverage
+        run: pnpm run test:coverage
       - name: Codecov Upload
         uses: codecov/codecov-action@v5
         with:

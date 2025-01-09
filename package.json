@@ -63,6 +63,7 @@
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
 		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
 		"lint": "eslint --fix --ext ts src tests",
 		"format": "prettier --write --log-level=warn \"{src,tests}/**/*.{js,ts,json}\"",
 		"scripts:tlds": "node scripts/tlds.mjs",
