@@ -35,7 +35,7 @@
 	},
 	"scripts": {
 		"build": "tsup",
-		"dev": "yarn build && yarn start",
+		"dev": "npm-run-all build start",
 		"watch": "tsup --watch",
 		"watch:start": "tsup --watch --onSuccess \"yarn start\"",
 		"prisma:generate": "yarn prisma generate",
@@ -110,6 +110,7 @@
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-prettier": "^5.2.1",
 		"lint-staged": "^15.3.0",
+		"npm-run-all2": "^7.0.2",
 		"prettier": "^3.4.2",
 		"prisma": "^6.2.1",
 		"prisma-json-types-generator": "^3.2.2",
