@@ -58,7 +58,7 @@
 		"dev": "npm-run-all build start",
 		"watch": "tsup --watch",
 		"watch:start": "tsup --watch --onSuccess \"pnpm run start\"",
-		"prisma:generate": "pnpm run prisma generate",
+		"prisma:generate": "pnpm exec prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
