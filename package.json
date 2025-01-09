@@ -33,6 +33,26 @@
 		"#languages": "./dist/languages/index.js",
 		"#root/*": "./dist/*.js"
 	},
+	"tsup": {
+		"clean": true,
+		"bundle": false,
+		"dts": false,
+		"entry": [
+			"src/**/*.ts",
+			"!src/**/*.d.ts"
+		],
+		"format": [
+			"esm"
+		],
+		"minify": false,
+		"tsconfig": "src/tsconfig.json",
+		"target": "es2024",
+		"splitting": false,
+		"skipNodeModulesBundle": true,
+		"sourcemap": true,
+		"shims": false,
+		"keepNames": true
+	},
 	"scripts": {
 		"build": "tsup",
 		"dev": "npm-run-all build start",
