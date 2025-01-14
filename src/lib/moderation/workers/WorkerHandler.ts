@@ -126,7 +126,7 @@ export class WorkerHandler {
 	}
 
 	private static readonly logsEnabled = process.env.NODE_ENV !== 'test';
-	private static readonly filename = new URL('worker.mjs', import.meta.url);
+	private static readonly filename = new URL('worker.js', import.meta.url);
 
 	private static readonly maximumId = Number.MAX_SAFE_INTEGER;
 }
