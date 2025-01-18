@@ -9,6 +9,7 @@ import { applyLocalizedBuilder, type TFunction } from '@sapphire/plugin-i18next'
 import {
 	ButtonStyle,
 	ComponentType,
+	MessageFlags,
 	OAuth2Scopes,
 	PermissionFlagsBits,
 	chatInputApplicationCommandMention,
@@ -51,7 +52,7 @@ export class UserCommand extends WolfCommand {
 			.addFields(this.getApplicationStatistics(t), this.getUptimeStatistics(t), this.getServerUsageStatistics(t));
 		const components = this.getComponents(t);
 
-		return interaction.reply({ embeds: [embed], components, ephemeral: true });
+		return interaction.reply({ embeds: [embed], components, flags: MessageFlags.Ephemeral });
 	}
 
 	private getApplicationStatistics(t: TFunction): APIEmbedField {

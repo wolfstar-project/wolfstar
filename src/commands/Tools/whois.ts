@@ -19,6 +19,7 @@ import {
 	ButtonStyle,
 	ChatInputCommandInteraction,
 	GuildMember,
+	MessageFlags,
 	PermissionFlagsBits,
 	UserContextMenuCommandInteraction,
 	bold,
@@ -78,7 +79,7 @@ export class UserCommand extends WolfCommand {
 
 		return interaction.reply({
 			...this.sharedRun(getSupportedUserLanguageT(interaction), user, member),
-			ephemeral: true
+			flags: MessageFlags.Ephemeral
 		});
 	}
 
@@ -88,7 +89,7 @@ export class UserCommand extends WolfCommand {
 
 		return interaction.reply({
 			...this.sharedRun(getSupportedUserLanguageT(interaction), user, member),
-			ephemeral: true
+			flags: MessageFlags.Ephemeral
 		});
 	}
 
