@@ -9,6 +9,7 @@ import { applyLocalizedBuilder, type TFunction } from '@sapphire/plugin-i18next'
 import {
 	ButtonStyle,
 	ComponentType,
+	InteractionContextType,
 	MessageFlags,
 	OAuth2Scopes,
 	PermissionFlagsBits,
@@ -31,11 +32,16 @@ const Root = LanguageKeys.Commands.Info;
 })
 export class UserCommand extends WolfCommand {
 	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
-		registry.registerChatInputCommand((command) => applyLocalizedBuilder(command, Root.Name, Root.Description), {
-			idHints: [
-				'1239990526061711554' // wolfstar-prod production
-			]
-		});
+		registry.registerChatInputCommand(
+			(command) =>
+				applyLocalizedBuilder(command, Root.Name, Root.Description) //
+					.setContexts(InteractionContextType.Guild, InteractionContextType.PrivateChannel),
+			{
+				idHints: [
+					'1239990526061711554' // wolfstar-prod production
+				]
+			}
+		);
 	}
 
 	public override messageRun(message: Message, args: WolfCommand.Args) {

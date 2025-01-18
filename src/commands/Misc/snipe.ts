@@ -10,7 +10,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { ApplicationCommandRegistry, CommandOptionsRunTypeEnum } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import { applyLocalizedBuilder } from '@sapphire/plugin-i18next';
-import { MessageFlags, PermissionFlagsBits, type GuildTextBasedChannel } from 'discord.js';
+import { InteractionContextType, MessageFlags, PermissionFlagsBits, type GuildTextBasedChannel } from 'discord.js';
 
 const Root = LanguageKeys.Commands.Snipe;
 
@@ -24,10 +24,18 @@ const Root = LanguageKeys.Commands.Snipe;
 })
 export class UserCommand extends WolfCommand {
 	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
-		registry.registerChatInputCommand((builder) =>
-			applyLocalizedBuilder(builder, Root.Name, Root.Description)
-				.setDMPermission(false)
-				.setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+		registry.registerChatInputCommand(
+			(builder) =>
+				applyLocalizedBuilder(builder, Root.Name, Root.Description)
+					.setContexts(InteractionContextType.Guild)
+					.setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
+			{
+				idHints: [
+					'1297896659283345408' // wolfstar-prod production
+
+					// coming soon beta
+				]
+			}
 		);
 	}
 

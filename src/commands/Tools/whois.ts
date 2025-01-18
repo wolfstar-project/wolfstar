@@ -19,6 +19,7 @@ import {
 	ButtonStyle,
 	ChatInputCommandInteraction,
 	GuildMember,
+	InteractionContextType,
 	MessageFlags,
 	PermissionFlagsBits,
 	UserContextMenuCommandInteraction,
@@ -97,8 +98,8 @@ export class UserCommand extends WolfCommand {
 		registry.registerChatInputCommand(
 			(builder) =>
 				applyLocalizedBuilder(builder, Root.Name, Root.Description) //
-					.addUserOption((option) => applyLocalizedBuilder(option, Root.User).setRequired(true))
-					.setDMPermission(false),
+					.addUserOption((option) => applyLocalizedBuilder(option, Root.User).setRequired(true)) //
+					.setContexts(InteractionContextType.Guild),
 			{
 				idHints: [
 					'1277288918756233298' // wolfstar-prod production
@@ -109,8 +110,8 @@ export class UserCommand extends WolfCommand {
 		registry.registerContextMenuCommand(
 			(builder) =>
 				applyNameLocalizedBuilder(builder, Root.ContextMenuName) //
-					.setType(ApplicationCommandType.User)
-					.setDMPermission(false),
+					.setType(ApplicationCommandType.User) //
+					.setContexts(InteractionContextType.Guild),
 			{
 				idHints: [
 					'1239990702570733608' // wolfstar-prod production
