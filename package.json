@@ -97,7 +97,7 @@
 		"@sapphire/ts-config": "^5.0.1",
 		"@swc/core": "1.10.9",
 		"@types/backoff": "^2.5.5",
-		"@types/diff": "^6.0.0",
+		"@types/diff": "^7.0.1",
 		"@types/he": "^1.2.3",
 		"@types/node": "^22.8.7",
 		"@types/pg": "^8.11.11",
