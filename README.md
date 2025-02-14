@@ -46,6 +46,7 @@ A powerful bot designed to enhance your server experience.<br/>
 - [🚀 Self-Hosting WolfStar Requirements](#-self-hosting-wolfstar-requirements)
 - [🉑 Translating WolfStar](#-translating-wolfstar)
 - [⌨️ Local Development](#️-local-development)
+- [💻 Online Development](#-online-development)
 - [🤝 Contributing](#-contributing)
 - [❤️ Sponsor](#️-sponsor)
 
@@ -59,6 +60,22 @@ A powerful bot designed to enhance your server experience.<br/>
 ## 👋🏻 Welcome to WolfStar
 
 WolfStar is a powerful multi-purpose bot for moderation.
+
+</div>
+
+<div id="-online-development">
+#### 🌏  Open in the Cloud
+
+Click any of the buttons below to start a new development environment to demo or contribute to the codebase without having to install anything on your machine:
+
+[![Open in VS Code](https://img.shields.io/badge/Open%20in-VS%20Code-blue?logo=visualstudiocode)](https://vscode.dev/github/wolfstar-project/wolfstar)
+[![Open in Glitch](https://img.shields.io/badge/Open%20in-Glitch-blue?logo=glitch)](https://glitch.com/edit/#!/import/github/wolfstar-project/wolfstar)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/wolfstar-project/wolfstar)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/wolfstar-project/wolfstar)
+[![Edit in Codesandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/wolfstar-project/wolfstar)
+[![Open in Repl.it](https://replit.com/badge/github/withastro/astro)](https://replit.com/github/wolfstar-project/wolfstar)
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/wolfstar-project/wolfstar)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/wolfstar-project/wolfstar)
 
 </div>
 
@@ -81,7 +98,7 @@ WolfStar is a powerful multi-purpose bot for moderation.
 - **PostgreSQL**: WolfStar uses PostgreSQL as its database, so you will need to have a PostgreSQL server running.
 - **InfluxDB**: WolfStar uses InfluxDB to keep anonymous metrics on bot usage. This is optional and can be disabled.
 - **Sentry**: WolfStar uses Sentry to log errors. This is optional and can be disabled.
-  </div>
+    </div>
 
 <div id="-self-hosting-wolfstar">
 
