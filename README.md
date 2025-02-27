@@ -8,7 +8,7 @@
 
 A powerful bot designed to enhance your server experience.<br/>
 
-[Official Site][official-site] · [Blog] · [WolfStar Invite Link][invite-link] · [Support Server][discord-link] · [Feedback][github-issues-link]
+[Official Site][official-site] · [Blog][blog] · [WolfStar Invite Link][invite-link] · [Support Server][discord-link] · [Feedback][github-issues-link]
 
 <!-- SHIELD GROUP -->
 
@@ -80,7 +80,7 @@ WolfStar is a powerful multi-purpose bot for moderation.
 - **PostgreSQL**: WolfStar uses PostgreSQL as its database, so you will need to have a PostgreSQL server running.
 - **InfluxDB**: WolfStar uses InfluxDB to keep anonymous metrics on bot usage. This is optional and can be disabled.
 - **Sentry**: WolfStar uses Sentry to log errors. This is optional and can be disabled.
-    </div>
+      </div>
 
 <div id="-self-hosting-wolfstar">
 
