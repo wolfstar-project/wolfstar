@@ -8,7 +8,7 @@
 
 A powerful bot designed to enhance your server experience.<br/>
 
-[Official Site][official-site] · [Blog][blog] · [WolfStar Invite Link][invite-link] · [Support Server][discord-link] · [Feedback][github-issues-link]
+[Official Site][official-site] · [Blog] · [WolfStar Invite Link][invite-link] · [Support Server][discord-link] · [Feedback][github-issues-link]
 
 <!-- SHIELD GROUP -->
 
@@ -50,8 +50,6 @@ A powerful bot designed to enhance your server experience.<br/>
 - [🤝 Contributing](#-contributing)
 - [❤️ Sponsor](#️-sponsor)
 
-####
-
 <br/>
 
 </details>
@@ -60,22 +58,6 @@ A powerful bot designed to enhance your server experience.<br/>
 ## 👋🏻 Welcome to WolfStar
 
 WolfStar is a powerful multi-purpose bot for moderation.
-
-</div>
-
-<div id="-online-development">
-#### 🌏  Open in the Cloud
-
-Click any of the buttons below to start a new development environment to demo or contribute to the codebase without having to install anything on your machine:
-
-[![Open in VS Code](https://img.shields.io/badge/Open%20in-VS%20Code-blue?logo=visualstudiocode)](https://vscode.dev/github/wolfstar-project/wolfstar)
-[![Open in Glitch](https://img.shields.io/badge/Open%20in-Glitch-blue?logo=glitch)](https://glitch.com/edit/#!/import/github/wolfstar-project/wolfstar)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/wolfstar-project/wolfstar)
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/wolfstar-project/wolfstar)
-[![Edit in Codesandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/wolfstar-project/wolfstar)
-[![Open in Repl.it](https://replit.com/badge/github/withastro/astro)](https://replit.com/github/wolfstar-project/wolfstar)
-[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/wolfstar-project/wolfstar)
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/wolfstar-project/wolfstar)
 
 </div>
 
@@ -112,7 +94,7 @@ In addition, WolfStar was built with a dependence on many services which need co
 - **PostgreSQL**: As database.
 - Other external APIs, each requiring their own individual API keys.
 
-With this in mind, it is also worth noting that WolfStar will in no way be capable of running on services such as [Glitch][glitch] or [Heroku][heroku]. A dedicated VPS (Virtual Private Server) is required in order to maintain the proper production environment.
+With this in mind, it is also worth noting that WolfStar will in no way be capable of running on services such as [Glitch] or [Heroku]. A dedicated VPS (Virtual Private Server) is required in order to maintain the proper production environment.
 
 </div>
 
@@ -129,6 +111,24 @@ We use **Crowdin** to translate WolfStar's messages into different languages. If
 ## ⌨️ Local Development
 
 Refer to [CONTRIBUTING.md][set-up - refer to contributing.md] for detailed setup instructions.
+
+</div>
+
+<div id="-online-development" align="right">
+
+## 💻 Online Development
+
+Click any of the buttons below to start a new development environment to demo or contribute to the codebase without having to install anything on your machine:
+
+[![Open in VS Code](https://img.shields.io/badge/Open%20in-VS%20Code-blue?logo=visualstudiocode)](https://vscode.dev/github/wolfstar-project/wolfstar)
+[![Open in GitHub1s](https://img.shields.io/badge/Open%20in-GitHub1s-blue?logo=github)](https://github1s.com/wolfstar-project/wolfstar)
+[![Open in Glitch](https://img.shields.io/badge/Open%20in-Glitch-purple?logo=glitch)](https://glitch.com/edit/#!/import/github/wolfstar-project/wolfstar)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/wolfstar-project/wolfstar)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/wolfstar-project/wolfstar)
+[![Edit in Codesandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/wolfstar-project/wolfstar)
+[![Open in Repl.it](https://replit.com/badge/github/withastro/astro)](https://replit.com/github/wolfstar-project/wolfstar)
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/wolfstar-project/wolfstar)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/wolfstar-project/wolfstar)
 
 </div>
 
@@ -159,10 +159,6 @@ Thank you for your support!
 
 <!-- LINK GROUP -->
 
-[ko-fi-link]: https://ko-fi.com/redstar071
-[patreon-link]: https://www.patreon.com/WolfStarBot
-[github-sponsor-link]: https://github.com/sponsors/wolfstar-project
-
 ---
 
 <div align="right">
@@ -180,6 +176,9 @@ This project is [Apache 2.0](./LICENSE) licensed.
 
 <!-- LINK GROUP -->
 
+[ko-fi-link]: https://ko-fi.com/redstar071
+[patreon-link]: https://www.patreon.com/RedStar071
+[github-sponsor-link]: https://github.com/sponsors/wolfstar-project
 [wolfstar-invite-link]: https://invite.wolfstar.rocks
 [glitch]: https://glitch.com
 [heroku]: https://heroku.com
