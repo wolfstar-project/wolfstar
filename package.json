@@ -83,7 +83,7 @@
 		"colorette": "^2.0.20",
 		"confusables": "^1.1.1",
 		"diff": "^7.0.0",
-		"discord-api-types": "0.37.98",
+		"discord-api-types": "^0.37.115",
 		"discord.js": "~14.18.0",
 		"he": "^1.2.0",
 		"zlib-sync": "^0.1.9"
@@ -95,7 +95,6 @@
 		"@sapphire/eslint-config": "^5.0.5",
 		"@sapphire/prettier-config": "^2.0.0",
 		"@sapphire/ts-config": "^5.0.1",
-		"@swc/core": "1.10.18",
 		"@types/backoff": "^2.5.5",
 		"@types/diff": "^6.0.0",
 		"@types/he": "^1.2.3",
@@ -119,7 +118,7 @@
 	},
 	"resolutions": {
 		"ansi-regex": "^5.0.1",
-		"discord-api-types": "0.37.98",
+		"discord-api-types": "^0.37.115",
 		"minimist": "^1.2.8"
 	},
 	"engines": {
