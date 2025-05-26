@@ -43,6 +43,8 @@ export const NewlinesName = T('commands/auto-moderation:newlinesName');
 export const NewlinesDescription = T('commands/auto-moderation:newlinesDescription');
 export const ReactionsName = T('commands/auto-moderation:reactionsName');
 export const ReactionsDescription = T('commands/auto-moderation:reactionsDescription');
+export const MarkdownSyntaxName = T('commands/auto-moderation:markdownSyntaxName');
+export const MarkdownSyntaxDescription = T('commands/auto-moderation:markdownSyntaxDescription');
 
 export const ShowDisabled = T('commands/auto-moderation:showDisabled');
 export const ShowEnabled = T('commands/auto-moderation:showEnabled');

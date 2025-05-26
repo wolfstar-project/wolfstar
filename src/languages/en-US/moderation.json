@@ -38,5 +38,9 @@
 	"actionTargetHigherHierarchyWolf": "This action cannot be performed on a member with a role position that is higher than or equal to mine.",
 	"actionTargetHigherHierarchyAuthor": "This action cannot be performed on a member with a role position that is higher than or equal to yours.",
 	"restrictionNotConfigured": "The restriction role must be configured for this action to happen",
-	"success": "Successfully executed the command."
+	"success": "Successfully executed the command.",
+	"markdownSyntaxSpoiler": "User {{user}} triggered the Markdown filter by exceeding spoiler limits ({{count}} tags or {{percentage}}% content, threshold: {{threshold}}).",
+	"markdownSyntaxBacktick": "User {{user}} triggered the Markdown filter by exceeding backtick/code block limits ({{count}} instances or {{percentage}}% content, threshold: {{threshold}}).",
+	"markdownSyntaxEmphasis": "User {{user}} triggered the Markdown filter by exceeding emphasis character limits ({{count}} sequences or {{percentage}}% content, threshold: {{threshold}}).",
+	"markdownSyntaxGeneric": "User {{user}} triggered the Markdown filter for excessive syntax (type: {{type}}, threshold: {{threshold}})."
 }

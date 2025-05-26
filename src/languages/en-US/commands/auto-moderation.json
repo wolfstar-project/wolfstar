@@ -52,6 +52,8 @@
 	"newlinesDescription": "Manage the auto-moderator for lines",
 	"reactionsName": "automod-reactions",
 	"reactionsDescription": "Manage the auto-moderator for reactions",
+	"markdownSyntaxName": "Markdown Syntax Filter",
+	"markdownSyntaxDescription": "Manages the filter for excessive Markdown syntax usage, such as too many spoilers, code blocks/backticks, or emphasis characters.",
 	"showDisabled": "Auto-moderator inactive",
 	"showEnabled": "Auto-moderator active",
 	"showReplyActive": "{{emoji}} **Alert Messages**",

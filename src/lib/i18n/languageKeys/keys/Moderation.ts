@@ -43,3 +43,9 @@ export const ActionTargetGuildOwner = T('moderation:actionTargetGuildOwner');
 export const ActionTargetWolf = T('moderation:actionTargetWolf');
 export const ActionTargetHigherHierarchyWolf = T('moderation:actionTargetHigherHierarchyWolf');
 export const ActionTargetHigherHierarchyAuthor = T('moderation:actionTargetHigherHierarchyAuthor');
+
+// Markdown Syntax Auto-Moderation Log Messages
+export const MarkdownSyntaxSpoiler = FT<{ user: string; count?: number; percentage?: number; threshold: string }>('moderation:markdownSyntaxSpoiler');
+export const MarkdownSyntaxBacktick = FT<{ user: string; count?: number; percentage?: number; threshold: string }>('moderation:markdownSyntaxBacktick');
+export const MarkdownSyntaxEmphasis = FT<{ user: string; count?: number; percentage?: number; threshold: string }>('moderation:markdownSyntaxEmphasis');
+export const MarkdownSyntaxGeneric = FT<{ user: string; type: string; threshold: string }>('moderation:markdownSyntaxGeneric');
