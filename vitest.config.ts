@@ -1,7 +1,9 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
+import codspeedPlugin from '@codspeed/vitest-plugin';
 
 export default defineConfig({
+	plugins: [codspeedPlugin()],
 	resolve: {
 		alias: [
 			{

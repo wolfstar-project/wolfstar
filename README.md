@@ -16,6 +16,7 @@ A powerful bot designed to enhance your server experience.<br/>
 [![][github-releasedate-shield]][github-releasedate-link]<br/>
 [![][discord-shield]][discord-link]
 [![][codecov-shield]][codecov-link]
+[![][codspeed-shield]][codspeed-link]
 [![][github-contributors-shield]][github-contributors-link]<br/>
 [![][github-forks-shield]][github-forks-link]
 [![][github-stars-shield]][github-stars-link]
@@ -80,7 +81,7 @@ WolfStar is a powerful multi-purpose bot for moderation.
 - **PostgreSQL**: WolfStar uses PostgreSQL as its database, so you will need to have a PostgreSQL server running.
 - **InfluxDB**: WolfStar uses InfluxDB to keep anonymous metrics on bot usage. This is optional and can be disabled.
 - **Sentry**: WolfStar uses Sentry to log errors. This is optional and can be disabled.
-      </div>
+  </div>
 
 <div id="-self-hosting-wolfstar">
 
@@ -186,6 +187,8 @@ This project is [Apache 2.0](./LICENSE) licensed.
 [blog]: https://blog.wolfstar.rocks
 [codecov-link]: https://codecov.io/gh/wolfstar-project/wolfstar
 [codecov-shield]: https://img.shields.io/codecov/c/github/wolfstar-project/wolfstar?labelColor=black&style=flat-square&logo=codecov&logoColor=white
+[codspeed-link]: https://codspeed.io/wolfstar-project/wolfstar
+[codspeed-shield]: https://img.shields.io/endpoint?url=https://codspeed.io/badge.json
 [codespaces-link]: https://codespaces.new/wolfstar-project/wolfstar
 [codespaces-shield]: https://github.com/codespaces/badge.svg
 [discord-link]: https://discord.gg/gqAnRyUXG8
