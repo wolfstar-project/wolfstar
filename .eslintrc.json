@@ -6,7 +6,8 @@
 		"no-catch-shadow": 0
 	},
 	"parserOptions": {
-		"warnOnUnsupportedTypeScriptVersion": false
+		"warnOnUnsupportedTypeScriptVersion": false,
+		"extraFileExtensions": [".yaml", ".json"]
 	},
 	"overrides": [
 		{

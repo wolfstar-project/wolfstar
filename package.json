@@ -35,20 +35,21 @@
 	},
 	"scripts": {
 		"build": "tsc -b src",
-		"dev": "yarn build && yarn start",
+		"dev": "pnpm build && pnpm start",
 		"watch": "tsc -b src -w",
-		"watch:start": "tsc-watch -b src --onSuccess \"yarn start\"",
-		"prisma:generate": "yarn prisma generate",
+		"watch:start": "tsc-watch -b src --onSuccess \"pnpm start\"",
+		"prisma:generate": "pnpm prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
+		"prepare": "node .husky/install.mjs",
 		"test": "vitest run",
 		"lint": "eslint --fix --ext ts src tests",
 		"format": "prettier --write --log-level=warn \"{src,tests}/**/*.{js,ts,json}\"",
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"scripts:migration": "node scripts/migrations.mjs",
 		"dockerps": "pwsh -NoLogo ./.docker/control.ps1",
-		"update": "yarn upgrade-interactive"
+		"update": "pnpm upgrade"
 	},
 	"dependencies": {
 		"@discordjs/builders": "^1.10.1",
@@ -108,6 +109,7 @@
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-prettier": "^5.2.6",
+		"husky": "^9.1.7",
 		"lint-staged": "^15.5.1",
 		"prettier": "^3.5.3",
 		"prisma": "^6.6.0",
@@ -143,7 +145,7 @@
 		}
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "yarn@4.9.1",
+	"packageManager": "pnpm@10.13.1",
 	"volta": {
 		"node": "22.14.0"
 	}
