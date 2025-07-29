@@ -7,7 +7,7 @@
 	},
 	"parserOptions": {
 		"warnOnUnsupportedTypeScriptVersion": false,
-		"extraFileExtensions": [".yaml", ".json"]
+		"extraFileExtensions": []
 	},
 	"overrides": [
 		{
