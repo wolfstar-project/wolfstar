@@ -12,7 +12,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk add --no-cache dumb-init=1.2.5-r3 g++=13.2.1_git20231014-r0 make=4.4.1-r2 python3=3.12.8-r1
 
-RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
+RUN corepack enable
 
 COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node package.json .
@@ -33,8 +33,7 @@ COPY --chown=node:node src/ src/
 
 RUN pnpm install --frozen-lockfile \
  && pnpm run prisma:generate \
- && pnpm run build \
- && pnpm prune --prod
+ && pnpm run build
 
 # ================ #
 #   Runner Stage   #
@@ -49,7 +48,7 @@ COPY --chown=node:node --from=builder /usr/src/app/dist dist
 
 COPY --chown=node:node src/.env src/.env
 
-COPY --chown=node:node --from=builder /usr/src/app/node_modules node_modules
+RUN pnpm install --frozen-lockfile --prod
 
 # Patch .prisma with the built files
 COPY --chown=node:node --from=builder /usr/src/app/node_modules/.prisma node_modules/.prisma
