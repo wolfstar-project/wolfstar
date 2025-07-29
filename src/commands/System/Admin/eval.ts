@@ -74,6 +74,7 @@ export class UserCommand extends WolfCommand {
 				vm: await import('node:vm'),
 				worker_threads: await import('node:worker_threads'),
 				stream: { web: await import('node:stream/web'), ...(await import('node:stream')) },
+				// @ts-ignore - ignore this bug
 				timers: { promises: await import('node:timers/promises'), ...(await import('node:timers')) },
 				discord: {
 					...(await import('discord.js')),
