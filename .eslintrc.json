@@ -7,7 +7,7 @@
 	},
 	"parserOptions": {
 		"warnOnUnsupportedTypeScriptVersion": false,
-		"extraFileExtensions": [".yaml", ".json"]
+		"extraFileExtensions": []
 	},
 	"overrides": [
 		{
@@ -15,6 +15,14 @@
 			"rules": {
 				"@typescript-eslint/require-await": 0
 			}
+		},
+		{
+			"files": ["*.yaml", "*.yml"],
+			"parser": "yaml-eslint-parser"
+		},
+		{
+			"files": ["*.json", "*.jsonc"],
+			"parser": "jsonc-eslint-parser"
 		}
 	]
 }
