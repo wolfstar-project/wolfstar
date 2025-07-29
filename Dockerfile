@@ -10,7 +10,7 @@ ENV CI=true
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-RUN apk add --no-cache dumb-init g++ make python3
+RUN apk add --no-cache dumb-init=1.2.5-r3 g++=13.2.1_git20231014-r0 make=4.4.1-r2 python3=3.12.8-r1
 
 RUN corepack enable
 RUN corepack prepare pnpm@10.13.1 --activate
