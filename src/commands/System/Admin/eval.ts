@@ -74,7 +74,7 @@ export class UserCommand extends WolfCommand {
 				vm: await import('node:vm'),
 				worker_threads: await import('node:worker_threads'),
 				stream: { web: await import('node:stream/web'), ...(await import('node:stream')) },
-				timers: { promises: await import('node:timers/promises'), ...(await import('node:timers')) } as typeof import('node:timers') & {
+				timers: { ...(await import('node:timers')), promises: await import('node:timers/promises') } as typeof import('node:timers') & {
 					promises: typeof import('node:timers/promises');
 				},
 				discord: {
