@@ -1,8 +1,10 @@
 onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
-  - '@skyra/ai'
-  - bufferutil
-  - esbuild
-  - prisma
-  - zlib-sync
+    - '@prisma/client'
+    - '@prisma/engines'
+    - '@skyra/ai'
+    - bufferutil
+    - esbuild
+    - prisma
+    - zlib-sync
+
+nodeLinker: 'hoisted'
