@@ -1,0 +1,11 @@
+model Schedule {
+  id        Int      @id(map: "PK_1c05e42aec7371641193e180046") @default(autoincrement())
+  taskId    String   @map("task_id") @db.VarChar
+  time      DateTime @db.Timestamp(6)
+  recurring String?  @db.VarChar
+  catchUp   Boolean  @default(true) @map("catch_up")
+  data      Json
+
+  @@map("schedule")
+  @@schema("schedule")
+}

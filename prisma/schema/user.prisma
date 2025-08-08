@@ -1,0 +1,7 @@
+model User {
+  id           String  @id(map: "PK_cace4a159ff9f2512dd42373760") @db.VarChar(19)
+  moderationDM Boolean @default(true) @map("moderation_dm")
+
+  @@map("user")
+  @@schema("user")
+}
