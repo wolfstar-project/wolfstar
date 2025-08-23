@@ -1,0 +1,8 @@
+model Migration {
+  id        Int    @id(map: "PK_Migrations") @default(autoincrement())
+  timestamp BigInt
+  name      String @db.VarChar
+
+  @@map("migrations")
+  @@schema("migration")
+}
