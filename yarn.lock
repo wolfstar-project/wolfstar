@@ -3829,10 +3829,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.37.115":
-  version: 0.37.119
-  resolution: "discord-api-types@npm:0.37.119"
-  checksum: 10/f477aec65cf9841b98c20642d99fd3030e2688a41fa5ed6b2a92fbbd11ced6c1aa8106c0a62d5e9cb145e882597e8a94d426e03dbc4da9a26da9dae404d10c87
+"discord-api-types@npm:^0.38.15":
+  version: 0.38.21
+  resolution: "discord-api-types@npm:0.38.21"
+  checksum: 10/ba374410b5aae856cc00a1c36bc218a38b9f627b3689df7884da90abc99e6e4f4e56e0f8eb88fb6dab8c553cb93a4489e57e7f6399eca8d2b6b7d3bb212b3652
   languageName: node
   linkType: hard
 
