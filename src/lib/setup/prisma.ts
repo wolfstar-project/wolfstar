@@ -11,10 +11,10 @@ const prisma = new PrismaClient().$extends({
 			},
 			async toggleModerationDirectMessageEnabled(userId: string): Promise<boolean> {
 				const [entry] = await prisma.$queryRaw<{ moderation_dm: boolean }[]>`
-					INSERT INTO public.user (id, moderation_dm)
+					INSERT INTO core.user (id, moderation_dm)
 					VALUES (${userId}, false)
 					ON CONFLICT (id)
-					DO UPDATE SET moderation_dm = NOT public.user.moderation_dm
+					DO UPDATE SET moderation_dm = NOT core.user.moderation_dm
 					RETURNING "moderation_dm";
 				`;
 				return entry.moderation_dm;
@@ -26,7 +26,7 @@ const prisma = new PrismaClient().$extends({
 					SELECT
 						MAX(case_id) as "latest",
 						COUNT(*) as "count"
-					FROM public.moderation
+					FROM moderation.moderation
 					WHERE guild_id = ${guildId};
 				`;
 

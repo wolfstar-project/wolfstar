@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["tracing"]
+  previewFeatures = ["tracing", "multiSchema"]
 }
 
 generator json {
@@ -10,6 +10,7 @@ generator json {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["core", "moderation", "system"]
 }
 
 model Guild {
@@ -175,6 +176,7 @@ model Guild {
   eventsTimeout                        Boolean  @default(false) @map("events.timeout")
 
   @@map("guilds")
+  @@schema("core")
 }
 
 model Migration {
@@ -183,6 +185,7 @@ model Migration {
   name      String @db.VarChar
 
   @@map("migrations")
+  @@schema("system")
 }
 
 model Moderation {
@@ -200,6 +203,7 @@ model Moderation {
 
   @@id([caseId, guildId], map: "PK_4054ed22fc0434ba8d5647e07cc")
   @@map("moderation")
+  @@schema("moderation")
 }
 
 model Schedule {
@@ -211,6 +215,7 @@ model Schedule {
   data      Json
 
   @@map("schedule")
+  @@schema("system")
 }
 
 model User {
@@ -218,4 +223,5 @@ model User {
   moderationDM Boolean @default(true) @map("moderation_dm")
 
   @@map("user")
+  @@schema("core")
 }
