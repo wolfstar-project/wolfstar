@@ -44,6 +44,28 @@ jobs:
         run: yarn prisma:generate
       - name: Build code
         run: yarn build
+  Benchmark:
+    name: Building NodeJS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Add problem matchers
+        run: echo "::add-matcher::.github/problemMatchers/tsc.json"
+      - name: Use Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - name: Install Dependencies
+        run: yarn --immutable
+      - name: Generate Prisma types
+        run: yarn prisma:generate
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v3
+        with:
+          run: yarn test:bench
+          token: ${{ secrets.CODSPEED_TOKEN }}
 
   UnitTesting:
     name: Unit Tests

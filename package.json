@@ -43,6 +43,7 @@
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
 		"test": "vitest run",
+		"test:bench": "vitest bench",
 		"lint": "eslint --fix --ext ts src tests",
 		"format": "prettier --write --log-level=warn \"{src,tests}/**/*.{js,ts,json}\"",
 		"scripts:tlds": "node scripts/tlds.mjs",
@@ -90,6 +91,7 @@
 	},
 	"devDependencies": {
 		"0x": "^5.8.0",
+		"@codspeed/vitest-plugin": "^4.0.1",
 		"@commitlint/cli": "^19.8.0",
 		"@commitlint/config-conventional": "^19.8.0",
 		"@sapphire/eslint-config": "^5.0.5",
@@ -114,7 +116,7 @@
 		"prisma-json-types-generator": "^3.2.3",
 		"tsc-watch": "^6.2.1",
 		"typescript": "~5.7.2",
-		"vitest": "^2.1.9"
+		"vitest": "^3.2.4"
 	},
 	"resolutions": {
 		"ansi-regex": "^5.0.1",
