@@ -1,4 +1,3 @@
-version: '2.4'
 services:
   influx:
     command: 'influxd run --bolt-path /var/lib/influxdb2/influxd.bolt --engine-path /var/lib/influxdb2/engine --store bolt'
