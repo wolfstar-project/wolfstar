@@ -1,0 +1,17 @@
+model Moderation {
+  caseId      Int       @map("case_id")
+  createdAt   DateTime? @map("created_at") @db.Timestamp(6)
+  duration    BigInt?
+  extraData   Json?     @map("extra_data") @db.Json
+  guildId     String    @map("guild_id") @db.VarChar(19)
+  moderatorId String    @map("moderator_id") @db.VarChar(19)
+  reason      String?   @db.VarChar(2000)
+  imageURL    String?   @map("image_url") @db.VarChar(2000)
+  userId      String?   @map("user_id") @db.VarChar(19)
+  type        Int       @db.SmallInt
+  metadata    Int       @default(0) @db.SmallInt
+
+  @@id([caseId, guildId], map: "PK_4054ed22fc0434ba8d5647e07cc")
+  @@map("moderation")
+  @@schema("moderation")
+}
