@@ -38,7 +38,7 @@
 		"dev": "pnpm build && pnpm start",
 		"watch": "tsc -b src -w",
 		"watch:start": "tsc-watch -b src --onSuccess \"pnpm start\"",
-		"prisma:generate": "pnpm prisma generate",
+		"prisma:generate": "pnpm exec prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
 		"start:profiler:0x": "0x --collect-only dist/index.js",
