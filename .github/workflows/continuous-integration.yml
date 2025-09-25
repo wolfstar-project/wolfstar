@@ -19,11 +19,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: false
       - name: Install Dependencies
-        run: yarn --immutable
+        run: pnpm install --frozen-lockfile
       - name: Run ESLint
-        run: yarn lint --fix=false
+        run: pnpm lint --fix=false
 
   Building:
     name: Building NodeJS
@@ -37,13 +41,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - name: Install Dependencies
-        run: yarn --immutable
+        run: pnpm install --frozen-lockfile
       - name: Generate Prisma types
-        run: yarn prisma:generate
+        run: pnpm prisma:generate
       - name: Build code
-        run: yarn build
+        run: pnpm build
 
   UnitTesting:
     name: Unit Tests
@@ -55,13 +63,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
       - name: Install Dependencies
-        run: yarn --immutable
+        run: pnpm install --frozen-lockfile
       - name: Generate Prisma types
-        run: yarn prisma:generate
+        run: pnpm prisma:generate
       - name: Run unit tests
-        run: yarn test --coverage
+        run: pnpm test --coverage
       - name: Codecov Upload
         uses: codecov/codecov-action@v5
         with:
