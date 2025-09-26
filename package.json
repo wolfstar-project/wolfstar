@@ -85,7 +85,7 @@
 		"confusables": "^1.1.1",
 		"diff": "^8.0.2",
 		"discord-api-types": "^0.38.26",
-		"discord.js": "~14.22.1",
+		"discord.js": "~14.18.0",
 		"he": "^1.2.0",
 		"zlib-sync": "^0.1.10"
 	},
