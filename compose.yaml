@@ -17,7 +17,7 @@ services:
 
   postgres2:
     container_name: postgres2
-    image: 'postgres:15-alpine'
+    image: 'postgres:18-alpine'
     networks:
       - wolfstar
     ports:
