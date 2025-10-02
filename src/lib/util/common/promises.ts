@@ -26,17 +26,17 @@ export function floatPromise(promise: Awaitable<unknown>) {
 
 export interface ReferredPromise<T> {
 	promise: Promise<T>;
-	resolve(value?: T): void;
+	resolve(value: T): void;
 	reject(error?: Error): void;
 }
 
 /**
  * Create a referred promise.
  */
-export function createReferPromise<T>(): ReferredPromise<T> {
+export function createReferPromise<T = void>(): ReferredPromise<T> {
 	let resolve: (value: T) => void;
 	let reject: (error?: Error) => void;
-	const promise: Promise<T> = new Promise((res, rej) => {
+	const promise: Promise<T> = new Promise<T>((res, rej) => {
 		resolve = res;
 		reject = rej;
 	});
