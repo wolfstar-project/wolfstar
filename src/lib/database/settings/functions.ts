@@ -119,14 +119,12 @@ export class Transaction {
 		try {
 			if (WeakMapNotInitialized.has(this.settings)) {
 				await container.prisma.guild.create({
-					// @ts-expect-error readonly
 					data: { ...this.settings, ...this.#changes }
 				});
 				WeakMapNotInitialized.delete(this.settings);
 			} else {
 				await container.prisma.guild.update({
 					where: { id: this.settings.id },
-					// @ts-expect-error readonly
 					data: this.#changes
 				});
 			}
