@@ -6,7 +6,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import { PermissionFlagsBits, type ImageSize, type Message } from 'discord.js';
 
-const VALID_SIZES = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096] as const satisfies readonly ImageSize[];
+const VALID_SIZES = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096] as const;
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['a', 'av', 'ava'],
@@ -31,8 +31,9 @@ export class UserCommand extends WolfCommand {
 	}
 
 	private resolveSize(parameter: string): ImageSize {
-		const size = Number(parameter) as ImageSize;
-		if (Number.isNaN(size) || !VALID_SIZES.includes(size)) return 2048;
-		return size;
+		const sizeNum = Number(parameter);
+		// Cast VALID_SIZES to number[] for the includes check so a plain number can be used safely.
+		if (Number.isNaN(sizeNum) || !(VALID_SIZES as readonly number[]).includes(sizeNum)) return 2048;
+		return sizeNum as ImageSize;
 	}
 }
