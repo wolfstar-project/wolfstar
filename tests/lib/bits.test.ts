@@ -60,7 +60,8 @@ describe('Bits', () => {
 				'UseExternalSounds',
 				'SendVoiceMessages',
 				'SendPolls',
-				'UseExternalApps'
+				'UseExternalApps',
+				'PinMessages'
 			]);
 		});
 	});
