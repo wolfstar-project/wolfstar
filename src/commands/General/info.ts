@@ -16,8 +16,8 @@ import {
 	chatInputApplicationCommandMention,
 	version as djsVersion,
 	type APIActionRowComponent,
+	type APIButtonComponent,
 	type APIEmbedField,
-	type APIMessageActionRowComponent,
 	type Message
 } from 'discord.js';
 import { cpus, uptime, type CpuInfo } from 'os';
@@ -105,19 +105,19 @@ export class UserCommand extends WolfCommand {
 		const url = this.getInvite();
 		const support = this.getSupportComponent(t);
 		const github = this.getGitHubComponent(t);
-		// const donate = this.getDonateComponent(t);
+		const donate = this.getDonateComponent(t);
 		const data = url
-			? [this.getActionRow(support, this.getInviteComponent(t, url)), this.getActionRow(github /* , donate */)]
-			: [this.getActionRow(support, github /* , donate */)];
+			? [this.getActionRow(support, this.getInviteComponent(t, url)), this.getActionRow(github, donate)]
+			: [this.getActionRow(support, github, donate)];
 
 		return data;
 	}
 
-	private getActionRow(...components: APIMessageActionRowComponent[]): APIActionRowComponent<APIMessageActionRowComponent> {
+	private getActionRow(...components: APIButtonComponent[]): APIActionRowComponent<APIButtonComponent> {
 		return { type: ComponentType.ActionRow, components };
 	}
 
-	private getSupportComponent(t: TFunction): APIMessageActionRowComponent {
+	private getSupportComponent(t: TFunction): APIButtonComponent {
 		return {
 			type: ComponentType.Button,
 			style: ButtonStyle.Link,
@@ -127,7 +127,7 @@ export class UserCommand extends WolfCommand {
 		};
 	}
 
-	private getInviteComponent(t: TFunction, url: string): APIMessageActionRowComponent {
+	private getInviteComponent(t: TFunction, url: string): APIButtonComponent {
 		return {
 			type: ComponentType.Button,
 			style: ButtonStyle.Link,
@@ -137,7 +137,7 @@ export class UserCommand extends WolfCommand {
 		};
 	}
 
-	private getGitHubComponent(t: TFunction): APIMessageActionRowComponent {
+	private getGitHubComponent(t: TFunction): APIButtonComponent {
 		return {
 			type: ComponentType.Button,
 			style: ButtonStyle.Link,
@@ -147,8 +147,7 @@ export class UserCommand extends WolfCommand {
 		};
 	}
 
-	/*
-	private getDonateComponent(t: TFunction): APIMessageActionRowComponent {
+	private getDonateComponent(t: TFunction): APIButtonComponent {
 		return {
 			type: ComponentType.Button,
 			style: ButtonStyle.Link,
@@ -157,7 +156,7 @@ export class UserCommand extends WolfCommand {
 			url: 'https://donate.wolfstar.rocks'
 		};
 	}
-*/
+
 	private formatCpuInfo({ times }: CpuInfo) {
 		return `${Math.round(((times.user + times.nice + times.sys + times.irq) / times.idle) * 10000) / 100}%`;
 	}

@@ -32,7 +32,7 @@ export class UserCommand extends WolfCommand {
 
 	private resolveSize(parameter: string): ImageSize {
 		const size = Number(parameter) as ImageSize;
-		if (Number.isNaN(size) || !VALID_SIZES.includes(size)) return 2048;
+		if (Number.isNaN(size) || !VALID_SIZES.includes(size as ImageSize)) return 2048;
 		return size;
 	}
 }
