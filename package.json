@@ -83,7 +83,7 @@
 		"colorette": "^2.0.20",
 		"confusables": "^1.1.1",
 		"diff": "^7.0.0",
-		"discord-api-types": "^0.37.115",
+		"discord-api-types": "^0.38.16",
 		"discord.js": "~14.22.1",
 		"he": "^1.2.0",
 		"zlib-sync": "^0.1.10"
@@ -114,11 +114,12 @@
 		"prisma-json-types-generator": "^3.6.1",
 		"tsc-watch": "^7.1.1",
 		"typescript": "~5.7.2",
+		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^4.0.8"
 	},
 	"resolutions": {
 		"ansi-regex": "^5.0.1",
-		"discord-api-types": "^0.37.115",
+		"discord-api-types": "^0.38.16",
 		"minimist": "^1.2.8"
 	},
 	"engines": {

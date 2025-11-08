@@ -1,43 +1,60 @@
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
-	resolve: {
-		alias: [
-			{
-				find: '#lib',
-				replacement: '#lib',
-				customResolver(source) {
-					if (source === '#lib/database') return resolve('src/lib/database/index.ts');
-					if (source === '#lib/database/entities') return resolve('src/lib/database/entities/index.ts');
-					if (source === '#lib/database/keys') return resolve('src/lib/database/keys/index.ts');
-					if (source === '#lib/database/settings') return resolve('src/lib/database/settings/index.ts');
-					if (source === '#lib/discord') return resolve('src/lib/discord/index.ts');
-					if (source === '#lib/moderation') return resolve('src/lib/moderation/index.ts');
-					if (source === '#lib/moderation/managers') return resolve('src/lib/moderation/managers/index.ts');
-					if (source === '#lib/moderation/workers') return resolve('src/lib/moderation/workers/index.ts');
-					if (source === '#lib/structures') return resolve('src/lib/structures/index.ts');
-					if (source === '#lib/structures/managers') return resolve('src/lib/structures/managers/index.ts');
-					if (source === '#lib/setup') return resolve('src/lib/setup/index.ts');
-					if (source === '#lib/types') return resolve('src/lib/types/index.ts');
-					if (source === '#lib/i18n/languageKeys') return resolve('src/lib/i18n/languageKeys/index.ts');
-					return source.replace('#lib', resolve('src/lib'));
-				}
-			},
-			{ find: /^#root\/(.*)/, replacement: resolve('src/$1.ts') },
-			{ find: '#languages', replacement: resolve('src/languages/index.ts') },
-			{
-				find: '#utils',
-				replacement: '#utils',
-				customResolver(source) {
-					if (source === '#utils/common') return resolve('src/lib/util/common/index.ts');
-					if (source === '#utils/functions') return resolve('src/lib/util/functions/index.ts');
-					return source.replace('#utils', resolve('src/lib/util'));
-				}
+// Plugin to resolve Node.js subpath imports (#lib, #utils, etc.)
+function resolveSubpathImports() {
+	return {
+		name: 'resolve-subpath-imports',
+		resolveId(id: string) {
+			// Handle #lib/* paths
+			if (id.startsWith('#lib/')) {
+				const path = id.replace('#lib/', 'src/lib/');
+				// Try with .ts extension first
+				const tsPath = resolve(path + '.ts');
+				if (existsSync(tsPath)) return tsPath;
+				// Try as directory with index.ts
+				const indexPath = resolve(path + '/index.ts');
+				if (existsSync(indexPath)) return indexPath;
+				// Try without extension (might already have one)
+				const directPath = resolve(path);
+				if (existsSync(directPath)) return directPath;
 			}
-		]
-	},
+			// Handle #utils/* paths
+			if (id.startsWith('#utils/')) {
+				const path = id.replace('#utils/', 'src/lib/util/');
+				const tsPath = resolve(path + '.ts');
+				if (existsSync(tsPath)) return tsPath;
+				const indexPath = resolve(path + '/index.ts');
+				if (existsSync(indexPath)) return indexPath;
+				const directPath = resolve(path);
+				if (existsSync(directPath)) return directPath;
+			}
+			// Handle #root/* paths
+			if (id.startsWith('#root/')) {
+				const path = id.replace('#root/', 'src/');
+				const tsPath = resolve(path + '.ts');
+				if (existsSync(tsPath)) return tsPath;
+			}
+			// Handle #languages
+			if (id === '#languages') {
+				return resolve('src/languages/index.ts');
+			}
+			return null;
+		}
+	};
+}
+
+export default defineConfig({
+	plugins: [resolveSubpathImports()],
 	test: {
+		environment: 'node',
+		pool: 'forks',
+		poolOptions: {
+			forks: {
+				singleFork: true
+			}
+		},
 		setupFiles: ['./tests/vitest.setup.ts'],
 		globals: true,
 		coverage: {
