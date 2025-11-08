@@ -50,15 +50,13 @@ export default defineConfig({
 	test: {
 		environment: 'node',
 		pool: 'forks',
-		poolOptions: {
-			forks: {
-				singleFork: true
-			}
-		},
 		setupFiles: ['./tests/vitest.setup.ts'],
 		globals: true,
 		coverage: {
+			provider: 'v8',
 			reporter: ['text', 'lcov', 'cobertura'],
+			reportsDirectory: './coverage',
+			reportOnFailure: true,
 			include: ['src/lib/**'],
 			exclude: [
 				'src/lib/api',
