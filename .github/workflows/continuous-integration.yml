@@ -56,7 +56,7 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Genarate prisma types
+      - name: Generate prisma types
         run: pnpm prisma:generate
       - name: Build code
         run: pnpm build
@@ -82,7 +82,7 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Genarate prisma types
+      - name: Generate prisma types
         run: pnpm prisma:generate
       - name: Run unit tests
         run: pnpm test --coverage
