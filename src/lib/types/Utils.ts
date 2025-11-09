@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 export type TypedT<TCustom = string> = string & { __type__: TCustom };
 export type GetTypedT<T extends TypedT<unknown>> = T extends TypedT<infer U> ? U : never;
 
