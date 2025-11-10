@@ -24,6 +24,7 @@ describe('PermissionNodeManager', () => {
 
 	function getSorted() {
 		const ctx = readSettingsPermissionNodes();
+
 		return ctx['sorted'];
 	}
 
