@@ -203,8 +203,7 @@ export class PermissionNodeManager {
 		// already a performance killer.
 		//
 
-		const roles = guild
-			._sortedRoles()
+		const roles = guild['_sortedRoles']()
 			// Set#delete returns `true` when the entry exists, so we will use this
 			// to automatically sweep the valid entries and leave the invalid ones out
 			.filter((role) => ids.delete(role.id));
