@@ -51,18 +51,18 @@
 		"update": "yarn upgrade-interactive"
 	},
 	"dependencies": {
-		"@discordjs/builders": "^1.11.3",
+		"@discordjs/builders": "^1.13.0",
 		"@discordjs/collection": "^2.1.1",
 		"@discordjs/core": "^1.2.0",
 		"@influxdata/influxdb-client": "^1.35.0",
 		"@influxdata/influxdb-client-apis": "^1.35.0",
-		"@prisma/client": "^6.16.2",
+		"@prisma/client": "^6.19.0",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/bitfield": "^1.2.4",
 		"@sapphire/decorators": "^6.2.0",
 		"@sapphire/discord.js-utilities": "7.3.3",
 		"@sapphire/fetch": "^3.0.5",
-		"@sapphire/framework": "5.3.7",
+		"@sapphire/framework": "5.4.0",
 		"@sapphire/iterator-utilities": "^2.0.1",
 		"@sapphire/plugin-api": "^8.3.1",
 		"@sapphire/plugin-editable-commands": "^4.0.4",
@@ -84,7 +84,7 @@
 		"confusables": "^1.1.1",
 		"diff": "^7.0.0",
 		"discord-api-types": "^0.37.115",
-		"discord.js": "~14.22.1",
+		"discord.js": "~14.24.2",
 		"he": "^1.2.0",
 		"zlib-sync": "^0.1.10"
 	},
@@ -99,7 +99,7 @@
 		"@types/diff": "^6.0.0",
 		"@types/he": "^1.2.3",
 		"@types/node": "^22.8.7",
-		"@types/pg": "^8.15.5",
+		"@types/pg": "^8.15.6",
 		"@types/ws": "^8.18.1",
 		"@typescript-eslint/eslint-plugin": "^7.18.0",
 		"@typescript-eslint/parser": "^7.18.0",
@@ -110,9 +110,9 @@
 		"eslint-plugin-prettier": "^5.5.4",
 		"lint-staged": "^15.5.2",
 		"prettier": "^3.6.2",
-		"prisma": "^6.16.2",
-		"prisma-json-types-generator": "^3.6.1",
-		"tsc-watch": "^7.1.1",
+		"prisma": "^6.19.0",
+		"prisma-json-types-generator": "^3.6.2",
+		"tsc-watch": "^7.2.0",
 		"typescript": "~5.7.2",
 		"vitest": "^2.1.9"
 	},
@@ -143,8 +143,8 @@
 		}
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "yarn@4.10.3",
+	"packageManager": "yarn@4.11.0",
 	"volta": {
-		"node": "22.20.0"
+		"node": "22.21.1"
 	}
 }
