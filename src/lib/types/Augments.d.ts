@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unified-signatures */
 import type {
 	CommandAutoDelete,
 	DisabledCommandChannel,

@@ -31,7 +31,7 @@ export abstract class Serializer<T> extends AliasPiece {
 	 * @param data The data to stringify
 	 * @param guild The guild given for context in this call
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	public stringify(data: Readonly<T>, _context: Serializer.UpdateContext): string {
 		return String(data);
 	}

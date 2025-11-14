@@ -24,7 +24,7 @@ describe('PermissionNodeManager', () => {
 
 	function getSorted() {
 		const ctx = readSettingsPermissionNodes();
-		// eslint-disable-next-line @typescript-eslint/dot-notation
+
 		return ctx['sorted'];
 	}
 

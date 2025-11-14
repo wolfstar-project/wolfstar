@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { IncomingType, OutgoingType, WorkerManager, type IncomingRunRegExpPayload, type NoId, type OutgoingPayload } from '#lib/moderation/workers';
 
 describe('WorkerManager', () => {
