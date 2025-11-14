@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 # ================ #
 #    Base Stage    #
 # ================ #
@@ -6,15 +8,23 @@ FROM node:22-alpine AS base
 
 WORKDIR /usr/src/app
 
+ENV HUSKY=0
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV CI=true
 
-RUN apk add --no-cache dumb-init g++ make python3
+RUN set -ex && \
+  apk add --no-cache \
+  jq \
+  libc6-compat \
+  curl \
+  build-base \
+  dumb-init
+
 RUN corepack enable
 
 COPY --chown=node:node package.json .
 COPY --chown=node:node pnpm-lock.yaml .
+COPY --chown=node:node .npmrc .
 
 ENTRYPOINT ["dumb-init", "--"]
 
