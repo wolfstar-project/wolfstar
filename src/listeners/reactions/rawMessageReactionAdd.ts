@@ -21,7 +21,7 @@ export class UserListener extends Listener {
 				name: raw.emoji.name,
 				requireColons: raw.emoji.require_colons ?? null,
 				roles: raw.emoji.roles || null,
-				// eslint-disable-next-line @typescript-eslint/dot-notation
+
 				user: (raw.emoji.user && this.container.client.users['_add'](raw.emoji.user)) ?? { id: raw.user_id }
 			},
 			guild: channel.guild,

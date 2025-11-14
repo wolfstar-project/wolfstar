@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import * as utilFormatters from '#utils/formatters';
 import type { Attachment } from 'discord.js';
 

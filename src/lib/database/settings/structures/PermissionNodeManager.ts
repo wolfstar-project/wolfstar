@@ -202,7 +202,7 @@ export class PermissionNodeManager {
 		// string operations (`String#slice()` and `Number(string)` in each), which is
 		// already a performance killer.
 		//
-		// eslint-disable-next-line @typescript-eslint/dot-notation
+
 		const roles = guild['_sortedRoles']()
 			// Set#delete returns `true` when the entry exists, so we will use this
 			// to automatically sweep the valid entries and leave the invalid ones out

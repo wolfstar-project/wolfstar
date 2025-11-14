@@ -1,16 +1,19 @@
 {
-	"editor.tabSize": 4,
-	"editor.useTabStops": true,
-	"editor.insertSpaces": false,
-	"editor.detectIndentation": true,
-	"files.eol": "\n",
-	"powershell.codeFormatting.addWhitespaceAroundPipe": true,
-	"search.exclude": {
-		"**/node_modules": true,
-		"**/bower_components": true,
-		"**/*.code-search": true,
-		"**/.yarn": true,
-		"**/dist/": true,
-		"**/.git/": true
-	}
+	"editor.formatOnSave": false,
+
+	"editor.gotoLocation.multipleDefinitions": "goto",
+	"editor.quickSuggestions": {
+		"strings": "on"
+	},
+
+	// Auto fix
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit",
+		"source.organizeImports": "never"
+	},
+
+	// Enable eslint for all supported languages
+	"eslint.validate": ["javascript", "typescript", "markdown", "json", "jsonc", "yaml", "toml"],
+	"files.autoSave": "onFocusChange",
+	"typescript.tsdk": "node_modules\\typescript\\lib"
 }

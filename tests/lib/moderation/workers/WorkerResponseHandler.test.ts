@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { TimeoutError, WorkerResponseHandler } from '#lib/moderation/workers';
 
 describe('WorkerHandler', () => {
