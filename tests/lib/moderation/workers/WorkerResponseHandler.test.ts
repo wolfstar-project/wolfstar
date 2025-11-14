@@ -3,9 +3,9 @@ import { TimeoutError, WorkerResponseHandler } from '#lib/moderation/workers';
 describe('WorkerHandler', () => {
 	test('GIVEN new instance THEN has initial data', () => {
 		const handler = new WorkerResponseHandler();
-		expect(handler['id']).toBe(-1);
-		expect(handler['handler']).toBeNull();
-		expect(handler['timer']).toBeNull();
+		expect(handler.id).toBe(-1);
+		expect(handler.handler).toBeNull();
+		expect(handler.timer).toBeNull();
 	});
 
 	test('GIVEN matching id in resolve THEN resolves the promise', async () => {
@@ -15,10 +15,10 @@ describe('WorkerHandler', () => {
 		const data = { id, type: 0, filtered: '', highlighted: '' };
 
 		const promise = handler.define(id);
-		expect(handler['handler']).not.toBeNull();
+		expect(handler.handler).not.toBeNull();
 
-		const resolve = vi.spyOn(handler['handler']!, 'resolve');
-		const reject = vi.spyOn(handler['handler']!, 'reject');
+		const resolve = vi.spyOn(handler.handler!, 'resolve');
+		const reject = vi.spyOn(handler.handler!, 'reject');
 
 		handler.resolve(id, data);
 		expect(resolve).toBeCalledTimes(1);
@@ -34,10 +34,10 @@ describe('WorkerHandler', () => {
 		const data = { id, type: 0, filtered: '', highlighted: '' };
 
 		const promise = handler.define(id);
-		expect(handler['handler']).not.toBeNull();
+		expect(handler.handler).not.toBeNull();
 
-		const resolve = vi.spyOn(handler['handler']!, 'resolve');
-		const reject = vi.spyOn(handler['handler']!, 'reject');
+		const resolve = vi.spyOn(handler.handler!, 'resolve');
+		const reject = vi.spyOn(handler.handler!, 'reject');
 
 		handler.resolve(id + 1, data);
 		expect(resolve).not.toBeCalled();
@@ -57,10 +57,10 @@ describe('WorkerHandler', () => {
 		const error = new Error('Hello there!');
 
 		const promise = handler.define(id);
-		expect(handler['handler']).not.toBeNull();
+		expect(handler.handler).not.toBeNull();
 
-		const resolve = vi.spyOn(handler['handler']!, 'resolve');
-		const reject = vi.spyOn(handler['handler']!, 'reject');
+		const resolve = vi.spyOn(handler.handler!, 'resolve');
+		const reject = vi.spyOn(handler.handler!, 'reject');
 
 		handler.reject(id, error);
 		expect(resolve).not.toBeCalled();
@@ -76,10 +76,10 @@ describe('WorkerHandler', () => {
 		const error = new Error('Hello there!');
 
 		const promise = handler.define(id);
-		expect(handler['handler']).not.toBeNull();
+		expect(handler.handler).not.toBeNull();
 
-		const resolve = vi.spyOn(handler['handler']!, 'resolve');
-		const reject = vi.spyOn(handler['handler']!, 'reject');
+		const resolve = vi.spyOn(handler.handler!, 'resolve');
+		const reject = vi.spyOn(handler.handler!, 'reject');
 
 		handler.reject(id + 1, error);
 		expect(resolve).not.toBeCalled();
@@ -98,7 +98,7 @@ describe('WorkerHandler', () => {
 		const clearTimeout = vi.spyOn(handler, 'clearTimeout' as any);
 
 		expect(handler.timeout(5)).toBe(false);
-		expect(handler['timer']).toBeNull();
+		expect(handler.timer).toBeNull();
 		expect(clearTimeout).not.toHaveBeenCalled();
 	});
 
@@ -111,15 +111,15 @@ describe('WorkerHandler', () => {
 		const promise = handler.define(id);
 
 		expect(handler.timeout(5)).toBe(true);
-		expect(handler['timer']).not.toBeNull();
+		expect(handler.timer).not.toBeNull();
 		expect(clearTimeout).toHaveBeenCalledTimes(1);
 		expect(clearTimeout).toHaveLastReturnedWith(false);
 
 		await expect(promise).rejects.toBeInstanceOf(TimeoutError);
 
-		expect(handler['id']).toBe(-1);
-		expect(handler['handler']).toBeNull();
-		expect(handler['timer']).toBeNull();
+		expect(handler.id).toBe(-1);
+		expect(handler.handler).toBeNull();
+		expect(handler.timer).toBeNull();
 		expect(clearTimeout).toHaveBeenCalledTimes(2);
 		expect(clearTimeout).toHaveLastReturnedWith(true);
 	});
@@ -133,12 +133,12 @@ describe('WorkerHandler', () => {
 		const promise = handler.define(id);
 
 		expect(handler.timeout(5)).toBe(true);
-		expect(handler['timer']).not.toBeNull();
+		expect(handler.timer).not.toBeNull();
 		expect(clearTimeout).toHaveBeenCalledTimes(1);
 		expect(clearTimeout).toHaveLastReturnedWith(false);
 
 		expect(handler.timeout(12)).toBe(true);
-		expect(handler['timer']).not.toBeNull();
+		expect(handler.timer).not.toBeNull();
 		expect(clearTimeout).toHaveBeenCalledTimes(2);
 		expect(clearTimeout).toHaveLastReturnedWith(true);
 
@@ -151,7 +151,7 @@ describe('WorkerHandler', () => {
 		const clearTimeout = vi.spyOn(handler, 'clearTimeout' as any);
 
 		expect(handler.timeout(null)).toBe(false);
-		expect(handler['timer']).toBeNull();
+		expect(handler.timer).toBeNull();
 		expect(clearTimeout).toHaveBeenCalledTimes(1);
 		expect(clearTimeout).toHaveLastReturnedWith(false);
 	});

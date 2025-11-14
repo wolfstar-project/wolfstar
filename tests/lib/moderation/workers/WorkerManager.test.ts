@@ -38,7 +38,7 @@ describe('WorkerManager', () => {
 	});
 
 	test('GIVEN getIdealWorker WHEN workers are idle THEN returns the first worker', () => {
-		expect(handler['getIdealWorker']()).toStrictEqual(handler.workers[0]);
+		expect(handler.getIdealWorker()).toStrictEqual(handler.workers[0]);
 	});
 
 	test('GIVEN data to process WHEN both workers are idle THEN the command runs in the first worker', async () => {
