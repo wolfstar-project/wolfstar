@@ -3,8 +3,7 @@ name: Continuous Integration
 on:
   push:
     branches:
-      # for now is set to refactor/imagine-an-app
-      - refactor/imagine-an-app
+      - main
   pull_request:
 
 jobs:
