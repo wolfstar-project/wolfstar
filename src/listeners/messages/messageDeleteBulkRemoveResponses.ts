@@ -5,9 +5,9 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import { get } from '@sapphire/plugin-editable-commands';
 import { hasAtLeastOneKeyInMap } from '@sapphire/utilities';
-import type { Message, ReadonlyCollection } from 'discord.js';
+import type { Message, OmitPartialGroupDMChannel, ReadonlyCollection } from 'discord.js';
 
-type MessageCollection = ReadonlyCollection<string, Message<true>>;
+type MessageCollection = ReadonlyCollection<string, OmitPartialGroupDMChannel<Message<true>>>;
 
 @ApplyOptions<Listener.Options>({ event: Events.MessageDeleteBulk })
 export class UserListener extends Listener<Events.MessageDeleteBulk> {
