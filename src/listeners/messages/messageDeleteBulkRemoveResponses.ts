@@ -45,7 +45,7 @@ export class UserListener extends Listener<Events.MessageDeleteBulk> {
 		}
 	}
 
-	private canBeCustomized(message: Message<true>): message is Message<true> & GuildMessage {
+	private canBeCustomized(message: Message): message is GuildMessage {
 		return message.guild !== null;
 	}
 
