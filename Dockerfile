@@ -6,15 +6,16 @@ FROM node:22-alpine AS base
 
 WORKDIR /usr/src/app
 
-ENV YARN_DISABLE_GIT_HOOKS=1
 ENV CI=true
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk add --no-cache dumb-init g++ make python3
+RUN corepack enable && corepack prepare pnpm@10.22.0 --activate
 
-COPY --chown=node:node yarn.lock .
+COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node package.json .
-COPY --chown=node:node .yarnrc.yml .
-COPY --chown=node:node .yarn/ .yarn/
+COPY --chown=node:node .npmrc .
 
 ENTRYPOINT ["dumb-init", "--"]
 
@@ -30,9 +31,9 @@ COPY --chown=node:node tsconfig.base.json tsconfig.base.json
 COPY --chown=node:node prisma/ prisma/
 COPY --chown=node:node src/ src/
 
-RUN yarn install --immutable \
- && yarn run prisma:generate \
- && yarn run build
+RUN pnpm install --frozen-lockfile \
+ && pnpm run prisma:generate \
+ && pnpm run build
 
 # ================ #
 #   Runner Stage   #
@@ -47,11 +48,11 @@ COPY --chown=node:node --from=builder /usr/src/app/dist dist
 
 COPY --chown=node:node src/.env src/.env
 
-RUN yarn workspaces focus --all --production
+RUN pnpm install --prod --frozen-lockfile
 
 # Patch .prisma with the built files
 COPY --chown=node:node --from=builder /usr/src/app/node_modules/.prisma node_modules/.prisma
 
 USER node
 
-CMD [ "yarn", "run", "start" ]
+CMD [ "pnpm", "run", "start" ]
