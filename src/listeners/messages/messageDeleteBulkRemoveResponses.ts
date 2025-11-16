@@ -5,20 +5,17 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import { get } from '@sapphire/plugin-editable-commands';
 import { hasAtLeastOneKeyInMap } from '@sapphire/utilities';
-import type { GuildTextBasedChannel, Message, PartialMessage, ReadonlyCollection } from 'discord.js';
+import type { Message, ReadonlyCollection } from 'discord.js';
 
-type MessageCollection = ReadonlyCollection<string, Message<true> | PartialMessage<true>>;
+type MessageCollection = ReadonlyCollection<string, Message<true>>;
 
 @ApplyOptions<Listener.Options>({ event: Events.MessageDeleteBulk })
 export class UserListener extends Listener<Events.MessageDeleteBulk> {
-	public async run(messages: MessageCollection, _channel: GuildTextBasedChannel) {
+	public async run(messages: MessageCollection) {
 		// If, for some reason, this was emitted with no messages, skip all:
 		if (messages.size === 0) return;
 
 		const first = messages.first()!;
-
-		// Skip partial messages since we can't process them properly
-		if (first.partial) return;
 
 		// If the auto-delete behavior cannot be customized, delete all:
 		if (!this.canBeCustomized(first)) return this.deleteAll(messages);
@@ -37,9 +34,6 @@ export class UserListener extends Listener<Events.MessageDeleteBulk> {
 		if (ignoredCommands.length === 0 && ignoredRoles.length === 0) return this.deleteAll(messages);
 
 		for (const message of messages.values()) {
-			// Skip partial messages
-			if (message.partial) continue;
-
 			const response = get(message);
 			if (response === null) continue;
 
@@ -51,8 +45,8 @@ export class UserListener extends Listener<Events.MessageDeleteBulk> {
 		}
 	}
 
-	private canBeCustomized(message: Message<true> | PartialMessage<true>): message is Message<true> & GuildMessage {
-		return !message.partial && message.guild !== null;
+	private canBeCustomized(message: Message<true>): message is Message<true> & GuildMessage {
+		return message.guild !== null;
 	}
 
 	private shouldBeIgnored(message: GuildMessage, ignoredCommands: readonly string[], ignoredRoles: readonly string[]): boolean {
@@ -68,9 +62,6 @@ export class UserListener extends Listener<Events.MessageDeleteBulk> {
 
 	private async deleteAll(messages: MessageCollection) {
 		for (const message of messages.values()) {
-			// Skip partial messages
-			if (message.partial) continue;
-
 			const response = get(message);
 			if (response !== null) await deleteMessage(response);
 		}
