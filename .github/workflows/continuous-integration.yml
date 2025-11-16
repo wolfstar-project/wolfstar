@@ -3,65 +3,96 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - main
+      # for now is set to refactor/imagine-an-app
+      - refactor/imagine-an-app
   pull_request:
 
 jobs:
   Linting:
     name: Linting NodeJS
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [22]
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Add problem matchers
         run: echo "::add-matcher::.github/problemMatchers/eslint.json"
-      - name: Use Node.js v22
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+      - name: Use Node.js v${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: yarn
-      - name: Install Dependencies
-        run: yarn --immutable
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Genarate prisma types
+        run: pnpm prisma:generate
       - name: Run ESLint
-        run: yarn lint --fix=false
+        run: pnpm lint --fix=false
 
   Building:
-    name: Building NodeJS
-    runs-on: ubuntu-latest
+    name: Compile source code
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [22]
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Add problem matchers
         run: echo "::add-matcher::.github/problemMatchers/tsc.json"
-      - name: Use Node.js v22
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+      - name: Use Node.js v${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: yarn
-      - name: Install Dependencies
-        run: yarn --immutable
-      - name: Generate Prisma types
-        run: yarn prisma:generate
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate prisma types
+        run: pnpm prisma:generate
       - name: Build code
-        run: yarn build
+        run: pnpm build
 
   UnitTesting:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [22]
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v5
-      - name: Use Node.js v22
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+      - name: Use Node.js v${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: yarn
-      - name: Install Dependencies
-        run: yarn --immutable
-      - name: Generate Prisma types
-        run: yarn prisma:generate
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate prisma types
+        run: pnpm prisma:generate
       - name: Run unit tests
-        run: yarn test --coverage
+        run: pnpm run test -- --coverage
       - name: Codecov Upload
         uses: codecov/codecov-action@v5
         with:
