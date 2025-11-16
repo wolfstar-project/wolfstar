@@ -48,7 +48,6 @@
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"scripts:migration": "node scripts/migrations.mjs",
 		"dockerps": "pwsh -NoLogo ./.docker/control.ps1",
-		"postinstall": "pnpm prisma:generate",
 		"prepare": "husky"
 	},
 	"dependencies": {
