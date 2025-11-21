@@ -117,10 +117,15 @@
 		"typescript": "~5.7.2",
 		"vitest": "^2.1.9"
 	},
-	"resolutions": {
-		"ansi-regex": "^5.0.1",
-		"discord-api-types": "^0.38.34",
-		"minimist": "^1.2.8"
+	"pnpm": {
+		"overrides": {
+			"ansi-regex": "^5.0.1",
+			"discord-api-types": "^0.38.34",
+			"minimist": "^1.2.8"
+		},
+		"onlyBuiltDependencies": [
+			"@skyra/ai"
+		]
 	},
 	"repository": {
 		"type": "git",
