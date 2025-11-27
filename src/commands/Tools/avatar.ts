@@ -8,6 +8,10 @@ import { PermissionFlagsBits, type ImageSize, type Message } from 'discord.js';
 
 const VALID_SIZES = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096] as const satisfies readonly ImageSize[];
 
+function isValidImageSize(value: number): value is ImageSize {
+	return VALID_SIZES.includes(value as (typeof VALID_SIZES)[number]);
+}
+
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['a', 'av', 'ava'],
 	description: LanguageKeys.Commands.Tools.AvatarDescription,
@@ -31,8 +35,8 @@ export class UserCommand extends WolfCommand {
 	}
 
 	private resolveSize(parameter: string): ImageSize {
-		const size = Number(parameter) as ImageSize;
-		if (Number.isNaN(size) || !VALID_SIZES.includes(size)) return 2048;
-		return size;
+		const raw = Number(parameter);
+		if (Number.isNaN(raw) || !isValidImageSize(raw)) return 2048;
+		return raw; // narrowed by type guard
 	}
 }

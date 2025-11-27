@@ -15,7 +15,7 @@ import {
 	GuildDefaultMessageNotifications,
 	GuildExplicitContentFilter,
 	GuildVerificationLevel,
-	Locale,
+	type Locale,
 	Options,
 	Partials,
 	PermissionFlagsBits,
@@ -36,19 +36,14 @@ export const OWNERS = envParseArray('CLIENT_OWNERS');
 
 export function parseAnalytics(): ConnectionOptions {
 	const url = envParseString('INFLUX_URL');
-	const proxyUrl = envParseString('INFLUX_PROXY_URL');
 	const token = envParseString('INFLUX_TOKEN');
 
-	return envIsDefined('INFLUX_PROXY_URL')
-		? {
-				proxyUrl,
-				url,
-				token
-			}
-		: {
-				url,
-				token
-			};
+	if (envIsDefined('INFLUX_PROXY_URL')) {
+		const proxyUrl = envParseString('INFLUX_PROXY_URL');
+		return { proxyUrl, url, token };
+	}
+
+	return { url, token };
 }
 
 function parseApiAuth(): ServerOptionsAuth | undefined {
