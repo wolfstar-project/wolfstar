@@ -11,6 +11,9 @@ on:
       - '.github/workflows/continuous-delivery.yml'
       - 'package.json'
 
+env:
+  HUSKY: 0
+
 jobs:
   build:
     name: Publish WolfStar.Rocks image to container registry
