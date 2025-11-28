@@ -86,7 +86,8 @@
 		"discord-api-types": "^0.38.34",
 		"discord.js": "~14.22.1",
 		"he": "^1.2.0",
-		"zlib-sync": "^0.1.10"
+		"zlib-sync": "^0.1.10",
+		"husky": "^9.1.7"
 	},
 	"devDependencies": {
 		"0x": "^5.8.0",
@@ -108,7 +109,6 @@
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.4",
-		"husky": "^9.1.7",
 		"lint-staged": "^15.5.2",
 		"prettier": "^3.6.2",
 		"prisma": "^6.16.2",
