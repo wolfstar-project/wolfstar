@@ -12,5 +12,6 @@
 		"**/.yarn": true,
 		"**/dist/": true,
 		"**/.git/": true
-	}
+	},
+	"prisma.pinToPrisma6": true
 }
