@@ -109,7 +109,7 @@
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.4",
-		"lint-staged": "^15.5.2",
+		"lint-staged": "^16.2.7",
 		"prettier": "^3.7.2",
 		"prisma": "^6.19.0",
 		"prisma-json-types-generator": "^3.6.2",
