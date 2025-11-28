@@ -14,7 +14,7 @@ importers:
   .:
     dependencies:
       '@discordjs/builders':
-        specifier: ^1.11.3
+        specifier: ^1.13.0
         version: 1.13.0
       '@discordjs/collection':
         specifier: ^2.1.1
@@ -29,7 +29,7 @@ importers:
         specifier: ^1.35.0
         version: 1.35.0(@influxdata/influxdb-client@1.35.0)
       '@prisma/client':
-        specifier: ^6.16.2
+        specifier: ^6.19.0
         version: 6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.7.3))(typescript@5.7.3)
       '@sapphire/async-queue':
         specifier: ^1.5.5
@@ -47,8 +47,8 @@ importers:
         specifier: ^3.0.5
         version: 3.0.5
       '@sapphire/framework':
-        specifier: 5.3.7
-        version: 5.3.7
+        specifier: 5.4.0
+        version: 5.4.0
       '@sapphire/iterator-utilities':
         specifier: ^2.0.1
         version: 2.0.1
@@ -83,7 +83,7 @@ importers:
         specifier: ^3.18.2
         version: 3.18.2
       '@sentry/node':
-        specifier: ^10.25.0
+        specifier: ^10.27.0
         version: 10.27.0
       '@skyra/ai':
         specifier: ^1.2.0
@@ -113,8 +113,8 @@ importers:
         specifier: ^0.38.34
         version: 0.38.34
       discord.js:
-        specifier: ~14.22.1
-        version: 14.22.1(bufferutil@4.0.9)
+        specifier: ~14.25.1
+        version: 14.25.1(bufferutil@4.0.9)
       he:
         specifier: ^1.2.0
         version: 1.2.0
@@ -141,8 +141,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@sapphire/ts-config':
-        specifier: ^5.0.1
-        version: 5.0.1
+        specifier: ^5.0.3
+        version: 5.0.3
       '@types/backoff':
         specifier: ^2.5.5
         version: 2.5.5
@@ -156,7 +156,7 @@ importers:
         specifier: ^22.8.7
         version: 22.19.1
       '@types/pg':
-        specifier: ^8.15.5
+        specifier: ^8.15.6
         version: 8.15.6
       '@types/ws':
         specifier: ^8.18.1
@@ -181,21 +181,21 @@ importers:
         version: 10.1.8(eslint@8.57.1)
       eslint-plugin-prettier:
         specifier: ^5.5.4
-        version: 5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)
+        version: 5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.7.2)
       lint-staged:
         specifier: ^15.5.2
         version: 15.5.2
       prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
+        specifier: ^3.7.2
+        version: 3.7.2
       prisma:
-        specifier: ^6.16.2
+        specifier: ^6.19.0
         version: 6.19.0(magicast@0.3.5)(typescript@5.7.3)
       prisma-json-types-generator:
-        specifier: ^3.6.1
+        specifier: ^3.6.2
         version: 3.6.2(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.7.3))(typescript@5.7.3))(prisma@6.19.0(magicast@0.3.5)(typescript@5.7.3))(typescript@5.7.3)
       tsc-watch:
-        specifier: ^7.1.1
+        specifier: ^7.2.0
         version: 7.2.0(typescript@5.7.3)
       typescript:
         specifier: ~5.7.2
@@ -358,12 +358,20 @@ packages:
     resolution: {integrity: sha512-5cnX+tASiPCqCWtFcFslxBVUaCetB0thvM/JyavhbXInP1HJIEU+Qv/zMrnuwSsX3yWH2lVXNJZeDK3EiP4HHg==}
     engines: {node: '>=16.11.0'}
 
+  '@discordjs/formatters@0.6.2':
+    resolution: {integrity: sha512-y4UPwWhH6vChKRkGdMB4odasUbHOUwy7KL+OVwF86PvT6QVOwElx+TiI1/6kcmcEe+g5YRXJFiXSXUdabqZOvQ==}
+    engines: {node: '>=16.11.0'}
+
   '@discordjs/rest@2.6.0':
     resolution: {integrity: sha512-RDYrhmpB7mTvmCKcpj+pc5k7POKszS4E2O9TYc+U+Y4iaCP+r910QdO43qmpOja8LRr1RJ0b3U+CqVsnPqzf4w==}
     engines: {node: '>=18'}
 
   '@discordjs/util@1.1.1':
     resolution: {integrity: sha512-eddz6UnOBEB1oITPinyrB2Pttej49M9FZQY8NxgEvc3tq6ZICZ19m70RsmzRdDHk80O9NoYN/25AqJl8vPVf/g==}
+    engines: {node: '>=18'}
+
+  '@discordjs/util@1.2.0':
+    resolution: {integrity: sha512-3LKP7F2+atl9vJFhaBjn4nOaSWahZ/yWjOvA4e5pnXkt2qyXRCHLxoBQy81GFtLGCq7K9lPm9R517M1U+/90Qg==}
     engines: {node: '>=18'}
 
   '@discordjs/ws@1.2.3':
@@ -946,6 +954,10 @@ packages:
     resolution: {integrity: sha512-H4SY5KTVDZrqA5QG7ob6etwqhdOb3TRSY2wv56f0tiobUdIr0irlrYvdmr8Kg/FRxWU+aiHDIISWGG5vBuxOGw==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
+  '@sapphire/discord-utilities@4.0.0':
+    resolution: {integrity: sha512-QAvrKNHgswz+ZX48WqSYpRiRzQcugNXXB1C3fR1qbpTJGd7Ckr2OWyFK88TyOksi3U2isrk8sMriTcAgaIe7Qg==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+
   '@sapphire/discord.js-utilities@7.3.3':
     resolution: {integrity: sha512-WDj+zjWgNCUSvzYDD0wY3TVeTUseHq0Nhk0wVWxSDjY8z2gFEVcpY7wF8/fbTDWP44LUG5sUQ4haIrIj2OjmkQ==}
     engines: {node: '>=16.6.0', npm: '>=7.0.0'}
@@ -962,8 +974,8 @@ packages:
     resolution: {integrity: sha512-YfH5iFFL+n21dEWfdNpSlN1Q4RH+84I9ZFLxtdlbqyWljkh1IwMU6UmHjnroiRJx9TwdFSQ0krHm4v0fV/VqiA==}
     engines: {node: '>=v18'}
 
-  '@sapphire/framework@5.3.7':
-    resolution: {integrity: sha512-8ynVsCo6wWSURhCaGTsHjicQwyGQXEJb2y6KEwL6WdUTILQYWf3JemoZ+Gq6HUJ4kDEFv0VzJHQ26CyXNrn34w==}
+  '@sapphire/framework@5.4.0':
+    resolution: {integrity: sha512-Gf0Ui5tOG1lRRf6Gpd/gpUDkAIMZxFXYOzq0X5kMcXRNWiX1B6iIUkyXrzCLaNunzqWRKe6x4UxzRewN5ktNWg==}
     engines: {node: '>=v18', npm: '>=7'}
 
   '@sapphire/iana-mime-types@1.15.0':
@@ -1042,8 +1054,8 @@ packages:
     resolution: {integrity: sha512-oNwWyNdbt5wm4aYZvlHl1+64U3g0xrFmRIHsnER7RgMxNnp/wmAE4yTK2oUHeadg3t4V9iYctPAQCF+aINke4g==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
-  '@sapphire/ts-config@5.0.1':
-    resolution: {integrity: sha512-86YBYNBDNs6/bCrTsv274553v43Bz8YljfrrIQ4N8ll2npUxbf6cpC0gjfJY+FMa1HwKUgoMF4lvhzY0Ph0smw==}
+  '@sapphire/ts-config@5.0.3':
+    resolution: {integrity: sha512-bFyGYHFT3TpOf5Sg2P+zY2ad0t5IA2epc5HtewlghhL7MYvbZvxtKsdaNaMwAdNObBx7hpiQm5OcOhyzEwQvbQ==}
     engines: {node: '>=v16.0.0', npm: '>=8.0.0'}
 
   '@sapphire/utilities@3.18.2':
@@ -1805,8 +1817,8 @@ packages:
   discord-api-types@0.38.34:
     resolution: {integrity: sha512-muq7xKGznj5MSFCzuIm/2TO7DpttuomUTemVM82fRqgnMl70YRzEyY24jlbiV6R9tzOTq6A6UnZ0bsfZeKD38Q==}
 
-  discord.js@14.22.1:
-    resolution: {integrity: sha512-3k+Kisd/v570Jr68A1kNs7qVhNehDwDJAPe4DZ2Syt+/zobf9zEcuYFvsfIaAOgCa0BiHMfOOKQY4eYINl0z7w==}
+  discord.js@14.25.1:
+    resolution: {integrity: sha512-2l0gsPOLPs5t6GFZfQZKnL1OJNYFcuC/ETWsW4VtKVD/tg4ICa9x+jb9bkPffkMdRpRpuUaO/fKkHCBeiCKh8g==}
     engines: {node: '>=18'}
 
   doctrine@3.0.0:
@@ -2963,8 +2975,8 @@ packages:
     resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
     engines: {node: '>=6.0.0'}
 
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+  prettier@3.7.2:
+    resolution: {integrity: sha512-n3HV2J6QhItCXndGa3oMWvWFAgN1ibnS7R9mt6iokScBOC0Ul9/iZORmU2IWUMcyAQaMPjTlY3uT34TqocUxMA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -3917,6 +3929,10 @@ snapshots:
     dependencies:
       discord-api-types: 0.38.34
 
+  '@discordjs/formatters@0.6.2':
+    dependencies:
+      discord-api-types: 0.38.34
+
   '@discordjs/rest@2.6.0':
     dependencies:
       '@discordjs/collection': 2.1.1
@@ -3930,6 +3946,10 @@ snapshots:
       undici: 6.21.3
 
   '@discordjs/util@1.1.1': {}
+
+  '@discordjs/util@1.2.0':
+    dependencies:
+      discord-api-types: 0.38.34
 
   '@discordjs/ws@1.2.3(bufferutil@4.0.9)':
     dependencies:
@@ -4463,6 +4483,10 @@ snapshots:
     dependencies:
       discord-api-types: 0.38.34
 
+  '@sapphire/discord-utilities@4.0.0':
+    dependencies:
+      discord-api-types: 0.38.34
+
   '@sapphire/discord.js-utilities@7.3.3':
     dependencies:
       '@sapphire/discord-utilities': 3.5.0
@@ -4478,8 +4502,8 @@ snapshots:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1)(typescript@5.4.5)
       eslint: 8.57.1
       eslint-config-prettier: 10.1.8(eslint@8.57.1)
-      eslint-plugin-prettier: 5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)
-      prettier: 3.6.2
+      eslint-plugin-prettier: 5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.7.2)
+      prettier: 3.7.2
       typescript: 5.4.5
     transitivePeerDependencies:
       - '@types/eslint'
@@ -4487,10 +4511,10 @@ snapshots:
 
   '@sapphire/fetch@3.0.5': {}
 
-  '@sapphire/framework@5.3.7':
+  '@sapphire/framework@5.4.0':
     dependencies:
       '@discordjs/builders': 1.13.0
-      '@sapphire/discord-utilities': 3.5.0
+      '@sapphire/discord-utilities': 4.0.0
       '@sapphire/discord.js-utilities': 7.3.3
       '@sapphire/lexure': 1.1.12
       '@sapphire/pieces': 4.4.1
@@ -4544,7 +4568,7 @@ snapshots:
 
   '@sapphire/prettier-config@2.0.0':
     dependencies:
-      prettier: 3.6.2
+      prettier: 3.7.2
 
   '@sapphire/ratelimits@2.4.11': {}
 
@@ -4574,10 +4598,10 @@ snapshots:
 
   '@sapphire/timestamp@1.0.5': {}
 
-  '@sapphire/ts-config@5.0.1':
+  '@sapphire/ts-config@5.0.3':
     dependencies:
       tslib: 2.8.1
-      typescript: 5.7.3
+      typescript: 5.4.5
 
   '@sapphire/utilities@3.18.2': {}
 
@@ -5627,13 +5651,13 @@ snapshots:
 
   discord-api-types@0.38.34: {}
 
-  discord.js@14.22.1(bufferutil@4.0.9):
+  discord.js@14.25.1(bufferutil@4.0.9):
     dependencies:
       '@discordjs/builders': 1.13.0
       '@discordjs/collection': 1.5.3
-      '@discordjs/formatters': 0.6.1
+      '@discordjs/formatters': 0.6.2
       '@discordjs/rest': 2.6.0
-      '@discordjs/util': 1.1.1
+      '@discordjs/util': 1.2.0
       '@discordjs/ws': 1.2.3(bufferutil@4.0.9)
       '@sapphire/snowflake': 3.5.3
       discord-api-types: 0.38.34
@@ -5764,10 +5788,10 @@ snapshots:
     dependencies:
       eslint: 8.57.1
 
-  eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2):
+  eslint-plugin-prettier@5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.7.2):
     dependencies:
       eslint: 8.57.1
-      prettier: 3.6.2
+      prettier: 3.7.2
       prettier-linter-helpers: 1.0.0
       synckit: 0.11.11
     optionalDependencies:
@@ -6863,7 +6887,7 @@ snapshots:
     dependencies:
       fast-diff: 1.3.0
 
-  prettier@3.6.2: {}
+  prettier@3.7.2: {}
 
   pretty-hrtime@1.0.3: {}
 
