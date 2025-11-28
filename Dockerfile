@@ -6,7 +6,7 @@ FROM node:22-alpine AS base
 
 WORKDIR /usr/src/app
 
-ENV CI=true
+ENV HUSKY="0"
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -32,8 +32,8 @@ COPY --chown=node:node prisma/ prisma/
 COPY --chown=node:node src/ src/
 
 RUN pnpm install --frozen-lockfile \
- && pnpm run prisma:generate \
- && pnpm run build
+	&& pnpm run prisma:generate \
+	&& pnpm run build
 
 # ================ #
 #   Runner Stage   #
@@ -48,11 +48,9 @@ COPY --chown=node:node --from=builder /usr/src/app/dist dist
 
 COPY --chown=node:node src/.env src/.env
 
+COPY --chown=node:node prisma/ prisma/
+
 RUN pnpm install --prod --frozen-lockfile
-
-# Patch .prisma with the built files
-COPY --chown=node:node --from=builder /usr/src/app/node_modules/.prisma node_modules/.prisma
-
 USER node
 
 CMD [ "pnpm", "run", "start" ]
