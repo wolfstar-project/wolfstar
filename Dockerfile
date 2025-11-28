@@ -1,12 +1,12 @@
 # ================ #
-#    Base Stage    #
+#   Base Stage     #
 # ================ #
 
 FROM node:22-alpine AS base
 
 WORKDIR /usr/src/app
 
-ENV HUSKY="0"
+ENV CI="true"
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -20,16 +20,16 @@ COPY --chown=node:node .npmrc .
 ENTRYPOINT ["dumb-init", "--"]
 
 # ================ #
-#   Builder Stage  #
+#   Builder Stage   #
 # ================ #
 
 FROM base AS builder
 
 ENV NODE_ENV="development"
 
-COPY --chown=node:node tsconfig.base.json tsconfig.base.json
 COPY --chown=node:node prisma/ prisma/
 COPY --chown=node:node src/ src/
+COPY --chown=node:node tsconfig.base.json tsconfig.base.json
 
 RUN pnpm install --frozen-lockfile \
 	&& pnpm run prisma:generate \
@@ -45,12 +45,13 @@ ENV NODE_ENV="production"
 ENV NODE_OPTIONS="--enable-source-maps --max_old_space_size=4096"
 
 COPY --chown=node:node --from=builder /usr/src/app/dist dist
+COPY --chown=node:node --from=builder /usr/src/app/node_modules ./node_modules
 
 COPY --chown=node:node src/.env src/.env
 
-COPY --chown=node:node prisma/ prisma/
 
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile --offline
+
 USER node
 
 CMD [ "pnpm", "run", "start" ]
