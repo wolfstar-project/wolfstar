@@ -14,14 +14,20 @@ export default defineConfig({
 					if (source === '#lib/database/settings') return resolve('src/lib/database/settings/index.ts');
 					if (source === '#lib/discord') return resolve('src/lib/discord/index.ts');
 					if (source === '#lib/moderation') return resolve('src/lib/moderation/index.ts');
+					if (source === '#lib/moderation/actions') return resolve('src/lib/moderation/actions/index.ts');
+					if (source === '#lib/moderation/common') return resolve('src/lib/moderation/common/index.ts');
 					if (source === '#lib/moderation/managers') return resolve('src/lib/moderation/managers/index.ts');
+					if (source === '#lib/moderation/managers/loggers') return resolve('src/lib/moderation/managers/loggers/index.ts');
 					if (source === '#lib/moderation/workers') return resolve('src/lib/moderation/workers/index.ts');
 					if (source === '#lib/structures') return resolve('src/lib/structures/index.ts');
+					if (source === '#lib/structures/data') return resolve('src/lib/structures/data/index.ts');
 					if (source === '#lib/structures/managers') return resolve('src/lib/structures/managers/index.ts');
 					if (source === '#lib/setup') return resolve('src/lib/setup/index.ts');
+					if (source === '#lib/schedule') return resolve('src/lib/schedule/index.ts');
 					if (source === '#lib/types') return resolve('src/lib/types/index.ts');
 					if (source === '#lib/i18n/languageKeys') return resolve('src/lib/i18n/languageKeys/index.ts');
-					return source.replace('#lib', resolve('src/lib'));
+					if (source === '#lib/i18n') return resolve('src/lib/i18n/index.ts');
+					return `${source.replace('#lib', resolve('src/lib'))}.ts`;
 				}
 			},
 			{ find: /^#root\/(.*)/, replacement: resolve('src/$1.ts') },
@@ -32,7 +38,8 @@ export default defineConfig({
 				customResolver(source) {
 					if (source === '#utils/common') return resolve('src/lib/util/common/index.ts');
 					if (source === '#utils/functions') return resolve('src/lib/util/functions/index.ts');
-					return source.replace('#utils', resolve('src/lib/util'));
+					if (source === '#utils/resolvers') return resolve('src/lib/util/resolvers/index.ts');
+					return `${source.replace('#utils', resolve('src/lib/util'))}.ts`;
 				}
 			}
 		]
