@@ -1034,8 +1034,6 @@ function makeKey(property: SchemaDataKey, options: ConfigurableKeyOptions) {
 }
 
 interface ConfigurableKeyOptions
-	extends Omit<
-			ConfigurableKeyValueOptions,
-			'key' | 'property' | 'name' | 'array' | 'inclusive' | 'minimum' | 'maximum' | 'default' | 'dashboardOnly'
-		>,
+	extends
+		Omit<ConfigurableKeyValueOptions, 'key' | 'property' | 'name' | 'array' | 'inclusive' | 'minimum' | 'maximum' | 'default' | 'dashboardOnly'>,
 		Partial<Pick<ConfigurableKeyValueOptions, 'name' | 'array' | 'inclusive' | 'minimum' | 'maximum' | 'default' | 'dashboardOnly'>> {}

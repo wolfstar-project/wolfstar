@@ -409,8 +409,10 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 }
 
 export namespace RoleModerationAction {
-	export interface ConstructorOptions<Type extends TypeVariation = TypeVariation>
-		extends Omit<ModerationAction.ConstructorOptions<Type>, 'isUndoActionAvailable'> {
+	export interface ConstructorOptions<Type extends TypeVariation = TypeVariation> extends Omit<
+		ModerationAction.ConstructorOptions<Type>,
+		'isUndoActionAvailable'
+	> {
 		replace?: boolean;
 		roleKey: RoleKey;
 		roleData: RoleData;
