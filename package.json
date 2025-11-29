@@ -86,8 +86,8 @@
 		"discord-api-types": "^0.38.34",
 		"discord.js": "~14.25.1",
 		"he": "^1.2.0",
-		"zlib-sync": "^0.1.10",
-		"husky": "^9.1.7"
+		"husky": "^9.1.7",
+		"zlib-sync": "^0.1.10"
 	},
 	"devDependencies": {
 		"0x": "^6.0.0",
@@ -124,7 +124,8 @@
 			"minimist": "^1.2.8"
 		},
 		"onlyBuiltDependencies": [
-			"@skyra/ai"
+			"@skyra/ai",
+			"esbuild"
 		]
 	},
 	"repository": {
