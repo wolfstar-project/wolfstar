@@ -18,10 +18,14 @@ function aliasResolverPlugin(): PluginOption {
 		'#lib/i18n': 'src/lib/i18n/index.ts',
 		'#lib/i18n/languageKeys': 'src/lib/i18n/languageKeys/index.ts',
 		'#lib/moderation': 'src/lib/moderation/index.ts',
+		'#lib/moderation/actions': 'src/lib/moderation/actions/index.ts',
+		'#lib/moderation/common': 'src/lib/moderation/common/index.ts',
 		'#lib/moderation/managers': 'src/lib/moderation/managers/index.ts',
+		'#lib/moderation/managers/loggers': 'src/lib/moderation/managers/loggers/index.ts',
 		'#lib/moderation/workers': 'src/lib/moderation/workers/index.ts',
 		'#lib/schedule': 'src/lib/schedule/index.ts',
 		'#lib/structures': 'src/lib/structures/index.ts',
+		'#lib/structures/data': 'src/lib/structures/data/index.ts',
 		'#lib/structures/managers': 'src/lib/structures/managers/index.ts',
 		'#lib/setup': 'src/lib/setup/index.ts',
 		'#lib/types': 'src/lib/types/index.ts',
@@ -29,20 +33,35 @@ function aliasResolverPlugin(): PluginOption {
 		// #utils aliases
 		'#utils/common': 'src/lib/util/common/index.ts',
 		'#utils/functions': 'src/lib/util/functions/index.ts',
+		'#utils/resolvers': 'src/lib/util/resolvers/index.ts',
 
 		// #languages alias
 		'#languages': 'src/languages/index.ts'
 	};
 
+	const resolveCache = new Map<string, string | null>();
+
 	function resolveCandidate(basePath: string): string | null {
+		if (resolveCache.has(basePath)) return resolveCache.get(basePath)!;
+
 		// if the path already exists as-is
-		if (existsSync(basePath)) return basePath;
+		if (existsSync(basePath)) {
+			resolveCache.set(basePath, basePath);
+			return basePath;
+		}
 		// try file with .ts extension
 		const tsPath = `${basePath}.ts`;
-		if (existsSync(tsPath)) return tsPath;
+		if (existsSync(tsPath)) {
+			resolveCache.set(basePath, tsPath);
+			return tsPath;
+		}
 		// try directory index.ts
 		const indexTs = join(basePath, 'index.ts');
-		if (existsSync(indexTs)) return indexTs;
+		if (existsSync(indexTs)) {
+			resolveCache.set(basePath, indexTs);
+			return indexTs;
+		}
+		resolveCache.set(basePath, null);
 		return null;
 	}
 
@@ -59,21 +78,21 @@ function aliasResolverPlugin(): PluginOption {
 			if (source.startsWith('#lib/')) {
 				const base = resolve(source.replace('#lib', 'src/lib'));
 				const target = resolveCandidate(base);
-				return target ? target : null;
+				return target;
 			}
 
 			// #utils/* fallback pattern
 			if (source.startsWith('#utils/')) {
 				const base = resolve(source.replace('#utils', 'src/lib/util'));
 				const target = resolveCandidate(base);
-				return target ? target : null;
+				return target;
 			}
 
 			// #root/* pattern
 			if (source.startsWith('#root/')) {
 				const base = resolve(source.replace('#root/', 'src/'));
 				const target = resolveCandidate(base);
-				return target ? target : null;
+				return target;
 			}
 
 			return null;
