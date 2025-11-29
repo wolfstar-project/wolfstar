@@ -1,42 +1,88 @@
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
+import { existsSync } from 'node:fs';
 import { defineConfig } from 'vitest/config';
+import type { PluginOption } from 'vite';
+
+/**
+ * Vite plugin for resolving TypeScript path aliases in tests.
+ * Maps `#lib`, `#utils`, `#root`, and `#languages` imports to their source files.
+ */
+function aliasResolverPlugin(): PluginOption {
+	const aliasMap: Record<string, string> = {
+		// #lib aliases
+		'#lib/database': 'src/lib/database/index.ts',
+		'#lib/database/entities': 'src/lib/database/entities/index.ts',
+		'#lib/database/keys': 'src/lib/database/keys/index.ts',
+		'#lib/database/settings': 'src/lib/database/settings/index.ts',
+		'#lib/discord': 'src/lib/discord/index.ts',
+		'#lib/i18n': 'src/lib/i18n/index.ts',
+		'#lib/i18n/languageKeys': 'src/lib/i18n/languageKeys/index.ts',
+		'#lib/moderation': 'src/lib/moderation/index.ts',
+		'#lib/moderation/managers': 'src/lib/moderation/managers/index.ts',
+		'#lib/moderation/workers': 'src/lib/moderation/workers/index.ts',
+		'#lib/schedule': 'src/lib/schedule/index.ts',
+		'#lib/structures': 'src/lib/structures/index.ts',
+		'#lib/structures/managers': 'src/lib/structures/managers/index.ts',
+		'#lib/setup': 'src/lib/setup/index.ts',
+		'#lib/types': 'src/lib/types/index.ts',
+
+		// #utils aliases
+		'#utils/common': 'src/lib/util/common/index.ts',
+		'#utils/functions': 'src/lib/util/functions/index.ts',
+
+		// #languages alias
+		'#languages': 'src/languages/index.ts'
+	};
+
+	function resolveCandidate(basePath: string): string | null {
+		// if the path already exists as-is
+		if (existsSync(basePath)) return basePath;
+		// try file with .ts extension
+		const tsPath = `${basePath}.ts`;
+		if (existsSync(tsPath)) return tsPath;
+		// try directory index.ts
+		const indexTs = join(basePath, 'index.ts');
+		if (existsSync(indexTs)) return indexTs;
+		return null;
+	}
+
+	return {
+		name: 'alias-resolver',
+		enforce: 'pre',
+		resolveId(source) {
+			// Exact match in alias map
+			if (source in aliasMap) {
+				return resolve(aliasMap[source]);
+			}
+
+			// #lib/* fallback pattern
+			if (source.startsWith('#lib/')) {
+				const base = resolve(source.replace('#lib', 'src/lib'));
+				const target = resolveCandidate(base);
+				return target ? target : null;
+			}
+
+			// #utils/* fallback pattern
+			if (source.startsWith('#utils/')) {
+				const base = resolve(source.replace('#utils', 'src/lib/util'));
+				const target = resolveCandidate(base);
+				return target ? target : null;
+			}
+
+			// #root/* pattern
+			if (source.startsWith('#root/')) {
+				const base = resolve(source.replace('#root/', 'src/'));
+				const target = resolveCandidate(base);
+				return target ? target : null;
+			}
+
+			return null;
+		}
+	};
+}
 
 export default defineConfig({
-	resolve: {
-		alias: [
-			{
-				find: '#lib',
-				replacement: '#lib',
-				customResolver(source) {
-					if (source === '#lib/database') return resolve('src/lib/database/index.ts');
-					if (source === '#lib/database/entities') return resolve('src/lib/database/entities/index.ts');
-					if (source === '#lib/database/keys') return resolve('src/lib/database/keys/index.ts');
-					if (source === '#lib/database/settings') return resolve('src/lib/database/settings/index.ts');
-					if (source === '#lib/discord') return resolve('src/lib/discord/index.ts');
-					if (source === '#lib/moderation') return resolve('src/lib/moderation/index.ts');
-					if (source === '#lib/moderation/managers') return resolve('src/lib/moderation/managers/index.ts');
-					if (source === '#lib/moderation/workers') return resolve('src/lib/moderation/workers/index.ts');
-					if (source === '#lib/structures') return resolve('src/lib/structures/index.ts');
-					if (source === '#lib/structures/managers') return resolve('src/lib/structures/managers/index.ts');
-					if (source === '#lib/setup') return resolve('src/lib/setup/index.ts');
-					if (source === '#lib/types') return resolve('src/lib/types/index.ts');
-					if (source === '#lib/i18n/languageKeys') return resolve('src/lib/i18n/languageKeys/index.ts');
-					return source.replace('#lib', resolve('src/lib'));
-				}
-			},
-			{ find: /^#root\/(.*)/, replacement: resolve('src/$1.ts') },
-			{ find: '#languages', replacement: resolve('src/languages/index.ts') },
-			{
-				find: '#utils',
-				replacement: '#utils',
-				customResolver(source) {
-					if (source === '#utils/common') return resolve('src/lib/util/common/index.ts');
-					if (source === '#utils/functions') return resolve('src/lib/util/functions/index.ts');
-					return source.replace('#utils', resolve('src/lib/util'));
-				}
-			}
-		]
-	},
+	plugins: [aliasResolverPlugin()],
 	test: {
 		setupFiles: ['./tests/vitest.setup.ts'],
 		globals: true,
