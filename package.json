@@ -34,10 +34,10 @@
 		"#root/*": "./dist/*.js"
 	},
 	"scripts": {
-		"build": "tsc -b src",
+		"build": "tsdown",
 		"dev": "pnpm build && pnpm start",
-		"watch": "tsc -b src -w",
-		"watch:start": "tsc-watch -b src --onSuccess \"pnpm start\"",
+		"watch": "tsdown --watch",
+		"watch:start": "tsdown --watch --on-success \"pnpm start\"",
 		"prisma:generate": "pnpm prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.js",
@@ -113,7 +113,7 @@
 		"prettier": "^3.7.2",
 		"prisma": "^6.19.0",
 		"prisma-json-types-generator": "^3.6.2",
-		"tsc-watch": "^7.2.0",
+		"tsdown": "^0.17.2",
 		"typescript": "~5.7.2",
 		"vitest": "^4.0.14"
 	},
@@ -123,9 +123,19 @@
 			"discord-api-types": "^0.38.34",
 			"minimist": "^1.2.8"
 		},
+		"allowedDeprecatedVersions": {
+			"eslint": "8.57.1"
+		},
 		"onlyBuiltDependencies": [
+			"@prisma/client",
+			"@prisma/engines",
 			"@skyra/ai",
-			"esbuild"
+			"esbuild",
+			"prisma"
+		],
+		"ignoredBuiltDependencies": [
+			"bufferutil",
+			"zlib-sync"
 		]
 	},
 	"repository": {
