@@ -35,7 +35,7 @@
 	},
 	"scripts": {
 		"build": "tsdown",
-		"dev": "pnpm build && pnpm start",
+		"dev": "tsdown --onSuccess \"pnpm start\"",
 		"watch": "tsdown --watch",
 		"watch:start": "tsdown --watch --on-success \"pnpm start\"",
 		"prisma:generate": "pnpm prisma generate",
