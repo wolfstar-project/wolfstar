@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsdown';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { existsSync, copyFileSync, mkdirSync } from 'node:fs';
+import { existsSync, copyFileSync, mkdirSync, cpSync } from 'node:fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -72,67 +72,42 @@ function importMapsResolverPlugin() {
 }
 
 // Plugin to copy .mjs files from src to dist
-function copyMjsFilesPlugin() {
+function copyPlugin() {
 	return {
 		name: 'copy-mjs-files',
 		buildEnd() {
 			// Copy worker.mjs to dist
-			const srcFile = resolve(__dirname, 'src/lib/moderation/workers/worker.mjs');
+			const workerFile = resolve(__dirname, 'src/lib/moderation/workers/worker.mjs');
 			const destDir = resolve(__dirname, 'dist/lib/moderation/workers');
 			const destFile = join(destDir, 'worker.mjs');
 
-			if (existsSync(srcFile)) {
+			const srcDir = resolve(__dirname, 'src/languages');
+			const destLanguagesDir = resolve(__dirname, 'dist/languages');
+
+			if (existsSync(workerFile)) {
 				mkdirSync(destDir, { recursive: true });
-				copyFileSync(srcFile, destFile);
+				copyFileSync(workerFile, destFile);
 				console.log('✓ Copied worker.mjs to dist');
+			}
+
+			if (existsSync(srcDir)) {
+				mkdirSync(destLanguagesDir, { recursive: true });
+				cpSync(srcDir, destLanguagesDir, { recursive: true });
+				console.log('✓ Copied languages to dist');
 			}
 		}
 	};
 }
 
 export default defineConfig({
-	// Project entry point - compile all source files
-	entry: ['src/**'],
-
-	// Output format: ESM only since package.json has "type": "module"
+	entry: ['src/**/*.ts', '!src/languages/**/*.ts'],
 	format: 'esm',
-
-	// Custom plugin to resolve import maps
-	plugins: [importMapsResolverPlugin(), copyMjsFilesPlugin()],
-
-	// Copy raw language JSON files so i18next can load them at runtime
-	copy: [{ from: 'src/languages', to: 'dist/languages' }],
-
-	// Output directory
-	outDir: 'dist',
-
-	// Generate TypeScript declaration files (.d.ts)
-	dts: false,
-
-	// Maintain the directory structure from src
+	plugins: [importMapsResolverPlugin(), copyPlugin()],
 	unbundle: true,
-
-	// Clean output directory before build
-	clean: true,
-
-	// Generate sourcemaps
 	sourcemap: true,
-
-	// Don't minify for easier debugging
 	minify: false,
-
-	// Target platform
 	platform: 'node',
-
-	// Target ES2024
-	target: 'es2024',
-
-	// TypeScript configuration
 	tsconfig: 'src/tsconfig.json',
-
-	// Enable tree shaking
 	treeshake: true,
-
-	// Keep all node_modules external
 	skipNodeModulesBundle: true
 });
