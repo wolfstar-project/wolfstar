@@ -100,6 +100,9 @@ export default defineConfig({
 	// Custom plugin to resolve import maps
 	plugins: [importMapsResolverPlugin(), copyMjsFilesPlugin()],
 
+	// Copy raw language JSON files so i18next can load them at runtime
+	copy: [{ from: 'src/languages', to: 'dist/languages' }],
+
 	// Output directory
 	outDir: 'dist',
 
@@ -131,12 +134,5 @@ export default defineConfig({
 	treeshake: true,
 
 	// Keep all node_modules external
-	skipNodeModulesBundle: true,
-
-	// Use .js extension for ESM files (not .mjs) since package.json has "type": "module"
-	outExtensions() {
-		return {
-			js: '.js'
-		};
-	}
+	skipNodeModulesBundle: true
 });
