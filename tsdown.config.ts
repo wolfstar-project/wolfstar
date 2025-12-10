@@ -1,9 +1,7 @@
 import { defineConfig } from 'tsdown';
-import { resolve, dirname } from 'node:path';
+import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync, copyFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
