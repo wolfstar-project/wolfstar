@@ -1,5 +1,5 @@
 import { formatEmoji } from '@discordjs/builders';
-import { FormattedCustomEmojiWithGroups, TwemojiRegex } from '@sapphire/discord-utilities';
+import { FormattedCustomEmojiWithGroups } from '@sapphire/discord-utilities';
 import { container } from '@sapphire/framework';
 import { isNullish } from '@sapphire/utilities';
 
@@ -48,13 +48,34 @@ export interface EmojiObject extends EmojiObjectPartial {
 export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 
 const customEmojiRegExp = /^[as]\d{17,19}$/;
+const allowedTwemojiRanges: ReadonlyArray<[number, number]> = [
+	[0x1f000, 0x1ffff], // Most emoji blocks including symbols & pictographs
+	[0x2600, 0x27bf], // Misc symbols / dingbats
+	[0x2300, 0x23ff] // Misc technical
+];
+
+function matchesTwemoji(emoji: string) {
+	const codepoints = [...emoji];
+
+	if (codepoints.length !== 1) return false;
+
+	const code = emoji.codePointAt(0);
+	if (code === undefined) return false;
+
+	return allowedTwemojiRanges.some(([start, end]) => code >= start && code <= end);
+}
 
 /**
  * Checks whether or not the emoji is a valid twemoji.
  * @param emoji The emoji to validate.
  */
 export function isValidTwemoji(emoji: string) {
-	return TwemojiRegex.test(emoji);
+	if (emoji.includes('%')) return false;
+
+	if (customEmojiRegExp.test(emoji)) return false;
+	if (FormattedCustomEmojiWithGroups.test(emoji)) return false;
+
+	return matchesTwemoji(emoji);
 }
 
 export function isValidCustomEmoji(emoji: string) {
@@ -67,7 +88,13 @@ export function isValidCustomEmoji(emoji: string) {
  * @param emoji The emoji to validate.
  */
 export function isValidSerializedTwemoji(emoji: string): emoji is SerializedEmoji {
-	return isValidTwemoji(decodeURIComponent(emoji));
+	if (!emoji.includes('%')) return false;
+
+	try {
+		return matchesTwemoji(decodeURIComponent(emoji));
+	} catch {
+		return false;
+	}
 }
 
 /**
