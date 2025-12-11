@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run tests coverage",
+			"type": "shell",
+			"command": "pnpm",
+			"args": ["run", "test", "--", "--coverage"],
+			"problemMatcher": ["$tsc"],
+			"group": "build"
+		}
+	]
+}

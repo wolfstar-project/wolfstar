@@ -28,6 +28,8 @@ export default defineConfig({
 		setupFiles: ['./tests/vitest.setup.ts'],
 		globals: true,
 		coverage: {
+			provider: 'v8',
+			reportsDirectory: './coverage',
 			reporter: ['text', 'lcov', 'cobertura'],
 			reportOnFailure: true,
 			include: ['src/lib/**'],
