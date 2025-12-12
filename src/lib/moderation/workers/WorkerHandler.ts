@@ -14,6 +14,7 @@ export class WorkerHandler {
 	private threadId = -1;
 	private queue = new AsyncQueue();
 	private response = new WorkerResponseHandler();
+	private suppressHeartbeatDispatch = false;
 
 	public constructor() {
 		this.spawn();
@@ -38,9 +39,11 @@ export class WorkerHandler {
 
 			return await promise;
 		} catch (error) {
+			this.suppressHeartbeatDispatch = true;
 			await this.restart();
 			throw error;
 		} finally {
+			this.suppressHeartbeatDispatch = false;
 			this.queue.shift();
 		}
 	}
@@ -61,7 +64,7 @@ export class WorkerHandler {
 		this.online = false;
 		this.lastHeartBeat = 0;
 		this.worker = new Worker(WorkerHandler.filename, { env: SHARE_ENV });
-		this.worker.on('message', (message: OutgoingPayload) => this.handleMessage(message));
+		this.worker.on('message', (message: OutgoingPayload) => this.handleWorkerMessage(message));
 		this.worker.once('online', () => this.handleOnline());
 		this.worker.once('exit', (code: number) => this.handleExit(code));
 		return this;
@@ -89,6 +92,15 @@ export class WorkerHandler {
 		}
 
 		return this.id++;
+	}
+
+	private handleWorkerMessage(message: OutgoingPayload) {
+		if (message.type === OutgoingType.Heartbeat && this.suppressHeartbeatDispatch) {
+			this.lastHeartBeat = Date.now();
+			return;
+		}
+
+		this.handleMessage(message);
 	}
 
 	private handleMessage(message: OutgoingPayload) {
