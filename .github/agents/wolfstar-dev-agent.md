@@ -3,25 +3,31 @@ description: WolfStar Development Agent - Enhanced with Context7 MCP and Beast M
 tools:
     [
         'edit/editFiles',
-        'runNotebooks',
+        'execute/runNotebookCell',
+        'read/getNotebookSummary',
+        'read/readNotebookCellOutput',
         'search',
-        'new',
-        'runCommands/terminalSelection',
-        'runCommands/terminalLastCommand',
-        'runTasks',
+        'vscode/getProjectSetupInfo',
+        'vscode/installExtension',
+        'vscode/newWorkspace',
+        'vscode/runCommand',
+        'read/terminalSelection',
+        'read/terminalLastCommand',
+        'execute/createAndRunTask',
+        'execute/getTaskOutput',
+        'execute/runTask',
         'context7/*',
         'eslint/*',
-        'nuxt/*',
         'sentry/*',
-        'usages',
-        'vscodeAPI',
-        'problems',
-        'changes',
-        'testFailure',
-        'fetch',
-        'githubRepo',
-        'extensions',
-        'runTests'
+        'search/usages',
+        'vscode/vscodeAPI',
+        'read/problems',
+        'search/changes',
+        'execute/testFailure',
+        'web/fetch',
+        'web/githubRepo',
+        'vscode/extensions',
+        'execute/runTests'
     ]
 ---
 
@@ -389,153 +395,154 @@ Context7 MCP enhances Beast Mode by providing:
 
 ## This enhanced Beast Mode ensures that all code generation and library integration uses the most current, accurate information available.
 
+---
+
 ## ESLint MCP Integration
 
-ESLint MCP provides real-time linting and code quality checks integrated with the project's configuration.
+MCP ESLint provides real-time linting and code quality checks integrated with the project’s ESLint configuration.
+MCP ESLint is the **required** and authoritative way to validate lint status.
 
-### When to Use ESLint MCP
+### Mandatory requirement (non-negotiable)
 
-**ALWAYS use ESLint MCP** when:
+- **MUST**: Use **MCP ESLint** for linting. This is not optional.
+- **MUST**: Treat MCP ESLint as the **source of truth**—linting is only “done” when MCP ESLint reports **zero errors**.
+- **MUST NOT**: Do not rely only on `pnpm lint`, `pnpm lint:fix`, or editor-only linting as a substitute for MCP ESLint.
+- If MCP ESLint reports issues, fix them and re-run MCP ESLint until it passes.
+- **Before committing / opening a PR**: MCP ESLint must show **no errors**.
 
-- Before committing code
-- During active development
-- Fixing linting issues
-- Validating code quality
-- After making significant code changes
+### When to Use MCP ESLint
 
-### ESLint Workflow
+**ALWAYS use MCP ESLint**:
 
-1. **Check Problems**: Use `problems` tool to check ESLint errors in real-time
-2. **Auto-fix**: Run `pnpm lint:fix` to automatically fix issues
-3. **Manual Review**: Address remaining issues that require manual intervention
-4. **Validate**: Ensure no errors remain before committing
+- During active development (continuous feedback).
+- After making significant code changes.
+- When fixing linting issues.
+- Right before every commit / PR (hard gate).
+
+### ESLint Workflow (required)
+
+1. **Run MCP ESLint checks** (via the Problems/diagnostics view) and review all reported issues.
+2. **Apply fixes**:
+    - Use MCP ESLint suggested fixes when available.
+    - Run `pnpm lint:fix` to auto-fix remaining fixable issues.
+3. **Re-run MCP ESLint** until it reports **zero errors** (repeat steps 1–2 as needed).
+4. **Optional CI parity check**: run `pnpm lint` to mirror the CI lint step (useful as a final sanity check).
 
 ### Project Configuration
 
-The project uses:
+- **ESLint config**: `@antfu/eslint-config`.
+- **Config entrypoint**: `eslint.config.mjs` (MCP ESLint uses the project configuration automatically).
 
-- **Config**: `@antfu/eslint-config` (comprehensive Vue/TypeScript rules)
-- **Cache**: ESLint uses caching for faster subsequent runs
-- **Auto-fix**: Most formatting issues are automatically fixable
+### Best Practices (aligned with the requirement)
 
-### Best Practices
-
-- ✅ Use `problems` tool to check ESLint errors before committing
-- ✅ Run `pnpm lint:fix` after making changes
-- ✅ Fix all errors (warnings are acceptable)
-- ✅ ESLint automatically integrates with project's `eslint.config.mjs`
-- ✅ Use lint-staged for pre-commit hooks (already configured)
+- ✅ Use MCP ESLint continuously; don’t wait until the end.
+- ✅ Fix **all errors**; warnings may be acceptable depending on existing project conventions.
+- ✅ Use `pnpm lint:fix` after MCP ESLint points out fixable issues.
+- ✅ Keep `pnpm lint` as a secondary verification step (not a replacement for MCP ESLint).
 
 ### Usage Examples
 
-**Example 1: Check Current Errors**
-
-```text
-Use problems tool to see all ESLint issues in the workspace
-```
-
-**Example 2: Fix Automatically**
-
-```bash
-pnpm lint:fix
-```
-
-**Example 3: Manual Validation**
-
-```bash
-pnpm lint
-```
+**Example 1: Check current errors**
+Open the Problems/diagnostics view and ensure MCP ESLint reports zero errors.
+**Example 2: Fix automatically**
+Run `pnpm lint:fix` to automatically fix fixable issues.
+**Example 3: Optional manual validation**
+Run `pnpm lint` to see the same linting results as CI (not a substitute for MCP ESLint).
 
 ---
 
 ## Sentry MCP Integration
 
-Sentry provides error tracking and monitoring for both client and server-side code.
+Sentry provides error tracking and monitoring for the Discord bot application.
 
 ### When to Use Sentry
 
 **Monitor and track** when:
 
-- Implementing error handling
+- Implementing error handling in commands, listeners, or tasks
 - Debugging production issues
-- Tracking performance metrics
 - Investigating user-reported errors
-- Analyzing error patterns
+- Analyzing error patterns in bot operations
+- Tracking Discord API errors and exceptions
 
 ### Sentry Configuration
 
 The project uses:
 
-- **Client Config**: `sentry.client.config.ts`
-- **Server Config**: `sentry.server.config.ts`
-- **Integration**: `@sentry/nuxt` package
-- **Auto-instrumentation**: Errors automatically captured
+- **Package**: `@sentry/node` (Node.js integration)
+- **Init Location**: `src/index.ts` - Main initialization with integrations
+- **Environment Variable**: `SENTRY_URL` (DSN for error reporting)
+- **Integrations**: Console, Prisma, HTTP, uncaught exceptions/rejections
+- **Auto-instrumentation**: Errors automatically captured via listeners
+
+### Architecture
+
+WolfStar implements Sentry through dedicated error listeners:
+
+- **`src/listeners/errors/listenerErrorSentry.ts`**: Captures Sapphire listener errors
+- **`src/listeners/errors/taskErrorSentry.ts`**: Captures scheduled task errors
+- **Command Errors**: Handled in `src/listeners/commands/_shared.ts` with context tags
+
+All Sentry listeners are conditionally enabled based on `SENTRY_URL` environment variable.
 
 ### Best Practices
 
-- ✅ Always include meaningful error messages in throw statements
-- ✅ Use structured logging alongside Sentry
-- ✅ Add context to errors with additional data
-- ✅ Test error tracking in development before deploying
-- ✅ Use Sentry breadcrumbs for debugging complex flows
+- ✅ Always include meaningful error messages and context in commands
+- ✅ Use `captureException` with tags for command/task context
+- ✅ Log errors with `container.logger` alongside Sentry capture
+- ✅ Test error tracking in development with `SENTRY_URL` configured
+- ✅ Use tags to categorize errors by command name, entity ID, or piece name
 
 ### Error Handling Pattern
 
 ```typescript
+import { captureException } from '@sentry/node';
+import { container } from '@sapphire/framework';
+
 try {
-	// Your code
+	// Your command/listener/task code
+	await someOperation();
 } catch (error) {
-	// Sentry automatically captures the error
-	logger.error('Descriptive error message', {
-		context: 'additional-info',
-		userId: user?.id
+	// Log locally
+	container.logger.error('Operation failed:', error);
+
+	// Capture to Sentry with context
+	captureException(error, {
+		tags: {
+			command: 'commandName',
+			userId: interaction.user.id,
+			guildId: interaction.guildId
+		}
 	});
-	throw createError({
-		statusCode: 500,
-		message: 'User-friendly error message'
+
+	// Return user-friendly error
+	return interaction.reply({
+		content: 'An error occurred. The issue has been reported.',
+		ephemeral: true
 	});
 }
 ```
 
----
+### Configuration Setup
 
-## Nuxt MCP Integration
-
-Nuxt MCP provides direct access to the running Nuxt development server.
-
-### When to Use Nuxt MCP
-
-**Access Nuxt server** when:
-
-- Inspecting runtime configuration
-- Debugging server-side rendering
-- Checking loaded modules
-- Analyzing build state
-- Testing API endpoints
-
-### Nuxt MCP Configuration
-
-**Server URL**: `http://localhost:3000/__mcp/sse`
-
-The Nuxt MCP server is automatically available when running:
+Ensure `.env` file contains:
 
 ```bash
-pnpm dev
+# Sentry
+SENTRY_URL='https://your-dsn@sentry.io/project-id'
 ```
 
-### Available Features
+### Sentry Integrations Used
 
-- Real-time server state inspection
-- Module and plugin status
-- Runtime configuration access
-- SSR debugging capabilities
-- API route testing
+The bot initializes Sentry with:
 
-### Best Practices
-
-- ✅ Ensure dev server is running before using Nuxt MCP
-- ✅ Use for debugging complex SSR issues
-- ✅ Inspect runtime config for environment-specific behavior
-- ✅ Test API endpoints during development
+- `consoleIntegration()`: Captures console errors
+- `functionToStringIntegration()`: Improves stack traces
+- `linkedErrorsIntegration()`: Links related errors
+- `onUncaughtExceptionIntegration()`: Catches uncaught exceptions
+- `onUnhandledRejectionIntegration()`: Catches unhandled promises
+- `httpIntegration()`: Monitors HTTP requests with breadcrumbs
+- `prismaIntegration()`: Tracks database queries
+- `rewriteFramesIntegration()`: Normalizes file paths in stack traces
 
 ---
