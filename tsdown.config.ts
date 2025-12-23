@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 function importMapsResolverPlugin() {
 	return {
 		name: 'import-maps-resolver',
-		resolveId(source: string, importer: string | undefined) {
+		resolveId(source: string) {
 			// Resolve #lib/* imports
 			if (source.startsWith('#lib/')) {
 				const path = source.replace('#lib/', '');
@@ -25,6 +25,9 @@ function importMapsResolverPlugin() {
 				if (existsSync(indexFile)) {
 					return indexFile;
 				}
+
+				// Fallback: return the path without extension for directory resolution
+				return resolve(__dirname, 'src/lib', path);
 			}
 
 			// Resolve #utils/* imports
@@ -42,11 +45,18 @@ function importMapsResolverPlugin() {
 				if (existsSync(indexFile)) {
 					return indexFile;
 				}
+
+				// Fallback: return the path without extension for directory resolution
+				return resolve(__dirname, 'src/lib/util', path);
 			}
 
 			// Resolve #languages import
 			if (source === '#languages') {
-				return resolve(__dirname, 'src/languages/index.ts');
+				const file = resolve(__dirname, 'src/languages/index.ts');
+				if (existsSync(file)) {
+					return file;
+				}
+				return resolve(__dirname, 'src/languages');
 			}
 
 			// Resolve #root/* imports
@@ -64,6 +74,9 @@ function importMapsResolverPlugin() {
 				if (existsSync(indexFile)) {
 					return indexFile;
 				}
+
+				// Fallback: return the path without extension for directory resolution
+				return resolve(__dirname, 'src', path);
 			}
 
 			return null; // Let other plugins handle this
@@ -109,5 +122,11 @@ export default defineConfig({
 	platform: 'node',
 	tsconfig: 'src/tsconfig.json',
 	treeshake: true,
-	skipNodeModulesBundle: true
+	skipNodeModulesBundle: true,
+	alias: {
+		'#lib': resolve(__dirname, 'src/lib'),
+		'#utils': resolve(__dirname, 'src/lib/util'),
+		'#languages': resolve(__dirname, 'src/languages'),
+		'#root': resolve(__dirname, 'src')
+	}
 });
