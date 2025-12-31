@@ -15,5 +15,12 @@
 	"andListValue": "{{value, list(conjunction)}}",
 	"orListValue": "{{value, orList}}",
 	"dateFormat": "MM/DD/YYYY",
-	"dateFormatExplanation": "Month/Day/Year"
+	"dateFormatExplanation": "Month/Day/Year",
+	"back": "Back",
+	"stop": "Stop",
+	"set": "Set",
+	"remove": "Remove",
+	"reset": "Reset",
+	"value": "Value",
+	"cancel": "Cancel"
 }
