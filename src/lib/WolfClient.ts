@@ -4,6 +4,7 @@ import { GuildMemberFetchQueue } from '#lib/discord/GuildMemberFetchQueue';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
 import { ScheduleManager, TaskStore } from '#lib/schedule';
 import { AnalyticsData, InviteStore } from '#lib/structures';
+import type { LongLivingInteractionCollector } from '#lib/util/LongLivingInteractionCollector';
 import type { LongLivingReactionCollector } from '#lib/util/LongLivingReactionCollector';
 import { CLIENT_OPTIONS, WEBHOOK_ERROR } from '#root/config';
 import { isGuildMessage } from '#utils/common';
@@ -43,6 +44,9 @@ export class WolfClient extends SapphireClient {
 
 	@Enumerable(false)
 	public override llrCollectors = new Set<LongLivingReactionCollector>();
+
+	@Enumerable(false)
+	public override lliCollectors = new Set<LongLivingInteractionCollector>();
 
 	public constructor() {
 		super(CLIENT_OPTIONS);

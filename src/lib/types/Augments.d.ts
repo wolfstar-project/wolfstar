@@ -16,6 +16,7 @@ import type { AnalyticsData, InviteCodeValidEntry, InviteStore, WolfCommand } fr
 import type { Events } from '#lib/types';
 import type { TaskErrorPayload } from '#lib/types/Internals';
 import type { TypedFT, TypedT } from '#lib/types/Utils';
+import type { LongLivingInteractionCollector } from '#utils/LongLivingInteractionCollector';
 import type { LLRCData, LongLivingReactionCollector } from '#utils/LongLivingReactionCollector';
 import type { EmojiObject } from '#utils/functions';
 import type { EmbedBuilder } from '@discordjs/builders';
@@ -42,6 +43,7 @@ declare module 'discord.js' {
 		readonly analytics: AnalyticsData | null;
 		readonly guildMemberFetchQueue: GuildMemberFetchQueue;
 		readonly invites: InviteStore;
+		readonly lliCollectors: Set<LongLivingInteractionCollector>;
 		readonly llrCollectors: Set<LongLivingReactionCollector>;
 		readonly schedules: ScheduleManager;
 		readonly version: string;
