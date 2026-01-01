@@ -116,6 +116,7 @@ export default defineConfig({
 	entry: ['src/**/*.ts', '!src/languages/**/*.ts'],
 	format: 'esm',
 	plugins: [importMapsResolverPlugin(), copyPlugin()],
+	dts: true,
 	unbundle: true,
 	sourcemap: true,
 	minify: false,
