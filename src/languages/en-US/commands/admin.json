@@ -103,5 +103,12 @@
 	"confMenuRenderBack": "Press ◀ to go back",
 	"confMenuInvalidKey": "Invalid Key, please try again with any of the following options.",
 	"confMenuInvalidAction": "Invalid Action, please try again with any of the following options.",
-	"confMenuSaved": "Successfully saved all changes."
+	"confMenuSaved": "Successfully saved all changes.",
+	"confMenuDescription": "Open an interactive settings menu",
+	"confShowDescription": "Show current settings or a specific key",
+	"confSetDescription": "Set a value for a configuration key",
+	"confRemoveDescription": "Remove a value from a configuration key",
+	"confResetDescription": "Reset a configuration key to its default value",
+	"confOptionKey": "The configuration key to modify",
+	"confOptionValue": "The value to set or remove"
 }
