@@ -103,7 +103,7 @@
 		"@types/ws": "^8.18.1",
 		"@typescript-eslint/eslint-plugin": "^7.18.0",
 		"@typescript-eslint/parser": "^7.18.0",
-		"@vitest/coverage-v8": "^4.0.14",
+		"@vitest/coverage-v8": "~2.1.9",
 		"cz-conventional-changelog": "^3.3.0",
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^10.1.8",
@@ -114,7 +114,7 @@
 		"prisma-json-types-generator": "^3.6.2",
 		"tsdown": "^0.17.2",
 		"typescript": "~5.7.2",
-		"vitest": "^4.0.14"
+		"vitest": "~2.1.9"
 	},
 	"pnpm": {
 		"overrides": {
