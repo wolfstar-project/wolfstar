@@ -50,12 +50,12 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
-		"@discordjs/builders": "^1.13.0",
+		"@discordjs/builders": "^1.13.1",
 		"@discordjs/collection": "^2.1.1",
 		"@discordjs/core": "^1.2.0",
 		"@influxdata/influxdb-client": "^1.35.0",
 		"@influxdata/influxdb-client-apis": "^1.35.0",
-		"@prisma/client": "^6.19.0",
+		"@prisma/client": "^6.19.1",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/bitfield": "^1.2.4",
 		"@sapphire/decorators": "^6.2.0",
@@ -73,7 +73,7 @@
 		"@sapphire/stopwatch": "^1.5.4",
 		"@sapphire/time-utilities": "^1.7.14",
 		"@sapphire/utilities": "^3.18.2",
-		"@sentry/node": "^10.27.0",
+		"@sentry/node": "^10.30.0",
 		"@skyra/ai": "^1.2.0",
 		"@skyra/char": "^1.0.3",
 		"@skyra/env-utilities": "^2.0.1",
@@ -90,8 +90,8 @@
 	},
 	"devDependencies": {
 		"0x": "^6.0.0",
-		"@commitlint/cli": "^20.1.0",
-		"@commitlint/config-conventional": "^20.0.0",
+		"@commitlint/cli": "^20.2.0",
+		"@commitlint/config-conventional": "^20.2.0",
 		"@sapphire/eslint-config": "^5.0.6",
 		"@sapphire/prettier-config": "^2.0.0",
 		"@sapphire/ts-config": "^5.0.3",
@@ -99,22 +99,22 @@
 		"@types/diff": "^6.0.0",
 		"@types/he": "^1.2.3",
 		"@types/node": "^22.8.7",
-		"@types/pg": "^8.15.6",
+		"@types/pg": "^8.16.0",
 		"@types/ws": "^8.18.1",
 		"@typescript-eslint/eslint-plugin": "^7.18.0",
 		"@typescript-eslint/parser": "^7.18.0",
-		"@vitest/coverage-v8": "^4.0.14",
+		"@vitest/coverage-v8": "^4.0.15",
 		"cz-conventional-changelog": "^3.3.0",
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.4",
 		"lint-staged": "^16.2.7",
-		"prettier": "^3.7.2",
-		"prisma": "^6.19.0",
+		"prettier": "^3.7.4",
+		"prisma": "^6.19.1",
 		"prisma-json-types-generator": "^3.6.2",
-		"tsdown": "^0.17.2",
+		"tsdown": "^0.17.3",
 		"typescript": "~5.7.2",
-		"vitest": "^4.0.14"
+		"vitest": "^4.0.15"
 	},
 	"pnpm": {
 		"overrides": {
@@ -156,7 +156,7 @@
 		}
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "pnpm@10.24.0",
+	"packageManager": "pnpm@10.25.0",
 	"engines": {
 		"node": ">=20",
 		"pnpm": ">=10"
