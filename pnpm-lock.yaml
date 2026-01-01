@@ -30,6 +30,9 @@ importers:
             '@prisma/client':
                 specifier: ^6.19.0
                 version: 6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.7.3))(typescript@5.7.3)
+            '@rollup/plugin-alias':
+                specifier: ^6.0.0
+                version: 6.0.0(rollup@4.53.2)
             '@sapphire/async-queue':
                 specifier: ^1.5.5
                 version: 1.5.5
@@ -903,6 +906,15 @@ packages:
 
     '@rolldown/pluginutils@1.0.0-beta.53':
         resolution: { integrity: sha512-vENRlFU4YbrwVqNDZ7fLvy+JR1CRkyr01jhSiDpE1u6py3OMzQfztQU2jxykW3ALNxO4kSlqIDeYyD0Y9RcQeQ== }
+
+    '@rollup/plugin-alias@6.0.0':
+        resolution: { integrity: sha512-tPCzJOtS7uuVZd+xPhoy5W4vThe6KWXNmsFCNktaAh5RTqcLiSfT4huPQIXkgJ6YCOjJHvecOAzQxLFhPxKr+g== }
+        engines: { node: '>=20.19.0' }
+        peerDependencies:
+            rollup: '>=4.0.0'
+        peerDependenciesMeta:
+            rollup:
+                optional: true
 
     '@rollup/rollup-android-arm-eabi@4.53.2':
         resolution: { integrity: sha512-yDPzwsgiFO26RJA4nZo8I+xqzh7sJTZIWQOxn+/XOdPE31lAvLIYCKqjV+lNH/vxE2L2iH3plKxDCRK6i+CwhA== }
@@ -4573,6 +4585,10 @@ snapshots:
         optional: true
 
     '@rolldown/pluginutils@1.0.0-beta.53': {}
+
+    '@rollup/plugin-alias@6.0.0(rollup@4.53.2)':
+        optionalDependencies:
+            rollup: 4.53.2
 
     '@rollup/rollup-android-arm-eabi@4.53.2':
         optional: true
