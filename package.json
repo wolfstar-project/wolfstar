@@ -112,7 +112,7 @@
 		"lint-staged": "^16.2.7",
 		"prettier": "^3.7.2",
 		"prisma": "^6.19.0",
-		"prisma-json-types-generator": "^3.6.2",
+		"prisma-json-types-generator": "^4.0.1",
 		"tsdown": "^0.17.2",
 		"typescript": "~5.7.2",
 		"vitest": "^4.0.14"
