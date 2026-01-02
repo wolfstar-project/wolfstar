@@ -94,11 +94,5 @@ export default defineConfig({
 	platform: 'node',
 	tsconfig: 'src/tsconfig.json',
 	treeshake: true,
-	skipNodeModulesBundle: true,
-	alias: {
-		'#lib': resolve(__dirname, 'src/lib'),
-		'#utils': resolve(__dirname, 'src/lib/util'),
-		'#languages': resolve(__dirname, 'src/languages'),
-		'#root': resolve(__dirname, 'src')
-	}
+	skipNodeModulesBundle: true
 });
