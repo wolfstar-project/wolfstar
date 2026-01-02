@@ -12,11 +12,11 @@ import {
 import { getT } from '#lib/i18n';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { LongLivingInteractionCollector } from '#lib/util/LongLivingInteractionCollector';
-import { WolfArgs, type WolfCommand } from '#lib/structures';
-import { Events, type GuildMessage } from '#lib/types';
+import { WolfArgs, type WolfCommand, type WolfSubcommand } from '#lib/structures';
+import { Events } from '#lib/types';
 import { floatPromise, minutes, stringifyError } from '#utils/common';
 import { ZeroWidthSpace } from '#utils/constants';
-import { getColor, getFullEmbedAuthor, sendLoadingMessage } from '#utils/util';
+import { getColor, getFullEmbedAuthor, pickRandom } from '#utils/util';
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -44,6 +44,28 @@ import {
 
 const TIMEOUT = minutes(15);
 
+const CustomIds = {
+	// Navigation
+	SELECT: 'conf-select',
+	BACK: 'conf-back',
+	STOP: 'conf-stop',
+
+	// Actions
+	SET: 'conf-set',
+	REMOVE: 'conf-remove',
+	RESET: 'conf-reset',
+	UNDO: 'conf-undo',
+
+	// Input Mode
+	CANCEL: 'conf-cancel',
+	INPUT_BOOL_TRUE: 'conf-input-bool-true',
+	INPUT_BOOL_FALSE: 'conf-input-bool-false',
+	INPUT_ROLE: 'conf-input-role',
+	INPUT_CHANNEL: 'conf-input-channel',
+	INPUT_REMOVE: 'conf-input-remove',
+	INPUT_MODAL: 'conf-input-modal'
+} as const;
+
 const enum UpdateType {
 	Set,
 	Remove,
@@ -52,7 +74,7 @@ const enum UpdateType {
 }
 
 export class SettingsMenu {
-	private readonly message: GuildMessage;
+	private readonly interaction: WolfSubcommand.Interaction;
 	private t: TFunction;
 	private schema: SchemaKey | SchemaGroup;
 	private collector: LongLivingInteractionCollector | null = null;
@@ -63,11 +85,11 @@ export class SettingsMenu {
 	private inputMode = false;
 	private inputType: UpdateType = UpdateType.Set;
 
-	public constructor(message: GuildMessage, language: TFunction) {
-		this.message = message;
+	public constructor(message: WolfSubcommand.Interaction, language: TFunction) {
+		this.interaction = message;
 		this.t = language;
 		this.schema = getConfigurableGroups();
-		this.embed = new EmbedBuilder().setAuthor(getFullEmbedAuthor(this.message.author));
+		this.embed = new EmbedBuilder().setAuthor(getFullEmbedAuthor(this.interaction.user));
 	}
 
 	public get client() {
@@ -79,15 +101,21 @@ export class SettingsMenu {
 	}
 
 	public async init(context: WolfCommand.RunContext): Promise<void> {
-		this.response = await sendLoadingMessage(this.message, this.t);
+		// Defer the interaction to prevent timeout
+		await this.interaction.deferReply();
+
+		// Show initial loading state
+		const loadingMessages = this.t(LanguageKeys.System.Loading);
+		const loadingEmbed = new EmbedBuilder()
+			.setDescription(pickRandom(Array.isArray(loadingMessages) ? loadingMessages : [loadingMessages]))
+			.setColor(0x5865f2);
+		this.response = await this.interaction.editReply({ embeds: [loadingEmbed] });
+
+		// Render the actual menu
 		await this._renderResponse();
 
 		this.collector = new LongLivingInteractionCollector();
-		this.collector.setListener((interaction) => {
-			if (interaction.message.id !== this.response?.id) return;
-			if (interaction.user.id !== this.message.author.id) return;
-			void this.onInteraction(interaction, context);
-		});
+		this.collector.setListener((interaction) => this.onInteraction(interaction, context));
 		this.collector.setEndListener(() => this.stop());
 		this.collector.setTime(TIMEOUT);
 	}
@@ -101,18 +129,18 @@ export class SettingsMenu {
 		const { parent } = this.schema;
 
 		this.embed
-			.setColor(getColor(this.message)) //
+			.setColor(getColor(this.interaction)) //
 			.setDescription(description.concat(ZeroWidthSpace).join('\n'))
 			.setTimestamp()
-			.setFooter(parent ? { text: this.t(LanguageKeys.Commands.Admin.ConfMenuRenderBack) } : null);
+			.setFooter(parent ? { text: this.t(LanguageKeys.Commands.Conf.MenuRenderBack) } : null);
 
 		const rows: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [];
 
 		// Select Menu Row
 		if (isSchemaGroup(this.schema)) {
 			const selectMenu = new StringSelectMenuBuilder()
-				.setCustomId('conf-select')
-				.setPlaceholder(this.t(LanguageKeys.Commands.Admin.ConfMenuRenderSelect));
+				.setCustomId(CustomIds.SELECT)
+				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
 
 			const options = [];
 			// Collect folders
@@ -122,8 +150,8 @@ export class SettingsMenu {
 					options.push({
 						label: value.name,
 						value: value.key,
-						emoji: '📁',
-						description: this.t(LanguageKeys.Commands.Admin.ConfMenuRenderAtFolder, { path: value.name }).substring(0, 100)
+						emoji: { name: '📁' },
+						description: this.t(LanguageKeys.Commands.Conf.MenuRenderAtFolder, { path: value.name }).substring(0, 100)
 					});
 				}
 			}
@@ -134,8 +162,8 @@ export class SettingsMenu {
 					options.push({
 						label: value.name,
 						value: value.key,
-						emoji: '⚙️',
-						description: this.t(LanguageKeys.Commands.Admin.ConfMenuRenderAtPiece, { path: value.name }).substring(0, 100)
+						emoji: { name: '⚙️' },
+						description: this.t(LanguageKeys.Commands.Conf.MenuRenderAtPiece, { path: value.name }).substring(0, 100)
 					});
 				}
 			}
@@ -151,34 +179,34 @@ export class SettingsMenu {
 		if (parent) {
 			buttons.addComponents(
 				new ButtonBuilder()
-					.setCustomId('conf-back')
+					.setCustomId(CustomIds.BACK)
 					.setLabel(this.t(LanguageKeys.Globals.Back))
 					.setStyle(ButtonStyle.Secondary)
-					.setEmoji('◀️')
+					.setEmoji({ name: '◀️' })
 			);
 		}
 
 		if (!isSchemaGroup(this.schema)) {
 			// It is a key
-			const settings = await readSettings(this.message.guild);
+			const settings = await readSettings(this.interaction.guild);
 			const value = settings[this.schema.property];
 
 			// Set
 			buttons.addComponents(
-				new ButtonBuilder().setCustomId('conf-set').setLabel(this.t(LanguageKeys.Globals.Set)).setStyle(ButtonStyle.Primary)
+				new ButtonBuilder().setCustomId(CustomIds.SET).setLabel(this.t(LanguageKeys.Globals.Set)).setStyle(ButtonStyle.Primary)
 			);
 
 			// Remove (if array and has elements)
 			if (this.schema.array && (value as unknown[]).length) {
 				buttons.addComponents(
-					new ButtonBuilder().setCustomId('conf-remove').setLabel(this.t(LanguageKeys.Globals.Remove)).setStyle(ButtonStyle.Danger)
+					new ButtonBuilder().setCustomId(CustomIds.REMOVE).setLabel(this.t(LanguageKeys.Globals.Remove)).setStyle(ButtonStyle.Danger)
 				);
 			}
 
 			// Reset (if changed)
 			if (value !== this.schema.default) {
 				buttons.addComponents(
-					new ButtonBuilder().setCustomId('conf-reset').setLabel(this.t(LanguageKeys.Globals.Reset)).setStyle(ButtonStyle.Danger)
+					new ButtonBuilder().setCustomId(CustomIds.RESET).setLabel(this.t(LanguageKeys.Globals.Reset)).setStyle(ButtonStyle.Danger)
 				);
 			}
 
@@ -186,15 +214,19 @@ export class SettingsMenu {
 			if (this.updatedValue) {
 				buttons.addComponents(
 					new ButtonBuilder()
-						.setCustomId('conf-undo')
-						.setLabel(this.t(LanguageKeys.Commands.Admin.ConfMenuRenderUndo))
+						.setCustomId(CustomIds.UNDO)
+						.setLabel(this.t(LanguageKeys.Commands.Conf.MenuRenderUndo))
 						.setStyle(ButtonStyle.Secondary)
 				);
 			}
 		}
 
 		buttons.addComponents(
-			new ButtonBuilder().setCustomId('conf-stop').setLabel(this.t(LanguageKeys.Globals.Stop)).setStyle(ButtonStyle.Danger).setEmoji('⏹️')
+			new ButtonBuilder()
+				.setCustomId(CustomIds.STOP)
+				.setLabel(this.t(LanguageKeys.Globals.Stop))
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji({ name: '⏹️' })
 		);
 		rows.push(buttons);
 
@@ -205,20 +237,19 @@ export class SettingsMenu {
 		const key = this.schema as SchemaKey;
 		const rows: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [];
 
-		this.embed.setDescription(this.t(LanguageKeys.Commands.Admin.ConfMenuRenderUpdate));
+		this.embed.setDescription(this.t(LanguageKeys.Commands.Conf.MenuRenderUpdate));
 
 		// Remove Mode: Show Select Menu with current values to remove
 		if (this.inputType === UpdateType.Remove) {
-			const settings = await readSettings(this.message.guild);
+			const settings = await readSettings(this.interaction.guild);
 			const values = settings[key.property] as unknown[];
 
 			const selectMenu = new StringSelectMenuBuilder()
-				.setCustomId('conf-input-remove')
-				.setPlaceholder(this.t(LanguageKeys.Commands.Admin.ConfMenuRenderSelect));
-
+				.setCustomId(CustomIds.INPUT_REMOVE)
+				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
 			const options = await Promise.all(
 				values.map((val, index) => {
-					const label = key.stringify(settings, this.t, val).substring(0, 100);
+					const label = key.stringify(settings, this.t, val as any).substring(0, 100);
 					// Better: For Roles/Channels, we can use their ID if available.
 					let valueId = String(val);
 					if (val && typeof val === 'object' && 'id' in val) {
@@ -248,11 +279,11 @@ export class SettingsMenu {
 					rows.push(
 						new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 							new ButtonBuilder()
-								.setCustomId('conf-input-bool-true')
+								.setCustomId(CustomIds.INPUT_BOOL_TRUE)
 								.setLabel(this.t(LanguageKeys.Globals.Yes))
 								.setStyle(ButtonStyle.Success),
 							new ButtonBuilder()
-								.setCustomId('conf-input-bool-false')
+								.setCustomId(CustomIds.INPUT_BOOL_FALSE)
 								.setLabel(this.t(LanguageKeys.Globals.No))
 								.setStyle(ButtonStyle.Danger)
 						)
@@ -261,16 +292,16 @@ export class SettingsMenu {
 				}
 				case 'role': {
 					const select = new RoleSelectMenuBuilder()
-						.setCustomId('conf-input-role')
-						.setPlaceholder(this.t(LanguageKeys.Commands.Admin.ConfMenuRenderSelect));
+						.setCustomId(CustomIds.INPUT_ROLE)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
 					rows.push(new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select));
 					break;
 				}
 				case 'guildTextChannel':
 				case 'guildVoiceChannel': {
 					const select = new ChannelSelectMenuBuilder()
-						.setCustomId('conf-input-channel')
-						.setPlaceholder(this.t(LanguageKeys.Commands.Admin.ConfMenuRenderSelect));
+						.setCustomId(CustomIds.INPUT_CHANNEL)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
 
 					if (key.type === 'guildTextChannel') select.setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
 					if (key.type === 'guildVoiceChannel') select.setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice);
@@ -284,7 +315,7 @@ export class SettingsMenu {
 		// Cancel Button
 		rows.push(
 			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-				new ButtonBuilder().setCustomId('conf-cancel').setLabel(this.t(LanguageKeys.Globals.Cancel)).setStyle(ButtonStyle.Secondary)
+				new ButtonBuilder().setCustomId(CustomIds.CANCEL).setLabel(this.t(LanguageKeys.Globals.Cancel)).setStyle(ButtonStyle.Secondary)
 			)
 		);
 
@@ -292,18 +323,18 @@ export class SettingsMenu {
 	}
 
 	private async renderKey(entry: SchemaKey) {
-		const settings = await readSettings(this.message.guild);
+		const settings = await readSettings(this.interaction.guild);
 
 		this.t = getT(settings.language);
 		const { t } = this;
 
-		const description = [t(LanguageKeys.Commands.Admin.ConfMenuRenderAtPiece, { path: this.schema.name })];
+		const description = [t(LanguageKeys.Commands.Conf.MenuRenderAtPiece, { path: this.schema.name })];
 		if (this.errorMessage) description.push('', this.errorMessage, '');
 
 		description.push(t(entry.description));
 
 		const serialized = entry.display(settings, this.t);
-		description.push('', t(LanguageKeys.Commands.Admin.ConfMenuRenderCvalue, { value: serialized }));
+		description.push('', t(LanguageKeys.Commands.Conf.MenuRenderCvalue, { value: serialized }));
 
 		return description;
 	}
@@ -311,7 +342,7 @@ export class SettingsMenu {
 	private renderGroup(entry: SchemaGroup) {
 		const { t } = this;
 
-		const description = [t(LanguageKeys.Commands.Admin.ConfMenuRenderAtFolder, { path: entry.name })];
+		const description = [t(LanguageKeys.Commands.Conf.MenuRenderAtFolder, { path: entry.name })];
 		if (this.errorMessage) description.push(this.errorMessage);
 
 		const [folders, keys] = partition(
@@ -320,10 +351,10 @@ export class SettingsMenu {
 		);
 
 		if (!folders.length && !keys.length) {
-			description.push(t(LanguageKeys.Commands.Admin.ConfMenuRenderNokeys));
+			description.push(t(LanguageKeys.Commands.Conf.MenuRenderNokeys));
 		} else {
 			description.push(
-				t(LanguageKeys.Commands.Admin.ConfMenuRenderSelect),
+				t(LanguageKeys.Commands.Conf.MenuRenderSelect),
 				'',
 				...folders.map(({ key }) => `📁 ${key}`),
 				...keys.map(({ key }) => `⚙️ ${key}`)
@@ -334,11 +365,13 @@ export class SettingsMenu {
 	}
 
 	private async onInteraction(interaction: MessageComponentInteraction, context: WolfCommand.RunContext) {
+		if (interaction.message.id !== this.response?.id) return;
+		if (interaction.user.id !== this.interaction.user.id) return;
 		this.collector?.setTime(TIMEOUT);
 		this.errorMessage = null;
 
 		// Handle Select Menu for Navigation
-		if (interaction.isStringSelectMenu() && interaction.customId === 'conf-select') {
+		if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.SELECT) {
 			await interaction.deferUpdate();
 			const selectedKey = interaction.values[0];
 			if (isSchemaGroup(this.schema)) {
@@ -354,26 +387,26 @@ export class SettingsMenu {
 
 		// Handle Input Mode Interactions
 		if (this.inputMode) {
-			if (interaction.customId === 'conf-cancel') {
+			if (interaction.customId === CustomIds.CANCEL) {
 				await interaction.deferUpdate();
 				this.inputMode = false;
 				await this._renderResponse();
 				return;
 			}
 
-			if (interaction.customId === 'conf-input-bool-true') {
+			if (interaction.customId === CustomIds.INPUT_BOOL_TRUE) {
 				await interaction.deferUpdate();
 				await this.processUpdate(this.inputType, 'true', context);
 				return;
 			}
 
-			if (interaction.customId === 'conf-input-bool-false') {
+			if (interaction.customId === CustomIds.INPUT_BOOL_FALSE) {
 				await interaction.deferUpdate();
 				await this.processUpdate(this.inputType, 'false', context);
 				return;
 			}
 
-			if (interaction.isRoleSelectMenu() && interaction.customId === 'conf-input-role') {
+			if (interaction.isRoleSelectMenu() && interaction.customId === CustomIds.INPUT_ROLE) {
 				await interaction.deferUpdate();
 				// Use the first selected role ID
 				const roleId = interaction.values[0];
@@ -381,21 +414,21 @@ export class SettingsMenu {
 				return;
 			}
 
-			if (interaction.isChannelSelectMenu() && interaction.customId === 'conf-input-channel') {
+			if (interaction.isChannelSelectMenu() && interaction.customId === CustomIds.INPUT_CHANNEL) {
 				await interaction.deferUpdate();
 				const channelId = interaction.values[0];
 				await this.processUpdate(this.inputType, channelId, context);
 				return;
 			}
 
-			if (interaction.isStringSelectMenu() && interaction.customId === 'conf-input-remove') {
+			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_REMOVE) {
 				await interaction.deferUpdate();
 				const value = interaction.values[0];
 				await this.processUpdate(this.inputType, value, context);
 				return;
 			}
 
-			if (interaction.customId === 'conf-input-modal') {
+			if (interaction.customId === CustomIds.INPUT_MODAL) {
 				// Re-trigger modal
 				await this.showInputModal(interaction, context, this.inputType);
 				return;
@@ -404,7 +437,7 @@ export class SettingsMenu {
 
 		if (interaction.isButton()) {
 			switch (interaction.customId) {
-				case 'conf-back':
+				case CustomIds.BACK:
 					await interaction.deferUpdate();
 					if (this.schema.parent) {
 						this.schema = this.schema.parent;
@@ -412,24 +445,24 @@ export class SettingsMenu {
 					}
 					await this._renderResponse();
 					break;
-				case 'conf-stop':
+				case CustomIds.STOP:
 					await interaction.deferUpdate();
 					this.stop();
 					break;
-				case 'conf-reset':
+				case CustomIds.RESET:
 					await interaction.deferUpdate();
 					await this.tryUpdate(UpdateType.Reset);
 					await this._renderResponse();
 					break;
-				case 'conf-undo':
+				case CustomIds.UNDO:
 					await interaction.deferUpdate();
 					await this.tryUndo();
 					await this._renderResponse();
 					break;
-				case 'conf-set':
+				case CustomIds.SET:
 					await this.initiateInput(interaction, context, UpdateType.Set);
 					break;
-				case 'conf-remove':
+				case CustomIds.REMOVE:
 					await this.initiateInput(interaction, context, UpdateType.Remove);
 					break;
 			}
@@ -501,7 +534,14 @@ export class SettingsMenu {
 
 	private async processUpdate(type: UpdateType, value: string, context: WolfCommand.RunContext) {
 		const conf = container.stores.get('commands').get('conf') as MessageCommand;
-		const args = WolfArgs.from(conf, this.message, value, context, this.t);
+		// Create a minimal message proxy for WolfArgs compatibility
+		const messageProxy = {
+			guild: this.interaction.guild,
+			channel: this.interaction.channel,
+			author: this.interaction.user,
+			client: this.interaction.client
+		} as any;
+		const args = WolfArgs.from(conf, messageProxy, value, context, this.t);
 		await this.tryUpdate(type, args);
 		this.inputMode = false;
 		await this._renderResponse();
@@ -525,7 +565,7 @@ export class SettingsMenu {
 	private async tryUpdate(action: UpdateType, args: WolfArgs | null = null, value: unknown = null) {
 		try {
 			const key = this.schema as SchemaKey;
-			using trx = await writeSettingsTransaction(this.message.guild);
+			using trx = await writeSettingsTransaction(this.interaction.guild);
 
 			this.t = getT(trx.settings.language);
 			this.oldValue = trx.settings[key.property];
@@ -550,21 +590,23 @@ export class SettingsMenu {
 			await trx.submit();
 		} catch (error) {
 			this.errorMessage = stringifyError(this.t, error);
+			this.oldValue = undefined;
 		}
 	}
 
 	private async tryUndo() {
 		if (this.updatedValue) {
 			await this.tryUpdate(UpdateType.Replace, null, this.oldValue);
+			this.oldValue = undefined;
 		} else {
 			const key = this.schema as SchemaKey;
-			this.errorMessage = this.t(LanguageKeys.Commands.Admin.ConfNochange, { key: key.name });
+			this.errorMessage = this.t(LanguageKeys.Commands.Conf.Nochange, { key: key.name });
 		}
 	}
 
 	private stop(): void {
 		if (this.response) {
-			const content = this.t(LanguageKeys.Commands.Admin.ConfMenuSaved);
+			const content = this.t(LanguageKeys.Commands.Conf.MenuSaved);
 			floatPromise(this.response.edit({ content, embeds: [], components: [] }));
 		}
 

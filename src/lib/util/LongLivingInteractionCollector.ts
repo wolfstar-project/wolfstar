@@ -66,6 +66,7 @@ export class LongLivingInteractionCollector {
 					}
 				},
 				() => {
+					llic.listener = null;
 					resolve(null);
 				}
 			).setTime(time);
