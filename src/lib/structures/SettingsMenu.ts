@@ -26,12 +26,13 @@ import {
 	StringSelectMenuBuilder,
 	TextInputBuilder
 } from '@discordjs/builders';
-import { container, type MessageCommand } from '@sapphire/framework';
+import { container, type ChatInputCommand, type MessageCommand } from '@sapphire/framework';
 import { filter, partition } from '@sapphire/iterator-utilities';
 import type { TFunction } from '@sapphire/plugin-i18next';
 import {
 	ButtonStyle,
 	ChannelType,
+	Collection,
 	DiscordAPIError,
 	MessageFlags,
 	RESTJSONErrorCodes,
@@ -39,6 +40,20 @@ import {
 	type Message,
 	type MessageComponentInteraction
 } from 'discord.js';
+
+/**
+ * Sorts a collection alphabetically as based on the keys, rather than the values.
+ * This is used to ensure that subcategories are listed in the pages right after the main category.
+ * @param _ The first element for comparison
+ * @param __ The second element for comparison
+ * @param firstCategory Key of the first element for comparison
+ * @param secondCategory Key of the second element for comparison
+ */
+function sortCommandsAlphabetically(_: WolfCommand[], __: WolfCommand[], firstCategory: string, secondCategory: string): 1 | -1 | 0 {
+	if (firstCategory > secondCategory) return 1;
+	if (secondCategory > firstCategory) return -1;
+	return 0;
+}
 
 const TIMEOUT = minutes(15);
 
@@ -61,6 +76,9 @@ const CustomIds = {
 	INPUT_ROLE: 'conf-input-role',
 	INPUT_CHANNEL: 'conf-input-channel',
 	INPUT_REMOVE: 'conf-input-remove',
+	INPUT_CATEGORY: 'conf-input-category',
+	INPUT_COMMAND: 'conf-input-command',
+	INPUT_COMMAND_BACK: 'conf-input-command-back',
 	INPUT_MODAL: 'conf-input-modal'
 } as const;
 
@@ -81,6 +99,7 @@ export class SettingsMenu {
 	private oldValue: unknown = undefined;
 	private inputMode = false;
 	private inputType: UpdateType = UpdateType.Set;
+	private selectedCategory: string | null = null;
 
 	public constructor(message: WolfSubcommand.Interaction, language: TFunction) {
 		this.interaction = message;
@@ -273,10 +292,65 @@ export class SettingsMenu {
 			} else {
 				container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
 			}
+		} else if (key.property === 'disabledCommands') {
+			// Special handling for disabled-commands with category navigation
+			const commandsByCategory = await SettingsMenu.fetchCommands(this.interaction);
+
+			if (this.selectedCategory === null) {
+				// Show categories
+				const options = Array.from(commandsByCategory.keys())
+					.slice(0, 25)
+					.map((category) => {
+						return {
+							label: category,
+							value: category
+						};
+					});
+
+				if (options.length > 0) {
+					const selectMenu = new StringSelectMenuBuilder()
+						.setCustomId(CustomIds.INPUT_CATEGORY)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+
+					selectMenu.addOptions(options);
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
+				} else {
+					container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
+				}
+			} else {
+				// Show commands for selected category
+				const commands = commandsByCategory.get(this.selectedCategory) || [];
+				const options = commands.slice(0, 25).map((cmd) => ({
+					label: cmd.name,
+					value: cmd.name,
+					description: this.t(cmd.description)
+				}));
+
+				if (options.length > 0) {
+					const selectMenu = new StringSelectMenuBuilder()
+						.setCustomId(CustomIds.INPUT_COMMAND)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+
+					selectMenu.addOptions(options);
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
+				} else {
+					container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
+				}
+
+				// Add back button to return to categories
+				container.addActionRowComponents((actionRow) =>
+					actionRow.setComponents(
+						new ButtonBuilder()
+							.setCustomId(CustomIds.INPUT_COMMAND_BACK)
+							.setLabel(this.t(LanguageKeys.Globals.Back))
+							.setStyle(ButtonStyle.Secondary)
+							.setEmoji({ name: '◀️' })
+					)
+				);
+			}
 		}
-		// Set Mode
-		else {
-			// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+		// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+		else
 			switch (key.type) {
 				case 'boolean': {
 					container.addActionRowComponents((actionRow) =>
@@ -313,7 +387,6 @@ export class SettingsMenu {
 					break;
 				}
 			}
-		}
 
 		// Cancel Button
 		container.addActionRowComponents((actionRow) =>
@@ -393,6 +466,21 @@ export class SettingsMenu {
 			if (interaction.customId === CustomIds.CANCEL) {
 				await interaction.deferUpdate();
 				this.inputMode = false;
+				this.selectedCategory = null;
+				await this._renderResponse();
+				return;
+			}
+
+			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_CATEGORY) {
+				await interaction.deferUpdate();
+				[this.selectedCategory] = interaction.values;
+				await this._renderResponse();
+				return;
+			}
+
+			if (interaction.isButton() && interaction.customId === CustomIds.INPUT_COMMAND_BACK) {
+				await interaction.deferUpdate();
+				this.selectedCategory = null;
 				await this._renderResponse();
 				return;
 			}
@@ -421,6 +509,14 @@ export class SettingsMenu {
 				await interaction.deferUpdate();
 				const channelId = interaction.values[0];
 				await this.processUpdate(this.inputType, channelId, context);
+				return;
+			}
+
+			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_COMMAND) {
+				await interaction.deferUpdate();
+				const commandName = interaction.values[0];
+				this.selectedCategory = null;
+				await this.processUpdate(this.inputType, commandName, context);
 				return;
 			}
 
@@ -479,6 +575,7 @@ export class SettingsMenu {
 		// Check if we can use special components
 		const useComponent =
 			(type === UpdateType.Set && ['boolean', 'role', 'guildTextChannel', 'guildVoiceChannel'].includes(key.type)) ||
+			(type === UpdateType.Set && key.property === 'disabledCommands') || // Special handling for disabled-commands
 			(type === UpdateType.Remove && key.array); // For Remove, we use a select menu if array
 
 		if (useComponent) {
@@ -619,5 +716,29 @@ export class SettingsMenu {
 		if (this.collector && !this.collector.ended) {
 			this.collector.end();
 		}
+	}
+
+	private static async fetchCommands(interaction: WolfSubcommand.Interaction) {
+		const commands = container.stores.get('commands');
+		const filtered = new Collection<string, WolfCommand[]>();
+		await Promise.all(
+			commands.map(async (cmd) => {
+				const command = cmd as WolfCommand;
+				if (command.hidden) return;
+
+				const result = await cmd.preconditions.chatInputRun(interaction, command as ChatInputCommand, { command: null! });
+				if (result.isErr()) return;
+
+				const category = filtered.get(command.fullCategory.join(' → '));
+				if (category) category.push(command);
+				else filtered.set(command.fullCategory.join(' → '), [command]);
+			})
+		);
+
+		const sorted = filtered.sort(sortCommandsAlphabetically);
+		console.log(
+			`[SettingsMenu] Found ${sorted.size} categories with ${Array.from(sorted.values()).reduce((acc, cmds) => acc + cmds.length, 0)} total commands`
+		);
+		return sorted;
 	}
 }
