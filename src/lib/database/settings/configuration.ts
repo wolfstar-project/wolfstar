@@ -45,7 +45,8 @@ export function getConfiguration() {
 		},
 		disabledCommands: {
 			name: 'disabled-commands',
-			type: 'commandMatch',
+			// @ts-expect-error Serializer 'commandmatch' exists but is not camel cased.
+			type: 'commandmatch',
 			description: LanguageKeys.Settings.DisabledCommands,
 			maximum: 32,
 			array: true
@@ -324,7 +325,8 @@ export function getConfiguration() {
 			array: true
 		},
 		messagesAutoDeleteIgnoredCommands: {
-			type: 'commandMatch',
+			// @ts-expect-error Serializer 'commandmatch' exists but is not camel cased.
+			type: 'commandmatch',
 			name: 'messages.auto-delete.ignored-commands',
 			description: LanguageKeys.Settings.MessagesAutoDeleteIgnoredCommands,
 			array: true

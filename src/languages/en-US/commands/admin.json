@@ -1,34 +1,4 @@
 {
-	"confUpdated": "Successfully updated the key **{{key}}**: {{response}}",
-	"confGetNoExt": "The key **{{key}}** does not seem to exist.",
-	"confGet": "The value for the key **{{key}}** is: `{{value}}`",
-	"confReset": "The key **{{key}}** has been reset to: `{{value}}`",
-	"confNochange": "The value for **{{key}}** was already that value.",
-	"confServerDescription": "Define per-server settings.",
-	"confServerExtended": {
-		"usages": [
-			"set NameOfKey Value for Key",
-			"show",
-			"show NameOfKey",
-			"remove NameOfKey Value for Key",
-			"reset NameOfKey",
-			"menu"
-		],
-		"extendedHelp": "Allows you to configure WolfStar from Discord, as a quick alternative to the [web dashboard](https://wolfstar.rocks).",
-		"examples": [
-			"set language en-GB",
-			"set channels.moderation-logs #moderation-logs",
-			"show",
-			"show channels",
-			"remove roles.moderator Moderator",
-			"reset roles.moderator",
-			"menu"
-		],
-		"reminder": "There are keys and groups, keys that are within a group are named by `GroupName.KeyName`."
-	},
-	"confServer": "**Server Setting {{key}}**\n{{list}}",
-	"confDashboardOnlyKey": "`{{key}}` can only be configured through the web dashboard ",
-	"confSettingNotSet": "Not Set",
 	"rolesetDescription": "Manage unique role sets.",
 	"rolesetExtended": {
 		"usages": [
@@ -90,18 +60,5 @@
 	"rolesetResetNotExists": "{{REDCROSS}} The roleset `{{name}}` does not exist in this server.",
 	"rolesetResetGroup": "{{GREENTICK}} Successfully removed the roleset `{{name}}` from this server.",
 	"rolesetUpdated": "The {{name}} unique role set has been updated.",
-	"rolesetNoRolesets": "You have no rolesets.",
-	"confMenuRenderAtFolder": "Currently at: 📁 {{path}}",
-	"confMenuRenderAtPiece": "Currently at: ⚙️ {{path}}",
-	"confMenuRenderNokeys": "There are no configurable keys for this folder",
-	"confMenuRenderSelect": "Please type in any of the following entries' names",
-	"confMenuRenderUpdate": "• Update Value → `set <value>`",
-	"confMenuRenderRemove": "• Remove Value → `remove <value>`",
-	"confMenuRenderReset": "• Reset Value → `reset`",
-	"confMenuRenderUndo": "• Undo Update → `undo`",
-	"confMenuRenderCvalue": "Current Value: **``{{value}}``**",
-	"confMenuRenderBack": "Press ◀ to go back",
-	"confMenuInvalidKey": "Invalid Key, please try again with any of the following options.",
-	"confMenuInvalidAction": "Invalid Action, please try again with any of the following options.",
-	"confMenuSaved": "Successfully saved all changes."
+	"rolesetNoRolesets": "You have no rolesets."
 }

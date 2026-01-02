@@ -35,7 +35,7 @@ export class UserCommand extends WolfCommand {
 				await writeSettings(message.guild, { rolesMuted: role.id });
 				if (canReact(message.channel)) return message.react(getEmojiReactionFormat(Emojis.GreenTickSerialized as SerializedEmoji));
 
-				const content = t(LanguageKeys.Commands.Admin.ConfUpdated, {
+				const content = t(LanguageKeys.Commands.Conf.Updated, {
 					key: 'rolesMuted',
 					response: role.name
 				});

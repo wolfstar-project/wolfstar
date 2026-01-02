@@ -9,24 +9,78 @@ import {
 	set,
 	writeSettingsTransaction
 } from '#lib/database/settings';
-import { api } from '#lib/discord/Api';
 import { getT } from '#lib/i18n';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
-import { WolfArgs, type WolfCommand } from '#lib/structures';
-import { Events, type GuildMessage } from '#lib/types';
+import { LongLivingInteractionCollector } from '#lib/util/LongLivingInteractionCollector';
+import { WolfArgs, type WolfCommand, type WolfSubcommand } from '#lib/structures';
 import { floatPromise, minutes, stringifyError } from '#utils/common';
 import { ZeroWidthSpace } from '#utils/constants';
-import { deleteMessage } from '#utils/functions';
-import { LongLivingReactionCollector, type LLRCData } from '#utils/LongLivingReactionCollector';
-import { getColor, getFullEmbedAuthor, sendLoadingMessage } from '#utils/util';
-import { EmbedBuilder } from '@discordjs/builders';
-import { container, type MessageCommand } from '@sapphire/framework';
+import { getColor, pickRandom } from '#utils/util';
+import {
+	ButtonBuilder,
+	ChannelSelectMenuBuilder,
+	ContainerBuilder,
+	LabelBuilder,
+	ModalBuilder,
+	RoleSelectMenuBuilder,
+	StringSelectMenuBuilder,
+	TextInputBuilder
+} from '@discordjs/builders';
+import { container, type ChatInputCommand, type MessageCommand } from '@sapphire/framework';
 import { filter, partition } from '@sapphire/iterator-utilities';
 import type { TFunction } from '@sapphire/plugin-i18next';
-import { DiscordAPIError, MessageCollector, RESTJSONErrorCodes } from 'discord.js';
+import {
+	ButtonStyle,
+	ChannelType,
+	Collection,
+	DiscordAPIError,
+	MessageFlags,
+	RESTJSONErrorCodes,
+	TextInputStyle,
+	type Message,
+	type MessageComponentInteraction
+} from 'discord.js';
 
-const EMOJIS = { BACK: '◀', STOP: '⏹' };
+/**
+ * Sorts a collection alphabetically as based on the keys, rather than the values.
+ * This is used to ensure that subcategories are listed in the pages right after the main category.
+ * @param _ The first element for comparison
+ * @param __ The second element for comparison
+ * @param firstCategory Key of the first element for comparison
+ * @param secondCategory Key of the second element for comparison
+ */
+function sortCommandsAlphabetically(_: WolfCommand[], __: WolfCommand[], firstCategory: string, secondCategory: string): 1 | -1 | 0 {
+	if (firstCategory > secondCategory) return 1;
+	if (secondCategory > firstCategory) return -1;
+	return 0;
+}
+
 const TIMEOUT = minutes(15);
+
+const CustomIds = {
+	// Navigation
+	SELECT: 'conf-select',
+	BACK: 'conf-back',
+	STOP: 'conf-stop',
+
+	// Actions
+	SET: 'conf-set',
+	REMOVE: 'conf-remove',
+	RESET: 'conf-reset',
+	UNDO: 'conf-undo',
+
+	// Input Mode
+	CANCEL: 'conf-cancel',
+	INPUT_BOOL_TRUE: 'conf-input-bool-true',
+	INPUT_BOOL_FALSE: 'conf-input-bool-false',
+	INPUT_ROLE: 'conf-input-role',
+	INPUT_CHANNEL: 'conf-input-channel',
+	INPUT_REMOVE: 'conf-input-remove',
+	INPUT_CATEGORY: 'conf-input-category',
+	INPUT_COMMAND: 'conf-input-command',
+	INPUT_COMMAND_BACK: 'conf-input-command-back',
+	INPUT_MODAL: 'conf-input-modal'
+} as const;
 
 const enum UpdateType {
 	Set,
@@ -36,21 +90,21 @@ const enum UpdateType {
 }
 
 export class SettingsMenu {
-	private readonly message: GuildMessage;
+	private readonly interaction: WolfSubcommand.Interaction;
 	private t: TFunction;
 	private schema: SchemaKey | SchemaGroup;
-	private messageCollector: MessageCollector | null = null;
+	private collector: LongLivingInteractionCollector | null = null;
 	private errorMessage: string | null = null;
-	private llrc: LongLivingReactionCollector | null = null;
-	private readonly embed: EmbedBuilder;
-	private response: GuildMessage | null = null;
+	private response: Message | null = null;
 	private oldValue: unknown = undefined;
+	private inputMode = false;
+	private inputType: UpdateType = UpdateType.Set;
+	private selectedCategory: string | null = null;
 
-	public constructor(message: GuildMessage, language: TFunction) {
-		this.message = message;
+	public constructor(message: WolfSubcommand.Interaction, language: TFunction) {
+		this.interaction = message;
 		this.t = language;
 		this.schema = getConfigurableGroups();
-		this.embed = new EmbedBuilder().setAuthor(getFullEmbedAuthor(this.message.author));
 	}
 
 	public get client() {
@@ -62,66 +116,301 @@ export class SettingsMenu {
 	}
 
 	public async init(context: WolfCommand.RunContext): Promise<void> {
-		this.response = await sendLoadingMessage(this.message, this.t);
-		await this.response.react(EMOJIS.STOP);
-		this.llrc = new LongLivingReactionCollector().setListener(this.onReaction.bind(this)).setEndListener(this.stop.bind(this));
-		this.llrc.setTime(TIMEOUT);
-		this.messageCollector = this.response.channel.createMessageCollector({
-			filter: (msg) => msg.author!.id === this.message.author.id
+		// Defer the interaction to prevent timeout
+		await this.interaction.deferReply();
+
+		// Show initial loading state
+		const loadingMessages = this.t(LanguageKeys.System.Loading);
+		const loadingContainer = new ContainerBuilder()
+			.setAccentColor(0x5865f2)
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay.setContent(pickRandom(Array.isArray(loadingMessages) ? loadingMessages : [loadingMessages]))
+			);
+
+		this.response = await this.interaction.editReply({
+			components: [loadingContainer],
+			flags: [MessageFlags.IsComponentsV2]
 		});
-		this.messageCollector.on('collect', (msg) => this.onMessage(msg as GuildMessage, context));
+
+		// Render the actual menu
 		await this._renderResponse();
+
+		this.collector = new LongLivingInteractionCollector();
+		this.collector.setListener((interaction) => this.onInteraction(interaction, context));
+		this.collector.setEndListener(() => this.stop());
+		this.collector.setTime(TIMEOUT);
 	}
 
 	private async render() {
-		const description = isSchemaGroup(this.schema) ? this.renderGroup(this.schema) : await this.renderKey(this.schema);
-
-		const { parent } = this.schema;
-		if (parent) floatPromise(this._reactResponse(EMOJIS.BACK));
-		else floatPromise(this._removeReactionFromUser(EMOJIS.BACK, this.client.id!));
-
-		this.embed
-			.setColor(getColor(this.message)) //
-			.setDescription(description.concat(ZeroWidthSpace).join('\n'))
-			.setTimestamp();
-
-		// If there is a parent, show the back option:
-		if (parent) {
-			this.embed.setFooter({ text: this.t(LanguageKeys.Commands.Admin.ConfMenuRenderBack) });
+		if (this.inputMode) {
+			return this.renderInput();
 		}
 
-		return this.embed;
+		const description = isSchemaGroup(this.schema) ? this.renderGroup(this.schema) : await this.renderKey(this.schema);
+		const { parent } = this.schema;
+
+		const container = new ContainerBuilder().setAccentColor(getColor(this.interaction));
+
+		// Add main content as TextDisplay
+		container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(description.concat(ZeroWidthSpace).join('\n')));
+
+		// Select Menu Row
+		if (isSchemaGroup(this.schema)) {
+			const selectMenu = new StringSelectMenuBuilder()
+				.setCustomId(CustomIds.SELECT)
+				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+
+			const options = [];
+			// Collect folders
+			for (const value of this.schema.values()) {
+				if (value.dashboardOnly) continue;
+				if (isSchemaGroup(value)) {
+					options.push({
+						label: value.name,
+						value: value.key,
+						emoji: { name: '📁' },
+						description: this.t(LanguageKeys.Commands.Conf.MenuRenderAtFolder, { path: value.name }).substring(0, 100)
+					});
+				}
+			}
+			// Collect keys
+			for (const value of this.schema.values()) {
+				if (value.dashboardOnly) continue;
+				if (!isSchemaGroup(value)) {
+					options.push({
+						label: value.name,
+						value: value.key,
+						emoji: { name: '⚙️' },
+						description: this.t(LanguageKeys.Commands.Conf.MenuRenderAtPiece, { path: value.name }).substring(0, 100)
+					});
+				}
+			}
+
+			if (options.length > 0) {
+				selectMenu.addOptions(options.slice(0, 25));
+				container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
+			}
+		}
+
+		// Buttons Section
+		const buttons: ButtonBuilder[] = [];
+		if (parent) {
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(CustomIds.BACK)
+					.setLabel(this.t(LanguageKeys.Globals.Back))
+					.setStyle(ButtonStyle.Secondary)
+					.setEmoji({ name: '◀️' })
+			);
+		}
+
+		if (!isSchemaGroup(this.schema)) {
+			// It is a key
+			const settings = await readSettings(this.interaction.guild);
+			const value = settings[this.schema.property];
+
+			// Set
+			buttons.push(new ButtonBuilder().setCustomId(CustomIds.SET).setLabel(this.t(LanguageKeys.Globals.Set)).setStyle(ButtonStyle.Primary));
+
+			// Remove (if array and has elements)
+			if (this.schema.array && (value as unknown[]).length) {
+				buttons.push(
+					new ButtonBuilder().setCustomId(CustomIds.REMOVE).setLabel(this.t(LanguageKeys.Globals.Remove)).setStyle(ButtonStyle.Danger)
+				);
+			}
+
+			// Reset (if changed)
+			if (value !== this.schema.default) {
+				buttons.push(
+					new ButtonBuilder().setCustomId(CustomIds.RESET).setLabel(this.t(LanguageKeys.Globals.Reset)).setStyle(ButtonStyle.Danger)
+				);
+			}
+
+			// Undo (if updated)
+			if (this.updatedValue) {
+				buttons.push(
+					new ButtonBuilder()
+						.setCustomId(CustomIds.UNDO)
+						.setLabel(this.t(LanguageKeys.Commands.Conf.MenuRenderUndo))
+						.setStyle(ButtonStyle.Secondary)
+				);
+			}
+		}
+
+		buttons.push(
+			new ButtonBuilder()
+				.setCustomId(CustomIds.STOP)
+				.setLabel(this.t(LanguageKeys.Globals.Stop))
+				.setStyle(ButtonStyle.Danger)
+				.setEmoji({ name: '⏹️' })
+		);
+
+		// Add buttons in groups of 5 (Discord limit per ActionRow)
+		for (let i = 0; i < buttons.length; i += 5) {
+			const chunk = buttons.slice(i, i + 5);
+			container.addActionRowComponents((actionRow) => actionRow.setComponents(...chunk));
+		}
+
+		return { components: [container], flags: [MessageFlags.IsComponentsV2] };
+	}
+
+	private async renderInput() {
+		const key = this.schema as SchemaKey;
+		const container = new ContainerBuilder().setAccentColor(getColor(this.interaction));
+
+		container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Commands.Conf.MenuRenderUpdate)));
+
+		// Remove Mode: Show Select Menu with current values to remove
+		if (this.inputType === UpdateType.Remove) {
+			const settings = await readSettings(this.interaction.guild);
+			const values = settings[key.property] as unknown[];
+
+			if (values.length) {
+				const selectMenu = new StringSelectMenuBuilder()
+					.setCustomId(CustomIds.INPUT_REMOVE)
+					.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+				const options = await Promise.all(
+					values.map((val, index) => {
+						const label = key.stringify(settings, this.t, val as any).substring(0, 100);
+						// Better: For Roles/Channels, we can use their ID if available.
+						let valueId = String(val);
+						if (val && typeof val === 'object' && 'id' in val) {
+							// @ts-expect-error accessing id
+							valueId = val.id;
+						}
+
+						return {
+							label: label || 'Unknown',
+							value: valueId.substring(0, 100),
+							description: String(index)
+						};
+					})
+				);
+
+				selectMenu.addOptions(options.slice(0, 25));
+				container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
+			} else {
+				container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
+			}
+		} else if (key.property === 'disabledCommands') {
+			// Special handling for disabled-commands with category navigation
+			const commandsByCategory = await SettingsMenu.fetchCommands(this.interaction);
+
+			if (this.selectedCategory === null) {
+				// Show categories
+				const options = Array.from(commandsByCategory.keys())
+					.slice(0, 25)
+					.map((category) => {
+						return {
+							label: category,
+							value: category
+						};
+					});
+
+				if (options.length > 0) {
+					const selectMenu = new StringSelectMenuBuilder()
+						.setCustomId(CustomIds.INPUT_CATEGORY)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+
+					selectMenu.addOptions(options);
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
+				} else {
+					container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
+				}
+			} else {
+				// Show commands for selected category
+				const commands = commandsByCategory.get(this.selectedCategory) || [];
+				const options = commands.slice(0, 25).map((cmd) => ({
+					label: cmd.name,
+					value: cmd.name,
+					description: this.t(cmd.description)
+				}));
+
+				if (options.length > 0) {
+					const selectMenu = new StringSelectMenuBuilder()
+						.setCustomId(CustomIds.INPUT_COMMAND)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+
+					selectMenu.addOptions(options);
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
+				} else {
+					container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
+				}
+
+				// Add back button to return to categories
+				container.addActionRowComponents((actionRow) =>
+					actionRow.setComponents(
+						new ButtonBuilder()
+							.setCustomId(CustomIds.INPUT_COMMAND_BACK)
+							.setLabel(this.t(LanguageKeys.Globals.Back))
+							.setStyle(ButtonStyle.Secondary)
+							.setEmoji({ name: '◀️' })
+					)
+				);
+			}
+		}
+		// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+		else
+			switch (key.type) {
+				case 'boolean': {
+					container.addActionRowComponents((actionRow) =>
+						actionRow.setComponents(
+							new ButtonBuilder()
+								.setCustomId(CustomIds.INPUT_BOOL_TRUE)
+								.setLabel(this.t(LanguageKeys.Globals.Yes))
+								.setStyle(ButtonStyle.Success),
+							new ButtonBuilder()
+								.setCustomId(CustomIds.INPUT_BOOL_FALSE)
+								.setLabel(this.t(LanguageKeys.Globals.No))
+								.setStyle(ButtonStyle.Danger)
+						)
+					);
+					break;
+				}
+				case 'role': {
+					const select = new RoleSelectMenuBuilder()
+						.setCustomId(CustomIds.INPUT_ROLE)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(select));
+					break;
+				}
+				case 'guildTextChannel':
+				case 'guildVoiceChannel': {
+					const select = new ChannelSelectMenuBuilder()
+						.setCustomId(CustomIds.INPUT_CHANNEL)
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+
+					if (key.type === 'guildTextChannel') select.setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
+					if (key.type === 'guildVoiceChannel') select.setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice);
+
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(select));
+					break;
+				}
+			}
+
+		// Cancel Button
+		container.addActionRowComponents((actionRow) =>
+			actionRow.setComponents(
+				new ButtonBuilder().setCustomId(CustomIds.CANCEL).setLabel(this.t(LanguageKeys.Globals.Cancel)).setStyle(ButtonStyle.Secondary)
+			)
+		);
+
+		return { components: [container], flags: [MessageFlags.IsComponentsV2] };
 	}
 
 	private async renderKey(entry: SchemaKey) {
-		const settings = await readSettings(this.message.guild);
+		const settings = await readSettings(this.interaction.guild);
 
 		this.t = getT(settings.language);
 		const { t } = this;
 
-		const description = [t(LanguageKeys.Commands.Admin.ConfMenuRenderAtPiece, { path: this.schema.name })];
+		const description = [t(LanguageKeys.Commands.Conf.MenuRenderAtPiece, { path: this.schema.name })];
 		if (this.errorMessage) description.push('', this.errorMessage, '');
-		description.push(t(entry.description), '', t(LanguageKeys.Commands.Admin.ConfMenuRenderUpdate));
 
-		const value = settings[entry.property];
-
-		// If the key is an array and has elements, show the remove option:
-		if (entry.array && (value as unknown[]).length) {
-			description.push(t(LanguageKeys.Commands.Admin.ConfMenuRenderRemove));
-		}
-
-		// If the value is different from the default value, show the reset option:
-		if (value !== entry.default) {
-			description.push(t(LanguageKeys.Commands.Admin.ConfMenuRenderReset));
-		}
-
-		// If there is undo data, show the undo option:
-		if (this.updatedValue) {
-			description.push(t(LanguageKeys.Commands.Admin.ConfMenuRenderUndo));
-		}
+		description.push(t(entry.description));
 
 		const serialized = entry.display(settings, this.t);
-		description.push('', t(LanguageKeys.Commands.Admin.ConfMenuRenderCvalue, { value: serialized }));
+		description.push('', t(LanguageKeys.Commands.Conf.MenuRenderCvalue, { value: serialized }));
 
 		return description;
 	}
@@ -129,7 +418,7 @@ export class SettingsMenu {
 	private renderGroup(entry: SchemaGroup) {
 		const { t } = this;
 
-		const description = [t(LanguageKeys.Commands.Admin.ConfMenuRenderAtFolder, { path: entry.name })];
+		const description = [t(LanguageKeys.Commands.Conf.MenuRenderAtFolder, { path: entry.name })];
 		if (this.errorMessage) description.push(this.errorMessage);
 
 		const [folders, keys] = partition(
@@ -138,10 +427,10 @@ export class SettingsMenu {
 		);
 
 		if (!folders.length && !keys.length) {
-			description.push(t(LanguageKeys.Commands.Admin.ConfMenuRenderNokeys));
+			description.push(t(LanguageKeys.Commands.Conf.MenuRenderNokeys));
 		} else {
 			description.push(
-				t(LanguageKeys.Commands.Admin.ConfMenuRenderSelect),
+				t(LanguageKeys.Commands.Conf.MenuRenderSelect),
 				'',
 				...folders.map(({ key }) => `📁 ${key}`),
 				...keys.map(({ key }) => `⚙️ ${key}`)
@@ -151,121 +440,223 @@ export class SettingsMenu {
 		return description;
 	}
 
-	private async onMessage(message: GuildMessage, context: WolfCommand.RunContext) {
-		// In case of messages that do not have a content, like attachments, ignore
-		if (!message.content) return;
-
-		this.llrc?.setTime(TIMEOUT);
+	private async onInteraction(interaction: MessageComponentInteraction, context: WolfCommand.RunContext) {
+		if (interaction.message.id !== this.response?.id) return;
+		if (interaction.user.id !== this.interaction.user.id) return;
+		this.collector?.setTime(TIMEOUT);
 		this.errorMessage = null;
-		if (isSchemaGroup(this.schema)) {
-			const schema = this.schema.get(message.content.toLowerCase());
-			if (schema && !schema.dashboardOnly) {
-				this.schema = schema as SchemaKey | SchemaGroup;
-				this.oldValue = undefined;
-			} else {
-				this.errorMessage = this.t(LanguageKeys.Commands.Admin.ConfMenuInvalidKey);
-			}
-		} else {
-			const conf = container.stores.get('commands').get('conf') as MessageCommand;
-			const args = WolfArgs.from(conf, message, message.content, context, this.t);
 
-			switch (args.next().toLowerCase()) {
-				case 'set':
-					await this.tryUpdate(UpdateType.Set, args);
-					break;
-				case 'remove':
-					await this.tryUpdate(UpdateType.Remove, args);
-					break;
-				case 'reset':
-					await this.tryUpdate(UpdateType.Reset);
-					break;
-				case 'undo':
-					await this.tryUndo();
-					break;
-				default:
-					this.errorMessage = this.t(LanguageKeys.Commands.Admin.ConfMenuInvalidAction);
-			}
-		}
-
-		if (!this.errorMessage) {
-			floatPromise(deleteMessage(message));
-		}
-
-		await this._renderResponse();
-	}
-
-	private async onReaction(reaction: LLRCData): Promise<void> {
-		// If the message is not the menu's message, ignore:
-		if (!this.response || reaction.messageId !== this.response.id) return;
-
-		// If the user is not the author, ignore:
-		if (reaction.userId !== this.message.author.id) return;
-
-		this.llrc?.setTime(TIMEOUT);
-		if (reaction.emoji.name === EMOJIS.STOP) {
-			this.llrc?.end();
-		} else if (reaction.emoji.name === EMOJIS.BACK) {
-			floatPromise(this._removeReactionFromUser(EMOJIS.BACK, reaction.userId));
-			if (this.schema.parent) {
-				this.schema = this.schema.parent;
-				this.oldValue = undefined;
+		// Handle Select Menu for Navigation
+		if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.SELECT) {
+			await interaction.deferUpdate();
+			const selectedKey = interaction.values[0];
+			if (isSchemaGroup(this.schema)) {
+				const next = this.schema.get(selectedKey);
+				if (next) {
+					this.schema = next;
+					this.oldValue = undefined;
+				}
 			}
 			await this._renderResponse();
+			return;
 		}
-	}
 
-	private async _removeReactionFromUser(reaction: string, userId: string) {
-		if (!this.response) return;
-
-		const channelId = this.response.channel.id;
-		const messageId = this.response.id;
-		try {
-			return await (userId === this.client.id
-				? api().channels.deleteUserMessageReaction(channelId, messageId, reaction, userId)
-				: api().channels.deleteOwnMessageReaction(channelId, messageId, reaction));
-		} catch (error) {
-			if (error instanceof DiscordAPIError) {
-				if (error.code === RESTJSONErrorCodes.UnknownMessage) {
-					this.response = null;
-					this.llrc?.end();
-					return this;
-				}
-
-				if (error.code === RESTJSONErrorCodes.UnknownEmoji) {
-					return this;
-				}
+		// Handle Input Mode Interactions
+		if (this.inputMode) {
+			if (interaction.customId === CustomIds.CANCEL) {
+				await interaction.deferUpdate();
+				this.inputMode = false;
+				this.selectedCategory = null;
+				await this._renderResponse();
+				return;
 			}
 
-			// Log any other error
-			this.client.emit(Events.Error, error as Error);
+			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_CATEGORY) {
+				await interaction.deferUpdate();
+				[this.selectedCategory] = interaction.values;
+				await this._renderResponse();
+				return;
+			}
+
+			if (interaction.isButton() && interaction.customId === CustomIds.INPUT_COMMAND_BACK) {
+				await interaction.deferUpdate();
+				this.selectedCategory = null;
+				await this._renderResponse();
+				return;
+			}
+
+			if (interaction.customId === CustomIds.INPUT_BOOL_TRUE) {
+				await interaction.deferUpdate();
+				await this.processUpdate(this.inputType, 'true', context);
+				return;
+			}
+
+			if (interaction.customId === CustomIds.INPUT_BOOL_FALSE) {
+				await interaction.deferUpdate();
+				await this.processUpdate(this.inputType, 'false', context);
+				return;
+			}
+
+			if (interaction.isRoleSelectMenu() && interaction.customId === CustomIds.INPUT_ROLE) {
+				await interaction.deferUpdate();
+				// Use the first selected role ID
+				const roleId = interaction.values[0];
+				await this.processUpdate(this.inputType, roleId, context);
+				return;
+			}
+
+			if (interaction.isChannelSelectMenu() && interaction.customId === CustomIds.INPUT_CHANNEL) {
+				await interaction.deferUpdate();
+				const channelId = interaction.values[0];
+				await this.processUpdate(this.inputType, channelId, context);
+				return;
+			}
+
+			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_COMMAND) {
+				await interaction.deferUpdate();
+				const commandName = interaction.values[0];
+				this.selectedCategory = null;
+				await this.processUpdate(this.inputType, commandName, context);
+				return;
+			}
+
+			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_REMOVE) {
+				await interaction.deferUpdate();
+				const value = interaction.values[0];
+				await this.processUpdate(this.inputType, value, context);
+				return;
+			}
+
+			if (interaction.customId === CustomIds.INPUT_MODAL) {
+				// Re-trigger modal
+				await this.showInputModal(interaction, context, this.inputType);
+				return;
+			}
+		}
+
+		if (interaction.isButton()) {
+			switch (interaction.customId) {
+				case CustomIds.BACK:
+					await interaction.deferUpdate();
+					if (this.schema.parent) {
+						this.schema = this.schema.parent;
+						this.oldValue = undefined;
+					}
+					await this._renderResponse();
+					break;
+				case CustomIds.STOP:
+					await interaction.deferUpdate();
+					this.stop();
+					break;
+				case CustomIds.RESET:
+					await interaction.deferUpdate();
+					await this.tryUpdate(UpdateType.Reset);
+					await this._renderResponse();
+					break;
+				case CustomIds.UNDO:
+					await interaction.deferUpdate();
+					await this.tryUndo();
+					await this._renderResponse();
+					break;
+				case CustomIds.SET:
+					await this.initiateInput(interaction, context, UpdateType.Set);
+					break;
+				case CustomIds.REMOVE:
+					await this.initiateInput(interaction, context, UpdateType.Remove);
+					break;
+			}
 		}
 	}
 
-	private async _reactResponse(emoji: string) {
-		if (!this.response) return;
+	private async initiateInput(interaction: MessageComponentInteraction, context: WolfCommand.RunContext, type: UpdateType) {
+		this.inputType = type;
+		const key = this.schema as SchemaKey;
+
+		// Check if we can use special components
+		const useComponent =
+			(type === UpdateType.Set && ['boolean', 'role', 'guildTextChannel', 'guildVoiceChannel'].includes(key.type)) ||
+			(type === UpdateType.Set && key.property === 'disabledCommands') || // Special handling for disabled-commands
+			(type === UpdateType.Remove && key.array); // For Remove, we use a select menu if array
+
+		if (useComponent) {
+			this.inputMode = true;
+			await interaction.deferUpdate();
+			await this._renderResponse();
+		} else {
+			// Use Modal
+			await this.showInputModal(interaction, context, type);
+		}
+	}
+
+	private async showInputModal(interaction: MessageComponentInteraction, context: WolfCommand.RunContext, type: UpdateType) {
+		const modalId = `conf-modal-${Date.now()}`;
+		const inputId = `conf-input-${Date.now()}`;
+
+		const modal = new ModalBuilder()
+			.setCustomId(modalId)
+			.setTitle(this.t(type === UpdateType.Set ? LanguageKeys.Globals.Set : LanguageKeys.Globals.Remove));
+
+		const key = this.schema as SchemaKey;
+
+		const input = new TextInputBuilder().setCustomId(inputId).setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder(key.name);
+		const label = new LabelBuilder().setLabel(this.t(LanguageKeys.Globals.Value)).setTextInputComponent(input);
+
+		modal.addLabelComponents(label);
+
+		await interaction.showModal(modal);
+
 		try {
-			await this.response.react(emoji);
+			const submission = await interaction.awaitModalSubmit({
+				time: minutes(5),
+				filter: (i) => i.customId === modalId && i.user.id === interaction.user.id
+			});
+
+			const value = submission.fields.getTextInputValue(inputId);
+			await submission.deferUpdate();
+
+			await this.processUpdate(type, value, context);
 		} catch (error) {
-			if (error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownMessage) {
-				this.response = null;
-				this.llrc?.end();
+			if (
+				error instanceof Error &&
+				(error.name === 'InteractionCollectorError' ||
+					error.name === 'Error [InteractionCollectorError]' ||
+					error.message === 'Collector received no interactions before ending with reason: time')
+			) {
+				// Ignore timeout
 			} else {
-				this.client.emit(Events.Error, error as Error);
+				this.errorMessage = stringifyError(this.t, error);
+				await this._renderResponse();
 			}
 		}
+	}
+
+	private async processUpdate(type: UpdateType, value: string, context: WolfCommand.RunContext) {
+		const conf = container.stores.get('commands').get('conf') as MessageCommand;
+		// Create a minimal message proxy for WolfArgs compatibility
+		const messageProxy = {
+			guild: this.interaction.guild,
+			channel: this.interaction.channel,
+			author: this.interaction.user,
+			client: this.interaction.client
+		} as any;
+		const args = WolfArgs.from(conf, messageProxy, value, context, this.t);
+		await this.tryUpdate(type, args);
+		this.inputMode = false;
+		await this._renderResponse();
 	}
 
 	private async _renderResponse() {
 		if (!this.response) return;
 		try {
-			const embed = await this.render();
-			await this.response.edit({ embeds: [embed] });
+			const payload = await this.render();
+			// @ts-expect-error - v2 components are experimental
+			await this.response.edit(payload);
 		} catch (error) {
 			if (error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownMessage) {
 				this.response = null;
-				this.llrc?.end();
+				this.collector?.end();
 			} else {
-				this.client.emit(Events.Error, error as Error);
+				this.client.emit('error', error as Error);
 			}
 		}
 	}
@@ -273,7 +664,7 @@ export class SettingsMenu {
 	private async tryUpdate(action: UpdateType, args: WolfArgs | null = null, value: unknown = null) {
 		try {
 			const key = this.schema as SchemaKey;
-			using trx = await writeSettingsTransaction(this.message.guild);
+			using trx = await writeSettingsTransaction(this.interaction.guild);
 
 			this.t = getT(trx.settings.language);
 			this.oldValue = trx.settings[key.property];
@@ -298,28 +689,56 @@ export class SettingsMenu {
 			await trx.submit();
 		} catch (error) {
 			this.errorMessage = stringifyError(this.t, error);
+			this.oldValue = undefined;
 		}
 	}
 
 	private async tryUndo() {
 		if (this.updatedValue) {
 			await this.tryUpdate(UpdateType.Replace, null, this.oldValue);
+			this.oldValue = undefined;
 		} else {
 			const key = this.schema as SchemaKey;
-			this.errorMessage = this.t(LanguageKeys.Commands.Admin.ConfNochange, { key: key.name });
+			this.errorMessage = this.t(LanguageKeys.Commands.Conf.Nochange, { key: key.name });
 		}
 	}
 
 	private stop(): void {
 		if (this.response) {
-			if (this.response.reactions.cache.size) {
-				floatPromise(this.response.reactions.removeAll());
-			}
+			const content = this.t(LanguageKeys.Commands.Conf.MenuSaved);
+			const container = new ContainerBuilder()
+				.setAccentColor(getColor(this.interaction))
+				.addTextDisplayComponents((textDisplay) => textDisplay.setContent(content));
 
-			const content = this.t(LanguageKeys.Commands.Admin.ConfMenuSaved);
-			floatPromise(this.response.edit({ content, embeds: [] }));
+			floatPromise(this.response.edit({ components: [container], flags: [MessageFlags.IsComponentsV2] }));
 		}
 
-		if (!this.messageCollector!.ended) this.messageCollector!.stop();
+		if (this.collector && !this.collector.ended) {
+			this.collector.end();
+		}
+	}
+
+	private static async fetchCommands(interaction: WolfSubcommand.Interaction) {
+		const commands = container.stores.get('commands');
+		const filtered = new Collection<string, WolfCommand[]>();
+		await Promise.all(
+			commands.map(async (cmd) => {
+				const command = cmd as WolfCommand;
+				if (command.hidden) return;
+
+				const result = await cmd.preconditions.chatInputRun(interaction, command as ChatInputCommand, { command: null! });
+				if (result.isErr()) return;
+
+				const category = filtered.get(command.fullCategory.join(' → '));
+				if (category) category.push(command);
+				else filtered.set(command.fullCategory.join(' → '), [command]);
+			})
+		);
+
+		const sorted = filtered.sort(sortCommandsAlphabetically);
+		console.log(
+			`[SettingsMenu] Found ${sorted.size} categories with ${Array.from(sorted.values()).reduce((acc, cmds) => acc + cmds.length, 0)} total commands`
+		);
+		return sorted;
 	}
 }
