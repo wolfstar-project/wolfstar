@@ -511,7 +511,7 @@ export class SettingsMenu {
 		try {
 			const submission = await interaction.awaitModalSubmit({
 				time: minutes(5),
-				filter: (i) => i.customId === modalId
+				filter: (i) => i.customId === modalId && i.user.id === interaction.user.id
 			});
 
 			const value = submission.fields.getTextInputValue(inputId);
