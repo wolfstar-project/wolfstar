@@ -45,7 +45,7 @@ export function getConfiguration() {
 		},
 		disabledCommands: {
 			name: 'disabled-commands',
-			type: 'commandMatch',
+			type: 'commandmatch',
 			description: LanguageKeys.Settings.DisabledCommands,
 			maximum: 32,
 			array: true
@@ -324,7 +324,7 @@ export function getConfiguration() {
 			array: true
 		},
 		messagesAutoDeleteIgnoredCommands: {
-			type: 'commandMatch',
+			type: 'commandmatch',
 			name: 'messages.auto-delete.ignored-commands',
 			description: LanguageKeys.Settings.MessagesAutoDeleteIgnoredCommands,
 			array: true

@@ -13,15 +13,14 @@ import { getT } from '#lib/i18n';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { LongLivingInteractionCollector } from '#lib/util/LongLivingInteractionCollector';
 import { WolfArgs, type WolfCommand, type WolfSubcommand } from '#lib/structures';
-import { Events } from '#lib/types';
 import { floatPromise, minutes, stringifyError } from '#utils/common';
 import { ZeroWidthSpace } from '#utils/constants';
-import { getColor, getFullEmbedAuthor, pickRandom } from '#utils/util';
+import { getColor, pickRandom } from '#utils/util';
 import {
-	ActionRowBuilder,
 	ButtonBuilder,
 	ChannelSelectMenuBuilder,
-	EmbedBuilder,
+	ContainerBuilder,
+	LabelBuilder,
 	ModalBuilder,
 	RoleSelectMenuBuilder,
 	StringSelectMenuBuilder,
@@ -34,12 +33,11 @@ import {
 	ButtonStyle,
 	ChannelType,
 	DiscordAPIError,
+	MessageFlags,
 	RESTJSONErrorCodes,
 	TextInputStyle,
 	type Message,
-	type MessageActionRowComponentBuilder,
-	type MessageComponentInteraction,
-	type ModalActionRowComponentBuilder
+	type MessageComponentInteraction
 } from 'discord.js';
 
 const TIMEOUT = minutes(15);
@@ -79,7 +77,6 @@ export class SettingsMenu {
 	private schema: SchemaKey | SchemaGroup;
 	private collector: LongLivingInteractionCollector | null = null;
 	private errorMessage: string | null = null;
-	private readonly embed: EmbedBuilder;
 	private response: Message | null = null;
 	private oldValue: unknown = undefined;
 	private inputMode = false;
@@ -89,7 +86,6 @@ export class SettingsMenu {
 		this.interaction = message;
 		this.t = language;
 		this.schema = getConfigurableGroups();
-		this.embed = new EmbedBuilder().setAuthor(getFullEmbedAuthor(this.interaction.user));
 	}
 
 	public get client() {
@@ -106,10 +102,16 @@ export class SettingsMenu {
 
 		// Show initial loading state
 		const loadingMessages = this.t(LanguageKeys.System.Loading);
-		const loadingEmbed = new EmbedBuilder()
-			.setDescription(pickRandom(Array.isArray(loadingMessages) ? loadingMessages : [loadingMessages]))
-			.setColor(0x5865f2);
-		this.response = await this.interaction.editReply({ embeds: [loadingEmbed] });
+		const loadingContainer = new ContainerBuilder()
+			.setAccentColor(0x5865f2)
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay.setContent(pickRandom(Array.isArray(loadingMessages) ? loadingMessages : [loadingMessages]))
+			);
+
+		this.response = await this.interaction.editReply({
+			components: [loadingContainer],
+			flags: [MessageFlags.IsComponentsV2]
+		});
 
 		// Render the actual menu
 		await this._renderResponse();
@@ -128,13 +130,10 @@ export class SettingsMenu {
 		const description = isSchemaGroup(this.schema) ? this.renderGroup(this.schema) : await this.renderKey(this.schema);
 		const { parent } = this.schema;
 
-		this.embed
-			.setColor(getColor(this.interaction)) //
-			.setDescription(description.concat(ZeroWidthSpace).join('\n'))
-			.setTimestamp()
-			.setFooter(parent ? { text: this.t(LanguageKeys.Commands.Conf.MenuRenderBack) } : null);
+		const container = new ContainerBuilder().setAccentColor(getColor(this.interaction));
 
-		const rows: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [];
+		// Add main content as TextDisplay
+		container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(description.concat(ZeroWidthSpace).join('\n')));
 
 		// Select Menu Row
 		if (isSchemaGroup(this.schema)) {
@@ -170,14 +169,14 @@ export class SettingsMenu {
 
 			if (options.length > 0) {
 				selectMenu.addOptions(options.slice(0, 25));
-				rows.push(new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectMenu));
+				container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
 			}
 		}
 
-		// Button Rows
-		const buttons = new ActionRowBuilder<MessageActionRowComponentBuilder>();
+		// Buttons Section
+		const buttons: ButtonBuilder[] = [];
 		if (parent) {
-			buttons.addComponents(
+			buttons.push(
 				new ButtonBuilder()
 					.setCustomId(CustomIds.BACK)
 					.setLabel(this.t(LanguageKeys.Globals.Back))
@@ -192,27 +191,25 @@ export class SettingsMenu {
 			const value = settings[this.schema.property];
 
 			// Set
-			buttons.addComponents(
-				new ButtonBuilder().setCustomId(CustomIds.SET).setLabel(this.t(LanguageKeys.Globals.Set)).setStyle(ButtonStyle.Primary)
-			);
+			buttons.push(new ButtonBuilder().setCustomId(CustomIds.SET).setLabel(this.t(LanguageKeys.Globals.Set)).setStyle(ButtonStyle.Primary));
 
 			// Remove (if array and has elements)
 			if (this.schema.array && (value as unknown[]).length) {
-				buttons.addComponents(
+				buttons.push(
 					new ButtonBuilder().setCustomId(CustomIds.REMOVE).setLabel(this.t(LanguageKeys.Globals.Remove)).setStyle(ButtonStyle.Danger)
 				);
 			}
 
 			// Reset (if changed)
 			if (value !== this.schema.default) {
-				buttons.addComponents(
+				buttons.push(
 					new ButtonBuilder().setCustomId(CustomIds.RESET).setLabel(this.t(LanguageKeys.Globals.Reset)).setStyle(ButtonStyle.Danger)
 				);
 			}
 
 			// Undo (if updated)
 			if (this.updatedValue) {
-				buttons.addComponents(
+				buttons.push(
 					new ButtonBuilder()
 						.setCustomId(CustomIds.UNDO)
 						.setLabel(this.t(LanguageKeys.Commands.Conf.MenuRenderUndo))
@@ -221,63 +218,69 @@ export class SettingsMenu {
 			}
 		}
 
-		buttons.addComponents(
+		buttons.push(
 			new ButtonBuilder()
 				.setCustomId(CustomIds.STOP)
 				.setLabel(this.t(LanguageKeys.Globals.Stop))
 				.setStyle(ButtonStyle.Danger)
 				.setEmoji({ name: '⏹️' })
 		);
-		rows.push(buttons);
 
-		return { embeds: [this.embed], components: rows };
+		// Add buttons in groups of 5 (Discord limit per ActionRow)
+		for (let i = 0; i < buttons.length; i += 5) {
+			const chunk = buttons.slice(i, i + 5);
+			container.addActionRowComponents((actionRow) => actionRow.setComponents(...chunk));
+		}
+
+		return { components: [container], flags: [MessageFlags.IsComponentsV2] };
 	}
 
 	private async renderInput() {
 		const key = this.schema as SchemaKey;
-		const rows: ActionRowBuilder<MessageActionRowComponentBuilder>[] = [];
+		const container = new ContainerBuilder().setAccentColor(getColor(this.interaction));
 
-		this.embed.setDescription(this.t(LanguageKeys.Commands.Conf.MenuRenderUpdate));
+		container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Commands.Conf.MenuRenderUpdate)));
 
 		// Remove Mode: Show Select Menu with current values to remove
 		if (this.inputType === UpdateType.Remove) {
 			const settings = await readSettings(this.interaction.guild);
 			const values = settings[key.property] as unknown[];
 
-			const selectMenu = new StringSelectMenuBuilder()
-				.setCustomId(CustomIds.INPUT_REMOVE)
-				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
-			const options = await Promise.all(
-				values.map((val, index) => {
-					const label = key.stringify(settings, this.t, val as any).substring(0, 100);
-					// Better: For Roles/Channels, we can use their ID if available.
-					let valueId = String(val);
-					if (val && typeof val === 'object' && 'id' in val) {
-						// @ts-expect-error accessing id
-						valueId = val.id;
-					}
+			if (values.length) {
+				const selectMenu = new StringSelectMenuBuilder()
+					.setCustomId(CustomIds.INPUT_REMOVE)
+					.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+				const options = await Promise.all(
+					values.map((val, index) => {
+						const label = key.stringify(settings, this.t, val as any).substring(0, 100);
+						// Better: For Roles/Channels, we can use their ID if available.
+						let valueId = String(val);
+						if (val && typeof val === 'object' && 'id' in val) {
+							// @ts-expect-error accessing id
+							valueId = val.id;
+						}
 
-					return {
-						label: label || 'Unknown',
-						value: valueId.substring(0, 100),
-						description: String(index)
-					};
-				})
-			);
+						return {
+							label: label || 'Unknown',
+							value: valueId.substring(0, 100),
+							description: String(index)
+						};
+					})
+				);
 
-			if (options.length) {
 				selectMenu.addOptions(options.slice(0, 25));
-				rows.push(new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectMenu));
+				container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
 			} else {
-				this.embed.setDescription(this.t(LanguageKeys.Globals.None));
+				container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Globals.None)));
 			}
 		}
 		// Set Mode
 		else {
+			// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
 			switch (key.type) {
 				case 'boolean': {
-					rows.push(
-						new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+					container.addActionRowComponents((actionRow) =>
+						actionRow.setComponents(
 							new ButtonBuilder()
 								.setCustomId(CustomIds.INPUT_BOOL_TRUE)
 								.setLabel(this.t(LanguageKeys.Globals.Yes))
@@ -294,7 +297,7 @@ export class SettingsMenu {
 					const select = new RoleSelectMenuBuilder()
 						.setCustomId(CustomIds.INPUT_ROLE)
 						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
-					rows.push(new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select));
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(select));
 					break;
 				}
 				case 'guildTextChannel':
@@ -306,20 +309,20 @@ export class SettingsMenu {
 					if (key.type === 'guildTextChannel') select.setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
 					if (key.type === 'guildVoiceChannel') select.setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice);
 
-					rows.push(new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select));
+					container.addActionRowComponents((actionRow) => actionRow.setComponents(select));
 					break;
 				}
 			}
 		}
 
 		// Cancel Button
-		rows.push(
-			new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+		container.addActionRowComponents((actionRow) =>
+			actionRow.setComponents(
 				new ButtonBuilder().setCustomId(CustomIds.CANCEL).setLabel(this.t(LanguageKeys.Globals.Cancel)).setStyle(ButtonStyle.Secondary)
 			)
 		);
 
-		return { embeds: [this.embed], components: rows };
+		return { components: [container], flags: [MessageFlags.IsComponentsV2] };
 	}
 
 	private async renderKey(entry: SchemaKey) {
@@ -496,14 +499,12 @@ export class SettingsMenu {
 			.setCustomId(modalId)
 			.setTitle(this.t(type === UpdateType.Set ? LanguageKeys.Globals.Set : LanguageKeys.Globals.Remove));
 
-		const input = new TextInputBuilder()
-			.setCustomId(inputId)
-			.setLabel(this.t(LanguageKeys.Globals.Value))
-			.setStyle(TextInputStyle.Short)
-			.setRequired(true);
+		const key = this.schema as SchemaKey;
 
-		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(input);
-		modal.addComponents(row);
+		const input = new TextInputBuilder().setCustomId(inputId).setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder(key.name);
+		const label = new LabelBuilder().setLabel(this.t(LanguageKeys.Globals.Value)).setTextInputComponent(input);
+
+		modal.addLabelComponents(label);
 
 		await interaction.showModal(modal);
 
@@ -551,13 +552,14 @@ export class SettingsMenu {
 		if (!this.response) return;
 		try {
 			const payload = await this.render();
+			// @ts-expect-error - v2 components are experimental
 			await this.response.edit(payload);
 		} catch (error) {
 			if (error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownMessage) {
 				this.response = null;
 				this.collector?.end();
 			} else {
-				this.client.emit(Events.Error, error as Error);
+				this.client.emit('error', error as Error);
 			}
 		}
 	}
@@ -607,7 +609,11 @@ export class SettingsMenu {
 	private stop(): void {
 		if (this.response) {
 			const content = this.t(LanguageKeys.Commands.Conf.MenuSaved);
-			floatPromise(this.response.edit({ content, embeds: [], components: [] }));
+			const container = new ContainerBuilder()
+				.setAccentColor(getColor(this.interaction))
+				.addTextDisplayComponents((textDisplay) => textDisplay.setContent(content));
+
+			floatPromise(this.response.edit({ components: [container], flags: [MessageFlags.IsComponentsV2] }));
 		}
 
 		if (this.collector && !this.collector.ended) {
