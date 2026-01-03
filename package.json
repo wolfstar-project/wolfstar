@@ -35,8 +35,9 @@
 	},
 	"scripts": {
 		"build": "tsdown",
-		"dev": "tsdown --watch --onSuccess \"pnpm start\"",
-		"watch": "tsdown --watch",
+		"dev": "pnpm build --onSuccess \"pnpm start\"",
+		"watch": "pnpm build --watch",
+		"watch:start": "pnpm build --watch --onSuccess \"pnpm start\"",
 		"prisma:generate": "pnpm prisma generate",
 		"clean": "node scripts/build/clean.mjs",
 		"start": "node --enable-source-maps dist/index.mjs",
@@ -113,6 +114,7 @@
 		"prettier": "^3.7.2",
 		"prisma": "^6.19.0",
 		"prisma-json-types-generator": "^3.6.2",
+		"taze": "^19.9.2",
 		"tsdown": "^0.17.2",
 		"typescript": "~5.7.2",
 		"vitest": "^4.0.14"
