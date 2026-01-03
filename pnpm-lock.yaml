@@ -171,7 +171,7 @@ importers:
                 version: 7.18.0(eslint@8.57.1)(typescript@5.7.3)
             '@vitest/coverage-v8':
                 specifier: ^4.0.14
-                version: 4.0.14(vitest@4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1))
+                version: 4.0.14(vitest@4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2))
             cz-conventional-changelog:
                 specifier: ^3.3.0
                 version: 3.3.0(@types/node@22.19.1)(typescript@5.7.3)
@@ -196,6 +196,9 @@ importers:
             prisma-json-types-generator:
                 specifier: ^3.6.2
                 version: 3.6.2(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.7.3))(typescript@5.7.3))(prisma@6.19.0(magicast@0.3.5)(typescript@5.7.3))(typescript@5.7.3)
+            taze:
+                specifier: ^19.9.2
+                version: 19.9.2
             tsdown:
                 specifier: ^0.17.2
                 version: 0.17.2(synckit@0.11.11)(typescript@5.7.3)
@@ -204,12 +207,17 @@ importers:
                 version: 5.7.3
             vitest:
                 specifier: ^4.0.14
-                version: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1)
+                version: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2)
 
 packages:
     0x@6.0.0:
         resolution: { integrity: sha512-4JrGHSPTaoEL3MZiKYH5BlNv67X2F48FmR3dKJZOoR/Z1CLVtVOwUb/n4PMf7B+sP9RPz+X50EbIFuwtfYguRQ== }
         engines: { node: '>=8.5.0' }
+        hasBin: true
+
+    '@antfu/ni@27.0.1':
+        resolution: { integrity: sha512-I6SOlwJ0MN73ECYcr7VJHpqSseyd7bpshx6JAaD0zNowS4kSWzFsqg8ikQT7DnCLiD4AZ+FaQJQ8WAk0Qi89Vw== }
+        engines: { node: '>=20' }
         hasBin: true
 
     '@apm-js-collab/code-transformer@0.8.2':
@@ -2182,6 +2190,10 @@ packages:
     find-root@1.1.0:
         resolution: { integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng== }
 
+    find-up-simple@1.0.1:
+        resolution: { integrity: sha512-afd4O7zpqHeRyg4PfDQsXmlDe2PfdHtJt6Akt8jOWaApLOZk5JXs6VMR29lz03pRe9mpykrRCYIYxaJYcfpncQ== }
+        engines: { node: '>=18' }
+
     find-up@5.0.0:
         resolution: { integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng== }
         engines: { node: '>=10' }
@@ -2226,6 +2238,9 @@ packages:
 
     function-bind@1.1.2:
         resolution: { integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA== }
+
+    fzf@0.5.2:
+        resolution: { integrity: sha512-Tt4kuxLXFKHy8KT40zwsUPUkg1CrsgY25FxA2U/j/0WgEDCk3ddc/zLTCCcbSHX9FcKtLuVaDGtGE/STWC+j3Q== }
 
     generator-function@2.0.1:
         resolution: { integrity: sha512-SFdFmIJi+ybC0vjlHN0ZGVGHc3lgE0DxPAT0djjVg+kjOnSqclqmj0KQ7ykTOLP6YxoqOvuAODGdcHJn+43q3g== }
@@ -2861,6 +2876,9 @@ packages:
     obug@2.1.1:
         resolution: { integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ== }
 
+    ofetch@1.5.1:
+        resolution: { integrity: sha512-2W4oUZlVaqAPAil6FUg/difl6YhqhUR7x2eZY4bQCko22UXg3hptq9KLQdqFClV+Wu85UX7hNtdGTngi/1BxcA== }
+
     ohash@2.0.11:
         resolution: { integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ== }
 
@@ -2913,6 +2931,9 @@ packages:
     p-locate@6.0.0:
         resolution: { integrity: sha512-wPrq66Llhl7/4AGC6I+cqxT07LhXvWL08LNXz1fENOw0Ap4sRZZ/gZpTTJ5jpurzzzfS2W/Ge9BY3LgLjCShcw== }
         engines: { node: ^12.20.0 || ^14.13.1 || >=16.0.0 }
+
+    package-manager-detector@1.6.0:
+        resolution: { integrity: sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA== }
 
     pako@1.0.11:
         resolution: { integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw== }
@@ -3005,6 +3026,9 @@ packages:
 
     pkg-types@2.3.0:
         resolution: { integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig== }
+
+    pnpm-workspace-yaml@1.4.3:
+        resolution: { integrity: sha512-Q8B3SWuuISy/Ciag4DFP7MCrJX07wfaekcqD2o/msdIj4x8Ql3bZ/NEKOXV7mTVh7m1YdiFWiMi9xH+0zuEGHw== }
 
     possible-typed-array-names@1.1.0:
         resolution: { integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg== }
@@ -3426,6 +3450,10 @@ packages:
     tachyons@4.12.0:
         resolution: { integrity: sha512-2nA2IrYFy3raCM9fxJ2KODRGHVSZNTW3BR0YnlGsLUf1DA3pk3YfWZ/DdfbnZK6zLZS+jUenlUGJsKcA5fUiZg== }
 
+    taze@19.9.2:
+        resolution: { integrity: sha512-If8bq7lSckIMPfXV+C9jjEfdsQnRryh/foKfpX/ah6zI0TrQfUGWSGCaaD32Bqy5/KGRmLZie3EwMSr3Au21XQ== }
+        hasBin: true
+
     text-extensions@2.4.0:
         resolution: { integrity: sha512-te/NtwBwfiNRLf9Ijqx3T0nlqZiQ2XrrtBvu+cLL8ZRrGkO0NHTug8MYFKyoSrv/sHTaSKfilUkizV6XhxMJ3g== }
         engines: { node: '>=8' }
@@ -3565,12 +3593,18 @@ packages:
         engines: { node: '>=14.17' }
         hasBin: true
 
+    ufo@1.6.1:
+        resolution: { integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA== }
+
     umd@3.0.3:
         resolution: { integrity: sha512-4IcGSufhFshvLNcMCV80UnQVlZ5pMOC8mvNPForqwA4+lzYQuetTESLDQkeLmihq8bRcnpbQa48Wb8Lh16/xow== }
         hasBin: true
 
     unconfig-core@7.4.2:
         resolution: { integrity: sha512-VgPCvLWugINbXvMQDf8Jh0mlbvNjNC6eSUziHsBCMpxR05OPrNrvDnyatdMjRgcHaaNsCqz+wjNXxNw1kRLHUg== }
+
+    unconfig@7.4.2:
+        resolution: { integrity: sha512-nrMlWRQ1xdTjSnSUqvYqJzbTBFugoqHobQj58B2bc8qxHKBBHMNNsWQFP3Cd3/JZK907voM2geYPWqD4VK3MPQ== }
 
     undeclared-identifiers@1.1.3:
         resolution: { integrity: sha512-pJOW4nxjlmfwKApE4zvxLScM/njmwj/DiUBv7EabwE4O8kRUy+HIwxQtZLBPll/jx1LJyBcqNfB3/cpv9EZwOw== }
@@ -3765,6 +3799,11 @@ packages:
         engines: { node: '>= 14.6' }
         hasBin: true
 
+    yaml@2.8.2:
+        resolution: { integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A== }
+        engines: { node: '>= 14.6' }
+        hasBin: true
+
     yargs-parser@21.1.1:
         resolution: { integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw== }
         engines: { node: '>=12' }
@@ -3817,6 +3856,14 @@ snapshots:
             which: 2.0.2
         transitivePeerDependencies:
             - supports-color
+
+    '@antfu/ni@27.0.1':
+        dependencies:
+            ansis: 4.2.0
+            fzf: 0.5.2
+            package-manager-detector: 1.6.0
+            tinyexec: 1.0.2
+            tinyglobby: 0.2.15
 
     '@apm-js-collab/code-transformer@0.8.2': {}
 
@@ -5046,7 +5093,7 @@ snapshots:
 
     '@ungap/structured-clone@1.3.0': {}
 
-    '@vitest/coverage-v8@4.0.14(vitest@4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1))':
+    '@vitest/coverage-v8@4.0.14(vitest@4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2))':
         dependencies:
             '@bcoe/v8-coverage': 1.0.2
             '@vitest/utils': 4.0.14
@@ -5059,7 +5106,7 @@ snapshots:
             obug: 2.1.1
             std-env: 3.10.0
             tinyrainbow: 3.0.3
-            vitest: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1)
+            vitest: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2)
         transitivePeerDependencies:
             - supports-color
 
@@ -5072,13 +5119,13 @@ snapshots:
             chai: 6.2.1
             tinyrainbow: 3.0.3
 
-    '@vitest/mocker@4.0.14(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1))':
+    '@vitest/mocker@4.0.14(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2))':
         dependencies:
             '@vitest/spy': 4.0.14
             estree-walker: 3.0.3
             magic-string: 0.30.21
         optionalDependencies:
-            vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1)
+            vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2)
 
     '@vitest/pretty-format@4.0.14':
         dependencies:
@@ -6110,6 +6157,8 @@ snapshots:
 
     find-root@1.1.0: {}
 
+    find-up-simple@1.0.1: {}
+
     find-up@5.0.0:
         dependencies:
             locate-path: 6.0.0
@@ -6161,6 +6210,8 @@ snapshots:
         optional: true
 
     function-bind@1.1.2: {}
+
+    fzf@0.5.2: {}
 
     generator-function@2.0.1: {}
 
@@ -6812,6 +6863,12 @@ snapshots:
 
     obug@2.1.1: {}
 
+    ofetch@1.5.1:
+        dependencies:
+            destr: 2.0.5
+            node-fetch-native: 1.6.7
+            ufo: 1.6.1
+
     ohash@2.0.11: {}
 
     on-net-listen@1.1.2: {}
@@ -6872,6 +6929,8 @@ snapshots:
     p-locate@6.0.0:
         dependencies:
             p-limit: 4.0.0
+
+    package-manager-detector@1.6.0: {}
 
     pako@1.0.11: {}
 
@@ -6954,6 +7013,10 @@ snapshots:
             confbox: 0.2.2
             exsolve: 1.0.8
             pathe: 2.0.3
+
+    pnpm-workspace-yaml@1.4.3:
+        dependencies:
+            yaml: 2.8.2
 
     possible-typed-array-names@1.1.0: {}
 
@@ -7405,6 +7468,21 @@ snapshots:
 
     tachyons@4.12.0: {}
 
+    taze@19.9.2:
+        dependencies:
+            '@antfu/ni': 27.0.1
+            cac: 6.7.14
+            find-up-simple: 1.0.1
+            ofetch: 1.5.1
+            package-manager-detector: 1.6.0
+            pathe: 2.0.3
+            pnpm-workspace-yaml: 1.4.3
+            restore-cursor: 5.1.0
+            tinyexec: 1.0.2
+            tinyglobby: 0.2.15
+            unconfig: 7.4.2
+            yaml: 2.8.1
+
     text-extensions@2.4.0: {}
 
     text-table@0.2.0: {}
@@ -7535,12 +7613,22 @@ snapshots:
 
     typescript@5.7.3: {}
 
+    ufo@1.6.1: {}
+
     umd@3.0.3: {}
 
     unconfig-core@7.4.2:
         dependencies:
             '@quansync/fs': 1.0.0
             quansync: 1.0.0
+
+    unconfig@7.4.2:
+        dependencies:
+            '@quansync/fs': 1.0.0
+            defu: 6.1.4
+            jiti: 2.6.1
+            quansync: 1.0.0
+            unconfig-core: 7.4.2
 
     undeclared-identifiers@1.1.3:
         dependencies:
@@ -7593,7 +7681,7 @@ snapshots:
             is-typed-array: 1.1.15
             which-typed-array: 1.1.19
 
-    vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1):
+    vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2):
         dependencies:
             esbuild: 0.25.12
             fdir: 6.5.0(picomatch@4.0.3)
@@ -7605,12 +7693,12 @@ snapshots:
             '@types/node': 22.19.1
             fsevents: 2.3.3
             jiti: 2.6.1
-            yaml: 2.8.1
+            yaml: 2.8.2
 
-    vitest@4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1):
+    vitest@4.0.14(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2):
         dependencies:
             '@vitest/expect': 4.0.14
-            '@vitest/mocker': 4.0.14(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1))
+            '@vitest/mocker': 4.0.14(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2))
             '@vitest/pretty-format': 4.0.14
             '@vitest/runner': 4.0.14
             '@vitest/snapshot': 4.0.14
@@ -7627,7 +7715,7 @@ snapshots:
             tinyexec: 0.3.2
             tinyglobby: 0.2.15
             tinyrainbow: 3.0.3
-            vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.1)
+            vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.2)
             why-is-node-running: 2.3.0
         optionalDependencies:
             '@opentelemetry/api': 1.9.0
@@ -7699,6 +7787,8 @@ snapshots:
     y18n@5.0.8: {}
 
     yaml@2.8.1: {}
+
+    yaml@2.8.2: {}
 
     yargs-parser@21.1.1: {}
 
