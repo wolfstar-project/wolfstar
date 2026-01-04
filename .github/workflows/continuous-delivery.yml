@@ -10,6 +10,9 @@ on:
       - 'Dockerfile'
       - '.github/workflows/continuous-delivery.yml'
       - 'package.json'
+permissions:
+  contents: read
+  packages: write
 
 env:
   HUSKY: 0
