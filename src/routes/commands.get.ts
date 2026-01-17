@@ -6,14 +6,14 @@ import { seconds } from '#utils/common';
 import type { Command } from '@sapphire/framework';
 import { Route } from '@sapphire/plugin-api';
 import type { TFunction } from '@sapphire/plugin-i18next';
-import type { LocaleString } from 'discord.js';
+import type { Locale } from 'discord.js';
 
 export class UserRoute extends Route {
 	@ratelimit(seconds(2), 2)
 	public run(request: Route.Request, response: Route.Response) {
 		const { lang, category } = request.query;
 		const commands = this.container.stores.get('commands');
-		const language = getT(lang as LocaleString);
+		const language = getT(lang as Locale);
 		const filtered = (category ? commands.filter((cmd) => cmd.category === category) : commands).filter(
 			(cmd) => (cmd as WolfCommand).permissionLevel < PermissionLevels.BotOwner
 		);
@@ -25,6 +25,8 @@ export class UserRoute extends Route {
 		const command = cmd as WolfCommand;
 		return {
 			category: command.category,
+			subCategory: command.subCategory,
+			alias: command.aliases,
 			description: t(command.description),
 			extendedHelp: t(command.detailedDescription, { prefix: process.env.CLIENT_PREFIX }),
 			guarded: command.guarded,

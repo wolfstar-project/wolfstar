@@ -4,7 +4,7 @@ import { DecoratorIdentifiers } from '@sapphire/decorators';
 import { Identifiers, container } from '@sapphire/framework';
 import type { InternationalizationContext, TFunction } from '@sapphire/plugin-i18next';
 import type { Nullish } from '@sapphire/utilities';
-import type { Interaction, LocaleString } from 'discord.js';
+import type { Interaction, Locale } from 'discord.js';
 
 export function translate(identifier: string): string {
 	switch (identifier) {
@@ -120,11 +120,11 @@ export function resolveT(t: TResolvable): TFunction {
  * @param locale The locale to get the translation function for.
  * @returns The translation function for the specified locale.
  */
-export function getT(locale?: LocaleString | string | Nullish) {
+export function getT(locale?: Locale | string | Nullish) {
 	return container.i18n.getT(locale ?? 'en-US');
 }
 
-export function getSupportedLanguageName(interaction: Interaction): LocaleString {
+export function getSupportedLanguageName(interaction: Interaction): Locale {
 	if (interaction.guildLocale && container.i18n.languages.has(interaction.guildLocale)) return interaction.guildLocale;
 	return 'en-US';
 }
@@ -133,7 +133,7 @@ export function getSupportedLanguageT(interaction: Interaction): TFunction {
 	return getT(getSupportedLanguageName(interaction));
 }
 
-export function getSupportedUserLanguageName(interaction: Interaction): LocaleString {
+export function getSupportedUserLanguageName(interaction: Interaction): Locale {
 	if (container.i18n.languages.has(interaction.locale)) return interaction.locale;
 	return getSupportedLanguageName(interaction);
 }
@@ -146,10 +146,10 @@ export function getSupportedUserLanguageT(interaction: Interaction): TFunction {
  * Fetches the language for the given {@link InternationalizationContext}.
  * If the language cannot be fetched, defaults to 'en-US'.
  * @param context The InternationalizationContext to fetch the language for.
- * @returns The fetched language as a {@link LocaleString}.
+ * @returns The fetched language as a {@link Locale}.
  */
 export async function fetchLanguage(context: InternationalizationContext) {
-	return (await container.i18n.fetchLanguage(context))! as LocaleString;
+	return (await container.i18n.fetchLanguage(context))! as Locale;
 }
 
 /**
