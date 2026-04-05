@@ -82,7 +82,8 @@
 				"args": "none",
 				"caughtErrors": "none",
 				"ignoreRestSiblings": true,
-				"vars": "all"
+				"vars": "all",
+				"varsIgnorePattern": "^_"
 			}
 		],
 		"prefer-const": [
@@ -118,7 +119,7 @@
 		"unicorn/no-instanceof-builtins": "error",
 		"unicorn/no-new-array": "error",
 		"unicorn/no-new-buffer": "error",
-		"unicorn/number-literal-case": "error",
+		"unicorn/number-literal-case": "off",
 		"unicorn/prefer-includes": "error",
 		"unicorn/prefer-node-protocol": "error",
 		"unicorn/prefer-number-properties": "error",
@@ -135,7 +136,7 @@
 		"unicorn/prefer-set-has": "off",
 		"vitest/require-mock-type-parameters": "off"
 	},
-	"ignorePatterns": ["dist/**", "node_modules/**", "coverage/**"],
+	"ignorePatterns": ["dist/**", "node_modules/**", "coverage/**", "src/lib/util/Links/TLDs.ts"],
 	"overrides": [
 		{
 			"files": ["**/*.?([cm])ts"],

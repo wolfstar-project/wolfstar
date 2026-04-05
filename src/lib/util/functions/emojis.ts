@@ -49,9 +49,9 @@ export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 
 const customEmojiRegExp = /^[as]\d{17,19}$/;
 const allowedTwemojiRanges: ReadonlyArray<[number, number]> = [
-	[0x1F000, 0x1FFFF], // Most emoji blocks including symbols & pictographs
-	[0x2600, 0x27BF], // Misc symbols / dingbats
-	[0x2300, 0x23FF] // Misc technical
+	[0x1f000, 0x1ffff], // Most emoji blocks including symbols & pictographs
+	[0x2600, 0x27bf], // Misc symbols / dingbats
+	[0x2300, 0x23ff] // Misc technical
 ];
 
 function matchesTwemoji(emoji: string) {

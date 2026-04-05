@@ -48,7 +48,7 @@ export class UserCommand extends WolfCommand {
 
 			// Replace the first character of the offending user's with an UTF-16 character, bringing'em down, down, down.
 			// The ternary cuts 2 characters if the 1st codepoint belongs in UTF-16
-			const newNick = `🠷${displayName.slice(char <= 0xFF ? 1 : 2)}`;
+			const newNick = `🠷${displayName.slice(char <= 0xff ? 1 : 2)}`;
 			try {
 				await member.setNickname(newNick, 'Dehoisting');
 			} catch {

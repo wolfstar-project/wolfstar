@@ -82,7 +82,7 @@ export class UserCommand extends WolfCommand {
 		return new EmbedBuilder()
 			.setAuthor({ name: titles.trivia })
 			.setTitle(data.category)
-			.setColor(0xF37917)
+			.setColor(0xf37917)
 			.setThumbnail('https://i.imgur.com/zPtu5aP.png')
 			.setDescription([`${titles.difficulty}: ${data.difficulty}`, '', he.decode(data.question), '', questionDisplay.join('\n')].join('\n'));
 	}

@@ -88,7 +88,7 @@ export const enum Emojis {
 
 export const enum BrandingColors {
 	Primary = 0x050505,
-	Secondary = 0xFD171B
+	Secondary = 0xfd171b
 }
 
 export const enum Urls {
@@ -124,28 +124,28 @@ export const enum LanguageFormatters {
 }
 
 export const enum Colors {
-	White = 0xE7E7E8,
-	Amber = 0xFFC107,
-	Amber300 = 0xFFD54F,
-	Blue = 0x2196F3,
-	BlueGrey = 0x607D8B,
+	White = 0xe7e7e8,
+	Amber = 0xffc107,
+	Amber300 = 0xffd54f,
+	Blue = 0x2196f3,
+	BlueGrey = 0x607d8b,
 	Brown = 0x795548,
-	Cyan = 0x00BCD4,
-	DeepOrange = 0xFF5722,
-	DeepPurple = 0x673AB7,
-	Green = 0x4CAF50,
-	Grey = 0x9E9E9E,
-	Indigo = 0x3F51B5,
-	LightBlue = 0x03A9F4,
-	LightGreen = 0x8BC34A,
-	Lime = 0xCDDC39,
-	Lime300 = 0xDCE775,
-	Orange = 0xFF9800,
-	Pink = 0xE91E63,
-	Purple = 0x9C27B0,
-	Red = 0xF44336,
-	Red300 = 0xE57373,
+	Cyan = 0x00bcd4,
+	DeepOrange = 0xff5722,
+	DeepPurple = 0x673ab7,
+	Green = 0x4caf50,
+	Grey = 0x9e9e9e,
+	Indigo = 0x3f51b5,
+	LightBlue = 0x03a9f4,
+	LightGreen = 0x8bc34a,
+	Lime = 0xcddc39,
+	Lime300 = 0xdce775,
+	Orange = 0xff9800,
+	Pink = 0xe91e63,
+	Purple = 0x9c27b0,
+	Red = 0xf44336,
+	Red300 = 0xe57373,
 	Teal = 0x009688,
-	Yellow = 0xFFEB3B,
-	Yellow300 = 0xFFF176
+	Yellow = 0xffeb3b,
+	Yellow300 = 0xfff176
 }

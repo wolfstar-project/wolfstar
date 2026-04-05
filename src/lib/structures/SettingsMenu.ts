@@ -122,7 +122,7 @@ export class SettingsMenu {
 		// Show initial loading state
 		const loadingMessages = this.t(LanguageKeys.System.Loading);
 		const loadingContainer = new ContainerBuilder()
-			.setAccentColor(0x5865F2)
+			.setAccentColor(0x5865f2)
 			.addTextDisplayComponents((textDisplay) =>
 				textDisplay.setContent(pickRandom(Array.isArray(loadingMessages) ? loadingMessages : [loadingMessages]))
 			);

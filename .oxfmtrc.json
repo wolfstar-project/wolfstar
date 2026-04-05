@@ -9,5 +9,16 @@
 	"trailingComma": "none",
 	"useTabs": true,
 	"sortPackageJson": false,
-	"ignorePatterns": ["src/languages/**/*.json", "dist/"]
+	"ignorePatterns": ["src/languages/**/*.json", "dist/"],
+	"overrides": [
+		{
+			"files": ["README.md"],
+			"options": {
+				"tabWidth": 2,
+				"useTabs": false,
+				"printWidth": 80,
+				"proseWrap": "always"
+			}
+		}
+	]
 }
