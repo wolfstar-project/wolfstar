@@ -55,7 +55,7 @@ export class UserListener extends Listener {
 			if (isNullishOrEmpty(contentLength)) continue;
 
 			// Parse the content length, validate it, and check if it's lower than the threshold.
-			const parsedContentLength = parseInt(contentLength, 10);
+			const parsedContentLength = Number.parseInt(contentLength, 10);
 			if (!isNumber(parsedContentLength)) continue;
 			if (parsedContentLength > MAXIMUM_LENGTH) continue;
 

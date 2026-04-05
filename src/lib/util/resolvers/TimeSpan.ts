@@ -32,7 +32,7 @@ function parse(parameter: string) {
 	const date = Date.parse(parameter);
 	if (!Number.isNaN(date)) return date - Date.now();
 
-	return NaN;
+	return Number.NaN;
 }
 
 export interface TimeSpanOptions {

@@ -11,9 +11,6 @@ onlyBuiltDependencies:
     - workerd
     - better-sqlite3
 
-allowedDeprecatedVersions:
-    eslint: 8.57.1
-
 overrides:
     ansi-regex: ^5.0.1
     discord-api-types: ^0.38.34

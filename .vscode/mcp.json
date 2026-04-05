@@ -1,10 +1,5 @@
 {
 	"servers": {
-		"eslint": {
-			"type": "stdio",
-			"command": "npx",
-			"args": ["@eslint/mcp"]
-		},
 		"sentry": {
 			"type": "http",
 			"url": "https://mcp.sentry.dev/mcp"

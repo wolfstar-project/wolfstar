@@ -33,7 +33,7 @@ import {
 
 const Root = LanguageKeys.Commands.Case;
 const RootModeration = LanguageKeys.Moderation;
-const OverviewColors = [0x80f31f, 0xa5de0b, 0xc7c101, 0xe39e03, 0xf6780f, 0xfe5326, 0xfb3244];
+const OverviewColors = [0x80F31F, 0xA5DE0B, 0xC7C101, 0xE39E03, 0xF6780F, 0xFE5326, 0xFB3244];
 
 @ApplyOptions<WolfSubcommand.Options>({
 	description: Root.Description,

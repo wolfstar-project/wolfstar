@@ -106,11 +106,10 @@ export class UserCommand extends WolfCommand {
 					// Ask for verification.
 					// NOTE: This does not deadlock because the callback is assigned to a variable in the scope, which
 					// is called with `false` when the LLRC times out.
-					const verification = await new Promise<boolean>(async (res) => {
+					const verification = await new Promise<boolean>((res) => {
 						resolve = res;
 						if (autoSkip) {
-							await sleep((gameMessage!.content.length / 20) * 1000);
-							res(true);
+							sleep((gameMessage!.content.length / 20) * 1000).then(() => res(true));
 						}
 					});
 
@@ -131,8 +130,6 @@ export class UserCommand extends WolfCommand {
 			// The match finished with one remaining player
 			const content = args.t(LanguageKeys.Commands.Games.HungerGamesWinner, { winner: game.tributes.values().next().value as string });
 			await send(message, content);
-		} catch (error) {
-			throw error;
 		} finally {
 			game.llrc.end();
 		}
@@ -208,7 +205,7 @@ export class UserCommand extends WolfCommand {
 		const deaths = [] as string[];
 		let maxDeaths = this.calculateMaxDeaths(game);
 
-		const turn = new Set([...game.tributes]);
+		const turn = new Set(game.tributes);
 		for (const tribute of game.tributes) {
 			// If the player already had its turn, skip
 			if (!turn.has(tribute)) continue;
