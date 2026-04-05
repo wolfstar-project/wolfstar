@@ -119,27 +119,6 @@
 		"typescript": "~5.7.2",
 		"vitest": "^4.0.14"
 	},
-	"pnpm": {
-		"overrides": {
-			"ansi-regex": "^5.0.1",
-			"discord-api-types": "^0.38.34",
-			"minimist": "^1.2.8"
-		},
-		"allowedDeprecatedVersions": {
-			"eslint": "8.57.1"
-		},
-		"onlyBuiltDependencies": [
-			"@prisma/client",
-			"@prisma/engines",
-			"@skyra/ai",
-			"esbuild",
-			"prisma"
-		],
-		"ignoredBuiltDependencies": [
-			"bufferutil",
-			"zlib-sync"
-		]
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/wolfstar-project/wolfstar.git"
@@ -163,8 +142,5 @@
 	"engines": {
 		"node": ">=20",
 		"pnpm": ">=10"
-	},
-	"volta": {
-		"node": "22.21.1"
 	}
 }
