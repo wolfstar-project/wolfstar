@@ -14,6 +14,7 @@ RUN apk add --no-cache dumb-init g++ make python3
 RUN corepack enable && corepack prepare pnpm@10.22.0 --activate
 
 COPY --chown=node:node pnpm-lock.yaml .
+COPY --chown=node:node pnpm-workspace.yaml .
 COPY --chown=node:node package.json .
 COPY --chown=node:node .npmrc .
 
