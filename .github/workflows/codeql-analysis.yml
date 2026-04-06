@@ -1,14 +1,14 @@
 name: Code Scanning
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+    push:
+        branches:
+            - main
+    pull_request:
 
 jobs:
-  CodeQL:
-    name: Analysis
-    uses: sapphiredev/.github/.github/workflows/reusable-codeql.yml@main
-    with:
-      with-auto-build: false
+    CodeQL:
+        name: Analysis
+        uses: sapphiredev/.github/.github/workflows/reusable-codeql.yml@main
+        with:
+            with-auto-build: false

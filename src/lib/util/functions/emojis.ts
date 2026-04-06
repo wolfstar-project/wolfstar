@@ -8,7 +8,7 @@ export type EncodedTwemoji = `${1 | 2 | 3}${string}` | 'a9' | 'ae' | 'e50a';
 
 // Hacky workaround for codes Discord and Windows use that don't exist on Twemoji's CDN.
 const TwemojiExceptions = {
-	'\u2764\ufe0f': '2764' // (❤️)
+	'\u2764\uFE0F': '2764' // (❤️)
 } as Record<string, EncodedTwemoji>;
 
 /**

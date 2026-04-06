@@ -1,13 +1,13 @@
 name: Automatic Label Sync
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    schedule:
+        - cron: '0 0 * * *'
+    workflow_dispatch:
 permissions:
-  contents: read
-  issues: write
+    contents: read
+    issues: write
 
 jobs:
-  label_sync:
-    uses: sapphiredev/.github/.github/workflows/reusable-labelsync.yml@main
+    label_sync:
+        uses: sapphiredev/.github/.github/workflows/reusable-labelsync.yml@main

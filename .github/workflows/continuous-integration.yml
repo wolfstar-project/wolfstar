@@ -1,100 +1,94 @@
-name: Continuous Integration
+name: ci
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
+    merge_group:
+        branches:
+            - main
+
+# cancel in-progress runs on new commits to same PR (github.event.number)
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
 
 jobs:
-  Linting:
-    name: Linting NodeJS
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [22]
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v6
-      - name: Add problem matchers
-        run: echo "::add-matcher::.github/problemMatchers/eslint.json"
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          run_install: false
-      - name: Use Node.js v${{ matrix.node }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node }}
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Generate prisma types
-        run: pnpm prisma:generate
-      - name: Run ESLint
-        run: pnpm lint --fix=false
+    lint:
+        name: Lint project
+        runs-on: ubuntu-24.04-arm
 
-  Building:
-    name: Compile source code
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [22]
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Add problem matchers
-        run: echo "::add-matcher::.github/problemMatchers/tsc.json"
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          run_install: false
-      - name: Use Node.js v${{ matrix.node }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node }}
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Generate prisma types
-        run: pnpm prisma:generate
-      - name: Build code
-        run: pnpm build
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-  UnitTesting:
-    name: Unit Tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [22]
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          run_install: false
-      - name: Use Node.js v${{ matrix.node }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node }}
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Generate prisma types
-        run: pnpm prisma:generate
-      - name: Run unit tests
-        run: pnpm test --coverage
-      - name: Codecov Upload
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/cobertura-coverage.xml
-          fail_ci_if_error: true
+            - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+              with:
+                  node-version: lts/*
+
+            - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+              name: Install pnpm
+
+            - name: Install dependencies (root only, no scripts)
+              run: pnpm install --filter . --ignore-scripts
+
+            - name: Lint project
+              run: pnpm lint
+
+    build:
+        name: Build project
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+            - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+              with:
+                  node-version: lts/*
+
+            - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+              name: Install pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Generate prisma types
+              run: pnpm prisma:generate
+
+            - name: Build project
+              run: pnpm build
+
+    test:
+        name: Unit tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+            - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+              with:
+                  node-version: lts/*
+
+            - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+              name: Install pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Generate prisma types
+              run: pnpm prisma:generate
+
+            - name: Run unit tests
+              run: pnpm test --coverage
+
+            - name: Codecov Upload
+              uses: codecov/codecov-action@v5
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: coverage/cobertura-coverage.xml
+                  fail_ci_if_error: true

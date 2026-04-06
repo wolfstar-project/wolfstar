@@ -68,6 +68,7 @@ export class SortedCollection<K extends number | string | bigint, V> implements 
 	 * @returns `true` if the collection contains the key, `false` otherwise.
 	 */
 	public has(key: K): boolean {
+		// eslint-disable-next-line unicorn/prefer-includes -- SortedCollection has no includes() method
 		return this.indexOf(key) !== -1;
 	}
 

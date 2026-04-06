@@ -1,0 +1,24 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"endOfLine": "lf",
+	"printWidth": 150,
+	"quoteProps": "as-needed",
+	"semi": true,
+	"singleQuote": true,
+	"tabWidth": 4,
+	"trailingComma": "none",
+	"useTabs": true,
+	"sortPackageJson": false,
+	"ignorePatterns": ["src/languages/**/*.json", "dist/"],
+	"overrides": [
+		{
+			"files": ["README.md"],
+			"options": {
+				"tabWidth": 2,
+				"useTabs": false,
+				"printWidth": 80,
+				"proseWrap": "always"
+			}
+		}
+	]
+}

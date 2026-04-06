@@ -1,24 +1,24 @@
 codecov:
-  notify:
-    after_n_builds: 1
-  strict_yaml_branch: main
+    notify:
+        after_n_builds: 1
+    strict_yaml_branch: main
 
 coverage:
-  range: '50...100'
-  status:
-    project:
-      default:
-        target: auto
-        threshold: 5%
-    patch: off
+    range: '50...100'
+    status:
+        project:
+            default:
+                target: auto
+                threshold: 5%
+        patch: off
 
 flag_management:
-  default_rules:
-    statuses:
-      - type: project
-        target: auto
-        threshold: 2%
+    default_rules:
+        statuses:
+            - type: project
+              target: auto
+              threshold: 2%
 
 comment:
-  require_changes: true
-  after_n_builds: 1
+    require_changes: true
+    after_n_builds: 1

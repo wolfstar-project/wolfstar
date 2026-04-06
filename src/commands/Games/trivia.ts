@@ -53,7 +53,7 @@ export class UserCommand extends WolfCommand {
 			return collector
 				.on('collect', (collected: Message) => {
 					if (participants.has(collected.author.id)) return;
-					const attempt = possibleAnswers[parseInt(collected.content, 10) - 1];
+					const attempt = possibleAnswers[Number.parseInt(collected.content, 10) - 1];
 					if (attempt === correctAnswer) {
 						winner = collected.author;
 						return collector.stop();

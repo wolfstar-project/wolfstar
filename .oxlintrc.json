@@ -1,0 +1,247 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["unicorn", "typescript", "oxc", "import", "vitest", "node"],
+	"categories": {
+		"correctness": "error",
+		"suspicious": "warn",
+		"perf": "warn"
+	},
+	"rules": {
+		"accessor-pairs": [
+			"error",
+			{
+				"enforceForClassMembers": true,
+				"setWithoutGet": true
+			}
+		],
+		"eqeqeq": "warn",
+		"new-cap": [
+			"error",
+			{
+				"capIsNew": false,
+				"newIsCap": true,
+				"properties": true
+			}
+		],
+		"no-cond-assign": "off",
+		"no-console": "off",
+		"no-debugger": "warn",
+		"no-empty": [
+			"error",
+			{
+				"allowEmptyCatch": true
+			}
+		],
+		"no-labels": [
+			"error",
+			{
+				"allowLoop": false,
+				"allowSwitch": false
+			}
+		],
+		"no-redeclare": [
+			"error",
+			{
+				"builtinGlobals": false
+			}
+		],
+		"no-restricted-globals": [
+			"error",
+			{
+				"message": "Use `globalThis` instead.",
+				"name": "global"
+			},
+			{
+				"message": "Use `globalThis` instead.",
+				"name": "self"
+			}
+		],
+		"no-self-assign": [
+			"error",
+			{
+				"props": true
+			}
+		],
+		"no-unneeded-ternary": [
+			"error",
+			{
+				"defaultAssignment": false
+			}
+		],
+		"no-unused-expressions": [
+			"error",
+			{
+				"allowShortCircuit": true,
+				"allowTaggedTemplates": true,
+				"allowTernary": true
+			}
+		],
+		"no-unused-vars": [
+			"error",
+			{
+				"args": "none",
+				"caughtErrors": "none",
+				"ignoreRestSiblings": true,
+				"vars": "all",
+				"varsIgnorePattern": "^_"
+			}
+		],
+		"prefer-const": [
+			"error",
+			{
+				"destructuring": "all",
+				"ignoreReadBeforeAssign": true
+			}
+		],
+		"unicode-bom": ["error", "never"],
+		"use-isnan": [
+			"error",
+			{
+				"enforceForIndexOf": true,
+				"enforceForSwitchCase": true
+			}
+		],
+		"valid-typeof": [
+			"error",
+			{
+				"requireStringLiterals": true
+			}
+		],
+		"yoda": ["error", "never"],
+		"no-await-in-loop": "off",
+		"no-shadow": "off",
+		"import/no-unassigned-import": "off",
+		"unicorn/no-nested-ternary": "off",
+		"unicorn/consistent-empty-array-spread": "error",
+		"unicorn/error-message": "error",
+		"unicorn/escape-case": "error",
+		"unicorn/new-for-builtins": "error",
+		"unicorn/no-instanceof-builtins": "error",
+		"unicorn/no-new-array": "error",
+		"unicorn/no-new-buffer": "error",
+		"unicorn/number-literal-case": "off",
+		"unicorn/prefer-includes": "error",
+		"unicorn/prefer-node-protocol": "error",
+		"unicorn/prefer-number-properties": "error",
+		"unicorn/prefer-string-starts-ends-with": "error",
+		"unicorn/prefer-type-error": "error",
+		"unicorn/throw-new-error": "error",
+		"unicorn/no-await-expression-member": "off",
+		"unicorn/prefer-global-this": "off",
+		"unicorn/consistent-function-scoping": "off",
+		"unicorn/no-null": "off",
+		"unicorn/no-array-sort": "off",
+		"unicorn/no-array-reverse": "off",
+		"unicorn/require-post-message-target-origin": "off",
+		"unicorn/prefer-set-has": "off",
+		"vitest/require-mock-type-parameters": "off"
+	},
+	"ignorePatterns": ["dist/**", "node_modules/**", "coverage/**", "src/lib/util/Links/TLDs.ts"],
+	"overrides": [
+		{
+			"files": ["**/*.?([cm])ts"],
+			"plugins": ["typescript"],
+			"rules": {
+				"no-undef": "off",
+				"no-redeclare": [
+					"error",
+					{
+						"builtinGlobals": false
+					}
+				],
+				"no-unused-vars": "off",
+				"no-useless-constructor": "off",
+				"no-unused-expressions": [
+					"error",
+					{
+						"allowShortCircuit": true,
+						"allowTaggedTemplates": true,
+						"allowTernary": true
+					}
+				],
+				"typescript/ban-ts-comment": [
+					"error",
+					{
+						"ts-expect-error": "allow-with-description"
+					}
+				],
+				"typescript/consistent-type-definitions": ["error", "interface"],
+				"typescript/consistent-type-imports": [
+					"error",
+					{
+						"disallowTypeAnnotations": false,
+						"fixStyle": "separate-type-imports",
+						"prefer": "type-imports"
+					}
+				],
+				"typescript/no-base-to-string": "off",
+				"typescript/no-dynamic-delete": "off",
+				"typescript/no-explicit-any": "off",
+				"typescript/no-extraneous-class": "off",
+				"typescript/no-import-type-side-effects": "error",
+				"typescript/no-namespace": "error",
+				"typescript/no-non-null-assertion": "off",
+				"typescript/no-require-imports": "error",
+				"typescript/only-throw-error": "off",
+				"typescript/prefer-as-const": "error",
+				"typescript/triple-slash-reference": "off"
+			}
+		},
+		{
+			"files": ["src/commands/**/*.ts"],
+			"rules": {
+				"typescript/require-await": "off"
+			}
+		},
+		{
+			"files": ["tests/**/*.?([cm])[jt]s?(x)"],
+			"plugins": ["vitest", "typescript"],
+			"rules": {
+				"vitest/consistent-test-it": [
+					"error",
+					{
+						"fn": "it",
+						"withinDescribe": "it"
+					}
+				],
+				"vitest/no-identical-title": "error",
+				"vitest/no-import-node-test": "error",
+				"vitest/prefer-hooks-in-order": "error",
+				"vitest/prefer-lowercase-title": "error",
+				"vitest/require-mock-type-parameters": "off",
+				"no-unused-expressions": "off"
+			}
+		},
+		{
+			"files": [
+				"**/types/**/*.ts",
+				"**/types/**/*.d.ts",
+				"**/util/**/*.ts",
+				"**/mocks/**/*.ts",
+				"**/database/**/*.ts",
+				"**/*.test.ts",
+				"**/*.spec.ts"
+			],
+			"rules": {
+				"unicorn/filename-case": [
+					"warn",
+					{
+						"cases": {
+							"kebabCase": true,
+							"pascalCase": true,
+							"camelCase": true
+						}
+					}
+				]
+			}
+		},
+		{
+			"files": ["**/*.config.?([cm])[jt]s?(x)", "**/*.config.*.?([cm])[jt]s?(x)", "**/scripts/**/*.?([cm])[jt]s?(x)"],
+			"plugins": ["typescript"],
+			"rules": {
+				"no-await-in-loop": "off",
+				"no-console": "off"
+			}
+		}
+	]
+}

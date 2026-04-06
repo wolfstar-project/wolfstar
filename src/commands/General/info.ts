@@ -20,7 +20,7 @@ import {
 	type APIButtonComponent,
 	type Message
 } from 'discord.js';
-import { cpus, uptime, type CpuInfo } from 'os';
+import { cpus, uptime, type CpuInfo } from 'node:os';
 
 const Root = LanguageKeys.Commands.Info;
 

@@ -17,7 +17,7 @@ tools:
         'execute/getTaskOutput',
         'execute/runTask',
         'context7/*',
-        'eslint/*',
+
         'sentry/*',
         'search/usages',
         'vscode/vscodeAPI',
@@ -397,59 +397,52 @@ Context7 MCP enhances Beast Mode by providing:
 
 ---
 
-## ESLint MCP Integration
+## OxLint Integration
 
-MCP ESLint provides real-time linting and code quality checks integrated with the project’s ESLint configuration.
-MCP ESLint is the **required** and authoritative way to validate lint status.
+OxLint is a high-performance linter for JavaScript and TypeScript, used as the project's linting tool.
 
 ### Mandatory requirement (non-negotiable)
 
-- **MUST**: Use **MCP ESLint** for linting. This is not optional.
-- **MUST**: Treat MCP ESLint as the **source of truth**—linting is only “done” when MCP ESLint reports **zero errors**.
-- **MUST NOT**: Do not rely only on `pnpm lint`, `pnpm lint:fix`, or editor-only linting as a substitute for MCP ESLint.
-- If MCP ESLint reports issues, fix them and re-run MCP ESLint until it passes.
-- **Before committing / opening a PR**: MCP ESLint must show **no errors**.
+- **MUST**: Use OxLint for linting. This is not optional.
+- **MUST**: Treat \`pnpm lint:check\` as the **source of truth** -- linting is only "done" when it reports **zero errors**.
+- If OxLint reports issues, fix them and re-run until it passes.
+- **Before committing / opening a PR**: OxLint must show **no errors**.
 
-### When to Use MCP ESLint
+### When to Use OxLint
 
-**ALWAYS use MCP ESLint**:
+**ALWAYS use OxLint**:
 
 - During active development (continuous feedback).
 - After making significant code changes.
 - When fixing linting issues.
 - Right before every commit / PR (hard gate).
 
-### ESLint Workflow (required)
+### OxLint Workflow (required)
 
-1. **Run MCP ESLint checks** (via the Problems/diagnostics view) and review all reported issues.
+1. **Run \`pnpm lint:check\`** and review all reported issues.
 2. **Apply fixes**:
-    - Use MCP ESLint suggested fixes when available.
-    - Run `pnpm lint:fix` to auto-fix remaining fixable issues.
-3. **Re-run MCP ESLint** until it reports **zero errors** (repeat steps 1–2 as needed).
-4. **Optional CI parity check**: run `pnpm lint` to mirror the CI lint step (useful as a final sanity check).
+    - Run \`pnpm lint\` to auto-fix fixable issues.
+3. **Re-run \`pnpm lint:check\`** until it reports **zero errors** (repeat steps 1-2 as needed).
 
 ### Project Configuration
 
-- **ESLint config**: `@antfu/eslint-config`.
-- **Config entrypoint**: `eslint.config.mjs` (MCP ESLint uses the project configuration automatically).
+- **OxLint config**: \`.oxlintrc.json\`.
+- **Plugins**: typescript, import, unicorn.
 
-### Best Practices (aligned with the requirement)
+### Best Practices
 
-- ✅ Use MCP ESLint continuously; don’t wait until the end.
-- ✅ Fix **all errors**; warnings may be acceptable depending on existing project conventions.
-- ✅ Use `pnpm lint:fix` after MCP ESLint points out fixable issues.
-- ✅ Keep `pnpm lint` as a secondary verification step (not a replacement for MCP ESLint).
+- Fix **all errors**; warnings may be acceptable depending on existing project conventions.
+- Use \`pnpm lint\` (with --fix) for auto-fixable issues.
+- Use \`pnpm lint:check\` (read-only) as the validation step matching CI.
 
 ### Usage Examples
 
 **Example 1: Check current errors**
-Open the Problems/diagnostics view and ensure MCP ESLint reports zero errors.
+Run \`pnpm lint:check\` to see all linting issues.
 **Example 2: Fix automatically**
-Run `pnpm lint:fix` to automatically fix fixable issues.
-**Example 3: Optional manual validation**
-Run `pnpm lint` to see the same linting results as CI (not a substitute for MCP ESLint).
-
----
+Run \`pnpm lint\` to automatically fix fixable issues.
+**Example 3: CI parity**
+Run \`pnpm lint:check\` to see the same linting results as CI.
 
 ## Sentry MCP Integration
 

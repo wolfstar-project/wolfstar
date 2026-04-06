@@ -63,7 +63,7 @@ export class ScheduleEntry<Type extends ScheduleEntry.TaskId = ScheduleEntry.Tas
 		this.#running = true;
 		let response: PartialResponseValue | null = null;
 		try {
-			response = (await task.run({ ...(this.data ?? {}), id: this.id })) as PartialResponseValue | null;
+			response = (await task.run({ ...this.data, id: this.id })) as PartialResponseValue | null;
 		} catch (error) {
 			container.client.emit(Events.TaskError, error, { piece: task, entity: this });
 		}
