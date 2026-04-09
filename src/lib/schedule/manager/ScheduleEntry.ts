@@ -1,7 +1,7 @@
 import type { ModerationManagerEntry } from '#lib/moderation';
 import { Events } from '#lib/types/Enums';
 import type { TypeVariation } from '#utils/moderationConstants';
-import type { Schedule } from '@prisma/client';
+import type { Schedule } from '#generated/prisma';
 import { container } from '@sapphire/framework';
 import { Cron } from '@sapphire/time-utilities';
 import { isNullishOrEmpty } from '@sapphire/utilities';

@@ -1,4 +1,4 @@
-import type { Guild as GuildData } from '@prisma/client';
+import type { Guild as GuildData } from '#generated/prisma';
 import type { DeepReadonly, PickByValue } from '@sapphire/utilities';
 
 export type GuildDataKey = keyof GuildData;
@@ -12,7 +12,7 @@ export type GuildSettingsOfType<T> = PickByValue<GuildData, T>;
 import type { SerializedEmoji } from '#utils/functions';
 import type { Snowflake } from 'discord.js';
 
-export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '@prisma/client';
+export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '#generated/prisma';
 
 export interface PermissionsNode {
 	allow: readonly Snowflake[];

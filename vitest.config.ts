@@ -19,6 +19,7 @@ export default defineConfig({
 			{ find: /^#lib\/(.*)/, replacement: `${libRoot}/$1` },
 			{ find: '#lib', replacement: libRoot },
 			{ find: /^#root\/(.*)/, replacement: `${srcRoot}/$1.ts` },
+			{ find: '#generated/prisma', replacement: `${srcRoot}/generated/prisma/client.js` },
 			{ find: '#languages', replacement: `${srcRoot}/languages/index.ts` },
 			{ find: /^#utils\/(.*)/, replacement: `${utilRoot}/$1` },
 			{ find: '#utils', replacement: utilRoot }
