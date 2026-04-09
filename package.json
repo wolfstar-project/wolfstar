@@ -77,7 +77,7 @@
 		"@sapphire/time-utilities": "^1.7.14",
 		"@sapphire/utilities": "^3.18.2",
 		"@sentry/node": "^10.27.0",
-		"@skyra/ai": "^1.2.0",
+		"@skyra/ai": "^2.0.1",
 		"@skyra/char": "^1.0.3",
 		"@skyra/env-utilities": "^2.0.1",
 		"@skyra/jaro-winkler": "^1.1.1",

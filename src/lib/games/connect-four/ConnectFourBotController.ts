@@ -1,7 +1,7 @@
 import { BaseBotController } from '#lib/games/base/BaseBotController';
 import type { ConnectFourGame } from '#lib/games/connect-four/ConnectFourGame';
 import { cast } from '#utils/util';
-import { connectFour } from '@skyra/ai';
+import { ConnectFour } from '@skyra/ai';
 
 export class ConnectFourBotController extends BaseBotController<number> {
 	private readonly depth: number;
@@ -13,6 +13,7 @@ export class ConnectFourBotController extends BaseBotController<number> {
 
 	public await(): number {
 		const game = cast<ConnectFourGame>(this.game);
-		return connectFour(game.board, this.depth);
+		const ai = new ConnectFour(game.board);
+		return ai.getBestMove(this.depth);
 	}
 }
