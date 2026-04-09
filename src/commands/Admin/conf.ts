@@ -2,7 +2,7 @@ import { getConfigurableGroups, isSchemaKey, readSettings, remove, reset, Schema
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { getSupportedUserLanguageT } from '#lib/i18n/translate';
 import { SettingsMenu, WolfArgs, WolfSubcommand } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { PermissionLevels, type GuildMessage } from '#lib/types';
 import { isValidCustomEmoji, isValidSerializedTwemoji, isValidTwemoji } from '#lib/util/functions/emojis';
 import { chatInputApplicationCommandMention, inlineCode } from '@discordjs/builders';
 import { ApplyOptions, RequiresClientPermissions } from '@sapphire/decorators';
@@ -12,8 +12,7 @@ import { filter, map, toArray } from '@sapphire/iterator-utilities';
 import { isNullish, toTitleCase } from '@sapphire/utilities';
 import { InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord.js';
 import { send } from '@sapphire/plugin-editable-commands';
-import type { GuildMessage } from 'lib/types/Discord.js';
-import { cast } from 'lib/util/util.js';
+import { cast } from '#utils/util';
 
 const Root = LanguageKeys.Commands.Conf;
 
