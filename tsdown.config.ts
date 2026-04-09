@@ -70,6 +70,7 @@ export default defineConfig({
 					}
 				},
 				{ find: /^#root\/(.*)/, replacement: resolve('src/$1.ts') },
+				{ find: '#generated/prisma', replacement: resolve('src/generated/prisma/client.js') },
 				{ find: '#languages', replacement: resolve('src/languages/index.ts') },
 				{
 					find: '#utils',
