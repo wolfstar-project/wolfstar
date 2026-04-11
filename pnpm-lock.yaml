@@ -113,8 +113,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       diff:
-        specifier: ^7.0.0
-        version: 7.0.0
+        specifier: ^8.0.0
+        version: 8.0.4
       discord-api-types:
         specifier: ^0.38.34
         version: 0.38.34
@@ -2278,8 +2278,8 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  diff@7.0.0:
-    resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
+  diff@8.0.4:
+    resolution: {integrity: sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw==}
     engines: {node: '>=0.3.1'}
 
   diffie-hellman@5.0.3:
@@ -6244,7 +6244,7 @@ snapshots:
       defined: 1.0.1
       minimist: 1.2.8
 
-  diff@7.0.0: {}
+  diff@8.0.4: {}
 
   diffie-hellman@5.0.3:
     dependencies:
