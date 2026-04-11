@@ -34,31 +34,41 @@ const Root = LanguageKeys.Commands.Conf;
 })
 export class UserCommand extends WolfSubcommand {
 	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
-		registry.registerChatInputCommand((builder) =>
-			applyLocalizedBuilder(builder, Root.Name, Root.Description)
-				.setContexts(InteractionContextType.Guild)
-				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-				.addSubcommand(
-					(subcommand) => applyLocalizedBuilder(subcommand, Root.Menu, Root.MenuDescription) //
-				)
-				.addSubcommand((subcommand) =>
-					applyLocalizedBuilder(subcommand, Root.Show, Root.ShowDescription) //
-						.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(false))
-				)
-				.addSubcommand((subcommand) =>
-					applyLocalizedBuilder(subcommand, Root.Set, Root.SetDescription) //
-						.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(true))
-						.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionValue, Root.OptionValueDescription).setRequired(true))
-				)
-				.addSubcommand((subcommand) =>
-					applyLocalizedBuilder(subcommand, Root.Remove, Root.RemoveDescription) //
-						.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(true))
-						.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionValue, Root.OptionValueDescription).setRequired(true))
-				)
-				.addSubcommand((subcommand) =>
-					applyLocalizedBuilder(subcommand, Root.Reset, Root.ResetDescription) //
-						.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(true))
-				)
+		registry.registerChatInputCommand(
+			(builder) =>
+				applyLocalizedBuilder(builder, Root.Name, Root.Description)
+					.setContexts(InteractionContextType.Guild)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+					.addSubcommand(
+						(subcommand) => applyLocalizedBuilder(subcommand, Root.Menu, Root.MenuDescription) //
+					)
+					.addSubcommand((subcommand) =>
+						applyLocalizedBuilder(subcommand, Root.Show, Root.ShowDescription) //
+							.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(false))
+					)
+					.addSubcommand((subcommand) =>
+						applyLocalizedBuilder(subcommand, Root.Set, Root.SetDescription) //
+							.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(true))
+							.addStringOption((option) =>
+								applyLocalizedBuilder(option, Root.OptionValue, Root.OptionValueDescription).setRequired(true)
+							)
+					)
+					.addSubcommand((subcommand) =>
+						applyLocalizedBuilder(subcommand, Root.Remove, Root.RemoveDescription) //
+							.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(true))
+							.addStringOption((option) =>
+								applyLocalizedBuilder(option, Root.OptionValue, Root.OptionValueDescription).setRequired(true)
+							)
+					)
+					.addSubcommand((subcommand) =>
+						applyLocalizedBuilder(subcommand, Root.Reset, Root.ResetDescription) //
+							.addStringOption((option) => applyLocalizedBuilder(option, Root.OptionKey, Root.OptionKeyDescription).setRequired(true))
+					),
+			{
+				idHints: [
+					'1492494867425787924' // wolfstar-prod production
+				]
+			}
 		);
 	}
 
