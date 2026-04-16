@@ -61,6 +61,10 @@ export function readSettingsCached(guild: GuildResolvable): ReadonlyGuildData | 
 	return cache.get(resolveGuildId(guild)) ?? null;
 }
 
+export function readSettingsAuditLog(settings: ReadonlyGuildData) {
+	return getSettingsContext(settings).auditLog;
+}
+
 export async function writeSettings(
 	guild: GuildResolvable,
 	data: Partial<ReadonlyGuildData> | ((settings: ReadonlyGuildData) => Awaitable<Partial<ReadonlyGuildData>>)

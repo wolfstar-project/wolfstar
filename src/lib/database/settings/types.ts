@@ -14,6 +14,12 @@ import type { Snowflake } from 'discord.js';
 
 export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '#generated/prisma';
 
+export interface AuditLogChange {
+	key: string;
+	oldValue?: unknown;
+	newValue?: unknown;
+}
+
 export interface PermissionsNode {
 	allow: readonly Snowflake[];
 	deny: readonly Snowflake[];

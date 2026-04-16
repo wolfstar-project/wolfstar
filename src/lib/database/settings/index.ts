@@ -5,6 +5,7 @@ export * from '#lib/database/settings/schema/SchemaGroup';
 export * from '#lib/database/settings/schema/SchemaKey';
 export * from '#lib/database/settings/structures/AdderManager';
 export * from '#lib/database/settings/structures/PermissionNodeManager';
+export * from '#lib/database/settings/structures/AuditLogManager';
 export * from '#lib/database/settings/structures/Serializer';
 export * from '#lib/database/settings/structures/SerializerStore';
 export * from '#lib/database/settings/types';

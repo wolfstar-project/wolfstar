@@ -7,7 +7,8 @@ import type {
 	ReactionRole,
 	SerializerStore,
 	StickyRole,
-	UniqueRoleSet
+	UniqueRoleSet,
+	AuditLogChange
 } from '#lib/database';
 import type { GuildMemberFetchQueue } from '#lib/discord/GuildMemberFetchQueue';
 import type { WorkerManager } from '#lib/moderation/workers/WorkerManager';
@@ -34,6 +35,7 @@ declare global {
 		export type StickyRoleEntries = StickyRole[];
 		export type ReactionRoleEntries = ReactionRole[];
 		export type UniqueRoleSetEntries = UniqueRoleSet[];
+		export type AuditLogChanges = AuditLogChange[];
 	}
 }
 
