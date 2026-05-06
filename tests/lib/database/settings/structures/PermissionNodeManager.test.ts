@@ -4,7 +4,7 @@ import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { UserError } from '@sapphire/framework';
 import type { Guild, GuildMember, Role, User } from 'discord.js';
-import { fail } from 'node:assert';
+
 import { createGuild, createGuildMember, createRole, createUser, roleData } from '../../../../mocks/MockInstances.js';
 
 describe('PermissionNodeManager', () => {
@@ -117,16 +117,17 @@ describe('PermissionNodeManager', () => {
 			const user = createUser();
 
 			test('GIVEN an empty node THEN throws error', () => {
+				let caughtError: unknown;
 				try {
 					reset(user);
-					fail();
-				} catch (error: unknown) {
-					const casted = error as UserError;
-
-					expect(casted).toBeInstanceOf(UserError);
-					expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
-					expect((casted.context as { target: typeof user }).target).toBe(user);
+				} catch (e) {
+					caughtError = e;
 				}
+
+				const casted = caughtError as UserError;
+				expect(casted).toBeInstanceOf(UserError);
+				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
+				expect((casted.context as { target: typeof user }).target).toBe(user);
 			});
 		});
 
@@ -134,32 +135,35 @@ describe('PermissionNodeManager', () => {
 			test('GIVEN an empty node THEN throws error', () => {
 				const member = createGuildMember({}, guild);
 
+				let caughtError: unknown;
 				try {
 					reset(member);
-					fail();
-				} catch (error: unknown) {
-					const casted = error as UserError;
-
-					expect(casted).toBeInstanceOf(UserError);
-					expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
-					expect((casted.context as { target: typeof member }).target).toBe(member);
+				} catch (e) {
+					caughtError = e;
 				}
+
+				const casted = caughtError as UserError;
+				expect(casted).toBeInstanceOf(UserError);
+				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
+				expect((casted.context as { target: typeof member }).target).toBe(member);
 			});
 		});
 
 		describe('role', () => {
 			test('GIVEN an empty node THEN throws error', () => {
 				const role = createGuildMember({}, guild);
+
+				let caughtError: unknown;
 				try {
 					reset(role);
-					fail();
-				} catch (error: unknown) {
-					const casted = error as UserError;
-
-					expect(casted).toBeInstanceOf(UserError);
-					expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
-					expect((casted.context as { target: typeof role }).target).toBe(role);
+				} catch (e) {
+					caughtError = e;
 				}
+
+				const casted = caughtError as UserError;
+				expect(casted).toBeInstanceOf(UserError);
+				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
+				expect((casted.context as { target: typeof role }).target).toBe(role);
 			});
 		});
 	});

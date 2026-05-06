@@ -6,11 +6,11 @@ describe('getEmojiTextFormat', () => {
 		expect(getEmojiTextFormat(encodedBunnyTwemoji)).toBe(bunnyTwemoji);
 	});
 
-	test('GIVEN custom serialized static emoji THEN returns <:_:819227046453444620>', () => {
-		expect(getEmojiTextFormat(serializedStaticSkyra)).toBe('<:_:819227046453444620>');
+	test('GIVEN custom serialized static emoji THEN returns <:emoji:819227046453444620>', () => {
+		expect(getEmojiTextFormat(serializedStaticSkyra)).toBe('<:emoji:819227046453444620>');
 	});
 
-	test('GIVEN custom serialized animated emoji THEN returns <a:_:735070572416991235>', () => {
-		expect(getEmojiTextFormat(serializedAnimatedSkyraGlasses)).toBe('<a:_:735070572416991235>');
+	test('GIVEN custom serialized animated emoji THEN returns <a:emoji:735070572416991235>', () => {
+		expect(getEmojiTextFormat(serializedAnimatedSkyraGlasses)).toBe('<a:emoji:735070572416991235>');
 	});
 });
