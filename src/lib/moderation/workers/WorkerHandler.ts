@@ -14,7 +14,6 @@ export class WorkerHandler {
 	private threadId = -1;
 	private queue = new AsyncQueue();
 	private response = new WorkerResponseHandler();
-	private suppressHeartbeatDispatch = false;
 
 	public constructor() {
 		this.spawn();
@@ -39,11 +38,9 @@ export class WorkerHandler {
 
 			return await promise;
 		} catch (error) {
-			this.suppressHeartbeatDispatch = true;
 			await this.restart();
 			throw error;
 		} finally {
-			this.suppressHeartbeatDispatch = false;
 			this.queue.shift();
 		}
 	}
@@ -95,7 +92,7 @@ export class WorkerHandler {
 	}
 
 	private handleWorkerMessage(message: OutgoingPayload) {
-		if (message.type === OutgoingType.Heartbeat && this.suppressHeartbeatDispatch) {
+		if (message.type === OutgoingType.Heartbeat) {
 			this.lastHeartBeat = Date.now();
 			return;
 		}
@@ -104,11 +101,6 @@ export class WorkerHandler {
 	}
 
 	private handleMessage(message: OutgoingPayload) {
-		if (message.type === OutgoingType.Heartbeat) {
-			this.lastHeartBeat = Date.now();
-			return;
-		}
-
 		this.response.resolve(message.id, message);
 	}
 
