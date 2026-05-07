@@ -16,4 +16,6 @@ overrides:
     discord-api-types: ^0.38.34
     minimist: ^1.2.8
 
+dedupePeers: true
+
 shellEmulator: true
