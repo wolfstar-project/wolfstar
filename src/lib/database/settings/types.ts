@@ -1,5 +1,6 @@
 import type { Guild as GuildData } from '#generated/prisma';
 import type { DeepReadonly, PickByValue } from '@sapphire/utilities';
+import type { APIGuildMember } from 'discord-api-types/v10';
 
 export type GuildDataKey = keyof GuildData;
 export type GuildDataValue = GuildData[GuildDataKey];
@@ -14,10 +15,30 @@ import type { Snowflake } from 'discord.js';
 
 export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '#generated/prisma';
 
-export interface AuditLogChange {
-	key: string;
-	oldValue?: unknown;
-	newValue?: unknown;
+export type DashboardAuditAction = 'guild.settings.update' | 'guild.settings.add' | 'guild.settings.remove' | 'guild.settings.access-denied';
+
+export type AuditOutcome = 'success' | 'failure' | 'denied';
+
+export interface DashboardAuditChanges {
+	added?: Record<string, unknown>;
+	removed?: Record<string, unknown>;
+	changed?: Record<string, { from: unknown; to: unknown }>;
+}
+
+export interface AuditEventChanges {
+	before?: Record<string, unknown>;
+	after?: Record<string, unknown>;
+}
+
+export interface DashboardAuditEntry {
+	id: string;
+	guildId: string;
+	action: DashboardAuditAction;
+	outcome: AuditOutcome;
+	member: APIGuildMember;
+	changes: DashboardAuditChanges;
+	reason: string | null;
+	timestamp: string;
 }
 
 export interface PermissionsNode {
