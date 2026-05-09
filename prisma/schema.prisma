@@ -174,11 +174,8 @@ model Guild {
   channelsIgnoreVoiceActivity          String[] @default([]) @map("channels.ignore.voice-activity") @db.VarChar(19)
   eventsTimeout                        Boolean  @default(false) @map("events.timeout")
 
-  auditLogs AuditLog[]
-
   @@map("guilds")
 }
-
 
 model Migration {
   id        Int    @id(map: "PK_Migrations") @default(autoincrement())
@@ -223,18 +220,32 @@ model User {
   @@map("user")
 }
 
-model AuditLog {
-  id        Int      @id @default(autoincrement())
-  guild     Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  guildId   String   @map("guild_id") @db.VarChar(19)
-  userId    String   @map("user_id") @db.VarChar(19)
-  action    String   @db.VarChar(64)
-  section   String   @db.VarChar(64)
-  /// [AuditLogChanges]
-  changes   Json     @default("[]") @db.Json
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+model AuditEvent {
+  hash             String   @id @db.VarChar(64)
+  prevHash         String?  @map("prev_hash") @db.VarChar(64)
+  tenantId         String   @map("tenant_id") @db.VarChar(19)
+  actorId          String   @map("actor_id") @db.VarChar(19)
+  actorDisplayName String?  @map("actor_display_name") @db.VarChar(64)
+  action           String   @db.VarChar(64)
+  outcome          String   @db.VarChar(16)
+  reason           String?  @db.VarChar(2000)
+  /// [AuditEventChanges]
+  changes          Json?    @db.Json
+  timestamp        DateTime @db.Timestamp(6)
+  requestId        String?  @map("request_id") @db.VarChar(64)
+  traceId          String?  @map("trace_id") @db.VarChar(64)
 
-  @@index([guildId, createdAt(sort: Desc)], map: "IDX_audit_log_guild_created")
-  @@map("audit_log")
+  @@index([action, timestamp(sort: Desc)], map: "IDX_audit_event_action_timestamp")
+  @@index([actorId, timestamp(sort: Desc)], map: "IDX_audit_event_actor_timestamp")
+  @@index([tenantId, timestamp(sort: Desc)], map: "IDX_audit_event_tenant_timestamp")
+  @@map("audit_event")
 }
 
+model AuditChainHead {
+  tenantId     String   @id @map("tenant_id") @db.VarChar(19)
+  lastHash     String   @map("last_hash") @db.VarChar(64)
+  lastSequence BigInt   @default(0) @map("last_sequence")
+  updatedAt    DateTime @map("updated_at") @db.Timestamp(6)
+
+  @@map("audit_chain_head")
+}

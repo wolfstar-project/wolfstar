@@ -1,12 +1,29 @@
-CREATE TABLE "audit_log" (
-  "id" SERIAL NOT NULL,
-  "guild_id" VARCHAR(19) NOT NULL,
-  "user_id" VARCHAR(19) NOT NULL,
-  "action" VARCHAR(64) NOT NULL,
-  "section" VARCHAR(64) NOT NULL,
-  "changes" JSON NOT NULL DEFAULT '[]',
-  "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT "audit_log_pkey" PRIMARY KEY ("id")
+DROP TABLE IF EXISTS "audit_log" CASCADE;
+
+CREATE TABLE "audit_event" (
+  "hash"               VARCHAR(64)  NOT NULL,
+  "prev_hash"          VARCHAR(64)  NULL,
+  "tenant_id"          VARCHAR(19)  NOT NULL,
+  "actor_id"           VARCHAR(19)  NOT NULL,
+  "actor_display_name" VARCHAR(64)  NULL,
+  "action"             VARCHAR(64)  NOT NULL,
+  "outcome"            VARCHAR(16)  NOT NULL,
+  "reason"             VARCHAR(2000) NULL,
+  "changes"            JSON         NULL,
+  "timestamp"          TIMESTAMP(6) NOT NULL,
+  "request_id"         VARCHAR(64)  NULL,
+  "trace_id"           VARCHAR(64)  NULL,
+  CONSTRAINT "audit_event_pkey" PRIMARY KEY ("hash")
 );
-CREATE INDEX "IDX_audit_log_guild_created" ON "audit_log"("guild_id", "created_at" DESC);
-ALTER TABLE "audit_log" ADD CONSTRAINT "audit_log_guild_id_fkey" FOREIGN KEY ("guild_id") REFERENCES "guilds"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE INDEX "IDX_audit_event_action_timestamp"   ON "audit_event"("action",    "timestamp" DESC);
+CREATE INDEX "IDX_audit_event_actor_timestamp"    ON "audit_event"("actor_id",  "timestamp" DESC);
+CREATE INDEX "IDX_audit_event_tenant_timestamp"   ON "audit_event"("tenant_id", "timestamp" DESC);
+
+CREATE TABLE "audit_chain_head" (
+  "tenant_id"     VARCHAR(19)  NOT NULL,
+  "last_hash"     VARCHAR(64)  NOT NULL,
+  "last_sequence" BIGINT       NOT NULL DEFAULT 0,
+  "updated_at"    TIMESTAMP(6) NOT NULL,
+  CONSTRAINT "audit_chain_head_pkey" PRIMARY KEY ("tenant_id")
+);
