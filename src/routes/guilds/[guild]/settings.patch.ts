@@ -40,13 +40,13 @@ export class UserRoute extends Route {
 			const data = await this.validateAll(trx.settings, guild, entries);
 			const settingsData = Object.fromEntries(data);
 
-			// Capture current settings for audit log before mutation
-			const auditLog = readSettingsAuditLog(structuredClone(trx.settings));
+			const before = structuredClone(trx.settings) as Record<string, unknown>;
+			const auditLog = readSettingsAuditLog(trx.settings);
 
 			await trx.write(settingsData).submit();
 
-			// Fire-and-forget audit log write
-			auditLog.update(request.auth!.id, settingsData).catch(() => null);
+			const after = structuredClone(trx.settings) as Record<string, unknown>;
+			auditLog.update(request.auth!.id, before, after).catch(() => null);
 
 			return this.sendSettings(response, trx.settings);
 		} catch (errors) {
