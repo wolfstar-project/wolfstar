@@ -1,4 +1,4 @@
-import { canonicalize, hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
+import { canonicalize, hashEnvelope, type AuditEnvelopeInput } from '#lib/database';
 
 const baseEnvelope: AuditEnvelopeInput = {
 	action: 'guild.settings.update',
@@ -10,8 +10,7 @@ const baseEnvelope: AuditEnvelopeInput = {
 	reason: null,
 	requestId: null,
 	traceId: null,
-	prevHash: null,
-	sequence: 1n
+	prevHash: null
 };
 
 describe('canonicalize()', () => {
@@ -50,10 +49,8 @@ describe('hashEnvelope()', () => {
 	it('produces different hashes when any field changes', () => {
 		const h1 = hashEnvelope(baseEnvelope);
 		const h2 = hashEnvelope({ ...baseEnvelope, action: 'guild.settings.add' });
-		const h3 = hashEnvelope({ ...baseEnvelope, sequence: 2n });
-		const h4 = hashEnvelope({ ...baseEnvelope, prevHash: 'abc123' });
+		const h3 = hashEnvelope({ ...baseEnvelope, prevHash: 'abc123' });
 		expect(h1).not.toBe(h2);
 		expect(h1).not.toBe(h3);
-		expect(h1).not.toBe(h4);
 	});
 });

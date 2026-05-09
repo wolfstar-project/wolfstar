@@ -11,7 +11,6 @@ export interface AuditEnvelopeInput {
 	requestId: string | null;
 	traceId: string | null;
 	prevHash: string | null;
-	sequence: bigint;
 }
 
 /**

@@ -221,31 +221,32 @@ model User {
 }
 
 model AuditEvent {
-  hash             String   @id @db.VarChar(64)
-  prevHash         String?  @map("prev_hash") @db.VarChar(64)
-  tenantId         String   @map("tenant_id") @db.VarChar(19)
-  actorId          String   @map("actor_id") @db.VarChar(19)
-  actorDisplayName String?  @map("actor_display_name") @db.VarChar(64)
-  action           String   @db.VarChar(64)
-  outcome          String   @db.VarChar(16)
-  reason           String?  @db.VarChar(2000)
-  /// [AuditEventChanges]
-  changes          Json?    @db.Json
-  timestamp        DateTime @db.Timestamp(6)
-  requestId        String?  @map("request_id") @db.VarChar(64)
-  traceId          String?  @map("trace_id") @db.VarChar(64)
+  id         String   @id @default(uuid()) @db.Uuid
+  action     String   @db.VarChar(64)
+  actorType  String   @map("actor_type") @db.VarChar(32)
+  actorId    String   @map("actor_id")
+  actorName  String?  @map("actor_name")
+  targetType String?  @map("target_type") @db.VarChar(32)
+  targetId   String?  @map("target_id")
+  outcome    String   @db.VarChar(32)
+  tenantId   String?  @map("tenant_id")
+  reason     String?  @db.VarChar(500)
+  timestamp  DateTime @db.Timestamp(6)
+  changes    Json?
+  context    Json?
+  prevHash   String?  @map("prev_hash") @db.VarChar(64)
+  hash       String   @unique @db.VarChar(64)
 
-  @@index([action, timestamp(sort: Desc)], map: "IDX_audit_event_action_timestamp")
-  @@index([actorId, timestamp(sort: Desc)], map: "IDX_audit_event_actor_timestamp")
-  @@index([tenantId, timestamp(sort: Desc)], map: "IDX_audit_event_tenant_timestamp")
+  @@index([action, timestamp])
+  @@index([actorId, timestamp])
+  @@index([tenantId, timestamp])
   @@map("audit_event")
 }
 
 model AuditChainHead {
-  tenantId     String   @id @map("tenant_id") @db.VarChar(19)
-  lastHash     String   @map("last_hash") @db.VarChar(64)
-  lastSequence BigInt   @default(0) @map("last_sequence")
-  updatedAt    DateTime @map("updated_at") @db.Timestamp(6)
+  id        String   @id @default("default")
+  hash      String?  @db.VarChar(64)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
 
   @@map("audit_chain_head")
 }
