@@ -77,7 +77,7 @@ describe('WorkerHandler', () => {
 		};
 
 		await expect(handler.send(given)).resolves.toEqual(expected);
-		expect(handleMessage).toHaveBeenCalledTimes(2);
+		expect(handleMessage).toHaveBeenCalledTimes(1);
 	});
 
 	test('GIVEN non-matching RunRegExp payload THEN resolves with a RegExpMatch payload', async () => {
@@ -93,7 +93,7 @@ describe('WorkerHandler', () => {
 		};
 
 		await expect(handler.send(given)).resolves.toEqual(expected);
-		expect(handleMessage).toHaveBeenCalledTimes(2);
+		expect(handleMessage).toHaveBeenCalledTimes(1);
 	});
 
 	test('GIVEN ReDoS payload THEN rejects with a TimeoutError', async () => {

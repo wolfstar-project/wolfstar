@@ -76,16 +76,16 @@ describe('WorkerManager', () => {
 		const given1: NoId<IncomingRunRegExpPayload> = { type: IncomingType.RunRegExp, regExp, content: 'nope' };
 		const expected1: OutgoingPayload = { id: 0, type: OutgoingType.NoContent };
 
-		const promise0 = expect(handler.send(given0)).resolves.toEqual(expected0);
+		const send0 = handler.send(given0);
 		expect(getIdealWorker).toHaveBeenCalledTimes(1);
 		expect(getIdealWorker).toHaveLastReturnedWith(handler.workers[0]);
 
-		const promise1 = expect(handler.send(given1)).resolves.toEqual(expected1);
+		const send1 = handler.send(given1);
 		expect(getIdealWorker).toHaveBeenCalledTimes(2);
 		expect(getIdealWorker).toHaveLastReturnedWith(handler.workers[1]);
 
-		await promise0;
-		await promise1;
+		await expect(send0).resolves.toEqual(expected0);
+		await expect(send1).resolves.toEqual(expected1);
 	});
 
 	test('GIVEN a lot data to process THEN both workers get to work', async () => {
