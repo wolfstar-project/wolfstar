@@ -53,6 +53,7 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
+		"evlog": "^2.16.0",
 		"@discordjs/builders": "^1.13.0",
 		"@discordjs/collection": "^2.1.1",
 		"@discordjs/core": "^1.2.0",
