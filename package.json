@@ -47,6 +47,7 @@
 		"lint:fix": "oxlint --fix && oxfmt",
 		"lint": "oxlint && oxfmt --check",
 		"format": "prettier --write --log-level=warn \"{src,tests}/**/*.{js,mjs,ts,json}\"",
+		"audit:verify": "node scripts/audit-verify.mjs",
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"scripts:migration": "node scripts/migrations.mjs",
 		"dockerps": "pwsh -NoLogo ./.docker/control.ps1",
