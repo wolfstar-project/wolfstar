@@ -1,6 +1,7 @@
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
+import { AuditLogManager } from '#lib/database/settings/structures/AuditLogManager';
 import type { GuildData, ReadonlyGuildData } from '#lib/database/settings/types';
 import { maybeParseNumber } from '#utils/common';
 import { AsyncQueue } from '@sapphire/async-queue';
@@ -62,7 +63,7 @@ export function readSettingsCached(guild: GuildResolvable): ReadonlyGuildData | 
 }
 
 export function readSettingsAuditLog(settings: ReadonlyGuildData) {
-	return getSettingsContext(settings).auditLog;
+	return new AuditLogManager(settings);
 }
 
 export async function writeSettings(
