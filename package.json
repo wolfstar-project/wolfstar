@@ -86,7 +86,7 @@
 		"bufferutil": "^4.1.0",
 		"colorette": "^2.0.20",
 		"confusables": "^1.1.1",
-		"diff": "^7.0.0",
+		"diff": "^9.0.0",
 		"discord-api-types": "^0.38.34",
 		"discord.js": "~14.26.4",
 		"he": "^1.2.0",
