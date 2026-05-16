@@ -1,3 +1,4 @@
+import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command, Events, Listener, LogLevel, type MessageCommandSuccessPayload } from '@sapphire/framework';
 import { cyan } from 'colorette';
@@ -11,6 +12,17 @@ export class UserListener extends Listener<typeof Events.MessageCommandSuccess> 
 		const author = this.author(message.author);
 		const sentAt = message.guild ? this.guild(message.guild) : this.direct();
 		this.container.logger.debug(`${shard} - ${commandName} ${author} ${sentAt}`);
+
+		if (!message.guildId) return;
+		const settings = readSettingsCached(message.guildId);
+		if (!settings) return;
+		void readSettingsAuditLog(settings)
+			.command(message.author.id, {
+				commandName: command.name,
+				commandType: 'message',
+				channelId: message.channelId
+			})
+			.catch(() => null);
 	}
 
 	public override onLoad() {

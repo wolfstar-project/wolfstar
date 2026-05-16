@@ -142,5 +142,14 @@
 	"serverUpdateWidgetDisabled": "• **Widget Disabled**",
 	"voiceChannelJoin": "Joined {{channel}}",
 	"voiceChannelLeave": "Left {{channel}}",
-	"voiceChannelMove": "Moved from {{oldChannel}} to {{newChannel}}"
+	"voiceChannelMove": "Moved from {{oldChannel}} to {{newChannel}}",
+	"commandExecuteTitle": "Command Executed",
+	"settingsUpdateTitle": "Settings Updated",
+	"settingsAccessDeniedTitle": "Settings Access Denied",
+	"logFieldUser": "User",
+	"logFieldCommand": "Command",
+	"logFieldType": "Type",
+	"logFieldChannel": "Channel",
+	"logFieldChange": "Changes",
+	"logFieldReason": "Reason"
 }

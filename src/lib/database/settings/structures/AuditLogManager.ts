@@ -1,17 +1,23 @@
 import { Prisma } from '#generated/prisma';
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
 import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/types';
+import { buildCommandExecuteEmbed, buildSettingsChangeEmbed, type CommandExecutePayload } from '#utils/functions/auditLogEmbeds';
 import { container } from '@sapphire/framework';
+import { Events } from '#lib/types';
+import { fetchT } from '@sapphire/plugin-i18next';
 
 export class AuditLogManager {
 	#guildId: string;
+	#settings: ReadonlyGuildData;
 
 	public constructor(settings: ReadonlyGuildData) {
 		this.#guildId = settings.id;
+		this.#settings = settings;
 	}
 
 	public onPatch(settings: ReadonlyGuildData): void {
 		this.#guildId = settings.id;
+		this.#settings = settings;
 	}
 
 	public update(actorId: string, before: Record<string, unknown>, after: Record<string, unknown>): Promise<void> {
@@ -55,6 +61,20 @@ export class AuditLogManager {
 			after: {},
 			outcome: 'denied',
 			reason: reason ?? null
+		});
+	}
+
+	public command(
+		actorId: string,
+		payload: { commandName: string; commandType: 'chat-input' | 'context-menu' | 'message'; channelId: string }
+	): Promise<void> {
+		return this.#write({
+			actorId,
+			action: 'guild.command.execute',
+			before: {},
+			after: payload,
+			outcome: 'success',
+			reason: null
 		});
 	}
 
@@ -120,6 +140,48 @@ export class AuditLogManager {
 				create: { id: 'default', hash }
 			});
 		});
+
+		void this.#emitChannelLog(action, { actorId, before: safeBefore, after: safeAfter, reason, timestamp }).catch(() => null);
+	}
+
+	async #emitChannelLog(
+		action: string,
+		params: {
+			actorId: string;
+			before: Record<string, unknown>;
+			after: Record<string, unknown>;
+			reason: string | null;
+			timestamp: Date;
+		}
+	): Promise<void> {
+		const guild = container.client.guilds.cache.get(this.#guildId);
+		if (!guild) return;
+
+		const channelKey = action === 'guild.command.execute' ? 'channelsLogsCommand' : 'channelsLogsSettings';
+		const channelId = this.#settings[channelKey];
+		if (!channelId) return;
+
+		const t = await fetchT(guild);
+
+		const makeMessage =
+			action === 'guild.command.execute'
+				? () =>
+						buildCommandExecuteEmbed(t, {
+							actorId: params.actorId,
+							...(params.after as Omit<CommandExecutePayload, 'actorId' | 'timestamp'>),
+							timestamp: params.timestamp
+						})
+				: () =>
+						buildSettingsChangeEmbed(t, {
+							actorId: params.actorId,
+							action: action as any,
+							before: params.before,
+							after: params.after,
+							reason: params.reason,
+							timestamp: params.timestamp
+						});
+
+		container.client.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
 	}
 
 	#toJsonSafe(value: unknown): unknown {

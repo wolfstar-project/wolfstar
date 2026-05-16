@@ -1,3 +1,4 @@
+import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, LogLevel, type ChatInputCommandSuccessPayload } from '@sapphire/framework';
 import { cyan } from 'colorette';
@@ -11,6 +12,17 @@ export class UserListener extends Listener<typeof Events.ChatInputCommandSuccess
 		const author = this.author(interaction.user);
 		const sentAt = interaction.guildId ? `${interaction.guild?.name ?? 'Unknown'}[${cyan(interaction.guildId)}]` : cyan('Direct Messages');
 		this.container.logger.debug(`${shard} - ${commandName} ${author} ${sentAt}`);
+
+		if (!interaction.guildId) return;
+		const settings = readSettingsCached(interaction.guildId);
+		if (!settings) return;
+		void readSettingsAuditLog(settings)
+			.command(interaction.user.id, {
+				commandName: interaction.commandName,
+				commandType: 'chat-input',
+				channelId: interaction.channelId
+			})
+			.catch(() => null);
 	}
 
 	public override onLoad() {

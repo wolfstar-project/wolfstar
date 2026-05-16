@@ -15,7 +15,12 @@ import type { Snowflake } from 'discord.js';
 
 export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '#generated/prisma';
 
-export type DashboardAuditAction = 'guild.settings.update' | 'guild.settings.add' | 'guild.settings.remove' | 'guild.settings.access-denied';
+export type DashboardAuditAction =
+	| 'guild.settings.update'
+	| 'guild.settings.add'
+	| 'guild.settings.remove'
+	| 'guild.settings.access-denied'
+	| 'guild.command.execute';
 
 export type AuditOutcome = 'success' | 'failure' | 'denied';
 

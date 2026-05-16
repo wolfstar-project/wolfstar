@@ -2,6 +2,8 @@ import { AuditLogManager } from '#lib/database';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import type { ReadonlyGuildData } from '#lib/database/settings/types';
 import { container } from '@sapphire/framework';
+import { Events } from '#lib/types';
+import { EmbedBuilder } from '@discordjs/builders';
 
 const ADVISORY_LOCK_NS = 1096107084;
 
@@ -178,6 +180,101 @@ describe('AuditLogManager', () => {
 			eventCreateSpy.mockRejectedValue(conflict);
 
 			await expect(manager.update('user1', {}, {})).rejects.toThrow('unique constraint violation');
+		});
+	});
+
+	describe('channel emit fan-out', () => {
+		let guildStub: { id: string };
+		let settingsStub: ReadonlyGuildData;
+		let tStub: (key: string) => string;
+		let emitSpy: ReturnType<typeof vi.spyOn>;
+
+		beforeEach(() => {
+			guildStub = { id: '123456789' };
+			settingsStub = Object.assign(Object.create(null), getDefaultGuildSettings(), {
+				id: '123456789',
+				channelsLogsCommand: '999000111',
+				channelsLogsSettings: '888000222'
+			}) as unknown as ReadonlyGuildData;
+			tStub = (key: string) => key;
+
+			// Re-create the manager with channel-log settings so #emitChannelLog can
+			// read channelsLogsCommand / channelsLogsSettings from the stored settings.
+			manager = new AuditLogManager(settingsStub);
+
+			vi.spyOn(container.client.guilds.cache as any, 'get').mockReturnValue(guildStub);
+			emitSpy = vi.spyOn(container.client as any, 'emit').mockReturnValue(true);
+
+			// Mock container.i18n so the real fetchT (from @sapphire/plugin-i18next,
+			// already loaded by the setup file) resolves via the shared container.
+			Reflect.set(container, 'i18n', {
+				fetchLanguage: vi.fn().mockResolvedValue('en-US'),
+				getT: vi.fn().mockReturnValue(tStub)
+			});
+		});
+
+		afterEach(() => {
+			vi.restoreAllMocks();
+		});
+
+		test('GIVEN command() THEN writes AuditEvent with guild.command.execute action', async () => {
+			await manager.command('user1', { commandName: 'ban', commandType: 'chat-input', channelId: '555' });
+			const { data } = eventCreateSpy.mock.calls[0][0];
+			expect(data.action).toBe('guild.command.execute');
+			expect(data.outcome).toBe('success');
+			expect(data.changes).toMatchObject({ after: { commandName: 'ban', commandType: 'chat-input', channelId: '555' } });
+		});
+
+		test('GIVEN command() with channelsLogsCommand set THEN emits GuildMessageLog with channelsLogsCommand key', async () => {
+			await manager.command('user1', { commandName: 'ban', commandType: 'chat-input', channelId: '555' });
+			await new Promise((r) => setImmediate(r));
+			expect(emitSpy).toHaveBeenCalledWith(Events.GuildMessageLog, guildStub, '999000111', 'channelsLogsCommand', expect.any(Function));
+			const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
+			expect(makeMessage()).toBeInstanceOf(EmbedBuilder);
+		});
+
+		test('GIVEN update() with channelsLogsSettings set THEN emits GuildMessageLog with channelsLogsSettings key', async () => {
+			await manager.update('user1', { prefix: '!' }, { prefix: '?' });
+			await new Promise((r) => setImmediate(r));
+			expect(emitSpy).toHaveBeenCalledWith(Events.GuildMessageLog, guildStub, '888000222', 'channelsLogsSettings', expect.any(Function));
+		});
+
+		test('GIVEN accessDenied() THEN emits with channelsLogsSettings key', async () => {
+			await manager.accessDenied('user1', 'No access');
+			await new Promise((r) => setImmediate(r));
+			expect(emitSpy).toHaveBeenCalledWith(Events.GuildMessageLog, guildStub, '888000222', 'channelsLogsSettings', expect.any(Function));
+		});
+
+		test('GIVEN channelsLogsCommand is null THEN no emit happens but DB row is still written', async () => {
+			const settingsWithNullCommand = Object.assign(Object.create(null), getDefaultGuildSettings(), {
+				id: '123456789',
+				channelsLogsCommand: null
+			}) as unknown as ReadonlyGuildData;
+			manager = new AuditLogManager(settingsWithNullCommand);
+			await manager.command('user1', { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
+			await new Promise((r) => setImmediate(r));
+			expect(eventCreateSpy).toHaveBeenCalledOnce();
+			expect(emitSpy).not.toHaveBeenCalledWith(
+				Events.GuildMessageLog,
+				expect.anything(),
+				expect.anything(),
+				'channelsLogsCommand',
+				expect.anything()
+			);
+		});
+
+		test('GIVEN guild not in cache THEN DB write succeeds and no emit is fired', async () => {
+			vi.spyOn(container.client.guilds.cache as any, 'get').mockReturnValue(undefined);
+			await manager.command('user1', { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
+			await new Promise((r) => setImmediate(r));
+			expect(eventCreateSpy).toHaveBeenCalledOnce();
+			expect(emitSpy).not.toHaveBeenCalledWith(
+				Events.GuildMessageLog,
+				expect.anything(),
+				expect.anything(),
+				expect.anything(),
+				expect.anything()
+			);
 		});
 	});
 });

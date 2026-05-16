@@ -36,6 +36,8 @@ export function getDefaultGuildSettings() {
 		channelsLogsEmojiDelete: null,
 		channelsLogsServerUpdate: null,
 		channelsLogsVoiceChannel: null,
+		channelsLogsCommand: null,
+		channelsLogsSettings: null,
 		channelsIgnoreAll: [],
 		channelsIgnoreMessageEdit: [],
 		channelsIgnoreMessageDelete: [],
