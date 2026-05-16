@@ -1,6 +1,6 @@
 import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, Events, Listener, LogLevel, type MessageCommandSuccessPayload } from '@sapphire/framework';
+import { Command, Events, Listener, type MessageCommandSuccessPayload } from '@sapphire/framework';
 import { cyan } from 'colorette';
 import type { Guild, User } from 'discord.js';
 
@@ -23,11 +23,6 @@ export class UserListener extends Listener<typeof Events.MessageCommandSuccess> 
 				channelId: message.channelId
 			})
 			.catch(() => null);
-	}
-
-	public override onLoad() {
-		this.enabled = this.container.logger.has(LogLevel.Debug);
-		return super.onLoad();
 	}
 
 	private shard(id: number) {

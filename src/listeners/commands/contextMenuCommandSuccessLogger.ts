@@ -1,6 +1,6 @@
 import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, LogLevel, type ContextMenuCommandSuccessPayload } from '@sapphire/framework';
+import { Events, Listener, type ContextMenuCommandSuccessPayload } from '@sapphire/framework';
 import { cyan } from 'colorette';
 import type { User } from 'discord.js';
 
@@ -23,11 +23,6 @@ export class UserListener extends Listener<typeof Events.ContextMenuCommandSucce
 				channelId: interaction.channelId
 			})
 			.catch(() => null);
-	}
-
-	public override onLoad() {
-		this.enabled = this.container.logger.has(LogLevel.Debug);
-		return super.onLoad();
 	}
 
 	private author(author: User) {

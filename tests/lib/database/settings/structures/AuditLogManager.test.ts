@@ -254,13 +254,7 @@ describe('AuditLogManager', () => {
 			await manager.command('user1', { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
 			await new Promise((r) => setImmediate(r));
 			expect(eventCreateSpy).toHaveBeenCalledOnce();
-			expect(emitSpy).not.toHaveBeenCalledWith(
-				Events.GuildMessageLog,
-				expect.anything(),
-				expect.anything(),
-				'channelsLogsCommand',
-				expect.anything()
-			);
+			expect(emitSpy).not.toHaveBeenCalled();
 		});
 
 		test('GIVEN guild not in cache THEN DB write succeeds and no emit is fired', async () => {
@@ -268,13 +262,7 @@ describe('AuditLogManager', () => {
 			await manager.command('user1', { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
 			await new Promise((r) => setImmediate(r));
 			expect(eventCreateSpy).toHaveBeenCalledOnce();
-			expect(emitSpy).not.toHaveBeenCalledWith(
-				Events.GuildMessageLog,
-				expect.anything(),
-				expect.anything(),
-				expect.anything(),
-				expect.anything()
-			);
+			expect(emitSpy).not.toHaveBeenCalled();
 		});
 	});
 });

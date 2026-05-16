@@ -26,12 +26,13 @@ export interface SettingsChangePayload {
 
 export function buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePayload): EmbedBuilder {
 	const { actorId, commandName, commandType, channelId, timestamp } = payload;
+	const formattedCommandName = commandType === 'chat-input' ? `\`/${commandName}\`` : `\`${commandName}\``;
 	return new EmbedBuilder()
 		.setColor(Colors.Blue)
 		.setTitle(t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle))
 		.addFields(
 			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: `<@${actorId}>`, inline: true },
-			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand), value: `\`/${commandName}\``, inline: true },
+			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand), value: formattedCommandName, inline: true },
 			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldType), value: commandType, inline: true },
 			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldChannel), value: `<#${channelId}>`, inline: true }
 		)

@@ -21,6 +21,19 @@ describe('buildCommandExecuteEmbed', () => {
 		expect(data.fields![2].value).toBe('chat-input');
 		expect(data.fields![3].value).toBe('<#987654321098765432>');
 	});
+
+	it('renders non-slash commands without a leading slash', () => {
+		const payload = {
+			actorId: '123456789012345678',
+			commandName: 'userinfo',
+			commandType: 'message' as const,
+			channelId: '987654321098765432',
+			timestamp: new Date('2026-05-16T00:00:00.000Z')
+		};
+		const embed = buildCommandExecuteEmbed(mockT as any, payload);
+		const data = embed.toJSON();
+		expect(data.fields![1].value).toBe('`userinfo`');
+	});
 });
 
 describe('buildSettingsChangeEmbed', () => {
