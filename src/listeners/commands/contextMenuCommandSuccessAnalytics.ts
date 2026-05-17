@@ -11,7 +11,7 @@ export class UserListener extends Listener<typeof Events.ContextMenuCommandSucce
 		const { interaction } = payload;
 		this.container.client.emit(WolfEvents.CommandUsageAnalytics, command.name, command.category);
 
-		if (!interaction.guildId) return;
+		if (!interaction.guildId || command.category === 'System') return;
 		const settings = readSettingsCached(interaction.guildId);
 		if (!settings) return;
 		void readSettingsAuditLog(settings)

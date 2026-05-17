@@ -11,7 +11,7 @@ export class UserListener extends Listener<typeof Events.MessageCommandSuccess> 
 		const { message } = payload;
 		this.container.client.emit(WolfEvents.CommandUsageAnalytics, command.name, command.category);
 
-		if (!message.guildId) return;
+		if (!message.guildId || command.category === 'System') return;
 		const settings = readSettingsCached(message.guildId);
 		if (!settings) return;
 		void readSettingsAuditLog(settings)
