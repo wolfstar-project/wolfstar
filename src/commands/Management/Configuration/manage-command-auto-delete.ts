@@ -1,4 +1,4 @@
-import { readSettings, writeSettingsTransaction, type CommandAutoDelete } from '#lib/database';
+import { readSettings, writeSettings, writeSettingsTransaction, type CommandAutoDelete } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
