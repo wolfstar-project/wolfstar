@@ -193,12 +193,12 @@ export function getConfiguration() {
 		},
 		channelsLogsCommand: {
 			type: 'guildTextChannel',
-			name: 'channels.logs.command',
+			name: 'channels.logs.audit.command',
 			description: LanguageKeys.Settings.Channels.Logs.Command
 		},
 		channelsLogsSettings: {
 			type: 'guildTextChannel',
-			name: 'channels.logs.settings',
+			name: 'channels.logs.audit.settings',
 			description: LanguageKeys.Settings.Channels.Logs.Settings
 		},
 		channelsIgnoreAll: {
