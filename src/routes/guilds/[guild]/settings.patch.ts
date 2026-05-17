@@ -2,7 +2,6 @@ import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import {
 	getConfigurableKeys,
 	isSchemaKey,
-	readSettingsAuditLog,
 	serializeSettings,
 	writeSettingsTransaction,
 	type GuildDataValue,
@@ -40,13 +39,7 @@ export class UserRoute extends Route {
 			const data = await this.validateAll(trx.settings, guild, entries);
 			const settingsData = Object.fromEntries(data);
 
-			const before = structuredClone(trx.settings) as Record<string, unknown>;
-			const auditLog = readSettingsAuditLog(trx.settings);
-
-			await trx.write(settingsData).submit();
-
-			const after = structuredClone(trx.settings) as Record<string, unknown>;
-			auditLog.update(request.auth!.id, before, after).catch(() => null);
+			await trx.write(settingsData).submitWithAudit(request.auth!.id);
 
 			return this.sendSettings(response, trx.settings);
 		} catch (errors) {

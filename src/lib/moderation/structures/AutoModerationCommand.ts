@@ -2,7 +2,6 @@ import {
 	getConfigurableKeys,
 	readSettings,
 	readSettingsAdder,
-	readSettingsAuditLog,
 	writeSettingsTransaction,
 	type AdderKey,
 	type GuildData,
@@ -161,11 +160,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		if (!isNullish(valuePunishmentThreshold)) pairs.push([this.keyPunishmentThreshold, valuePunishmentThreshold]);
 		if (!isNullish(valuePunishmentThresholdDuration)) pairs.push([this.keyPunishmentThresholdPeriod, valuePunishmentThresholdDuration]);
 
-		const auditLog = readSettingsAuditLog(trx.settings);
-		const before = Object.fromEntries(pairs.map(([k]) => [k, trx.settings[k as keyof ReadonlyGuildData]])) as Record<string, unknown>;
-		await trx.write(Object.fromEntries(pairs) as Partial<GuildData>).submit();
-		const after = Object.fromEntries(pairs.map(([k]) => [k, trx.settings[k as keyof ReadonlyGuildData]])) as Record<string, unknown>;
-		void auditLog.update(interaction.user.id, before, after).catch(() => null);
+		await trx.write(Object.fromEntries(pairs) as Partial<GuildData>).submitWithAudit(interaction.user.id);
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = t(Root.EditSuccess);
@@ -175,11 +170,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 	public async chatInputRunReset(interaction: AutoModerationCommand.Interaction) {
 		const [key, value] = await this.resetGetKeyValuePair(interaction.guild, interaction.options.getString('key', true) as ResetKey);
 		using trx = await writeSettingsTransaction(interaction.guild);
-		const auditLog = readSettingsAuditLog(trx.settings);
-		const before = { [key]: trx.settings[key as keyof ReadonlyGuildData] } as Record<string, unknown>;
-		await trx.write({ [key]: value } as Partial<GuildData>).submit();
-		const after = { [key]: trx.settings[key as keyof ReadonlyGuildData] } as Record<string, unknown>;
-		void auditLog.update(interaction.user.id, before, after).catch(() => null);
+		await trx.write({ [key]: value } as Partial<GuildData>).submitWithAudit(interaction.user.id);
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = t(Root.EditSuccess);

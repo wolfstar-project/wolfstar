@@ -45,7 +45,7 @@ export class UserCommand extends WolfSubcommand {
 			});
 		}
 
-		await trx.submit();
+		await trx.submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandChannelAdd, { channel: channel.toString(), command: command.name });
 		return send(message, content);
@@ -72,7 +72,7 @@ export class UserCommand extends WolfSubcommand {
 			entry.commands.length === 1
 				? trx.settings.disabledCommandsChannels.toSpliced(index, 1)
 				: trx.settings.disabledCommandsChannels.with(index, { channel: channel.id, commands: entry.commands.toSpliced(commandIndex, 1) });
-		await trx.write({ disabledCommandsChannels }).submit();
+		await trx.write({ disabledCommandsChannels }).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandChannelRemove, { channel: channel.toString(), command: command.name });
 		return send(message, content);
@@ -88,7 +88,7 @@ export class UserCommand extends WolfSubcommand {
 			this.error(LanguageKeys.Commands.Management.ManageCommandChannelResetEmpty);
 		}
 
-		await trx.write({ disabledCommandsChannels: trx.settings.disabledCommandsChannels.toSpliced(index, 1) }).submit();
+		await trx.write({ disabledCommandsChannels: trx.settings.disabledCommandsChannels.toSpliced(index, 1) }).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandChannelReset, { channel: channel.toString() });
 		return send(message, content);

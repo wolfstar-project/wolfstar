@@ -65,7 +65,7 @@ export class UserAutoModerationCommand extends AutoModerationCommand {
 			return interaction.reply({ content: t(Root.WordAddFiltered, { word }), flags: MessageFlags.Ephemeral });
 		}
 
-		await trx.write({ selfmodFilterRaw: trx.settings.selfmodFilterRaw.concat(word) }).submit();
+		await trx.write({ selfmodFilterRaw: trx.settings.selfmodFilterRaw.concat(word) }).submitWithAudit(interaction.user.id);
 		return interaction.reply({ content: t(Root.EditSuccess), flags: MessageFlags.Ephemeral });
 	}
 
@@ -81,7 +81,7 @@ export class UserAutoModerationCommand extends AutoModerationCommand {
 			return interaction.reply({ content: t(Root.WordRemoveNotFiltered, { word }), flags: MessageFlags.Ephemeral });
 		}
 
-		await trx.write({ selfmodFilterRaw: trx.settings.selfmodFilterRaw.toSpliced(index, 1) }).submit();
+		await trx.write({ selfmodFilterRaw: trx.settings.selfmodFilterRaw.toSpliced(index, 1) }).submitWithAudit(interaction.user.id);
 		return interaction.reply({ content: t(Root.EditSuccess), flags: MessageFlags.Ephemeral });
 	}
 

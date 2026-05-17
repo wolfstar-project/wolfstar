@@ -41,7 +41,7 @@ export class UserListener extends Listener {
 			trx.write({ permissionsRoles: permissionNodes.refresh(trx.settings) });
 		}
 
-		await trx.submit();
+		await trx.submitWithAudit(role.client.user!.id);
 	}
 
 	#filterStickyRoles(roles: readonly StickyRole[], role: Role) {

@@ -67,7 +67,8 @@ export function readSettingsAuditLog(settings: ReadonlyGuildData) {
 
 export async function writeSettings(
 	guild: GuildResolvable,
-	data: Partial<ReadonlyGuildData> | ((settings: ReadonlyGuildData) => Awaitable<Partial<ReadonlyGuildData>>)
+	data: Partial<ReadonlyGuildData> | ((settings: ReadonlyGuildData) => Awaitable<Partial<ReadonlyGuildData>>),
+	actorId?: string
 ) {
 	using trx = await writeSettingsTransaction(guild);
 
@@ -75,7 +76,11 @@ export async function writeSettings(
 		data = await data(trx.settings);
 	}
 
-	await trx.write(data).submit();
+	if (actorId) {
+		await trx.write(data).submitWithAudit(actorId);
+	} else {
+		await trx.write(data).submit();
+	}
 }
 
 export async function writeSettingsTransaction(guild: GuildResolvable) {
@@ -93,6 +98,7 @@ export async function writeSettingsTransaction(guild: GuildResolvable) {
 
 export class Transaction {
 	#changes = Object.create(null) as Partial<ReadonlyGuildData>;
+	#before = Object.create(null) as Record<string, unknown>;
 	#hasChanges = false;
 	#locking = true;
 
@@ -110,9 +116,25 @@ export class Transaction {
 	}
 
 	public write(data: Partial<ReadonlyGuildData>) {
+		for (const key of Object.keys(data)) {
+			if (!(key in this.#before)) {
+				(this.#before as Record<string, unknown>)[key] = (this.settings as Record<string, unknown>)[key];
+			}
+		}
+
 		Object.assign(this.#changes, data);
 		this.#hasChanges = true;
 		return this;
+	}
+
+	public async submitWithAudit(actorId: string) {
+		if (!this.#hasChanges) return;
+		const before = { ...this.#before };
+		await this.submit();
+		const after = Object.fromEntries(Object.keys(before).map((key) => [key, (this.settings as Record<string, unknown>)[key]]));
+		void readSettingsAuditLog(this.settings)
+			.update(actorId, before, after)
+			.catch(() => null);
 	}
 
 	public async submit() {

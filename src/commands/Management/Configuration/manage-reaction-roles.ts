@@ -1,4 +1,4 @@
-import { readSettings, writeSettings, writeSettingsTransaction, type ReactionRole } from '#lib/database';
+import { readSettings, writeSettingsTransaction, type ReactionRole } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -40,10 +40,13 @@ export class UserCommand extends WolfSubcommand {
 				role: role.id
 			};
 
-			await writeSettings(message.guild, (settings) => ({
-				reactionRoles: settings.reactionRoles.concat(reactionRole)
-			}));
-
+			await writeSettings(
+				message.guild,
+				(settings) => ({
+					reactionRoles: settings.reactionRoles.concat(reactionRole)
+				}),
+				message.author.id
+			);
 			const content = args.t(LanguageKeys.Commands.Management.ManageReactionRolesAddChannel, {
 				emoji: getEmojiTextFormat(reactionRole.emoji),
 				channel: channel!.toString()
@@ -65,9 +68,8 @@ export class UserCommand extends WolfSubcommand {
 			channel: reaction.channel.id,
 			role: role.id
 		};
-		await writeSettings(message.guild, (settings) => ({
-			reactionRoles: settings.reactionRoles.concat(reactionRole)
-		}));
+		using trx = await writeSettingsTransaction(message.guild);
+		await trx.write({ reactionRoles: trx.settings.reactionRoles.concat(reactionRole) }).submitWithAudit(message.author.id);
 
 		const url = `<https://discord.com/channels/${message.guild.id}/${reactionRole.channel}/${reactionRole.message}>`;
 		const content = args.t(LanguageKeys.Commands.Management.ManageReactionRolesAdd, {
@@ -86,7 +88,7 @@ export class UserCommand extends WolfSubcommand {
 		if (index === -1) this.error(LanguageKeys.Commands.Management.ManageReactionRolesRemoveNotExists);
 
 		const reactionRole = trx.settings.reactionRoles[index];
-		await trx.write({ reactionRoles: trx.settings.reactionRoles.toSpliced(index, 1) }).submit();
+		await trx.write({ reactionRoles: trx.settings.reactionRoles.toSpliced(index, 1) }).submitWithAudit(message.author.id);
 
 		const url = reactionRole.message
 			? `<https://discord.com/channels/${message.guild.id}/${reactionRole.channel}/${reactionRole.message}>`
@@ -100,7 +102,8 @@ export class UserCommand extends WolfSubcommand {
 	}
 
 	public async reset(message: GuildMessage, args: WolfSubcommand.Args) {
-		await writeSettings(message.guild, { reactionRoles: [] });
+		using trx = await writeSettingsTransaction(message.guild);
+		await trx.write({ reactionRoles: [] }).submitWithAudit(message.author.id);
 		const content = args.t(LanguageKeys.Commands.Management.ManageReactionRolesReset);
 		return send(message, content);
 	}

@@ -1,11 +1,4 @@
-import {
-	PermissionNodeAction,
-	readSettings,
-	readSettingsAuditLog,
-	readSettingsPermissionNodes,
-	writeSettingsTransaction,
-	type PermissionsNode
-} from '#lib/database';
+import { PermissionNodeAction, readSettings, readSettingsPermissionNodes, writeSettingsTransaction, type PermissionsNode } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -47,11 +40,7 @@ export class UserCommand extends WolfSubcommand {
 		using trx = await writeSettingsTransaction(message.guild);
 		const nodes = readSettingsPermissionNodes(trx.settings);
 		const propertyKey = nodes.settingsPropertyFor(target);
-		const auditLog = readSettingsAuditLog(trx.settings);
-		const before = { [propertyKey]: trx.settings[propertyKey] } as Record<string, unknown>;
-		await trx.write({ [propertyKey]: nodes.add(target, command, action) } as any).submit();
-		const after = { [propertyKey]: trx.settings[propertyKey] } as Record<string, unknown>;
-		void auditLog.update(message.author.id, before, after).catch(() => null);
+		await trx.write({ [propertyKey]: nodes.add(target, command, action) } as any).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesAdd);
 		return send(message, content);
@@ -67,11 +56,7 @@ export class UserCommand extends WolfSubcommand {
 		using trx = await writeSettingsTransaction(message.guild);
 		const nodes = readSettingsPermissionNodes(trx.settings);
 		const propertyKey = nodes.settingsPropertyFor(target);
-		const auditLog = readSettingsAuditLog(trx.settings);
-		const before = { [propertyKey]: trx.settings[propertyKey] } as Record<string, unknown>;
-		await trx.write({ [propertyKey]: nodes.remove(target, command, action) } as any).submit();
-		const after = { [propertyKey]: trx.settings[propertyKey] } as Record<string, unknown>;
-		void auditLog.update(message.author.id, before, after).catch(() => null);
+		await trx.write({ [propertyKey]: nodes.remove(target, command, action) } as any).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesRemove);
 		return send(message, content);
@@ -85,11 +70,7 @@ export class UserCommand extends WolfSubcommand {
 		using trx = await writeSettingsTransaction(message.guild);
 		const nodes = readSettingsPermissionNodes(trx.settings);
 		const propertyKey = nodes.settingsPropertyFor(target);
-		const auditLog = readSettingsAuditLog(trx.settings);
-		const before = { [propertyKey]: trx.settings[propertyKey] } as Record<string, unknown>;
-		await trx.write({ [propertyKey]: nodes.reset(target) } as any).submit();
-		const after = { [propertyKey]: trx.settings[propertyKey] } as Record<string, unknown>;
-		void auditLog.update(message.author.id, before, after).catch(() => null);
+		await trx.write({ [propertyKey]: nodes.reset(target) } as any).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesReset);
 		return send(message, content);

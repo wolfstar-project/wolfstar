@@ -1,4 +1,4 @@
-import { readSettingsAuditLog, writeSettingsTransaction } from '#lib/database';
+import { writeSettingsTransaction } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationActions } from '#lib/moderation';
 import { WolfCommand } from '#lib/structures';
@@ -33,10 +33,7 @@ export class UserCommand extends WolfCommand {
 			if (result.isOk()) {
 				const role = result.unwrap();
 				using trx = await writeSettingsTransaction(message.guild);
-				const auditLog = readSettingsAuditLog(trx.settings);
-				const beforeMuted = trx.settings.rolesMuted;
-				await trx.write({ rolesMuted: role.id }).submit();
-				void auditLog.update(message.author.id, { rolesMuted: beforeMuted }, { rolesMuted: trx.settings.rolesMuted }).catch(() => null);
+				await trx.write({ rolesMuted: role.id }).submitWithAudit(message.author.id);
 				if (canReact(message.channel)) return message.react(getEmojiReactionFormat(Emojis.GreenTickSerialized as SerializedEmoji));
 
 				const content = t(LanguageKeys.Commands.Conf.Updated, {
