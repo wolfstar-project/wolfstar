@@ -1,5 +1,5 @@
 import type { WolfCommand } from '#lib/structures';
-
+import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { Events as WolfEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, type ChatInputCommandSuccessPayload } from '@sapphire/framework';
