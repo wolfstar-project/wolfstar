@@ -24,7 +24,7 @@ describe('buildCommandExecuteEmbed', () => {
 		expect(data.fields).toHaveLength(4);
 		expect(data.fields![0].value).toBe('<@123456789012345678>');
 		expect(data.fields![1].value).toBe('`/ban`');
-		expect(data.fields![2].value).toBe('Slash Command');
+		expect(data.fields![2].value).toBe('Chat Input');
 		expect(data.fields![3].value).toBe('<#987654321098765432>');
 	});
 
