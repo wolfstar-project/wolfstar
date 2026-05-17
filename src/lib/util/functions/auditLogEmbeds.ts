@@ -71,7 +71,8 @@ export function buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePa
 		if (op.op === 'replace') {
 			const from = cutText(formatAuditValue(getNestedValue(before, op.path)), 100);
 			const to = cutText(formatAuditValue(op.value), 100);
-			value = `${from} -> ${to}`;
+			if (from === to) continue;
+			value = `has changed ${from} to ${to}`;
 		} else if (op.op === 'add') {
 			value = cutText(formatAuditValue(op.value), 200);
 		} else {
@@ -81,11 +82,7 @@ export function buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePa
 	}
 
 	if (changeFields.length > 0) {
-		embed.addFields(
-			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: `<@${actorId}>`, inline: true },
-			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldChange), value: `${changeFields.length}`, inline: true },
-			...changeFields
-		);
+		embed.addFields({ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: `<@${actorId}>`, inline: true }, ...changeFields);
 	} else {
 		embed.addFields({ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: `<@${actorId}>`, inline: true });
 	}
