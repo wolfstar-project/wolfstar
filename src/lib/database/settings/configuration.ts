@@ -191,6 +191,16 @@ export function getConfiguration() {
 			name: 'channels.logs.voice-activity',
 			description: LanguageKeys.Settings.Channels.Logs.VoiceActivity
 		},
+		channelsLogsCommand: {
+			type: 'guildTextChannel',
+			name: 'channels.logs.command',
+			description: LanguageKeys.Settings.Channels.Logs.Command
+		},
+		channelsLogsSettings: {
+			type: 'guildTextChannel',
+			name: 'channels.logs.settings',
+			description: LanguageKeys.Settings.Channels.Logs.Settings
+		},
 		channelsIgnoreAll: {
 			type: 'guildTextChannel',
 			name: 'channels.ignore.all',
