@@ -140,3 +140,6 @@ export const LogFieldType = T('events/guilds-logs:logFieldType');
 export const LogFieldChannel = T('events/guilds-logs:logFieldChannel');
 export const LogFieldChange = T('events/guilds-logs:logFieldChange');
 export const LogFieldReason = T('events/guilds-logs:logFieldReason');
+export const CommandTypeChatInput = T('events/guilds-logs:commandTypeChatInput');
+export const CommandTypeContextMenu = T('events/guilds-logs:commandTypeContextMenu');
+export const CommandTypeMessage = T('events/guilds-logs:commandTypeMessage');

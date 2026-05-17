@@ -33,7 +33,16 @@ export function buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePa
 		.addFields(
 			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: `<@${actorId}>`, inline: true },
 			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand), value: formattedCommandName, inline: true },
-			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldType), value: commandType, inline: true },
+			{
+				name: t(LanguageKeys.Events.Guilds.Logs.LogFieldType),
+				value:
+					commandType === 'chat-input'
+						? t(LanguageKeys.Events.Guilds.Logs.CommandTypeChatInput)
+						: commandType === 'context-menu'
+							? t(LanguageKeys.Events.Guilds.Logs.CommandTypeContextMenu)
+							: t(LanguageKeys.Events.Guilds.Logs.CommandTypeMessage),
+				inline: true
+			},
 			{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldChannel), value: `<#${channelId}>`, inline: true }
 		)
 		.setTimestamp(timestamp);

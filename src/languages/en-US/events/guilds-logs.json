@@ -151,5 +151,8 @@
 	"logFieldType": "Type",
 	"logFieldChannel": "Channel",
 	"logFieldChange": "Changes",
-	"logFieldReason": "Reason"
+	"logFieldReason": "Reason",
+	"commandTypeChatInput": "Chat Input",
+	"commandTypeContextMenu": "Context Menu",
+	"commandTypeMessage": "Message Command"
 }

@@ -1,7 +1,13 @@
 import { buildCommandExecuteEmbed, buildSettingsChangeEmbed } from '#lib/util/functions/auditLogEmbeds';
 import { Colors } from 'discord.js';
 
-const mockT = (key: string | { toString(): string }) => String(key);
+const translations: Record<string, string> = {
+	'events/guilds-logs:commandTypeChatInput': 'Chat Input',
+	'events/guilds-logs:commandTypeContextMenu': 'Context Menu',
+	'events/guilds-logs:commandTypeMessage': 'Message Command'
+};
+
+const mockT = (key: string | { toString(): string }) => translations[String(key)] ?? String(key);
 
 describe('buildCommandExecuteEmbed', () => {
 	it('returns an EmbedBuilder with blue color and expected fields', () => {
@@ -18,7 +24,7 @@ describe('buildCommandExecuteEmbed', () => {
 		expect(data.fields).toHaveLength(4);
 		expect(data.fields![0].value).toBe('<@123456789012345678>');
 		expect(data.fields![1].value).toBe('`/ban`');
-		expect(data.fields![2].value).toBe('chat-input');
+		expect(data.fields![2].value).toBe('Slash Command');
 		expect(data.fields![3].value).toBe('<#987654321098765432>');
 	});
 
