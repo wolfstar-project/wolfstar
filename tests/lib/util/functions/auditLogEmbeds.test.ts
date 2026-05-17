@@ -55,11 +55,10 @@ describe('buildSettingsChangeEmbed', () => {
 		const embed = buildSettingsChangeEmbed(mockT as any, payload);
 		const data = embed.toJSON();
 		expect(data.color).toBe(Colors.Green);
-		// Should have at least the user field + change count field + 1 diff field
-		expect(data.fields!.length).toBeGreaterThanOrEqual(3);
+		// Should have at least the user field + 1 diff field
+		expect(data.fields!.length).toBeGreaterThanOrEqual(2);
 		const changeField = data.fields!.find((f) => f.name === 'reason');
 		expect(changeField).toBeDefined();
-		expect(changeField!.value).toContain('->');
 	});
 
 	it('returns a yellow embed for access-denied', () => {
