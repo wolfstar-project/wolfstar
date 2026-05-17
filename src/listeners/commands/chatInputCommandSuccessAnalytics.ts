@@ -1,4 +1,5 @@
 import type { WolfCommand } from '#lib/structures';
+
 import { Events as WolfEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, type ChatInputCommandSuccessPayload } from '@sapphire/framework';
@@ -7,6 +8,18 @@ import { Events, Listener, type ChatInputCommandSuccessPayload } from '@sapphire
 export class UserListener extends Listener<typeof Events.ChatInputCommandSuccess> {
 	public run(payload: ChatInputCommandSuccessPayload) {
 		const command = payload.command as WolfCommand;
+		const { interaction } = payload;
 		this.container.client.emit(WolfEvents.CommandUsageAnalytics, command.name, command.category);
+
+		if (!interaction.guildId) return;
+		const settings = readSettingsCached(interaction.guildId);
+		if (!settings) return;
+		void readSettingsAuditLog(settings)
+			.command(interaction.user.id, {
+				commandName: interaction.commandName,
+				commandType: 'chat-input',
+				channelId: interaction.channelId
+			})
+			.catch(() => null);
 	}
 }
