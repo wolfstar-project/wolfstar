@@ -40,6 +40,61 @@ describe('buildCommandExecuteEmbed', () => {
 		const data = embed.toJSON();
 		expect(data.fields![1].value).toBe('`userinfo`');
 	});
+
+	it('uses chatInputApplicationCommandMention for a slash command with commandId and no subcommand', () => {
+		const payload = {
+			actorId: '123456789012345678',
+			commandName: 'ban',
+			commandId: '111111111111111111',
+			commandType: 'chat-input' as const,
+			channelId: '987654321098765432',
+			timestamp: new Date('2026-05-16T00:00:00.000Z')
+		};
+		const embed = buildCommandExecuteEmbed(mockT as any, payload);
+		const data = embed.toJSON();
+		expect(data.fields![1].value).toBe('</ban:111111111111111111>');
+	});
+
+	it('uses chatInputApplicationCommandMention for a slash command with one subcommand', () => {
+		const payload = {
+			actorId: '123456789012345678',
+			commandName: 'mod ban',
+			commandId: '222222222222222222',
+			commandType: 'chat-input' as const,
+			channelId: '987654321098765432',
+			timestamp: new Date('2026-05-16T00:00:00.000Z')
+		};
+		const embed = buildCommandExecuteEmbed(mockT as any, payload);
+		const data = embed.toJSON();
+		expect(data.fields![1].value).toBe('</mod ban:222222222222222222>');
+	});
+
+	it('uses chatInputApplicationCommandMention for a slash command with a subcommand group and subcommand', () => {
+		const payload = {
+			actorId: '123456789012345678',
+			commandName: 'config settings reset',
+			commandId: '333333333333333333',
+			commandType: 'chat-input' as const,
+			channelId: '987654321098765432',
+			timestamp: new Date('2026-05-16T00:00:00.000Z')
+		};
+		const embed = buildCommandExecuteEmbed(mockT as any, payload);
+		const data = embed.toJSON();
+		expect(data.fields![1].value).toBe('</config settings reset:333333333333333333>');
+	});
+
+	it('falls back to backtick format for chat-input when commandId is absent', () => {
+		const payload = {
+			actorId: '123456789012345678',
+			commandName: 'mod warn',
+			commandType: 'chat-input' as const,
+			channelId: '987654321098765432',
+			timestamp: new Date('2026-05-16T00:00:00.000Z')
+		};
+		const embed = buildCommandExecuteEmbed(mockT as any, payload);
+		const data = embed.toJSON();
+		expect(data.fields![1].value).toBe('`/mod warn`');
+	});
 });
 
 describe('buildSettingsChangeEmbed', () => {
