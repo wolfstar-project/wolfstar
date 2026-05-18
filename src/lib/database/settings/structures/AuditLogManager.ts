@@ -66,7 +66,7 @@ export class AuditLogManager {
 
 	public command(
 		actorId: string,
-		payload: { commandName: string; commandType: 'chat-input' | 'context-menu' | 'message'; channelId: string }
+		payload: { commandName: string; commandId?: string; commandType: 'chat-input' | 'context-menu' | 'message'; channelId: string }
 	): Promise<void> {
 		return this.#write({
 			actorId,

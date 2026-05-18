@@ -27,8 +27,7 @@ export interface SettingsChangePayload {
 
 function formatChatInputMention(commandName: string, commandId?: string): string {
 	const parts = commandName.split(' ');
-	if (!commandId) return `\`${commandName}\``;
-	if (parts.length === 0) return `</${commandName}:${commandId}>`;
+	if (!commandId) return `\`/${commandName}\``;
 	if (parts.length === 3) return chatInputApplicationCommandMention(parts[0], parts[1], parts[2], commandId);
 	if (parts.length === 2) return chatInputApplicationCommandMention(parts[0], parts[1], commandId);
 	return chatInputApplicationCommandMention(parts[0], commandId);
