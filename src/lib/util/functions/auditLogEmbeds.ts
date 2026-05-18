@@ -2,12 +2,13 @@ import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { EmbedBuilder } from '@discordjs/builders';
 import type { TFunction } from '@sapphire/plugin-i18next';
 import { cutText } from '@sapphire/utilities';
-import { Colors } from 'discord.js';
+import { Colors, chatInputApplicationCommandMention } from 'discord.js';
 import { auditDiff } from 'evlog';
 
 export interface CommandExecutePayload {
 	actorId: string;
 	commandName: string;
+	commandId?: string;
 	commandType: 'chat-input' | 'context-menu' | 'message';
 	channelId: string;
 	timestamp: Date;
@@ -24,9 +25,18 @@ export interface SettingsChangePayload {
 	timestamp: Date;
 }
 
+function formatChatInputMention(commandName: string, commandId?: string): string {
+	const parts = commandName.split(' ');
+	if (!commandId) return `\`${commandName}\``;
+	if (parts.length === 0) return `</${commandName}:${commandId}>`;
+	if (parts.length === 3) return chatInputApplicationCommandMention(parts[0], parts[1], parts[2], commandId);
+	if (parts.length === 2) return chatInputApplicationCommandMention(parts[0], parts[1], commandId);
+	return chatInputApplicationCommandMention(parts[0], commandId);
+}
+
 export function buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePayload): EmbedBuilder {
-	const { actorId, commandName, commandType, channelId, timestamp } = payload;
-	const formattedCommandName = commandType === 'chat-input' ? `\`/${commandName}\`` : `\`${commandName}\``;
+	const { actorId, commandName, commandId, commandType, channelId, timestamp } = payload;
+	const formattedCommandName = commandType === 'chat-input' ? formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
 	return new EmbedBuilder()
 		.setColor(Colors.Blue)
 		.setTitle(t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle))
