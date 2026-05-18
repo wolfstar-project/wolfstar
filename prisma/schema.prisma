@@ -252,3 +252,23 @@ model AuditChainHead {
 
   @@map("audit_chain_head")
 }
+
+model CommandLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  guildId     String   @map("guild_id") @db.VarChar(19)
+  userId      String   @map("user_id") @db.VarChar(19)
+  userTag     String?  @map("user_tag") @db.VarChar(37)
+  commandName String   @map("command_name") @db.VarChar(64)
+  subcommand  String?  @db.VarChar(64)
+  channelId   String?  @map("channel_id") @db.VarChar(19)
+  success     Boolean  @default(true)
+  errorReason String?  @map("error_reason") @db.VarChar(2000)
+  executedAt  DateTime @map("executed_at") @db.Timestamp(6)
+  latencyMs   Int?     @map("latency_ms")
+  metadata    Json?    @db.Json
+
+  @@index([guildId, executedAt(sort: Desc)])
+  @@index([guildId, userId, executedAt])
+  @@index([guildId, commandName, executedAt])
+  @@map("command_log")
+}
