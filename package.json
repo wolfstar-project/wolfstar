@@ -35,7 +35,6 @@
 		"#root/*": "./dist/*.mjs"
 	},
 	"scripts": {
-		"prebuild": "pnpm prisma:generate",
 		"build": "tsdown",
 		"dev": "pnpm build --onSuccess \"pnpm start\"",
 		"watch": "pnpm build --watch",
