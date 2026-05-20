@@ -10,8 +10,9 @@ export class UserListener extends Listener<typeof Events.MessageCommandSuccess> 
 		writeCommandLog({
 			guildId: message.guildId,
 			userId: message.author.id,
-			userTag: message.author.username,
 			commandName: command.name,
+			commandType: 'MESSAGE',
+			commandId: null,
 			subcommand: null,
 			channelId: message.channelId,
 			success: true,

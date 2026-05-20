@@ -7,8 +7,9 @@ export class UserListener extends Listener<typeof Events.ContextMenuCommandError
 		writeCommandLog({
 			guildId: interaction.guildId,
 			userId: interaction.user.id,
-			userTag: interaction.user.username,
 			commandName: interaction.commandName,
+			commandType: 'CONTEXT_MENU',
+			commandId: interaction.commandId,
 			subcommand: null,
 			channelId: interaction.channelId,
 			success: false,

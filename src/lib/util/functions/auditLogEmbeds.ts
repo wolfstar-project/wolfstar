@@ -84,8 +84,10 @@ export function buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePa
 			value = `has changed ${from} to ${to}`;
 		} else if (op.op === 'add') {
 			value = cutText(formatAuditValue(op.value), 200);
-		} else {
+		} else if (op.op === 'remove') {
 			value = cutText(formatAuditValue(getNestedValue(before, op.path)), 200);
+		} else {
+			continue;
 		}
 		changeFields.push({ name: key, value, inline: false });
 	}

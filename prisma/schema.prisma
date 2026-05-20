@@ -257,8 +257,9 @@ model CommandLog {
   id          String   @id @default(uuid()) @db.Uuid
   guildId     String   @map("guild_id") @db.VarChar(19)
   userId      String   @map("user_id") @db.VarChar(19)
-  userTag     String?  @map("user_tag") @db.VarChar(37)
   commandName String   @map("command_name") @db.VarChar(64)
+  commandType String  @map("command_type") @db.VarChar(32)
+  commandId   String?  @map("command_id") @db.VarChar(19)
   subcommand  String?  @db.VarChar(64)
   channelId   String?  @map("channel_id") @db.VarChar(19)
   success     Boolean  @default(true)

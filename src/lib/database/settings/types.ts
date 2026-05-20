@@ -13,7 +13,7 @@ export type GuildSettingsOfType<T> = PickByValue<GuildData, T>;
 import type { SerializedEmoji } from '#utils/functions';
 import type { Snowflake } from 'discord.js';
 
-export type { Guild as GuildData, Moderation as ModerationData, User as UserData } from '#generated/prisma';
+export type { CommandLog as CommandLogData, Guild as GuildData, Moderation as ModerationData, User as UserData } from '#generated/prisma';
 
 export type DashboardAuditAction =
 	| 'guild.settings.update'

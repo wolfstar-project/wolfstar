@@ -4,8 +4,9 @@ import { container } from '@sapphire/framework';
 const basePayload: CommandLogPayload = {
 	guildId: '1234567890',
 	userId: '9876543210',
-	userTag: 'TestUser#0001',
 	commandName: 'ping',
+	commandType: 'CHAT_INPUT',
+	commandId: '1111222233334444',
 	subcommand: null,
 	channelId: '1111111111',
 	success: true,
@@ -84,8 +85,10 @@ describe('writeCommandLog', () => {
 			data: {
 				guildId: basePayload.guildId,
 				userId: basePayload.userId,
-				userTag: basePayload.userTag,
+
 				commandName: basePayload.commandName,
+				commandType: basePayload.commandType,
+				commandId: basePayload.commandId,
 				subcommand: basePayload.subcommand,
 				channelId: basePayload.channelId,
 				success: basePayload.success,

@@ -3,13 +3,14 @@ import { container } from '@sapphire/framework';
 export interface CommandLogPayload {
 	guildId: string | null;
 	userId: string;
-	userTag: string | null;
 	commandName: string;
-	subcommand: string | null;
-	channelId: string | null;
-	success: boolean;
-	errorReason: string | null;
-	latencyMs: number | null;
+	commandType: string;
+	commandId?: string | null;
+	subcommand?: string | null;
+	channelId?: string | null;
+	success?: boolean;
+	errorReason?: string | null;
+	latencyMs?: number | null;
 }
 
 export function normalizeCommandError(err: unknown): string | null {
@@ -30,8 +31,9 @@ export function writeCommandLog(payload: CommandLogPayload): void {
 			data: {
 				guildId: payload.guildId,
 				userId: payload.userId,
-				userTag: payload.userTag,
 				commandName: payload.commandName,
+				commandType: payload.commandType,
+				commandId: payload.commandId,
 				subcommand: payload.subcommand,
 				channelId: payload.channelId,
 				success: payload.success,

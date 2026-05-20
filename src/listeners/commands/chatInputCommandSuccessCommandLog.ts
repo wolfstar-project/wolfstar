@@ -9,8 +9,9 @@ export class UserListener extends Listener<typeof Events.ChatInputCommandSuccess
 		writeCommandLog({
 			guildId: interaction.guildId,
 			userId: interaction.user.id,
-			userTag: interaction.user.username,
 			commandName: interaction.commandName,
+			commandType: 'CHAT_INPUT',
+			commandId: interaction.commandId,
 			subcommand: interaction.options.getSubcommand(false),
 			channelId: interaction.channelId,
 			success: true,
