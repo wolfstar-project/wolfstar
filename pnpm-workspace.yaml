@@ -1,4 +1,4 @@
-# Delay installs of very new releases by 24h as a supply-chain safety buffer.
+# Delay installs of very new releases by 24 hours (1440 minutes) as a supply-chain safety buffer.
 minimumReleaseAge: 1440
 
 allowBuilds:
