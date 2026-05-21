@@ -1,15 +1,11 @@
-ignoredBuiltDependencies:
-    - bufferutil
-    - zlib-sync
+minimumReleaseAge: 1440
 
-onlyBuiltDependencies:
-    - '@prisma/client'
-    - '@prisma/engines'
-    - '@tailwindcss/oxide'
-    - prisma
-    - sharp@0.34.5
-    - workerd
-    - better-sqlite3
+allowBuilds:
+    '@prisma/engines': true
+    bufferutil: false
+    esbuild: true
+    prisma: true
+    zlib-sync: false
 
 overrides:
     ansi-regex: ^5.0.1
