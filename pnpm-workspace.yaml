@@ -1,3 +1,4 @@
+# Delay installs of very new releases by 24h as a supply-chain safety buffer.
 minimumReleaseAge: 1440
 
 allowBuilds:
@@ -6,6 +7,7 @@ allowBuilds:
     '@tailwindcss/oxide': true
     better-sqlite3: true
     bufferutil: false
+    # Required by current lockfile; pnpm v11 blocks install unless explicitly approved.
     esbuild: true
     prisma: true
     sharp@0.34.5: true
