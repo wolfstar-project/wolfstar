@@ -1,4 +1,26 @@
+import { readSettings, readSettingsAuditLog } from '#lib/database';
 import { container } from '@sapphire/framework';
+
+export interface CommandExecuteAuditPayload {
+	guildId: string;
+	actorId: string;
+	commandName: string;
+	commandId?: string;
+	commandType: 'chat-input' | 'context-menu' | 'message';
+	channelId: string;
+}
+
+export function recordCommandExecuteAudit(payload: CommandExecuteAuditPayload): void {
+	void (async () => {
+		const settings = await readSettings(payload.guildId);
+		await readSettingsAuditLog(settings).command(payload.actorId, {
+			commandName: payload.commandName,
+			commandId: payload.commandId,
+			commandType: payload.commandType,
+			channelId: payload.channelId
+		});
+	})().catch(() => null);
+}
 
 export interface CommandLogPayload {
 	guildId: string | null;

@@ -1,8 +1,8 @@
 import type { WolfCommand } from '#lib/structures';
 import { Events as WolfEvents } from '#lib/types';
-import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, type ContextMenuCommandSuccessPayload } from '@sapphire/framework';
+import { recordCommandExecuteAudit } from './_command-log-shared.js';
 
 @ApplyOptions<Listener.Options>({ event: Events.ContextMenuCommandSuccess })
 export class UserListener extends Listener<typeof Events.ContextMenuCommandSuccess> {
@@ -12,14 +12,12 @@ export class UserListener extends Listener<typeof Events.ContextMenuCommandSucce
 		this.container.client.emit(WolfEvents.CommandUsageAnalytics, command.name, command.category);
 
 		if (!interaction.guildId || command.category === 'System') return;
-		const settings = readSettingsCached(interaction.guildId);
-		if (!settings) return;
-		void readSettingsAuditLog(settings)
-			.command(interaction.user.id, {
-				commandName: interaction.commandName,
-				commandType: 'context-menu',
-				channelId: interaction.channelId
-			})
-			.catch(() => null);
+		recordCommandExecuteAudit({
+			guildId: interaction.guildId,
+			actorId: interaction.user.id,
+			commandName: interaction.commandName,
+			commandType: 'context-menu',
+			channelId: interaction.channelId
+		});
 	}
 }

@@ -1,5 +1,17 @@
-import { normalizeCommandError, writeCommandLog, type CommandLogPayload } from '#root/listeners/commands/_command-log-shared';
+import * as database from '#lib/database';
+import { getDefaultGuildSettings } from '#lib/database/settings/constants';
+import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import {
+	normalizeCommandError,
+	recordCommandExecuteAudit,
+	writeCommandLog,
+	type CommandLogPayload
+} from '#root/listeners/commands/_command-log-shared';
 import { container } from '@sapphire/framework';
+
+function createSettings(id: string): ReadonlyGuildData {
+	return Object.assign(Object.create(null), getDefaultGuildSettings(), { id }) as ReadonlyGuildData;
+}
 
 const basePayload: CommandLogPayload = {
 	guildId: '1234567890',
@@ -57,6 +69,36 @@ describe('normalizeCommandError', () => {
 		circular.self = circular;
 		const result = normalizeCommandError(circular);
 		expect(result).toBe(String(circular).slice(0, 2000));
+	});
+});
+
+describe('recordCommandExecuteAudit', () => {
+	it('loads settings via readSettings before writing guild.command.execute audit events', async () => {
+		const settings = createSettings('1234567890');
+		const commandMock = vi.fn().mockResolvedValue(undefined);
+		const readSettingsSpy = vi.spyOn(database, 'readSettings').mockResolvedValue(settings);
+		const auditLogSpy = vi.spyOn(database, 'readSettingsAuditLog').mockReturnValue({ command: commandMock } as never);
+
+		recordCommandExecuteAudit({
+			guildId: '1234567890',
+			actorId: '9876543210',
+			commandName: 'ping',
+			commandType: 'chat-input',
+			channelId: '1111111111'
+		});
+
+		await vi.waitFor(() => {
+			expect(readSettingsSpy).toHaveBeenCalledWith('1234567890');
+		});
+
+		expect(commandMock).toHaveBeenCalledWith('9876543210', {
+			commandName: 'ping',
+			commandType: 'chat-input',
+			channelId: '1111111111'
+		});
+
+		readSettingsSpy.mockRestore();
+		auditLogSpy.mockRestore();
 	});
 });
 

@@ -1,8 +1,8 @@
 import type { WolfCommand } from '#lib/structures';
 import { Events as WolfEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { readSettingsAuditLog, readSettingsCached } from '#lib/database';
 import { Events, Listener, type MessageCommandSuccessPayload } from '@sapphire/framework';
+import { recordCommandExecuteAudit } from './_command-log-shared.js';
 
 @ApplyOptions<Listener.Options>({ event: Events.MessageCommandSuccess })
 export class UserListener extends Listener<typeof Events.MessageCommandSuccess> {
@@ -12,14 +12,12 @@ export class UserListener extends Listener<typeof Events.MessageCommandSuccess> 
 		this.container.client.emit(WolfEvents.CommandUsageAnalytics, command.name, command.category);
 
 		if (!message.guildId || command.category === 'System') return;
-		const settings = readSettingsCached(message.guildId);
-		if (!settings) return;
-		void readSettingsAuditLog(settings)
-			.command(message.author.id, {
-				commandName: command.name,
-				commandType: 'message',
-				channelId: message.channelId
-			})
-			.catch(() => null);
+		recordCommandExecuteAudit({
+			guildId: message.guildId,
+			actorId: message.author.id,
+			commandName: command.name,
+			commandType: 'message',
+			channelId: message.channelId
+		});
 	}
 }
