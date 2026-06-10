@@ -16,7 +16,7 @@ export class UserListener extends Listener<typeof Events.ChatInputCommandSuccess
 			channelId: interaction.channelId,
 			success: true,
 			errorReason: null,
-			latencyMs: Math.round(duration)
+			latencyMs: duration !== undefined ? Math.round(duration) : null
 		});
 	}
 }
