@@ -135,6 +135,8 @@ export async function transformOauthGuildsAndUser({ user, guilds }: LoginData): 
 	const { client } = container;
 	const userId = user.id;
 
-	const transformedGuilds = await Promise.all(guilds.map((guild) => transformGuild(client, userId, guild)));
+	const transformedGuilds = (await Promise.all(guilds.map((guild) => transformGuild(client, userId, guild)))).filter(
+		(guild) => guild.wolfstarIsIn && guild.manageable
+	);
 	return { user, transformedGuilds };
 }
