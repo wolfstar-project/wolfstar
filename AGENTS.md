@@ -64,17 +64,17 @@ InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without Inf
 
 ### Common commands
 
-| Task                              | Command                           |
-| --------------------------------- | --------------------------------- |
-| Install deps                      | `pnpm install`                    |
-| Generate Prisma client            | `pnpm prisma:generate`            |
-| Lint                              | `pnpm lint`                       |
-| Unit tests (no external services) | `pnpm test`                       |
-| Build                             | `pnpm build`                      |
-| Dev (watch + start)               | `pnpm dev`                        |
-| Start (production build)          | `INFLUX_ENABLED=false pnpm start` |
+| Task                     | Command                           |
+| ------------------------ | --------------------------------- |
+| Install deps             | `pnpm install`                    |
+| Generate Prisma client   | `pnpm prisma:generate`            |
+| Lint                     | `pnpm lint`                       |
+| Unit tests               | `pnpm test`                       |
+| Build                    | `pnpm build`                      |
+| Dev (watch + start)      | `pnpm dev`                        |
+| Start (production build) | `INFLUX_ENABLED=false pnpm start` |
 
-Unit tests use mocked Discord (`tests/mocks/`) and do not require PostgreSQL or a `DISCORD_TOKEN`. Full bot startup requires a valid `DISCORD_TOKEN` in `src/.env` (or `src/.env.local`, gitignored).
+Unit tests import `#lib/setup` via `tests/vitest.setup.ts`, which loads `src/lib/setup/prisma.ts` and constructs `PrismaPg` from `process.env.DATABASE_URL`, so tests require a `DATABASE_URL`/PostgreSQL connection. They do not require a `DISCORD_TOKEN` because mocked Discord is provided by `tests/vitest.setup.ts` and `tests/mocks/MockInstances.ts`. Full bot startup requires a valid `DISCORD_TOKEN` in `src/.env` (or `src/.env.local`, gitignored).
 
 ### REST API
 
