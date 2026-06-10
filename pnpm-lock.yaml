@@ -6779,7 +6779,7 @@ snapshots:
       hono: 4.12.12
       ofetch: 1.5.1
       react: 19.2.5
-      vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.8.4)
+      vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.9.0)
 
   evp_bytestokey@1.0.3:
     dependencies:
