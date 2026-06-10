@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS "audit_log" CASCADE;
-
 CREATE TABLE "audit_event" (
   "id"          UUID         NOT NULL DEFAULT gen_random_uuid(),
   "action"      VARCHAR(64)  NOT NULL,
