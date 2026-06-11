@@ -122,6 +122,9 @@ importers:
       discord.js:
         specifier: ~14.26.4
         version: 14.26.4(bufferutil@4.1.0)
+      evlog:
+        specifier: ^2.16.0
+        version: 2.16.0(hono@4.12.12)(ofetch@1.5.1)(react@19.2.5)(vite@7.2.4)
       he:
         specifier: ^1.2.0
         version: 1.2.0
@@ -2623,6 +2626,59 @@ packages:
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
+
+  evlog@2.16.0:
+    resolution: {integrity: sha512-qpIt+5+5hY8hxpca4vFTxR3x5jcnEC5DQh9OffR1mZWFfX2wui7ksh9I0AUUxRNP8ttlU/QN/JPVbSj5nepJ9w==}
+    peerDependencies:
+      '@nestjs/common': '>=11.1.19'
+      '@nuxt/kit': ^4.4.2
+      '@tanstack/start-client-core': ^1.167.20
+      ai: '>=6.0.168'
+      elysia: '>=1.4.28'
+      express: '>=5.2.1'
+      fastify: '>=5.8.5'
+      h3: ^1.15.11
+      hono: ''
+      next: '>=16.2.4'
+      nitro: ^3.0.260311-beta
+      nitropack: ^2.13.3
+      ofetch: ^1.5.1
+      react: '>=19.2.5'
+      react-router: '>=7.14.2'
+      vite: ^7.0.0 || ^8.0.0
+    peerDependenciesMeta:
+      '@nestjs/common':
+        optional: true
+      '@nuxt/kit':
+        optional: true
+      '@tanstack/start-client-core':
+        optional: true
+      ai:
+        optional: true
+      elysia:
+        optional: true
+      express:
+        optional: true
+      fastify:
+        optional: true
+      h3:
+        optional: true
+      hono:
+        optional: true
+      next:
+        optional: true
+      nitro:
+        optional: true
+      nitropack:
+        optional: true
+      ofetch:
+        optional: true
+      react:
+        optional: true
+      react-router:
+        optional: true
+      vite:
+        optional: true
 
   evp_bytestokey@1.0.3:
     resolution: {integrity: sha512-/f2Go4TognH/KvCISP7OUsHn85hT9nUkxxA9BEWxFn+Oj9o8ZNLm/40hdlgSLyuOimsrTKLUMEorQexp/aPQeA==}
@@ -6717,6 +6773,13 @@ snapshots:
   eventemitter3@5.0.1: {}
 
   events@3.3.0: {}
+
+  evlog@2.16.0(hono@4.12.12)(ofetch@1.5.1)(react@19.2.5)(vite@7.2.4):
+    optionalDependencies:
+      hono: 4.12.12
+      ofetch: 1.5.1
+      react: 19.2.5
+      vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.9.0)
 
   evp_bytestokey@1.0.3:
     dependencies:

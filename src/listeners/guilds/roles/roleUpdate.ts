@@ -13,6 +13,6 @@ export class UserListener extends Listener {
 		const nodes = readSettingsPermissionNodes(settings);
 		if (!nodes.has(next.id)) return;
 
-		await writeSettings(next, { permissionsRoles: nodes.refresh(settings) });
+		await writeSettings(next, { permissionsRoles: nodes.refresh(settings) }, next.client.user!.id);
 	}
 }

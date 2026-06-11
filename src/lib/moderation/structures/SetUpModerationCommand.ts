@@ -1,4 +1,4 @@
-import { readSettings, writeSettings } from '#lib/database';
+import { readSettings, writeSettingsTransaction } from '#lib/database';
 import { getT } from '#lib/i18n';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { RoleTypeVariation } from '#lib/moderation';
@@ -51,7 +51,8 @@ export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, Val
 		const t = getT(settings.language);
 		if (await promptConfirmation(message, t(LanguageKeys.Commands.Moderation.ActionSharedRoleSetupExisting))) {
 			const role = (await this.askForRole(message, args, context)).unwrapRaw();
-			await writeSettings(message.guild, { [this.action.roleKey]: role.id });
+			using trx = await writeSettingsTransaction(message.guild);
+			await trx.write({ [this.action.roleKey]: role.id } as any).submitWithAudit(message.author.id);
 		} else if (await promptConfirmation(message, t(LanguageKeys.Commands.Moderation.ActionSharedRoleSetupNew))) {
 			await this.action.setup(message);
 

@@ -34,13 +34,17 @@ export class UserCommand extends WolfSubcommand {
 		const roles = await args.repeat('roleName');
 
 		// Get all rolesets from settings and check if there is an existing set with the name provided by the user
-		await writeSettings(message.guild, (settings) => ({
-			// The set does exist so we want to only REMOVE provided roles from it
-			// Create a new array that we can use to overwrite the existing one in settings
-			rolesUniqueRoleSets: settings.rolesUniqueRoleSets.map((set) =>
-				set.name === name ? { name, roles: set.roles.filter((id: string) => !roles.find((role) => role.id === id)) } : set
-			)
-		}));
+		await writeSettings(
+			message.guild,
+			(settings) => ({
+				// The set does exist so we want to only REMOVE provided roles from it
+				// Create a new array that we can use to overwrite the existing one in settings
+				rolesUniqueRoleSets: settings.rolesUniqueRoleSets.map((set) =>
+					set.name === name ? { name, roles: set.roles.filter((id: string) => !roles.find((role) => role.id === id)) } : set
+				)
+			}),
+			message.author.id
+		);
 
 		return send(message, args.t(Root.RoleSetRemoved, { name, roles: roles.map((role) => role.name) }));
 	}
@@ -54,16 +58,20 @@ export class UserCommand extends WolfSubcommand {
 		if (sets.length === 0) this.error(Root.RoleSetResetEmpty);
 
 		if (!name) {
-			await writeSettings(message.guild, { rolesUniqueRoleSets: [] });
+			await writeSettings(message.guild, { rolesUniqueRoleSets: [] }, message.author.id);
 			return send(message, args.t(Root.RoleSetResetAll));
 		}
 
 		const arrayIndex = sets.findIndex((set) => set.name === name);
 		if (arrayIndex === -1) this.error(Root.RoleSetResetNotExists, { name });
 
-		await writeSettings(message.guild, {
-			rolesUniqueRoleSets: sets.toSpliced(arrayIndex, 1)
-		});
+		await writeSettings(
+			message.guild,
+			{
+				rolesUniqueRoleSets: sets.toSpliced(arrayIndex, 1)
+			},
+			message.author.id
+		);
 
 		return send(message, args.t(Root.RoleSetResetGroup, { name }));
 	}
@@ -94,7 +102,7 @@ export class UserCommand extends WolfSubcommand {
 			return { name, roles: newRoles };
 		});
 
-		await writeSettings(message.guild, { rolesUniqueRoleSets: newSets });
+		await writeSettings(message.guild, { rolesUniqueRoleSets: newSets }, message.author.id);
 		return send(message, args.t(Root.RoleSetUpdated, { name }));
 	}
 
@@ -137,14 +145,18 @@ export class UserCommand extends WolfSubcommand {
 		if (changed) {
 			// If after cleaning up, all sets end up empty, reset and return error:
 			if (list.length === 0) {
-				await writeSettings(message.guild, { rolesUniqueRoleSets: [] });
+				await writeSettings(message.guild, { rolesUniqueRoleSets: [] }, message.author.id);
 				this.error(Root.RoleSetNoRoleSets);
 			}
 
 			// Else, clean up:
-			await writeSettings(message.guild, (settings) => ({
-				rolesUniqueRoleSets: this.cleanRoleSets(message, settings)
-			}));
+			await writeSettings(
+				message.guild,
+				(settings) => ({
+					rolesUniqueRoleSets: this.cleanRoleSets(message, settings)
+				}),
+				message.author.id
+			);
 		}
 
 		return list;
@@ -178,7 +190,7 @@ export class UserCommand extends WolfSubcommand {
 			const rolesUniqueRoleSets = entries.with(index, { name, roles: entry.roles.concat(roles.map((role) => role.id)) });
 			trx.write({ rolesUniqueRoleSets });
 		}
-		await trx.submit();
+		await trx.submitWithAudit(message.author.id);
 
 		const created = index === -1;
 		const key = created ? Root.RoleSetCreated : Root.RoleSetAdded;

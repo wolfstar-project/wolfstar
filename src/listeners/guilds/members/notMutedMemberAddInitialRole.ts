@@ -28,7 +28,7 @@ export class UserListener extends Listener {
 				: member.user.bot
 					? 'rolesInitialBots'
 					: 'rolesInitialHumans';
-			await writeSettings(member, { [key]: null });
+			await writeSettings(member, { [key]: null }, member.client.user!.id);
 			return;
 		}
 

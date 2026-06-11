@@ -47,6 +47,8 @@ model Guild {
   channelsLogsEmojiDelete              String?  @map("channels.logs.emoji-delete") @db.VarChar(19)
   channelsLogsServerUpdate             String?  @map("channels.logs.server-update") @db.VarChar(19)
   channelsLogsVoiceChannel             String?  @map("channels.logs.voice-activity") @db.VarChar(19)
+  channelsLogsCommand                  String?  @map("channels.logs.command") @db.VarChar(19)
+  channelsLogsSettings                 String?  @map("channels.logs.settings") @db.VarChar(19)
   channelsIgnoreAll                    String[] @default([]) @map("channels.ignore.all") @db.VarChar(19)
   channelsIgnoreMessageEdit            String[] @default([]) @map("channels.ignore.message-edit") @db.VarChar(19)
   channelsIgnoreMessageDelete          String[] @default([]) @map("channels.ignore.message-delete") @db.VarChar(19)
@@ -218,4 +220,56 @@ model User {
   moderationDM Boolean @default(true) @map("moderation_dm")
 
   @@map("user")
+}
+
+model AuditEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  action     String   @db.VarChar(64)
+  actorType  String   @map("actor_type") @db.VarChar(32)
+  actorId    String   @map("actor_id")
+  actorName  String?  @map("actor_name")
+  targetType String?  @map("target_type") @db.VarChar(32)
+  targetId   String?  @map("target_id")
+  outcome    String   @db.VarChar(32)
+  tenantId   String?  @map("tenant_id")
+  reason     String?  @db.VarChar(500)
+  timestamp  DateTime @db.Timestamp(6)
+  changes    Json?
+  context    Json?
+  prevHash   String?  @map("prev_hash") @db.VarChar(64)
+  hash       String   @unique @db.VarChar(64)
+
+  @@index([action, timestamp])
+  @@index([actorId, timestamp])
+  @@index([tenantId, timestamp])
+  @@map("audit_event")
+}
+
+model AuditChainHead {
+  id        String   @id @default("default")
+  hash      String?  @db.VarChar(64)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("audit_chain_head")
+}
+
+model CommandLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  guildId     String   @map("guild_id") @db.VarChar(19)
+  userId      String   @map("user_id") @db.VarChar(19)
+  commandName String   @map("command_name") @db.VarChar(64)
+  commandType String  @map("command_type") @db.VarChar(32)
+  commandId   String?  @map("command_id") @db.VarChar(19)
+  subcommand  String?  @db.VarChar(64)
+  channelId   String?  @map("channel_id") @db.VarChar(19)
+  success     Boolean  @default(true)
+  errorReason String?  @map("error_reason") @db.VarChar(2000)
+  executedAt  DateTime @map("executed_at") @db.Timestamp(6)
+  latencyMs   Int?     @map("latency_ms")
+  metadata    Json?    @db.Json
+
+  @@index([guildId, executedAt(sort: Desc)])
+  @@index([guildId, userId, executedAt])
+  @@index([guildId, commandName, executedAt])
+  @@map("command_log")
 }

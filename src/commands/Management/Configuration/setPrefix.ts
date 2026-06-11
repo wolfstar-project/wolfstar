@@ -24,7 +24,7 @@ export class UserCommand extends WolfCommand {
 			this.error(LanguageKeys.Misc.ConfigurationEquals);
 		}
 
-		await trx.write({ prefix }).submit();
+		await trx.write({ prefix }).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.SetPrefixSet, { prefix });
 		return send(message, { content, allowedMentions: { users: [message.author.id], roles: [] } });

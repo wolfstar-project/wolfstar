@@ -157,7 +157,7 @@ export class UserCommand extends WolfSubcommand {
 			client: interaction.client
 		});
 		const args = WolfArgs.from(this, messageProxy, value, {} as any, t);
-		await trx.write(await set(trx.settings, schemaKey, args)).submit();
+		await trx.write(await set(trx.settings, schemaKey, args)).submitWithAudit(interaction.user.id);
 
 		const response = schemaKey.display(trx.settings, t);
 		const content = t(Root.Updated, { key, response: this.#getTextResponse(response) });
@@ -179,7 +179,7 @@ export class UserCommand extends WolfSubcommand {
 			client: interaction.client
 		});
 		const args = WolfArgs.from(this, messageProxy, value, {} as any, t);
-		await trx.write(await remove(trx.settings, schemaKey, args)).submit();
+		await trx.write(await remove(trx.settings, schemaKey, args)).submitWithAudit(interaction.user.id);
 
 		const response = schemaKey.display(trx.settings, t);
 		const content = t(Root.Updated, { key, response: this.#getTextResponse(response) });
@@ -191,7 +191,7 @@ export class UserCommand extends WolfSubcommand {
 		const [key, schemaKey] = await this.#fetchKeyFromInteraction(interaction, t);
 
 		using trx = await writeSettingsTransaction(interaction.guild);
-		await trx.write(reset(schemaKey)).submit();
+		await trx.write(reset(schemaKey)).submitWithAudit(interaction.user.id);
 
 		const response = schemaKey.display(trx.settings, t);
 		const content = t(Root.ResetSuccess, { key, value: response });

@@ -37,7 +37,9 @@ export class UserRoute extends Route {
 		try {
 			using trx = await writeSettingsTransaction(guild);
 			const data = await this.validateAll(trx.settings, guild, entries);
-			await trx.write(Object.fromEntries(data)).submit();
+			const settingsData = Object.fromEntries(data);
+
+			await trx.write(settingsData).submitWithAudit(request.auth!.id);
 
 			return this.sendSettings(response, trx.settings);
 		} catch (errors) {

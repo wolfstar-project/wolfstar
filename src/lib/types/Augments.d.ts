@@ -34,6 +34,7 @@ declare global {
 		export type StickyRoleEntries = StickyRole[];
 		export type ReactionRoleEntries = ReactionRole[];
 		export type UniqueRoleSetEntries = UniqueRoleSet[];
+		export type AuditEventChanges = import('#lib/database').AuditEventChanges;
 	}
 }
 

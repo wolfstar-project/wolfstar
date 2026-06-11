@@ -2,7 +2,7 @@ import {
 	getConfigurableKeys,
 	readSettings,
 	readSettingsAdder,
-	writeSettings,
+	writeSettingsTransaction,
 	type AdderKey,
 	type GuildData,
 	type GuildDataValue,
@@ -132,7 +132,8 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 	}
 
 	public async chatInputRunEdit(interaction: AutoModerationCommand.Interaction) {
-		const settings = await readSettings(interaction.guild);
+		using trx = await writeSettingsTransaction(interaction.guild);
+		const settings = trx.settings;
 
 		const valueEnabled = interaction.options.getBoolean('enabled');
 		const valueOnInfraction = this.#getInfraction(interaction, settings[this.keyOnInfraction]);
@@ -159,7 +160,7 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 		if (!isNullish(valuePunishmentThreshold)) pairs.push([this.keyPunishmentThreshold, valuePunishmentThreshold]);
 		if (!isNullish(valuePunishmentThresholdDuration)) pairs.push([this.keyPunishmentThresholdPeriod, valuePunishmentThresholdDuration]);
 
-		await writeSettings(interaction.guild, Object.fromEntries(pairs));
+		await trx.write(Object.fromEntries(pairs) as Partial<GuildData>).submitWithAudit(interaction.user.id);
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = t(Root.EditSuccess);
@@ -168,7 +169,8 @@ export abstract class AutoModerationCommand extends WolfSubcommand {
 
 	public async chatInputRunReset(interaction: AutoModerationCommand.Interaction) {
 		const [key, value] = await this.resetGetKeyValuePair(interaction.guild, interaction.options.getString('key', true) as ResetKey);
-		await writeSettings(interaction.guild, { [key]: value });
+		using trx = await writeSettingsTransaction(interaction.guild);
+		await trx.write({ [key]: value } as Partial<GuildData>).submitWithAudit(interaction.user.id);
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = t(Root.EditSuccess);
