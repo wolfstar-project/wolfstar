@@ -24,7 +24,7 @@ export class UserListener extends Listener {
 		try {
 			await resolveOnErrorCodes(channel.send(options), RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.MissingPermissions);
 		} catch (error) {
-			await writeSettings(entry.guild, { channelsLogsModeration: null });
+			await writeSettings(entry.guild, { channelsLogsModeration: null }, entry.guild.client.user!.id);
 		}
 	}
 

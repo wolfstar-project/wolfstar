@@ -124,6 +124,7 @@ describe('PermissionNodeManager', () => {
 					caughtError = e;
 				}
 
+				expect(caughtError).toBeDefined();
 				const casted = caughtError as UserError;
 				expect(casted).toBeInstanceOf(UserError);
 				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
@@ -142,6 +143,7 @@ describe('PermissionNodeManager', () => {
 					caughtError = e;
 				}
 
+				expect(caughtError).toBeDefined();
 				const casted = caughtError as UserError;
 				expect(casted).toBeInstanceOf(UserError);
 				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
@@ -160,6 +162,7 @@ describe('PermissionNodeManager', () => {
 					caughtError = e;
 				}
 
+				expect(caughtError).toBeDefined();
 				const casted = caughtError as UserError;
 				expect(casted).toBeInstanceOf(UserError);
 				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);

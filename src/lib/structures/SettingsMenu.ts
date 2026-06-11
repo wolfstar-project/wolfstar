@@ -686,7 +686,7 @@ export class SettingsMenu {
 					break;
 				}
 			}
-			await trx.submit();
+			await trx.submitWithAudit(this.interaction.user.id);
 		} catch (error) {
 			this.errorMessage = stringifyError(this.t, error);
 			this.oldValue = undefined;

@@ -21,7 +21,7 @@ export class UserCommand extends WolfCommand {
 
 		const index = trx.settings.disabledChannels.indexOf(channel.id);
 		const disabledChannels = index === -1 ? trx.settings.disabledChannels.concat(channel.id) : trx.settings.disabledChannels.toSpliced(index, 1);
-		await trx.write({ disabledChannels }).submit();
+		await trx.write({ disabledChannels }).submitWithAudit(message.author.id);
 
 		const added = index === -1;
 		const contentKey = added ? LanguageKeys.Commands.Management.SetIgnoreChannelsSet : LanguageKeys.Commands.Management.SetIgnoreChannelsRemoved;

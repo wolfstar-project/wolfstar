@@ -1,4 +1,4 @@
-import { PermissionNodeAction, readSettings, readSettingsPermissionNodes, writeSettings, type PermissionsNode } from '#lib/database';
+import { PermissionNodeAction, readSettings, readSettingsPermissionNodes, writeSettingsTransaction, type PermissionsNode } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfSubcommand } from '#lib/structures';
 import { PermissionLevels, type GuildMessage } from '#lib/types';
@@ -37,10 +37,10 @@ export class UserCommand extends WolfSubcommand {
 		}
 
 		const command = await args.pick('commandMatch', { owners: false });
-		await writeSettings(message.guild, (settings) => {
-			const nodes = readSettingsPermissionNodes(settings);
-			return { [nodes.settingsPropertyFor(target)]: nodes.add(target, command, action) };
-		});
+		using trx = await writeSettingsTransaction(message.guild);
+		const nodes = readSettingsPermissionNodes(trx.settings);
+		const propertyKey = nodes.settingsPropertyFor(target);
+		await trx.write({ [propertyKey]: nodes.add(target, command, action) } as any).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesAdd);
 		return send(message, content);
@@ -53,10 +53,10 @@ export class UserCommand extends WolfSubcommand {
 
 		if (!this.checkPermissions(message, target)) this.error(LanguageKeys.Commands.Management.PermissionNodesHigher);
 
-		await writeSettings(message.guild, (settings) => {
-			const nodes = readSettingsPermissionNodes(settings);
-			return { [nodes.settingsPropertyFor(target)]: nodes.remove(target, command, action) };
-		});
+		using trx = await writeSettingsTransaction(message.guild);
+		const nodes = readSettingsPermissionNodes(trx.settings);
+		const propertyKey = nodes.settingsPropertyFor(target);
+		await trx.write({ [propertyKey]: nodes.remove(target, command, action) } as any).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesRemove);
 		return send(message, content);
@@ -67,10 +67,10 @@ export class UserCommand extends WolfSubcommand {
 
 		if (!this.checkPermissions(message, target)) this.error(LanguageKeys.Commands.Management.PermissionNodesHigher);
 
-		await writeSettings(message.guild, (settings) => {
-			const nodes = readSettingsPermissionNodes(settings);
-			return { [nodes.settingsPropertyFor(target)]: nodes.reset(target) };
-		});
+		using trx = await writeSettingsTransaction(message.guild);
+		const nodes = readSettingsPermissionNodes(trx.settings);
+		const propertyKey = nodes.settingsPropertyFor(target);
+		await trx.write({ [propertyKey]: nodes.reset(target) } as any).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.PermissionNodesReset);
 		return send(message, content);

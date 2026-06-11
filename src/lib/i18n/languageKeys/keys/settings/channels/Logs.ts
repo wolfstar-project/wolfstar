@@ -24,3 +24,5 @@ export const RoleDelete = T('settings:channelsLogsRoleDelete');
 export const RoleUpdate = T('settings:channelsLogsRoleUpdate');
 export const ServerUpdate = T('settings:channelsLogsServerUpdate');
 export const VoiceActivity = T('settings:channelsLogsVoiceChannel');
+export const Command = T('settings:channelsLogsCommand');
+export const Settings = T('settings:channelsLogsSettings');

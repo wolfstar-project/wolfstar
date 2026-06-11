@@ -35,7 +35,7 @@ export class UserCommand extends WolfSubcommand {
 			index === -1 //
 				? trx.settings.commandAutoDelete.concat(value)
 				: trx.settings.commandAutoDelete.with(index, value);
-		await trx.write({ commandAutoDelete }).submit();
+		await trx.write({ commandAutoDelete }).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandAutoDeleteAdd, { channel: channel.toString(), time });
 		return send(message, content);
@@ -51,14 +51,14 @@ export class UserCommand extends WolfSubcommand {
 		}
 
 		const commandAutoDelete = trx.settings.commandAutoDelete.toSpliced(index, 1);
-		await trx.write({ commandAutoDelete }).submit();
+		await trx.write({ commandAutoDelete }).submitWithAudit(message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandAutoDeleteRemove, { channel: channel.toString() });
 		return send(message, content);
 	}
 
 	public async reset(message: GuildMessage, args: WolfSubcommand.Args) {
-		await writeSettings(message.guild, { commandAutoDelete: [] });
+		await writeSettings(message.guild, { commandAutoDelete: [] }, message.author.id);
 
 		const content = args.t(LanguageKeys.Commands.Management.ManageCommandAutoDeleteReset);
 		return send(message, content);
