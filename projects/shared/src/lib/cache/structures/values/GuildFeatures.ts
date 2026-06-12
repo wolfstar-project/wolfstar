@@ -32,7 +32,7 @@ export const GuildFeatureBits = {
 export const GuildFeatureEntries = Object.entries(GuildFeatureBits) as [feature: GuildFeature, bit: number][];
 
 export function toFeatures(features: readonly GuildFeature[]) {
-	return features.reduce((bits, feature) => bits | (GuildFeatureBits[feature] ?? 0), 0);
+	return features.reduce((bits, feature) => bits | (GuildFeatureBits[feature as keyof typeof GuildFeatureBits] ?? 0), 0);
 }
 
 export function fromFeatures(value: number): GuildFeature[] {

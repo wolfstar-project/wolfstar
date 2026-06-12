@@ -1,12 +1,14 @@
 import { Collection } from '@discordjs/collection';
-import { isNullish } from '@sapphire/utilities';
+import { isNullish, type NonNullObject } from '@sapphire/utilities';
 import { Reader } from '../../data/Reader.js';
-import type { IStructure, IStructureConstructor } from '../structures/interfaces/IStructure.js';
+import type { IStructure } from '../structures/interfaces/IStructure.js';
+import type { IStructureCreator } from '../structures/interfaces/IStructureCreator.js';
+import type { ICache } from '../interfaces/ICache.js';
 import { ScopedCache } from './ScopedCache.js';
 
-export abstract class HashScopedCache<T extends IStructure> extends ScopedCache {
+export abstract class HashScopedCache<T extends IStructure> extends ScopedCache implements ICache<T> {
 	public abstract readonly tail: string;
-	public abstract readonly structure: IStructureConstructor<T>;
+	public abstract readonly structure: IStructureCreator<T>;
 
 	/**
 	 * Sets an entry to the hashmap.
@@ -15,6 +17,30 @@ export abstract class HashScopedCache<T extends IStructure> extends ScopedCache 
 	 */
 	public set(parentId: ScopedCache.Snowflake, entries: T | readonly T[]) {
 		return Array.isArray(entries) ? this.setMany(parentId, entries as readonly T[]) : this.setOne(parentId, entries as T);
+	}
+
+	/**
+	 * Adds or updates an entry from raw API data, returning the stored structure.
+	 *
+	 * If the entry already exists and `overwrite` is `false`, it is patched with the
+	 * new data; otherwise a fresh instance is constructed. Patching uses the
+	 * structure's {@link IStructureCreator.patch} when available, falling back to a
+	 * full reconstruction that merges the existing serialized value with `data`.
+	 * @param parentId The parent's ID.
+	 * @param data The raw API data to store. Must carry the entry's identity.
+	 * @param overwrite Whether to replace an existing entry instead of patching it.
+	 */
+	public async add(parentId: ScopedCache.Snowflake, data: NonNullObject, overwrite = false): Promise<T> {
+		const id = this.structure.getId?.(data) ?? BigInt((data as { id: ScopedCache.Snowflake }).id);
+		const existing = overwrite ? null : await this.getOne(parentId, id);
+
+		const value =
+			existing === null //
+				? this.structure.fromAPI(data)
+				: (this.structure.patch?.(existing, data) ?? this.structure.fromAPI({ ...existing.toJSON(), ...data }));
+
+		await this.setOne(parentId, value);
+		return value;
 	}
 
 	/**
@@ -92,6 +118,14 @@ export abstract class HashScopedCache<T extends IStructure> extends ScopedCache 
 	}
 
 	/**
+	 * Gets the number of entries scoped under `parentId`.
+	 * @remark RFC alias of {@link HashScopedCache.count}.
+	 */
+	public getSize(parentId: ScopedCache.Snowflake) {
+		return this.count(parentId);
+	}
+
+	/**
 	 * Removes one or more entries from the hashmap.
 	 * @param parentId The parent's ID.
 	 * @param entries The IDs of the entries to remove.
@@ -102,6 +136,14 @@ export abstract class HashScopedCache<T extends IStructure> extends ScopedCache 
 			? this.client.hdel(this.makeId(parentId), ...entries.map((entry: ScopedCache.Snowflake) => entry.toString()))
 			: this.client.hdel(this.makeId(parentId), entries.toString()));
 		return result;
+	}
+
+	/**
+	 * Deletes one or more entries from the hashmap.
+	 * @remark RFC alias of {@link HashScopedCache.remove}.
+	 */
+	public delete(parentId: ScopedCache.Snowflake, entries: ScopedCache.Snowflake | readonly ScopedCache.Snowflake[]) {
+		return this.remove(parentId, entries);
 	}
 
 	/**

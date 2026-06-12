@@ -62,6 +62,7 @@ export class Message implements IStructure {
 				id: this.author.id.toString(),
 				username: this.author.username,
 				discriminator: this.author.discriminator.toString().padStart(4, '0'),
+				global_name: null,
 				avatar: this.author.avatar ?? null
 			},
 			content: this.content,
@@ -91,6 +92,10 @@ export class Message implements IStructure {
 				})
 			)
 		};
+	}
+
+	public static patch(existing: Message, data: Partial<Message.Json>): Message {
+		return existing.patch(data);
 	}
 
 	public static fromAPI(data: Message.Json): Message {

@@ -57,6 +57,8 @@ export class Role implements IStructure {
 			id: this.id.toString(),
 			name: this.name,
 			color: this.color,
+			colors: { primary_color: this.color, secondary_color: null, tertiary_color: null },
+			flags: 0 as APIRole['flags'],
 			hoist: this.hoist,
 			icon: this.icon,
 			managed: this.managed,

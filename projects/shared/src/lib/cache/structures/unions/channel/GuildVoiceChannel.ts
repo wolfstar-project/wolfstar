@@ -1,5 +1,5 @@
 import type { Nullish } from '@sapphire/utilities';
-import type { APIVoiceChannel, ChannelType, VideoQualityMode } from 'discord-api-types/v10';
+import type { APIVoiceChannelBase, ChannelType, VideoQualityMode } from 'discord-api-types/v10';
 import type { Reader } from '../../../../data/Reader.js';
 import { GuildBasedChannel, guildBasedFromAPIShared, guildBasedFromBinaryShared } from './base/GuildBasedChannel.js';
 
@@ -24,6 +24,7 @@ export class GuildVoiceChannel extends GuildBasedChannel<GuildVoiceChannel.Type>
 	public override toJSON(): GuildVoiceChannel.Json {
 		return {
 			...super.toJSON(),
+			position: this.position ?? 0,
 			bitrate: this.bitrate ?? undefined,
 			user_limit: this.userLimit ?? undefined,
 			rtc_region: this.rtcRegion,
@@ -54,7 +55,7 @@ export class GuildVoiceChannel extends GuildBasedChannel<GuildVoiceChannel.Type>
 
 export namespace GuildVoiceChannel {
 	export type Type = ChannelType.GuildStageVoice | ChannelType.GuildVoice;
-	export type Json = Omit<APIVoiceChannel, 'guild_id'>;
+	export type Json = Omit<APIVoiceChannelBase<Type>, 'guild_id'>;
 	export interface Data extends GuildBasedChannel.Data<Type> {
 		bitrate?: number | Nullish;
 		userLimit?: number | Nullish;

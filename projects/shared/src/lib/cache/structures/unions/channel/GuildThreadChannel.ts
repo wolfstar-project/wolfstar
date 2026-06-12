@@ -41,13 +41,14 @@ export class GuildThreadChannel extends GuildBasedChannel<GuildThreadChannel.Typ
 	public override toJSON(): GuildThreadChannel.Json {
 		return {
 			...super.toJSON(),
+			parent_id: this.parentId?.toString(),
 			owner_id: this.ownerId?.toString(),
 			rate_limit_per_user: this.rateLimitPerUser ?? undefined,
 			thread_metadata: {
 				archived: this.archived,
 				auto_archive_duration: this.autoArchiveDuration,
 				archive_timestamp: fromTimestamp(this.archiveAt),
-				locked: this.locked ?? undefined,
+				locked: this.locked ?? false,
 				invitable: this.invitable ?? undefined,
 				create_timestamp: fromTimestamp(this.createdAt) ?? undefined
 			}

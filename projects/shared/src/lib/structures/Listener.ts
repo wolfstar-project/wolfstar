@@ -1,3 +1,4 @@
+// oxlint-disable no-underscore-dangle
 import { Piece, type Container } from '@sapphire/pieces';
 
 export abstract class Listener extends Piece<Listener.Options> {

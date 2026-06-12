@@ -1,11 +1,11 @@
 import type { Nullish } from '@sapphire/utilities';
-import type { APIGuildChannel, APIOverwrite, ChannelFlags, ChannelType, OverwriteType } from 'discord-api-types/v10';
+import type { APIGuildChannel, APIOverwrite, ChannelFlags, GuildChannelType, OverwriteType } from 'discord-api-types/v10';
 import { normalizeNullable } from '../../../../../common/util.js';
 import type { Reader } from '../../../../../data/Reader.js';
 import { Writer } from '../../../../../data/Writer.js';
 import type { IStructure } from '../../../interfaces/IStructure.js';
 
-export abstract class GuildBasedChannel<T extends ChannelType> implements IStructure {
+export abstract class GuildBasedChannel<T extends GuildChannelType> implements IStructure {
 	public readonly id: bigint;
 	public readonly type: T;
 	public readonly name: string;
@@ -64,9 +64,9 @@ export abstract class GuildBasedChannel<T extends ChannelType> implements IStruc
 }
 
 export namespace GuildBasedChannel {
-	export type Json<T extends ChannelType> = Omit<APIGuildChannel<T>, 'guild_id'>;
+	export type Json<T extends GuildChannelType> = Omit<APIGuildChannel<T>, 'guild_id'> & { position?: number };
 
-	export interface Data<T extends ChannelType> {
+	export interface Data<T extends GuildChannelType> {
 		id: bigint;
 		name: string;
 		type: T;
@@ -85,7 +85,7 @@ export namespace GuildBasedChannel {
 	}
 }
 
-export function guildBasedFromAPIShared<T extends ChannelType>(data: GuildBasedChannel.Json<T>): GuildBasedChannel.Data<T> {
+export function guildBasedFromAPIShared<T extends GuildChannelType>(data: GuildBasedChannel.Json<T>): GuildBasedChannel.Data<T> {
 	return {
 		id: BigInt(data.id),
 		type: data.type,
@@ -105,7 +105,7 @@ export function guildBasedFromAPIShared<T extends ChannelType>(data: GuildBasedC
 	};
 }
 
-export function guildBasedFromBinaryShared<T extends ChannelType>(reader: Reader): GuildBasedChannel.Data<T> {
+export function guildBasedFromBinaryShared<T extends GuildChannelType>(reader: Reader): GuildBasedChannel.Data<T> {
 	return {
 		id: reader.u64()!,
 		type: reader.u8()! as T,

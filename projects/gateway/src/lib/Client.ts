@@ -1,3 +1,4 @@
+import { GatewayManagers } from '#lib/managers/GatewayManagers';
 import { REST, RESTOptions } from '@discordjs/rest';
 import { OptionalWebSocketManagerOptions, RequiredWebSocketManagerOptions, WebSocketManager } from '@discordjs/ws';
 import { envParseInteger, envParseString } from '@wolfstar/env-utilities';
@@ -30,6 +31,7 @@ export function createClient(options: ClientOptions) {
 		block: envParseInteger('BROKER_BLOCK', 5000),
 		max: envParseInteger('BROKER_MAX', 10)
 	});
+	container.managers = new GatewayManagers(container.cache, container.broker, container.rest);
 
 	container.stores.register(new ListenerStore());
 }
@@ -50,6 +52,7 @@ declare module '@sapphire/pieces' {
 	interface Container {
 		broker: MessageBroker;
 		cache: Cache;
+		managers: GatewayManagers;
 		redis: Redis;
 		rest: REST;
 		ws: WebSocketManager;

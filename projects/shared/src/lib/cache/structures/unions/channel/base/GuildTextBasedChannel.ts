@@ -17,6 +17,7 @@ export abstract class GuildTextBasedChannel<T extends GuildTextChannelType> exte
 	public override toJSON(): GuildTextBasedChannel.Json<T> {
 		return {
 			...super.toJSON(),
+			position: this.position ?? 0,
 			default_auto_archive_duration: this.defaultAutoArchiveDuration ?? undefined,
 			topic: this.topic
 		};

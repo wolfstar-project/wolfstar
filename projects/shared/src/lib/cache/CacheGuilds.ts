@@ -10,6 +10,22 @@ export class CacheGuilds extends ScopedCache {
 		await this.client.set(this.makeId(guild.id), guild.toBuffer());
 	}
 
+	/**
+	 * Adds or updates a guild from raw API data, returning the stored structure.
+	 *
+	 * If the guild already exists and `overwrite` is `false`, the existing value is
+	 * merged with `data` before being reconstructed; otherwise a fresh instance is
+	 * built from `data` alone.
+	 * @param data The raw API guild data to store.
+	 * @param overwrite Whether to replace an existing guild instead of patching it.
+	 */
+	public async add(data: Guild.Json, overwrite = false): Promise<Guild> {
+		const existing = overwrite ? null : await this.get(BigInt(data.id));
+		const value = existing === null ? Guild.fromAPI(data) : Guild.fromAPI({ ...existing.toJSON(), ...data });
+		await this.set(value);
+		return value;
+	}
+
 	public async has(guildId: ScopedCache.Snowflake) {
 		const data = await this.client.exists(this.makeId(guildId));
 		return data === 1;
@@ -33,10 +49,26 @@ export class CacheGuilds extends ScopedCache {
 		return count(this.client.scanBufferStream({ match: this.makeId('*'), count: 100 }));
 	}
 
+	/**
+	 * Gets the number of cached guilds.
+	 * @remark RFC alias of {@link CacheGuilds.count}.
+	 */
+	public getSize() {
+		return this.count();
+	}
+
 	public async remove(guildId: ScopedCache.Snowflake) {
 		const key = this.makeId(guildId);
 		const result = await this.client.del(key, `${key}:channels`, `${key}:emojis`, `${key}:members`, `${key}:roles`, `${key}:stickers`);
 		return result > 0;
+	}
+
+	/**
+	 * Deletes a guild and all of its scoped sub-caches.
+	 * @remark RFC alias of {@link CacheGuilds.remove}.
+	 */
+	public delete(guildId: ScopedCache.Snowflake) {
+		return this.remove(guildId);
 	}
 
 	public async *keys(): AsyncIterable<bigint> {

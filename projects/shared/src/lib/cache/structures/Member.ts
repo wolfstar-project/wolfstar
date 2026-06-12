@@ -1,6 +1,7 @@
 import { isNullish, type Nullish } from '@sapphire/utilities';
-import type { Nullable } from 'discord-api-types/utils/internals.js';
 import type { APIGuildMember, APIUser } from 'discord-api-types/v10';
+
+type Nullable<T> = { [P in keyof T]: T[P] | null };
 import { defaultOptional, fromTimestamp, toTimestamp } from '../../common/util.js';
 import type { Reader } from '../../data/Reader.js';
 import { Writer } from '../../data/Writer.js';
@@ -86,10 +87,12 @@ export class Member implements IStructure {
 				id: this.id.toString(),
 				username: this.username,
 				discriminator: this.discriminator.toString().padStart(4, '0'),
+				global_name: null,
 				bot: this.bot ?? undefined,
 				avatar: this.avatar,
 				public_flags: this.flags ?? undefined
 			},
+			flags: 0 as APIGuildMember['flags'],
 			nick: this.nickname,
 			avatar: this.guildAvatar,
 			roles: this.roles.map((role) => role.toString()),
@@ -100,6 +103,14 @@ export class Member implements IStructure {
 			pending: this.pending ?? undefined,
 			communication_disabled_until: fromTimestamp(this.communicationDisabledUntil)
 		};
+	}
+
+	public static getId(data: Member.Json): bigint {
+		return BigInt(data.user!.id);
+	}
+
+	public static patch(existing: Member, data: Partial<Member.Json>): Member {
+		return existing.patch(data);
 	}
 
 	public static fromAPI(data: Member.Json, user?: APIUser): Member {

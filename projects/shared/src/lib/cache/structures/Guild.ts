@@ -122,7 +122,7 @@ export class Guild implements IStructure {
 		return {
 			id: this.id.toString(),
 			afk_channel_id: this.afkChannelId?.toString() ?? null,
-			afk_timeout: this.afkTimeout,
+			afk_timeout: this.afkTimeout as Guild.Json['afk_timeout'],
 			banner: this.banner,
 			default_message_notifications: this.defaultMessageNotifications,
 			description: this.description,
@@ -138,7 +138,7 @@ export class Guild implements IStructure {
 			name: this.name,
 			nsfw_level: this.nsfwLevel,
 			owner_id: this.ownerId.toString(),
-			preferred_locale: this.preferredLocale,
+			preferred_locale: this.preferredLocale as Guild.Json['preferred_locale'],
 			premium_progress_bar_enabled: this.premiumProgressBarEnabled,
 			premium_subscription_count: this.premiumSubscriptionCount ?? undefined,
 			premium_tier: this.premiumTier,
@@ -150,7 +150,9 @@ export class Guild implements IStructure {
 			vanity_url_code: this.vanityUrlCode,
 			verification_level: this.verificationLevel,
 			widget_channel_id: this.widgetChannelId?.toString(),
-			widget_enabled: this.widgetEnabled ?? undefined
+			widget_enabled: this.widgetEnabled ?? undefined,
+			safety_alerts_channel_id: null,
+			incidents_data: null
 		};
 	}
 
