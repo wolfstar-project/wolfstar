@@ -167,6 +167,12 @@ importers:
         specifier: workspace:^
         version: link:../shared
     devDependencies:
+      '@rollup/plugin-alias':
+        specifier: 6.0.0
+        version: 6.0.0(rollup@4.61.1)
+      tsdown:
+        specifier: 0.22.0
+        version: 0.22.0(typescript@6.0.3)
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -198,6 +204,12 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@rollup/plugin-alias':
+        specifier: 6.0.0
+        version: 6.0.0(rollup@4.61.1)
+      tsdown:
+        specifier: 0.22.0
+        version: 0.22.0(typescript@6.0.3)
       typescript:
         specifier: ^6.0.0
         version: 6.0.3

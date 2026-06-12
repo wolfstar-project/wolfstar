@@ -11,9 +11,9 @@
 		"#lib/*": "./dist/lib/*.js"
 	},
 	"scripts": {
-		"build": "tsc -b src",
+		"build": "tsdown",
 		"dev": "pnpm build && pnpm start",
-		"watch": "tsc -b src -w",
+		"watch": "tsdown --watch",
 		"clean": "node scripts/clean.mjs",
 		"start": "node --enable-source-maps dist/main.js"
 	},
@@ -28,6 +28,8 @@
 		"wolfstar-shared": "workspace:^"
 	},
 	"devDependencies": {
+		"@rollup/plugin-alias": "6.0.0",
+		"tsdown": "0.22.0",
 		"typescript": "^6.0.0"
 	}
 }

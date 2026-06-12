@@ -195,12 +195,6 @@
 			}
 		},
 		{
-			"files": ["src/commands/**/*.ts"],
-			"rules": {
-				"typescript/require-await": "off"
-			}
-		},
-		{
 			"files": ["tests/**/*.?([cm])[jt]s?(x)"],
 			"plugins": ["vitest", "typescript"],
 			"rules": {
@@ -247,6 +241,14 @@
 			"plugins": ["typescript"],
 			"rules": {
 				"no-await-in-loop": "off",
+				"no-console": "off"
+			}
+		},
+		{
+			"files": ["projects/**/tsdown.config.ts"],
+			"plugins": ["typescript"],
+			"rules": {
+				"no-underscore-dangle": "off",
 				"no-console": "off"
 			}
 		}
