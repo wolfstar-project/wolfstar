@@ -8,13 +8,6 @@ export default defineConfig({
 	recursive: true,
 	includeLocked: true,
 	interactive: true,
-	packageMode: {
-		typescript: 'ignore',
-		'@prisma/client': 'ignore',
-		'@prisma/adapter-pg': 'ignore',
-		'prisma-json-types-generator': 'ignore',
-		prisma: 'ignore'
-	},
 	depFields: {
 		overrides: false
 	}

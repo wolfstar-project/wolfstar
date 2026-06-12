@@ -1,0 +1,110 @@
+import { LanguageKeys } from '#lib/i18n/languageKeys';
+import { WolfCommand } from '#lib/structures';
+import type { GuildMessage } from '#lib/types';
+import { PermissionLevels } from '#lib/types/Enums';
+import { sendLoadingMessage } from '#utils/util';
+import { ApplyOptions } from '@sapphire/decorators';
+import { CommandOptionsRunTypeEnum } from '@sapphire/framework';
+import { send } from '@sapphire/plugin-editable-commands';
+import { codeBlock } from '@sapphire/utilities';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { GuildMember, MessageEmbed } from 'discord.js';
+import type { TFunction } from 'i18next';
+
+const [kLowestNumberCode, kHighestNumberCode] = ['0'.charCodeAt(0), '9'.charCodeAt(0)];
+
+@ApplyOptions<WolfCommand.Options>({
+	aliases: ['dh'],
+	description: LanguageKeys.Commands.Moderation.DehoistDescription,
+	detailedDescription: LanguageKeys.Commands.Moderation.DehoistExtended,
+	permissionLevel: PermissionLevels.Moderator,
+	requiredClientPermissions: [PermissionFlagsBits.ManageNicknames, PermissionFlagsBits.EmbedLinks],
+	runIn: [CommandOptionsRunTypeEnum.GuildAny]
+})
+export class UserCommand extends WolfCommand {
+	private kLowestCode = 'A'.charCodeAt(0);
+
+	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
+		if (message.guild.members.cache.size !== message.guild.memberCount) {
+			await sendLoadingMessage(message, args.t);
+			await message.guild.members.fetch();
+		}
+
+		let counter = 0;
+		const errored: ErroredChange[] = [];
+		const hoistedMembers: GuildMember[] = [];
+		for (const member of message.guild.members.cache.values()) {
+			if (member.manageable && this.shouldDeHoist(member)) hoistedMembers.push(member);
+		}
+
+		if (hoistedMembers.length > 0) {
+			await send(message, args.t(LanguageKeys.Commands.Moderation.DehoistStarting, { count: hoistedMembers.length }));
+		}
+
+		for (let i = 0; i < hoistedMembers.length; i++) {
+			const member = hoistedMembers[i];
+			const { displayName } = member;
+
+			const char = displayName.codePointAt(0)!;
+
+			// Replace the first character of the offending user's with an UTF-16 character, bringing'em down, down, down.
+			// The ternary cuts 2 characters if the 1st codepoint belongs in UTF-16
+			const newNick = `🠷${displayName.slice(char <= 0xff ? 1 : 2)}`;
+			try {
+				await member.setNickname(newNick, 'Dehoisting');
+			} catch {
+				errored.push({ oldNick: displayName, newNick });
+			}
+
+			++counter;
+
+			// update the counter every 10 dehoists
+			if ((i + 1) % 10 === 0) {
+				const deHoistPercentage = (i / hoistedMembers.length) * 100;
+				const content = args.t(LanguageKeys.Commands.Moderation.DehoistProgress, { count: i + 1, percentage: Math.round(deHoistPercentage) });
+				await send(message, content);
+			}
+		}
+
+		// We're done!
+		const embed = await this.prepareFinalEmbed(message, args.t, counter, errored);
+		return send(message, { embeds: [embed] });
+	}
+
+	private shouldDeHoist(member: GuildMember) {
+		const { displayName } = member;
+		if (!displayName) return false;
+
+		const char = displayName.codePointAt(0)!;
+
+		// If it's lower than '0' or is higher than '9' and lower than 'A', then it's hoisting
+		return char < this.kLowestCode && (char < kLowestNumberCode || char > kHighestNumberCode);
+	}
+
+	private async prepareFinalEmbed(message: GuildMessage, t: TFunction, deHoistedMembers: number, erroredChanges: ErroredChange[]) {
+		const embedLanguage = t(LanguageKeys.Commands.Moderation.DehoistEmbed, {
+			dehoistedMemberCount: deHoistedMembers,
+			dehoistedWithErrorsCount: deHoistedMembers - erroredChanges.length,
+			errored: erroredChanges.length,
+			users: message.guild.members.cache.size
+		});
+		const embed = new MessageEmbed().setColor(await this.container.db.fetchColor(message)).setTitle(embedLanguage.title);
+
+		let { description } = embedLanguage;
+		if (deHoistedMembers <= 0) description = embedLanguage.descriptionNoone;
+		if (deHoistedMembers > 1) description = embedLanguage.descriptionMultipleMembers;
+		if (erroredChanges.length > 0) {
+			description = erroredChanges.length > 1 ? embedLanguage.descriptionWithMultipleErrors : embedLanguage.descriptionWithError;
+			const erroredNicknames = erroredChanges.map((entry) => `${entry.oldNick} => ${entry.newNick}`).join('\n');
+			const codeblock = codeBlock('js', erroredNicknames);
+			embed.addField(embedLanguage.fieldErrorTitle, codeblock);
+		}
+
+		return embed.setDescription(description);
+	}
+}
+
+interface ErroredChange {
+	oldNick: string;
+	newNick: string;
+}

@@ -1,21 +1,22 @@
-ignoredBuiltDependencies:
-    - bufferutil
-    - zlib-sync
+packages:
+  - 'projects/*'
 
-onlyBuiltDependencies:
-    - '@prisma/client'
-    - '@prisma/engines'
-    - '@tailwindcss/oxide'
-    - prisma
-    - sharp@0.34.5
-    - workerd
-    - better-sqlite3
+allowBuilds:
+  bufferutil: false
+  'zlib-sync': false
+  '@prisma/client': true
+  '@prisma/engines': true
+  prisma: true
+  esbuild: false
 
 overrides:
-    ansi-regex: ^5.0.1
-    discord-api-types: ^0.38.34
-    minimist: ^1.2.8
+  ansi-regex: ^5.0.1
+  discord-api-types: ^0.38.34
+  minimist: ^1.2.6
+  vite: ^6.3.5
 
 dedupePeers: true
 
 shellEmulator: true
+
+minimumReleaseAge: 0

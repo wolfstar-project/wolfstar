@@ -1,0 +1,41 @@
+{
+	"name": "wolfstar-shared",
+	"version": "7.0.0",
+	"description": "Shared utilities for Skyra's projects",
+	"author": "WolfStar Project",
+	"license": "Apache-2.0",
+	"private": true,
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		"import": "./dist/index.js",
+		"types": "./dist/index.d.ts"
+	},
+	"type": "module",
+	"imports": {
+		"#lib/*": "./dist/lib/*.js"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "pnpm build && pnpm start",
+		"watch": "tsdown --watch",
+		"prisma:generate": "pnpm prisma generate",
+		"clean": "node scripts/clean.mjs",
+		"start": "node --enable-source-maps dist/main.js"
+	},
+	"dependencies": {
+		"@discordjs/collection": "^1.0.1",
+		"@sapphire/pieces": "^3.3.5",
+		"@sapphire/result": "^2.1.1",
+		"@sapphire/utilities": "^3.8.0",
+		"@vladfrangu/async_event_emitter": "^2.0.1",
+		"discord-api-types": "^0.38.48",
+		"ioredis": "^5.2.2",
+		"ix": "^5.0.0"
+	},
+	"devDependencies": {
+		"@rollup/plugin-alias": "6.0.0",
+		"tsdown": "0.22.0",
+		"typescript": "^6.0.0"
+	}
+}
