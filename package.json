@@ -10,7 +10,7 @@
 		"build": "pnpm -r run build",
 		"dev": "pnpm --filter wolfstar-bot dev",
 		"watch": "pnpm --filter wolfstar-bot watch",
-		"prisma:generate": "pnpm --filter wolfstar-shared prisma:generate",
+		"prisma:generate": "pnpm --filter wolfstar-database prisma:generate",
 		"clean": "pnpm -r run clean",
 		"test": "vitest run --config vitest.config.ts",
 		"lint:fix": "oxlint --fix && oxfmt",

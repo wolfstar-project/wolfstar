@@ -1,7 +1,7 @@
 {
 	"name": "wolfstar-shared",
 	"version": "7.0.0",
-	"description": "Shared utilities for Skyra's projects",
+	"description": "Shared utilities for Wolfstar's projects",
 	"author": "WolfStar Project",
 	"license": "Apache-2.0",
 	"private": true,
