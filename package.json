@@ -15,8 +15,6 @@
 		"test": "vitest run --config vitest.config.ts",
 		"lint:fix": "oxlint --fix && oxfmt",
 		"lint": "oxlint && oxfmt --check",
-		"format": "prettier --write --log-level=warn \"projects/**/*.{js,mjs,ts,json}\"",
-		"audit:verify": "node scripts/audit-verify.mjs",
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"prepare": "node .husky/install.mjs"
 	},
