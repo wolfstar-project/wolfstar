@@ -10,8 +10,8 @@ setup(new URL('../src/.env', import.meta.url));
 createClient({
 	ws: {
 		intents:
-			GatewayIntentBits.GuildBans |
-			GatewayIntentBits.GuildEmojisAndStickers |
+			GatewayIntentBits.GuildModeration |
+			GatewayIntentBits.GuildExpressions |
 			GatewayIntentBits.GuildInvites |
 			GatewayIntentBits.GuildMembers |
 			GatewayIntentBits.GuildMessageReactions |
@@ -45,7 +45,7 @@ console.log(
 				String.raw`╲________╱╲___╱____╱ ╲______╱ ╲________╱╲________╱╲___╱____╱   ╲_____╱ `
 			],
 			extra: [
-				` Skyra ${envParseString('CLIENT_VERSION')} Gateway`,
+				` WolfStar ${envParseString('CLIENT_VERSION')} Gateway`,
 				` ├ WebSocket: ${container.ws.options.shardCount} shards`,
 				` └ Redis    : ${container.redis.options.host}:${container.redis.options.port}`
 			]
