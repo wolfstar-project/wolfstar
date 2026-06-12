@@ -1,14 +1,13 @@
-import { config } from 'dotenv';
-import { defineConfig, env } from 'prisma/config';
-
-config({ path: 'src/.env' });
+import { defineConfig } from "prisma/config";
+import "dotenv/config";
 
 export default defineConfig({
-	schema: 'prisma/schema.prisma',
+	schema: "projects/shared/src/lib/prisma/schema.prisma",
 	migrations: {
-		path: 'prisma/migrations'
+		path: "projects/shared/src/lib/prisma/migrations",
 	},
 	datasource: {
-		url: env('DATABASE_URL')
-	}
+		// Use process.env so non-Prisma tools (knip) can load this file without DATABASE_URL
+		url: process.env.DATABASE_URL ?? "",
+	},
 });

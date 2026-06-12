@@ -21,24 +21,22 @@
 		"prepare": "husky"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^20.5.3",
-		"@commitlint/config-conventional": "^20.5.3",
-		"@sapphire/prettier-config": "^2.0.0",
+		"@commitlint/cli": "^21.0.2",
+		"@commitlint/config-conventional": "^21.0.2",
 		"@sapphire/ts-config": "^5.0.3",
-		"@types/node": "^22.8.7",
-		"@vitest/coverage-v8": "^4.1.7",
+		"@types/node": "^24.13.2",
+		"@vitest/coverage-v8": "^4.1.8",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.4.0",
-		"oxfmt": "^0.51.0",
-		"oxlint": "^1.66.0",
-		"prettier": "^3.8.3",
-		"prisma": "^4.1.1",
-		"taze": "^19.13.0",
-		"tsdown": "latest",
-		"typescript": "^4.7.4",
-		"vite": "^6.3.5",
-		"vitest": "^4.1.7"
+		"nano-staged": "^1.0.2",
+		"oxfmt": "^0.54.0",
+		"oxlint": "^1.69.0",
+		"prisma": "^7.8.0",
+		"taze": "^19.14.1",
+		"tsdown": "0.22.0",
+		"typescript": "^6.0.3",
+		"vite": "^6.4.3",
+		"vitest": "^4.1.8"
 	},
 	"repository": {
 		"type": "git",
@@ -63,5 +61,5 @@
 		}
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "pnpm@10.33.4"
+	"packageManager": "pnpm@11.4.0"
 }
