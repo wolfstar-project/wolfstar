@@ -1,3 +1,4 @@
+// oxlint-disable no-new
 import { envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { Client, container } from '@wolfstar/http-framework';
 import { MessageBroker, Redis, Cache, RedisOptions } from 'wolfstar-shared';
@@ -34,9 +35,9 @@ export function createClient(options: ClientOptions = {}) {
 	container.stores.registerPath(fileURLToPath(srcFolderURL));
 
 	// Load in Sentry for error logging
-	if (process.env.SENTRY_URL) {
+	if (process.env.SENTRY_DSN) {
 		Sentry.init({
-			dsn: process.env.SENTRY_URL,
+			dsn: process.env.SENTRY_DSN,
 			integrations: [
 				new Sentry.Integrations.Modules(),
 				new Sentry.Integrations.FunctionToString(),

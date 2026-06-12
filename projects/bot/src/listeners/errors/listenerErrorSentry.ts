@@ -3,7 +3,7 @@ import { Events, Listener, ListenerErrorPayload } from '@sapphire/framework';
 import { captureException } from '@sentry/node';
 import { envIsDefined } from '@wolfstar/env-utilities';
 
-@ApplyOptions({ enabled: envIsDefined('SENTRY_URL') })
+@ApplyOptions({ enabled: envIsDefined('SENTRY_DSN') })
 export class UserListener extends Listener<typeof Events.ListenerError> {
 	public run(error: Error, context: ListenerErrorPayload) {
 		captureException(error, { tags: { name: context.piece.name } });

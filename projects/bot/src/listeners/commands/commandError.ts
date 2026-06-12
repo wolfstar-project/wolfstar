@@ -15,7 +15,7 @@ import type { TFunction } from 'i18next';
 const ignoredCodes = [RESTJSONErrorCodes.UnknownChannel, RESTJSONErrorCodes.UnknownMessage];
 
 export class UserListener extends Listener<typeof Events.CommandError> {
-	private readonly sentry = envIsDefined('SENTRY_URL');
+	private readonly sentry = envIsDefined('SENTRY_DSN');
 
 	public async run(error: Error, { message, piece, parameters, args }: CommandErrorPayload) {
 		// If the error was a string or an UserError, send it to the user:

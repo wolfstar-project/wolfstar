@@ -4,7 +4,7 @@ declare module '@wolfstar/env-utilities' {
 	interface Env {
 		CLIENT_VERSION: string;
 
-		SENTRY_URL?: string;
+		SENTRY_DSN?: string;
 
 		DISCORD_TOKEN: string;
 		DISCORD_PUBLIC_KEY: string;
