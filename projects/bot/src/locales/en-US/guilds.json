@@ -1,0 +1,11 @@
+{
+	"explicitContentFilterDisabled": "Disabled",
+	"explicitContentFilterMembersWithoutRoles": "Members without roles",
+	"explicitContentFilterAllMembers": "All members",
+	"messageNotificationsAll": "All Messages",
+	"messageNotificationsMentions": "Only @mentions",
+	"SUPPRESS_JOIN_NOTIFICATIONS": "Member join notifications",
+	"SUPPRESS_JOIN_NOTIFICATION_REPLIES": "Member join sticker reply buttons",
+	"SUPPRESS_PREMIUM_SUBSCRIPTIONS": "Server boost notifications",
+	"SUPPRESS_GUILD_REMINDER_NOTIFICATIONS": "Server setup tips"
+}

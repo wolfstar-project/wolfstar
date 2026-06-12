@@ -1,0 +1,33 @@
+{
+	"name": "wolfstar-gateway",
+	"version": "7.0.0",
+	"description": "Multipurpose Discord Bot built on Sapphire Framework",
+	"author": "WolfStar Project",
+	"license": "Apache-2.0",
+	"private": true,
+	"main": "dist/main.js",
+	"type": "module",
+	"imports": {
+		"#lib/*": "./dist/lib/*.js"
+	},
+	"scripts": {
+		"build": "tsc -b src",
+		"dev": "pnpm build && pnpm start",
+		"watch": "tsc -b src -w",
+		"clean": "node scripts/clean.mjs",
+		"start": "node --enable-source-maps dist/main.js"
+	},
+	"dependencies": {
+		"@discordjs/rest": "^1.0.1",
+		"@discordjs/ws": "^0.2.0",
+		"@sapphire/utilities": "^3.8.0",
+		"@wolfstar/env-utilities": "^3.0.1",
+		"@wolfstar/start-banner": "^3.0.1",
+		"discord-api-types": "^0.37.0",
+		"gradient-string": "^2.0.1",
+		"wolfstar-shared": "workspace:^"
+	},
+	"devDependencies": {
+		"typescript": "^4.7.4"
+	}
+}

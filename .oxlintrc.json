@@ -136,7 +136,14 @@
 		"unicorn/prefer-set-has": "off",
 		"vitest/require-mock-type-parameters": "off"
 	},
-	"ignorePatterns": ["dist/**", "node_modules/**", "coverage/**", "src/languages/**/*.json", "src/lib/util/Links/TLDs.ts"],
+	"ignorePatterns": [
+		"dist/**",
+		"node_modules/**",
+		"coverage/**",
+		"projects/**/dist/**",
+		"projects/**/src/languages/**/*.json",
+		"projects/bot/src/lib/util/Links/TLDs.ts"
+	],
 	"overrides": [
 		{
 			"files": ["**/*.?([cm])ts"],

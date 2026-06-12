@@ -16,7 +16,6 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
-/.env
 redis.local.conf
 
 # Ignore bwd folders
@@ -38,7 +37,12 @@ gh
 
 # Ignore the "wiki" folder so we can checkout the wiki inside the same folder
 wiki/
-plans/
 
 # Profiler data
 *.0x
+
+# Claude
+.claude/state
+
+# Plans
+plans/

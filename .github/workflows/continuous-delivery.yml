@@ -6,10 +6,12 @@ on:
         branches:
             - main
         paths:
-            - 'src/**'
+            - 'projects/**'
             - 'Dockerfile'
             - '.github/workflows/continuous-delivery.yml'
             - 'package.json'
+            - 'pnpm-lock.yaml'
+
 permissions:
     contents: read
     packages: write
