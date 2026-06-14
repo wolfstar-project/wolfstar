@@ -8,7 +8,9 @@
 	"main": "dist/main.js",
 	"type": "module",
 	"imports": {
-		"#lib/*": "./dist/lib/*.js"
+		"#lib/*": "./dist/lib/*.js",
+		"#util/*": "./dist/util/*.js",
+		"#util": "./dist/util/index.js"
 	},
 	"scripts": {
 		"build": "tsdown",

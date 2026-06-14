@@ -1,6 +1,7 @@
 {
 	"extends": ["@sapphire/ts-config/extra-strict", "@sapphire/ts-config/bundler"],
 	"compilerOptions": {
+		"target": "ES2024",
 		"lib": ["ESNext", "DOM"],
 		"emitDecoratorMetadata": false,
 	}
