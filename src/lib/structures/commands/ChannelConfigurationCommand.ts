@@ -32,7 +32,7 @@ export abstract class ChannelConfigurationCommand extends WolfCommand {
 			this.error(LanguageKeys.Misc.ConfigurationEquals);
 		}
 
-		await trx.write({ [this.settingsKey]: channel.id }).submit();
+		await trx.write({ [this.settingsKey]: channel.id }).submitWithAudit(message.author.id);
 
 		const content = args.t(this.responseKey, { channel: channel.toString() });
 		return send(message, content);

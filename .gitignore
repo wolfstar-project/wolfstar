@@ -42,3 +42,6 @@ plans/
 
 # Profiler data
 *.0x
+
+# Ignore the .claude/state folder
+.claude/state

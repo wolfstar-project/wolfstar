@@ -1,4 +1,4 @@
-import { writeSettings } from '#lib/database';
+import { writeSettingsTransaction } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationActions } from '#lib/moderation';
 import { WolfCommand } from '#lib/structures';
@@ -32,7 +32,8 @@ export class UserCommand extends WolfCommand {
 			const result = await this.askForRole(message, args, context);
 			if (result.isOk()) {
 				const role = result.unwrap();
-				await writeSettings(message.guild, { rolesMuted: role.id });
+				using trx = await writeSettingsTransaction(message.guild);
+				await trx.write({ rolesMuted: role.id }).submitWithAudit(message.author.id);
 				if (canReact(message.channel)) return message.react(getEmojiReactionFormat(Emojis.GreenTickSerialized as SerializedEmoji));
 
 				const content = t(LanguageKeys.Commands.Conf.Updated, {
