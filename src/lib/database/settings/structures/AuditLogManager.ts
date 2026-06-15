@@ -1,10 +1,36 @@
 import { Prisma } from '#generated/prisma';
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
 import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/types';
-import { buildCommandExecuteEmbed, buildSettingsChangeEmbed, type CommandExecutePayload } from '#utils/functions/auditLogEmbeds';
-import { container } from '@sapphire/framework';
+import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types';
-import { fetchT } from '@sapphire/plugin-i18next';
+import { addAutomaticFields } from '#utils/functions';
+import { channelMention, EmbedBuilder, userMention } from '@discordjs/builders';
+import { container } from '@sapphire/framework';
+import { fetchT, type TFunction } from '@sapphire/plugin-i18next';
+import { Colors, chatInputApplicationCommandMention } from 'discord.js';
+import { auditDiff } from 'evlog';
+
+interface CommandExecutePayload {
+	actorId: string;
+	commandName: string;
+	commandId?: string;
+	commandType: 'chat-input' | 'context-menu' | 'message';
+	channelId: string;
+	timestamp: Date;
+}
+
+type AuditLogSettingsAction = 'guild.settings.update' | 'guild.settings.add' | 'guild.settings.remove' | 'guild.settings.access-denied';
+
+type AuditLogAction = AuditLogSettingsAction | 'guild.command.execute';
+
+interface SettingsChangePayload {
+	actorId: string;
+	action: AuditLogSettingsAction;
+	before: Record<string, unknown>;
+	after: Record<string, unknown>;
+	reason: string | null;
+	timestamp: Date;
+}
 
 export class AuditLogManager {
 	#guildId: string;
@@ -80,7 +106,7 @@ export class AuditLogManager {
 
 	async #write(params: {
 		actorId: string;
-		action: string;
+		action: AuditLogAction;
 		before: Record<string, unknown>;
 		after: Record<string, unknown>;
 		outcome: AuditOutcome;
@@ -145,7 +171,7 @@ export class AuditLogManager {
 	}
 
 	async #emitChannelLog(
-		action: string,
+		action: AuditLogAction,
 		params: {
 			actorId: string;
 			before: Record<string, unknown>;
@@ -165,16 +191,31 @@ export class AuditLogManager {
 
 		const makeMessage =
 			action === 'guild.command.execute'
-				? () =>
-						buildCommandExecuteEmbed(t, {
+				? () => {
+						const {
+							commandName,
+							commandId,
+							commandType,
+							channelId: cmdChannelId
+						} = params.after as {
+							commandName: string;
+							commandId?: string;
+							commandType: 'chat-input' | 'context-menu' | 'message';
+							channelId: string;
+						};
+						return this.#buildCommandExecuteEmbed(t, {
 							actorId: params.actorId,
-							...(params.after as Omit<CommandExecutePayload, 'actorId' | 'timestamp'>),
+							commandName,
+							commandId,
+							commandType,
+							channelId: cmdChannelId,
 							timestamp: params.timestamp
-						})
+						});
+					}
 				: () =>
-						buildSettingsChangeEmbed(t, {
+						this.#buildSettingsChangeEmbed(t, {
 							actorId: params.actorId,
-							action: action as any,
+							action: action as AuditLogSettingsAction,
 							before: params.before,
 							after: params.after,
 							reason: params.reason,
@@ -182,6 +223,94 @@ export class AuditLogManager {
 						});
 
 		container.client.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
+	}
+
+	#buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePayload): EmbedBuilder {
+		const { actorId, commandName, commandId, commandType, channelId, timestamp } = payload;
+		const formattedCommandName = commandType === 'chat-input' ? this.#formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
+		return new EmbedBuilder()
+			.setColor(Colors.Blue)
+			.setTitle(t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle))
+			.addFields(
+				{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: userMention(actorId), inline: true },
+				{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand), value: formattedCommandName, inline: true },
+				{
+					name: t(LanguageKeys.Events.Guilds.Logs.LogFieldType),
+					value:
+						commandType === 'chat-input'
+							? t(LanguageKeys.Events.Guilds.Logs.CommandTypeChatInput)
+							: commandType === 'context-menu'
+								? t(LanguageKeys.Events.Guilds.Logs.CommandTypeContextMenu)
+								: t(LanguageKeys.Events.Guilds.Logs.CommandTypeMessage),
+					inline: true
+				},
+				{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldChannel), value: channelMention(channelId), inline: true }
+			)
+			.setTimestamp(timestamp);
+	}
+
+	#buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePayload): EmbedBuilder {
+		const { actorId, action, before, after, reason, timestamp } = payload;
+
+		const color = action === 'guild.settings.access-denied' ? Colors.Yellow : action === 'guild.settings.remove' ? Colors.Red : Colors.Green;
+
+		const title =
+			action === 'guild.settings.access-denied'
+				? t(LanguageKeys.Events.Guilds.Logs.SettingsAccessDeniedTitle)
+				: t(LanguageKeys.Events.Guilds.Logs.SettingsUpdateTitle);
+
+		const embed = new EmbedBuilder().setColor(color).setTitle(title).setTimestamp(timestamp);
+
+		if (reason) addAutomaticFields(embed, reason);
+
+		embed.addFields({ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: userMention(actorId), inline: true });
+
+		const diff = auditDiff(before, after);
+
+		for (const op of diff.patch.slice(0, 10)) {
+			const key = op.path.replace(/^\//, '').replaceAll('/', '.');
+			let value: string;
+			if (op.op === 'replace') {
+				const from = this.#formatAuditValue(this.#getNestedValue(before, op.path));
+				const to = this.#formatAuditValue(op.value);
+				if (from === to) continue;
+				value = `has changed ${from} to ${to}`;
+			} else if (op.op === 'add') {
+				value = this.#formatAuditValue(op.value);
+			} else if (op.op === 'remove') {
+				value = this.#formatAuditValue(this.#getNestedValue(before, op.path));
+			} else {
+				continue;
+			}
+			addAutomaticFields(embed, key, value);
+		}
+
+		return embed;
+	}
+
+	#formatChatInputMention(commandName: string, commandId?: string): string {
+		const parts = commandName.split(' ');
+		if (!commandId) return `\`/${commandName}\``;
+		if (parts.length === 3) return chatInputApplicationCommandMention(parts[0], parts[1], parts[2], commandId);
+		if (parts.length === 2) return chatInputApplicationCommandMention(parts[0], parts[1], commandId);
+		return chatInputApplicationCommandMention(parts[0], commandId);
+	}
+
+	#formatAuditValue(value: unknown): string {
+		if (value === null || value === undefined) return '`null`';
+		if (typeof value === 'string') return value.length === 0 ? '""' : value;
+		if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') return String(value);
+		return '`' + JSON.stringify(value) + '`';
+	}
+
+	#getNestedValue(obj: Record<string, unknown>, path: string): unknown {
+		const parts = path.split('/').filter(Boolean);
+		let current: unknown = obj;
+		for (const part of parts) {
+			if (current === null || current === undefined || typeof current !== 'object') return undefined;
+			current = (current as Record<string, unknown>)[part];
+		}
+		return current;
 	}
 
 	#toJsonSafe(value: unknown): unknown {
