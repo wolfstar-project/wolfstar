@@ -268,7 +268,11 @@ export class AuditLogManager {
 		const diff = auditDiff(before, after);
 
 		for (const op of diff.patch.slice(0, 10)) {
-			const key = op.path.replace(/^\//, '').replaceAll('/', '.');
+			const key = op.path
+				.replace(/^\//, '')
+				.split('/')
+				.map((part) => part.replaceAll('~1', '/').replaceAll('~0', '~'))
+				.join('.');
 			let value: string;
 			if (op.op === 'replace') {
 				const from = this.#formatAuditValue(this.#getNestedValue(before, op.path));
@@ -308,7 +312,7 @@ export class AuditLogManager {
 		let current: unknown = obj;
 		for (const part of parts) {
 			if (current === null || current === undefined || typeof current !== 'object') return undefined;
-			current = (current as Record<string, unknown>)[part];
+			current = (current as Record<string, unknown>)[part.replaceAll('~1', '/').replaceAll('~0', '~')];
 		}
 		return current;
 	}
