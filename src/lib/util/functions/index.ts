@@ -7,4 +7,3 @@ export * from '#lib/util/functions/permissions';
 export * from '#lib/util/functions/numbers';
 export * from '#lib/util/functions/pieces';
 export * from '#lib/util/functions/users';
-export * from '#lib/util/functions/auditLogEmbeds';
