@@ -1,4 +1,5 @@
 import { ResponseType, ScheduleEntry, type ResponseValue } from '#lib/schedule/manager/ScheduleEntry';
+import { Prisma } from '#generated/prisma';
 import { container } from '@sapphire/framework';
 import { Cron } from '@sapphire/time-utilities';
 
@@ -118,7 +119,13 @@ export class ScheduleManager {
 
 		// 2. If the response is to finish, remove the entry from the database and the cache.
 		if (response.type === ResponseType.Finished) {
-			await container.prisma.schedule.delete({ where: { id: response.entry.id } });
+			try {
+				await container.prisma.schedule.delete({ where: { id: response.entry.id } });
+			} catch (error) {
+				// Record was already deleted externally — still remove from queue.
+				if (!isNotFoundError(error)) throw error;
+			}
+
 			this._remove(response.entry);
 			return;
 		}
@@ -133,7 +140,14 @@ export class ScheduleManager {
 			throw new Error('Unreachable');
 		}
 
-		await response.entry.update({ time });
+		try {
+			await response.entry.update({ time });
+		} catch (error) {
+			// Record was deleted externally while the task was running — remove stale entry.
+			if (!isNotFoundError(error)) throw error;
+			this._remove(response.entry);
+			return;
+		}
 
 		const index = this.queue.findIndex((entity) => entity === response.entry);
 		if (index === -1) return;
@@ -180,6 +194,10 @@ export class ScheduleManager {
 		}
 		throw new Error('invalid time passed');
 	}
+}
+
+function isNotFoundError(error: unknown): boolean {
+	return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025';
 }
 
 export interface ScheduleManagerAddOptions<Type extends ScheduleEntry.TaskId> {
