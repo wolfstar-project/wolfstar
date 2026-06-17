@@ -3,7 +3,7 @@ import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/st
 import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/types';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types';
-import { addAutomaticFields } from '#utils/functions';
+import { addAutomaticFields } from '#utils/functions/embeds';
 import { channelMention, EmbedBuilder, userMention } from '@discordjs/builders';
 import { container } from '@sapphire/framework';
 import { fetchT, type TFunction } from '@sapphire/plugin-i18next';
