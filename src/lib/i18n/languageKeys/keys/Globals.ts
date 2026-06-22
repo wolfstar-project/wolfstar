@@ -20,5 +20,6 @@ export const Stop = T('globals:stop');
 export const Set = T('globals:set');
 export const Remove = T('globals:remove');
 export const Reset = T('globals:reset');
+export const Undo = T('globals:undo');
 export const Value = T('globals:value');
 export const Cancel = T('globals:cancel');

@@ -23,38 +23,33 @@
 	"server": "Settings{{key}}:\n{{list}}",
 	"serverDescription": "Define per-server settings.",
 	"serverExtended": {
-			"usages": [
-				"set NameOfKey Value for Key",
-				"show",
-				"show NameOfKey",
-				"remove NameOfKey Value for Key",
-				"reset NameOfKey",
-				"menu"
-			],
-			"extendedHelp": "Allows you to configure WolfStar from Discord, as a quick alternative to the [web dashboard](https://wolfstar.rocks).",
-			"examples": [
-				"set language en-GB",
-				"set channels.moderation-logs #moderation-logs",
-				"show",
-				"show channels",
-				"remove roles.moderator Moderator",
-				"reset roles.moderator",
-				"menu"
-			],
-			"reminder": "There are keys and groups, keys that are within a group are named by `GroupName.KeyName`."
-		},
-		"menuRenderAtFolder": "Currently at: 📁 {{path}}",
-		"menuRenderAtPiece": "Currently at: ⚙️ {{path}}",
-		"menuRenderNokeys": "There are no configurable keys for this folder",
-		"menuRenderSelect": "Please type in any of the following entries' names",
-		"menuRenderUpdate": "• Update Value → `set <value>`",
-		"menuRenderRemove": "• Remove Value → `remove <value>`",
-		"menuRenderReset": "• Reset Value → `reset`",
-		"menuRenderUndo": "• Undo Update → `undo`",
-		"menuRenderCvalue": "Current Value: **``{{value}}``**",
-		"menuRenderBack": "Press ◀ to go back",
-		"menuInvalidKey": "Invalid Key, please try again with any of the following options.",
-		"menuInvalidAction": "Invalid Action, please try again with any of the following options.",
-		"menuSaved": "Successfully saved all changes."
-
+		"usages": ["set NameOfKey Value for Key", "show", "show NameOfKey", "remove NameOfKey Value for Key", "reset NameOfKey", "menu"],
+		"extendedHelp": "Allows you to configure WolfStar from Discord, as a quick alternative to the [web dashboard](https://wolfstar.rocks).",
+		"examples": [
+			"set language en-GB",
+			"set channels.moderation-logs #moderation-logs",
+			"show",
+			"show channels",
+			"remove roles.moderator Moderator",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "There are keys and groups, keys that are within a group are named by `GroupName.KeyName`."
+	},
+	"menuRenderAtFolder": "Currently at: 📁 {{path}}",
+	"menuRenderAtPiece": "Currently at: ⚙️ {{path}}",
+	"menuRenderNokeys": "There are no configurable keys for this folder",
+	"menuRenderSelect": "Use the menu below to navigate:",
+	"menuRenderUpdate": "• Update Value → `set <value>`",
+	"menuRenderRemove": "• Remove Value → `remove <value>`",
+	"menuRenderReset": "• Reset Value → `reset`",
+	"menuRenderUndo": "• Undo Update → `undo`",
+	"menuRenderCvalue": "Current Value: {{value}}",
+	"menuRenderBack": "Press ◀ to go back",
+	"menuInputPrompt": "Choose or enter the new value for **{{path}}**",
+	"menuSelectPlaceholder": "Choose an option…",
+	"menuInvalidKey": "Invalid Key, please try again with any of the following options.",
+	"menuInvalidAction": "Invalid Action, please try again with any of the following options.",
+	"menuSaved": "Successfully saved all changes.",
+	"settingNotSet": "Not Set"
 }

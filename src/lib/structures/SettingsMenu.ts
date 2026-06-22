@@ -7,7 +7,8 @@ import {
 	SchemaGroup,
 	SchemaKey,
 	set,
-	writeSettingsTransaction
+	writeSettingsTransaction,
+	type ReadonlyGuildData
 } from '#lib/database/settings';
 import { getT } from '#lib/i18n';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
@@ -19,9 +20,11 @@ import { getColor, pickRandom } from '#utils/util';
 import {
 	ButtonBuilder,
 	ChannelSelectMenuBuilder,
+	channelMention,
 	ContainerBuilder,
 	LabelBuilder,
 	ModalBuilder,
+	roleMention,
 	RoleSelectMenuBuilder,
 	StringSelectMenuBuilder,
 	TextInputBuilder
@@ -29,6 +32,7 @@ import {
 import { container, type ChatInputCommand, type MessageCommand } from '@sapphire/framework';
 import { filter, partition } from '@sapphire/iterator-utilities';
 import type { TFunction } from '@sapphire/plugin-i18next';
+import { isNullish } from '@sapphire/utilities';
 import {
 	ButtonStyle,
 	ChannelType,
@@ -115,6 +119,23 @@ export class SettingsMenu {
 		return this.oldValue !== undefined;
 	}
 
+	/**
+	 * Determines whether the current value of a key differs from its default, so the "Reset" button is only shown when
+	 * resetting would actually change something. Arrays are compared by contents instead of by reference.
+	 */
+	private differsFromDefault(key: SchemaKey, value: unknown): boolean {
+		const { default: defaultValue } = key;
+		if (key.array) {
+			const current = (value as readonly unknown[] | null) ?? [];
+			const fallback = (defaultValue as readonly unknown[] | null) ?? [];
+			if (current.length !== fallback.length) return true;
+			return current.some((entry, index) => entry !== fallback[index]);
+		}
+
+		if (isNullish(value) && isNullish(defaultValue)) return false;
+		return value !== defaultValue;
+	}
+
 	public async init(context: WolfCommand.RunContext): Promise<void> {
 		// Defer the interaction to prevent timeout
 		await this.interaction.deferReply();
@@ -158,7 +179,7 @@ export class SettingsMenu {
 		if (isSchemaGroup(this.schema)) {
 			const selectMenu = new StringSelectMenuBuilder()
 				.setCustomId(CustomIds.SELECT)
-				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 			const options = [];
 			// Collect folders
@@ -219,8 +240,8 @@ export class SettingsMenu {
 				);
 			}
 
-			// Reset (if changed)
-			if (value !== this.schema.default) {
+			// Reset (if differs from the default value)
+			if (this.differsFromDefault(this.schema, value)) {
 				buttons.push(
 					new ButtonBuilder().setCustomId(CustomIds.RESET).setLabel(this.t(LanguageKeys.Globals.Reset)).setStyle(ButtonStyle.Danger)
 				);
@@ -229,10 +250,7 @@ export class SettingsMenu {
 			// Undo (if updated)
 			if (this.updatedValue) {
 				buttons.push(
-					new ButtonBuilder()
-						.setCustomId(CustomIds.UNDO)
-						.setLabel(this.t(LanguageKeys.Commands.Conf.MenuRenderUndo))
-						.setStyle(ButtonStyle.Secondary)
+					new ButtonBuilder().setCustomId(CustomIds.UNDO).setLabel(this.t(LanguageKeys.Globals.Undo)).setStyle(ButtonStyle.Secondary)
 				);
 			}
 		}
@@ -244,6 +262,9 @@ export class SettingsMenu {
 				.setStyle(ButtonStyle.Danger)
 				.setEmoji({ name: '⏹️' })
 		);
+
+		// Visually separate the content/navigation from the action buttons.
+		container.addSeparatorComponents((separator) => separator);
 
 		// Add buttons in groups of 5 (Discord limit per ActionRow)
 		for (let i = 0; i < buttons.length; i += 5) {
@@ -258,7 +279,9 @@ export class SettingsMenu {
 		const key = this.schema as SchemaKey;
 		const container = new ContainerBuilder().setAccentColor(getColor(this.interaction));
 
-		container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Commands.Conf.MenuRenderUpdate)));
+		container.addTextDisplayComponents((textDisplay) =>
+			textDisplay.setContent(this.t(LanguageKeys.Commands.Conf.MenuInputPrompt, { path: key.name }))
+		);
 
 		// Remove Mode: Show Select Menu with current values to remove
 		if (this.inputType === UpdateType.Remove) {
@@ -268,7 +291,7 @@ export class SettingsMenu {
 			if (values.length) {
 				const selectMenu = new StringSelectMenuBuilder()
 					.setCustomId(CustomIds.INPUT_REMOVE)
-					.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+					.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 				const options = await Promise.all(
 					values.map((val, index) => {
 						const label = key.stringify(settings, this.t, val as any).substring(0, 100);
@@ -310,7 +333,7 @@ export class SettingsMenu {
 				if (options.length > 0) {
 					const selectMenu = new StringSelectMenuBuilder()
 						.setCustomId(CustomIds.INPUT_CATEGORY)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 					selectMenu.addOptions(options);
 					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
@@ -329,7 +352,7 @@ export class SettingsMenu {
 				if (options.length > 0) {
 					const selectMenu = new StringSelectMenuBuilder()
 						.setCustomId(CustomIds.INPUT_COMMAND)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 					selectMenu.addOptions(options);
 					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
@@ -370,7 +393,7 @@ export class SettingsMenu {
 				case 'role': {
 					const select = new RoleSelectMenuBuilder()
 						.setCustomId(CustomIds.INPUT_ROLE)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 					container.addActionRowComponents((actionRow) => actionRow.setComponents(select));
 					break;
 				}
@@ -378,7 +401,7 @@ export class SettingsMenu {
 				case 'guildVoiceChannel': {
 					const select = new ChannelSelectMenuBuilder()
 						.setCustomId(CustomIds.INPUT_CHANNEL)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 					if (key.type === 'guildTextChannel') select.setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
 					if (key.type === 'guildVoiceChannel') select.setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice);
@@ -409,10 +432,45 @@ export class SettingsMenu {
 
 		description.push(t(entry.description));
 
-		const serialized = entry.display(settings, this.t);
+		const serialized = this.displayValue(entry, settings);
 		description.push('', t(LanguageKeys.Commands.Conf.MenuRenderCvalue, { value: serialized }));
 
 		return description;
+	}
+
+	/**
+	 * Formats the current value of a key for the "Current Value" line. Channel, role and category settings are rendered
+	 * as clickable mentions; every other type falls back to {@link SchemaKey.display} wrapped in inline code.
+	 */
+	private displayValue(entry: SchemaKey, settings: ReadonlyGuildData): string {
+		const { t } = this;
+		const mention = SettingsMenu.getMentionFactory(entry.type);
+		if (mention) {
+			if (entry.array) {
+				const values = settings[entry.property] as readonly string[] | null;
+				return isNullish(values) || values.length === 0 ? t(LanguageKeys.Globals.None) : values.map(mention).join(' ');
+			}
+
+			const value = settings[entry.property] as string | null;
+			return isNullish(value) ? t(LanguageKeys.Commands.Conf.SettingNotSet) : mention(value);
+		}
+
+		// Non-mention values keep monospace formatting for readability.
+		const serialized = entry.display(settings, t);
+		return `\`\`${serialized}\`\``;
+	}
+
+	private static getMentionFactory(type: string): ((id: string) => string) | null {
+		switch (type) {
+			case 'guildTextChannel':
+			case 'guildVoiceChannel':
+			case 'guildCategoryChannel':
+				return channelMention;
+			case 'role':
+				return roleMention;
+			default:
+				return null;
+		}
 	}
 
 	private renderGroup(entry: SchemaGroup) {
@@ -426,15 +484,20 @@ export class SettingsMenu {
 			(value) => isSchemaGroup(value)
 		);
 
-		if (!folders.length && !keys.length) {
+		const total = folders.length + keys.length;
+		if (total === 0) {
 			description.push(t(LanguageKeys.Commands.Conf.MenuRenderNokeys));
-		} else {
+		} else if (total > 25) {
+			// The select menu can only hold 25 options, so fall back to a textual list when the group is larger.
 			description.push(
 				t(LanguageKeys.Commands.Conf.MenuRenderSelect),
 				'',
 				...folders.map(({ key }) => `📁 ${key}`),
 				...keys.map(({ key }) => `⚙️ ${key}`)
 			);
+		} else {
+			// Otherwise the select menu rendered below already lists every entry, so just prompt the user.
+			description.push(t(LanguageKeys.Commands.Conf.MenuRenderSelect));
 		}
 
 		return description;
@@ -735,10 +798,6 @@ export class SettingsMenu {
 			})
 		);
 
-		const sorted = filtered.sort(sortCommandsAlphabetically);
-		console.log(
-			`[SettingsMenu] Found ${sorted.size} categories with ${Array.from(sorted.values()).reduce((acc, cmds) => acc + cmds.length, 0)} total commands`
-		);
-		return sorted;
+		return filtered.sort(sortCommandsAlphabetically);
 	}
 }

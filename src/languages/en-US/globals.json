@@ -21,6 +21,7 @@
 	"set": "Set",
 	"remove": "Remove",
 	"reset": "Reset",
+	"undo": "Undo",
 	"value": "Value",
 	"cancel": "Cancel"
 }
