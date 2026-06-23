@@ -4,14 +4,24 @@ import {
 	readSettings,
 	remove,
 	reset,
+	resolveSchemaPath,
 	SchemaGroup,
 	SchemaKey,
 	set,
-	writeSettingsTransaction
+	writeSettingsTransaction,
+	type ReadonlyGuildData
 } from '#lib/database/settings';
+import { getSchemaPath } from '#lib/database/settings/Utils';
 import { getT } from '#lib/i18n';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { LongLivingInteractionCollector } from '#lib/util/LongLivingInteractionCollector';
+import {
+	buildSettingsMenuCustomId,
+	parseSettingsMenuCustomId,
+	SettingsMenuAction,
+	SettingsMenuUpdateType,
+	type SettingsMenuCustomIdData
+} from '#utils/settingsMenuCustomId';
 import { WolfArgs, type WolfCommand, type WolfSubcommand } from '#lib/structures';
 import { floatPromise, minutes, stringifyError } from '#utils/common';
 import { ZeroWidthSpace } from '#utils/constants';
@@ -19,9 +29,11 @@ import { getColor, pickRandom } from '#utils/util';
 import {
 	ButtonBuilder,
 	ChannelSelectMenuBuilder,
+	channelMention,
 	ContainerBuilder,
 	LabelBuilder,
 	ModalBuilder,
+	roleMention,
 	RoleSelectMenuBuilder,
 	StringSelectMenuBuilder,
 	TextInputBuilder
@@ -29,6 +41,7 @@ import {
 import { container, type ChatInputCommand, type MessageCommand } from '@sapphire/framework';
 import { filter, partition } from '@sapphire/iterator-utilities';
 import type { TFunction } from '@sapphire/plugin-i18next';
+import { isNullish } from '@sapphire/utilities';
 import {
 	ButtonStyle,
 	ChannelType,
@@ -57,38 +70,6 @@ function sortCommandsAlphabetically(_: WolfCommand[], __: WolfCommand[], firstCa
 
 const TIMEOUT = minutes(15);
 
-const CustomIds = {
-	// Navigation
-	SELECT: 'conf-select',
-	BACK: 'conf-back',
-	STOP: 'conf-stop',
-
-	// Actions
-	SET: 'conf-set',
-	REMOVE: 'conf-remove',
-	RESET: 'conf-reset',
-	UNDO: 'conf-undo',
-
-	// Input Mode
-	CANCEL: 'conf-cancel',
-	INPUT_BOOL_TRUE: 'conf-input-bool-true',
-	INPUT_BOOL_FALSE: 'conf-input-bool-false',
-	INPUT_ROLE: 'conf-input-role',
-	INPUT_CHANNEL: 'conf-input-channel',
-	INPUT_REMOVE: 'conf-input-remove',
-	INPUT_CATEGORY: 'conf-input-category',
-	INPUT_COMMAND: 'conf-input-command',
-	INPUT_COMMAND_BACK: 'conf-input-command-back',
-	INPUT_MODAL: 'conf-input-modal'
-} as const;
-
-const enum UpdateType {
-	Set,
-	Remove,
-	Reset,
-	Replace
-}
-
 export class SettingsMenu {
 	private readonly interaction: WolfSubcommand.Interaction;
 	private t: TFunction;
@@ -98,7 +79,7 @@ export class SettingsMenu {
 	private response: Message | null = null;
 	private oldValue: unknown = undefined;
 	private inputMode = false;
-	private inputType: UpdateType = UpdateType.Set;
+	private inputType: SettingsMenuUpdateType = SettingsMenuUpdateType.Set;
 	private selectedCategory: string | null = null;
 
 	public constructor(message: WolfSubcommand.Interaction, language: TFunction) {
@@ -113,6 +94,19 @@ export class SettingsMenu {
 
 	private get updatedValue(): boolean {
 		return this.oldValue !== undefined;
+	}
+
+	private differsFromDefault(key: SchemaKey, value: unknown): boolean {
+		const { default: defaultValue } = key;
+		if (key.array) {
+			const current = (value as readonly unknown[] | null) ?? [];
+			const fallback = (defaultValue as readonly unknown[] | null) ?? [];
+			if (current.length !== fallback.length) return true;
+			return current.some((entry, index) => entry !== fallback[index]);
+		}
+
+		if (isNullish(value) && isNullish(defaultValue)) return false;
+		return value !== defaultValue;
 	}
 
 	public async init(context: WolfCommand.RunContext): Promise<void> {
@@ -141,6 +135,20 @@ export class SettingsMenu {
 		this.collector.setTime(TIMEOUT);
 	}
 
+	private getCustomIdContext(): Omit<SettingsMenuCustomIdData, 'a'> {
+		return {
+			u: this.interaction.user.id,
+			p: getSchemaPath(this.schema),
+			im: this.inputMode ? 1 : 0,
+			it: this.inputMode ? this.inputType : undefined,
+			sc: this.selectedCategory?.slice(0, 48) ?? undefined
+		};
+	}
+
+	private buildCustomId(action: SettingsMenuAction): string {
+		return buildSettingsMenuCustomId(action, this.getCustomIdContext());
+	}
+
 	private async render() {
 		if (this.inputMode) {
 			return this.renderInput();
@@ -157,8 +165,8 @@ export class SettingsMenu {
 		// Select Menu Row
 		if (isSchemaGroup(this.schema)) {
 			const selectMenu = new StringSelectMenuBuilder()
-				.setCustomId(CustomIds.SELECT)
-				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+				.setCustomId(this.buildCustomId(SettingsMenuAction.Select))
+				.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 			const options = [];
 			// Collect folders
@@ -197,7 +205,7 @@ export class SettingsMenu {
 		if (parent) {
 			buttons.push(
 				new ButtonBuilder()
-					.setCustomId(CustomIds.BACK)
+					.setCustomId(this.buildCustomId(SettingsMenuAction.Back))
 					.setLabel(this.t(LanguageKeys.Globals.Back))
 					.setStyle(ButtonStyle.Secondary)
 					.setEmoji({ name: '◀️' })
@@ -210,19 +218,30 @@ export class SettingsMenu {
 			const value = settings[this.schema.property];
 
 			// Set
-			buttons.push(new ButtonBuilder().setCustomId(CustomIds.SET).setLabel(this.t(LanguageKeys.Globals.Set)).setStyle(ButtonStyle.Primary));
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(this.buildCustomId(SettingsMenuAction.Set))
+					.setLabel(this.t(LanguageKeys.Globals.Set))
+					.setStyle(ButtonStyle.Primary)
+			);
 
 			// Remove (if array and has elements)
 			if (this.schema.array && (value as unknown[]).length) {
 				buttons.push(
-					new ButtonBuilder().setCustomId(CustomIds.REMOVE).setLabel(this.t(LanguageKeys.Globals.Remove)).setStyle(ButtonStyle.Danger)
+					new ButtonBuilder()
+						.setCustomId(this.buildCustomId(SettingsMenuAction.Remove))
+						.setLabel(this.t(LanguageKeys.Globals.Remove))
+						.setStyle(ButtonStyle.Danger)
 				);
 			}
 
-			// Reset (if changed)
-			if (value !== this.schema.default) {
+			// Reset (if differs from the default value)
+			if (this.differsFromDefault(this.schema, value)) {
 				buttons.push(
-					new ButtonBuilder().setCustomId(CustomIds.RESET).setLabel(this.t(LanguageKeys.Globals.Reset)).setStyle(ButtonStyle.Danger)
+					new ButtonBuilder()
+						.setCustomId(this.buildCustomId(SettingsMenuAction.Reset))
+						.setLabel(this.t(LanguageKeys.Globals.Reset))
+						.setStyle(ButtonStyle.Danger)
 				);
 			}
 
@@ -230,8 +249,8 @@ export class SettingsMenu {
 			if (this.updatedValue) {
 				buttons.push(
 					new ButtonBuilder()
-						.setCustomId(CustomIds.UNDO)
-						.setLabel(this.t(LanguageKeys.Commands.Conf.MenuRenderUndo))
+						.setCustomId(this.buildCustomId(SettingsMenuAction.Undo))
+						.setLabel(this.t(LanguageKeys.Globals.Undo))
 						.setStyle(ButtonStyle.Secondary)
 				);
 			}
@@ -239,11 +258,14 @@ export class SettingsMenu {
 
 		buttons.push(
 			new ButtonBuilder()
-				.setCustomId(CustomIds.STOP)
+				.setCustomId(this.buildCustomId(SettingsMenuAction.Stop))
 				.setLabel(this.t(LanguageKeys.Globals.Stop))
 				.setStyle(ButtonStyle.Danger)
 				.setEmoji({ name: '⏹️' })
 		);
+
+		// Visually separate the content/navigation from the action buttons.
+		container.addSeparatorComponents((separator) => separator);
 
 		// Add buttons in groups of 5 (Discord limit per ActionRow)
 		for (let i = 0; i < buttons.length; i += 5) {
@@ -258,17 +280,19 @@ export class SettingsMenu {
 		const key = this.schema as SchemaKey;
 		const container = new ContainerBuilder().setAccentColor(getColor(this.interaction));
 
-		container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(this.t(LanguageKeys.Commands.Conf.MenuRenderUpdate)));
+		container.addTextDisplayComponents((textDisplay) =>
+			textDisplay.setContent(this.t(LanguageKeys.Commands.Conf.MenuInputPrompt, { path: key.name }))
+		);
 
 		// Remove Mode: Show Select Menu with current values to remove
-		if (this.inputType === UpdateType.Remove) {
+		if (this.inputType === SettingsMenuUpdateType.Remove) {
 			const settings = await readSettings(this.interaction.guild);
 			const values = settings[key.property] as unknown[];
 
 			if (values.length) {
 				const selectMenu = new StringSelectMenuBuilder()
-					.setCustomId(CustomIds.INPUT_REMOVE)
-					.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+					.setCustomId(this.buildCustomId(SettingsMenuAction.InputRemove))
+					.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 				const options = await Promise.all(
 					values.map((val, index) => {
 						const label = key.stringify(settings, this.t, val as any).substring(0, 100);
@@ -309,8 +333,8 @@ export class SettingsMenu {
 
 				if (options.length > 0) {
 					const selectMenu = new StringSelectMenuBuilder()
-						.setCustomId(CustomIds.INPUT_CATEGORY)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setCustomId(this.buildCustomId(SettingsMenuAction.InputCategory))
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 					selectMenu.addOptions(options);
 					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
@@ -328,8 +352,8 @@ export class SettingsMenu {
 
 				if (options.length > 0) {
 					const selectMenu = new StringSelectMenuBuilder()
-						.setCustomId(CustomIds.INPUT_COMMAND)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setCustomId(this.buildCustomId(SettingsMenuAction.InputCommand))
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 					selectMenu.addOptions(options);
 					container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
@@ -341,7 +365,7 @@ export class SettingsMenu {
 				container.addActionRowComponents((actionRow) =>
 					actionRow.setComponents(
 						new ButtonBuilder()
-							.setCustomId(CustomIds.INPUT_COMMAND_BACK)
+							.setCustomId(this.buildCustomId(SettingsMenuAction.InputCommandBack))
 							.setLabel(this.t(LanguageKeys.Globals.Back))
 							.setStyle(ButtonStyle.Secondary)
 							.setEmoji({ name: '◀️' })
@@ -356,11 +380,11 @@ export class SettingsMenu {
 					container.addActionRowComponents((actionRow) =>
 						actionRow.setComponents(
 							new ButtonBuilder()
-								.setCustomId(CustomIds.INPUT_BOOL_TRUE)
+								.setCustomId(this.buildCustomId(SettingsMenuAction.InputBoolTrue))
 								.setLabel(this.t(LanguageKeys.Globals.Yes))
 								.setStyle(ButtonStyle.Success),
 							new ButtonBuilder()
-								.setCustomId(CustomIds.INPUT_BOOL_FALSE)
+								.setCustomId(this.buildCustomId(SettingsMenuAction.InputBoolFalse))
 								.setLabel(this.t(LanguageKeys.Globals.No))
 								.setStyle(ButtonStyle.Danger)
 						)
@@ -369,16 +393,16 @@ export class SettingsMenu {
 				}
 				case 'role': {
 					const select = new RoleSelectMenuBuilder()
-						.setCustomId(CustomIds.INPUT_ROLE)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setCustomId(this.buildCustomId(SettingsMenuAction.InputRole))
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 					container.addActionRowComponents((actionRow) => actionRow.setComponents(select));
 					break;
 				}
 				case 'guildTextChannel':
 				case 'guildVoiceChannel': {
 					const select = new ChannelSelectMenuBuilder()
-						.setCustomId(CustomIds.INPUT_CHANNEL)
-						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuRenderSelect));
+						.setCustomId(this.buildCustomId(SettingsMenuAction.InputChannel))
+						.setPlaceholder(this.t(LanguageKeys.Commands.Conf.MenuSelectPlaceholder));
 
 					if (key.type === 'guildTextChannel') select.setChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
 					if (key.type === 'guildVoiceChannel') select.setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice);
@@ -391,7 +415,10 @@ export class SettingsMenu {
 		// Cancel Button
 		container.addActionRowComponents((actionRow) =>
 			actionRow.setComponents(
-				new ButtonBuilder().setCustomId(CustomIds.CANCEL).setLabel(this.t(LanguageKeys.Globals.Cancel)).setStyle(ButtonStyle.Secondary)
+				new ButtonBuilder()
+					.setCustomId(this.buildCustomId(SettingsMenuAction.Cancel))
+					.setLabel(this.t(LanguageKeys.Globals.Cancel))
+					.setStyle(ButtonStyle.Secondary)
 			)
 		);
 
@@ -409,10 +436,45 @@ export class SettingsMenu {
 
 		description.push(t(entry.description));
 
-		const serialized = entry.display(settings, this.t);
+		const serialized = this.displayValue(entry, settings);
 		description.push('', t(LanguageKeys.Commands.Conf.MenuRenderCvalue, { value: serialized }));
 
 		return description;
+	}
+
+	/**
+	 * Formats the current value of a key for the "Current Value" line. Channel, role and category settings are rendered
+	 * as clickable mentions; every other type falls back to {@link SchemaKey.display} wrapped in inline code.
+	 */
+	private displayValue(entry: SchemaKey, settings: ReadonlyGuildData): string {
+		const { t } = this;
+		const mention = SettingsMenu.getMentionFactory(entry.type);
+		if (mention) {
+			if (entry.array) {
+				const values = settings[entry.property] as readonly string[] | null;
+				return isNullish(values) || values.length === 0 ? t(LanguageKeys.Globals.None) : values.map(mention).join(' ');
+			}
+
+			const value = settings[entry.property] as string | null;
+			return isNullish(value) ? t(LanguageKeys.Commands.Conf.SettingNotSet) : mention(value);
+		}
+
+		// Non-mention values keep monospace formatting for readability.
+		const serialized = entry.display(settings, t);
+		return `\`\`${serialized}\`\``;
+	}
+
+	private static getMentionFactory(type: string): ((id: string) => string) | null {
+		switch (type) {
+			case 'guildTextChannel':
+			case 'guildVoiceChannel':
+			case 'guildCategoryChannel':
+				return channelMention;
+			case 'role':
+				return roleMention;
+			default:
+				return null;
+		}
 	}
 
 	private renderGroup(entry: SchemaGroup) {
@@ -440,14 +502,27 @@ export class SettingsMenu {
 		return description;
 	}
 
+	private applyCustomIdContext(data: SettingsMenuCustomIdData): void {
+		this.schema = resolveSchemaPath(data.p);
+		this.inputMode = data.im === 1;
+		if (data.it !== undefined) this.inputType = data.it;
+		this.selectedCategory = data.sc ?? null;
+	}
+
 	private async onInteraction(interaction: MessageComponentInteraction, context: WolfCommand.RunContext) {
 		if (interaction.message.id !== this.response?.id) return;
 		if (interaction.user.id !== this.interaction.user.id) return;
+
+		const parsed = parseSettingsMenuCustomId(interaction.customId);
+		if (!parsed || parsed.data.u !== this.interaction.user.id) return;
+
 		this.collector?.setTime(TIMEOUT);
 		this.errorMessage = null;
+		this.applyCustomIdContext(parsed.data);
 
-		// Handle Select Menu for Navigation
-		if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.SELECT) {
+		const { action } = parsed;
+
+		if (interaction.isStringSelectMenu() && action === SettingsMenuAction.Select) {
 			await interaction.deferUpdate();
 			const selectedKey = interaction.values[0];
 			if (isSchemaGroup(this.schema)) {
@@ -461,82 +536,64 @@ export class SettingsMenu {
 			return;
 		}
 
-		// Handle Input Mode Interactions
 		if (this.inputMode) {
-			if (interaction.customId === CustomIds.CANCEL) {
-				await interaction.deferUpdate();
-				this.inputMode = false;
-				this.selectedCategory = null;
-				await this._renderResponse();
-				return;
-			}
-
-			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_CATEGORY) {
-				await interaction.deferUpdate();
-				[this.selectedCategory] = interaction.values;
-				await this._renderResponse();
-				return;
-			}
-
-			if (interaction.isButton() && interaction.customId === CustomIds.INPUT_COMMAND_BACK) {
-				await interaction.deferUpdate();
-				this.selectedCategory = null;
-				await this._renderResponse();
-				return;
-			}
-
-			if (interaction.customId === CustomIds.INPUT_BOOL_TRUE) {
-				await interaction.deferUpdate();
-				await this.processUpdate(this.inputType, 'true', context);
-				return;
-			}
-
-			if (interaction.customId === CustomIds.INPUT_BOOL_FALSE) {
-				await interaction.deferUpdate();
-				await this.processUpdate(this.inputType, 'false', context);
-				return;
-			}
-
-			if (interaction.isRoleSelectMenu() && interaction.customId === CustomIds.INPUT_ROLE) {
-				await interaction.deferUpdate();
-				// Use the first selected role ID
-				const roleId = interaction.values[0];
-				await this.processUpdate(this.inputType, roleId, context);
-				return;
-			}
-
-			if (interaction.isChannelSelectMenu() && interaction.customId === CustomIds.INPUT_CHANNEL) {
-				await interaction.deferUpdate();
-				const channelId = interaction.values[0];
-				await this.processUpdate(this.inputType, channelId, context);
-				return;
-			}
-
-			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_COMMAND) {
-				await interaction.deferUpdate();
-				const commandName = interaction.values[0];
-				this.selectedCategory = null;
-				await this.processUpdate(this.inputType, commandName, context);
-				return;
-			}
-
-			if (interaction.isStringSelectMenu() && interaction.customId === CustomIds.INPUT_REMOVE) {
-				await interaction.deferUpdate();
-				const value = interaction.values[0];
-				await this.processUpdate(this.inputType, value, context);
-				return;
-			}
-
-			if (interaction.customId === CustomIds.INPUT_MODAL) {
-				// Re-trigger modal
-				await this.showInputModal(interaction, context, this.inputType);
-				return;
+			switch (action) {
+				case SettingsMenuAction.Cancel:
+					await interaction.deferUpdate();
+					this.inputMode = false;
+					this.selectedCategory = null;
+					await this._renderResponse();
+					return;
+				case SettingsMenuAction.InputCategory:
+					if (!interaction.isStringSelectMenu()) return;
+					await interaction.deferUpdate();
+					[this.selectedCategory] = interaction.values;
+					await this._renderResponse();
+					return;
+				case SettingsMenuAction.InputCommandBack:
+					if (!interaction.isButton()) return;
+					await interaction.deferUpdate();
+					this.selectedCategory = null;
+					await this._renderResponse();
+					return;
+				case SettingsMenuAction.InputBoolTrue:
+					await interaction.deferUpdate();
+					await this.processUpdate(this.inputType, 'true', context);
+					return;
+				case SettingsMenuAction.InputBoolFalse:
+					await interaction.deferUpdate();
+					await this.processUpdate(this.inputType, 'false', context);
+					return;
+				case SettingsMenuAction.InputRole:
+					if (!interaction.isRoleSelectMenu()) return;
+					await interaction.deferUpdate();
+					await this.processUpdate(this.inputType, interaction.values[0], context);
+					return;
+				case SettingsMenuAction.InputChannel:
+					if (!interaction.isChannelSelectMenu()) return;
+					await interaction.deferUpdate();
+					await this.processUpdate(this.inputType, interaction.values[0], context);
+					return;
+				case SettingsMenuAction.InputCommand:
+					if (!interaction.isStringSelectMenu()) return;
+					await interaction.deferUpdate();
+					this.selectedCategory = null;
+					await this.processUpdate(this.inputType, interaction.values[0], context);
+					return;
+				case SettingsMenuAction.InputRemove:
+					if (!interaction.isStringSelectMenu()) return;
+					await interaction.deferUpdate();
+					await this.processUpdate(this.inputType, interaction.values[0], context);
+					return;
+				case SettingsMenuAction.InputModal:
+					await this.showInputModal(interaction, context, this.inputType);
+					return;
 			}
 		}
 
 		if (interaction.isButton()) {
-			switch (interaction.customId) {
-				case CustomIds.BACK:
+			switch (action) {
+				case SettingsMenuAction.Back:
 					await interaction.deferUpdate();
 					if (this.schema.parent) {
 						this.schema = this.schema.parent;
@@ -544,39 +601,39 @@ export class SettingsMenu {
 					}
 					await this._renderResponse();
 					break;
-				case CustomIds.STOP:
+				case SettingsMenuAction.Stop:
 					await interaction.deferUpdate();
 					this.stop();
 					break;
-				case CustomIds.RESET:
+				case SettingsMenuAction.Reset:
 					await interaction.deferUpdate();
-					await this.tryUpdate(UpdateType.Reset);
+					await this.tryUpdate(SettingsMenuUpdateType.Reset);
 					await this._renderResponse();
 					break;
-				case CustomIds.UNDO:
+				case SettingsMenuAction.Undo:
 					await interaction.deferUpdate();
 					await this.tryUndo();
 					await this._renderResponse();
 					break;
-				case CustomIds.SET:
-					await this.initiateInput(interaction, context, UpdateType.Set);
+				case SettingsMenuAction.Set:
+					await this.initiateInput(interaction, context, SettingsMenuUpdateType.Set);
 					break;
-				case CustomIds.REMOVE:
-					await this.initiateInput(interaction, context, UpdateType.Remove);
+				case SettingsMenuAction.Remove:
+					await this.initiateInput(interaction, context, SettingsMenuUpdateType.Remove);
 					break;
 			}
 		}
 	}
 
-	private async initiateInput(interaction: MessageComponentInteraction, context: WolfCommand.RunContext, type: UpdateType) {
+	private async initiateInput(interaction: MessageComponentInteraction, context: WolfCommand.RunContext, type: SettingsMenuUpdateType) {
 		this.inputType = type;
 		const key = this.schema as SchemaKey;
 
 		// Check if we can use special components
 		const useComponent =
-			(type === UpdateType.Set && ['boolean', 'role', 'guildTextChannel', 'guildVoiceChannel'].includes(key.type)) ||
-			(type === UpdateType.Set && key.property === 'disabledCommands') || // Special handling for disabled-commands
-			(type === UpdateType.Remove && key.array); // For Remove, we use a select menu if array
+			(type === SettingsMenuUpdateType.Set && ['boolean', 'role', 'guildTextChannel', 'guildVoiceChannel'].includes(key.type)) ||
+			(type === SettingsMenuUpdateType.Set && key.property === 'disabledCommands') ||
+			(type === SettingsMenuUpdateType.Remove && key.array);
 
 		if (useComponent) {
 			this.inputMode = true;
@@ -588,13 +645,13 @@ export class SettingsMenu {
 		}
 	}
 
-	private async showInputModal(interaction: MessageComponentInteraction, context: WolfCommand.RunContext, type: UpdateType) {
-		const modalId = `conf-modal-${Date.now()}`;
-		const inputId = `conf-input-${Date.now()}`;
+	private async showInputModal(interaction: MessageComponentInteraction, context: WolfCommand.RunContext, type: SettingsMenuUpdateType) {
+		const modalId = this.buildCustomId(SettingsMenuAction.InputModal);
+		const inputId = this.buildCustomId(SettingsMenuAction.InputModalField);
 
 		const modal = new ModalBuilder()
 			.setCustomId(modalId)
-			.setTitle(this.t(type === UpdateType.Set ? LanguageKeys.Globals.Set : LanguageKeys.Globals.Remove));
+			.setTitle(this.t(type === SettingsMenuUpdateType.Set ? LanguageKeys.Globals.Set : LanguageKeys.Globals.Remove));
 
 		const key = this.schema as SchemaKey;
 
@@ -608,7 +665,10 @@ export class SettingsMenu {
 		try {
 			const submission = await interaction.awaitModalSubmit({
 				time: minutes(5),
-				filter: (i) => i.customId === modalId && i.user.id === interaction.user.id
+				filter: (i) => {
+					const submissionParsed = parseSettingsMenuCustomId(i.customId);
+					return submissionParsed?.action === SettingsMenuAction.InputModal && submissionParsed.data.u === interaction.user.id;
+				}
 			});
 
 			const value = submission.fields.getTextInputValue(inputId);
@@ -630,7 +690,7 @@ export class SettingsMenu {
 		}
 	}
 
-	private async processUpdate(type: UpdateType, value: string, context: WolfCommand.RunContext) {
+	private async processUpdate(type: SettingsMenuUpdateType, value: string, context: WolfCommand.RunContext) {
 		const conf = container.stores.get('commands').get('conf') as MessageCommand;
 		// Create a minimal message proxy for WolfArgs compatibility
 		const messageProxy = {
@@ -661,7 +721,7 @@ export class SettingsMenu {
 		}
 	}
 
-	private async tryUpdate(action: UpdateType, args: WolfArgs | null = null, value: unknown = null) {
+	private async tryUpdate(action: SettingsMenuUpdateType, args: WolfArgs | null = null, value: unknown = null) {
 		try {
 			const key = this.schema as SchemaKey;
 			using trx = await writeSettingsTransaction(this.interaction.guild);
@@ -669,19 +729,19 @@ export class SettingsMenu {
 			this.t = getT(trx.settings.language);
 			this.oldValue = trx.settings[key.property];
 			switch (action) {
-				case UpdateType.Set: {
+				case SettingsMenuUpdateType.Set: {
 					trx.write(await set(trx.settings, key, args!));
 					break;
 				}
-				case UpdateType.Remove: {
+				case SettingsMenuUpdateType.Remove: {
 					trx.write(await remove(trx.settings, key, args!));
 					break;
 				}
-				case UpdateType.Reset: {
+				case SettingsMenuUpdateType.Reset: {
 					trx.write(reset(key));
 					break;
 				}
-				case UpdateType.Replace: {
+				case SettingsMenuUpdateType.Replace: {
 					trx.write({ [key.property]: value });
 					break;
 				}
@@ -695,7 +755,7 @@ export class SettingsMenu {
 
 	private async tryUndo() {
 		if (this.updatedValue) {
-			await this.tryUpdate(UpdateType.Replace, null, this.oldValue);
+			await this.tryUpdate(SettingsMenuUpdateType.Replace, null, this.oldValue);
 			this.oldValue = undefined;
 		} else {
 			const key = this.schema as SchemaKey;
@@ -735,10 +795,6 @@ export class SettingsMenu {
 			})
 		);
 
-		const sorted = filtered.sort(sortCommandsAlphabetically);
-		console.log(
-			`[SettingsMenu] Found ${sorted.size} categories with ${Array.from(sorted.values()).reduce((acc, cmds) => acc + cmds.length, 0)} total commands`
-		);
-		return sorted;
+		return filtered.sort(sortCommandsAlphabetically);
 	}
 }

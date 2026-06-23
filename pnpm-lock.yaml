@@ -104,6 +104,9 @@ importers:
       '@skyra/jaro-winkler':
         specifier: ^1.1.1
         version: 1.1.1
+      binarytf:
+        specifier: ^2.1.3
+        version: 2.1.3
       bufferutil:
         specifier: ^4.1.0
         version: 4.1.0
@@ -1880,6 +1883,10 @@ packages:
 
   better-result@2.8.2:
     resolution: {integrity: sha512-YOf0VSj5nUPI27doTtXF+BBnsiRq3qY7avHqfIWnppxTLGyvkLq1QV2RTxkwoZwJ60ywLfZ0raFF4J/G886i7A==}
+
+  binarytf@2.1.3:
+    resolution: {integrity: sha512-3r/lCKKXhyh06cIrFI0OlZmTcVyB2D4Nf87uGs0mfYeRhsv67z/MeIzDCmSeXo7kglBx0c3grfmbcsz5cSo0rQ==}
+    engines: {node: '>=v14.18.0', npm: '>=7.24.2'}
 
   birpc@4.0.0:
     resolution: {integrity: sha512-LShSxJP0KTmd101b6DRyGBj57LZxSDYWKitQNW/mi8GRMvZb078Uf9+pveax1DrVL89vm7mWe+TovdI/UDOuPw==}
@@ -3848,10 +3855,6 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
-  tinyexec@1.0.4:
-    resolution: {integrity: sha512-u9r3uZC0bdpGOXtlxUIdwf9pkmvhqJdrVCH9fapQtgy/OeTTMZ1nqH7agtvEfmGui6e1XxjcdrlxvxJvc3sMqw==}
-    engines: {node: '>=18'}
-
   tinyexec@1.1.2:
     resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
     engines: {node: '>=18'}
@@ -5630,6 +5633,8 @@ snapshots:
   base64-js@1.5.1: {}
 
   better-result@2.8.2: {}
+
+  binarytf@2.1.3: {}
 
   birpc@4.0.0: {}
 
@@ -7817,8 +7822,6 @@ snapshots:
       process: 0.11.10
 
   tinybench@2.9.0: {}
-
-  tinyexec@1.0.4: {}
 
   tinyexec@1.1.2: {}
 

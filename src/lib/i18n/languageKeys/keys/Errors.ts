@@ -1,4 +1,4 @@
-import { T } from '#lib/types';
+import { FT, T } from '#lib/types';
 
 export const GenericUnknownChannel = T('errors:genericUnknownChannel');
 export const GenericUnknownGuild = T('errors:genericUnknownGuild');
@@ -9,3 +9,5 @@ export const GenericMissingAccess = T('errors:genericMissingAccess');
 export const GenericDiscordInternalServerError = T('errors:genericDiscordInternalServerError');
 export const GenericDiscordGateway = T('errors:genericDiscordGateway');
 export const GenericDiscordUnavailable = T('errors:genericDiscordUnavailable');
+export const QueryCausedTooLongCustomId = FT<{ customMessagePart: string }>('errors:queryCausedTooLongCustomId');
+export const SettingsMenuCustomIdDeserializeFailed = T('errors:settingsMenuCustomIdDeserializeFailed');
