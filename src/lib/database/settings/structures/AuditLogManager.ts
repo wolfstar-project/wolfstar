@@ -247,7 +247,10 @@ export class AuditLogManager {
 			.setColor(Colors.Blue)
 			.setAuthor(getFullEmbedAuthor(actor))
 			.setDescription(description)
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle), iconURL: getDisplayAvatar(container.client.user!, { size: 128 }) })
+			.setFooter({
+				text: t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle),
+				iconURL: getDisplayAvatar(container.client.user!, { size: 128 })
+			})
 			.setTimestamp(timestamp);
 	}
 
