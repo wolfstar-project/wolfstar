@@ -488,20 +488,15 @@ export class SettingsMenu {
 			(value) => isSchemaGroup(value)
 		);
 
-		const total = folders.length + keys.length;
-		if (total === 0) {
+		if (!folders.length && !keys.length) {
 			description.push(t(LanguageKeys.Commands.Conf.MenuRenderNokeys));
-		} else if (total > 25) {
-			// The select menu can only hold 25 options, so fall back to a textual list when the group is larger.
+		} else {
 			description.push(
 				t(LanguageKeys.Commands.Conf.MenuRenderSelect),
 				'',
 				...folders.map(({ key }) => `📁 ${key}`),
 				...keys.map(({ key }) => `⚙️ ${key}`)
 			);
-		} else {
-			// Otherwise the select menu rendered below already lists every entry, so just prompt the user.
-			description.push(t(LanguageKeys.Commands.Conf.MenuRenderSelect));
 		}
 
 		return description;
