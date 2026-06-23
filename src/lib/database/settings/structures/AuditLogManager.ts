@@ -303,8 +303,20 @@ export class AuditLogManager {
 		return embed;
 	}
 
-	async #fetchUser(userId: string): Promise<User> {
-		return container.client.users.fetch(userId);
+	async `#fetchUser`(userId: string): Promise<User> {
+		try {
+			return await container.client.users.fetch(userId);
+		} catch {
+			// Fallback to a minimal user object when fetch fails (deleted account, network error, etc.)
+			return {
+				id: userId,
+				username: 'Unknown User',
+				discriminator: '0000',
+				avatar: null,
+				bot: false,
+				system: false
+			} as User;
+		}
 	}
 
 	#formatChatInputMention(commandName: string, commandId?: string): string {
