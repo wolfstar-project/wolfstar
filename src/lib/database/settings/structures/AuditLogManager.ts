@@ -4,10 +4,11 @@ import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/typ
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types';
 import { addAutomaticFields } from '#utils/functions/embeds';
-import { channelMention, EmbedBuilder, userMention } from '@discordjs/builders';
+import { getDisplayAvatar, getFullEmbedAuthor } from '#utils/util';
+import { channelMention, EmbedBuilder } from '@discordjs/builders';
 import { container } from '@sapphire/framework';
 import { fetchT, type TFunction } from '@sapphire/plugin-i18next';
-import { Colors, chatInputApplicationCommandMention } from 'discord.js';
+import { Colors, chatInputApplicationCommandMention, type User } from 'discord.js';
 import { auditDiff } from 'evlog';
 
 interface CommandExecutePayload {
@@ -225,71 +226,97 @@ export class AuditLogManager {
 		container.client.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
 	}
 
-	#buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePayload): EmbedBuilder {
+	async #buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePayload): Promise<EmbedBuilder> {
 		const { actorId, commandName, commandId, commandType, channelId, timestamp } = payload;
 		const formattedCommandName = commandType === 'chat-input' ? this.#formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
+		const typeLabel =
+			commandType === 'chat-input'
+				? t(LanguageKeys.Events.Guilds.Logs.CommandTypeChatInput)
+				: commandType === 'context-menu'
+					? t(LanguageKeys.Events.Guilds.Logs.CommandTypeContextMenu)
+					: t(LanguageKeys.Events.Guilds.Logs.CommandTypeMessage);
+
+		const actor = await this.#fetchUser(actorId);
+		const description = [
+			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldType)}:** ${typeLabel}`,
+			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand)}:** ${formattedCommandName}`,
+			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldChannel)}:** ${channelMention(channelId)}`
+		].join('\n');
+
 		return new EmbedBuilder()
 			.setColor(Colors.Blue)
-			.setTitle(t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle))
-			.addFields(
-				{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: userMention(actorId), inline: true },
-				{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand), value: formattedCommandName, inline: true },
-				{
-					name: t(LanguageKeys.Events.Guilds.Logs.LogFieldType),
-					value:
-						commandType === 'chat-input'
-							? t(LanguageKeys.Events.Guilds.Logs.CommandTypeChatInput)
-							: commandType === 'context-menu'
-								? t(LanguageKeys.Events.Guilds.Logs.CommandTypeContextMenu)
-								: t(LanguageKeys.Events.Guilds.Logs.CommandTypeMessage),
-					inline: true
-				},
-				{ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldChannel), value: channelMention(channelId), inline: true }
-			)
+			.setAuthor(getFullEmbedAuthor(actor))
+			.setDescription(description)
+			.setFooter({
+				text: t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle),
+				iconURL: getDisplayAvatar(container.client.user!, { size: 128 })
+			})
 			.setTimestamp(timestamp);
 	}
 
-	#buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePayload): EmbedBuilder {
+	async #buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePayload): Promise<EmbedBuilder> {
 		const { actorId, action, before, after, reason, timestamp } = payload;
 
 		const color = action === 'guild.settings.access-denied' ? Colors.Yellow : action === 'guild.settings.remove' ? Colors.Red : Colors.Green;
 
-		const title =
+		const actionTitle =
 			action === 'guild.settings.access-denied'
 				? t(LanguageKeys.Events.Guilds.Logs.SettingsAccessDeniedTitle)
 				: t(LanguageKeys.Events.Guilds.Logs.SettingsUpdateTitle);
 
-		const embed = new EmbedBuilder().setColor(color).setTitle(title).setTimestamp(timestamp);
+		const actor = await this.#fetchUser(actorId);
+		const descLines = [`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldAction)}:** ${actionTitle}`];
+		if (reason) descLines.push(`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldReason)}:** ${reason}`);
 
-		if (reason) addAutomaticFields(embed, reason);
+		const embed = new EmbedBuilder()
+			.setColor(color)
+			.setAuthor(getFullEmbedAuthor(actor))
+			.setDescription(descLines.join('\n'))
+			.setFooter({ text: actionTitle, iconURL: getDisplayAvatar(container.client.user!, { size: 128 }) })
+			.setTimestamp(timestamp);
 
-		embed.addFields({ name: t(LanguageKeys.Events.Guilds.Logs.LogFieldUser), value: userMention(actorId), inline: true });
-
-		const diff = auditDiff(before, after);
-
-		for (const op of diff.patch.slice(0, 10)) {
-			const key = op.path
-				.replace(/^\//, '')
-				.split('/')
-				.map((part) => part.replaceAll('~1', '/').replaceAll('~0', '~'))
-				.join('.');
-			let value: string;
-			if (op.op === 'replace') {
-				const from = this.#formatAuditValue(this.#getNestedValue(before, op.path));
-				const to = this.#formatAuditValue(op.value);
-				if (from === to) continue;
-				value = `has changed ${from} to ${to}`;
-			} else if (op.op === 'add') {
-				value = this.#formatAuditValue(op.value);
-			} else if (op.op === 'remove') {
-				value = this.#formatAuditValue(this.#getNestedValue(before, op.path));
-			} else {
-				continue;
+		if (action !== 'guild.settings.access-denied') {
+			const diff = auditDiff(before, after);
+			for (const op of diff.patch.slice(0, 10)) {
+				const key = op.path
+					.replace(/^\//, '')
+					.split('/')
+					.map((part) => part.replaceAll('~1', '/').replaceAll('~0', '~'))
+					.join('.');
+				let value: string;
+				if (op.op === 'replace') {
+					const from = this.#formatAuditValue(this.#getNestedValue(before, op.path));
+					const to = this.#formatAuditValue(op.value);
+					if (from === to) continue;
+					value = `has changed ${from} to ${to}`;
+				} else if (op.op === 'add') {
+					value = this.#formatAuditValue(op.value);
+				} else if (op.op === 'remove') {
+					value = this.#formatAuditValue(this.#getNestedValue(before, op.path));
+				} else {
+					continue;
+				}
+				addAutomaticFields(embed, key, value);
 			}
-			addAutomaticFields(embed, key, value);
 		}
 
 		return embed;
+	}
+
+	async `#fetchUser`(userId: string): Promise<User> {
+		try {
+			return await container.client.users.fetch(userId);
+		} catch {
+			// Fallback to a minimal user object when fetch fails (deleted account, network error, etc.)
+			return {
+				id: userId,
+				username: 'Unknown User',
+				discriminator: '0000',
+				avatar: null,
+				bot: false,
+				system: false
+			} as User;
+		}
 	}
 
 	#formatChatInputMention(commandName: string, commandId?: string): string {
