@@ -150,6 +150,7 @@
 	"logFieldCommand": "Command",
 	"logFieldType": "Type",
 	"logFieldChannel": "Channel",
+	"logFieldAction": "Action",
 	"logFieldChange": "Changes",
 	"logFieldReason": "Reason",
 	"commandTypeChatInput": "Chat Input",
