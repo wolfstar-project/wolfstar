@@ -1,15 +1,14 @@
-ignoredBuiltDependencies:
-    - bufferutil
-    - zlib-sync
-
-onlyBuiltDependencies:
-    - '@prisma/client'
-    - '@prisma/engines'
-    - '@tailwindcss/oxide'
-    - prisma
-    - sharp@0.34.5
-    - workerd
-    - better-sqlite3
+allowBuilds:
+    '@prisma/client': true
+    '@prisma/engines': true
+    '@tailwindcss/oxide': true
+    better-sqlite3: true
+    bufferutil: false
+    esbuild: true
+    prisma: true
+    sharp@0.34.5: true
+    workerd: true
+    zlib-sync: false
 
 overrides:
     ansi-regex: ^5.0.1
@@ -19,3 +18,14 @@ overrides:
 dedupePeers: true
 
 shellEmulator: true
+
+# Delay installs of very new releases by 24 hours (1440 minutes) as a supply-chain safety buffer.
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+    - '@sentry/conventions'
+    - '@sentry/core'
+    - '@sentry/node'
+    - '@sentry/node-core'
+    - '@sentry/opentelemetry'
+    - '@sentry/server-utils'
+    - evlog
