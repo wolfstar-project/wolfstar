@@ -8,6 +8,8 @@
 	"genericDiscordInternalServerError": "Oops, Discord broke itself, please try again later.",
 	"genericDiscordGateway": "Oops, the network is struggling to communicate with Discord, please try again later.",
 	"genericDiscordUnavailable": "Oops, Discord is currently unavailable, please try again later.",
+	"queryCausedTooLongCustomId": "Due to Discord API limitations I was unable to resolve that request. {{customMessagePart}}This issue will be fixed in the future.",
+	"settingsMenuCustomIdDeserializeFailed": "I am sorry, but that query failed. Please try again. If the problem persists, then please join the support server (use the /info command).",
 	"guildBansEmpty": "There are no bans registered in this server.",
 	"guildBansNotFound": "I tried and failed to find this user from the ban list. Are you certain this user is banned?",
 	"guildMemberNotVoicechannel": "I cannot execute this action in a member that is not connected to a voice channel.",
