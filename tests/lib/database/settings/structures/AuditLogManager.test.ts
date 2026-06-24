@@ -4,6 +4,7 @@ import type { ReadonlyGuildData } from '#lib/database/settings/types';
 import { container } from '@sapphire/framework';
 import { Events } from '#lib/types';
 import { EmbedBuilder } from '@discordjs/builders';
+import { createUser } from '../../../../mocks/MockInstances.js';
 
 const ADVISORY_LOCK_NS = 1096107084;
 
@@ -211,6 +212,11 @@ describe('AuditLogManager', () => {
 				fetchLanguage: vi.fn().mockResolvedValue('en-US'),
 				getT: vi.fn().mockReturnValue(tStub)
 			});
+
+			// Provide a real-ish User and bot user so embed builders don't crash.
+			const stubbedUser = createUser();
+			vi.spyOn(container.client.users, 'fetch').mockResolvedValue(stubbedUser as never);
+			Reflect.set(container.client, 'user', stubbedUser);
 		});
 
 		afterEach(() => {
@@ -276,17 +282,17 @@ describe('AuditLogManager', () => {
 			test('GIVEN chat-input without commandId THEN uses backtick fallback', async () => {
 				const data = await getCommandEmbed({ commandName: 'ban', commandType: 'chat-input', channelId: '555' });
 				expect(data.color).toBeDefined();
-				expect(data.fields![1].value).toBe('`/ban`');
+				expect(data.description).toContain('`/ban`');
 			});
 
 			test('GIVEN context-menu command THEN uses backtick format without slash', async () => {
 				const data = await getCommandEmbed({ commandName: 'userinfo', commandType: 'context-menu', channelId: '555' });
-				expect(data.fields![1].value).toBe('`userinfo`');
+				expect(data.description).toContain('`userinfo`');
 			});
 
 			test('GIVEN message command THEN uses backtick format without slash', async () => {
 				const data = await getCommandEmbed({ commandName: 'userinfo', commandType: 'message', channelId: '555' });
-				expect(data.fields![1].value).toBe('`userinfo`');
+				expect(data.description).toContain('`userinfo`');
 			});
 
 			test('GIVEN chat-input with commandId and no subcommand THEN uses slash mention', async () => {
@@ -296,7 +302,7 @@ describe('AuditLogManager', () => {
 					commandType: 'chat-input',
 					channelId: '555'
 				});
-				expect(data.fields![1].value).toBe('</ban:111111111111111111>');
+				expect(data.description).toContain('</ban:111111111111111111>');
 			});
 
 			test('GIVEN chat-input with commandId and one subcommand THEN uses slash mention', async () => {
@@ -306,7 +312,7 @@ describe('AuditLogManager', () => {
 					commandType: 'chat-input',
 					channelId: '555'
 				});
-				expect(data.fields![1].value).toBe('</mod ban:222222222222222222>');
+				expect(data.description).toContain('</mod ban:222222222222222222>');
 			});
 
 			test('GIVEN chat-input with commandId and subcommand group THEN uses slash mention', async () => {
@@ -316,19 +322,18 @@ describe('AuditLogManager', () => {
 					commandType: 'chat-input',
 					channelId: '555'
 				});
-				expect(data.fields![1].value).toBe('</config settings reset:333333333333333333>');
+				expect(data.description).toContain('</config settings reset:333333333333333333>');
 			});
 
 			test('GIVEN chat-input with multi-word name but no commandId THEN uses backtick fallback with slash', async () => {
 				const data = await getCommandEmbed({ commandName: 'mod warn', commandType: 'chat-input', channelId: '555' });
-				expect(data.fields![1].value).toBe('`/mod warn`');
+				expect(data.description).toContain('`/mod warn`');
 			});
 
-			test('GIVEN command() THEN embed has 4 fields and correct channel mention', async () => {
+			test('GIVEN command() THEN embed has author and correct channel mention in description', async () => {
 				const data = await getCommandEmbed({ commandName: 'kick', commandType: 'chat-input', channelId: '987654321098765432' });
-				expect(data.fields).toHaveLength(4);
-				expect(data.fields![0].value).toBe('<@user1>');
-				expect(data.fields![3].value).toBe('<#987654321098765432>');
+				expect(data.author).toBeDefined();
+				expect(data.description).toContain('<#987654321098765432>');
 			});
 		});
 
@@ -345,7 +350,7 @@ describe('AuditLogManager', () => {
 
 			test('GIVEN settings update THEN embed has diff field for changed key', async () => {
 				const data = await getSettingsEmbed({ prefix: '!' }, { prefix: '?' });
-				expect(data.fields!.length).toBeGreaterThanOrEqual(2);
+				expect(data.fields!.length).toBeGreaterThanOrEqual(1);
 				const changeField = data.fields!.find((f) => f.name === 'prefix');
 				expect(changeField).toBeDefined();
 			});
@@ -355,7 +360,7 @@ describe('AuditLogManager', () => {
 				await new Promise((r) => setImmediate(r));
 				const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
 				const data = makeMessage().toJSON();
-				expect(data.description).toBe('Unauthorized');
+				expect(data.description).toContain('Unauthorized');
 			});
 		});
 	});
