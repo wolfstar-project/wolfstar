@@ -36,12 +36,10 @@ interface SettingsChangePayload {
 export class AuditLogManager {
 	#guildId: string;
 	#settings: ReadonlyGuildData;
-	#user: User | null;
 
 	public constructor(settings: ReadonlyGuildData) {
 		this.#guildId = settings.id;
 		this.#settings = settings;
-		this.#user = null;
 	}
 
 	public onPatch(settings: ReadonlyGuildData): void {
@@ -191,6 +189,7 @@ export class AuditLogManager {
 		if (!channelId) return;
 
 		const t = await fetchT(guild);
+		const actor = await this.#fetchUser(params.actorId);
 
 		const makeMessage =
 			action === 'guild.command.execute'
@@ -206,7 +205,7 @@ export class AuditLogManager {
 							commandType: 'chat-input' | 'context-menu' | 'message';
 							channelId: string;
 						};
-						return this.#buildCommandExecuteEmbed(t, {
+						return this.#buildCommandExecuteEmbed(t, actor, {
 							actorId: params.actorId,
 							commandName,
 							commandId,
@@ -216,7 +215,7 @@ export class AuditLogManager {
 						});
 					}
 				: () =>
-						this.#buildSettingsChangeEmbed(t, {
+						this.#buildSettingsChangeEmbed(t, actor, {
 							actorId: params.actorId,
 							action: action as AuditLogSettingsAction,
 							before: params.before,
@@ -228,8 +227,8 @@ export class AuditLogManager {
 		container.client.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
 	}
 
-	async #buildCommandExecuteEmbed(t: TFunction, payload: CommandExecutePayload): Promise<EmbedBuilder> {
-		const { actorId, commandName, commandId, commandType, channelId, timestamp } = payload;
+	#buildCommandExecuteEmbed(t: TFunction, actor: User, payload: CommandExecutePayload): EmbedBuilder {
+		const { commandName, commandId, commandType, channelId, timestamp } = payload;
 		const formattedCommandName = commandType === 'chat-input' ? this.#formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
 		const typeLabel =
 			commandType === 'chat-input'
@@ -238,7 +237,6 @@ export class AuditLogManager {
 					? t(LanguageKeys.Events.Guilds.Logs.CommandTypeContextMenu)
 					: t(LanguageKeys.Events.Guilds.Logs.CommandTypeMessage);
 
-		const actor = await this.#fetchUser(actorId);
 		const description = [
 			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldType)}:** ${typeLabel}`,
 			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand)}:** ${formattedCommandName}`,
@@ -256,8 +254,8 @@ export class AuditLogManager {
 			.setTimestamp(timestamp);
 	}
 
-	async #buildSettingsChangeEmbed(t: TFunction, payload: SettingsChangePayload): Promise<EmbedBuilder> {
-		const { actorId, action, before, after, reason, timestamp } = payload;
+	#buildSettingsChangeEmbed(t: TFunction, actor: User, payload: SettingsChangePayload): EmbedBuilder {
+		const { action, before, after, reason, timestamp } = payload;
 
 		const color = action === 'guild.settings.access-denied' ? Colors.Yellow : action === 'guild.settings.remove' ? Colors.Red : Colors.Green;
 
@@ -266,7 +264,6 @@ export class AuditLogManager {
 				? t(LanguageKeys.Events.Guilds.Logs.SettingsAccessDeniedTitle)
 				: t(LanguageKeys.Events.Guilds.Logs.SettingsUpdateTitle);
 
-		const actor = await this.#fetchUser(actorId);
 		const descLines = [`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldAction)}:** ${actionTitle}`];
 		if (reason) descLines.push(`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldReason)}:** ${reason}`);
 
@@ -306,7 +303,11 @@ export class AuditLogManager {
 	}
 
 	async #fetchUser(userId: string): Promise<User> {
-		return (this.#user ??= await container.client.users.fetch(userId));
+		try {
+			return await container.client.users.fetch(userId);
+		} catch {
+			return { id: userId, username: 'Unknown User', discriminator: '0000', avatar: null, bot: false, system: false } as User;
+		}
 	}
 
 	#formatChatInputMention(commandName: string, commandId?: string): string {
