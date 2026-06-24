@@ -36,10 +36,12 @@ interface SettingsChangePayload {
 export class AuditLogManager {
 	#guildId: string;
 	#settings: ReadonlyGuildData;
+	#user: User | null;
 
 	public constructor(settings: ReadonlyGuildData) {
 		this.#guildId = settings.id;
 		this.#settings = settings;
+		this.#user = null;
 	}
 
 	public onPatch(settings: ReadonlyGuildData): void {
@@ -303,20 +305,8 @@ export class AuditLogManager {
 		return embed;
 	}
 
-	async `#fetchUser`(userId: string): Promise<User> {
-		try {
-			return await container.client.users.fetch(userId);
-		} catch {
-			// Fallback to a minimal user object when fetch fails (deleted account, network error, etc.)
-			return {
-				id: userId,
-				username: 'Unknown User',
-				discriminator: '0000',
-				avatar: null,
-				bot: false,
-				system: false
-			} as User;
-		}
+	async #fetchUser(userId: string): Promise<User> {
+		return (this.#user ??= await container.client.users.fetch(userId));
 	}
 
 	#formatChatInputMention(commandName: string, commandId?: string): string {
