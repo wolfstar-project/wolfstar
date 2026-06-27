@@ -8,7 +8,7 @@ on:
 jobs:
     UpdateTLDs:
         name: Update TLD's
-        runs-on: ubuntu-latest
+        runs-on: blacksmith-4vcpu-ubuntu-2404
         steps:
             - name: Checkout Project
               uses: actions/checkout@v7
