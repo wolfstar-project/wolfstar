@@ -21,8 +21,5 @@ jobs:
         uses: wolfstar-project/.github/.github/workflows/reusable-publish-image.yml@main
         secrets: inherit
         with:
-            enablePlatforms: true
             commitHash: ${{ github.event.inputs.commit }}
             tag: stable
-            platforms: >-
-                [{"platform": "linux/amd64", "runner": "ubuntu-latest"}, {"platform": "linux/arm64", "runner": "ubuntu-latest"}]
