@@ -14,17 +14,18 @@ Link][invite-link] · [Support Server][discord-link] ·
 
 <!-- SHIELD GROUP -->
 
-[![][github-release-shield]][github-release-link]
-[![][github-releasedate-shield]][github-releasedate-link]<br/>
-[![][discord-shield]][discord-link] [![][codecov-shield]][codecov-link]
-[![][github-contributors-shield]][github-contributors-link]<br/>
-[![][github-forks-shield]][github-forks-link]
-[![][github-stars-shield]][github-stars-link]
-[![][github-issues-shield]][github-issues-link]
-[![][github-license-shield]][github-license-link]<br>
-[![][pr-welcome-shield]][pr-welcome-link]
+[![GitHub latest release badge][github-release-shield]][github-release-link]
+[![GitHub last commit badge][github-last-commit-shield]][github-last-commit-link]<br/>
+[![Discord community badge][discord-shield]][discord-link]
+[![Codecov coverage badge][codecov-shield]][codecov-link]
+[![GitHub contributors badge][github-contributors-shield]][github-contributors-link]<br/>
+[![GitHub forks badge][github-forks-shield]][github-forks-link]
+[![GitHub stars badge][github-stars-shield]][github-stars-link]
+[![GitHub issues badge][github-issues-shield]][github-issues-link]
+[![GitHub license badge][github-license-shield]][github-license-link]<br>
+[![PRs welcome badge][pr-welcome-shield]][pr-welcome-link]
 
-**Share WolfStar Repository**
+### Share WolfStar Repository
 
 [![][share-linkedin-shield]][share-linkedin-link]
 [![][share-reddit-shield]][share-reddit-link]
@@ -191,7 +192,7 @@ Thank you for your support!
 
 <div align="right">
 
-[![][back-to-top]](#readme-top)
+[![Back to top][back-to-top]](#readme-top)
 
 </div>
 
@@ -215,46 +216,46 @@ Copyright © 2024 [WolfStar][profile-link]. <br /> This project is
 [blog]: https://blog.wolfstar.rocks
 [codecov-link]: https://codecov.io/gh/wolfstar-project/wolfstar
 [codecov-shield]:
-  https://img.shields.io/codecov/c/github/wolfstar-project/wolfstar?labelColor=black&style=flat-square&logo=codecov&logoColor=white
+  https://shieldcn.dev/codecov/github/wolfstar-project/wolfstar?variant=branded
 [codespaces-link]: https://codespaces.new/wolfstar-project/wolfstar
 [codespaces-shield]: https://github.com/codespaces/badge.svg
 [discord-link]: https://discord.gg/gqAnRyUXG8
 [discord-shield]:
-  https://img.shields.io/discord/830481105261821952?color=5865F2&label=discord&labelColor=black&logo=discord&logoColor=white&style=flat-square
+  https://shieldcn.dev/discord/830481105261821952?variant=branded
 [discord-shield-badge]:
   https://img.shields.io/discord/1127171173982154893?color=5865F2&label=discord&labelColor=black&logo=discord&logoColor=white&style=for-the-badge
 [github-contributors-link]:
   https://github.com/wolfstar-project/wolfstar/graphs/contributors
 [github-contributors-shield]:
-  https://img.shields.io/github/contributors/wolfstar-project/wolfstar?color=c4f042&labelColor=black&style=flat-square
+  https://shieldcn.dev/github/contributors/wolfstar-project/wolfstar?variant=branded
 [github-forks-link]:
   https://github.com/wolfstar-project/wolfstar/network/members
 [github-forks-shield]:
-  https://img.shields.io/github/forks/wolfstar-project/wolfstar?color=8ae8ff&labelColor=black&style=flat-square
+  https://shieldcn.dev/github/forks/wolfstar-project/wolfstar?variant=branded
 [github-issues-link]: https://github.com/wolfstar-project/wolfstar/issues
 [github-issues-shield]:
-  https://img.shields.io/github/issues/wolfstar-project/wolfstar?color=ff80eb&labelColor=black&style=flat-square
+  https://shieldcn.dev/github/issues/wolfstar-project/wolfstar?variant=branded
+[github-last-commit-link]: https://github.com/wolfstar-project/wolfstar/commits
+[github-last-commit-shield]:
+  https://shieldcn.dev/github/last-commit/wolfstar-project/wolfstar?variant=branded
 [github-license-link]:
   https://github.com/wolfstar-project/wolfstar/blob/main/LICENSE
 [github-license-shield]:
-  https://img.shields.io/badge/license-apache%202.0-white?labelColor=black&style=flat-square
+  https://shieldcn.dev/github/license/wolfstar-project/wolfstar?variant=branded
 [github-project-link]: https://github.com/wolfstar-project/wolfstar/projects
 [github-release-link]: https://github.com/wolfstar-project/wolfstar/releases
 [github-release-shield]:
-  https://img.shields.io/github/v/release/wolfstar-project/wolfstar?color=369eff&labelColor=black&logo=github&style=flat-square
-[github-releasedate-link]: https://github.com/wolfstar-project/wolfstar/releases
-[github-releasedate-shield]:
-  https://img.shields.io/github/release-date/wolfstar-project/wolfstar?labelColor=black&style=flat-square
+  https://shieldcn.dev/github/release/wolfstar-project/wolfstar?variant=branded
 [github-stars-link]:
   https://github.com/wolfstar-project/wolfstar/network/stargazers
 [github-stars-shield]:
-  https://img.shields.io/github/stars/wolfstar-project/wolfstar?color=ffcb47&labelColor=black&style=flat-square
+  https://shieldcn.dev/github/stars/wolfstar-project/wolfstar?variant=branded
 [issues-link]:
   https://img.shields.io/github/issues/wolfstar-project/wolfstar.svg?style=flat
 [official-site]: https://wolfstar.rocks
 [pr-welcome-link]: https://github.com/wolfstar-project/wolfstar/pulls
 [pr-welcome-shield]:
-  https://img.shields.io/badge/🤯_pr_welcome-%E2%86%92-ffcb47?labelColor=black&style=for-the-badge
+  https://shieldcn.dev/badge/PRs-welcome-ffcb47?variant=branded
 [profile-link]: https://github.com/wolfstar
 [set-up - refer to contributing.md]:
   https://github.com/wolfstar-project/.github/blob/main/.github/CONTRIBUTING.md
