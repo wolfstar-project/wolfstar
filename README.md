@@ -141,7 +141,7 @@ instructions.
 
 </div>
 
-<div id="-online-development" align="right">
+<div id="-online-development">
 
 ## 💻 Online Development
 
