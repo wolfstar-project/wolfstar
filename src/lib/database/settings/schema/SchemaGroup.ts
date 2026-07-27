@@ -78,7 +78,7 @@ export class SchemaGroup extends AliasedCollection<string, SchemaGroup | SchemaK
 		return this.getPathArray(key.split('.') as NonEmptyArray<string>);
 	}
 
-	public display(settings: ReadonlyGuildData, language: TFunction) {
+	public display(settings: ReadonlyGuildData, language: TFunction): string {
 		const folders: string[] = [];
 		const sections = new Map<string, string[]>();
 		let longest = 0;
