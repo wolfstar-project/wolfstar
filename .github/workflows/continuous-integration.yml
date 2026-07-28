@@ -22,7 +22,7 @@ permissions:
 jobs:
     lint:
         name: Lint project
-        runs-on: blacksmith-4vcpu-ubuntu-2404-arm
+        runs-on: depot-ubuntu-24.04-arm-4
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -42,7 +42,7 @@ jobs:
 
     build:
         name: Build project
-        runs-on: blacksmith-4vcpu-ubuntu-2404
+        runs-on: depot-ubuntu-24.04-4
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -65,7 +65,7 @@ jobs:
 
     test:
         name: Unit tests
-        runs-on: blacksmith-8vcpu-ubuntu-2404
+        runs-on: depot-ubuntu-24.04-8
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
