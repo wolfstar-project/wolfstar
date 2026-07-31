@@ -4,59 +4,32 @@
  * Reads .tolgee-pull/{tag}/{namespace}.json → src/languages/{locale}/{namespace}.json
  *
  * Tolgee short tags (en, es, pt, …) are remapped to Discord locale folder names
- * (en-US, es-ES, pt-BR, …). Nested namespaces (commands/admin, events/errors)
- * are preserved. Non-JSON files such as constants.ts are never touched.
+ * (en-US, es-ES, pt-BR, …) using `tolgeeToLocal` from `.tolgeerc.cjs`. Nested
+ * namespaces (commands/admin, events/errors) are preserved. Non-JSON files such
+ * as constants.ts are never touched.
  *
  * Usage:  pnpm tolgee:pull
  *         (or: pnpm exec tolgee pull && node --experimental-strip-types scripts/tolgee-pull-remap.ts)
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync, type Dirent } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const require = createRequire(import.meta.url);
 
-const config = JSON.parse(readFileSync(join(root, '.tolgeerc.json'), 'utf8')) as {
+const config = require('../.tolgeerc.cjs') as {
 	pull: { path: string };
+	tolgeeToLocal: Record<string, string>;
+	namespaces?: string[];
 };
 
 /**
  * Tolgee language tags → local dirs under src/languages/.
- * Identity entries document every Tolgee tag we expect; remap-only tags differ.
+ * Single source of truth: `.tolgeerc.cjs` (shared with push).
  */
-const TOLGEE_TO_LOCAL: Record<string, string> = {
-	cs: 'cs',
-	da: 'da',
-	de: 'de',
-	el: 'el',
-	en: 'en-US',
-	'en-GB': 'en-GB',
-	es: 'es-ES',
-	'es-419': 'es-419',
-	fi: 'fi',
-	fr: 'fr',
-	hi: 'hi',
-	hr: 'hr',
-	hu: 'hu',
-	id: 'id',
-	it: 'it',
-	ja: 'ja',
-	ko: 'ko',
-	lt: 'lt',
-	nl: 'nl',
-	no: 'no',
-	pl: 'pl',
-	pt: 'pt-BR',
-	ro: 'ro',
-	ru: 'ru',
-	sv: 'sv-SE',
-	th: 'th',
-	tr: 'tr',
-	uk: 'uk',
-	vi: 'vi',
-	'zh-Hans': 'zh-CN',
-	'zh-Hant': 'zh-TW'
-};
+const TOLGEE_TO_LOCAL: Record<string, string> = config.tolgeeToLocal;
 
 const pullRoot = join(root, config.pull.path.replace(/^\.\//, ''));
 const languagesRoot = join(root, 'src/languages');
