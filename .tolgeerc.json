@@ -203,7 +203,7 @@
 		"languages": ["en-US"]
 	},
 	"pull": {
-		"path": "src/languages",
+		"path": ".tolgee-pull",
 		"fileStructureTemplate": "{languageTag}/{namespace}.json"
 	}
 }

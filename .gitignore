@@ -26,6 +26,9 @@ dist/
 .config/
 generated/
 
+# Tolgee pull staging (promoted into src/languages by scripts/tolgee-pull-remap.ts)
+.tolgee-pull/
+
 # Ignore heapsnapshot and log files
 *.heapsnapshot
 *.log
