@@ -123,9 +123,9 @@ environment.
 
 <div id="-translating-wolfstar">
 
-## 🉑 Translating WolfStar <a href="https://translation.wolfstar.rocks" target="_blank"><img src="https://support.crowdin.com/assets/logos/crowdin-core-logo.png" align="right" width="30%"></a>
+## 🉑 Translating WolfStar <a href="https://translation.wolfstar.rocks" target="_blank"><img src="https://img.shields.io/badge/Localization-Tolgee-1D2A3A?logo=tolgee&logoColor=white" align="right" width="30%"></a>
 
-We use **Crowdin** to translate WolfStar's messages into different languages. If
+We use **Tolgee** to translate WolfStar's messages into different languages. If
 you'd like to help by contributing new translations or improving existing ones,
 [**click here**](https://translation.wolfstar.rocks). Thanks for any
 contributions!
