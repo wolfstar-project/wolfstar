@@ -90,7 +90,7 @@ const pushFiles = Object.entries(LOCALE_MAP).flatMap(([localDir, language]) =>
 
 module.exports = {
 	$schema: 'https://raw.githubusercontent.com/tolgee/tolgee-cli/main/schema.json',
-	projectId: 33602,
+	projectId: 33768,
 	format: 'JSON_I18NEXT',
 	push: {
 		forceMode: 'KEEP',
