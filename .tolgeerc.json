@@ -1,9 +1,204 @@
 {
 	"$schema": "https://raw.githubusercontent.com/tolgee/tolgee-cli/main/schema.json",
-	"projectId": "your_project_id",
 	"format": "JSON_I18NEXT",
 	"push": {
-		"filesTemplate": "src/languages/{languageTag}/{namespace}.json",
+		"files": [
+			{
+				"path": "src/languages/en-US/arguments.json",
+				"language": "en-US",
+				"namespace": "arguments"
+			},
+			{
+				"path": "src/languages/en-US/assertions.json",
+				"language": "en-US",
+				"namespace": "assertions"
+			},
+			{
+				"path": "src/languages/en-US/colors.json",
+				"language": "en-US",
+				"namespace": "colors"
+			},
+			{
+				"path": "src/languages/en-US/commands/admin.json",
+				"language": "en-US",
+				"namespace": "commands/admin"
+			},
+			{
+				"path": "src/languages/en-US/commands/auto-moderation.json",
+				"language": "en-US",
+				"namespace": "commands/auto-moderation"
+			},
+			{
+				"path": "src/languages/en-US/commands/case.json",
+				"language": "en-US",
+				"namespace": "commands/case"
+			},
+			{
+				"path": "src/languages/en-US/commands/conf.json",
+				"language": "en-US",
+				"namespace": "commands/conf"
+			},
+			{
+				"path": "src/languages/en-US/commands/fun.json",
+				"language": "en-US",
+				"namespace": "commands/fun"
+			},
+			{
+				"path": "src/languages/en-US/commands/game.json",
+				"language": "en-US",
+				"namespace": "commands/game"
+			},
+			{
+				"path": "src/languages/en-US/commands/general.json",
+				"language": "en-US",
+				"namespace": "commands/general"
+			},
+			{
+				"path": "src/languages/en-US/commands/info.json",
+				"language": "en-US",
+				"namespace": "commands/info"
+			},
+			{
+				"path": "src/languages/en-US/commands/management.json",
+				"language": "en-US",
+				"namespace": "commands/management"
+			},
+			{
+				"path": "src/languages/en-US/commands/moderation.json",
+				"language": "en-US",
+				"namespace": "commands/moderation"
+			},
+			{
+				"path": "src/languages/en-US/commands/permissions.json",
+				"language": "en-US",
+				"namespace": "commands/permissions"
+			},
+			{
+				"path": "src/languages/en-US/commands/shared.json",
+				"language": "en-US",
+				"namespace": "commands/shared"
+			},
+			{
+				"path": "src/languages/en-US/commands/snipe.json",
+				"language": "en-US",
+				"namespace": "commands/snipe"
+			},
+			{
+				"path": "src/languages/en-US/commands/system.json",
+				"language": "en-US",
+				"namespace": "commands/system"
+			},
+			{
+				"path": "src/languages/en-US/commands/tools.json",
+				"language": "en-US",
+				"namespace": "commands/tools"
+			},
+			{
+				"path": "src/languages/en-US/commands/whois.json",
+				"language": "en-US",
+				"namespace": "commands/whois"
+			},
+			{
+				"path": "src/languages/en-US/errors.json",
+				"language": "en-US",
+				"namespace": "errors"
+			},
+			{
+				"path": "src/languages/en-US/events/errors.json",
+				"language": "en-US",
+				"namespace": "events/errors"
+			},
+			{
+				"path": "src/languages/en-US/events/guilds-logs.json",
+				"language": "en-US",
+				"namespace": "events/guilds-logs"
+			},
+			{
+				"path": "src/languages/en-US/events/guilds-members.json",
+				"language": "en-US",
+				"namespace": "events/guilds-members"
+			},
+			{
+				"path": "src/languages/en-US/events/messages.json",
+				"language": "en-US",
+				"namespace": "events/messages"
+			},
+			{
+				"path": "src/languages/en-US/events/moderation.json",
+				"language": "en-US",
+				"namespace": "events/moderation"
+			},
+			{
+				"path": "src/languages/en-US/events/noMentionSpam.json",
+				"language": "en-US",
+				"namespace": "events/noMentionSpam"
+			},
+			{
+				"path": "src/languages/en-US/events/reactions.json",
+				"language": "en-US",
+				"namespace": "events/reactions"
+			},
+			{
+				"path": "src/languages/en-US/fuzzySearch.json",
+				"language": "en-US",
+				"namespace": "fuzzySearch"
+			},
+			{
+				"path": "src/languages/en-US/globals.json",
+				"language": "en-US",
+				"namespace": "globals"
+			},
+			{
+				"path": "src/languages/en-US/guilds.json",
+				"language": "en-US",
+				"namespace": "guilds"
+			},
+			{
+				"path": "src/languages/en-US/humanLevels.json",
+				"language": "en-US",
+				"namespace": "humanLevels"
+			},
+			{
+				"path": "src/languages/en-US/moderation.json",
+				"language": "en-US",
+				"namespace": "moderation"
+			},
+			{
+				"path": "src/languages/en-US/moderationActions.json",
+				"language": "en-US",
+				"namespace": "moderationActions"
+			},
+			{
+				"path": "src/languages/en-US/permissions.json",
+				"language": "en-US",
+				"namespace": "permissions"
+			},
+			{
+				"path": "src/languages/en-US/preconditions.json",
+				"language": "en-US",
+				"namespace": "preconditions"
+			},
+			{
+				"path": "src/languages/en-US/selfModeration.json",
+				"language": "en-US",
+				"namespace": "selfModeration"
+			},
+			{
+				"path": "src/languages/en-US/serializers.json",
+				"language": "en-US",
+				"namespace": "serializers"
+			},
+			{
+				"path": "src/languages/en-US/settings.json",
+				"language": "en-US",
+				"namespace": "settings"
+			},
+			{
+				"path": "src/languages/en-US/system.json",
+				"language": "en-US",
+				"namespace": "system"
+			}
+		],
 		"languages": ["en-US"]
 	},
 	"pull": {
