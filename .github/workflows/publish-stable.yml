@@ -23,4 +23,3 @@ jobs:
         with:
             commitHash: ${{ github.event.inputs.commit }}
             tag: stable
-            depotProject: 10f7gg2mqd
