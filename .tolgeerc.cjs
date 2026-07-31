@@ -1,5 +1,5 @@
 /**
- * Tolgee CLI config for WolfStar bot (project id 33768).
+ * Tolgee CLI config for WolfStar bot (project id 33602).
  *
  * Local layout: src/languages/{discordLocale}/{namespace}.json
  * Tolgee tags are shorter (en-US → en, es-ES → es, zh-CN → zh-Hans, …).
@@ -90,7 +90,7 @@ const pushFiles = Object.entries(LOCALE_MAP).flatMap(([localDir, language]) =>
 
 module.exports = {
 	$schema: 'https://raw.githubusercontent.com/tolgee/tolgee-cli/main/schema.json',
-	projectId: 33768,
+	projectId: 33602,
 	format: 'JSON_I18NEXT',
 	push: {
 		forceMode: 'KEEP',
