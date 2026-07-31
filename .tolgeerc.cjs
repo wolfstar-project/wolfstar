@@ -76,14 +76,16 @@ if (!existsSync(baseLocaleDir)) {
 	throw new Error(`Missing base locale directory: ${baseLocaleDir}`);
 }
 
-const NAMESPACES = collectNamespaces(baseLocaleDir);
+const NAMESPACES = collectNamespaces(baseLocaleDir).sort();
 
+// Explicit path → Tolgee language/namespace so Discord dirs (en-US) push as
+// short tags (en). Skip missing files — non-English locales omit a few namespaces.
 const pushFiles = Object.entries(LOCALE_MAP).flatMap(([localDir, language]) =>
-	NAMESPACES.map((namespace) => ({
-		path: `./src/languages/${localDir}/${namespace}.json`,
-		language,
-		namespace
-	}))
+	NAMESPACES.flatMap((namespace) => {
+		const path = `./src/languages/${localDir}/${namespace}.json`;
+		if (!existsSync(join(languagesRoot, localDir, `${namespace}.json`))) return [];
+		return [{ path, language, namespace }];
+	})
 );
 
 module.exports = {
@@ -98,7 +100,7 @@ module.exports = {
 		path: '.tolgee-pull',
 		fileStructureTemplate: '{languageTag}/{namespace}.json'
 	},
-	// Exported for scripts/tolgee-pull-remap.ts
+	// Exported for scripts/tolgee-pull-remap.ts (single source of truth with push)
 	tolgeeToLocal: TOLGEE_TO_LOCAL,
 	localeMap: LOCALE_MAP,
 	namespaces: NAMESPACES
