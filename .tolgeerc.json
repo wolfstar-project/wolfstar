@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/tolgee/tolgee-cli/main/schema.json",
+	"projectId": "your_project_id",
+	"format": "JSON_I18NEXT",
+	"push": {
+		"filesTemplate": "src/languages/{languageTag}/{namespace}.json",
+		"languages": ["en-US"]
+	},
+	"pull": {
+		"path": "src/languages",
+		"fileStructureTemplate": "{languageTag}/{namespace}.json"
+	}
+}
