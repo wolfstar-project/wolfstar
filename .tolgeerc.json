@@ -1,5 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/tolgee/tolgee-cli/main/schema.json",
+	"projectId": "33768",
 	"format": "JSON_I18NEXT",
 	"push": {
 		"files": [
