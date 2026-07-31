@@ -8,7 +8,8 @@
  * Pull stages into `.tolgee-pull/`; `pnpm tolgee:pull` remaps via
  * scripts/tolgee-pull-remap.ts using `tolgeeToLocal` below.
  *
- * Nested namespaces (commands/admin, events/errors) are discovered from en-US.
+ * Nested namespaces (commands/admin, events/errors) are discovered from the
+ * union of all configured locale directories (some exist only outside en-US).
  * Default script pushes base English only (`pnpm tolgee:push` → `--languages en`).
  *
  * Set TOLGEE_API_KEY (Project API Key or PAT) in the environment — never commit it.
@@ -76,7 +77,16 @@ if (!existsSync(baseLocaleDir)) {
 	throw new Error(`Missing base locale directory: ${baseLocaleDir}`);
 }
 
-const NAMESPACES = collectNamespaces(baseLocaleDir).sort();
+// Union across all configured locales — some namespaces exist only in
+// non-English directories (e.g. events/twitch, commands/animal).
+const NAMESPACES = [
+	...new Set(
+		Object.keys(LOCALE_MAP).flatMap((localDir) => {
+			const dir = join(languagesRoot, localDir);
+			return existsSync(dir) ? collectNamespaces(dir) : [];
+		})
+	)
+].sort();
 
 // Explicit path → Tolgee language/namespace so Discord dirs (en-US) push as
 // short tags (en). Skip missing files — non-English locales omit a few namespaces.
