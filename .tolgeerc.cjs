@@ -2,7 +2,8 @@
  * Tolgee CLI config for WolfStar bot (project id 33602).
  *
  * Local layout: src/languages/{discordLocale}/{namespace}.json
- * Tolgee tags are shorter (en-US → en, es-ES → es, zh-CN → zh-Hans, …).
+ * Some Tolgee tags differ from Discord dirs (es-ES → es, zh-CN → zh-Hans, …).
+ * Base English matches both sides (en-US → en-US).
  *
  * Push uses an explicit files list so local folder names ≠ Tolgee tags.
  * Pull stages into `.tolgee-pull/`; `pnpm tolgee:pull` remaps via
@@ -10,7 +11,7 @@
  *
  * Nested namespaces (commands/admin, events/errors) are discovered from the
  * union of all configured locale directories (some exist only outside en-US).
- * Default script pushes base English only (`pnpm tolgee:push` → `--languages en`).
+ * Default script pushes base English only (`pnpm tolgee:push` → `--languages en-US`).
  *
  * Set TOLGEE_API_KEY (Project API Key or PAT) in the environment — never commit it.
  */
@@ -19,7 +20,7 @@ const { join } = require('node:path');
 
 /** Local directory under src/languages/ → Tolgee language tag. */
 const LOCALE_MAP = {
-	'en-US': 'en',
+	'en-US': 'en-US',
 	'en-GB': 'en-GB',
 	'es-ES': 'es',
 	'es-419': 'es-419',
@@ -88,8 +89,8 @@ const NAMESPACES = [
 	)
 ].sort();
 
-// Explicit path → Tolgee language/namespace so Discord dirs (en-US) push as
-// short tags (en). Skip missing files — non-English locales omit a few namespaces.
+// Explicit path → Tolgee language/namespace so Discord dirs map to platform
+// tags (e.g. es-ES → es). Skip missing files — non-English locales omit a few namespaces.
 const pushFiles = Object.entries(LOCALE_MAP).flatMap(([localDir, language]) =>
 	NAMESPACES.flatMap((namespace) => {
 		const path = `./src/languages/${localDir}/${namespace}.json`;

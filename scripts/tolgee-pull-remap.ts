@@ -3,7 +3,7 @@
  *
  * Reads .tolgee-pull/{tag}/{namespace}.json → src/languages/{locale}/{namespace}.json
  *
- * Tolgee short tags (en, es, pt, …) are remapped to Discord locale folder names
+ * Tolgee tags (en-US, es, pt, …) are remapped to Discord locale folder names
  * (en-US, es-ES, pt-BR, …) using `tolgeeToLocal` from `.tolgeerc.cjs`. Nested
  * namespaces (commands/admin, events/errors) are preserved. Non-JSON files such
  * as constants.ts are never touched.
@@ -72,7 +72,7 @@ for (const tag of pullTags) {
 }
 
 // Pulls may legitimately contain a subset of the configured languages
-// (e.g. `tolgee pull --languages en es it`), so remap only the mapped
+// (e.g. `tolgee pull --languages en-US es it`), so remap only the mapped
 // language directories actually present in staging. Absent configured
 // languages are reported but do not fail the pull.
 const mappedTags = pullTags.filter((tag) => Boolean(resolveLocalDir(tag)));

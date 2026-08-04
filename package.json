@@ -51,7 +51,7 @@
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"scripts:migration": "node scripts/migrations.mjs",
 		"tolgee:pull": "tolgee pull && node --experimental-strip-types scripts/tolgee-pull-remap.ts",
-		"tolgee:push": "tolgee push --languages en",
+		"tolgee:push": "tolgee push --languages en-US",
 		"tolgee:remap": "node --experimental-strip-types scripts/tolgee-pull-remap.ts",
 		"dockerps": "pwsh -NoLogo ./.docker/control.ps1",
 		"prepare": "husky"
