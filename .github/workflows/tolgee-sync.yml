@@ -1,0 +1,59 @@
+name: Tolgee Translation Sync
+
+on:
+    workflow_dispatch:
+    schedule:
+        # Every day at 02:00 UTC
+        - cron: '0 2 * * *'
+
+concurrency:
+    group: tolgee-sync
+    cancel-in-progress: false
+
+jobs:
+    SyncTranslations:
+        name: Sync translations from Tolgee
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+        steps:
+            - name: Checkout Project
+              uses: actions/checkout@v7
+              with:
+                  token: ${{ secrets.WOLFSTAR_TOKEN }}
+                  fetch-depth: 0
+            - name: Install pnpm and Node.js v24
+              uses: pnpm/setup@v2
+              with:
+                  runtime: node@24
+                  cache: true
+                  # Install is run explicitly below so it can skip lifecycle scripts
+                  install: false
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --ignore-scripts
+            - name: Pull translations from Tolgee
+              env:
+                  TOLGEE_API_KEY: ${{ secrets.TOLGEE_API_KEY }}
+              # `pnpm tolgee:pull` runs the CLI (config: .tolgeerc.cjs) and then
+              # scripts/tolgee-pull-remap.ts, which remaps Tolgee language tags
+              # (es, pt, zh-Hans, …) onto the Discord locale directories.
+              run: pnpm tolgee:pull
+            - name: Commit any changes and create a pull request
+              env:
+                  GITHUB_TOKEN: ${{ secrets.WOLFSTAR_TOKEN }}
+              run: |
+                  git add src/languages;
+                  if git diff-index --quiet HEAD --; then
+                    echo "No translation changes to commit, exiting with code 0"
+                    exit 0;
+                  else
+                    git remote set-url origin "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${GITHUB_REPOSITORY}.git";
+                    # Commit as the account behind WOLFSTAR_TOKEN
+                    git config --local user.name "wolfstarbot";
+                    git config --local user.email "169603024+wolfstarbot@users.noreply.github.com";
+                    git checkout -b tolgee-sync/$(date +%F-%H-%M);
+                    git commit -sam "chore(i18n): update translations from Tolgee";
+                    git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD);
+                    gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main;
+                  fi
