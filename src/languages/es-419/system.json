@@ -1,25 +1,23 @@
 {
-	"discordAbortError": "Tuve un pequeño error de red al enviar el mensaje a Discord, ¡por favor ejecuta este comando de nuevo!",
-	"fetchBansFail": "Error al obtener la información de los baneos. ¿Tengo el permiso **{{ADMINISTRATOR, permissions}}**?",
-	"helpTitles": {
-		"aliases": "🖇️ | **Aliases**",
-		"usages": "📝 | **Uso de Comando**",
-		"extendedHelp": "🔍 | **Ayuda Extendida**",
-		"explainedUsage": "⚙ | **Uso explicado**",
-		"possibleFormats": "🔢 | **Formatos posibles**",
-		"examples": "🔗 | **Ejemplos**",
-		"reminders": "⏰ | **Recordatorio**"
-	},
-	"jumpTo": "Saltar al Mensaje ►",
-	"loading": [
-		"{{LOADING}} Viendo hámsters correr...",
-		"{{LOADING}} Buscando personas en el escondite...",
-		"{{LOADING}} Tratando de averiguar este comando...",
-		"{{LOADING}} Obteniendo datos desde la nube...",
-		"{{LOADING}} Calibrando lentes...",
-		"{{LOADING}} Jugando piedra, papel, tijeras...",
-		"{{LOADING}} Ajustando a las frecuencias correctas...",
-		"{{LOADING}} Reticulando curvas..."
-	],
-	"prefixReminder": "El prefijo de este servidor es: `{{prefix}}`"
+  "discordAbortError": "Tuve un pequeño error de red al enviar el mensaje a Discord, ¡por favor ejecuta este comando de nuevo!",
+  "fetchBansFail": "Error al obtener la información de los baneos. ¿Tengo el permiso **{{ADMINISTRATOR, permissions}}**?",
+  "helpTitles": {
+    "aliases": "🖇️ | **Aliases**",
+    "examples": "🔗 | **Ejemplos**",
+    "explainedUsage": "⚙ | **Uso explicado**",
+    "extendedHelp": "🔍 | **Ayuda Extendida**",
+    "possibleFormats": "🔢 | **Formatos posibles**",
+    "reminders": "⏰ | **Recordatorio**",
+    "usages": "📝 | **Uso de Comando**"
+  },
+  "jumpTo": "Saltar al Mensaje ►",
+  "loading[0]": "{{LOADING}} Viendo hámsters correr...",
+  "loading[1]": "{{LOADING}} Buscando personas en el escondite...",
+  "loading[2]": "{{LOADING}} Tratando de averiguar este comando...",
+  "loading[3]": "{{LOADING}} Obteniendo datos desde la nube...",
+  "loading[4]": "{{LOADING}} Calibrando lentes...",
+  "loading[5]": "{{LOADING}} Jugando piedra, papel, tijeras...",
+  "loading[6]": "{{LOADING}} Ajustando a las frecuencias correctas...",
+  "loading[7]": "{{LOADING}} Reticulando curvas...",
+  "prefixReminder": "El prefijo de este servidor es: `{{prefix}}`"
 }

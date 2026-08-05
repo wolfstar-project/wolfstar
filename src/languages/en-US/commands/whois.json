@@ -1,15 +1,15 @@
 {
-	"name": "whois",
-	"description": "Provides information about a Discord user",
-	"contextMenuName": "Get Information",
-	"userName": "user",
-	"userDescription": "The user to get information about",
-	"rolesTitle_one": "Role [1]",
-	"rolesTitle_other": "Roles [{{count, number}}]",
-	"permissionsTitle": "Key Permissions",
-	"permissionsAll": "All Permissions",
-	"embedDescription": "**User Since**: {{createdAt}}",
-	"embedMemberDescription": "**Member Since**: {{joinedAt}}",
-	"buttonAvatar": "Avatar",
-	"buttonProfile": "Profile"
+  "buttonAvatar": "Avatar",
+  "buttonProfile": "Profile",
+  "contextMenuName": "Get Information",
+  "description": "Provides information about a Discord user",
+  "embedDescription": "**User Since**: {{createdAt}}",
+  "embedMemberDescription": "**Member Since**: {{joinedAt}}",
+  "name": "whois",
+  "permissionsAll": "All Permissions",
+  "permissionsTitle": "Key Permissions",
+  "rolesTitle_one": "Role [1]",
+  "rolesTitle_other": "Roles [{{count, number}}]",
+  "userDescription": "The user to get information about",
+  "userName": "user"
 }

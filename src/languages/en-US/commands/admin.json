@@ -1,64 +1,44 @@
 {
-	"rolesetDescription": "Manage unique role sets.",
-	"rolesetExtended": {
-		"usages": [
-			"set RoleSetName Role1 Role2 Role3...",
-			"remove RoleSetName Role1 Role2 Role3...",
-			"reset",
-			"reset RoleSetName",
-			"list",
-			"RoleSetName Role1 Role2 Role3"
-		],
-		"extendedHelp": "A role set is a group of roles WolfStar identifies as unique for all members in the server, i.e. a roleset named `region` could have the roles `Africa`, `America`, `Asia`, and `Europe`, and members will only be able to have one of them. This is like a kind of \"rule\" that is applied in the three following situations:\n\n- When somebody claims a role via the `roles` command.\n- When somebody claims a role via reaction roles.\n- When somebody receives a role either manually or from another bot.",
-		"explainedUsage": [
-			[
-				"add",
-				"Create a new roleset or add a role to an existing one."
-			],
-			[
-				"remove",
-				"Remove a role from an existing roleset."
-			],
-			[
-				"reset",
-				"Removes all roles from a roleset or, if not specified, all existing rolesets."
-			],
-			[
-				"list",
-				"Lists all rolesets."
-			],
-			[
-				"auto",
-				"Adds or removes a roleset."
-			],
-			[
-				"RoleSetName",
-				"The name of the roleset"
-			],
-			[
-				"Role1 Role2 Role3",
-				"The roles to add to the roleset"
-			]
-		],
-		"examples": [
-			"add regions America",
-			"add regions Africa America Asia Europe",
-			"remove regions America",
-			"reset",
-			"reset regions",
-			"list",
-			"regions America",
-			"regions Africa America Asia Europe"
-		],
-		"reminder": "This command can add and/or remove multiple roles at the same time."
-	},
-	"rolesetCreated": "The {{name}} unique role set has been created with the following roles: {{roles, list(conjunction)}}",
-	"rolesetAdded": "Updated the {{name}} unique role set, it now has the following roles: {{roles, list(conjunction)}}.",
-	"rolesetRemoved": "The {{name}} unique role set will no longer include the following roles: {{roles, list(conjunction)}}",
-	"rolesetResetEmpty": "{{REDCROSS}} There are no rolesets configured in this group.",
-	"rolesetResetAll": "{{GREENTICK}} Successfully removed all rolesets.",
-	"rolesetResetNotExists": "{{REDCROSS}} The roleset `{{name}}` does not exist in this server.",
-	"rolesetResetGroup": "{{GREENTICK}} Successfully removed the roleset `{{name}}` from this server.",
-	"rolesetUpdated": "The {{name}} unique role set has been updated.",
-	"rolesetNoRolesets": "You have no rolesets."
+  "rolesetAdded": "Updated the {{name}} unique role set, it now has the following roles: {{roles, list(conjunction)}}.",
+  "rolesetCreated": "The {{name}} unique role set has been created with the following roles: {{roles, list(conjunction)}}",
+  "rolesetDescription": "Manage unique role sets.",
+  "rolesetExtended": {
+    "examples[0]": "add regions America",
+    "examples[1]": "add regions Africa America Asia Europe",
+    "examples[2]": "remove regions America",
+    "examples[3]": "reset",
+    "examples[4]": "reset regions",
+    "examples[5]": "list",
+    "examples[6]": "regions America",
+    "examples[7]": "regions Africa America Asia Europe",
+    "explainedUsage[0][0]": "add",
+    "explainedUsage[0][1]": "Create a new roleset or add a role to an existing one.",
+    "explainedUsage[1][0]": "remove",
+    "explainedUsage[1][1]": "Remove a role from an existing roleset.",
+    "explainedUsage[2][0]": "reset",
+    "explainedUsage[2][1]": "Removes all roles from a roleset or, if not specified, all existing rolesets.",
+    "explainedUsage[3][0]": "list",
+    "explainedUsage[3][1]": "Lists all rolesets.",
+    "explainedUsage[4][0]": "auto",
+    "explainedUsage[4][1]": "Adds or removes a roleset.",
+    "explainedUsage[5][0]": "RoleSetName",
+    "explainedUsage[5][1]": "The name of the roleset",
+    "explainedUsage[6][0]": "Role1 Role2 Role3",
+    "explainedUsage[6][1]": "The roles to add to the roleset",
+    "extendedHelp": "A role set is a group of roles WolfStar identifies as unique for all members in the server, i.e. a roleset named `region` could have the roles `Africa`, `America`, `Asia`, and `Europe`, and members will only be able to have one of them. This is like a kind of \"rule\" that is applied in the three following situations:\n\n- When somebody claims a role via the `roles` command.\n- When somebody claims a role via reaction roles.\n- When somebody receives a role either manually or from another bot.",
+    "reminder": "This command can add and/or remove multiple roles at the same time.",
+    "usages[0]": "set RoleSetName Role1 Role2 Role3...",
+    "usages[1]": "remove RoleSetName Role1 Role2 Role3...",
+    "usages[2]": "reset",
+    "usages[3]": "reset RoleSetName",
+    "usages[4]": "list",
+    "usages[5]": "RoleSetName Role1 Role2 Role3"
+  },
+  "rolesetNoRolesets": "You have no rolesets.",
+  "rolesetRemoved": "The {{name}} unique role set will no longer include the following roles: {{roles, list(conjunction)}}",
+  "rolesetResetAll": "{{GREENTICK}} Successfully removed all rolesets.",
+  "rolesetResetEmpty": "{{REDCROSS}} There are no rolesets configured in this group.",
+  "rolesetResetGroup": "{{GREENTICK}} Successfully removed the roleset `{{name}}` from this server.",
+  "rolesetResetNotExists": "{{REDCROSS}} The roleset `{{name}}` does not exist in this server.",
+  "rolesetUpdated": "The {{name}} unique role set has been updated."
 }

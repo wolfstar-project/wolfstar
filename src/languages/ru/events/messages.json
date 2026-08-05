@@ -1,4 +1,4 @@
 {
-	"messageDelete": "Сообщение удалено • {{channel}}",
-	"messageUpdate": "Сообщение изменено • {{channel}}"
+  "messageDelete": "Сообщение удалено • {{channel}}",
+  "messageUpdate": "Сообщение изменено • {{channel}}"
 }

@@ -1,4 +1,4 @@
 {
-	"messageDelete": "Bericht verwijderd • {{channel}}",
-	"messageUpdate": "Bericht bewerkt • {{channel}}"
+  "messageDelete": "Bericht verwijderd • {{channel}}",
+  "messageUpdate": "Bericht bewerkt • {{channel}}"
 }

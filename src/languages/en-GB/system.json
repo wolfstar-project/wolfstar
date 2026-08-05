@@ -1,25 +1,23 @@
 {
-	"discordAbortError": "I had a small network error when messaging Discord. Please run this command again!",
-	"fetchBansFail": "Failed to fetch bans. Do I have the **{{ADMINISTRATOR, permissions}}** permission?",
-	"helpTitles": {
-		"aliases": "🖇️ | **Aliases**",
-		"usages": "📝 | **Command Usage**",
-		"extendedHelp": "🔍 | **Extended Help**",
-		"explainedUsage": "⚙ | **Explained usage**",
-		"possibleFormats": "🔢 | **Possible formats**",
-		"examples": "🔗 | **Examples**",
-		"reminders": "⏰ | **Reminder**"
-	},
-	"jumpTo": "Jump to Message ►",
-	"loading": [
-		"{{LOADING}} Watching hamsters run...",
-		"{{LOADING}} Finding people in hide-and-seek...",
-		"{{LOADING}} Trying to figure out this command...",
-		"{{LOADING}} Fetching data from the cloud...",
-		"{{LOADING}} Calibrating lenses...",
-		"{{LOADING}} Playing rock, paper, scissors...",
-		"{{LOADING}} Tuning in to the right frequencies...",
-		"{{LOADING}} Reticulating splines..."
-	],
-	"prefixReminder": "The prefix in this server is currently set to `{{prefix}}`"
+  "discordAbortError": "I had a small network error when messaging Discord. Please run this command again!",
+  "fetchBansFail": "Failed to fetch bans. Do I have the **{{ADMINISTRATOR, permissions}}** permission?",
+  "helpTitles": {
+    "aliases": "🖇️ | **Aliases**",
+    "examples": "🔗 | **Examples**",
+    "explainedUsage": "⚙ | **Explained usage**",
+    "extendedHelp": "🔍 | **Extended Help**",
+    "possibleFormats": "🔢 | **Possible formats**",
+    "reminders": "⏰ | **Reminder**",
+    "usages": "📝 | **Command Usage**"
+  },
+  "jumpTo": "Jump to Message ►",
+  "loading[0]": "{{LOADING}} Watching hamsters run...",
+  "loading[1]": "{{LOADING}} Finding people in hide-and-seek...",
+  "loading[2]": "{{LOADING}} Trying to figure out this command...",
+  "loading[3]": "{{LOADING}} Fetching data from the cloud...",
+  "loading[4]": "{{LOADING}} Calibrating lenses...",
+  "loading[5]": "{{LOADING}} Playing rock, paper, scissors...",
+  "loading[6]": "{{LOADING}} Tuning in to the right frequencies...",
+  "loading[7]": "{{LOADING}} Reticulating splines...",
+  "prefixReminder": "The prefix in this server is currently set to `{{prefix}}`"
 }

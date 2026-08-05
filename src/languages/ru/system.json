@@ -1,25 +1,3 @@
 {
-	"discordAbortError": "",
-	"fetchBansFail": "",
-	"helpTitles": {
-		"aliases": "",
-		"usages": "",
-		"extendedHelp": "",
-		"explainedUsage": "",
-		"possibleFormats": "",
-		"examples": "",
-		"reminders": ""
-	},
-	"jumpTo": "Перейти к сообщению ►",
-	"loading": [
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
-	],
-	"prefixReminder": ""
+  "jumpTo": "Перейти к сообщению ►"
 }

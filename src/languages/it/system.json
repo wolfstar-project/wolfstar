@@ -1,25 +1,23 @@
 {
-	"discordAbortError": "",
-	"fetchBansFail": "",
-	"helpTitles": {
-		"aliases": "",
-		"usages": "",
-		"extendedHelp": "",
-		"explainedUsage": "",
-		"possibleFormats": "",
-		"examples": "",
-		"reminders": ""
-	},
-	"jumpTo": "",
-	"loading": [
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
-	],
-	"prefixReminder": ""
+  "discordAbortError": "Ho avuto un piccolo errore di rete inviando messaggi a Discord, per favore esegui di nuovo questo comando!",
+  "fetchBansFail": "Impossibile recuperare i divieti. Ho il permesso **{{ADMINISTRATOR, permissions}}**?",
+  "helpTitles": {
+    "aliases": "🖇️ | **Alias**",
+    "examples": "🔗 | **Esempi**",
+    "explainedUsage": "⚙ | **Uso spiegato**",
+    "extendedHelp": "🔍 | **Guida Estesa**",
+    "possibleFormats": "🔢 | **Formati possibili**",
+    "reminders": "⏰ | **Promemoria**",
+    "usages": "📝 | **Uso Comando**"
+  },
+  "jumpTo": "Vai al messaggio ►",
+  "loading[0]": "{{LOADING}} In attesa che i criceti corrano...",
+  "loading[1]": "{{LOADING}} Ricerca persone al nascondino...",
+  "loading[2]": "{{LOADING}} Sto cercando di capire questo comando...",
+  "loading[3]": "{{LOADING}} Recuperando dati dal cloud...",
+  "loading[4]": "{{LOADING}} Calibrazione delle lenti...",
+  "loading[5]": "{{LOADING}} Caricamento in corso: sasso, carta, forbici...",
+  "loading[6]": "{{LOADING}} Sintonizzazione delle frequenze giuste...",
+  "loading[7]": "{{LOADING}} Reticolazione delle spline...",
+  "prefixReminder": "Il prefisso in questo server è impostato su: `{{prefix}}`"
 }

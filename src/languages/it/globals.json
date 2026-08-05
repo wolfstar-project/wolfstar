@@ -1,1 +1,27 @@
-[]
+{
+  "andListValue": "{{valore, elenco(congiunzione)}}",
+  "back": "Indietro",
+  "cancel": "Annulla",
+  "dateFormat": "GG/MM/AAAA",
+  "dateFormatExplanation": "Mese/Giorno/Anno",
+  "dateTimeValue": "{{value, dateTime}}",
+  "default": "\"{{key}} non è ancora stato localizzato per en-US.\"",
+  "defaultLanguage": "Lingua predefinita",
+  "durationValue": "{{value, durata}}",
+  "humanDateTimeValue": "{{value, humanDateTime}}",
+  "no": "No",
+  "none": "Nessuno",
+  "numberCompactValue": "{{value, numberCompact}}",
+  "numberValue": "{{value, number}}",
+  "orListValue": "{{valore, orList}}",
+  "paginatedMessagePage": "Pagina",
+  "paginatedMessageWrongUserInteractionReply": "Per favore, smetti di premere i pulsanti su questo messaggio. Sono solo per {{user}}.",
+  "remove": "Rimuovere",
+  "reset": "Reimposta",
+  "set": "Imposta",
+  "stop": "Stop",
+  "undo": "Annulla",
+  "unknown": "sconosciuto",
+  "value": "Valore",
+  "yes": "Sì"
+}

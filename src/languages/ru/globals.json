@@ -1,10 +1,10 @@
 {
-	"defaultLanguage": "Язык по умолчанию",
-	"no": "Нет",
-	"yes": "Да",
-	"durationValue": "{{value, duration}}",
-	"numberValue": "{{value, number}}",
-	"numberCompactValue": "{{value, numberCompact}}",
-	"dateTimeValue": "{{value, dateTime}}",
-	"orListValue": "{{value, orList}}"
+  "dateTimeValue": "{{value, dateTime}}",
+  "defaultLanguage": "Язык по умолчанию",
+  "durationValue": "{{value, duration}}",
+  "no": "Нет",
+  "numberCompactValue": "{{value, numberCompact}}",
+  "numberValue": "{{value, number}}",
+  "orListValue": "{{value, orList}}",
+  "yes": "Да"
 }
