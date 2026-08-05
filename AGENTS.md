@@ -40,6 +40,14 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - Existing structure tests: `tests/lib/database/settings/structures/PermissionNodeManager.test.ts`
 - vitest globals enabled (no explicit imports for `describe`, `it`, `expect`)
 
+## Localization
+
+- **Tooling:** [Tolgee](https://tolgee.io/) (migrated from Crowdin)
+- **Config:** `.tolgeerc.cjs` (project id, locale↔Tolgee-tag mapping, push file list, pull output path)
+- **Locale files:** `src/languages/{discordLocale}/{namespace}.json` (e.g. `en-US/globals.json`, `en-US/commands/admin.json`)
+- **Pull remap script:** `scripts/tolgee-pull-remap.ts` — moves `tolgee pull` output from `.tolgee-pull/{tolgeeTag}/` into the matching `src/languages/{discordLocale}/` directory
+- Requires `TOLGEE_API_KEY` in the environment for push/pull; never commit it
+
 ## Plan Directory
 
 `.atlas/plans/*`
@@ -73,6 +81,8 @@ InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without Inf
 | Build                    | `pnpm build`                      |
 | Dev (watch + start)      | `pnpm dev`                        |
 | Start (production build) | `INFLUX_ENABLED=false pnpm start` |
+| Pull translations        | `pnpm tolgee:pull`                |
+| Push translations        | `pnpm tolgee:push`                |
 
 Unit tests import `#lib/setup` via `tests/vitest.setup.ts`, which loads `src/lib/setup/prisma.ts` and constructs `PrismaPg` from `process.env.DATABASE_URL`, so tests require a `DATABASE_URL`/PostgreSQL connection. They do not require a `DISCORD_TOKEN` because mocked Discord is provided by `tests/vitest.setup.ts` and `tests/mocks/MockInstances.ts`. Full bot startup requires a valid `DISCORD_TOKEN` in `src/.env` (or `src/.env.local`, gitignored).
 
