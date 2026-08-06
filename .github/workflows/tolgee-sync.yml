@@ -70,15 +70,39 @@ jobs:
                     fi
                     git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2>/dev/null || true;
                     REMOTE_TIP="$(git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH" || true)";
-                    if [ -n "$REMOTE_TIP" ] && [ "$OPEN_PR_COUNT" = "0" ]; then
-                      # The branch exists remotely but has no open automation PR. Only
-                      # overwrite it when its tip provably belongs to the automation:
-                      # either it matches the head of a PR authored by the bot (any
-                      # state, covering squash-merged or closed sync PRs), or it is
-                      # already an ancestor of main (nothing would be lost).
-                      BOT_TIP_MATCHES="$(gh pr list --head "$BRANCH" --state all --json author,headRefOid | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.headRefOid == $tip and .author.login == $bot)] | length')";
-                      if [ "$BOT_TIP_MATCHES" = "0" ] && ! git merge-base --is-ancestor "$REMOTE_TIP" origin/main; then
-                        echo "::error::Remote branch '$BRANCH' exists with unverified, unmerged work and no automation-owned PR; refusing to force-push over it. Delete the stale branch to re-enable the sync.";
+                    if [ -n "$REMOTE_TIP" ]; then
+                      # Validate the current remote tip even when a bot-authored PR is
+                      # open: a collaborator can push unmerged work to the branch of an
+                      # open PR, which moves both the branch tip and the PR's head SHA,
+                      # so PR authorship alone proves nothing about the tip. Only
+                      # overwrite the branch when the tip provably belongs to the
+                      # automation, via one of these server-authenticated signals:
+                      #   1. the tip is already an ancestor of main (nothing lost);
+                      #   2. the tip matches the frozen head SHA of a closed or merged
+                      #      bot-authored PR (covers squash-merged sync PRs; closed PR
+                      #      head SHAs no longer track the branch, unlike open ones);
+                      #   3. the tip was pushed by the bot itself, per the pusher
+                      #      recorded server-side in the repository activity log.
+                      TIP_OWNED="";
+                      if git merge-base --is-ancestor "$REMOTE_TIP" origin/main; then
+                        TIP_OWNED=1;
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        BOT_TIP_MATCHES="$(gh pr list --head "$BRANCH" --state closed --json author,headRefOid | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.headRefOid == $tip and .author.login == $bot)] | length')";
+                        if [ "$BOT_TIP_MATCHES" != "0" ]; then
+                          TIP_OWNED=1;
+                        fi
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        # Most recent activity on the ref (desc order); it must be the
+                        # push that produced REMOTE_TIP, performed by the bot.
+                        BOT_PUSHED_TIP="$(gh api "repos/$GITHUB_REPOSITORY/activity?ref=refs/heads/$BRANCH&per_page=1" | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.after == $tip and .actor.login == $bot)] | length')";
+                        if [ "$BOT_PUSHED_TIP" != "0" ]; then
+                          TIP_OWNED=1;
+                        fi
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        echo "::error::Remote branch '$BRANCH' tip $REMOTE_TIP cannot be proven to belong to $BOT (unverified, unmerged work); refusing to force-push over it. Delete or merge the stale branch to re-enable the sync.";
                         exit 1;
                       fi
                     fi
