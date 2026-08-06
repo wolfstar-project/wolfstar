@@ -1,1 +1,15 @@
-[]
+{
+  "buttonAvatar": "Avatar",
+  "buttonProfile": "Profilo",
+  "contextMenuName": "Ottieni Informazioni",
+  "description": "Fornisce informazioni su un utente Discord",
+  "embedDescription": "Utente dal: {{createdAt}}",
+  "embedMemberDescription": "\"Membro dal\": {{joinedAt}}",
+  "name": "chiè",
+  "permissionsAll": "Tutti i Permessi",
+  "permissionsTitle": "Autorizzazioni Chiave",
+  "rolesTitle_one": "Ruolo [1]",
+  "rolesTitle_other": "Ruoli [{{count, number}}]",
+  "userDescription": "L'utente di cui ottenere informazioni",
+  "userName": "utente"
+}

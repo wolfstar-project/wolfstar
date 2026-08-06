@@ -1,4 +1,4 @@
 {
-	"embedDescription": "{{userName}} сейчас в эфире!",
-	"embedDescriptionWithGame": "{{userName}} сейчас в эфире - Стримит {{gameName}}!"
+  "embedDescription": "{{userName}} сейчас в эфире!",
+  "embedDescriptionWithGame": "{{userName}} сейчас в эфире - Стримит {{gameName}}!"
 }

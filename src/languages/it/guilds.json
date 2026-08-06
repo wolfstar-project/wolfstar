@@ -1,1 +1,13 @@
-[]
+{
+  "defaultMessageNotificationsAllMessages": "Tutti i messaggi",
+  "defaultMessageNotificationsOnlyMentions": "Solo @menzioni",
+  "explicitContentFilterAllMembers": "Tutti i membri",
+  "explicitContentFilterDisabled": "Disabilitato",
+  "explicitContentFilterMembersWithoutRoles": "Membri senza ruoli",
+  "SuppressGuildReminderNotifications": "Suggerimenti per la configurazione del server",
+  "SuppressJoinNotificationReplies": "Pulsanti di risposta adesivo adesione membri",
+  "SuppressJoinNotifications": "Notifiche di adesione dei membri",
+  "SuppressPremiumSubscriptions": "Notifiche di potenziamento del server",
+  "SuppressRoleSubscriptionPurchaseNotificationReplies": "Sopprimi risposte per notifiche di acquisto abbonamento ruolo",
+  "SuppressRoleSubscriptionPurchaseNotifications": "Sopprimi notifiche di acquisto abbonamento ruolo"
+}

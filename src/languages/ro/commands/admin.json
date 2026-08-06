@@ -1,107 +1,52 @@
 {
-	"confUpdated": "",
-	"confGetNoExt": "Cheia **{{key}}** nu pare să existe.",
-	"confGet": "Valoarea cheii **{{key}}** este: `{{value}}`",
-	"confReset": "Cheia **{{key}}** a fost resetată la: `{{value}}`",
-	"confNochange": "Cheia **{{key}}** are deja această valoare.",
-	"confServerDescription": "Definiți setările per-server.",
-	"confServerExtended": {
-		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"extendedHelp": "",
-		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"reminder": ""
-	},
-	"confServer": "**Setarea {{key}} a server-ului**\n{{list}}",
-	"confDashboardOnlyKey": "`{{key}}` poate fi configurat doar prin intermediul panoului web (<https://wolfstar.rocks>)",
-	"confSettingNotSet": "Nu este setat",
-	"rolesetDescription": "Gestionați seturi de roluri unice.",
-	"rolesetExtended": {
-		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"extendedHelp": "Un set de roluri este un grup de roluri pe care WolfStar le identifică ca fiind unice pentru toți membrii din server, ca de exemplu un roleset numit `regiune` ar putea avea rolurile `Africa`, `America`, `Asia` şi `Europa`, iar membrii vor putea avea doar unul dintre ele. Este ca un fel de \"regulă\" care se aplică în următoarele trei situaţii:\n\n- Când cineva revendică un rol prin comanda `roles`.\n- Când cineva revendică un rol prin roluri de reacție.\n- Când cineva primește un rol fie manual, fie de la un alt bot.",
-		"explainedUsage": [
-			[
-				"add",
-				"Creați un nou roleset sau adăugați un rol la unul existent."
-			],
-			[
-				"remove",
-				"Elimină un rol dintr-un roleset existent."
-			],
-			[
-				"reset",
-				"Elimină toate rolurile dintr-un roleset sau, dacă nu este specificat, toate roleset-urile existente."
-			],
-			[
-				"list",
-				"Listează toate seturile de role-uri."
-			],
-			[
-				"auto",
-				"Adaugă sau elimină un set de roluri."
-			],
-			[
-				"",
-				""
-			],
-			[
-				"",
-				""
-			]
-		],
-		"examples": [
-			"add regions America",
-			"add regions Africa America Asia Europa",
-			"remove regions America",
-			"reset",
-			"reset regions",
-			"list",
-			"regions America",
-			"regions Africa America Asia Europa"
-		],
-		"reminder": "Această comandă poate adăuga și/sau elimina mai multe roluri în același timp."
-	},
-	"rolesetCreated": "",
-	"rolesetAdded": "",
-	"rolesetRemoved": "",
-	"rolesetResetEmpty": "{{REDCROSS}} Nu există rolurset-uri configurate în acest grup.",
-	"rolesetResetAll": "{{GREENTICK}} Toate roleset-urile au fost eliminate cu succes.",
-	"rolesetResetNotExists": "{{REDCROSS}} Roleset-ul `{{name}}` nu există pe acest server.",
-	"rolesetResetGroup": "{{GREENTICK}} Roleset-ul `{{name}}` a fost eliminat cu success de pe acest server.",
-	"rolesetUpdated": "Roleset-ul {{name}} a fost actualizat.",
-	"rolesetNoRolesets": "Nu aveți nici un roleset.",
-	"confMenuRenderAtFolder": "Momentan la: 📁 {{path}}",
-	"confMenuRenderAtPiece": "Momentan la: ⚙️ {{path}}",
-	"confMenuRenderNokeys": "Nu există chei configurabile pentru acest dosar",
-	"confMenuRenderSelect": "Vă rugăm să introduceți oricare dintre următoarele intrări",
-	"confMenuRenderUpdate": "• Actualizează Valoarea → `set <value>`",
-	"confMenuRenderRemove": "• Elimină Valoarea → `remove <value>`",
-	"confMenuRenderReset": "• Resetează Valoarea → `reset`",
-	"confMenuRenderUndo": "• Anulează Actualizarea → `undo`",
-	"confMenuRenderCvalue": "Valoarea actuală: **``{{value}}``**",
-	"confMenuRenderBack": "Apăsați ◀ pentru a merge înapoi",
-	"confMenuInvalidKey": "Cheie invalidă, te rugăm să încerci din nou cu oricare dintre următoarele opțiuni.",
-	"confMenuInvalidAction": "Acțiune invalidă, vă rugăm să încercați din nou cu oricare dintre următoarele opțiuni.",
-	"confMenuSaved": "Salvare reuşită a tuturor modificărilor."
+  "confDashboardOnlyKey": "`{{key}}` poate fi configurat doar prin intermediul panoului web (<https://wolfstar.rocks>)",
+  "confGet": "Valoarea cheii **{{key}}** este: `{{value}}`",
+  "confGetNoExt": "Cheia **{{key}}** nu pare să existe.",
+  "confMenuInvalidAction": "Acțiune invalidă, vă rugăm să încercați din nou cu oricare dintre următoarele opțiuni.",
+  "confMenuInvalidKey": "Cheie invalidă, te rugăm să încerci din nou cu oricare dintre următoarele opțiuni.",
+  "confMenuRenderAtFolder": "Momentan la: 📁 {{path}}",
+  "confMenuRenderAtPiece": "Momentan la: ⚙️ {{path}}",
+  "confMenuRenderBack": "Apăsați ◀ pentru a merge înapoi",
+  "confMenuRenderCvalue": "Valoarea actuală: **``{{value}}``**",
+  "confMenuRenderNokeys": "Nu există chei configurabile pentru acest dosar",
+  "confMenuRenderRemove": "• Elimină Valoarea → `remove <value>`",
+  "confMenuRenderReset": "• Resetează Valoarea → `reset`",
+  "confMenuRenderSelect": "Vă rugăm să introduceți oricare dintre următoarele intrări",
+  "confMenuRenderUndo": "• Anulează Actualizarea → `undo`",
+  "confMenuRenderUpdate": "• Actualizează Valoarea → `set <value>`",
+  "confMenuSaved": "Salvare reuşită a tuturor modificărilor.",
+  "confNochange": "Cheia **{{key}}** are deja această valoare.",
+  "confReset": "Cheia **{{key}}** a fost resetată la: `{{value}}`",
+  "confServer": "**Setarea {{key}} a server-ului**\n{{list}}",
+  "confServerDescription": "Definiți setările per-server.",
+  "confSettingNotSet": "Nu este setat",
+  "rolesetDescription": "Gestionați seturi de roluri unice.",
+  "rolesetExtended": {
+    "examples[0]": "add regions America",
+    "examples[1]": "add regions Africa America Asia Europa",
+    "examples[2]": "remove regions America",
+    "examples[3]": "reset",
+    "examples[4]": "reset regions",
+    "examples[5]": "list",
+    "examples[6]": "regions America",
+    "examples[7]": "regions Africa America Asia Europa",
+    "explainedUsage[0][0]": "add",
+    "explainedUsage[0][1]": "Creați un nou roleset sau adăugați un rol la unul existent.",
+    "explainedUsage[1][0]": "remove",
+    "explainedUsage[1][1]": "Elimină un rol dintr-un roleset existent.",
+    "explainedUsage[2][0]": "reset",
+    "explainedUsage[2][1]": "Elimină toate rolurile dintr-un roleset sau, dacă nu este specificat, toate roleset-urile existente.",
+    "explainedUsage[3][0]": "list",
+    "explainedUsage[3][1]": "Listează toate seturile de role-uri.",
+    "explainedUsage[4][0]": "auto",
+    "explainedUsage[4][1]": "Adaugă sau elimină un set de roluri.",
+    "extendedHelp": "Un set de roluri este un grup de roluri pe care WolfStar le identifică ca fiind unice pentru toți membrii din server, ca de exemplu un roleset numit `regiune` ar putea avea rolurile `Africa`, `America`, `Asia` şi `Europa`, iar membrii vor putea avea doar unul dintre ele. Este ca un fel de \"regulă\" care se aplică în următoarele trei situaţii:\n\n- Când cineva revendică un rol prin comanda `roles`.\n- Când cineva revendică un rol prin roluri de reacție.\n- Când cineva primește un rol fie manual, fie de la un alt bot.",
+    "reminder": "Această comandă poate adăuga și/sau elimina mai multe roluri în același timp."
+  },
+  "rolesetNoRolesets": "Nu aveți nici un roleset.",
+  "rolesetResetAll": "{{GREENTICK}} Toate roleset-urile au fost eliminate cu succes.",
+  "rolesetResetEmpty": "{{REDCROSS}} Nu există rolurset-uri configurate în acest grup.",
+  "rolesetResetGroup": "{{GREENTICK}} Roleset-ul `{{name}}` a fost eliminat cu success de pe acest server.",
+  "rolesetResetNotExists": "{{REDCROSS}} Roleset-ul `{{name}}` nu există pe acest server.",
+  "rolesetUpdated": "Roleset-ul {{name}} a fost actualizat."
 }

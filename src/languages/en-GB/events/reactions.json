@@ -1,4 +1,4 @@
 {
-	"filterFooter": "Filtered Reaction",
-	"filter": "{{REDCROSS}} Hey {{user}}, please do not add that reaction!"
+  "filter": "{{REDCROSS}} Hey {{user}}, please do not add that reaction!",
+  "filterFooter": "Filtered Reaction"
 }

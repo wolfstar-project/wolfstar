@@ -1,14 +1,14 @@
 {
-	"messageDelete": "Message Deleted • {{channel}}",
-	"messageDeleteUnknown": "Unknown Message Deleted • {{channel}}",
-	"messageUpdate": "Message Edited • {{channel}}",
-	"messageUpdateUnknown": "Unknown Message Edited • {{channel}}",
-	"messageNotFound": "Unknown Message",
-	"messageDeleteBulk_one": "{{count}} message deleted in {{channel}} by {{author}}",
-	"messageDeleteBulk_other": "{{count}} messages deleted in {{channel}} by {{author}}",
-	"messageDeleteBulkUnknown_one": "{{count}} message deleted in {{channel}}",
-	"messageDeleteBulkUnknown_other": "{{count}} messages deleted in {{channel}}",
-	"messageDeleteBulkFooter": "Multiple Messages Deleted",
-	"voiceActivityFooter": "Voice Activity",
-	"jumpToContext": "Jump to Context"
+  "jumpToContext": "Jump to Context",
+  "messageDelete": "Message Deleted • {{channel}}",
+  "messageDeleteBulk_one": "{{count, number}} message deleted in {{channel}} by {{author}}",
+  "messageDeleteBulk_other": "{{count, number}} messages deleted in {{channel}} by {{author}}",
+  "messageDeleteBulkFooter": "Multiple Messages Deleted",
+  "messageDeleteBulkUnknown_one": "{{count, number}} message deleted in {{channel}}",
+  "messageDeleteBulkUnknown_other": "{{count, number}} messages deleted in {{channel}}",
+  "messageDeleteUnknown": "Unknown Message Deleted • {{channel}}",
+  "messageNotFound": "Unknown Message",
+  "messageUpdate": "Message Edited • {{channel}}",
+  "messageUpdateUnknown": "Unknown Message Edited • {{channel}}",
+  "voiceActivityFooter": "Voice Activity"
 }

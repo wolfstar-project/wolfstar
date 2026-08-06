@@ -1,49 +1,27 @@
 {
-	"avatarDescription": "View somebody's avatar in full size.",
-	"avatarExtended": {
-		"usages": [
-			"",
-			"User"
-		],
-		"extendedHelp": "As this command's name says, it shows somebody's avatar.",
-		"explainedUsage": [
-			[
-				"User",
-				"The user to get the avatar for. Defaults to you yourself."
-			]
-		],
-		"reminder": "Use the --size flag to change the avatar's size."
-	},
-	"avatarNone": "The user does not have an avatar set.",
-	"voteDescription": "Simplified reaction-based vote.",
-	"voteExtended": {
-		"usages": [
-			"Question"
-		],
-		"examples": [
-			"Should I implement the #anime channel?"
-		],
-		"explainedUsage": [
-			[
-				"Question",
-				"The question to vote on."
-			]
-		]
-	},
-	"voteContentNeeded": "{{REDCROSS}} You must give a topic for the poll.",
-	"voteReactionBlocked": "{{REDCROSS}} I was not able to add the reactions necessary for this command to work because you have me blocked! 😢",
-	"whoisExtended": {
-		"usages": [
-			"",
-			"User"
-		],
-		"extendedHelp": "Gets information on any server member. Also known as `userinfo` in many other bots.",
-		"explainedUsage": [
-			[
-				"User",
-				"The user to get information about. Defaults to you yourself."
-			]
-		]
-	},
-	"whoisMemberRoleListAndMore": "{{count}} more."
+  "avatarDescription": "View somebody's avatar in full size.",
+  "avatarExtended": {
+    "explainedUsage[0][0]": "User",
+    "explainedUsage[0][1]": "The user to get the avatar for. Defaults to you yourself.",
+    "extendedHelp": "As this command's name says, it shows somebody's avatar.",
+    "reminder": "Use the --size flag to change the avatar's size.",
+    "usages[1]": "User"
+  },
+  "avatarNone": "The user does not have an avatar set.",
+  "voteContentNeeded": "{{REDCROSS}} You must give a topic for the poll.",
+  "voteDescription": "Simplified reaction-based vote.",
+  "voteExtended": {
+    "examples[0]": "Should I implement the #anime channel?",
+    "explainedUsage[0][0]": "Question",
+    "explainedUsage[0][1]": "The question to vote on.",
+    "usages[0]": "Question"
+  },
+  "voteReactionBlocked": "{{REDCROSS}} I was not able to add the reactions necessary for this command to work because you have me blocked! 😢",
+  "whoisExtended": {
+    "explainedUsage[0][0]": "User",
+    "explainedUsage[0][1]": "The user to get information about. Defaults to you yourself.",
+    "extendedHelp": "Gets information on any server member. Also known as `userinfo` in many other bots.",
+    "usages[1]": "User"
+  },
+  "whoisMemberRoleListAndMore": "{{count}} more."
 }

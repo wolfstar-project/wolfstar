@@ -1,49 +1,27 @@
 {
-	"avatarDescription": "",
-	"avatarExtended": {
-		"usages": [
-			"",
-			""
-		],
-		"extendedHelp": "",
-		"explainedUsage": [
-			[
-				"",
-				""
-			]
-		],
-		"reminder": ""
-	},
-	"avatarNone": "",
-	"voteDescription": "",
-	"voteExtended": {
-		"usages": [
-			""
-		],
-		"examples": [
-			""
-		],
-		"explainedUsage": [
-			[
-				"",
-				""
-			]
-		]
-	},
-	"voteContentNeeded": "",
-	"voteReactionBlocked": "",
-	"whoisExtended": {
-		"usages": [
-			"",
-			""
-		],
-		"extendedHelp": "",
-		"explainedUsage": [
-			[
-				"",
-				""
-			]
-		]
-	},
-	"whoisMemberRoleListAndMore": ""
+  "avatarDescription": "Visualizza l'avatar di qualcuno a grandezza naturale.",
+  "avatarExtended": {
+    "explainedUsage[0][0]": "Utente",
+    "explainedUsage[0][1]": "L'utente per cui ottenere l'avatar. Per impostazione predefinita, te stesso.",
+    "extendedHelp": "Come dice il nome di questo comando, mostra l'avatar di qualcuno.",
+    "reminder": "Usa il flag --size per cambiare la dimensione dell'avatar.",
+    "usages[1]": "Utente"
+  },
+  "avatarNone": "L'utente non ha impostato un avatar.",
+  "voteContentNeeded": "{{REDCROSS}} Devi fornire un argomento per il sondaggio.",
+  "voteDescription": "Voto semplificato basato su reazioni",
+  "voteExtended": {
+    "examples[0]": "Dovrei implementare il canale #anime?",
+    "explainedUsage[0][0]": "Domanda",
+    "explainedUsage[0][1]": "La domanda su cui votare.",
+    "usages[0]": "Domanda"
+  },
+  "voteReactionBlocked": "{{REDCROSS}} Non sono stato in grado di aggiungere le reazioni necessarie per il funzionamento di questo comando perché mi hai bloccato! 😢",
+  "whoisExtended": {
+    "explainedUsage[0][0]": "Utente",
+    "explainedUsage[0][1]": "L'utente di cui ottenere informazioni. Per impostazione predefinita, te stesso.",
+    "extendedHelp": "Ottiene informazioni su qualsiasi membro del server. Anche conosciuto come `userinfo` in molti altri bot.",
+    "usages[1]": "Utente"
+  },
+  "whoisMemberRoleListAndMore": "{{count}} altri."
 }

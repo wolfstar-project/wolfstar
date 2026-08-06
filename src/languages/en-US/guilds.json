@@ -1,13 +1,13 @@
 {
-	"explicitContentFilterDisabled": "Disabled",
-	"explicitContentFilterMembersWithoutRoles": "Members without roles",
-	"explicitContentFilterAllMembers": "All members",
-	"defaultMessageNotificationsAllMessages": "All Messages",
-	"defaultMessageNotificationsOnlyMentions": "Only @mentions",
-	"SuppressJoinNotifications": "Member join notifications",
-	"SuppressJoinNotificationReplies": "Member join sticker reply buttons",
-	"SuppressPremiumSubscriptions": "Server boost notifications",
-	"SuppressGuildReminderNotifications": "Server setup tips",
-	"SuppressRoleSubscriptionPurchaseNotifications": "Suppress role subscription purchase notifications",
-	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Suppress replies for role subscription purchase notifications"
+  "defaultMessageNotificationsAllMessages": "All Messages",
+  "defaultMessageNotificationsOnlyMentions": "Only @mentions",
+  "explicitContentFilterAllMembers": "All members",
+  "explicitContentFilterDisabled": "Disabled",
+  "explicitContentFilterMembersWithoutRoles": "Members without roles",
+  "SuppressGuildReminderNotifications": "Server setup tips",
+  "SuppressJoinNotificationReplies": "Member join sticker reply buttons",
+  "SuppressJoinNotifications": "Member join notifications",
+  "SuppressPremiumSubscriptions": "Server boost notifications",
+  "SuppressRoleSubscriptionPurchaseNotificationReplies": "Suppress replies for role subscription purchase notifications",
+  "SuppressRoleSubscriptionPurchaseNotifications": "Suppress role subscription purchase notifications"
 }

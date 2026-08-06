@@ -1,14 +1,14 @@
 {
-	"name": "permissions",
-	"description": "Get the user's permissions",
-	"contextMenuName": "Inspect Permissions",
-	"optionsUserName": "user",
-	"optionsUserDescription": "The user to inspect the permissions of",
-	"optionsListAllName": "list-all",
-	"optionsListAllDescription": "Whether or not to display non-moderation permissions (default: False)",
-	"optionsListMissingName": "list-missing",
-	"optionsListMissingDescription": "Whether or not to display non-granted permissions (default: False)",
-	"optionsShowName": "show",
-	"optionsShowDescription": "Whether or not to show the message publicly (default: False)",
-	"title": "Permissions for {{username}} ({{id}})"
+  "contextMenuName": "Inspect Permissions",
+  "description": "Get the user's permissions",
+  "name": "permissions",
+  "optionsListAllDescription": "Whether or not to display non-moderation permissions (default: False)",
+  "optionsListAllName": "list-all",
+  "optionsListMissingDescription": "Whether or not to display non-granted permissions (default: False)",
+  "optionsListMissingName": "list-missing",
+  "optionsShowDescription": "Whether or not to show the message publicly (default: False)",
+  "optionsShowName": "show",
+  "optionsUserDescription": "The user to inspect the permissions of",
+  "optionsUserName": "user",
+  "title": "Permissions for {{username}} ({{id}})"
 }

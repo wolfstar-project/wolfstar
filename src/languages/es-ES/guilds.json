@@ -1,13 +1,13 @@
 {
-	"explicitContentFilterDisabled": "Desabilitado",
-	"explicitContentFilterMembersWithoutRoles": "Miembros sin rol",
-	"explicitContentFilterAllMembers": "Todos los miembros",
-	"defaultMessageNotificationsAllMessages": "Todos los Mensajes",
-	"defaultMessageNotificationsOnlyMentions": "Solo @menciones",
-	"SuppressJoinNotifications": "Notificaciones de entrada de miembros",
-	"SuppressJoinNotificationReplies": "Botones de respuesta de sticker de entrada de miembros",
-	"SuppressPremiumSubscriptions": "Notificaciones de mejora del servidor",
-	"SuppressGuildReminderNotifications": "Consejos de configuración del servidor",
-	"SuppressRoleSubscriptionPurchaseNotifications": "Suprimir notificaciones de compra de suscripción de rol",
-	"SuppressRoleSubscriptionPurchaseNotificationReplies": "Suprimir las respuestas para las notificaciones de compra de suscripción a roles"
+  "defaultMessageNotificationsAllMessages": "Todos los Mensajes",
+  "defaultMessageNotificationsOnlyMentions": "Solo @menciones",
+  "explicitContentFilterAllMembers": "Todos los miembros",
+  "explicitContentFilterDisabled": "Desabilitado",
+  "explicitContentFilterMembersWithoutRoles": "Miembros sin rol",
+  "SuppressGuildReminderNotifications": "Consejos de configuración del servidor",
+  "SuppressJoinNotificationReplies": "Botones de respuesta de sticker de entrada de miembros",
+  "SuppressJoinNotifications": "Notificaciones de entrada de miembros",
+  "SuppressPremiumSubscriptions": "Notificaciones de mejora del servidor",
+  "SuppressRoleSubscriptionPurchaseNotificationReplies": "Suprimir las respuestas para las notificaciones de compra de suscripción a roles",
+  "SuppressRoleSubscriptionPurchaseNotifications": "Suprimir notificaciones de compra de suscripción de rol"
 }

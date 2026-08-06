@@ -1,26 +1,9 @@
 {
-	"bunnyDescription": "",
-	"bunnyExtended": {
-		"extendedHelp": ""
-	},
-	"bunnyEmbedData": {
-		"title": "",
-		"source": ""
-	},
-	"dogDescription": "Schattige hondjes! ❤",
-	"dogExtended": {
-		"extendedHelp": ""
-	},
-	"foxDescription": "Laat me je een foto van een vos tonen!",
-	"foxExtended": {
-		"extendedHelp": ""
-	},
-	"kittyDescription": "KITTENS!",
-	"kittyExtended": {
-		"extendedHelp": ""
-	},
-	"shibeDescription": "Schattige shibas!",
-	"shibeExtended": {
-		"extendedHelp": "Iedereen houdt van shibas, dus ik ook! Ze zijn zo schattig ❤"
-	}
+  "dogDescription": "Schattige hondjes! ❤",
+  "foxDescription": "Laat me je een foto van een vos tonen!",
+  "kittyDescription": "KITTENS!",
+  "shibeDescription": "Schattige shibas!",
+  "shibeExtended": {
+    "extendedHelp": "Iedereen houdt van shibas, dus ik ook! Ze zijn zo schattig ❤"
+  }
 }
