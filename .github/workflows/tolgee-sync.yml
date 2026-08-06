@@ -52,14 +52,22 @@ jobs:
                     # Commit as the account behind WOLFSTAR_TOKEN
                     git config --local user.name "wolfstarbot";
                     git config --local user.email "169603024+wolfstarbot@users.noreply.github.com";
-                    # Reuse a single fixed branch so re-runs update the existing PR
-                    # instead of spawning a new one each time.
-                    git checkout -B i18n;
+                    # Reuse a single fixed automation-specific branch so re-runs update
+                    # the existing PR instead of spawning a new one each time.
+                    BRANCH="tolgee-sync/i18n";
+                    git checkout -B "$BRANCH";
                     git commit -sam "chore(i18n): update translations from Tolgee";
-                    git push --force --set-upstream origin i18n;
-                    if [ "$(gh pr list --head i18n --state open --json number --jq 'length')" = "0" ]; then
-                      gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main -H i18n;
+                    # Fail safely if an open PR with this head branch is not owned by the
+                    # automation account, so we never force-push over someone else's work.
+                    PR_AUTHOR="$(gh pr list --head "$BRANCH" --state open --json author --jq '.[0].author.login // empty')";
+                    if [ -n "$PR_AUTHOR" ] && [ "$PR_AUTHOR" != "wolfstarbot" ]; then
+                      echo "An open PR for the $BRANCH branch is owned by $PR_AUTHOR, refusing to force-push over it";
+                      exit 1;
+                    fi
+                    git push --force --set-upstream origin "$BRANCH";
+                    if [ -z "$PR_AUTHOR" ]; then
+                      gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main -H "$BRANCH";
                     else
-                      echo "An open PR for the i18n branch already exists, skipping PR creation";
+                      echo "An open PR for the $BRANCH branch already exists, skipping PR creation";
                     fi
                   fi
