@@ -52,33 +52,40 @@ jobs:
                     # Commit as the account behind WOLFSTAR_TOKEN
                     git config --local user.name "wolfstarbot";
                     git config --local user.email "169603024+wolfstarbot@users.noreply.github.com";
-                    BOT_LOGIN="wolfstarbot";
-                    BOT_EMAIL="169603024+wolfstarbot@users.noreply.github.com";
+                    BRANCH="i18n";
+                    BOT="wolfstarbot";
                     # Reuse a single fixed branch so re-runs update the existing PR
-                    # instead of spawning a new one each time, but refuse to touch
-                    # it if it wasn't created by this workflow, so we never clobber
-                    # an unrelated collaborator branch/PR that happens to be named "i18n".
-                    if git ls-remote --exit-code --heads origin i18n > /dev/null 2>&1; then
-                      git fetch origin i18n;
-                      REMOTE_AUTHOR="$(git log -1 --format='%ae' origin/i18n)";
-                      if [ "$REMOTE_AUTHOR" != "$BOT_EMAIL" ]; then
-                        echo "::error::Refusing to overwrite the 'i18n' branch: its latest commit was not authored by $BOT_LOGIN (found $REMOTE_AUTHOR)";
+                    # instead of spawning a new one each time, but refuse to touch it
+                    # unless ownership is proven. Ownership checks below rely exclusively
+                    # on server-authenticated signals (PR authorship and head SHAs from
+                    # the GitHub API, and git ancestry against main); commit
+                    # author/committer emails are caller-controlled metadata and are
+                    # deliberately not trusted.
+                    PR_AUTHOR="$(gh pr list --head "$BRANCH" --state open --json author --jq '.[0].author.login // empty')";
+                    if [ -n "$PR_AUTHOR" ] && [ "$PR_AUTHOR" != "$BOT" ]; then
+                      echo "::error::Refusing to reuse the '$BRANCH' branch: its open PR is owned by $PR_AUTHOR, not $BOT";
+                      exit 1;
+                    fi
+                    git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2>/dev/null || true;
+                    REMOTE_TIP="$(git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH" || true)";
+                    if [ -n "$REMOTE_TIP" ] && [ -z "$PR_AUTHOR" ]; then
+                      # The branch exists remotely but has no open automation PR. Only
+                      # overwrite it when its tip provably belongs to the automation:
+                      # either it matches the head of a PR authored by the bot (any
+                      # state, covering squash-merged or closed sync PRs), or it is
+                      # already an ancestor of main (nothing would be lost).
+                      BOT_TIP_MATCHES="$(gh pr list --head "$BRANCH" --state all --json author,headRefOid | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.headRefOid == $tip and .author.login == $bot)] | length')";
+                      if [ "$BOT_TIP_MATCHES" = "0" ] && ! git merge-base --is-ancestor "$REMOTE_TIP" origin/main; then
+                        echo "::error::Remote branch '$BRANCH' exists with unverified, unmerged work and no automation-owned PR; refusing to force-push over it. Delete the stale branch to re-enable the sync.";
                         exit 1;
                       fi
                     fi
-                    # Fail safely if an open PR with this head branch is not owned by the
-                    # automation account, so we never silently retarget someone else's PR.
-                    PR_AUTHOR="$(gh pr list --head i18n --state open --json author --jq '.[0].author.login // empty')";
-                    if [ -n "$PR_AUTHOR" ] && [ "$PR_AUTHOR" != "$BOT_LOGIN" ]; then
-                      echo "::error::Refusing to reuse the 'i18n' branch: its open PR is owned by $PR_AUTHOR, not $BOT_LOGIN";
-                      exit 1;
-                    fi
-                    git checkout -B i18n;
+                    git checkout -B "$BRANCH";
                     git commit -sam "chore(i18n): update translations from Tolgee";
-                    git push --force --set-upstream origin i18n;
+                    git push --force --set-upstream origin "$BRANCH";
                     if [ -z "$PR_AUTHOR" ]; then
-                      gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main -H i18n;
+                      gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main -H "$BRANCH";
                     else
-                      echo "An open PR for the i18n branch already exists, skipping PR creation";
+                      echo "An open PR for the $BRANCH branch already exists, skipping PR creation";
                     fi
                   fi
