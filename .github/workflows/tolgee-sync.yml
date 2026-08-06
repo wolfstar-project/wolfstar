@@ -52,8 +52,69 @@ jobs:
                     # Commit as the account behind WOLFSTAR_TOKEN
                     git config --local user.name "wolfstarbot";
                     git config --local user.email "169603024+wolfstarbot@users.noreply.github.com";
-                    git checkout -b tolgee-sync/$(date +%F-%H-%M);
+                    BRANCH="i18n";
+                    BOT="wolfstarbot";
+                    # Reuse a single fixed branch so re-runs update the existing PR
+                    # instead of spawning a new one each time, but refuse to touch it
+                    # unless ownership is proven. Ownership checks below rely exclusively
+                    # on server-authenticated signals (PR authorship and head SHAs from
+                    # the GitHub API, and git ancestry against main); commit
+                    # author/committer emails are caller-controlled metadata and are
+                    # deliberately not trusted.
+                    OPEN_PRS="$(gh pr list --head "$BRANCH" --state open --json author)";
+                    OPEN_PR_COUNT="$(printf '%s' "$OPEN_PRS" | jq 'length')";
+                    NON_BOT_AUTHORS="$(printf '%s' "$OPEN_PRS" | jq -r --arg bot "$BOT" '[.[].author.login | select(. != $bot)] | unique | join(", ")')";
+                    if [ -n "$NON_BOT_AUTHORS" ]; then
+                      echo "::error::Refusing to reuse the '$BRANCH' branch: open PR(s) on it are owned by $NON_BOT_AUTHORS, not $BOT";
+                      exit 1;
+                    fi
+                    git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2>/dev/null || true;
+                    REMOTE_TIP="$(git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH" || true)";
+                    if [ -n "$REMOTE_TIP" ]; then
+                      # Validate the current remote tip even when a bot-authored PR is
+                      # open: a collaborator can push unmerged work to the branch of an
+                      # open PR, which moves both the branch tip and the PR's head SHA,
+                      # so PR authorship alone proves nothing about the tip. Only
+                      # overwrite the branch when the tip provably belongs to the
+                      # automation, via one of these server-authenticated signals:
+                      #   1. the tip is already an ancestor of main (nothing lost);
+                      #   2. the tip matches the frozen head SHA of a closed or merged
+                      #      bot-authored PR (covers squash-merged sync PRs; closed PR
+                      #      head SHAs no longer track the branch, unlike open ones);
+                      #   3. the tip was pushed by the bot itself, per the pusher
+                      #      recorded server-side in the repository activity log.
+                      TIP_OWNED="";
+                      if git merge-base --is-ancestor "$REMOTE_TIP" origin/main; then
+                        TIP_OWNED=1;
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        BOT_TIP_MATCHES="$(gh pr list --head "$BRANCH" --state closed --json author,headRefOid | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.headRefOid == $tip and .author.login == $bot)] | length')";
+                        if [ "$BOT_TIP_MATCHES" != "0" ]; then
+                          TIP_OWNED=1;
+                        fi
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        # Most recent activity on the ref (desc order); it must be the
+                        # push that produced REMOTE_TIP, performed by the bot.
+                        BOT_PUSHED_TIP="$(gh api "repos/$GITHUB_REPOSITORY/activity?ref=refs/heads/$BRANCH&per_page=1" | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.after == $tip and .actor.login == $bot)] | length')";
+                        if [ "$BOT_PUSHED_TIP" != "0" ]; then
+                          TIP_OWNED=1;
+                        fi
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        echo "::error::Remote branch '$BRANCH' tip $REMOTE_TIP cannot be proven to belong to $BOT (unverified, unmerged work); refusing to force-push over it. Delete or merge the stale branch to re-enable the sync.";
+                        exit 1;
+                      fi
+                    fi
+                    git checkout -B "$BRANCH";
                     git commit -sam "chore(i18n): update translations from Tolgee";
-                    git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD);
-                    gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main;
+                    # --force-with-lease pins the expected remote tip (empty = branch must
+                    # not exist), so the push fails safely if the ref moved after the
+                    # ownership validation above instead of clobbering the newer commit.
+                    git push --force-with-lease="refs/heads/$BRANCH:$REMOTE_TIP" --set-upstream origin "$BRANCH";
+                    if [ "$OPEN_PR_COUNT" = "0" ]; then
+                      gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main -H "$BRANCH";
+                    else
+                      echo "An open PR for the $BRANCH branch already exists, skipping PR creation";
+                    fi
                   fi
