@@ -109,7 +109,13 @@ module.exports = {
 	},
 	pull: {
 		path: '.tolgee-pull',
-		fileStructureTemplate: '{languageTag}/{namespace}.json'
+		fileStructureTemplate: '{languageTag}/{namespace}.json',
+		// `tolgee pull` defaults to excluding UNTRANSLATED keys. Since
+		// tolgee-pull-remap.ts overwrites each destination file wholesale,
+		// omitting UNTRANSLATED here would delete every not-yet-translated
+		// key from the local locale files instead of leaving them as empty
+		// placeholders pending translation.
+		states: ['TRANSLATED', 'REVIEWED', 'UNTRANSLATED']
 	},
 	// Exported for scripts/tolgee-pull-remap.ts (single source of truth with push)
 	tolgeeToLocal: TOLGEE_TO_LOCAL,
