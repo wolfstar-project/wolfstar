@@ -1,7 +1,7 @@
 {
-	"escaperopeDescription": "",
-	"escaperopeExtended": {
-		"extendedHelp": ""
-	},
-	"escaperopeOutput": ""
+  "escaperopeDescription": "Usa la corda fuga di Pokemon.",
+  "escaperopeExtended": {
+    "extendedHelp": "**WolfStar** ha usato **Fune di Fuga**."
+  },
+  "escaperopeOutput": "**{{user}}** ha usato **Fune di Fuga**"
 }

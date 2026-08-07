@@ -1,15 +1,15 @@
 {
-	"default": "{{key}} has not been localised for en-GB yet.",
-	"defaultLanguage": "Default Language",
-	"no": "No",
-	"none": "None",
-	"unknown": "unknown",
-	"yes": "Yes",
-	"durationValue": "{{value, duration}}",
-	"numberValue": "{{value, number}}",
-	"numberCompactValue": "{{value, numberCompact}}",
-	"dateTimeValue": "{{value, dateTime}}",
-	"orListValue": "{{value, orList}}",
-	"dateFormat": "DD/MM/YYYY",
-	"dateFormatExplanation": "Day/Month/Year"
+  "dateFormat": "DD/MM/YYYY",
+  "dateFormatExplanation": "Day/Month/Year",
+  "dateTimeValue": "{{value, dateTime}}",
+  "default": "{{key}} has not been localised for en-GB yet.",
+  "defaultLanguage": "Default Language",
+  "durationValue": "{{value, duration}}",
+  "no": "No",
+  "none": "None",
+  "numberCompactValue": "{{value, numberCompact}}",
+  "numberValue": "{{value, number}}",
+  "orListValue": "{{value, orList}}",
+  "unknown": "unknown",
+  "yes": "Yes"
 }

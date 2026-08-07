@@ -1,7 +1,7 @@
 {
-	"escaperopeDescription": "Benutze das Fluchtseil aus Pokémon.",
-	"escaperopeExtended": {
-		"extendedHelp": "**WolfStar** benutzte **Fluchtseil**."
-	},
-	"escaperopeOutput": "**{{user}}** benutzte **Fluchtseil**"
+  "escaperopeDescription": "Benutze das Fluchtseil aus Pokémon.",
+  "escaperopeExtended": {
+    "extendedHelp": "**WolfStar** benutzte **Fluchtseil**."
+  },
+  "escaperopeOutput": "**{{user}}** benutzte **Fluchtseil**"
 }

@@ -1,49 +1,15 @@
 {
-	"avatarDescription": "Просмотрите чей-либо аватар в полном размере.",
-	"avatarExtended": {
-		"usages": [
-			"",
-			"Пользователь"
-		],
-		"extendedHelp": "",
-		"explainedUsage": [
-			[
-				"Пользователь",
-				""
-			]
-		],
-		"reminder": ""
-	},
-	"avatarNone": "",
-	"voteDescription": "",
-	"voteExtended": {
-		"usages": [
-			"Вопрос"
-		],
-		"examples": [
-			""
-		],
-		"explainedUsage": [
-			[
-				"Вопрос",
-				""
-			]
-		]
-	},
-	"voteContentNeeded": "",
-	"voteReactionBlocked": "",
-	"whoisExtended": {
-		"usages": [
-			"",
-			"Пользователь"
-		],
-		"extendedHelp": "",
-		"explainedUsage": [
-			[
-				"Пользователь",
-				""
-			]
-		]
-	},
-	"whoisMemberRoleListAndMore": ""
+  "avatarDescription": "Просмотрите чей-либо аватар в полном размере.",
+  "avatarExtended": {
+    "explainedUsage[0][0]": "Пользователь",
+    "usages[1]": "Пользователь"
+  },
+  "voteExtended": {
+    "explainedUsage[0][0]": "Вопрос",
+    "usages[0]": "Вопрос"
+  },
+  "whoisExtended": {
+    "explainedUsage[0][0]": "Пользователь",
+    "usages[1]": "Пользователь"
+  }
 }

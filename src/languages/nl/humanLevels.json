@@ -1,7 +1,7 @@
 {
-	"None": "Geen",
-	"Low": "Laag",
-	"Medium": "Gemiddeld",
-	"High": "Hoog",
-	"VeryHigh": "Hoogste"
+  "High": "Hoog",
+  "Low": "Laag",
+  "Medium": "Gemiddeld",
+  "None": "Geen",
+  "VeryHigh": "Hoogste"
 }

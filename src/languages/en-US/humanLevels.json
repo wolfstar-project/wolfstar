@@ -1,7 +1,7 @@
 {
-	"None": "None",
-	"Low": "Low",
-	"Medium": "Medium",
-	"High": "High",
-	"VeryHigh": "Highest"
+  "High": "High",
+  "Low": "Low",
+  "Medium": "Medium",
+  "None": "None",
+  "VeryHigh": "Highest"
 }

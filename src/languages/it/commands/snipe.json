@@ -1,0 +1,6 @@
+{
+  "description": "Recupera l'ultimo messaggio cancellato di recente da un canale",
+  "embedTitle": "Messaggio Snipato",
+  "messageEmpty": "Non ci sono messaggi snipati in questo canale.",
+  "name": "cecchino"
+}
