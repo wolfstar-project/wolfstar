@@ -46,6 +46,7 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Config:** `.tolgeerc.cjs` (project id, locale↔Tolgee-tag mapping, push file list, pull output path)
 - **Locale files:** `src/languages/{discordLocale}/{namespace}.json` (e.g. `en-US/globals.json`, `en-US/commands/admin.json`)
 - **Pull remap script:** `scripts/tolgee-pull-remap.ts` — moves `tolgee pull` output from `.tolgee-pull/{tolgeeTag}/` into the matching `src/languages/{discordLocale}/` directory
+- **Automated sync:** `.github/workflows/tolgee-sync.yml` runs `pnpm tolgee:pull` nightly (02:00 UTC) and opens/updates a PR from the fixed `i18n` branch with any translation changes — don't hand-edit non-`en-US` locale files, they get overwritten by the next sync
 - Requires `TOLGEE_API_KEY` in the environment for push/pull; never commit it
 
 ## Plan Directory
