@@ -28,6 +28,8 @@ generated/
 
 # Tolgee pull staging (promoted into src/languages by scripts/tolgee-pull-remap.ts)
 .tolgee-pull/
+# Sync summary emitted by the same script (used as the PR body by the sync workflow)
+.tolgee-report.md
 
 # Ignore heapsnapshot and log files
 *.heapsnapshot

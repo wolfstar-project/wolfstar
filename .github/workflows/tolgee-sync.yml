@@ -37,8 +37,18 @@ jobs:
                   TOLGEE_API_KEY: ${{ secrets.TOLGEE_API_KEY }}
               # `pnpm tolgee:pull` runs the CLI (config: .tolgeerc.cjs) and then
               # scripts/tolgee-pull-remap.ts, which remaps Tolgee language tags
-              # (es, pt, zh-Hans, …) onto the Discord locale directories.
+              # (es, pt, zh-Hans, …) onto the Discord locale directories and merges
+              # the export onto the committed files (en-US is never written).
               run: pnpm tolgee:pull
+            - name: Generate prisma types
+              # tests/vitest.setup.ts boots #lib/setup, which needs the generated client;
+              # the install above skips lifecycle scripts, so generate it explicitly.
+              run: pnpm prisma:generate
+            - name: Validate translations
+              # Structural gate on the merged tree: no nulls, no `name[0]` keys, no raw ICU
+              # shells, placeholders consistent with en-US. A corrupt export fails the job
+              # here instead of reaching a pull request.
+              run: pnpm vitest run tests/languages
             - name: Commit any changes and create a pull request
               env:
                   GITHUB_TOKEN: ${{ secrets.WOLFSTAR_TOKEN }}
@@ -112,9 +122,18 @@ jobs:
                     # not exist), so the push fails safely if the ref moved after the
                     # ownership validation above instead of clobbering the newer commit.
                     git push --force-with-lease="refs/heads/$BRANCH:$REMOTE_TIP" --set-upstream origin "$BRANCH";
+                    # scripts/tolgee-pull-remap.ts writes a summary of what was applied and,
+                    # more importantly, of the translations it had to reject (placeholders
+                    # that no longer match en-US). Fall back to the plain message if absent.
+                    BODY_FILE=".tolgee-report.md";
+                    if [ ! -f "$BODY_FILE" ]; then
+                      BODY_FILE="$(mktemp)";
+                      printf '%s\n' "*bleep bloop* I synced the translations from Tolgee" > "$BODY_FILE";
+                    fi
                     if [ "$OPEN_PR_COUNT" = "0" ]; then
-                      gh pr create -t "chore(i18n): update translations from Tolgee" -b "*bleep bloop* I synced the translations from Tolgee" -B main -H "$BRANCH";
+                      gh pr create -t "chore(i18n): update translations from Tolgee" -F "$BODY_FILE" -B main -H "$BRANCH";
                     else
-                      echo "An open PR for the $BRANCH branch already exists, skipping PR creation";
+                      echo "An open PR for the $BRANCH branch already exists, refreshing its body";
+                      gh pr edit "$BRANCH" -F "$BODY_FILE";
                     fi
                   fi
