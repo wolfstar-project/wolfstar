@@ -134,8 +134,9 @@ function groupByVariable(value: string): Map<string, Set<string>> {
  * match exactly, and every formatter has to be one the project actually registers.
  *
  * A translator *adding* a formatter the base omits (`{{count}}` → `{{count, number}}`) is a
- * legitimate improvement and is accepted; dropping one the base relies on is not, since the
- * raw value would be rendered instead of the formatted one.
+ * legitimate improvement and is accepted; dropping or replacing one the base relies on is
+ * not, since the value would be rendered raw or with the wrong semantics (`{{value,
+ * duration}}` → `{{value, number}}` would print milliseconds as a plain number).
  *
  * @param knownFormatters The formatter vocabulary, normally {@link collectFormatters} over
  * en-US. Omit it to require the placeholders to be byte-identical.
@@ -159,8 +160,12 @@ export function placeholdersMatch(base: string, translated: string, knownFormatt
 		for (const formatter of translatedFormatters) {
 			if (!knownFormatters.has(formatter)) return false;
 		}
-		// Losing the base's formatter would print the raw value (milliseconds, a snowflake…).
-		if (baseFormatters.size > 0 && translatedFormatters.size === 0) return false;
+		// Every formatter the base relies on has to survive: dropping `duration` would print
+		// raw milliseconds, and swapping it for another known formatter (`number`) would
+		// render the value with the wrong semantics.
+		for (const formatter of baseFormatters) {
+			if (!translatedFormatters.has(formatter)) return false;
+		}
 	}
 	return true;
 }

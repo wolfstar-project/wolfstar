@@ -143,8 +143,10 @@ describe('locale sanitizing helpers', () => {
 	test('GIVEN an added formatter THEN accepts it, GIVEN a dropped one THEN rejects it', () => {
 		// A translator refining `{{count}}` into `{{count, number}}` is an improvement…
 		expect(placeholdersMatch('{{count}} warnings', '{{count, number}} advertencias', knownFormatters)).toBe(true);
-		// …but losing the formatter the base relies on would print the raw value.
+		// …but losing the formatter the base relies on would print the raw value…
 		expect(placeholdersMatch('{{value, duration}}', '{{value}}', knownFormatters)).toBe(false);
+		// …and swapping it for another known formatter would render the wrong semantics.
+		expect(placeholdersMatch('{{value, duration}}', '{{value, number}}', knownFormatters)).toBe(false);
 	});
 
 	test('GIVEN the base locale THEN its formatter vocabulary is non-empty', () => {
