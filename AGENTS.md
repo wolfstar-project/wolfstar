@@ -45,8 +45,10 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Tooling:** [Tolgee](https://tolgee.io/) (migrated from Crowdin)
 - **Config:** `.tolgeerc.cjs` (project id, locale↔Tolgee-tag mapping, push file list, pull output path)
 - **Locale files:** `src/languages/{discordLocale}/{namespace}.json` (e.g. `en-US/globals.json`, `en-US/commands/admin.json`)
-- **Pull remap script:** `scripts/tolgee-pull-remap.ts` — moves `tolgee pull` output from `.tolgee-pull/{tolgeeTag}/` into the matching `src/languages/{discordLocale}/` directory
-- **Automated sync:** `.github/workflows/tolgee-sync.yml` runs `pnpm tolgee:pull` nightly (02:00 UTC) and opens/updates a PR from the fixed `i18n` branch with any translation changes — don't hand-edit non-`en-US` locale files, they get overwritten by the next sync
+- **Base locale:** `en-US` is push-only — it is the local source of truth and a pull never writes it
+- **Pull remap script:** `scripts/tolgee-pull-remap.ts` — merges `tolgee pull` output from `.tolgee-pull/{tolgeeTag}/` onto the matching `src/languages/{discordLocale}/` files. It drops untranslated values (`null`, blank, empty ICU plural shells), rejects translations whose i18next placeholders don't match `en-US`, prunes keys `en-US` no longer defines, and rewrites files in repo style (tabs, trailing newline) keeping the existing key order — so the diff only ever shows real translation changes
+- **Sanitizing helpers:** `scripts/lib/locale-sanitize.ts`, shared with `tests/languages/locales.test.ts` so the definition of a valid locale file lives in one place
+- **Automated sync:** `.github/workflows/tolgee-sync.yml` runs `pnpm tolgee:pull` nightly (02:00 UTC), validates the result with `pnpm vitest run tests/languages`, and opens/updates a PR from the fixed `i18n` branch — don't hand-edit non-`en-US` locale files, they get overwritten by the next sync
 - Requires `TOLGEE_API_KEY` in the environment for push/pull; never commit it
 
 ## Plan Directory

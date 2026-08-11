@@ -9,6 +9,9 @@
  * Pull stages into `.tolgee-pull/`; `pnpm tolgee:pull` remaps via
  * scripts/tolgee-pull-remap.ts using `tolgeeToLocal` below.
  *
+ * en-US is push-only: it is the local source of truth for every string, so the remap
+ * step never writes src/languages/en-US, no matter what the export contains.
+ *
  * Nested namespaces (commands/admin, events/errors) are discovered from the
  * union of all configured locale directories (some exist only outside en-US).
  * Default script pushes base English only (`pnpm tolgee:push` → `--languages en-US`).
@@ -110,12 +113,16 @@ module.exports = {
 	pull: {
 		path: '.tolgee-pull',
 		fileStructureTemplate: '{languageTag}/{namespace}.json',
-		// `tolgee pull` defaults to excluding UNTRANSLATED keys. Since
-		// tolgee-pull-remap.ts overwrites each destination file wholesale,
-		// omitting UNTRANSLATED here would delete every not-yet-translated
-		// key from the local locale files instead of leaving them as empty
-		// placeholders pending translation.
-		states: ['TRANSLATED', 'REVIEWED', 'UNTRANSLATED']
+		// Rebuild `name[0]` keys into real arrays. Several namespaces rely on arrays
+		// (arguments:booleanTrueOptions, commands/game:hgDay, every `explainedUsage`)
+		// and the bot reads them as arrays — see src/lib/i18n/LanguageHelp.ts.
+		supportArrays: true,
+		// Default states, i.e. everything except UNTRANSLATED. Untranslated keys are
+		// exported as `null`, which must never reach a locale file; they are not lost by
+		// omitting them here because tolgee-pull-remap.ts *merges* the export onto the
+		// committed files instead of overwriting them, so a key with no translation keeps
+		// whatever the repository already had (usually the empty-string placeholder).
+		states: ['TRANSLATED', 'REVIEWED']
 	},
 	// Exported for scripts/tolgee-pull-remap.ts (single source of truth with push)
 	tolgeeToLocal: TOLGEE_TO_LOCAL,
