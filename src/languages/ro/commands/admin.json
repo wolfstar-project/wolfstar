@@ -1,31 +1,9 @@
 {
-	"confUpdated": "",
 	"confGetNoExt": "Cheia **{{key}}** nu pare să existe.",
 	"confGet": "Valoarea cheii **{{key}}** este: `{{value}}`",
 	"confReset": "Cheia **{{key}}** a fost resetată la: `{{value}}`",
 	"confNochange": "Cheia **{{key}}** are deja această valoare.",
 	"confServerDescription": "Definiți setările per-server.",
-	"confServerExtended": {
-		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"extendedHelp": "",
-		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"reminder": ""
-	},
 	"confServer": "**Setarea {{key}} a server-ului**\n{{list}}",
 	"confDashboardOnlyKey": "`{{key}}` poate fi configurat doar prin intermediul panoului web (<https://wolfstar.rocks>)",
 	"confSettingNotSet": "Nu este setat",

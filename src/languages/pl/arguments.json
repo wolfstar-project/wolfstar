@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Nie można rozwiązać `{{parameter}}` do prawidłowego linku zaproszenia, mają one jeden z następujących formatów:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Wskazówka**: Możesz pominąć część `https://`, `discord.gg/gqAnRyUXG8` jest również akceptowany jako prawidłowy parametr.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

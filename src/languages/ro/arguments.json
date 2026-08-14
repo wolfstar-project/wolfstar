@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Nu am putut rezolva `{{parameter}}` ca un link de invitaţie valid, acestea au unul dintre următoarele formate:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Sfat**: Puteţi omite partea `https://`, `discord.gg/gqAnRyUXG8` este de asemenea acceptat ca parametru valid.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

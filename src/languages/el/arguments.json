@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Δεν ήταν δυνατή η επίλυση του`{{parameter}}` σε έγκυρο σύνδεσμο πρόσκλησης, έχουν μια από τις ακόλουθες μορφές:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Συμβουλή**: Μπορείτε να παραλείψετε το `https://` μέρος, το `discord.gg/gqAnRyUXG8` είναι επίσης αποδεκτό ως έγκυρη παράμετρος.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

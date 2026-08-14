@@ -1,30 +1,30 @@
 {
-	"evalDescription": "",
+	"evalDescription": "Valuta codice Javascript arbitrario.",
 	"evalExtended": {
 		"usages": [
-			""
+			"Espressione"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Il comando eval esegue il codice così com'è, qualsiasi errore generato sarà gestito.\nUtilizza anche la funzionalità dei flag. Scrivi --silent, --depth=number o --async per personalizzare l'output.\nIl flag --wait modifica il tempo durante cui l'eval verrà eseguito. Predefinito a 60 secondi. Accetta tempo in millisecondi.\nIl flag --silent farà sì che non venga prodotto alcun output.\nIl flag --depth accetta un numero, per esempio --depth=2, per personalizzare la profondità di util.inspect.\nIl flag --async racchiuderà il codice in una funzione asincrona dove potrai usare await, tuttavia, se vuoi restituire qualcosa, avrai bisogno della parola chiave return\nIl flag --showHidden abiliterà l'opzione showHidden in util.inspect.\nI flag --lang e --language consentono diversi evidenziamenti di sintassi per l'output.\nIl flag --json converte l'output in json\nIl flag --no-timeout disabilita il timeout\nSe l'output è troppo grande, verrà inviato come file.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Espressione",
+				"L'espressione da valutare"
 			]
 		],
 		"examples": [
-			"",
-			""
+			"msg.author.username;",
+			"1 + 1;"
 		],
-		"reminder": ""
+		"reminder": "Riservato ai proprietari del bot."
 	},
-	"evalTimeout": "",
-	"evalError": "",
-	"dmNotSent": "",
-	"dmSent": "",
-	"reboot": "",
-	"rebootDescription": "",
+	"evalTimeout": "TIMEOUT: Impiegato più di {{seconds}} secondi.",
+	"evalError": "**Errore**:{{output}}\n**Tipo**:{{type}}\n{{time}}",
+	"dmNotSent": "Non posso inviarti un messaggio nei DM, mi hai bloccato?",
+	"dmSent": "Ti ho inviato il messaggio nei messaggi privati.",
+	"reboot": "{{LOADING}} Riavvio in corso...",
+	"rebootDescription": "Riavvia il bot.",
 	"rebootExtended": {
-		"extendedHelp": "",
-		"reminder": ""
+		"extendedHelp": "Il bot esplode, poi il bot si riavvia.",
+		"reminder": "Riservato ai proprietari del bot."
 	}
 }

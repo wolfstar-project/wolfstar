@@ -1,1 +1,20 @@
-[]
+{
+	"genericDiscordGateway": "Oops, la rete sta facendo fatica a comunicare con Discord, riprova più tardi.",
+	"genericDiscordInternalServerError": "Ops, Discord si è rotto, riprova più tardi.",
+	"genericDiscordUnavailable": "Ops, Discord attualmente non è disponibile, riprova più tardi.",
+	"genericMissingAccess": "Mi dispiace, ho tentato di eseguire un'azione per una risorsa senza i permessi necessari e ho fallito, quest'errore è stato segnalato agli sviluppatori.",
+	"genericUnknownChannel": "Mi dispiace, ho tentato di eseguire un'azione per un canale sconosciuto a Discord e ho fallito, quest'errore è stato segnalato agli sviluppatori.",
+	"genericUnknownGuild": "Mi dispiace, ho tentato di eseguire un'azione per un server sconosciuto a Discord e ho fallito, quest'errore è stato segnalato agli sviluppatori.",
+	"genericUnknownMember": "Mi dispiace, ho tentato di eseguire un'azione per un membro sconosciuto a Discord e ho fallito, quest'errore è stato segnalato agli sviluppatori.",
+	"genericUnknownMessage": "Mi dispiace, ho tentato di eseguire un'azione per un messaggio sconosciuto a Discord e ho fallito, quest'errore è stato segnalato agli sviluppatori.",
+	"genericUnknownRole": "Mi dispiace, ho tentato di eseguire un'azione per un ruolo sconosciuto a Discord e ho fallito, quest'errore è stato segnalato agli sviluppatori.",
+	"guildBansEmpty": "Non ci sono ban registrati su questo server.",
+	"guildBansNotFound": "Ho provato e non sono riuscito a trovare questo utente nell'elenco dei bannati. Sei sicuro che questo utente sia bannato?",
+	"guildMemberNotVoicechannel": "Non posso eseguire questa azione su un membro che non è connesso a un canale vocale.",
+	"guildWarnNotFound": "Non sono riuscito a recuperare quell'avviso. O non esiste, non è di tipo avviso, oppure è stato impugnato.",
+	"modlogTimed": "Questo registro di moderazione è già temporizzato. Scade tra {{remaining, duration}}.",
+	"queryCausedTooLongCustomId": "A causa delle limitazioni dell'API di Discord non sono riuscito a risolvere quella richiesta. {{customMessagePart}}Questo problema verrà risolto in futuro.",
+	"settingsMenuCustomIdDeserializeFailed": "Mi dispiace, ma quella richiesta è fallita. per favore riprova. Se il problema persiste, unisciti al server di supporto (usa il comando /info).",
+	"unexpectedIssue": "Si è verificato un errore imprevisto! Interrompendo in sicurezza questo comando…",
+	"userNotInGuild": "Questo utente non è in questo server."
+}

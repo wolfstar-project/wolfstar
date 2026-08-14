@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "ฉันไม่สามารถแปลง `{{parameter}}` ให้เป็นลิงก์เชิญที่ถูกต้องได้ พวกเขามีรูปแบบดังต่อไปนี้:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **เคล็ดลับ**: คุณสามารถละเว้นส่วน `https://` ได้, `discord.gg/gqAnRyUXG8` ก็ถือว่าถูกต้องเป็นพารามิเตอร์ที่ยอมรับได้เช่นกัน.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

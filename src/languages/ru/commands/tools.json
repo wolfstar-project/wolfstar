@@ -2,7 +2,7 @@
 	"avatarDescription": "Просмотрите чей-либо аватар в полном размере.",
 	"avatarExtended": {
 		"usages": [
-			"",
+			"Пользователь",
 			"Пользователь"
 		],
 		"extendedHelp": "",
@@ -34,7 +34,7 @@
 	"voteReactionBlocked": "",
 	"whoisExtended": {
 		"usages": [
-			"",
+			"Пользователь",
 			"Пользователь"
 		],
 		"extendedHelp": "",

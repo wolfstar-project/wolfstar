@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Nemohl jsem přeložit `{{parameter}}` na platný odkaz na pozvánku, mají jeden z následujících formátů:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Tip**: Můžete vynechat část `https://`, `discord.gg/gqAnRyUXG8` je také přijat jako platný parametr.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

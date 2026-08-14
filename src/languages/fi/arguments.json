@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "En voinut ratkaista \"{{parameter}}\" kelvolliseksi kutsulinkiksi, sillä ne ovat seuraavanlaisia:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Vinkki**: Voit jättää pois `https://` -osuuden, `discord.gg/gqAnRyUXG8` hyväksytään myös kelvollisena parametrina.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

@@ -1,31 +1,9 @@
 {
-	"confUpdated": "",
 	"confGetNoExt": "The key **{{key}}** does not seem to exist.",
 	"confGet": "The value for the key **{{key}}** is: `{{value}}`",
 	"confReset": "The key **{{key}}** has been reset to: `{{value}}`",
 	"confNochange": "The value for **{{key}}** was already that value.",
 	"confServerDescription": "Define per-server settings.",
-	"confServerExtended": {
-		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"extendedHelp": "",
-		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"reminder": ""
-	},
 	"confServer": "**Server Setting {{key}}**\n{{list}}",
 	"confDashboardOnlyKey": "`{{key}}` can only be configured through the web dashboard (<https://wolfstar.rocks>)",
 	"confSettingNotSet": "Not Set",
@@ -90,18 +68,5 @@
 	"rolesetResetNotExists": "",
 	"rolesetResetGroup": "",
 	"rolesetUpdated": "",
-	"rolesetNoRolesets": "",
-	"confMenuRenderAtFolder": "",
-	"confMenuRenderAtPiece": "",
-	"confMenuRenderNokeys": "",
-	"confMenuRenderSelect": "",
-	"confMenuRenderUpdate": "",
-	"confMenuRenderRemove": "",
-	"confMenuRenderReset": "",
-	"confMenuRenderUndo": "",
-	"confMenuRenderCvalue": "",
-	"confMenuRenderBack": "",
-	"confMenuInvalidKey": "",
-	"confMenuInvalidAction": "",
-	"confMenuSaved": ""
+	"rolesetNoRolesets": ""
 }

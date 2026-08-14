@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "`{{parameter}}` を有効な招待リンクに解決できませんでした。次の形式のいずれかである必要があります:\n\n- `https://discord.gg/gqAnRyUXG8`\n- `https://discord.com/invite/gqAnRyUXG8`\n- `https://discordapp.com/invite/gqAnRyUXG8`\n\n> **ヒント**: `https://` の部分を省略しても、 `discord.gg/gqAnRyUXG8` は有効なパラメータとして認識されます。",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

@@ -1,0 +1,14 @@
+{
+	"contextMenuName": "Ispeziona Permessi",
+	"description": "Ottieni i permessi dell'utente",
+	"name": "permessi",
+	"optionsListAllDescription": "Se visualizzare o meno le autorizzazioni non di moderazione (predefinito: False)",
+	"optionsListAllName": "elenca-tutti",
+	"optionsListMissingDescription": "Se visualizzare o meno le autorizzazioni non concesse (predefinito: False)",
+	"optionsListMissingName": "elenco-mancante",
+	"optionsShowDescription": "Mostrare o meno il messaggio pubblicamente (predefinito: Falso)",
+	"optionsShowName": "mostra",
+	"optionsUserDescription": "L'utente di cui ispezionare i permessi",
+	"optionsUserName": "utente",
+	"title": "Permessi per {{username}} ({{id}})"
+}

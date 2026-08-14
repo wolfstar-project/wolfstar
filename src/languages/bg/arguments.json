@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Не успях да преобразувам `{{parameter}}` в валиден връзка за покана, те имат един от следните формати:\n\n- `https://discord​.gg/gqAnRyUXG8`.\n- `https://discord​.com/invite/gqAnRyUXG8`.\n- `https://discordapp​.com/invite/gqAnRyUXG8`.\n\n> **Съвет**: Можете да пропуснете частта `https://`, `discord​.gg/gqAnRyUXG8` също е приемлива като валиден параметър.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

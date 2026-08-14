@@ -1,889 +1,891 @@
 {
-	"permissions": "",
-	"permissionsAll": "",
-	"slowmodeSet": "",
-	"slowmodeReset": "",
-	"banNotBannable": "",
-	"dehoistStarting": "",
-	"dehoistProgress": "",
+	"permissions": "Permessi per {{username}} ({{id}})",
+	"permissionsAll": "Tutti i Permessi",
+	"slowmodeSet": "Il ritardo per questo canale è stato impostato a {{cooldown, duration}}.",
+	"slowmodeReset": "Il ritardo per questo canale è stato reimpostato.",
+	"banNotBannable": "L'obiettivo non è bannabile per me.",
+	"dehoistStarting": "Inizierò a rimuovere il dehoist a {{count}} membri...",
+	"dehoistProgress": "Dehoistati {{count}} membri finora! ({{percentage}}%)",
 	"dehoistEmbed": {
-		"title": "",
-		"descriptionNoone": "",
-		"descriptionWithError": "",
-		"descriptionWithMultipleErrors": "",
-		"description": "",
-		"descriptionMultipleMembers": "",
-		"fieldErrorTitle": ""
+		"title": "Terminato il dehoisting di {{users}} membri",
+		"descriptionNoone": "Nessun membro è stato spostato. Un applauso per i tuoi utenti rispettosi della legge!",
+		"descriptionWithError": "{{dehoistedWithErrorsCount}} membro è stato sollevato. Abbiamo anche cercato di sollevare un altro membro {{errored}}, ma si è verificato un errore",
+		"descriptionWithMultipleErrors": "{{dehoistedWithErrorsCount}} membri sono stati sollevati. Abbiamo anche provato a sollevare un altro membro {{errored}}, ma si è verificato un errore",
+		"description": "{{dehoistedMemberCount}} membro è stato dehoisted",
+		"descriptionMultipleMembers": "{{dehoistedMemberCount}} membri sono stati dehoisted",
+		"fieldErrorTitle": "Gli utenti per cui abbiamo riscontrato un errore:"
 	},
-	"kickNotKickable": "",
-	"lockdownLock": "",
-	"lockdownLocking": "",
-	"lockdownLocked": "",
-	"lockdownUnlocked": "",
-	"lockdownOpen": "",
-	"muteMuted": "",
-	"muteUserNotMuted": "",
-	"restrictLowlevel": "",
-	"pruneAlert_one": "",
-	"pruneAlert_other": "",
-	"pruneInvalidPosition": "",
-	"pruneNoDeletes": "",
-	"pruneLogHeader": "",
-	"toggleModerationDmToggledEnabled": "",
-	"toggleModerationDmToggledDisabled": "",
-	"moderationOutput_one": "",
-	"moderationOutput_other": "",
-	"moderationOutputWithReason_one": "",
-	"moderationOutputWithReason_other": "",
-	"moderationFailed_one": "",
-	"moderationFailed_other": "",
-	"moderationDmFooter": "",
-	"moderationDmDescription": "",
-	"moderationDmDescriptionWithReason": "",
-	"moderationDmDescriptionWithDuration": "",
-	"moderationDmDescriptionWithReasonWithDuration": "",
-	"slowmodeDescription": "",
+	"kickNotKickable": "L'obiettivo non è espellibile per me.",
+	"lockdownLock": "Il canale {{channel}} è ora bloccato.",
+	"lockdownLocking": "{{LOADING}} Bloccando il canale {{channel}}... Potrei non essere in grado di rispondere dopo.",
+	"lockdownLocked": "Il canale {{channel}} era già bloccato.",
+	"lockdownUnlocked": "Il canale {{channel}} non era bloccato.",
+	"lockdownOpen": "Il blocco per il canale {{channel}} è stato rimosso.",
+	"muteMuted": "L'utente di destinazione è già messo in muto.",
+	"muteUserNotMuted": "Questo utente non è silenziato.",
+	"restrictLowlevel": "{{REDCROSS}} Mi dispiace, non è stato configurato alcun ruolo di restrizione. Si prega di chiedere a un amministratore o al proprietario del server di configurarlo.",
+	"pruneAlert_one": "Eliminato con successo {{count, number}} messaggio da {{total}}.",
+	"pruneAlert_other": "Eliminato con successo {{count, number}} messaggi da {{total}}.",
+	"pruneInvalidPosition": "{{REDCROSS}} La posizione dev'essere \"prima\" o \"dopo\".",
+	"pruneNoDeletes": "Nessun messaggio è stato eliminato, o nessun messaggio corrisponde al filtro o hanno più di 14 giorni.",
+	"pruneLogHeader": "I seguenti messaggi sono stati generati su richiesta di un moderatore.\nLa formattazione della data è \" $t(globals:dateFormat) hh:mm:ss \".",
+	"toggleModerationDmToggledEnabled": "{{GREENTICK}} Abilitazione delle DMs di moderazione riuscita",
+	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Disattivazione delle DMs di moderazione riuscita",
+	"moderationOutput_one": "{{GREENTICK}} Caso creato {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Casi creati {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Caso creato {{range}} | {{users, list(conjunction)}}.\nCon la motivazione: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Casi creati {{range}} | {{users, list(conjunction)}}.\nCon la motivazione: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Impossibile moderare l'utente:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Impossibile moderare gli utenti:\n{{users}}",
+	"moderationDmFooter": "Per disattivare i DMs di moderazione, scrivi `toggleModerationDM`.",
+	"moderationDmDescription": "**❯ Server**: {{guild}}\n**❯ Tipo**: {{title}}\n**❯ Motivo**: Nessuno specificato",
+	"moderationDmDescriptionWithReason": "**❯ Server**: {{guild}}\n**❯ Tipo**: {{title}}\n**❯ Motivo**: {{reason}}",
+	"moderationDmDescriptionWithDuration": "**❯ Server**: {{guild}}\n**❯ Tipo**: {{title}}\n**❯ Durata**: {{duration, duration}}\n**❯ Motivo**: Nessuno specificato",
+	"moderationDmDescriptionWithReasonWithDuration": "**❯ Server**: {{guild}}\n**❯ Tipo**: {{title}}\n**❯ Durata**: {{duration, duration}}\n**❯ Motivo**: {{reason}}",
+	"slowmodeDescription": "Imposta il valore della slowmode del canale in secondi.",
 	"slowmodeExtended": {
 		"usages": [
-			""
+			"ripristina/Secondi/Durata"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_CHANNELS, permissions}}** e modificherà il limite di velocità per utente del canale a qualsiasi valore tra 0 e 6 ore.",
 		"examples": [
-			"",
-			"",
-			""
+			"0",
+			"reimposta",
+			"4 m"
 		],
-		"reminder": ""
+		"reminder": "Per reimpostare il limite di velocità di un canale per utente, puoi utilizzare 0 o 'reset'."
 	},
-	"banDescription": "",
+	"banDescription": "Colpisci qualcuno con il martello del ban.",
 	"banExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo",
+			"Utente --secondi=S --minuti=M --ore=H --giorni=D"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da bannare. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questo ban dovrebbe durare. Ad esempio 24h per 24 ore. L'utente o gli utenti verranno automaticamente sbannati dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo del ban. Questo apparirà anche nei registri di controllo del server."
 			],
 			[
-				"",
-				""
+				"--secondi=S --minuti=M --ore=H --giorni=D",
+				"La quantità di tempo relativo ai messaggi da eliminare, ogni flag è facoltativa e può essere combinata. Fino a 7 giorni."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{BanMembers, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere bannati da me.\nNo, il proprietario del server non può essere bannato.\nQuesta azione può essere opzionalmente temporizzata per creare un ban temporaneo.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spam di tutti i canali.",
+			"@Pete @Jack @John 24h Incursione"
 		]
 	},
-	"dehoistDescription": "",
+	"dehoistDescription": "Spara a tutti con il Disinnestatore 3000",
 	"dehoistExtended": {
-		"extendedHelp": "",
-		"reminder": ""
+		"extendedHelp": "L'atto di sollevare comporta l'aggiunta di caratteri speciali davanti al tuo soprannome per apparire più in alto nell'elenco dei membri.\nQuesto comando sostituisce il soprannome di qualsiasi membro che include quei caratteri speciali con un carattere speciale che li trascina in fondo all'elenco.",
+		"reminder": "Questo comando richiede **{{ManageNicknames, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere dehoistati."
 	},
-	"kickDescription": "",
+	"kickDescription": "Colpisci qualcuno con la 👢.",
 	"kickExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente Motivo"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{KickMembers, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere cacciati da me. No, il proprietario del server non può essere cacciato.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da espellere. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'espulsione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
 		"examples": [
-			"",
-			""
+			"@Sarah",
+			"@Sarah Spamming chat generale."
 		]
 	},
-	"lockdownDescription": "",
+	"lockdownDescription": "Chiudi i cancelli per questo canale!",
 	"lockdownExtended": {
 		"usages": [
-			"",
-			"",
-			"",
+			"bloccare Ruolo TestoCanale Durata",
+			"sbloccare Ruolo TestoCanale",
+			"Ruolo TestoCanale Durata",
 			""
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_CHANNELS, permissions}}** per poter gestire i permessi per un canale.\nQuesto comando rimuove il permesso **{{SEND_MESSAGES, permissions}}** al ruolo `@everyone` così nessuno, tranne i membri con ruoli che hanno proprie eccezioni (oltre agli amministratori, che aggirano le eccezioni del canale), può inviare messaggi.\nFacoltativamente, puoi passare il tempo come secondo argomento.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"blocca/sblocca",
+				"Se bloccare o sbloccare il canale. Se il canale è attualmente sbloccato, l'opzione predefinita è \"blocco\", o \"sblocco\" se è attualmente bloccato."
 			],
 			[
-				"",
-				""
+				"Ruolo",
+				"Il ruolo da bloccare. Per impostazione predefinita è il ruolo `@everyone`."
 			],
 			[
-				"",
-				""
+				"TestoCanale",
+				"Il canale da bloccare. Predefinito sul canale corrente."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di questa chiusura. Predefinito a infinito."
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
+			"#generale",
+			"blocca #generale 5m",
+			"sbloccare #generale",
+			"blocca Membri #generale",
 			""
 		],
-		"reminder": ""
+		"reminder": "Se i tuoi membri necessitano di un ruolo come \"member\" per iniziare a inviare messaggi nel canale, allora questo comando non funzionerà. È nel nostro backlog per aggiungere la possibilità di configurare il ruolo che dovrebbe essere bloccato."
 	},
-	"muteDescription": "",
+	"muteDescription": "Silenzia un utente in tutti i canali di testo e voce.",
 	"muteExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da silenziare. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questo silenziamento dovrebbe durare. Ad esempio 24h per 24 ore. L'utente o gli utenti verranno automaticamente desilenziati dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Ragione",
+				"Il motivo per il silenziamento. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere gestiti da me.\nNo, il proprietario del server non può essere messo in silenzio.\nQuesta azione può essere opzionalmente temporizzata per creare un silenziamento temporaneo. Questa azione salva temporaneamente i ruoli di un membro e verranno restituiti all'utente dopo il de-silenziamento.\nIl ruolo silenziato è **sticky**, se l'utente tenta di rimuoverlo rientrando nel server, verrà aggiunto nuovamente.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Alphonse",
+			"@Alphonse Spam di tutti i canali",
+			"@Alphonse 24h Spam di tutti i canali"
 		]
 	},
-	"setNicknameDescription": "",
+	"setNicknameDescription": "Cambia il soprannome di un utente.",
 	"setNicknameExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Soprannome Utente1",
+			"Utente1 Durata",
+			"Utente1 Utente2 Nickname Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da rinominare. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Soprannome",
+				"Il nuovo soprannome da impostare. Non includerlo farà sì che il comando utilizzi il nome utente dell'utente come predefinito."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questa modifica del soprannome dovrebbe durare. Ad esempio 24h per 24 ore. L'utente o gli utenti riacquisteranno automaticamente il loro soprannome attuale dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per il cambio di questo nickname. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_NICKNAMES, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere gestiti da me.\nNo, il soprannome del proprietario del server non può essere cambiato.",
 		"examples": [
-			"",
-			""
+			"@Pete peeehteeerrr",
+			"@ꓑ𝗲੮ẻ Nome non menzionabile di Pete"
 		],
-		"reminder": ""
+		"reminder": "Lasciare vuoto il nuovo soprannome cancellerà le modifiche e tornerà al nome utente dell'utente"
 	},
-	"addRoleDescription": "",
+	"addRoleDescription": "Aggiunge un ruolo a un utente.",
 	"addRoleExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Ruolo Utente1",
+			"Utente1 Durata",
+			"Utente1 Utente2 ruolo Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) al quale aggiungere un ruolo. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Ruolo",
+				"Il nuovo ruolo da assegnare"
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questo ruolo deve essere applicato a questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente il ruolo rimosso dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questo ruolo. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione gerarchica inferiore nel ruolo possono essere gestiti da me.\nNo, il ruolo del proprietario del server non può essere modificato.",
 		"examples": [
-			"",
-			""
+			"@John membro",
+			"@John membro Rendi John un membro"
 		]
 	},
-	"removeroleDescription": "",
+	"removeroleDescription": "Rimuove un ruolo da un utente",
 	"removeroleExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Ruolo Utente1",
+			"Utente1 Durata",
+			"Utente1 Utente2 ruolo Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) dal quale rimuovere un ruolo. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Ruolo",
+				"Il ruolo da rimuovere"
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questo ruolo deve essere rimosso da questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti riguadagneranno automaticamente il ruolo dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione di questo ruolo. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione gerarchica inferiore nel ruolo possono essere gestiti da me.\nNo, il ruolo del proprietario del server non può essere modificato.",
 		"examples": [
-			"",
-			""
+			"@Paula membro",
+			"@Paula membro Rimuovi permessi membro da Paula"
 		]
 	},
-	"pruneDescription": "",
+	"pruneDescription": "Rimuove una certa quantità di messaggi senza filtro.",
 	"pruneExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"Quantità Segnalazioni Utente",
+			"Importo delle Flag prima/dopo il Messaggio",
+			"Quantità Utente",
+			"Quantità Utenti prima/dopo il Messaggio",
+			"Quantità --silenzioso"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando elimina il numero specificato di messaggi in base a un filtro negli ultimi 100 messaggi inviati nel canale in cui è stato eseguito il comando.\nFacoltativamente, puoi aggiungere `--silent` per impedire a WolfStar di inviare un messaggio di risposta.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Quantità",
+				"La quantità di messaggi da eliminare."
 			],
 			[
-				"",
-				""
+				"--f/file/file",
+				"Elimina messaggi con allegati."
 			],
 			[
-				"",
-				""
+				"--a/autore",
+				"Elimina i tuoi messaggi."
 			],
 			[
-				"",
-				""
+				"--b/bot/bot",
+				"Elimina i messaggi inviati dai bot."
 			],
 			[
-				"",
-				""
+				"--u/umano/umani",
+				"Elimina i messaggi inviati dagli utenti."
 			],
 			[
-				"",
-				""
+				"-i/invito/inviti",
+				"Elimina i messaggi che contengono link di invito."
 			],
 			[
-				"",
-				""
+				"--l/collegamento/collegamenti",
+				"Elimina i messaggi che contengono qualsiasi link."
 			],
 			[
-				"",
-				""
+				"-y/tu",
+				"Elimina i miei messaggi."
 			],
 			[
-				"",
-				""
+				"--age=Durata",
+				"Elimina qualsiasi messaggio più recente di Durata."
 			],
 			[
-				"",
-				""
+				"--include/contain=Parola",
+				"Elimina i messaggi che contengono Parola."
 			],
 			[
-				"",
-				""
+				"--p/spillo/spilli",
+				"Elimina i messaggi fissati, a meno che non sia specificato, nessun altro filtro elimina i fissi."
 			],
 			[
-				"",
-				""
+				"Utente",
+				"Elimina i messaggi inviati dall'utente specificato."
 			],
 			[
-				"",
-				""
+				"Posizione: dopo",
+				"Elimina i messaggi inviati dopo il messaggio specificato."
 			],
 			[
-				"",
-				""
+				"Posizione: prima",
+				"Elimina i messaggi inviati prima del messaggio specificato."
 			],
 			[
-				"",
-				""
+				"--s/silenzioso",
+				"Indipendentemente dal fatto che un messaggio di risposta debba essere inviato o meno, questo eliminerà anche il tuo messaggio di comando se sono stati filtrati meno di 100 messaggi."
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"50 --un",
+			"75 @kyra",
+			"20 --bot",
+			"60 --umani --file prima di 629992398700675082",
+			"30 --age=5m --contain=lol",
+			"100 --silenzioso"
 		],
-		"reminder": ""
+		"reminder": "A causa di una limitazione di Discord, i bot non possono eliminare messaggi più vecchi di 14 giorni."
 	},
-	"permissionsDescription": "",
+	"permissionsDescription": "Controlla l'autorizzazione per un membro o la tua.",
 	"permissionsExtended": {
 		"usages": [
-			"",
+			"Utente",
 			""
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente",
+				"L'utente per il quale vuoi controllare le autorizzazioni. Predefinito a te stesso."
 			]
 		],
-		"extendedHelp": ""
+		"extendedHelp": "Ideale se desideri sapere quali permessi sono concessi a un membro quando ha un determinato insieme di ruoli."
 	},
-	"restrictAttachmentDescription": "",
+	"restrictAttachmentDescription": "Impedisci a un utente di inviare allegati in tutti i canali.",
 	"restrictAttachmentExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) al quale limitare gli allegati. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questa restrizione deve essere applicata a questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente la restrizione rimossa dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questa restrizione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere gestiti da me.\nNo, il proprietario del server non può essere limitato.\nQuesta azione può essere opzionalmente temporizzata per creare una restrizione temporanea.\nIl ruolo limitato è **sticky**, se l'utente tenta di rimuoverlo rientrando nel server, verrà aggiunto nuovamente.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Invio di immagini strane",
+			"@Pete 24h Invio di immagini NSFW"
 		]
 	},
-	"restrictEmbedDescription": "",
+	"restrictEmbedDescription": "Impedisci a un utente di allegare embed in tutti i canali.",
 	"restrictEmbedExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) al quale limitare gli embed. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questa restrizione deve essere applicata a questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente la restrizione rimossa dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questa restrizione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere gestiti da me.\nNo, il proprietario del server non può essere limitato.\nQuesta azione può essere opzionalmente temporizzata per creare una restrizione temporanea.\nIl ruolo limitato è **sticky**, se l'utente tenta di rimuoverlo rientrando nel server, verrà aggiunto nuovamente.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Invio di link strani",
+			"@Pete 24h Ha postato un link spam"
 		],
-		"reminder": ""
+		"reminder": "Gli embed sono, per esempio, quando un utente invia un video e viene incorporato nella chat."
 	},
-	"restrictEmojiDescription": "",
+	"restrictEmojiDescription": "Impedisci a un utente di utilizzare emoji esterni in tutti i canali.",
 	"restrictEmojiExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) al quale limitare gli emoji esterni. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questa restrizione deve essere applicata a questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente la restrizione rimossa dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questa restrizione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere gestiti da me.\nNo, il proprietario del server non può essere limitato.\nQuesta azione può essere opzionalmente temporizzata per creare una restrizione temporanea.\nIl ruolo limitato è **sticky**, se l'utente tenta di rimuoverlo rientrando nel server, verrà aggiunto nuovamente.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spam di emoji esterni",
+			"@Pete 24h Pubblicato 'cringe'"
 		],
-		"reminder": ""
+		"reminder": "Questo impedirà solo l'uso di emoji esterni e quindi non avrà effetto su utenti non-nitro, gli emoji del tuo server e gli emoji predefiniti di twemoji possono ancora essere usati dai membri con questo ruolo."
 	},
-	"restrictReactionDescription": "",
+	"restrictReactionDescription": "Impedisci a un utente di reagire ai messaggi in tutti i canali.",
 	"restrictReactionExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) al quale limitare le reazioni ai messaggi. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questa restrizione deve essere applicata a questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente la restrizione rimossa dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questa restrizione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione nella gerarchia dei ruoli inferiore possono essere gestiti da me.\nNo, il proprietario del server non può essere limitato.\nQuesta azione può essere opzionalmente temporizzata per creare una restrizione temporanea.\nIl ruolo limitato è **sticky**, se l'utente tenta di rimuoverlo rientrando nel server, verrà aggiunto nuovamente.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Reazioni di spam",
+			"@Pete 24h Pubblicazione di reazioni strane"
 		]
 	},
-	"restrictVoiceDescription": "",
+	"restrictVoiceDescription": "Limita un utente dall'unirsi a qualsiasi canale vocale.",
 	"restrictVoiceExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da limitare l'interazione nei canali vocali. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questa restrizione deve essere applicata a questo utente. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente la restrizione rimossa dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questa restrizione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}**, e solo i membri con una posizione nella gerarchia dei ruoli inferiore possono essere gestiti da me.\nNo, il proprietario del server non può essere limitato.\nQuesta azione può essere opzionalmente temporizzata per creare una restrizione temporanea.\nIl ruolo limitato è **sticky**, se l'utente tenta di rimuoverlo rientrando nel server, verrà aggiunto nuovamente.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Urla nelle chat vocali generali",
+			"@Pete 24h Facendo rumori strani"
 		]
 	},
-	"softBanDescription": "",
+	"softBanDescription": "Colpisci qualcuno con il martello del ban, distruggendo tutti i loro messaggi per alcuni giorni e sbloccalo.",
 	"softBanExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo",
+			"Utente --secondi=S --minuti=M --ore=H --giorni=D"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da sospendere temporaneamente. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per il softban. Questo apparirà anche nei registri di controllo del server."
 			],
 			[
-				"",
-				""
+				"--secondi=S --minuti=M --ore=H --giorni=D",
+				"La quantità di tempo relativo ai messaggi da eliminare, ogni flag è facoltativa e può essere combinata. Fino a 7 giorni."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{BanMembers, permissions}}**, e solo i membri con una posizione gerarchica di ruolo inferiore possono essere bannati da me.\nNo, il proprietario del server non può essere bannato.\nLa funzionalità di ban di Discord permette al moderatore di rimuovere tutti i messaggi da tutti i canali inviati negli ultimi 'x' giorni, essendo un numero tra 0 (nessun giorno) e 7.\nL'utente viene sbannato immediatamente dopo il ban, quindi è come un espulsione, ma che può eliminare molti, molti messaggi.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Spam di tutti i canali",
+			"@Pete 7 Tutti i messaggi inviati in 7 sono ora spariti, EVVIVA!"
 		]
 	},
-	"timeoutApplyDescription": "",
+	"timeoutApplyDescription": "Blocca temporaneamente un utente.",
 	"timeoutApplyExtended": {
 		"usages": [
-			"",
-			""
+			"Durata Utente",
+			"Durata Utente Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Durata",
+				"La durata del timeout. Ad esempio 24h per 24 ore."
 			],
 			[
-				"",
-				""
+				"Utente",
+				"L'utente da bloccare temporaneamente."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo del timeout. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
 		"examples": [
-			"",
-			""
+			"30s @Pete",
+			"2h @Pete Spam di tutti i canali"
 		]
 	},
-	"timeoutUndoDescription": "",
+	"timeoutUndoDescription": "Rimuove una sospensione da un utente.",
 	"timeoutUndoExtended": {
 		"usages": [
-			"",
-			""
+			"Utente",
+			"Utente Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente",
+				"L'utente da bloccare temporaneamente."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo del timeout. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete A quanto pare non era lui quello che ha spammato tutti i canali 🤷"
 		]
 	},
-	"timeoutNotModeratable": "",
-	"toggleModerationDmDescription": "",
+	"timeoutNotModeratable": "Non posso bloccare l'obiettivo.",
+	"toggleModerationDmDescription": "Attiva/disattiva DMs di moderazione.",
 	"toggleModerationDmExtended": {
-		"extendedHelp": ""
+		"extendedHelp": "Questo comando ti consente di attivare o disattivare i DM di moderazione. Per impostazione predefinita, sono attivi, il che significa che qualsiasi azione di moderazione (automatica o manuale) ti invierà un DM, ma puoi disattivarli con questo comando."
 	},
-	"unbanDescription": "",
+	"unbanDescription": "Rimuovi il divieto per qualcuno da questo server.",
 	"unbanExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"\"Utente(i) da sbloccare. Possono essere fino a un totale di 10 utenti.\""
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione del ban. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{BanMembers, permissions}}**. Praticamente tira fuori qualcuno dalla spazzatura, lo pulisce e lo consente di entrare ai cancelli di questo server.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete A quanto pare non era lui quello che ha spammato tutti i canali 🤷"
 		]
 	},
-	"unmuteDescription": "",
+	"unmuteDescription": "Rimuovi il nastro adesivo da un utente.",
 	"unmuteExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"Utente(i) da riattivare. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione del silenziamento. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}** e rimuove un utente dall'elenco delle persone silenziate, e restituisce i vecchi ruoli se l'utente li aveva.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete (Inserisci una battuta a caso qui)."
 		]
 	},
-	"unrestrictAttachmentDescription": "",
+	"unrestrictAttachmentDescription": "Rimuovi la restrizione degli allegati da uno o più utenti.",
 	"unrestrictAttachmentExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da rimuovere le restrizioni degli allegati. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione della restrizione sull'allegato. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}** e rimuove un utente dall'elenco delle persone con restrizioni.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictEmbedDescription": "",
+	"unrestrictEmbedDescription": "Rimuovi la restrizione degli embed da uno o più utenti.",
 	"unrestrictEmbedExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da rimuovere le restrizioni degli embed. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione della restrizione sull'incorporamento. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}** e rimuove un utente dall'elenco delle persone con restrizioni.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictEmojiDescription": "",
+	"unrestrictEmojiDescription": "Rimuovi la restrizione degli emoji esterni da uno o più utenti.",
 	"unrestrictEmojiExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da rimuovere le restrizioni emoji. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione della restrizione sull'emoji. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}** e rimuove un utente dall'elenco delle persone con restrizioni.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictReactionDescription": "",
+	"unrestrictReactionDescription": "Rimuovi la restrizione delle reazioni da uno o più utenti.",
 	"unrestrictReactionExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da rimuovere le restrizioni delle reazioni. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione della restrizione sulla reazione. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}** e rimuove un utente dall'elenco delle persone con restrizioni.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unrestrictVoiceDescription": "",
+	"unrestrictVoiceDescription": "Rimuovi la restrizione vocale da uno o più utenti.",
 	"unrestrictVoiceExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da rimuovere le restrizioni vocali. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione della restrizione sulla voce. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MANAGE_ROLES, permissions}}** e rimuove un utente dall'elenco delle persone con restrizioni.",
 		"examples": [
-			""
+			"@Pete"
 		]
 	},
-	"unwarnDescription": "",
+	"unwarnDescription": "Appello un caso di moderazione del log di avvertimento.",
 	"unwarnExtended": {
 		"usages": [
-			"",
-			""
+			"Casi",
+			"Motivo del Caso"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Casi",
+				"Il numero del caso da modificare. Puoi trovare i numeri dei casi tramite il comando `history` o guardando nel canale dei log di moderazione."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per la rimozione di questo avviso."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando fa appello a un avvertimento, non richiede autorizzazioni, devi solo fornirmi il caso nel registro di moderazione da appellare e il motivo.",
 		"examples": [
-			"",
-			""
+			"0 Ops, persona sbagliata.",
+			"42 Risulta che questa era la definizione di vita."
 		]
 	},
-	"vmuteDescription": "",
+	"vmuteDescription": "Butta il microfono di qualcuno dalla finestra.",
 	"vmuteExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"Utente(i) da silenziare nei canali vocali. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questo silenzio vocale deve essere applicato. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente il silenzio vocale rimosso dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'aggiunta di questo silenziamento vocale. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MUTE_MEMBERS, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere silenziati da me.\nNo, il proprietario del server non può essere silenziato.\nQuesta azione può essere opzionalmente temporizzata per creare un silenziamento temporaneo della voce.",
 		"examples": [
-			"",
-			"",
-			""
+			"@Pete",
+			"@Pete Canta troppo forte",
+			"@Pete 24h Cantato letteralmente a volume molto alto"
 		]
 	},
-	"voiceKickDescription": "",
+	"voiceKickDescription": "Colpisci qualcuno con il 👢 per aver cantato così male e forte.",
 	"voiceKickExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo",
+			"Utente1 Utente2 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da espellere dal canale vocale corrente. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo per l'espulsione dell'utente(i) dal canale vocale. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede i permessi **{{MANAGE_CHANNELS, permissions}}** per creare un canale vocale temporaneo (nascosto) e **{{MOVE_MEMBERS, permissions}}** per spostare l'utente nel canale temporaneo.\nDopo di ciò, il canale viene rapidamente eliminato, facendo uscire l'utente dal canale vocale.\nPer i moderatori timorosi, questo comando ha quasi nessun impatto sugli utenti medi, poiché il canale viene creato in modo che solo io e l'utente selezionato possiamo vedere e unirci, poi viene rapidamente eliminato.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete Spam di tutti i canali"
 		]
 	},
-	"vunmuteDescription": "",
+	"vunmuteDescription": "Riattiva il microfono di qualcuno affinché possa parlare.",
 	"vunmuteExtended": {
 		"usages": [
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"Utente(i) da riattivare nei canali vocali. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Ragione",
+				"Il motivo per la rimozione del silenziamento vocale. Questo apparirà anche nei registri di controllo del server."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando richiede **{{MUTE_MEMBERS, permissions}}**, e solo i membri con una posizione gerarchica inferiore possono essere de-silenziati da me.\nNo, il proprietario del server non può essere de-silenziato.",
 		"examples": [
-			"",
-			""
+			"@Pete",
+			"@Pete ha presentato ricorso per le sue volte firmando ascolto stupro."
 		]
 	},
-	"warnDescription": "",
+	"warnDescription": "Invia un avviso a qualcuno.",
 	"warnExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			""
+			"Utente",
+			"Utente1 Utente2 Utente3...Utente10",
+			"Utente1 Durata",
+			"Utente1 Utente2 Durata Motivo"
 		],
 		"explainedUsage": [
 			[
-				"",
-				""
+				"Utente/Utente1/Utente2",
+				"L'utente(i) da avvisare. Possono essere fino a un totale di 10 utenti."
 			],
 			[
-				"",
-				""
+				"Durata",
+				"La durata di tempo per cui questo avviso è applicabile. Ad esempio 24h per 24 ore. L'utente o gli utenti avranno automaticamente l'avviso rimosso dopo questo tempo."
 			],
 			[
-				"",
-				""
+				"Motivo",
+				"Il motivo di questo avviso."
 			]
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Questo comando emette un avvertimento a un utente.\nQuesto tipo di avvertimento è inteso come **avvertimenti formali**, poiché saranno mostrati nel comando 'avvertimenti'.\nÈ buona pratica dare un avvertimento informale prima di utilizzare questo comando.",
 		"examples": [
-			""
+			"@Pete Ha tentato di menzionare tutti."
 		]
-	}
+	},
+	"pruneAlert_many": "Eliminato con successo {{count, number}} messaggi da {{total}}.",
+	"pruneNotSubcommandSameOFSameFlag": "{{REDCROSS}} Non puoi usare la stessa opzione dello stesso sottocomando."
 }

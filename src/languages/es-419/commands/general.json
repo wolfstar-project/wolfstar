@@ -1,7 +1,7 @@
 {
 	"helpAllFlag": "Mostrando una categoría por página. ¿Tiene problemas con el incrustado? Ejecute `{{prefix}}help --all` para obtener una lista completa en mensajes directos.",
-	"helpCommandCount_one": "{{count}} comando",
-	"helpCommandCount_other": "{{count}} comandos",
+	"helpCommandCount_one": "{{count, number}} comando",
+	"helpCommandCount_other": "{{count, number}} comandos",
 	"helpData": {
 		"footer": "Descripción de ayuda para {{footerName}}",
 		"title": "{{titleDescription}}"
@@ -31,6 +31,5 @@
 	"v7Extended": {
 		"extendedHelp": ""
 	},
-	"v7Message": "",
 	"v7NayreMessage": ""
 }

@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Nisam uspio riješiti `{{parameter}}` u valjani poziv za pridruživanje, oni imaju jedan od sljedećih formata:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Savjet**: Možete izostaviti `https://` dio, `discord.gg/gqAnRyUXG8` također je prihvaćen kao valjani parametar.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

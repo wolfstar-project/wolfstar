@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Nepavyko išspręsti `{{parameter}}` į galiojančią kvietimo nuorodą — jos turi vieną iš šių formatų:\n\n- `https://discord.gg/gqAnRyUXG8`\n- `https://discord.com/invite/gqAnRyUXG8`\n- `https://discordapp.com/invite/gqAnRyUXG8`\n\n> **Patarimas**: galite praleisti `https://` dalį, `discord.gg/gqAnRyUXG8` taip pat priimamas kaip galiojantis parametras.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",
