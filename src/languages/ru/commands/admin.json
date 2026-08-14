@@ -1,8 +1,6 @@
 {
-	"confUpdated": "",
 	"confGetNoExt": "Кажется, ключа **{{key}}** не существует.",
 	"confGet": "Значение ключа **{{key}}**: `{{value}}`",
-	"confReset": "",
 	"confNochange": "Значение **{{key}}** уже соответствует этому значению.",
 	"confServerDescription": "Определить параметры для сервера.",
 	"confServerExtended": {
@@ -91,17 +89,10 @@
 	"rolesetResetGroup": "{{GREENTICK}} Набор ролей `{{name}}` успешно удалён с этого сервера.",
 	"rolesetUpdated": "Набор уникальных ролей {{name}} обновлён.",
 	"rolesetNoRolesets": "У вас нет наборов ролей.",
-	"confMenuRenderAtFolder": "",
-	"confMenuRenderAtPiece": "",
-	"confMenuRenderNokeys": "",
-	"confMenuRenderSelect": "",
 	"confMenuRenderUpdate": "• Обновить значение → `set <value>`",
 	"confMenuRenderRemove": "• Удалить значение → `remove <value>`",
 	"confMenuRenderReset": "• Сбросить значение → `reset`",
 	"confMenuRenderUndo": "• Отменить обновление → `undo`",
 	"confMenuRenderCvalue": "Текущее значение: **``{{value}}``**",
-	"confMenuRenderBack": "",
-	"confMenuInvalidKey": "",
-	"confMenuInvalidAction": "",
 	"confMenuSaved": "Все изменения успешно сохранены."
 }

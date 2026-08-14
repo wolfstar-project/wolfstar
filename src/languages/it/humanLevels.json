@@ -1,1 +1,7 @@
-[]
+{
+	"High": "Alta",
+	"Low": "Basso",
+	"Medium": "Medio",
+	"None": "Nessuno",
+	"VeryHigh": "Massimo"
+}

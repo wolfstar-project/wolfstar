@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Я не смог разрешить `{{parameter}}` в допустимую ссылку-приглашение, они имеют один из следующих форматов:\n\n- `https://discord​.gg/gqAnRyUXG8`.\n- `https://discord​.com/invite/gqAnRyUXG8`.\n- `https://discordapp​.com/invite/gqAnRyUXG8`.\n\n> **Совет**: Вы можете опустить часть `https://`, `discord​.gg/gqAnRyUXG8` также принимается как допустимый параметр.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

@@ -1,1 +1,6 @@
-[]
+{
+	"aborted": "Prompt annullato con successo.",
+	"invalidIndex": "Quel numero era fuori dall'intervallo, annullamento prompt.",
+	"invalidNumber": "Mi aspettavo che mi fornissi un numero (di una sola cifra), hai dato una patata.",
+	"matches": "Ho trovato più corrispondenze! **Seleziona un numero compreso tra 0 e {{matches}}**:\n{{codeblock}}\nScrivi **ABORTISCI** se vuoi uscire dal prompt."
+}

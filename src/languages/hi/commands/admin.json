@@ -1,5 +1,4 @@
 {
-	"confUpdated": "",
 	"confGetNoExt": "{{key}} यह कुंजी मौजूद नहीं है।",
 	"confGet": "{{key}} इस कुंजी का मूल्य {{value}} के बराबर है।",
 	"confReset": "{{key}} कुंजी का मूल्य {{value}} के बराबर स्थापित किया गया है।",
@@ -95,10 +94,6 @@
 	"confMenuRenderAtPiece": "अभी फिलाल ⚙️ {{path}} में है।",
 	"confMenuRenderNokeys": "इस फोल्डर के लिए कोई भी परिभाषित की नहीं है।",
 	"confMenuRenderSelect": "कृपया कोई भी प्रविष्टियो का नाम लिखे।",
-	"confMenuRenderUpdate": "",
-	"confMenuRenderRemove": "",
-	"confMenuRenderReset": "",
-	"confMenuRenderUndo": "",
 	"confMenuRenderCvalue": "वर्तमान मूल्य: **``{{value}}``**",
 	"confMenuRenderBack": "पिछे जाने के लिए ◀ दबाए।",
 	"confMenuInvalidKey": "अवैध की, कृपया दिए गए पर्याय से पुन: प्रयास करें।",

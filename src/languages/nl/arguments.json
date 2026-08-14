@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Ik kon `{{parameter}}` niet omzetten naar een geldige uitnodigingslink, ze hebben een van de volgende formaten:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Tip**: Je kunt het `https://` gedeelte weglaten, `discord.gg/gqAnRyUXG8` wordt ook geaccepteerd als een geldige parameter.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

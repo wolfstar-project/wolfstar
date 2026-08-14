@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Jeg kunne ikke koble `{{parameter}}` til en gyldig invitasjonslenke, de har ett av følgende formater:\n\n- `https://discord​.gg/gqAnRyUXG8`.\n- `https://discord​.com/invite/gqAnRyUXG8`.\n- `https://discordapp​.com/invite/gqAnRyUXG8`.\n\n> **Tips**: Du kan utelate delen `https://`, `discord​.gg/gqAnRyUXG8` godtas også som en gyldig parameter.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

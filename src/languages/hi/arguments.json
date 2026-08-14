@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "\"मैं `{{parameter}}` को एक वैध निमंत्रण लिंक के रूप में हल नहीं कर सका, उनके निम्नलिखित प्रारूपों में से एक है:\n\n- `https://discord​.gg/gqAnRyUXG8`.\n- `https://discord​.com/invite/gqAnRyUXG8`.\n- `https://discordapp​.com/invite/gqAnRyUXG8`.\n\n> **टिप**: आप `https://` भाग को हटा सकते हैं, `discord​.gg/gqAnRyUXG8` भी एक मान्य पैरामीटर के रूप में स्वीकार किया जाता है।\"",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

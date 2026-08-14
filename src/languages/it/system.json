@@ -1,25 +1,25 @@
 {
-	"discordAbortError": "",
-	"fetchBansFail": "",
+	"discordAbortError": "Ho avuto un piccolo errore di rete inviando messaggi a Discord, per favore esegui di nuovo questo comando!",
+	"fetchBansFail": "Impossibile recuperare i divieti. Ho il permesso **{{ADMINISTRATOR, permissions}}**?",
 	"helpTitles": {
-		"aliases": "",
-		"usages": "",
-		"extendedHelp": "",
-		"explainedUsage": "",
-		"possibleFormats": "",
-		"examples": "",
-		"reminders": ""
+		"aliases": "🖇️ | **Alias**",
+		"usages": "📝 | **Uso Comando**",
+		"extendedHelp": "🔍 | **Guida Estesa**",
+		"explainedUsage": "⚙ | **Uso spiegato**",
+		"possibleFormats": "🔢 | **Formati possibili**",
+		"examples": "🔗 | **Esempi**",
+		"reminders": "⏰ | **Promemoria**"
 	},
-	"jumpTo": "",
+	"jumpTo": "Vai al messaggio ►",
 	"loading": [
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		""
+		"{{LOADING}} In attesa che i criceti corrano...",
+		"{{LOADING}} Ricerca persone al nascondino...",
+		"{{LOADING}} Sto cercando di capire questo comando...",
+		"{{LOADING}} Recuperando dati dal cloud...",
+		"{{LOADING}} Calibrazione delle lenti...",
+		"{{LOADING}} Caricamento in corso: sasso, carta, forbici...",
+		"{{LOADING}} Sintonizzazione delle frequenze giuste...",
+		"{{LOADING}} Reticolazione delle spline..."
 	],
-	"prefixReminder": ""
+	"prefixReminder": "Il prefisso in questo server è impostato su: `{{prefix}}`"
 }

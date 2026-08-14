@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "`{{parameter}}` 을(를) 올바른 초대 링크로 해석할 수 없습니다. 다음과 같은 형식 중 하나를 가집니다:\n\n- `https://discord​.gg/gqAnRyUXG8`.\n- `https://discord​.com/invite/gqAnRyUXG8`.\n- `https://discordapp​.com/invite/gqAnRyUXG8`.\n\n> **팁**: `https://` 부분을 생략할 수 있으며, `discord​.gg/gqAnRyUXG8` 도 유효한 매개변수로 허용됩니다.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

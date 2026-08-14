@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Я не зміг вирішити `{{parameter}}` до дійсного посилання запрошення, вони мають один із наступних форматів:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Порада**: Ви можете опустити частину `https://`, `discord.gg/gqAnRyUXG8` також приймається як дійсний параметр.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

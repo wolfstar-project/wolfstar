@@ -1,107 +1,64 @@
 {
-	"confUpdated": "",
-	"confGetNoExt": "",
-	"confGet": "",
-	"confReset": "",
-	"confNochange": "",
-	"confServerDescription": "",
-	"confServerExtended": {
-		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"extendedHelp": "",
-		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"reminder": ""
-	},
-	"confServer": "",
-	"confDashboardOnlyKey": "",
-	"confSettingNotSet": "",
-	"rolesetDescription": "",
+	"rolesetDescription": "Gestisci set di ruoli unici.",
 	"rolesetExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"imposta RuoloNome Ruolo1 Ruolo2 Ruolo3...",
+			"rimuovi RuoloNome Ruolo1 Ruolo2 Ruolo3...",
+			"reimposta",
+			"reimposta RuoloNome",
+			"elenco",
+			"RuoloNome Ruolo1 Ruolo2 Ruolo3"
 		],
-		"extendedHelp": "",
+		"extendedHelp": "Un insieme di ruoli è un gruppo di ruoli che WolfStar identifica come unici per tutti i membri del server, ad esempio, un insieme di ruoli chiamato `regione` potrebbe avere i ruoli `Africa`, `America`, `Asia` e `Europa`, e i membri potranno avere solo uno di essi. Questa è come una sorta di \"regola\" applicata nelle tre seguenti situazioni:\n\n- Quando qualcuno reclama un ruolo tramite il comando `roles`.\n- Quando qualcuno reclama un ruolo tramite i ruoli di reazione.\n- Quando qualcuno riceve un ruolo manualmente o da un altro bot.",
 		"explainedUsage": [
 			[
-				"",
-				""
+				"aggiungi",
+				"Crea un nuovo roleset o aggiungi un ruolo a uno esistente."
 			],
 			[
-				"",
-				""
+				"rimuovere",
+				"Rimuovi un ruolo da un roleset esistente."
 			],
 			[
-				"",
-				""
+				"reimposta",
+				"Rimuove tutti i ruoli da un roleset o, se non specificato, da tutti i roleset esistenti."
 			],
 			[
-				"",
-				""
+				"elenco",
+				"Elenca tutti i gruppi di ruoli."
 			],
 			[
-				"",
-				""
+				"automatico",
+				"Aggiunge o rimuove un roleset."
 			],
 			[
-				"",
-				""
+				"RuoloNome",
+				"Il nome dell'insieme di ruoli"
 			],
 			[
-				"",
-				""
+				"Ruolo1 Ruolo2 Ruolo3",
+				"I ruoli da aggiungere al roleset"
 			]
 		],
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
+			"aggiungi regioni America",
+			"aggiungi regioni Africa America Asia Europa",
+			"rimuovi regioni America",
+			"reimposta",
+			"reimposta regioni",
+			"elenco",
+			"regioni America",
+			"regioni Africa America Asia Europa"
 		],
-		"reminder": ""
+		"reminder": "Questo comando può aggiungere e/o rimuovere più ruoli contemporaneamente."
 	},
-	"rolesetCreated": "",
-	"rolesetAdded": "",
-	"rolesetRemoved": "",
-	"rolesetResetEmpty": "",
-	"rolesetResetAll": "",
-	"rolesetResetNotExists": "",
-	"rolesetResetGroup": "",
-	"rolesetUpdated": "",
-	"rolesetNoRolesets": "",
-	"confMenuRenderAtFolder": "",
-	"confMenuRenderAtPiece": "",
-	"confMenuRenderNokeys": "",
-	"confMenuRenderSelect": "",
-	"confMenuRenderUpdate": "",
-	"confMenuRenderRemove": "",
-	"confMenuRenderReset": "",
-	"confMenuRenderUndo": "",
-	"confMenuRenderCvalue": "",
-	"confMenuRenderBack": "",
-	"confMenuInvalidKey": "",
-	"confMenuInvalidAction": "",
-	"confMenuSaved": ""
+	"rolesetCreated": "Il set di ruoli unici {{name}} è stato creato con i seguenti ruoli: {{roles, list(conjunction)}}",
+	"rolesetAdded": "Aggiornato il set di ruoli unici {{name}}, ora contiene i seguenti ruoli: {{roles, list(conjunction)}}.",
+	"rolesetRemoved": "Il set di ruoli unici {{name}} non includerà più i seguenti ruoli: {{roles, list(conjunction)}}",
+	"rolesetResetEmpty": "{{REDCROSS}} Non ci sono ruoli configurati in questo gruppo.",
+	"rolesetResetAll": "{{GREENTICK}} Rimossi con successo tutti i gruppi di ruoli.",
+	"rolesetResetNotExists": "{{REDCROSS}} Il roleset `{{name}}` non esiste in questo server.",
+	"rolesetResetGroup": "{{GREENTICK}} Ruoli del gruppo `{{name}}` rimossi con successo da questo server.",
+	"rolesetUpdated": "Il set di ruoli unico {{name}} è stato aggiornato.",
+	"rolesetNoRolesets": "Non hai ruoli."
 }

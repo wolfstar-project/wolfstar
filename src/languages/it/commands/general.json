@@ -1,36 +1,41 @@
 {
-	"helpAllFlag": "",
-	"helpCommandCount_one": "",
-	"helpCommandCount_other": "",
+	"helpAllFlag": "Visualizzazione di una categoria per pagina. Problemi con l'incorporamento? Esegui `{{prefix}}help --all` per un elenco completo nei messaggi diretti.",
+	"helpCommandCount_one": "{{count, number}} comando",
+	"helpCommandCount_other": "{{count, number}} comandi",
 	"helpData": {
-		"footer": "",
-		"title": ""
+		"footer": "Guida ai comandi per {{footerName}}",
+		"title": "{{titleDescription}}"
 	},
-	"helpDescription": "",
+	"helpDescription": "Mostra tutti i comandi o la descrizione di uno.",
 	"helpExtended": {
 		"usages": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"--categ/--categorie",
+			"--tutti",
+			"NomeCategoria",
+			"Pagina",
+			"NomeComando"
 		],
-		"extendedHelp": "",
-		"reminder": "",
+		"extendedHelp": "Il comando di aiuto mostra un elenco paginato di tutti i comandi suddivisi per categorie, o le informazioni estese di un comando se specificato.\n\nSe usi `--categorie` o `--cat`, puoi ottenere l'elenco di tutte le categorie e la quantità di comandi che ciascuna di esse contiene.",
+		"reminder": "Il comando di aiuto **mostra solo** i comandi che puoi utilizzare. Per l'elenco completo, visita <https://wolfstar.rocks/commands>.",
 		"examples": [
-			"",
-			"",
-			"",
-			"",
-			""
+			"--gatto",
+			"--tutti",
+			"Moderazione",
+			"12",
+			"aiuto"
 		]
 	},
-	"helpDm": "",
-	"helpNodm": "",
-	"v7Description": "",
+	"helpDm": "📥 | L'elenco dei comandi a cui hai accesso è stato inviato ai tuoi messaggi diretti.",
+	"helpNodm": "{{REDCROSS}} | Hai i messaggi diretti disabilitati quindi non ti ho potuto inviare l'elenco dei comandi.",
+	"v7Description": "Ottiene le informazioni riguardanti Skyra v7",
 	"v7Extended": {
-		"extendedHelp": ""
+		"extendedHelp": "Questo è un comando **nascosto** utilizzato esclusivamente per inviare una notifica a tutti coloro che tentano di usare comandi che sono stati rimossi secondo i piani di [WolfStar v7](https://wolfstar.notion.site/wolfstar)."
 	},
-	"v7Message": "",
-	"v7NayreMessage": ""
+	"v7NayreMessage": "Ciao!\nGrazie per aver usato questo comando, tuttavia è stato rimosso e verrà eventualmente riprogettato come parte dell'Acryss RPG di Nayre, come indicato nei piani di [Skyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8).\n\nCi scusiamo per l'inconveniente e grazie per aver usato WolfStar. 💖",
+	"helpCommandCount_many": "{{count, number}} comandi",
+	"v7SkyraDescription": "Ottiene le informazioni riguardanti WolfStar v7",
+	"v7SkyraExtended": {
+		"extendedHelp": "Questo è un comando **nascosto** utilizzato esclusivamente per inviare una notifica a tutti coloro che tentano di usare comandi che sono stati rimossi secondo i piani di [Skyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8)."
+	},
+	"v7SkyraMessage": "Ciao!\nGrazie per aver usato questo comando, tuttavia è stato rimosso a causa dei piani di [Skyra v7](https://skyra.notion.site/skyra/Skyra-v7-922ba06004654142a7b63347a92513a8). Il link contiene una spiegazione sul perché il comando `{{command}}` è stato rimosso.\n\nCi scusiamo per l'inconveniente e grazie per aver usato WolfStar. 💖"
 }

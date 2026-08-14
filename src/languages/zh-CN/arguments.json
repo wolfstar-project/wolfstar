@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "我无法将 `{{parameter}}` 解析为有效的邀请链接， 他们 有以下格式：\n\n- `https://discord​.gg/gqAnRyUXG8`。\n- `https://discord​.com/invite/gqAnRyUXG8`。\n- `https://discordapp​.com/invite/gqAnRyUXG8`。\n\n> **提示**：你 可以省略 `https://` 部分， `discord​.gg/gqAnRyUXG8` 也作为有效参数被接受。",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

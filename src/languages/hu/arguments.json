@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Nem sikerült érvényes meghívó linkre feloldani a(z) `{{parameter}}` értéket, az alábbi formátumok egyikével rendelkeznek:\n\n- `https://discord.gg/gqAnRyUXG8`.\n- `https://discord.com/invite/gqAnRyUXG8`.\n- `https://discordapp.com/invite/gqAnRyUXG8`.\n\n> **Tipp**: A `https://` rész kihagyható, a `discord.gg/gqAnRyUXG8` is elfogadható érvényes paraméterként.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

@@ -1,1 +1,25 @@
-[]
+{
+	"guildMemberAdd": "Utente entrato",
+	"guildMemberAddDescription": "{{user}} si è unito a Discord {{relativeTime}}",
+	"guildMemberAddedRoles_one": "**Ruolo aggiunto**: {{addedRoles}}",
+	"guildMemberAddedRoles_many": "**Ruoli aggiunti**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddedRoles_other": "**Ruoli aggiunti**: {{addedRoles, list(conjunction)}}",
+	"guildMemberAddMute": "Utente con audio disattivato è entrato",
+	"guildMemberBanned": "Utente bannato",
+	"guildMemberKicked": "Utente Espulso",
+	"guildMemberNoUpdate": "Nessun aggiornamento rilevato",
+	"guildMemberRemove": "Utente ha lasciato",
+	"guildMemberRemoveDescription": "{{user}} si è unito a questo server *un tempo sconosciuto fa*",
+	"guildMemberRemoveDescriptionWithJoinedAt": "{{user}} si è unito a questo server {{relativeTime}}",
+	"guildMemberRemovedRoles_one": "**Ruolo rimosso**: {{removedRoles}}",
+	"guildMemberRemovedRoles_many": "**Ruoli rimossi**: {{removedRoles, list(conjunction)}}",
+	"guildMemberRemovedRoles_other": "**Ruoli rimossi**: {{removedRoles, list(conjunction)}}",
+	"guildMemberSoftBanned": "Utente sospeso",
+	"nameUpdateNextWasNotSet": "\"Avanti\": Non impostato",
+	"nameUpdateNextWasSet": "Prossimo: `{{nextName}}`",
+	"nameUpdatePreviousWasNotSet": "Precedente: Non impostato",
+	"nameUpdatePreviousWasSet": "**Precedente**: `{{previousName}}`",
+	"nicknameUpdate": "Soprannome modificato",
+	"roleUpdate": "Ruoli Modificati",
+	"usernameUpdate": "Nome utente modificato"
+}

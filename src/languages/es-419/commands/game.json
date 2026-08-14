@@ -379,8 +379,8 @@
 		],
 		"reminder": "Puede especificar `--autoskip` para omitir automáticamente después de algún tiempo."
 	},
-	"hungerGamesResultDeaths_one": "**{{count}} disparo de cañón se puede escuchar en la distancia.**",
-	"hungerGamesResultDeaths_other": "**{{count}} disparos de cañón se pueden escuchar en la distancia.**",
+	"hungerGamesResultDeaths_one": "**{{count, number}} disparo de cañón se puede escuchar en la distancia.**",
+	"hungerGamesResultDeaths_other": "**{{count, number}} disparos de cañón se pueden escuchar en la distancia.**",
 	"hungerGamesResultHeaderBloodbath": "Baño de Sangre",
 	"hungerGamesResultHeaderMoon": "Noche {{game.turn}}",
 	"hungerGamesResultHeaderSun": "Día {{game.turn}}",
@@ -409,10 +409,10 @@
 	},
 	"triviaExtended": {
 		"usages": [
-			"",
 			"Categoría",
 			"Categoría multiple/boolean/truefalse",
 			"multiple easy/medium/hard",
+			"hard 2m",
 			"hard 2m"
 		],
 		"extendedHelp": "Responda a preguntas de trivia aquí, ¡con categorías que van desde los libros hasta la mitología! (alimentado por OpenTDB)\n\n**Categorías**: {{TRIVIA_CATEGORIES}}",

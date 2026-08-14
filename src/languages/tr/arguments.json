@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "`{{parameter}}` öğesini geçerli bir davet bağlantısına dönüştüremedim, bunlardan biri formatlara sahiptir:\n\n- `https://discord​.gg/gqAnRyUXG8`.\n- `https://discord​.com/invite/gqAnRyUXG8`.\n- `https://discordapp​.com/invite/gqAnRyUXG8`.\n\n> **İpucu**: `https://` kısmını çıkarabilirsiniz, `discord​.gg/gqAnRyUXG8` de geçerli bir parametre olarak kabul edilir.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

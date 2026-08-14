@@ -1,5 +1,4 @@
 {
-	"confUpdated": "",
 	"confGetNoExt": "De sleutel **{{key}}** lijkt niet te bestaan.",
 	"confGet": "De waarde voor **{{key}}** is: `{{value}}`",
 	"confReset": "**{{key}}** is gereset naar: `{{value}}`",

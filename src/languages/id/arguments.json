@@ -61,7 +61,7 @@
 	"integerError": "",
 	"integerTooLarge": "",
 	"integerTooSmall": "",
-	"invite": "",
+	"invite": "Saya tidak dapat menyelesaikan `{{parameter}}` menjadi tautan undangan yang valid, karena mereka memiliki salah satu format berikut:\n\n- `https://discord​.gg/gqAnRyUXG8`\n- `https://discord​.com/invite/gqAnRyUXG8`\n- `https://discordapp​.com/invite/gqAnRyUXG8`\n\n> **Tip**: Anda dapat menghilangkan bagian `https://`, `discord​.gg/gqAnRyUXG8` juga diterima sebagai parameter yang valid.",
 	"language": "",
 	"memberError": "",
 	"memberMissingGuild": "",

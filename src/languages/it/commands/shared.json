@@ -1,7 +1,7 @@
 {
-	"deprecatedMessage": "",
+	"deprecatedMessage": "I comandi basati su messaggi sono **obsoleti** e verranno rimossi in futuro. Si consiglia di utilizzare il comando a barre {{command}} invece!",
 	"slashOnlyDetailedDescription": {
-		"extendedHelp": ""
+		"extendedHelp": "Questo comando è disponibile solo tramite i comandi slash. Si prega di utilizzare il comando slash invece."
 	},
-	"slashOnlyErrorMessage": ""
+	"slashOnlyErrorMessage": "Questo comando è disponibile solo tramite i comandi slash. Si prega di utilizzare il comando slash invece."
 }

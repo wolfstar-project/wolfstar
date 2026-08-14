@@ -1,0 +1,12 @@
+{
+	"invalidBase10": "Il colore deve essere compreso nell'intervallo 0 - 16777215 (0xFFFFFF), ma è stato ricevuto `{{value}}`.",
+	"invalidHexBlue": "Intervallo Blu non valido. Deve essere compreso tra '00' e 'ff', ma ricevuto `{{value}}`.",
+	"invalidHexGreen": "Intervallo Verde non valido. Deve essere compreso tra '00' e 'ff', ma ricevuto `{{value}}`.",
+	"invalidHexRed": "Intervallo Rosso non valido. Deve essere compreso tra '00' e 'ff', ma ricevuto `{{value}}`.",
+	"invalidHslHue": "Intervallo Tonalità non valido. Deve essere compreso tra 0 e 360, ma ricevuto `{{value}}`.",
+	"invalidHslLightness": "Intervallo Luminosità non valido. Deve essere compreso tra 0 e 100, ma ricevuto `{{value}}`.",
+	"invalidHslSaturation": "Intervallo Saturazione non valido. Deve essere compreso tra 0 e 100, ma ricevuto `{{value}}`.",
+	"invalidRgbBlue": "Intervallo Blu non valido. Deve essere compreso tra 0 e 255, ma ricevuto `{{value}}`.",
+	"invalidRgbGreen": "Intervallo Verde non valido. Deve essere compreso tra 0 e 255, ma ricevuto `{{value}}`.",
+	"invalidRgbRed": "Intervallo Rosso non valido. Deve essere compreso tra 0 e 255, ma ricevuto `{{value}}`."
+}
