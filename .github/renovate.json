@@ -1,6 +1,6 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["github>sapphiredev/.github:sapphire-renovate"],
+	"extends": ["github>wolfstar-project/.github:wolfstar-renovate"],
 	"npm": {
 		"packageRules": [
 			{
