@@ -59,6 +59,7 @@ describe('Bits', () => {
 				'CreateEvents',
 				'UseExternalSounds',
 				'SendVoiceMessages',
+				'SetVoiceChannelStatus',
 				'SendPolls',
 				'UseExternalApps',
 				'PinMessages',
