@@ -126,7 +126,7 @@
 		"prettier": "^3.9.6",
 		"prisma": "^7.9.1",
 		"prisma-json-types-generator": "^5.1.1",
-		"taze": "^19.17.2",
+		"taze": "^20.0.2",
 		"tsdown": "^0.22.14",
 		"typescript": "^6.0.2",
 		"vitest": "^4.1.10"

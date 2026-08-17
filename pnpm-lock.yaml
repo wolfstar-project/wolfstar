@@ -217,8 +217,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1(@prisma/client@7.9.1)(prisma@7.9.1)
       taze:
-        specifier: ^19.17.2
-        version: 19.17.2
+        specifier: ^20.0.2
+        version: 20.0.2
       tsdown:
         specifier: ^0.22.14
         version: 0.22.14(typescript@6.0.3)
@@ -3927,8 +3927,8 @@ packages:
   tachyons@4.12.0:
     resolution: {integrity: sha512-2nA2IrYFy3raCM9fxJ2KODRGHVSZNTW3BR0YnlGsLUf1DA3pk3YfWZ/DdfbnZK6zLZS+jUenlUGJsKcA5fUiZg==}
 
-  taze@19.17.2:
-    resolution: {integrity: sha512-1WH+LUf5H0R07EF606fuP5TuHPVvtrMIPpn69EkqaOVJYg0foL8xnD+lEs0s19Zfmplul5nRd3TpbbF0twXCkw==}
+  taze@20.0.2:
+    resolution: {integrity: sha512-OlY3OEHIeVq7kSfidnkpEPE8Gqn1DgDU05Q4kdVrjrvVN8OIWu4xci+hK9DXofprHyw29vkgBpaz7n8dEUcHng==}
     hasBin: true
 
   through2@2.0.5:
@@ -4127,8 +4127,8 @@ packages:
       typescript:
         optional: true
 
-  verkit@0.3.1:
-    resolution: {integrity: sha512-w2Eo8LSIIoW7qxNBzT7/17k+bh8plXo7G3dHjEIDqPlnluhzaxr9JX8F28VSYEtDvc1/a3WBDih6xNUZseebXg==}
+  verkit@0.3.2:
+    resolution: {integrity: sha512-zj/ob3UsvJGN0whEAKFp53REA5X66hvffVqoCtVQAakJKnKlH+/PcOfMoFwIG/o4rElqLv/ycAFlx8ZlXUorCg==}
     engines: {node: '>=18.12.0'}
 
   vite@7.2.4:
@@ -7945,7 +7945,7 @@ snapshots:
 
   tachyons@4.12.0: {}
 
-  taze@19.17.2:
+  taze@20.0.2:
     dependencies:
       '@antfu/ni': 30.3.0
       '@henrygd/queue': 1.2.0
@@ -7959,7 +7959,7 @@ snapshots:
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       unconfig: 7.5.0
-      verkit: 0.3.1
+      verkit: 0.3.2
       yaml: 2.9.0
 
   through2@2.0.5:
@@ -8047,7 +8047,7 @@ snapshots:
       tinyglobby: 0.2.17
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
-      verkit: 0.3.1
+      verkit: 0.3.2
     optionalDependencies:
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -8145,7 +8145,7 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  verkit@0.3.1: {}
+  verkit@0.3.2: {}
 
   vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(yaml@2.9.0):
     dependencies:
