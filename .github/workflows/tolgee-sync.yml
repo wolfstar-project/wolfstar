@@ -1,0 +1,139 @@
+name: Tolgee Translation Sync
+
+on:
+    workflow_dispatch:
+    schedule:
+        # Every day at 02:00 UTC
+        - cron: '0 2 * * *'
+
+concurrency:
+    group: tolgee-sync
+    cancel-in-progress: false
+
+jobs:
+    SyncTranslations:
+        name: Sync translations from Tolgee
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+        steps:
+            - name: Checkout Project
+              uses: actions/checkout@v7
+              with:
+                  token: ${{ secrets.WOLFSTAR_TOKEN }}
+                  fetch-depth: 0
+            - name: Install pnpm and Node.js v24
+              uses: pnpm/setup@v2
+              with:
+                  runtime: node@24
+                  cache: true
+                  # Install is run explicitly below so it can skip lifecycle scripts
+                  install: false
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --ignore-scripts
+            - name: Pull translations from Tolgee
+              env:
+                  TOLGEE_API_KEY: ${{ secrets.TOLGEE_API_KEY }}
+              # `pnpm tolgee:pull` runs the CLI (config: .tolgeerc.cjs) and then
+              # scripts/tolgee-pull-remap.ts, which remaps Tolgee language tags
+              # (es, pt, zh-Hans, …) onto the Discord locale directories and merges
+              # the export onto the committed files (en-US is never written).
+              run: pnpm tolgee:pull
+            - name: Generate prisma types
+              # tests/vitest.setup.ts boots #lib/setup, which needs the generated client;
+              # the install above skips lifecycle scripts, so generate it explicitly.
+              run: pnpm prisma:generate
+            - name: Validate translations
+              # Structural gate on the merged tree: no nulls, no `name[0]` keys, no raw ICU
+              # shells, placeholders consistent with en-US. A corrupt export fails the job
+              # here instead of reaching a pull request.
+              run: pnpm vitest run tests/languages
+            - name: Commit any changes and create a pull request
+              env:
+                  GITHUB_TOKEN: ${{ secrets.WOLFSTAR_TOKEN }}
+              run: |
+                  git add src/languages;
+                  if git diff-index --quiet HEAD --; then
+                    echo "No translation changes to commit, exiting with code 0"
+                    exit 0;
+                  else
+                    git remote set-url origin "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${GITHUB_REPOSITORY}.git";
+                    # Commit as the account behind WOLFSTAR_TOKEN
+                    git config --local user.name "wolfstarbot";
+                    git config --local user.email "169603024+wolfstarbot@users.noreply.github.com";
+                    BRANCH="i18n";
+                    BOT="wolfstarbot";
+                    # Reuse a single fixed branch so re-runs update the existing PR
+                    # instead of spawning a new one each time, but refuse to touch it
+                    # unless ownership is proven. Ownership checks below rely exclusively
+                    # on server-authenticated signals (PR authorship and head SHAs from
+                    # the GitHub API, and git ancestry against main); commit
+                    # author/committer emails are caller-controlled metadata and are
+                    # deliberately not trusted.
+                    OPEN_PRS="$(gh pr list --head "$BRANCH" --state open --json author)";
+                    OPEN_PR_COUNT="$(printf '%s' "$OPEN_PRS" | jq 'length')";
+                    NON_BOT_AUTHORS="$(printf '%s' "$OPEN_PRS" | jq -r --arg bot "$BOT" '[.[].author.login | select(. != $bot)] | unique | join(", ")')";
+                    if [ -n "$NON_BOT_AUTHORS" ]; then
+                      echo "::error::Refusing to reuse the '$BRANCH' branch: open PR(s) on it are owned by $NON_BOT_AUTHORS, not $BOT";
+                      exit 1;
+                    fi
+                    git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2>/dev/null || true;
+                    REMOTE_TIP="$(git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH" || true)";
+                    if [ -n "$REMOTE_TIP" ]; then
+                      # Validate the current remote tip even when a bot-authored PR is
+                      # open: a collaborator can push unmerged work to the branch of an
+                      # open PR, which moves both the branch tip and the PR's head SHA,
+                      # so PR authorship alone proves nothing about the tip. Only
+                      # overwrite the branch when the tip provably belongs to the
+                      # automation, via one of these server-authenticated signals:
+                      #   1. the tip is already an ancestor of main (nothing lost);
+                      #   2. the tip matches the frozen head SHA of a closed or merged
+                      #      bot-authored PR (covers squash-merged sync PRs; closed PR
+                      #      head SHAs no longer track the branch, unlike open ones);
+                      #   3. the tip was pushed by the bot itself, per the pusher
+                      #      recorded server-side in the repository activity log.
+                      TIP_OWNED="";
+                      if git merge-base --is-ancestor "$REMOTE_TIP" origin/main; then
+                        TIP_OWNED=1;
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        BOT_TIP_MATCHES="$(gh pr list --head "$BRANCH" --state closed --json author,headRefOid | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.headRefOid == $tip and .author.login == $bot)] | length')";
+                        if [ "$BOT_TIP_MATCHES" != "0" ]; then
+                          TIP_OWNED=1;
+                        fi
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        # Most recent activity on the ref (desc order); it must be the
+                        # push that produced REMOTE_TIP, performed by the bot.
+                        BOT_PUSHED_TIP="$(gh api "repos/$GITHUB_REPOSITORY/activity?ref=refs/heads/$BRANCH&per_page=1" | jq -r --arg tip "$REMOTE_TIP" --arg bot "$BOT" '[.[] | select(.after == $tip and .actor.login == $bot)] | length')";
+                        if [ "$BOT_PUSHED_TIP" != "0" ]; then
+                          TIP_OWNED=1;
+                        fi
+                      fi
+                      if [ -z "$TIP_OWNED" ]; then
+                        echo "::error::Remote branch '$BRANCH' tip $REMOTE_TIP cannot be proven to belong to $BOT (unverified, unmerged work); refusing to force-push over it. Delete or merge the stale branch to re-enable the sync.";
+                        exit 1;
+                      fi
+                    fi
+                    git checkout -B "$BRANCH";
+                    git commit -sam "chore(i18n): update translations from Tolgee";
+                    # --force-with-lease pins the expected remote tip (empty = branch must
+                    # not exist), so the push fails safely if the ref moved after the
+                    # ownership validation above instead of clobbering the newer commit.
+                    git push --force-with-lease="refs/heads/$BRANCH:$REMOTE_TIP" --set-upstream origin "$BRANCH";
+                    # scripts/tolgee-pull-remap.ts writes a summary of what was applied and,
+                    # more importantly, of the translations it had to reject (placeholders
+                    # that no longer match en-US). Fall back to the plain message if absent.
+                    BODY_FILE=".tolgee-report.md";
+                    if [ ! -f "$BODY_FILE" ]; then
+                      BODY_FILE="$(mktemp)";
+                      printf '%s\n' "*bleep bloop* I synced the translations from Tolgee" > "$BODY_FILE";
+                    fi
+                    if [ "$OPEN_PR_COUNT" = "0" ]; then
+                      gh pr create -t "chore(i18n): update translations from Tolgee" -F "$BODY_FILE" -B main -H "$BRANCH";
+                    else
+                      echo "An open PR for the $BRANCH branch already exists, refreshing its body";
+                      gh pr edit "$BRANCH" -F "$BODY_FILE";
+                    fi
+                  fi

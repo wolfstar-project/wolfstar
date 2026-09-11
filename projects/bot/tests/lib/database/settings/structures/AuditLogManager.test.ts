@@ -4,6 +4,7 @@ import type { ReadonlyGuildData } from '#lib/database/settings/types';
 import { container } from '@sapphire/framework';
 import { Events } from '#lib/types';
 import { EmbedBuilder } from '@discordjs/builders';
+import { createUser } from '../../../../mocks/MockInstances.js';
 
 const ADVISORY_LOCK_NS = 1096107084;
 
@@ -211,6 +212,11 @@ describe('AuditLogManager', () => {
 				fetchLanguage: vi.fn().mockResolvedValue('en-US'),
 				getT: vi.fn().mockReturnValue(tStub)
 			});
+
+			// Provide a real-ish User and bot user so embed builders don't crash.
+			const stubbedUser = createUser();
+			vi.spyOn(container.client.users, 'fetch').mockResolvedValue(stubbedUser as never);
+			Reflect.set(container.client, 'user', stubbedUser);
 		});
 
 		afterEach(() => {
@@ -263,6 +269,99 @@ describe('AuditLogManager', () => {
 			await new Promise((r) => setImmediate(r));
 			expect(eventCreateSpy).toHaveBeenCalledOnce();
 			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		async function getCommandEmbed(payload: Parameters<AuditLogManager['command']>[1]): Promise<ReturnType<EmbedBuilder['toJSON']>> {
+			await manager.command('user1', payload);
+			await new Promise((r) => setImmediate(r));
+			const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
+			return makeMessage().toJSON();
+		}
+
+		describe('#buildCommandExecuteEmbed', () => {
+			test('GIVEN chat-input without commandId THEN uses backtick fallback', async () => {
+				const data = await getCommandEmbed({ commandName: 'ban', commandType: 'chat-input', channelId: '555' });
+				expect(data.color).toBeDefined();
+				expect(data.description).toContain('`/ban`');
+			});
+
+			test('GIVEN context-menu command THEN uses backtick format without slash', async () => {
+				const data = await getCommandEmbed({ commandName: 'userinfo', commandType: 'context-menu', channelId: '555' });
+				expect(data.description).toContain('`userinfo`');
+			});
+
+			test('GIVEN message command THEN uses backtick format without slash', async () => {
+				const data = await getCommandEmbed({ commandName: 'userinfo', commandType: 'message', channelId: '555' });
+				expect(data.description).toContain('`userinfo`');
+			});
+
+			test('GIVEN chat-input with commandId and no subcommand THEN uses slash mention', async () => {
+				const data = await getCommandEmbed({
+					commandName: 'ban',
+					commandId: '111111111111111111',
+					commandType: 'chat-input',
+					channelId: '555'
+				});
+				expect(data.description).toContain('</ban:111111111111111111>');
+			});
+
+			test('GIVEN chat-input with commandId and one subcommand THEN uses slash mention', async () => {
+				const data = await getCommandEmbed({
+					commandName: 'mod ban',
+					commandId: '222222222222222222',
+					commandType: 'chat-input',
+					channelId: '555'
+				});
+				expect(data.description).toContain('</mod ban:222222222222222222>');
+			});
+
+			test('GIVEN chat-input with commandId and subcommand group THEN uses slash mention', async () => {
+				const data = await getCommandEmbed({
+					commandName: 'config settings reset',
+					commandId: '333333333333333333',
+					commandType: 'chat-input',
+					channelId: '555'
+				});
+				expect(data.description).toContain('</config settings reset:333333333333333333>');
+			});
+
+			test('GIVEN chat-input with multi-word name but no commandId THEN uses backtick fallback with slash', async () => {
+				const data = await getCommandEmbed({ commandName: 'mod warn', commandType: 'chat-input', channelId: '555' });
+				expect(data.description).toContain('`/mod warn`');
+			});
+
+			test('GIVEN command() THEN embed has author and correct channel mention in description', async () => {
+				const data = await getCommandEmbed({ commandName: 'kick', commandType: 'chat-input', channelId: '987654321098765432' });
+				expect(data.author).toBeDefined();
+				expect(data.description).toContain('<#987654321098765432>');
+			});
+		});
+
+		describe('#buildSettingsChangeEmbed', () => {
+			async function getSettingsEmbed(
+				before: Record<string, unknown>,
+				after: Record<string, unknown>
+			): Promise<ReturnType<EmbedBuilder['toJSON']>> {
+				await manager.update('user1', before, after);
+				await new Promise((r) => setImmediate(r));
+				const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
+				return makeMessage().toJSON();
+			}
+
+			test('GIVEN settings update THEN embed has diff field for changed key', async () => {
+				const data = await getSettingsEmbed({ prefix: '!' }, { prefix: '?' });
+				expect(data.fields!.length).toBeGreaterThanOrEqual(1);
+				const changeField = data.fields!.find((f) => f.name === 'prefix');
+				expect(changeField).toBeDefined();
+			});
+
+			test('GIVEN access-denied THEN embed carries the reason', async () => {
+				await manager.accessDenied('user1', 'Unauthorized');
+				await new Promise((r) => setImmediate(r));
+				const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
+				const data = makeMessage().toJSON();
+				expect(data.description).toContain('Unauthorized');
+			});
 		});
 	});
 });
