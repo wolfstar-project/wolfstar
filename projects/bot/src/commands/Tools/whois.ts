@@ -4,8 +4,8 @@ import type { GuildMessage } from '#lib/types';
 import { months, seconds } from '#utils/common';
 import { Colors, Emojis } from '#utils/constants';
 import { time, TimestampStyles } from '@discordjs/builders';
-import { Command, RegisterCommand, RegisterSubCommand } from '@wolfstar/http-framework';
-import { applyLocalizedBuilder } from '@wolfstar/http-framework-i18n';
+import { Command, RegisterCommand, RegisterSubcommand } from '@wolfstar/http-framework';
+import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import type { TFunction } from 'i18next';
 
 const sortRanks = (x: Role, y: Role) => Number(y.position > x.position) || Number(x.position === y.position) - 1;
@@ -29,20 +29,20 @@ export class UserCommand extends Command {
 		['MENTION_EVERYONE', FLAGS.MENTION_EVERYONE]
 	];
 
-	@RegisterSubCommand((builder) =>
+	@RegisterSubcommand((builder) =>
 		applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.User) //
 			.addUserOption((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.OptionsUser))
 	)
-	public async handleUser(interaction: Command.Interaction) {}
+	public async handleUser(interaction: Command.ChatInputInteraction) {}
 
-	@RegisterSubCommand((builder) =>
+	@RegisterSubcommand((builder) =>
 		applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.Role) //
 			.addRoleOption((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.OptionsRole))
 	)
-	public async handleRole(interaction: Command.Interaction) {}
+	public async handleRole(interaction: Command.ChatInputInteraction) {}
 
-	@RegisterSubCommand((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.Server))
-	public async handleServer(interaction: Command.Interaction) {}
+	@RegisterSubcommand((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.Server))
+	public async handleServer(interaction: Command.ChatInputInteraction) {}
 
 	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
 		const user = args.finished ? message.author : await args.pick('userName');
@@ -55,8 +55,8 @@ export class UserCommand extends Command {
 	private user(t: TFunction, user: User) {
 		const userCreatedAtTimestampSeconds = seconds.fromMilliseconds(user.createdTimestamp);
 
-		const titles = t(LanguageKeys.Commands.Tools.WhoisUserTitles);
-		const fields = t(LanguageKeys.Commands.Tools.WhoisUserFields, {
+		const titles = t(LanguageKeys.Commands.Whois.UserTitles);
+		const fields = t(LanguageKeys.Commands.Whois.UserFields, {
 			user,
 			userCreatedAt: time(userCreatedAtTimestampSeconds, TimestampStyles.ShortDateTime),
 			userCreatedAtOffset: time(userCreatedAtTimestampSeconds, TimestampStyles.RelativeTime)
@@ -75,8 +75,8 @@ export class UserCommand extends Command {
 		const userCreatedAtTimestampSeconds = seconds.fromMilliseconds(member.user.createdTimestamp);
 		const memberJoinedAtTimestampSeconds = seconds.fromMilliseconds(member.joinedTimestamp!);
 
-		const titles = t(LanguageKeys.Commands.Tools.WhoisMemberTitles);
-		const fields = t(LanguageKeys.Commands.Tools.WhoisMemberFields, {
+		const titles = t(LanguageKeys.Commands.Whois.MemberTitles);
+		const fields = t(LanguageKeys.Commands.Whois.MemberFields, {
 			member,
 			memberCreatedAt: time(userCreatedAtTimestampSeconds, TimestampStyles.ShortDateTime),
 			memberCreatedAtOffset: time(userCreatedAtTimestampSeconds, TimestampStyles.RelativeTime),
@@ -109,12 +109,12 @@ export class UserCommand extends Command {
 
 		const roles = member.roles.cache.sorted(sortRanks);
 		roles.delete(member.guild.id);
-		embed.splitFields(t(LanguageKeys.Commands.Tools.WhoisMemberRoles, { count: roles.size }), [...roles.values()].join(' '));
+		embed.splitFields(t(LanguageKeys.Commands.Whois.MemberRoles, { count: roles.size }), [...roles.values()].join(' '));
 	}
 
 	private applyMemberKeyPermissions(t: TFunction, member: GuildMember, embed: SkyraEmbed) {
 		if (member.permissions.has(this.kAdministratorPermission)) {
-			embed.addField(t(LanguageKeys.Commands.Tools.WhoisMemberPermissions), t(LanguageKeys.Commands.Tools.WhoisMemberPermissionsAll));
+			embed.addField(t(LanguageKeys.Commands.Whois.MemberPermissions), t(LanguageKeys.Commands.Whois.MemberPermissionsAll));
 			return;
 		}
 
@@ -124,7 +124,7 @@ export class UserCommand extends Command {
 		}
 
 		if (permissions.length > 0) {
-			embed.addField(t(LanguageKeys.Commands.Tools.WhoisMemberPermissions), permissions.join(', '));
+			embed.addField(t(LanguageKeys.Commands.Whois.MemberPermissions), permissions.join(', '));
 		}
 	}
 

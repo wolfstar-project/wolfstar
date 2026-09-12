@@ -24,6 +24,7 @@ dist/
 # Ignore auto-generated files
 .config/
 generated/
+projects/*/.stars/
 
 # Tolgee pull staging (promoted into src/languages by scripts/tolgee-pull-remap.ts)
 .tolgee-pull/

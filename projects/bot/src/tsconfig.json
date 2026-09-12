@@ -2,6 +2,7 @@
 	"extends": "../../../tsconfig.base.json",
 	"compilerOptions": {
 		"allowJs": true,
+		"experimentalDecorators": true,
 		"outDir": "../dist",
 		"rootDir": ".",
 		"paths": {
@@ -12,6 +13,6 @@
 		},
 		"composite": true
 	},
-	"include": [".", "./**/*.json"],
+	"include": [".", "./**/*.json", "../.stars/imports.d.ts"],
 	"exclude": ["./tsconfig.json"]
 }

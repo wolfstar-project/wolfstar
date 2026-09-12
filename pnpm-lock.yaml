@@ -254,9 +254,15 @@ importers:
       '@wolfstar/http-framework':
         specifier: ^3.6.0
         version: 3.6.0(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(vite@8.3.0)
-      '@wolfstar/http-framework-i18n':
-        specifier: ^2.0.0
-        version: 2.0.0(typescript@7.0.2)
+      '@wolfstar/plugin-api':
+        specifier: ^1.1.5
+        version: 1.1.5(@wolfstar/http-framework@3.6.0)
+      '@wolfstar/plugin-i18next':
+        specifier: ^2.0.3
+        version: 2.0.3(@wolfstar/http-framework@3.6.0)(typescript@7.0.2)
+      '@wolfstar/plugin-subcommands-advanced':
+        specifier: ^2.0.3
+        version: 2.0.3(@wolfstar/http-framework@3.6.0)
       '@wolfstar/shared-http-pieces':
         specifier: ^2.0.1
         version: 2.0.1(@opentelemetry/core@2.11.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(supports-color@7.2.0)(typescript@7.0.2)(vite@8.3.0)
@@ -288,6 +294,9 @@ importers:
       '@sapphire/framework':
         specifier: ^5.5.1
         version: 5.5.1
+      '@wolfstar/cli':
+        specifier: ^0.3.0
+        version: 0.3.0(@types/react@19.2.17)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)
       discord.js:
         specifier: ^14.27.0
         version: 14.27.0
@@ -410,6 +419,10 @@ packages:
 
   '@alcalzone/ansi-tokenize@0.2.5':
     resolution: {integrity: sha512-3NX/MpTdroi0aKz134A6RC2Gb2iXVECN4QaAXnvCIxxIm3C3AVB1mkUe8NaaiyvOpDfsrqWhYtj+Q6a62RrTsw==}
+    engines: {node: '>=18'}
+
+  '@alcalzone/ansi-tokenize@0.3.0':
+    resolution: {integrity: sha512-p+CMKJ93HFmLkjXKlXiVGlMQEuRb6H0MokBSwUsX+S6BRX8eV5naFZpQJFfJHjRZY0Hmnqy1/r6UWl3x+19zYA==}
     engines: {node: '>=18'}
 
   '@alchemy.run/cloudflare-runtime@2.0.0-beta.74':
@@ -2790,12 +2803,24 @@ packages:
     resolution: {integrity: sha512-Xfe6rpCTxSxfbswi/W/Pz7zp1WWSNn4A0eW4mLkQUewCrXXtMj31lCg+iQyTkh/CkusZSq9eDflu7tjEDXUY6g==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
+  '@wolfstar/cli@0.3.0':
+    resolution: {integrity: sha512-UQg0B+E69OwI1I7kuVJRPqBl6z/xmKQe5SAeYXgWjcMNULTHo1+kQf4knsfeDeAekGn4BW31mVg8PPyf6+RkCg==}
+    engines: {node: '>=22'}
+    hasBin: true
+    peerDependencies:
+      tsdown: '>=0.15.0'
+      typescript: '>=5.0.0'
+      vite: ^8.3.0
+    peerDependenciesMeta:
+      tsdown:
+        optional: true
+      typescript:
+        optional: true
+      vite:
+        optional: true
+
   '@wolfstar/env-utilities@2.0.8':
     resolution: {integrity: sha512-8i7Cq0L2s0x13di9ksDJp7pFQc7YZIjJmhk5rYzo4olm7aCXuvos14VnBzJ924xhgrKnnq1G4HFJwN+mV+bqCQ==}
-    engines: {node: '>=20'}
-
-  '@wolfstar/http-framework-i18n@2.0.0':
-    resolution: {integrity: sha512-HrJJUTslKc3vXeqtNQ4zp33t9mLS23GwL4qxABhtoiHNdXgXvU8DD/+8x7to2zdsBGN/GIFnXB2F/P/Vz7oM2g==}
     engines: {node: '>=20'}
 
   '@wolfstar/http-framework@3.6.0':
@@ -2806,6 +2831,12 @@ packages:
     resolution: {integrity: sha512-DEdQ3lJtvL1N3iMQwkLCo4BF+K7ljFlkh7wTITDHY1hT6IvurC1mffOQiH6h15CxeFHDjwx66FKgMUvVxVGAmQ==}
     engines: {node: '>=20'}
 
+  '@wolfstar/plugin-api@1.1.5':
+    resolution: {integrity: sha512-leHyXNxts7UVztliIZd0KXTYdwF09I4/R6SZaocdeqq3chEqgpJBQ2XnUibwym7U+uM+Db7WvK3CBPvuYbjAkA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^3.0.0
+
   '@wolfstar/plugin-i18next@2.0.1':
     resolution: {integrity: sha512-wFolysPXugjAv9jfXfuw7bwuK2mxzp9EfBd3RUtDo6gKdSPbZ0yb/7fOUQXkiVHGPHOEeNkhlcXIxLIRjUwTRA==}
     engines: {node: '>=20.0.0'}
@@ -2815,6 +2846,22 @@ packages:
     peerDependenciesMeta:
       '@wolfstar/i18next-type-generator':
         optional: true
+
+  '@wolfstar/plugin-i18next@2.0.3':
+    resolution: {integrity: sha512-tz65AcO7vTpYnSeWyuOfaHvAVhGyjk79uPAl2ow4oloEcDytkrylLmRbT1KM7AfaRTL+6l0TE50epesSVMp0bA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^3.1.0
+      '@wolfstar/i18next-type-generator': ^3.0.0
+    peerDependenciesMeta:
+      '@wolfstar/i18next-type-generator':
+        optional: true
+
+  '@wolfstar/plugin-subcommands-advanced@2.0.3':
+    resolution: {integrity: sha512-LJ+fBXZj03NaX/sSCTk//wTXEjvjFP+RYplOykJn96H/MOPrF+rqy6nCUwXrNarTzj2ADQwzhYh9n5tm6bSUOA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^3.1.0
 
   '@wolfstar/shared-http-pieces@2.0.1':
     resolution: {integrity: sha512-JqUqHbDr7HyayPr3DdPsnJ67FXn9fxaWCzB4eK19j5WWKpbMbtz++F8LtGU6vFwodmoV9kYDNvsnpxppHhxjuQ==}
@@ -3260,6 +3307,9 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
+  citty@0.2.2:
+    resolution: {integrity: sha512-+6vJA3L98yv+IdfKGZHBNiGW5KHn22e/JwID0Strsz8h4S/csAu/OuICwxrg44k5MRiZHWIo8XXuJgQTriRP4w==}
+
   cjs-module-lexer@2.2.0:
     resolution: {integrity: sha512-4bHTS2YuzUvtoLjdy+98ykbNB5jS0+07EvFNXerqZQJ89F7DI6ET7OQo/HJuW6K0aVsKA9hj9/RVb2kQVOrPDQ==}
 
@@ -3269,6 +3319,10 @@ packages:
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
     engines: {node: '>=10'}
+
+  cli-boxes@4.0.1:
+    resolution: {integrity: sha512-5IOn+jcCEHEraYolBPs/sT4BxYCe2nHg374OPiItB1O96KZFseS2gthU4twyYzeDcFew4DaUM/xwc5BQf08JJw==}
+    engines: {node: '>=18.20 <19 || >=20.10'}
 
   cli-cursor@3.1.0:
     resolution: {integrity: sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==}
@@ -3285,6 +3339,10 @@ packages:
   cli-truncate@5.2.0:
     resolution: {integrity: sha512-xRwvIOMGrfOAnM1JYtqQImuaNtDEv9v6oIYAs4LIHwTiKee8uwvIi363igssOC0O5U04i4AlENs79LQLu9tEMw==}
     engines: {node: '>=20'}
+
+  cli-truncate@6.1.1:
+    resolution: {integrity: sha512-06p9vyLahLa4zkGcgsGxU6iEkSOiuI4fhCH6Emhe2lPAcoUv73n72DnODsnHA+5wwXGnV0n9M9/qOQJSjYhFhw==}
+    engines: {node: '>=22'}
 
   cli-width@3.0.0:
     resolution: {integrity: sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==}
@@ -3921,6 +3979,19 @@ packages:
     peerDependencies:
       '@types/react': '>=19.0.0'
       react: '>=19.0.0'
+      react-devtools-core: '>=6.1.2'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react-devtools-core:
+        optional: true
+
+  ink@7.1.1:
+    resolution: {integrity: sha512-Y43xxa1ZSPvpmfLHcN5o+OdP8Rf8ykkNJEuKYOUNZKT8wXVNLFTtEm1nSDMQkfBH+YANF4Xuu0hhZ4ejqAtN2w==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@types/react': '>=19.2.0'
+      react: '>=19.2.0'
       react-devtools-core: '>=6.1.2'
     peerDependenciesMeta:
       '@types/react':
@@ -4640,6 +4711,10 @@ packages:
     resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
     engines: {node: '>=0.10.0'}
 
+  react@19.3.0:
+    resolution: {integrity: sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==}
+    engines: {node: '>=0.10.0'}
+
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
 
@@ -4830,6 +4905,10 @@ packages:
   slice-ansi@8.0.0:
     resolution: {integrity: sha512-stxByr12oeeOyY2BlviTNQlYV5xOj47GirPr4yA1hE9JCtxfQN0+tVbkxwCtYDQWhEKWFHsEK48ORg5jrouCAg==}
     engines: {node: '>=20'}
+
+  slice-ansi@9.0.0:
+    resolution: {integrity: sha512-SO/3iYL5S3W57LLEniscOGPZgOqZUPCx6d3dB+52B80yJ0XstzsC/eV8gnA4tM3MHDrKz+OCFSLNjswdSC+/bA==}
+    engines: {node: '>=22'}
 
   sockjs-client@1.6.1:
     resolution: {integrity: sha512-2g0tjOR+fRs0amxENLi/q5TiJTqY+WXFOzb5UwXndlK6TO3U/mirZznpx6w34HVMoc3g7cY24yC/ZMIYnDlfkw==}
@@ -5435,6 +5514,11 @@ packages:
 snapshots:
 
   '@alcalzone/ansi-tokenize@0.2.5':
+    dependencies:
+      ansi-styles: 6.2.3
+      is-fullwidth-code-point: 5.1.0
+
+  '@alcalzone/ansi-tokenize@0.3.0':
     dependencies:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
@@ -7787,21 +7871,39 @@ snapshots:
 
   '@vladfrangu/async_event_emitter@2.4.7': {}
 
+  '@wolfstar/cli@0.3.0(@types/react@19.2.17)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)':
+    dependencies:
+      '@clack/prompts': 1.8.0
+      '@wolfstar/http-framework': 3.6.0(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(vite@8.3.0)
+      chokidar: 5.0.0
+      citty: 0.2.2
+      colorette: 2.0.20
+      ink: 7.1.1(@types/react@19.2.17)(react@19.3.0)
+      react: 19.3.0
+    optionalDependencies:
+      tsdown: 0.23.0(typescript@7.0.2)
+      typescript: 7.0.2
+      vite: 8.3.0(@types/node@24.13.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@farmfe/core'
+      - '@rspack/core'
+      - '@types/react'
+      - bufferutil
+      - bun-types-no-globals
+      - esbuild
+      - magicast
+      - oxc-parser
+      - react-devtools-core
+      - rolldown
+      - rollup
+      - unloader
+      - utf-8-validate
+      - webpack
+
   '@wolfstar/env-utilities@2.0.8':
     dependencies:
       dotenv: 17.4.2
       dotenv-expand: 13.0.0
-
-  '@wolfstar/http-framework-i18n@2.0.0(typescript@7.0.2)':
-    dependencies:
-      '@discordjs/collection': 2.1.1
-      '@sapphire/utilities': 3.18.2
-      '@wolfstar/i18next-backend': 2.0.11
-      discord-api-types: 0.38.55
-      i18next: 25.10.10(typescript@7.0.2)
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - typescript
 
   '@wolfstar/http-framework@3.6.0(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(vite@8.3.0)':
     dependencies:
@@ -7835,6 +7937,12 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@wolfstar/plugin-api@1.1.5(@wolfstar/http-framework@3.6.0)':
+    dependencies:
+      '@sapphire/pieces': 4.4.1
+      '@vladfrangu/async_event_emitter': 2.4.7
+      '@wolfstar/http-framework': 3.6.0(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(vite@8.3.0)
+
   '@wolfstar/plugin-i18next@2.0.1(@wolfstar/http-framework@3.6.0)(typescript@7.0.2)':
     dependencies:
       '@discordjs/collection': 2.1.1
@@ -7848,6 +7956,27 @@ snapshots:
       i18next: 25.10.10(typescript@7.0.2)
     transitivePeerDependencies:
       - typescript
+
+  '@wolfstar/plugin-i18next@2.0.3(@wolfstar/http-framework@3.6.0)(typescript@7.0.2)':
+    dependencies:
+      '@discordjs/collection': 2.1.1
+      '@sapphire/pieces': 4.4.1
+      '@sapphire/result': 2.8.0
+      '@sapphire/utilities': 3.18.2
+      '@wolfstar/http-framework': 3.6.0(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(vite@8.3.0)
+      '@wolfstar/i18next-backend': 2.0.11
+      chokidar: 5.0.0
+      discord-api-types: 0.38.55
+      i18next: 25.10.10(typescript@7.0.2)
+    transitivePeerDependencies:
+      - typescript
+
+  '@wolfstar/plugin-subcommands-advanced@2.0.3(@wolfstar/http-framework@3.6.0)':
+    dependencies:
+      '@discordjs/builders': 1.14.1
+      '@discordjs/collection': 2.1.1
+      '@wolfstar/http-framework': 3.6.0(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(vite@8.3.0)
+      discord-api-types: 0.38.55
 
   '@wolfstar/shared-http-pieces@2.0.1(@opentelemetry/core@2.11.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(supports-color@7.2.0)(typescript@7.0.2)(vite@8.3.0)':
     dependencies:
@@ -8241,11 +8370,15 @@ snapshots:
 
   ci-info@4.4.0: {}
 
+  citty@0.2.2: {}
+
   cjs-module-lexer@2.2.0: {}
 
   classnames@2.5.1: {}
 
   cli-boxes@3.0.0: {}
+
+  cli-boxes@4.0.1: {}
 
   cli-cursor@3.1.0:
     dependencies:
@@ -8260,6 +8393,11 @@ snapshots:
   cli-truncate@5.2.0:
     dependencies:
       slice-ansi: 8.0.0
+      string-width: 8.2.2
+
+  cli-truncate@6.1.1:
+    dependencies:
+      slice-ansi: 9.0.0
       string-width: 8.2.2
 
   cli-width@3.0.0: {}
@@ -8917,6 +9055,40 @@ snapshots:
       type-fest: 5.9.0
       widest-line: 6.0.0
       wrap-ansi: 9.0.2
+      ws: 8.21.0
+      yoga-layout: 3.2.1
+    optionalDependencies:
+      '@types/react': 19.2.17
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  ink@7.1.1(@types/react@19.2.17)(react@19.3.0):
+    dependencies:
+      '@alcalzone/ansi-tokenize': 0.3.0
+      ansi-escapes: 7.3.0
+      ansi-styles: 6.2.3
+      auto-bind: 5.0.1
+      chalk: 5.6.2
+      cli-boxes: 4.0.1
+      cli-cursor: 4.0.0
+      cli-truncate: 6.1.1
+      code-excerpt: 4.0.0
+      es-toolkit: 1.47.1
+      indent-string: 5.0.0
+      is-in-ci: 2.0.0
+      patch-console: 2.0.0
+      react: 19.3.0
+      react-reconciler: 0.33.0(react@19.3.0)
+      scheduler: 0.27.0
+      signal-exit: 3.0.7
+      slice-ansi: 9.0.0
+      stack-utils: 2.0.6
+      string-width: 8.2.2
+      terminal-size: 4.0.1
+      type-fest: 5.9.0
+      widest-line: 6.0.0
+      wrap-ansi: 10.0.1
       ws: 8.21.0
       yoga-layout: 3.2.1
     optionalDependencies:
@@ -9639,7 +9811,14 @@ snapshots:
       react: 19.2.7
       scheduler: 0.27.0
 
+  react-reconciler@0.33.0(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+      scheduler: 0.27.0
+
   react@19.2.7: {}
+
+  react@19.3.0: {}
 
   readable-stream@2.3.8:
     dependencies:
@@ -9880,6 +10059,11 @@ snapshots:
   sisteransi@1.0.5: {}
 
   slice-ansi@8.0.0:
+    dependencies:
+      ansi-styles: 6.2.3
+      is-fullwidth-code-point: 5.1.0
+
+  slice-ansi@9.0.0:
     dependencies:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0

@@ -1,15 +1,11 @@
-import { authenticated } from '#lib/api/utils';
-import { ApplyOptions } from '@sapphire/decorators';
-import { ApiRequest, ApiResponse, methods, Route, RouteOptions } from '@sapphire/plugin-api';
+import { ApiRequest, ApiResponse, Route } from '@wolfstar/plugin-api';
 
-@ApplyOptions<RouteOptions>({ route: '' })
 export class UserRoute extends Route {
-	public [methods.GET](_request: ApiRequest, response: ApiResponse) {
-		response.json({ message: 'Hello World' });
+	public constructor(context: Route.LoaderContext) {
+		super(context, { route: '/', methods: ['GET'] });
 	}
 
-	@authenticated()
-	public [methods.POST](_request: ApiRequest, response: ApiResponse) {
-		response.json({ message: 'Hello World' });
+	public run(_request: ApiRequest, response: ApiResponse) {
+		return response.json({ message: 'Hello World' });
 	}
 }

@@ -1,7 +1,7 @@
 {
 	"name": "wolfstar",
 	"version": "7.0.0",
-	"description": "Multipurpose Discord Bot built on Sapphire Framework",
+	"description": "Multipurpose Discord bot built on the WolfStar HTTP Framework",
 	"author": "WolfStar Project",
 	"license": "Apache-2.0",
 	"private": true,

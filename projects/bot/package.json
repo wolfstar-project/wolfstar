@@ -1,7 +1,7 @@
 {
 	"name": "wolfstar-bot",
 	"version": "7.0.0",
-	"description": "Multipurpose Discord Bot built on Sapphire Framework",
+	"description": "Multipurpose Discord bot built on the WolfStar HTTP Framework",
 	"author": "WolfStar Project",
 	"license": "Apache-2.0",
 	"private": true,
@@ -13,9 +13,9 @@
 		"#util": "./dist/util/index.js"
 	},
 	"scripts": {
-		"build": "tsdown",
-		"dev": "pnpm build && pnpm start",
-		"watch": "tsdown --watch",
+		"build": "stars build",
+		"dev": "stars dev",
+		"watch": "stars dev",
 		"clean": "node scripts/clean.mjs",
 		"start": "node --enable-source-maps dist/main.js",
 		"test": "vitest run --config ../../vitest.config.ts"
@@ -31,7 +31,9 @@
 		"@skyra/jaro-winkler": "^1.1.1",
 		"@wolfstar/env-utilities": "^2.0.8",
 		"@wolfstar/http-framework": "^3.6.0",
-		"@wolfstar/http-framework-i18n": "^2.0.0",
+		"@wolfstar/plugin-api": "^1.1.5",
+		"@wolfstar/plugin-i18next": "^2.0.3",
+		"@wolfstar/plugin-subcommands-advanced": "^2.0.3",
 		"@wolfstar/shared-http-pieces": "^2.0.1",
 		"@wolfstar/start-banner": "^2.1.0",
 		"colorette": "^2.0.20",
@@ -44,6 +46,7 @@
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",
 		"@sapphire/framework": "^5.5.1",
+		"@wolfstar/cli": "^0.3.0",
 		"discord.js": "^14.27.0",
 		"tsdown": "0.23.0",
 		"typescript": "^7.0.2"
