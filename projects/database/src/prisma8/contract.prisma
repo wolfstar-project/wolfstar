@@ -1,0 +1,271 @@
+// use prisma-next
+// Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
+
+namespace public {
+  model AuditChainHead {
+    id        String       @id(map: "AuditChainHead_pkey") @default("default")
+    hash      String?
+    updatedAt Timestamp(3) @map("updated_at")
+  }
+
+  model AuditEvent {
+    id         String       @id(map: "AuditEvent_pkey")
+    action     String
+    actorType  String       @map("actor_type")
+    actorId    BigInt       @map("actor_id")
+    actorName  String?      @map("actor_name")
+    targetType String?      @map("target_type")
+    targetId   BigInt?      @map("target_id")
+    outcome    String
+    tenantId   BigInt?      @map("tenant_id")
+    reason     String?
+    timestamp  Timestamp(3)
+    changes    Jsonb?
+    context    Jsonb?
+    prevHash   String?      @map("prev_hash")
+    hash       String
+
+    @@index([action, timestamp], map: "AuditEvent_action_timestamp_idx")
+    @@index([actorId, timestamp], map: "AuditEvent_actor_id_timestamp_idx")
+    @@index([hash], map: "AuditEvent_hash_key", unique: true)
+    @@index([tenantId, timestamp], map: "AuditEvent_tenant_id_timestamp_idx")
+  }
+
+  model CommandLog {
+    id          String       @id(map: "CommandLog_pkey")
+    guildId     BigInt       @map("guild_id")
+    userId      BigInt       @map("user_id")
+    commandName String       @map("command_name")
+    commandType String       @map("command_type")
+    commandId   BigInt?      @map("command_id")
+    subcommand  String?
+    channelId   BigInt?      @map("channel_id")
+    success     Boolean      @default(true)
+    errorReason String?      @map("error_reason")
+    executedAt  Timestamp(3) @map("executed_at")
+    latencyMs   Int?         @map("latency_ms")
+    metadata    Jsonb?
+
+    @@index([guildId, commandName, executedAt], map: "CommandLog_guild_id_command_name_executed_at_idx")
+    @@index([guildId, executedAt], map: "CommandLog_guild_id_executed_at_idx")
+    @@index([guildId, userId, executedAt], map: "CommandLog_guild_id_user_id_executed_at_idx")
+  }
+
+  model Guild {
+    id                  BigInt               @id(map: "Guild_pkey")
+  }
+
+  model GuildAutoModeration {
+    id                             BigInt                          @id(map: "GuildAutoModeration_pkey")
+    channelId                      BigInt?                         @map("channel_id")
+    trackNative                    Boolean                         @default(false) @map("track_native")
+    guild                          Guild                           @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModeration_id_fkey")
+  }
+
+  model GuildAutoModerationAttachments {
+    id                  BigInt                                 @id(map: "GuildAutoModerationAttachments_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationAttachments_id_fkey")
+  }
+
+  model GuildAutoModerationCapitals {
+    id                  BigInt                                 @id(map: "GuildAutoModerationCapitals_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    minimum             Int
+    maximum             Int
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationCapitals_id_fkey")
+  }
+
+  model GuildAutoModerationInvites {
+    id                  BigInt                                 @id(map: "GuildAutoModerationInvites_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    allowedCodes        String[]                               @default([]) @noCheck(elementNotNull) @map("allowed_codes")
+    allowedGuilds       BigInt[]                               @default([]) @noCheck(elementNotNull) @map("allowed_guilds")
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationInvites_id_fkey")
+  }
+
+  model GuildAutoModerationLinks {
+    id                  BigInt                                 @id(map: "GuildAutoModerationLinks_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    allowed             String[]                               @default([]) @noCheck(elementNotNull)
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationLinks_id_fkey")
+  }
+
+  model GuildAutoModerationMentions {
+    id                                   BigInt                                 @id(map: "GuildAutoModerationMentions_pkey")
+    enabled                              Boolean?
+    softAction                           Int                                    @map("soft_action")
+    hardAction                           pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration                   Int?                                   @map("hard_action_duration")
+    thresholdMaximum                     Int                                    @map("threshold_maximum")
+    thresholdDuration                    Int                                    @map("threshold_duration")
+    ignoredRoles                         BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels                      BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration                  GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationMentions_id_fkey")
+  }
+
+  model GuildAutoModerationMentionsOverrides {
+    id       BigInt                      @id(map: "GuildAutoModerationMentionsOverrides_pkey") @default(autoincrement())
+    parentId BigInt                      @map("parent_id")
+    roles    BigInt[]                    @noCheck(elementNotNull)
+    users    BigInt[]                    @noCheck(elementNotNull)
+    points   Int
+    parent   GuildAutoModerationMentions @relation(fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationMentionsOverrides_parent_id_fkey", index: false)
+  }
+
+  model GuildAutoModerationNewlines {
+    id                  BigInt                                 @id(map: "GuildAutoModerationNewlines_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    maximum             Int
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationNewlines_id_fkey")
+  }
+
+  model GuildAutoModerationWords {
+    id                  BigInt                                 @id(map: "GuildAutoModerationWords_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    words               String[]                               @default([]) @noCheck(elementNotNull)
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationWords_id_fkey")
+  }
+
+  model GuildLogs {
+    id                     BigInt   @id(map: "GuildLogs_pkey")
+    memberAdd              BigInt?  @map("member_add")
+    memberRemove           BigInt?  @map("member_remove")
+    memberNicknameUpdate   BigInt?  @map("member_nickname_update")
+    memberUsernameUpdate   BigInt?  @map("member_username_update")
+    messageDelete          BigInt?  @map("message_delete")
+    messageDeleteNsfw      BigInt?  @map("message_delete_nsfw")
+    messageUpdate          BigInt?  @map("message_update")
+    messageUpdateNsfw      BigInt?  @map("message_update_nsfw")
+    prune                  BigInt?
+    reaction               BigInt?
+    roleCreate             BigInt?  @map("role_create")
+    roleUpdate             BigInt?  @map("role_update")
+    roleDelete             BigInt?  @map("role_delete")
+    channelCreate          BigInt?  @map("channel_create")
+    channelUpdate          BigInt?  @map("channel_update")
+    channelDelete          BigInt?  @map("channel_delete")
+    emojiCreate            BigInt?  @map("emoji_create")
+    emojiUpdate            BigInt?  @map("emoji_update")
+    emojiDelete            BigInt?  @map("emoji_delete")
+    emojiAdd               BigInt?  @map("emoji_add")
+    emojiAddIncludeTwemoji Boolean  @default(false) @map("emoji_add_include_twemoji")
+    serverUpdate           BigInt?  @map("server_update")
+    command                BigInt?
+    settings               BigInt?
+    ignoreAll              BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_all")
+    ignoreMessages         BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_messages")
+    ignoreReactions        BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_reactions")
+    guild                  Guild    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildLogs_id_fkey")
+  }
+
+  model GuildModeration {
+    id            BigInt  @id(map: "GuildModeration_pkey")
+    channelId     BigInt? @map("channel_id")
+    trackBans     Boolean @default(false) @map("track_bans")
+    trackTimeouts Boolean @default(false) @map("track_timeouts")
+    guild         Guild   @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
+  }
+
+  model GuildRoles {
+    id            BigInt   @id(map: "GuildRoles_pkey")
+    initial       BigInt[] @default([]) @noCheck(elementNotNull)
+    initialHumans BigInt[] @default([]) @noCheck(elementNotNull) @map("initial_humans")
+    initialRobots BigInt[] @default([]) @noCheck(elementNotNull) @map("initial_robots")
+    guild         Guild    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoles_id_fkey")
+  }
+
+  model ModerationAction {
+    id          Int
+    guildId     BigInt                        @map("guild_id")
+    action      pg.enum(ModerationActionType)
+    metadata    Int
+    createdAt   Timestamp(3)                  @default(now()) @map("created_at")
+    duration    Int
+    targetId    BigInt                        @map("target_id")
+    moderatorId BigInt                        @map("moderator_id")
+    referenceId Int?                          @map("reference_id")
+    guild       Guild                         @relation(fields: [guildId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "ModerationAction_guild_id_fkey", index: false)
+
+    @@id([id, guildId], map: "ModerationAction_pkey")
+  }
+
+  model StickyRole {
+    userId  BigInt   @map("user_id")
+    guildId BigInt   @map("guild_id")
+    roleIds BigInt[] @noCheck(elementNotNull) @map("role_ids")
+    guild   Guild    @relation(fields: [guildId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "StickyRole_guild_id_fkey", index: false)
+
+    @@id([userId, guildId], map: "StickyRole_pkey")
+  }
+
+  model User {
+    id     BigInt  @id(map: "User_pkey")
+    report Boolean @default(true)
+  }
+
+  native_enum GuildAutoModerationHardAction {
+    VoiceKick = "VoiceKick"
+    Warning = "Warning"
+    Timeout = "Timeout"
+    Kick = "Kick"
+    Softban = "Softban"
+    Ban = "Ban"
+  }
+
+  native_enum ModerationActionType {
+    AddRole = "AddRole"
+    RemoveRole = "RemoveRole"
+    Nickname = "Nickname"
+    AddWarning = "AddWarning"
+    RemoveWarning = "RemoveWarning"
+    Timeout = "Timeout"
+    TimeoutEnd = "TimeoutEnd"
+    Kick = "Kick"
+    Softban = "Softban"
+    Ban = "Ban"
+    Unban = "Unban"
+  }
+}

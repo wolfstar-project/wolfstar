@@ -43,10 +43,10 @@ export default defineConfig({
 			reportsDirectory: fromRoot('coverage'),
 			reporter: ['text', 'lcov', 'cobertura'],
 			reportOnFailure: true,
-			include: [fromRoot('projects/bot/src/lib/**')]
+			include: ['projects/bot/src/lib/**']
 		}
 	},
-	esbuild: {
+	oxc: {
 		target: 'es2022'
 	}
 });

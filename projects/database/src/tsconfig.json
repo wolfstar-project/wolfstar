@@ -3,7 +3,11 @@
 	"compilerOptions": {
 		"outDir": "../dist",
 		"rootDir": ".",
-		"composite": true
+		"resolvePackageJsonImports": true,
+		"composite": true,
+		"resolveJsonModule": true
 	},
-	"include": ["."]
+	"include": [
+		"."
+	]
 }

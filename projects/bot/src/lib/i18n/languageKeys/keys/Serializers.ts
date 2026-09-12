@@ -41,5 +41,3 @@ export const UnknownRole = T('serializers:unknownRole');
 export const UnknownUser = T('serializers:unknownUser');
 export const Unsupported = T('serializers:unsupported');
 
-export * as CustomCommands from './CustomCommandSerializer/All';
-export * as DisabledCommandChannels from './DisabledCommandChannels/All';

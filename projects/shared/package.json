@@ -19,23 +19,22 @@
 		"build": "tsdown",
 		"dev": "pnpm build && pnpm start",
 		"watch": "tsdown --watch",
-		"prisma:generate": "pnpm prisma generate",
 		"clean": "node scripts/clean.mjs",
 		"start": "node --enable-source-maps dist/main.js"
 	},
 	"dependencies": {
-		"@discordjs/collection": "^1.0.1",
-		"@sapphire/pieces": "^3.3.5",
-		"@sapphire/result": "^2.1.1",
-		"@sapphire/utilities": "^3.8.0",
-		"@vladfrangu/async_event_emitter": "^2.0.1",
-		"discord-api-types": "^0.38.48",
-		"ioredis": "^5.2.2",
-		"ix": "^5.0.0"
+		"@discordjs/collection": "^2.1.1",
+		"@sapphire/pieces": "^4.4.1",
+		"@sapphire/result": "^2.8.0",
+		"@sapphire/utilities": "^3.18.2",
+		"@vladfrangu/async_event_emitter": "^2.4.7",
+		"discord-api-types": "^0.38.55",
+		"ioredis": "^6.0.0",
+		"ix": "^7.0.0"
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",
-		"tsdown": "0.22.0",
-		"typescript": "^6.0.0"
+		"tsdown": "0.23.0",
+		"typescript": "^7.0.2"
 	}
 }

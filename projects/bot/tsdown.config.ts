@@ -85,5 +85,5 @@ export default defineConfig({
 	platform: 'node',
 	tsconfig: 'src/tsconfig.json',
 	treeshake: true,
-	deps: { skipNodeModulesBundle: true }
+	deps: { neverBundle: true }
 });

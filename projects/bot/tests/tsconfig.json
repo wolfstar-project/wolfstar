@@ -3,7 +3,6 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"incremental": false,
-		"baseUrl": ".",
 		"types": ["vitest/globals"],
 		"verbatimModuleSyntax": false,
 		"paths": {

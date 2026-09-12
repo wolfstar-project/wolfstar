@@ -8,15 +8,22 @@ allowBuilds:
   '@prisma/engines': true
   prisma: true
   esbuild: false
+  msgpackr-extract: false
+  workerd: false
 
 overrides:
   ansi-regex: ^5.0.1
-  discord-api-types: ^0.38.34
+  discord-api-types: ^0.38.55
   minimist: ^1.2.6
-  vite: ^6.3.5
+  vite: ^8.3.0
 
 dedupePeers: true
 
 shellEmulator: true
 
 minimumReleaseAge: 0
+
+# Moved here from .npmrc: since pnpm 11 only auth and registry settings are read
+# from .npmrc, everything else must live in this file in camelCase.
+shamefullyHoist: true
+ignoreWorkspaceRootCheck: true

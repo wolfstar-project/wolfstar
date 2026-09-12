@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import { isNullish } from '@sapphire/utilities';
-import { count } from 'ix/asynciterable/count.js';
+import { count } from 'ix/asynciterable/count';
 import { Reader } from '../data/Reader.js';
 import { ScopedCache } from './base/ScopedCache.js';
 import { Guild } from './structures/Guild.js';

@@ -4,12 +4,11 @@
 		"allowJs": true,
 		"outDir": "../dist",
 		"rootDir": ".",
-		"baseUrl": ".",
 		"paths": {
-			"#utils/*": ["lib/util/*"],
-			"#lib/*": ["lib/*"],
-			"#languages": ["locales/index"],
-			"#root/*": ["*"]
+			"#utils/*": ["./lib/util/*"],
+			"#lib/*": ["./lib/*"],
+			"#languages": ["./locales/index"],
+			"#root/*": ["./*"]
 		},
 		"composite": true
 	},
