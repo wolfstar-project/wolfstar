@@ -1,0 +1,51 @@
+{
+	"name": "wolfstar-bot",
+	"version": "7.0.0",
+	"description": "Multipurpose Discord Bot built on Sapphire Framework",
+	"author": "WolfStar Project",
+	"license": "Apache-2.0",
+	"private": true,
+	"main": "dist/main.js",
+	"type": "module",
+	"imports": {
+		"#lib/*": "./dist/lib/*.js",
+		"#util/*": "./dist/util/*.js",
+		"#util": "./dist/util/index.js"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "pnpm build && pnpm start",
+		"watch": "tsdown --watch",
+		"clean": "node scripts/clean.mjs",
+		"start": "node --enable-source-maps dist/main.js",
+		"test": "vitest run --config ../../vitest.config.ts"
+	},
+	"dependencies": {
+		"@discordjs/builders": "^1.14.1",
+		"@discordjs/collection": "^2.1.1",
+		"@sapphire/async-queue": "^1.5.5",
+		"@sapphire/result": "^2.8.0",
+		"@sapphire/utilities": "^3.18.2",
+		"@sentry/node": "^10.74.0",
+		"@skyra/char": "^1.0.3",
+		"@skyra/jaro-winkler": "^1.1.1",
+		"@wolfstar/env-utilities": "^2.0.8",
+		"@wolfstar/http-framework": "^3.6.0",
+		"@wolfstar/http-framework-i18n": "^2.0.0",
+		"@wolfstar/shared-http-pieces": "^2.0.1",
+		"@wolfstar/start-banner": "^2.1.0",
+		"colorette": "^2.0.20",
+		"discord-api-types": "^0.38.55",
+		"gradient-string": "^3.0.0",
+		"tslib": "^2.8.1",
+		"wolfstar-database": "workspace:^",
+		"wolfstar-shared": "workspace:^"
+	},
+	"devDependencies": {
+		"@rollup/plugin-alias": "6.0.0",
+		"@sapphire/framework": "^5.5.1",
+		"discord.js": "^14.27.0",
+		"tsdown": "0.23.0",
+		"typescript": "^7.0.2"
+	}
+}

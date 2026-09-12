@@ -1,0 +1,42 @@
+{
+	"name": "wolfstar-database",
+	"version": "7.0.0",
+	"description": "Database utilities for Wolfstar's projects",
+	"author": "WolfStar Project",
+	"license": "Apache-2.0",
+	"private": true,
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		"import": "./dist/index.js",
+		"types": "./dist/index.d.ts"
+	},
+	"type": "module",
+	"imports": {
+		"#lib/*": "./dist/lib/*.js"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "pnpm build && pnpm start",
+		"watch": "tsdown --watch",
+		"prisma:generate": "pnpm prisma7:generate && pnpm prisma8:emit",
+		"prisma7:generate": "prisma7 generate",
+		"prisma7:migrate": "prisma7 migrate dev",
+		"prisma8:infer": "prisma contract infer --output src/prisma8/contract.prisma",
+		"prisma8:emit": "prisma contract emit"
+	},
+	"dependencies": {
+		"@prisma/adapter-pg": "^7.10.0",
+		"@prisma/client": "^7.10.0",
+		"@prisma/orm-postgres": "8.0.0-rc.10",
+		"dotenv": "^17.4.2",
+		"pg": "^8.23.0"
+	},
+	"devDependencies": {
+		"@prisma/prisma7": "7.10.0-dev.58",
+		"@rollup/plugin-alias": "6.0.0",
+		"prisma": "8.0.0-rc.13",
+		"tsdown": "0.23.0",
+		"typescript": "^7.0.2"
+	}
+}

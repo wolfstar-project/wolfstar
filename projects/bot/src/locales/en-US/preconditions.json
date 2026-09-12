@@ -1,0 +1,21 @@
+{
+	"clientPermissions": "I don't have sufficient permissions! I'm missing: {{missing, permissionsAndList}}",
+	"cooldown": "You have just used this command. You can use this command again in {{remaining, duration}}.",
+	"dmOnly": "This command can only be used in DM channels.",
+	"guildNewsOnly": "This command can only be used in announcement channels.",
+	"guildNewsThreadOnly": "This command can only be used in announcement thread channels.",
+	"guildOnly": "This command can only be used in server channels.",
+	"guildPrivateThreadOnly": "This command can only be used in private thread channels.",
+	"guildPublicThreadOnly": "This command can only be used in public thread channels.",
+	"guildTextOnly": "This command can only be used in text channels.",
+	"nsfw": "You may not use NSFW commands in this channel!",
+	"threadOnly": "This command can only be used in thread channels.",
+	"userPermissions": "You don't have sufficient permissions! You're missing: {{missing, permissionsAndList}}",
+	"administrator": "You need administrator privileges to run `{{command.name}}`!",
+	"disabledGlobal": "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official Skyra server: <https://join.skyra.pw>",
+	"disabledGuild": "This command has been disabled by an admin in this server!",
+	"moderator": "You need moderator privileges to run `{{command.name}}`!",
+	"permissionNodes": "{{REDCROSS}} You do not have permission to use this command!",
+	"serverOwner": "You need to be the server's owner to run `{{command.name}}`!",
+	"subCommandGuildOnly": "This subcommand can only be used in server channels due to Discord limitations. We will likely make this command available in DMs when we implement the new \"buttons\" feature."
+}

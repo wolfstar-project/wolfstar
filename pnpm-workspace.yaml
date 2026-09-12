@@ -1,31 +1,29 @@
+packages:
+    - 'projects/*'
+
 allowBuilds:
+    bufferutil: false
+    'zlib-sync': false
     '@prisma/client': true
     '@prisma/engines': true
-    '@tailwindcss/oxide': true
-    better-sqlite3: true
-    bufferutil: false
-    esbuild: true
     prisma: true
-    sharp@0.34.5: true
-    workerd: true
-    zlib-sync: false
+    esbuild: false
+    msgpackr-extract: false
+    workerd: false
 
 overrides:
     ansi-regex: ^5.0.1
-    discord-api-types: ^0.38.34
-    minimist: ^1.2.8
+    discord-api-types: ^0.38.55
+    minimist: ^1.2.6
+    vite: ^8.3.0
 
 dedupePeers: true
 
 shellEmulator: true
 
-# Delay installs of very new releases by 24 hours (1440 minutes) as a supply-chain safety buffer.
-minimumReleaseAge: 1440
-minimumReleaseAgeExclude:
-    - '@sentry/conventions'
-    - '@sentry/core'
-    - '@sentry/node'
-    - '@sentry/node-core'
-    - '@sentry/opentelemetry'
-    - '@sentry/server-utils'
-    - evlog
+minimumReleaseAge: 0
+
+# Moved here from .npmrc: since pnpm 11 only auth and registry settings are read
+# from .npmrc, everything else must live in this file in camelCase.
+shamefullyHoist: true
+ignoreWorkspaceRootCheck: true

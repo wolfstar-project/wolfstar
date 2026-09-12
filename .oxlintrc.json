@@ -39,12 +39,7 @@
 				"allowSwitch": false
 			}
 		],
-		"no-redeclare": [
-			"error",
-			{
-				"builtinGlobals": false
-			}
-		],
+		"no-redeclare": "off",
 		"no-restricted-globals": [
 			"error",
 			{
@@ -136,19 +131,20 @@
 		"unicorn/prefer-set-has": "off",
 		"vitest/require-mock-type-parameters": "off"
 	},
-	"ignorePatterns": ["dist/**", "node_modules/**", "coverage/**", "src/languages/**/*.json", "src/lib/util/Links/TLDs.ts"],
+	"ignorePatterns": [
+		"dist/**",
+		"node_modules/**",
+		"coverage/**",
+		"projects/**/dist/**",
+		"projects/**/src/languages/**/*.json",
+		"projects/bot/src/lib/util/Links/TLDs.ts"
+	],
 	"overrides": [
 		{
 			"files": ["**/*.?([cm])ts"],
 			"plugins": ["typescript"],
 			"rules": {
 				"no-undef": "off",
-				"no-redeclare": [
-					"error",
-					{
-						"builtinGlobals": false
-					}
-				],
 				"no-unused-vars": "off",
 				"no-useless-constructor": "off",
 				"no-unused-expressions": [
@@ -185,12 +181,6 @@
 				"typescript/only-throw-error": "off",
 				"typescript/prefer-as-const": "error",
 				"typescript/triple-slash-reference": "off"
-			}
-		},
-		{
-			"files": ["src/commands/**/*.ts"],
-			"rules": {
-				"typescript/require-await": "off"
 			}
 		},
 		{
@@ -240,6 +230,14 @@
 			"plugins": ["typescript"],
 			"rules": {
 				"no-await-in-loop": "off",
+				"no-console": "off"
+			}
+		},
+		{
+			"files": ["projects/**/tsdown.config.ts"],
+			"plugins": ["typescript"],
+			"rules": {
+				"no-underscore-dangle": "off",
 				"no-console": "off"
 			}
 		}

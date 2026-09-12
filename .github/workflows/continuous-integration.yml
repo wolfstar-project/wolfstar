@@ -11,7 +11,6 @@ on:
         branches:
             - main
 
-# cancel in-progress runs on new commits to same PR (github.event.number)
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
     cancel-in-progress: true
@@ -27,12 +26,13 @@ jobs:
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-              with:
-                  node-version: lts/*
-
             - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               name: Install pnpm
+
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
 
             - name: Install dependencies (root only, no scripts)
               run: pnpm install --filter . --ignore-scripts
@@ -47,18 +47,19 @@ jobs:
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-              with:
-                  node-version: lts/*
-
             - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               name: Install pnpm
+
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
             - name: Generate prisma types
-              run: pnpm prisma:generate
+              run: pnpm --filter wolfstar-database prisma:generate
 
             - name: Build project
               run: pnpm build
@@ -70,21 +71,25 @@ jobs:
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-              with:
-                  node-version: lts/*
-
             - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               name: Install pnpm
+
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
             - name: Generate prisma types
-              run: pnpm prisma:generate
+              run: pnpm --filter wolfstar-database prisma:generate
+
+            - name: Build project
+              run: pnpm build
 
             - name: Run unit tests
-              run: pnpm test --coverage
+              run: pnpm test -- --coverage
 
             - name: Codecov Upload
               uses: codecov/codecov-action@v7
