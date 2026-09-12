@@ -23,6 +23,9 @@ COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node pnpm-workspace.yaml .
 COPY --chown=node:node package.json .
 COPY --chown=node:node .npmrc .
+# pnpm runs the root `prepare` script on install; .husky/install.mjs is what
+# reads CI=true to opt out, so it has to exist.
+COPY --chown=node:node .husky/ .husky/
 COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
 COPY --chown=node:node projects/gateway/package.json projects/gateway/package.json
@@ -65,7 +68,9 @@ COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bo
 COPY --chown=node:node --from=builder /usr/src/app/projects/shared/dist projects/shared/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 
-RUN pnpm install --prod --frozen-lockfile --offline
+# Not --offline: the runner is a fresh layer off `base` with an empty pnpm
+# store, so an offline install fails with ERR_PNPM_NO_OFFLINE_TARBALL.
+RUN pnpm install --prod --frozen-lockfile
 RUN chown node:node /usr/src/app/
 
 USER node
