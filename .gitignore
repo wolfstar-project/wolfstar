@@ -51,3 +51,10 @@ wiki/
 
 # Plans
 plans/
+
+# `prisma skills sync` writes a 1.5 MB copy of the Prisma 8 reference docs into
+# each supported agent directory. Regenerate on demand instead of committing it.
+projects/*/.agents/
+projects/*/.claude/
+projects/*/.cursor/
+projects/*/.devin/

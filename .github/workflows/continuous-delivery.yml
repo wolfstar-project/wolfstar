@@ -11,6 +11,9 @@ on:
             - '.github/workflows/continuous-delivery.yml'
             - 'package.json'
             - 'pnpm-lock.yaml'
+            - 'pnpm-workspace.yaml'
+            - 'tsconfig.base.json'
+            - '.npmrc'
 
 permissions:
     contents: read

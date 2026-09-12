@@ -23,13 +23,15 @@ jobs:
               with:
                   token: ${{ secrets.WOLFSTAR_TOKEN }}
                   fetch-depth: 0
-            - name: Install pnpm and Node.js v24
-              uses: pnpm/setup@v2
+            - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              name: Install pnpm
               with:
-                  runtime: node@24
-                  cache: true
-                  # Install is run explicitly below so it can skip lifecycle scripts
-                  install: false
+                  run_install: false
+            - name: Use Node.js v24
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
             - name: Install dependencies
               run: pnpm install --frozen-lockfile --ignore-scripts
             - name: Pull translations from Tolgee
@@ -37,13 +39,14 @@ jobs:
                   TOLGEE_API_KEY: ${{ secrets.TOLGEE_API_KEY }}
               # `pnpm tolgee:pull` runs the CLI (config: .tolgeerc.cjs) and then
               # scripts/tolgee-pull-remap.ts, which remaps Tolgee language tags
-              # (es, pt, zh-Hans, …) onto the Discord locale directories and merges
-              # the export onto the committed files (en-US is never written).
+              # (es, pt, zh-Hans, …) onto the Discord locale directories under
+              # projects/bot/src/locales and merges the export onto the committed
+              # files (en-US is never written).
               run: pnpm tolgee:pull
             - name: Generate prisma types
               # tests/vitest.setup.ts boots #lib/setup, which needs the generated client;
               # the install above skips lifecycle scripts, so generate it explicitly.
-              run: pnpm prisma:generate
+              run: pnpm --filter wolfstar-database prisma:generate
             - name: Validate translations
               # Structural gate on the merged tree: no nulls, no `name[0]` keys, no raw ICU
               # shells, placeholders consistent with en-US. A corrupt export fails the job
@@ -53,7 +56,7 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.WOLFSTAR_TOKEN }}
               run: |
-                  git add src/languages;
+                  git add projects/bot/src/locales;
                   if git diff-index --quiet HEAD --; then
                     echo "No translation changes to commit, exiting with code 0"
                     exit 0;
