@@ -24,11 +24,11 @@ export class UserCommand extends WolfCommand {
 		const permissions = role.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
 			? args.t(LanguageKeys.Commands.Management.RoleInfoAll)
 			: role.permissions.toArray().length > 0
-			? role.permissions
-					.toArray()
-					.map((key) => `+ **${args.t(`permissions:${key}`, key)}**`)
-					.join('\n')
-			: args.t(LanguageKeys.Commands.Management.RoleInfoNoPermissions);
+				? role.permissions
+						.toArray()
+						.map((key) => `+ **${args.t(`permissions:${key}`, key)}**`)
+						.join('\n')
+				: args.t(LanguageKeys.Commands.Management.RoleInfoNoPermissions);
 
 		const description = args.t(LanguageKeys.Commands.Management.RoleInfoData, {
 			role,

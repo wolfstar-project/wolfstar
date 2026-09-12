@@ -109,11 +109,11 @@ export class UserCommand extends WolfCommand {
 				result instanceof Error
 					? result.stack
 					: args.getFlags('json')
-					? JSON.stringify(result, null, 4)
-					: inspect(result, {
-							depth: Number(args.getOption('depth') ?? 0) || 0,
-							showHidden: args.getFlags('showHidden', 'hidden')
-					  });
+						? JSON.stringify(result, null, 4)
+						: inspect(result, {
+								depth: Number(args.getOption('depth') ?? 0) || 0,
+								showHidden: args.getFlags('showHidden', 'hidden')
+							});
 		}
 		return {
 			success,

@@ -1,9 +1,9 @@
-import "dotenv/config";
-import { PrismaPg } from "@prisma/adapter-pg";
-import postgres from "@prisma/orm-postgres/runtime";
-import { PrismaClient } from "./generated/prisma/client.js";
-import type { Contract } from "./generated/prisma8/contract.js";
-import contractJson from "./generated/prisma8/contract.json" with { type: "json" };
+import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import postgres from '@prisma/orm-postgres/runtime';
+import { PrismaClient } from './generated/prisma/client.js';
+import type { Contract } from './generated/prisma8/contract.js';
+import contractJson from './generated/prisma8/contract.json' with { type: 'json' };
 
 interface GetDbParams {
 	connectionString: string;
@@ -17,7 +17,7 @@ function getDb({ connectionString }: GetDbParams) {
 	return prisma;
 }
 
-const connectionString = process.env.DATABASE_URL ?? "";
+const connectionString = process.env.DATABASE_URL ?? '';
 
 /**
  * Prisma ORM 7 client. Every existing consumer still reads and writes through this.
@@ -30,6 +30,8 @@ const prisma = getDb({ connectionString });
  * https://www.prisma.io/docs/guides/upgrade-prisma-orm/postgresql
  */
 export const db = postgres<Contract>({ url: connectionString, contractJson });
+
+export type { PrismaClient } from './generated/prisma/client.js';
 
 export { prisma };
 export default prisma;

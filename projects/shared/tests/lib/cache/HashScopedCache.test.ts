@@ -1,7 +1,6 @@
 import type { APIEmoji, APIGuildMember } from 'discord-api-types/v10';
 import { Cache } from '../../../src/lib/cache/Cache.js';
 import { Emoji } from '../../../src/lib/cache/structures/Emoji.js';
-import { Member } from '../../../src/lib/cache/structures/Member.js';
 
 /**
  * Minimal in-memory stand-in for the subset of the ioredis hash API used by

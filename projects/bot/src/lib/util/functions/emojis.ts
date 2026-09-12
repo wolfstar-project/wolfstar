@@ -115,7 +115,7 @@ export function getEmojiObject(emoji: string): EmojiObject | null {
 export function resolveEmojiId(emoji: EmojiObject | SerializedEmoji): string {
 	if (isNullish(emoji)) return '';
 
-	return typeof emoji === 'string' ? getEmojiId(emoji) : emoji.id ?? encodeURIComponent(emoji.name!);
+	return typeof emoji === 'string' ? getEmojiId(emoji) : (emoji.id ?? encodeURIComponent(emoji.name!));
 }
 
 /**

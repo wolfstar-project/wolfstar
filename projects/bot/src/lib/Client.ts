@@ -3,7 +3,6 @@ import { envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { Client, container } from '@wolfstar/http-framework';
 import { MessageBroker, Redis, Cache, RedisOptions } from 'wolfstar-shared';
 import * as Sentry from '@sentry/node';
-import { RewriteFrames } from '@sentry/integrations';
 import { fileURLToPath } from 'node:url';
 
 export function createClient(options: ClientOptions = {}) {
@@ -39,12 +38,12 @@ export function createClient(options: ClientOptions = {}) {
 		Sentry.init({
 			dsn: process.env.SENTRY_DSN,
 			integrations: [
-				new Sentry.Integrations.Modules(),
-				new Sentry.Integrations.FunctionToString(),
-				new Sentry.Integrations.LinkedErrors(),
-				new Sentry.Integrations.Console(),
-				new Sentry.Integrations.Http({ breadcrumbs: true, tracing: true }),
-				new RewriteFrames({ root: fileURLToPath(new URL('..', srcFolderURL)) })
+				Sentry.modulesIntegration(),
+				Sentry.functionToStringIntegration(),
+				Sentry.linkedErrorsIntegration(),
+				Sentry.consoleIntegration(),
+				Sentry.httpIntegration({ breadcrumbs: true }),
+				Sentry.rewriteFramesIntegration({ root: fileURLToPath(new URL('..', srcFolderURL)) })
 			]
 		});
 	}

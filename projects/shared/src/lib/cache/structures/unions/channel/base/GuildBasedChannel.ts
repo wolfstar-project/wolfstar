@@ -38,14 +38,12 @@ export abstract class GuildBasedChannel<T extends GuildChannelType> implements I
 			flags: this.flags ?? undefined,
 			nsfw: this.nsfw ?? undefined,
 			parent_id: this.parentId?.toString(),
-			permission_overwrites: this.permissionOverwrites.map(
-				(entry): APIOverwrite => ({
-					id: entry.id.toString(),
-					type: entry.type,
-					allow: entry.allow.toString(),
-					deny: entry.deny.toString()
-				})
-			),
+			permission_overwrites: this.permissionOverwrites.map((entry): APIOverwrite => ({
+				id: entry.id.toString(),
+				type: entry.type,
+				allow: entry.allow.toString(),
+				deny: entry.deny.toString()
+			})),
 			position: this.position ?? undefined
 		};
 	}
@@ -93,14 +91,12 @@ export function guildBasedFromAPIShared<T extends GuildChannelType>(data: GuildB
 		flags: data.flags,
 		nsfw: data.nsfw,
 		parentId: normalizeNullable(data.parent_id, BigInt),
-		permissionOverwrites: data.permission_overwrites?.map(
-			(value): GuildBasedChannel.DataPermissionOverwrite => ({
-				id: BigInt(value.id),
-				type: value.type,
-				allow: BigInt(value.allow),
-				deny: BigInt(value.deny)
-			})
-		),
+		permissionOverwrites: data.permission_overwrites?.map((value): GuildBasedChannel.DataPermissionOverwrite => ({
+			id: BigInt(value.id),
+			type: value.type,
+			allow: BigInt(value.allow),
+			deny: BigInt(value.deny)
+		})),
 		position: data.position
 	};
 }
@@ -113,14 +109,12 @@ export function guildBasedFromBinaryShared<T extends GuildChannelType>(reader: R
 		flags: reader.u8(),
 		nsfw: reader.bool(),
 		parentId: reader.u64(),
-		permissionOverwrites: reader.array(
-			(reader): GuildBasedChannel.DataPermissionOverwrite => ({
-				id: reader.u64()!,
-				type: reader.u8()!,
-				allow: reader.u64()!,
-				deny: reader.u64()!
-			})
-		),
+		permissionOverwrites: reader.array((reader): GuildBasedChannel.DataPermissionOverwrite => ({
+			id: reader.u64()!,
+			type: reader.u8()!,
+			allow: reader.u64()!,
+			deny: reader.u64()!
+		})),
 		position: reader.u16()
 	};
 }

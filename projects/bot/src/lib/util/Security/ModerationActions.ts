@@ -290,13 +290,13 @@ export class ModerationActions {
 								? LanguageKeys.Commands.Moderation.ActionSetNicknameSet
 								: LanguageKeys.Commands.Moderation.ActionSetNicknameRemoved,
 							{ reason: moderationLog.reason }
-					  )
+						)
 					: await resolveKey(
 							this.guild,
 							nickname
 								? LanguageKeys.Commands.Moderation.ActionSetNicknameNoReasonSet
 								: LanguageKeys.Commands.Moderation.ActionSetNicknameNoReasonRemoved
-					  )
+						)
 			});
 
 		await this.cancelLastLogTaskFromUser(options.userId, TypeCodes.SetNickname);
@@ -715,8 +715,8 @@ export class ModerationActions {
 				? LanguageKeys.Commands.Moderation.ModerationDmDescriptionWithReasonWithDuration
 				: LanguageKeys.Commands.Moderation.ModerationDmDescriptionWithReason
 			: entry.duration
-			? LanguageKeys.Commands.Moderation.ModerationDmDescriptionWithDuration
-			: LanguageKeys.Commands.Moderation.ModerationDmDescription;
+				? LanguageKeys.Commands.Moderation.ModerationDmDescriptionWithDuration
+				: LanguageKeys.Commands.Moderation.ModerationDmDescription;
 
 		const t = await fetchT(this.guild);
 		const description = t(descriptionKey, {

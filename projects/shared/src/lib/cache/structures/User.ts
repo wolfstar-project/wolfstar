@@ -38,16 +38,13 @@ export class User implements IStructure {
 			discriminator: this.discriminator.toString().padStart(4, '0'),
 			avatar: this.avatar,
 			bot: this.bot,
-			flags: this.flags,
+			flags: this.flags
 		};
 	}
 }
 
-
-
-
 export namespace User {
-   export type Json = APIUser;
+	export type Json = APIUser;
 
 	export interface Data {
 		id: bigint;

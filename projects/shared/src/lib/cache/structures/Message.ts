@@ -71,26 +71,21 @@ export class Message implements IStructure {
 				filename: entry.name,
 				url: entry.url
 			})),
-			embeds: this.embeds.map(
-				(entry): APIEmbed => ({
-					author: normalizeOptional(
-						entry.author,
-						(entry): APIEmbedAuthor => ({
-							name: entry.name,
-							icon_url: entry.icon ?? undefined,
-							url: entry.url ?? undefined
-						})
-					),
-					description: entry.description ?? undefined,
-					fields: entry.fields ?? undefined,
-					footer: entry.footer ?? undefined,
-					image: entry.image ?? undefined,
-					thumbnail: entry.thumbnail ?? undefined,
-					timestamp: fromTimestamp(entry.timestamp) ?? undefined,
-					title: entry.title ?? undefined,
+			embeds: this.embeds.map((entry): APIEmbed => ({
+				author: normalizeOptional(entry.author, (entry): APIEmbedAuthor => ({
+					name: entry.name,
+					icon_url: entry.icon ?? undefined,
 					url: entry.url ?? undefined
-				})
-			)
+				})),
+				description: entry.description ?? undefined,
+				fields: entry.fields ?? undefined,
+				footer: entry.footer ?? undefined,
+				image: entry.image ?? undefined,
+				thumbnail: entry.thumbnail ?? undefined,
+				timestamp: fromTimestamp(entry.timestamp) ?? undefined,
+				title: entry.title ?? undefined,
+				url: entry.url ?? undefined
+			}))
 		};
 	}
 
@@ -125,21 +120,17 @@ export class Message implements IStructure {
 				name: reader.string()!,
 				url: reader.string()!
 			}))!,
-			embeds: reader.array(
-				(reader): Message.DataEmbed => ({
-					author: reader.object(
-						(reader): Message.DataEmbedAuthor => ({ name: reader.string()!, icon: reader.string(), url: reader.string() })
-					),
-					description: reader.string(),
-					fields: reader.array((reader): Message.DataEmbedField => ({ name: reader.string()!, value: reader.string()! })),
-					footer: reader.object((reader): Message.DataEmbedFooter => ({ text: reader.string()!, icon: reader.string() })),
-					image: reader.object((reader): Message.DataEmbedImage => ({ url: reader.string()! })),
-					thumbnail: reader.object((reader): Message.DataEmbedThumbnail => ({ url: reader.string()! })),
-					timestamp: reader.date(),
-					title: reader.string(),
-					url: reader.string()
-				})
-			)
+			embeds: reader.array((reader): Message.DataEmbed => ({
+				author: reader.object((reader): Message.DataEmbedAuthor => ({ name: reader.string()!, icon: reader.string(), url: reader.string() })),
+				description: reader.string(),
+				fields: reader.array((reader): Message.DataEmbedField => ({ name: reader.string()!, value: reader.string()! })),
+				footer: reader.object((reader): Message.DataEmbedFooter => ({ text: reader.string()!, icon: reader.string() })),
+				image: reader.object((reader): Message.DataEmbedImage => ({ url: reader.string()! })),
+				thumbnail: reader.object((reader): Message.DataEmbedThumbnail => ({ url: reader.string()! })),
+				timestamp: reader.date(),
+				title: reader.string(),
+				url: reader.string()
+			}))
 		});
 	}
 
@@ -161,22 +152,21 @@ export class Message implements IStructure {
 	}
 
 	private static mapEmbeds(embeds: APIEmbed[]) {
-		return embeds.map(
-			(embed): Message.DataEmbed => ({
-				author: normalizeNullable(
-					embed.author,
-					(author): Message.DataEmbedAuthor => ({ name: author.name, icon: author.icon_url, url: author.url })
-				),
-				description: embed.description,
-				fields: normalizeArray(embed.fields, (field): Message.DataEmbedField => ({ name: field.name, value: field.value })),
-				footer: normalizeNullable(embed.footer, (footer): Message.DataEmbedFooter => ({ text: footer.text, icon: footer.icon_url })),
-				image: normalizeNullable(embed.image, (image): Message.DataEmbedImage => ({ url: image.url })),
-				thumbnail: normalizeNullable(embed.thumbnail, (thumbnail): Message.DataEmbedThumbnail => ({ url: thumbnail.url })),
-				timestamp: toTimestamp(embed.timestamp),
-				title: embed.title,
-				url: embed.url
-			})
-		);
+		return embeds.map((embed): Message.DataEmbed => ({
+			author: normalizeNullable(embed.author, (author): Message.DataEmbedAuthor => ({
+				name: author.name,
+				icon: author.icon_url,
+				url: author.url
+			})),
+			description: embed.description,
+			fields: normalizeArray(embed.fields, (field): Message.DataEmbedField => ({ name: field.name, value: field.value })),
+			footer: normalizeNullable(embed.footer, (footer): Message.DataEmbedFooter => ({ text: footer.text, icon: footer.icon_url })),
+			image: normalizeNullable(embed.image, (image): Message.DataEmbedImage => ({ url: image.url })),
+			thumbnail: normalizeNullable(embed.thumbnail, (thumbnail): Message.DataEmbedThumbnail => ({ url: thumbnail.url })),
+			timestamp: toTimestamp(embed.timestamp),
+			title: embed.title,
+			url: embed.url
+		}));
 	}
 }
 

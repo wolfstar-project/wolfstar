@@ -39,12 +39,7 @@
 				"allowSwitch": false
 			}
 		],
-		"no-redeclare": [
-			"error",
-			{
-				"builtinGlobals": false
-			}
-		],
+		"no-redeclare": "off",
 		"no-restricted-globals": [
 			"error",
 			{
@@ -150,12 +145,6 @@
 			"plugins": ["typescript"],
 			"rules": {
 				"no-undef": "off",
-				"no-redeclare": [
-					"error",
-					{
-						"builtinGlobals": false
-					}
-				],
 				"no-unused-vars": "off",
 				"no-useless-constructor": "off",
 				"no-unused-expressions": [

@@ -100,7 +100,7 @@ export class UserListener extends Listener<typeof Events.CommandError> {
 	private userError(message: Message, t: TFunction, error: UserError) {
 		// `context: { silent: true }` should make UserError silent:
 		// Use cases for this are for example permissions error when running the `eval` command.
-		if (Reflect.get(Object(error.context), 'silent')) return;
+		if (Reflect.get(new Object(error.context), 'silent')) return;
 
 		const identifier = translate(error.identifier);
 		return this.alert(message, t(identifier, error.context as any));

@@ -40,4 +40,3 @@ export const UnknownChannel = T('serializers:unknownChannel');
 export const UnknownRole = T('serializers:unknownRole');
 export const UnknownUser = T('serializers:unknownUser');
 export const Unsupported = T('serializers:unsupported');
-

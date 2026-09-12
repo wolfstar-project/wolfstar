@@ -3,6 +3,6 @@
 	"compilerOptions": {
 		"target": "ES2024",
 		"lib": ["ESNext", "DOM"],
-		"emitDecoratorMetadata": false,
+		"emitDecoratorMetadata": false
 	}
 }

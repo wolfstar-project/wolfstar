@@ -35,7 +35,7 @@ const zws = String.fromCharCode(8203);
  */
 export function clean(text: string) {
 	if (typeof sensitivePattern === 'undefined') {
-		throw new Error('initClean must be called before running this.');
+		throw new TypeError('initClean must be called before running this.');
 	}
 	return text.replace(sensitivePattern, '「ｒｅｄａｃｔｅｄ」').replace(/`/g, `\`${zws}`).replace(/@/g, `@${zws}`);
 }

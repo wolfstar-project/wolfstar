@@ -42,9 +42,7 @@ export class UserCommand extends Command {
 	public async handleRole(interaction: Command.Interaction) {}
 
 	@RegisterSubCommand((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.Server))
-	public async handleServer(interaction: Command.Interaction) {
-		this.container.client
-	}
+	public async handleServer(interaction: Command.Interaction) {}
 
 	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
 		const user = args.finished ? message.author : await args.pick('userName');
