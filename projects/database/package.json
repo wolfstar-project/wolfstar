@@ -5,11 +5,11 @@
 	"author": "WolfStar Project",
 	"license": "Apache-2.0",
 	"private": true,
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "dist/index.mjs",
+	"types": "dist/index.d.mts",
 	"exports": {
-		"import": "./dist/index.js",
-		"types": "./dist/index.d.ts"
+		"types": "./dist/index.d.mts",
+		"import": "./dist/index.mjs"
 	},
 	"type": "module",
 	"imports": {

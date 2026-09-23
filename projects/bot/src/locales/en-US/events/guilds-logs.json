@@ -139,5 +139,18 @@
 	"serverUpdateWidgetChannelRemoved": "• **Widget Channel**: {{value}} → Not Set",
 	"serverUpdateWidgetChannel": "• **Widget Channel**: {{previous}} → {{next}}",
 	"serverUpdateWidgetEnabled": "• **Widget Enabled**",
-	"serverUpdateWidgetDisabled": "• **Widget Disabled**"
+	"serverUpdateWidgetDisabled": "• **Widget Disabled**",
+	"commandExecuteTitle": "Command Executed",
+	"settingsUpdateTitle": "Settings Updated",
+	"settingsAccessDeniedTitle": "Settings Access Denied",
+	"logFieldUser": "User",
+	"logFieldCommand": "Command",
+	"logFieldType": "Type",
+	"logFieldChannel": "Channel",
+	"logFieldAction": "Action",
+	"logFieldChange": "Changes",
+	"logFieldReason": "Reason",
+	"commandTypeChatInput": "Chat Input",
+	"commandTypeContextMenu": "Context Menu",
+	"commandTypeMessage": "Message Command"
 }

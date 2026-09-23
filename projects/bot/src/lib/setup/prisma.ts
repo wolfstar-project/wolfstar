@@ -1,11 +1,10 @@
 import { container } from '@wolfstar/http-framework';
-import { prisma } from 'wolfstar-database';
-import type { PrismaClient } from 'wolfstar-database';
+import { db, type Database } from 'wolfstar-database';
 
-container.prisma = prisma;
+container.prisma = db;
 
 declare module '@sapphire/pieces' {
 	interface Container {
-		prisma: PrismaClient;
+		prisma: Database;
 	}
 }

@@ -1914,6 +1914,19 @@ declare module "i18next" {
         serverUpdateWidgetChannel: "• **Widget Channel**: {{previous}} → {{next}}";
         serverUpdateWidgetEnabled: "• **Widget Enabled**";
         serverUpdateWidgetDisabled: "• **Widget Disabled**";
+        commandExecuteTitle: "Command Executed";
+        settingsUpdateTitle: "Settings Updated";
+        settingsAccessDeniedTitle: "Settings Access Denied";
+        logFieldUser: "User";
+        logFieldCommand: "Command";
+        logFieldType: "Type";
+        logFieldChannel: "Channel";
+        logFieldAction: "Action";
+        logFieldChange: "Changes";
+        logFieldReason: "Reason";
+        commandTypeChatInput: "Chat Input";
+        commandTypeContextMenu: "Context Menu";
+        commandTypeMessage: "Message Command";
       };
       "events/guilds-members": {
         guildMemberAdd: "User Joined";
@@ -2311,6 +2324,25 @@ declare module "i18next" {
         validationChooseKey: "You cannot configure a group, please pick one of the following keys: {{keys, andList}}.";
         validationMissingValue: "The value ``{{value}}`` was not set in the key **{{path}}**.";
         validationDuplicatedValue: "The value for the key `{{path}}` was already set to ``{{value}}``!";
+        modulesAutomod: "Whether the auto-moderation module is enabled.";
+        modulesModeration: "Whether the moderation module is enabled.";
+        modulesLogs: "Whether the logs module is enabled.";
+        modulesCommands: "Whether the commands module is enabled.";
+        modulesRoles: "Whether the roles module is enabled.";
+        automodChannel: "The channel where the auto-moderation actions are reported.";
+        automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
+        moderationTrackBans: "Whether I should record the bans made without using my commands.";
+        moderationTrackTimeouts: "Whether I should record the timeouts made without using my commands.";
+        noMentionSpamIgnoredChannels: "The channels where the mention spam filter is not applied.";
+        noMentionSpamIgnoredRoles: "The roles that are not affected by the mention spam filter.";
+        selfmodMentionsEnabled: "Whether the mentions filter is enabled.";
+        selfmodMentionsIgnoredChannels: "The channels where the mentions filter is not applied.";
+        selfmodMentionsIgnoredRoles: "The roles that are not affected by the mentions filter.";
+        channelsLogsCommand: "The channel where I will log the commands that are run.";
+        channelsLogsEmojiAdd: "The channel where I will log the reactions added to messages.";
+        channelsLogsEmojiAddIncludeTwemoji: "Whether the reaction logs should include the default (Twemoji) emojis.";
+        channelsLogsSettings: "The channel where I will log the changes to my settings.";
+        channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
       };
       system: {
         discordAbortError: "I had a small network error when messaging Discord, please run this command again!";

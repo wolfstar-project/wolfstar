@@ -26,10 +26,13 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Generated client:** `projects/database/src/generated/prisma/`
 - **Prisma config:** `projects/database/prisma.config.ts`
 - **Migrations:** `prisma/migrations/` (PostgreSQL)
-- **Access:** `container.prisma` (Sapphire container)
+- **Access:** `container.prisma` is the Prisma 8 `db` (type `Database` from `wolfstar-database`), set in `projects/bot/src/lib/setup/prisma.ts`. Query with `container.prisma.orm.public.<Model>` and `container.prisma.transaction(async (tx) => …)`
+- **Types:** `Models.public_<Model>` from `wolfstar-database`; `BigInt` columns decode to `bigint`, `Jsonb` to `JsonValue`, `TimestampString(3)` to a branded string
 
 ## Settings System
 
+- **Data:** `GuildData` (`src/lib/database/settings/types.ts`) is flat. Each key is prefixed by the Prisma 8 table it is stored in (`rolesAdmin` → `GuildRoles.admin`, `logsMemberAdd` → `GuildLogs.memberAdd`, `selfmodLinksEnabled` → `GuildAutoModerationLinks.enabled`, …). Snowflakes are strings in `GuildData`, `bigint` in the database
+- **Storage:** `src/lib/database/settings/storage.ts` maps every key to its table and column, reads a guild from all the tables, and writes changes in one transaction. Missing rows are created in foreign-key order (`Guild` → `Modules` → `GuildAutoModeration` → rule tables). To add a setting, add the column to `types.ts`, `constants.ts`, `configuration.ts` and the `Columns` map in `storage.ts`
 - **Cache:** In-memory `Collection<string, GuildData>` in `src/lib/database/settings/functions.ts`
 - **Context:** `SettingsContext` in `src/lib/database/settings/context/SettingsContext.ts`
     - Holds `AdderManager`, `PermissionNodeManager`, word filter regex, rate limiter
