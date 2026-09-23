@@ -17,10 +17,10 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 
 ## Database
 
-- **ORM:** Prisma Client v7+ with `@prisma/adapter-pg`
-- **Schema:** `prisma/schema.prisma`
-- **Generated client:** `src/generated/prisma/`
-- **Prisma config:** `prisma.config.ts`
+- **ORM:** Prisma ORM 8 (`@prisma/orm-postgres`), accessed via `db` exported from `projects/database`
+- **Contract:** `projects/database/src/contract.prisma`
+- **Generated client:** `projects/database/src/generated/prisma/`
+- **Prisma config:** `projects/database/prisma.config.ts`
 - **Migrations:** `prisma/migrations/` (PostgreSQL)
 - **Access:** `container.prisma` (Sapphire container)
 

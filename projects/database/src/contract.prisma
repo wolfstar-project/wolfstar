@@ -1,11 +1,31 @@
 // use prisma-next
-// Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
-
+// Prisma ORM 8 data contract for the WolfStar shared database.
+//
+// Inferred with `prisma contract infer` from a database carrying the full
+// `server/database/migrations` history, then adjusted in three ways: the
+// archived `*_v6` tables are dropped; every model is `@@control(external)`
+// because the bot owns and migrates these tables; and the empty-array column
+// defaults infer writes as `dbgenerated("ARRAY[]::…")` become literal
+// `@default([])`, which is the same default and the only one PSL accepts on a
+// list. The optional back-reference of each identifying 1:1 is left out too:
+// it has no local FK column, so the contract validator rejects it as nullable.
+//
+// The four `timestamp(3)` columns are authored as `TimestampString(3)` rather
+// than the `Timestamp(3)` infer writes. A `Timestamp` column decodes to a
+// `Temporal.PlainDateTime`, which needs a global `Temporal` that no Node 22 or
+// 24 release provides, so the first read would throw RUNTIME.TEMPORAL_UNAVAILABLE
+// on the versions this project targets. The String variants carry PostgreSQL's
+// own text, which is what these values are serialized to anyway.
+//
+// Re-run `pnpm prisma8:infer` against such a database after a migration lands,
+// then re-apply that substitution and `pnpm prisma8:emit`.
 namespace public {
   model AuditChainHead {
     id        String       @id(map: "AuditChainHead_pkey") @default("default")
     hash      String?
-    updatedAt Timestamp(3) @map("updated_at")
+    updatedAt TimestampString(3) @map("updated_at")
+
+    @@control(external)
   }
 
   model AuditEvent {
@@ -19,7 +39,7 @@ namespace public {
     outcome    String
     tenantId   BigInt?      @map("tenant_id")
     reason     String?
-    timestamp  Timestamp(3)
+    timestamp  TimestampString(3)
     changes    Jsonb?
     context    Jsonb?
     prevHash   String?      @map("prev_hash")
@@ -29,6 +49,8 @@ namespace public {
     @@index([actorId, timestamp], map: "AuditEvent_actor_id_timestamp_idx")
     @@index([hash], map: "AuditEvent_hash_key", unique: true)
     @@index([tenantId, timestamp], map: "AuditEvent_tenant_id_timestamp_idx")
+
+    @@control(external)
   }
 
   model CommandLog {
@@ -42,24 +64,45 @@ namespace public {
     channelId   BigInt?      @map("channel_id")
     success     Boolean      @default(true)
     errorReason String?      @map("error_reason")
-    executedAt  Timestamp(3) @map("executed_at")
+    executedAt  TimestampString(3) @map("executed_at")
     latencyMs   Int?         @map("latency_ms")
     metadata    Jsonb?
 
     @@index([guildId, commandName, executedAt], map: "CommandLog_guild_id_command_name_executed_at_idx")
     @@index([guildId, executedAt], map: "CommandLog_guild_id_executed_at_idx")
     @@index([guildId, userId, executedAt], map: "CommandLog_guild_id_user_id_executed_at_idx")
+
+    @@control(external)
   }
 
   model Guild {
-    id                  BigInt               @id(map: "Guild_pkey")
+    id                BigInt             @id(map: "Guild_pkey")
+    language          String             @default("en-US")
+    moderationActions ModerationAction[]
+    stickyRoles       StickyRole[]
+
+    @@control(external)
+  }
+
+  model Modules {
+    id         BigInt  @id(map: "Modules_pkey")
+    automod    Boolean @default(true)
+    moderation Boolean @default(true)
+    logs       Boolean @default(true)
+    commands   Boolean @default(true)
+    roles      Boolean @default(true)
+    guild      Guild   @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "Modules_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModeration {
-    id                             BigInt                          @id(map: "GuildAutoModeration_pkey")
-    channelId                      BigInt?                         @map("channel_id")
-    trackNative                    Boolean                         @default(false) @map("track_native")
-    guild                          Guild                           @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModeration_id_fkey")
+    id          BigInt  @id(map: "GuildAutoModeration_pkey")
+    channelId   BigInt? @map("channel_id")
+    trackNative Boolean @default(false) @map("track_native")
+    modules     Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModeration_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationAttachments {
@@ -72,7 +115,9 @@ namespace public {
     thresholdDuration   Int                                    @map("threshold_duration")
     ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationAttachments_id_fkey")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationAttachments_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationCapitals {
@@ -87,7 +132,9 @@ namespace public {
     maximum             Int
     ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationCapitals_id_fkey")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationCapitals_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationInvites {
@@ -102,7 +149,9 @@ namespace public {
     allowedGuilds       BigInt[]                               @default([]) @noCheck(elementNotNull) @map("allowed_guilds")
     ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationInvites_id_fkey")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationInvites_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationLinks {
@@ -116,7 +165,9 @@ namespace public {
     allowed             String[]                               @default([]) @noCheck(elementNotNull)
     ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationLinks_id_fkey")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationLinks_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationMentions {
@@ -129,7 +180,10 @@ namespace public {
     thresholdDuration                    Int                                    @map("threshold_duration")
     ignoredRoles                         BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels                      BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration                  GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationMentions_id_fkey")
+    guildAutoModerationMentionsOverrides GuildAutoModerationMentionsOverrides[]
+    guildAutoModeration                  GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationMentions_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationMentionsOverrides {
@@ -138,7 +192,9 @@ namespace public {
     roles    BigInt[]                    @noCheck(elementNotNull)
     users    BigInt[]                    @noCheck(elementNotNull)
     points   Int
-    parent   GuildAutoModerationMentions @relation(fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationMentionsOverrides_parent_id_fkey", index: false)
+    parent   GuildAutoModerationMentions @relation(fields:[parentId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationMentionsOverrides_parent_id_fkey", index: false)
+
+    @@control(external)
   }
 
   model GuildAutoModerationNewlines {
@@ -152,7 +208,27 @@ namespace public {
     maximum             Int
     ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationNewlines_id_fkey")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationNewlines_id_fkey")
+
+    @@control(external)
+  }
+
+  model GuildAutoModerationNoMentionSpam {
+    id                  BigInt                                 @id(map: "GuildAutoModerationNoMentionSpam_pkey")
+    enabled             Boolean?
+    softAction          Int                                    @map("soft_action")
+    hardAction          pg.enum(GuildAutoModerationHardAction) @map("hard_action")
+    hardActionDuration  Int?                                   @map("hard_action_duration")
+    thresholdMaximum    Int                                    @map("threshold_maximum")
+    thresholdDuration   Int                                    @map("threshold_duration")
+    alerts              Boolean                                @default(false)
+    mentionsAllowed     Int                                    @map("mentions_allowed")
+    timePeriod          Int                                    @map("time_period")
+    ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
+    ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationNoMentionSpam_id_fkey")
+
+    @@control(external)
   }
 
   model GuildAutoModerationWords {
@@ -166,7 +242,19 @@ namespace public {
     words               String[]                               @default([]) @noCheck(elementNotNull)
     ignoredRoles        BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels     BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
-    guildAutoModeration GuildAutoModeration                    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationWords_id_fkey")
+    guildAutoModeration GuildAutoModeration                    @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationWords_id_fkey")
+
+    @@control(external)
+  }
+
+  model GuildCommands {
+    id                 BigInt   @id(map: "GuildCommands_pkey")
+    disabled           String[] @default([]) @noCheck(elementNotNull)
+    disabledChannels   BigInt[] @default([]) @noCheck(elementNotNull) @map("disabled_channels")
+    disabledInChannels Jsonb    @default(dbgenerated("'[]'::jsonb")) @map("disabled_in_channels")
+    modules            Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildCommands_id_fkey")
+
+    @@control(external)
   }
 
   model GuildLogs {
@@ -198,7 +286,9 @@ namespace public {
     ignoreAll              BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_all")
     ignoreMessages         BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_messages")
     ignoreReactions        BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_reactions")
-    guild                  Guild    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildLogs_id_fkey")
+    modules                Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildLogs_id_fkey")
+
+    @@control(external)
   }
 
   model GuildModeration {
@@ -206,15 +296,39 @@ namespace public {
     channelId     BigInt? @map("channel_id")
     trackBans     Boolean @default(false) @map("track_bans")
     trackTimeouts Boolean @default(false) @map("track_timeouts")
-    guild         Guild   @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
+    modules       Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
+
+    @@control(external)
+  }
+
+  model GuildPermissions {
+    id      BigInt  @id(map: "GuildPermissions_pkey")
+    users   Jsonb   @default(dbgenerated("'[]'::jsonb"))
+    roles   Jsonb   @default(dbgenerated("'[]'::jsonb"))
+    modules Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildPermissions_id_fkey")
+
+    @@control(external)
   }
 
   model GuildRoles {
-    id            BigInt   @id(map: "GuildRoles_pkey")
-    initial       BigInt[] @default([]) @noCheck(elementNotNull)
-    initialHumans BigInt[] @default([]) @noCheck(elementNotNull) @map("initial_humans")
-    initialRobots BigInt[] @default([]) @noCheck(elementNotNull) @map("initial_robots")
-    guild         Guild    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoles_id_fkey")
+    id                   BigInt   @id(map: "GuildRoles_pkey")
+    initial              BigInt[] @default([]) @noCheck(elementNotNull)
+    initialHumans        BigInt[] @default([]) @noCheck(elementNotNull) @map("initial_humans")
+    initialRobots        BigInt[] @default([]) @noCheck(elementNotNull) @map("initial_robots")
+    admin                BigInt[] @default([]) @noCheck(elementNotNull)
+    moderator            BigInt[] @default([]) @noCheck(elementNotNull)
+    muted                BigInt?
+    public               BigInt[] @default([]) @noCheck(elementNotNull)
+    removeInitial        Boolean  @default(false) @map("remove_initial")
+    uniqueRoleSets       Jsonb    @default(dbgenerated("'[]'::jsonb")) @map("unique_role_sets")
+    restrictedReaction   BigInt?  @map("restricted_reaction")
+    restrictedEmbed      BigInt?  @map("restricted_embed")
+    restrictedEmoji      BigInt?  @map("restricted_emoji")
+    restrictedAttachment BigInt?  @map("restricted_attachment")
+    restrictedVoice      BigInt?  @map("restricted_voice")
+    modules              Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoles_id_fkey")
+
+    @@control(external)
   }
 
   model ModerationAction {
@@ -222,28 +336,35 @@ namespace public {
     guildId     BigInt                        @map("guild_id")
     action      pg.enum(ModerationActionType)
     metadata    Int
-    createdAt   Timestamp(3)                  @default(now()) @map("created_at")
+    createdAt   TimestampString(3)                  @default(now()) @map("created_at")
     duration    Int
     targetId    BigInt                        @map("target_id")
     moderatorId BigInt                        @map("moderator_id")
+    reason      String?
     referenceId Int?                          @map("reference_id")
-    guild       Guild                         @relation(fields: [guildId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "ModerationAction_guild_id_fkey", index: false)
+    guild       Guild                         @relation(fields:[guildId], references:[id], onDelete: Restrict, onUpdate: Cascade, map: "ModerationAction_guild_id_fkey", index: false)
 
     @@id([id, guildId], map: "ModerationAction_pkey")
+
+    @@control(external)
   }
 
   model StickyRole {
     userId  BigInt   @map("user_id")
     guildId BigInt   @map("guild_id")
     roleIds BigInt[] @noCheck(elementNotNull) @map("role_ids")
-    guild   Guild    @relation(fields: [guildId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "StickyRole_guild_id_fkey", index: false)
+    guild   Guild    @relation(fields:[guildId], references:[id], onDelete: Restrict, onUpdate: Cascade, map: "StickyRole_guild_id_fkey", index: false)
 
     @@id([userId, guildId], map: "StickyRole_pkey")
+
+    @@control(external)
   }
 
   model User {
     id     BigInt  @id(map: "User_pkey")
     report Boolean @default(true)
+
+    @@control(external)
   }
 
   native_enum GuildAutoModerationHardAction {
