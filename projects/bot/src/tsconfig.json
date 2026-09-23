@@ -3,16 +3,19 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"experimentalDecorators": true,
-		"outDir": "../dist",
-		"rootDir": ".",
+		"noEmit": true,
+		"rootDir": "..",
+		"resolvePackageJsonImports": true,
 		"paths": {
-			"#utils/*": ["./lib/util/*"],
 			"#lib/*": ["./lib/*"],
-			"#languages": ["./locales/index"],
+			"#common": ["./lib/common/index"],
+			"#common/*": ["./lib/common/*"],
+			"#types": ["./lib/types/index"],
+			"#types/*": ["./lib/types/*"],
+			"#utils/*": ["./lib/utilities/*"],
 			"#root/*": ["./*"]
-		},
-		"composite": true
+		}
 	},
 	"include": [".", "./**/*.json", "../.stars/imports.d.ts"],
-	"exclude": ["./tsconfig.json"]
+	"exclude": ["./tsconfig.json", "../dist"]
 }

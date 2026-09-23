@@ -1,8 +1,8 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toChannelsArray } from '#utils/bits';
-import { seconds } from '#utils/common';
-import { differenceArray, differenceBitField } from '#utils/common/comparators';
+import { seconds } from '#common';
+import { differenceArray, differenceBitField } from '#common/comparators';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';

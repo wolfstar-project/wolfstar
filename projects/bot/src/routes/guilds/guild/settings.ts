@@ -1,6 +1,6 @@
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import { configurableKeys, GuildEntity, isSchemaKey, readSettings, SerializerUpdateContext, writeSettings } from '#lib/database';
-import { seconds } from '#utils/common';
+import { seconds } from '#common';
 import { cast } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApiRequest, ApiResponse, HttpCodes, methods, Route, RouteOptions } from '@sapphire/plugin-api';

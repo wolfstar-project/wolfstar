@@ -6,13 +6,16 @@
 		"types": ["vitest/globals"],
 		"verbatimModuleSyntax": false,
 		"paths": {
-			"#utils/*": ["../src/lib/util/*"],
 			"#lib/*": ["../src/lib/*"],
-			"#languages": ["../src/locales/index"],
-			"#root/*": ["../src/*"]
+			"#common": ["../src/lib/common/index"],
+			"#common/*": ["../src/lib/common/*"],
+			"#types": ["../src/lib/types/index"],
+			"#types/*": ["../src/lib/types/*"],
+			"#utils/*": ["../src/lib/utilities/*"],
+			"#root/*": ["../src/*"],
+			"#mocks/*": ["./mocks/*"]
 		}
 	},
 	"include": [".", "../src/**/*"],
-	"exclude": ["../dist/**/*"],
-	"references": [{ "path": "../src" }]
+	"exclude": ["../dist/**/*"]
 }

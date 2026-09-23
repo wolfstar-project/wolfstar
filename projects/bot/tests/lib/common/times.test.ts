@@ -1,4 +1,4 @@
-import { seconds, minutes, hours, days, months, years } from '#utils/common';
+import { seconds, minutes, hours, days, months, years } from '#common';
 
 describe('Time functions', () => {
 	describe('seconds', () => {

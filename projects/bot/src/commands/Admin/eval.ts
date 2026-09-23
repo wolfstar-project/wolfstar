@@ -1,7 +1,7 @@
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types/Enums';
-import { seconds } from '#utils/common';
+import { seconds } from '#common';
 import { EvalExtraData, handleMessage } from '#utils/Parsers/ExceededLength';
 import { clean } from '#utils/Sanitizer/clean';
 import { cast } from '#utils/util';

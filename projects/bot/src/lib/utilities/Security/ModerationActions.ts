@@ -4,7 +4,7 @@ import { readSettings, writeSettings } from '#lib/database/settings';
 import { api } from '#lib/discord/Api';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { ModerationManagerCreateData } from '#lib/moderation';
-import { resolveOnErrorCodes } from '#utils/common';
+import { resolveOnErrorCodes } from '#common';
 import { getModeration, getStickyRoles, promptConfirmation } from '#utils/functions';
 import { TypeCodes } from '#utils/moderationConstants';
 import { isCategoryChannel, isNewsChannel, isStageChannel, isTextChannel, isVoiceChannel } from '@sapphire/discord.js-utilities';

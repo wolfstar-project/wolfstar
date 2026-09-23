@@ -1,4 +1,4 @@
-import { buildCommandExecuteEmbed, buildSettingsChangeEmbed } from '#lib/util/functions/auditLogEmbeds';
+import { buildCommandExecuteEmbed, buildSettingsChangeEmbed } from '#utils/functions/auditLogEmbeds';
 import { Colors } from 'discord.js';
 
 const translations: Record<string, string> = {

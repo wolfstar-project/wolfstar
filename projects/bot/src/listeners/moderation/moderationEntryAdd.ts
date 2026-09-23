@@ -1,5 +1,5 @@
 import { GuildSettings, ModerationEntity, writeSettings } from '#lib/database';
-import { resolveOnErrorCodes } from '#utils/common';
+import { resolveOnErrorCodes } from '#common';
 import { SchemaKeys } from '#utils/moderationConstants';
 import { canSendEmbeds } from '@sapphire/discord.js-utilities';
 import { Listener } from '@sapphire/framework';

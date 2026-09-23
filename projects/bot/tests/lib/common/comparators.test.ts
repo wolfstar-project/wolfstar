@@ -1,4 +1,4 @@
-import { andMix, orMix } from '#utils/common';
+import { andMix, orMix } from '#common';
 
 describe('util common comparators', () => {
 	describe('andMix', () => {

@@ -1,5 +1,5 @@
 import { Events } from '#lib/types/Enums';
-import { isGuildMessage } from '#utils/common';
+import { isGuildMessage } from '#common';
 import { Listener } from '@sapphire/framework';
 import type { Message } from 'discord.js';
 

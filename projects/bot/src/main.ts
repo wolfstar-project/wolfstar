@@ -1,17 +1,18 @@
 import { createClient, loadAll } from '#lib/Client';
-import { envParseString, setup } from '@wolfstar/env-utilities';
+import { initializeApp } from '#lib/setup/all';
+import { envParseString } from '@wolfstar/env-utilities';
 import { createBanner } from '@wolfstar/start-banner';
 import { bold } from 'colorette';
-import gradient from 'gradient-string';
+import { vice } from 'gradient-string';
 import { container } from 'wolfstar-shared';
 
-setup(new URL('../src/.env', import.meta.url));
+initializeApp();
 
 createClient();
 await loadAll();
 
 console.log(
-	gradient.vice.multiline(
+	vice.multiline(
 		createBanner({
 			logo: [
 				String.raw`          /          `,

@@ -44,7 +44,7 @@ jobs:
               # files (en-US is never written).
               run: pnpm tolgee:pull
             - name: Generate prisma types
-              # tests/vitest.setup.ts boots #lib/setup, which needs the generated client;
+              # tests/setup.ts boots #lib/setup, which needs the generated client;
               # the install above skips lifecycle scripts, so generate it explicitly.
               run: pnpm --filter wolfstar-database prisma:generate
             - name: Validate translations

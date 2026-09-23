@@ -1,8 +1,8 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toPermissionsArray } from '#utils/bits';
-import { seconds } from '#utils/common';
-import { differenceBitField, differenceMap } from '#utils/common/comparators';
+import { seconds } from '#common';
+import { differenceBitField, differenceMap } from '#common/comparators';
 import { Colors, LongWidthSpace } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { GuildBasedChannelTypes, isDMChannel, isNsfwChannel, NonThreadGuildBasedChannelTypes } from '@sapphire/discord.js-utilities';

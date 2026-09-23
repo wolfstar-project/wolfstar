@@ -14,7 +14,9 @@ function fromRoot(...paths: string[]) {
 
 const srcRoot = fromRoot('projects', 'bot', 'src');
 const libRoot = fromRoot('projects', 'bot', 'src', 'lib');
-const utilRoot = fromRoot('projects', 'bot', 'src', 'lib', 'util');
+const utilRoot = fromRoot('projects', 'bot', 'src', 'lib', 'utilities');
+const commonRoot = fromRoot('projects', 'bot', 'src', 'lib', 'common');
+const typesRoot = fromRoot('projects', 'bot', 'src', 'lib', 'types');
 const testsRoot = fromRoot('projects', 'bot', 'tests');
 
 export default defineConfig({
@@ -25,9 +27,12 @@ export default defineConfig({
 			{ find: '#lib', replacement: libRoot },
 			{ find: /^#utils\/(.*)/, replacement: `${utilRoot}/$1` },
 			{ find: '#utils', replacement: utilRoot },
+			{ find: /^#common\/(.*)/, replacement: `${commonRoot}/$1` },
+			{ find: '#common', replacement: commonRoot },
+			{ find: /^#types\/(.*)/, replacement: `${typesRoot}/$1` },
+			{ find: '#types', replacement: typesRoot },
 			{ find: /^#root\/(.*)/, replacement: `${srcRoot}/$1.ts` },
-			{ find: '#root/config', replacement: `${srcRoot}/config.ts` },
-			{ find: '#languages', replacement: `${srcRoot}/locales/index.ts` }
+			{ find: '#root/config', replacement: `${srcRoot}/config.ts` }
 		]
 	},
 	test: {
@@ -39,7 +44,7 @@ export default defineConfig({
 			// for `vitest run tests/languages` to match anything.
 			fromRoot('tests/**/*.test.ts')
 		],
-		setupFiles: [fromRoot('projects/bot/tests/vitest.setup.ts')],
+		setupFiles: [fromRoot('projects/bot/tests/setup.ts')],
 		globals: true,
 		passWithNoTests: true,
 		coverage: {

@@ -3,7 +3,7 @@ import { api } from '#lib/discord/Api';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HardPunishment, ModerationListener, SelfModeratorBitField } from '#lib/moderation';
 import { Events } from '#lib/types/Enums';
-import { floatPromise, seconds } from '#utils/common';
+import { floatPromise, seconds } from '#common';
 import { Colors } from '#utils/constants';
 import { deleteMessage, getEmojiReactionFormat, SerializedEmoji } from '#utils/functions';
 import type { LLRCData } from '#utils/LongLivingReactionCollector';

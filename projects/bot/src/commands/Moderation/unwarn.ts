@@ -2,7 +2,7 @@ import { GuildSettings, ModerationEntity, readSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HandledCommandContext, ModerationCommand } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
-import { floatPromise } from '#utils/common';
+import { floatPromise } from '#common';
 import { deleteMessage, getModeration, getSecurity } from '#utils/functions';
 import { TypeCodes } from '#utils/moderationConstants';
 import { getImage } from '#utils/util';

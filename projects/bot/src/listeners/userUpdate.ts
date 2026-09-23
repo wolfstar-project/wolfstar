@@ -2,7 +2,7 @@ import { GuildSettings, readSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { CustomGet } from '#lib/types';
 import { Events } from '#lib/types/Enums';
-import { filter, map } from '#utils/common';
+import { filter, map } from '#common';
 import { Colors } from '#utils/constants';
 import { Listener } from '@sapphire/framework';
 import { Guild, MessageEmbed, User } from 'discord.js';

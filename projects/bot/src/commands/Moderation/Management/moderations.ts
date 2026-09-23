@@ -3,7 +3,7 @@ import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { PaginatedMessageCommand, SkyraPaginatedMessage } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
-import { seconds } from '#utils/common';
+import { seconds } from '#common';
 import { getModeration } from '#utils/functions';
 import { TypeCodes } from '#utils/moderationConstants';
 import { sendLoadingMessage } from '#utils/util';

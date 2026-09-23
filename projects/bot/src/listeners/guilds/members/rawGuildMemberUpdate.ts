@@ -1,6 +1,6 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { api } from '#lib/discord/Api';
-import { floatPromise } from '#utils/common';
+import { floatPromise } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, ListenerOptions } from '@sapphire/framework';
 import {

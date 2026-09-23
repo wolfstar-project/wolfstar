@@ -1,6 +1,6 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { Events } from '#lib/types/Enums';
-import { isGuildMessage } from '#utils/common';
+import { isGuildMessage } from '#common';
 import { deleteMessage } from '#utils/functions';
 import { ApplyOptions } from '@sapphire/decorators';
 import { CommandSuccessPayload, Listener, ListenerOptions } from '@sapphire/framework';

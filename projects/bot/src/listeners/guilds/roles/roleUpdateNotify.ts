@@ -1,7 +1,7 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toPermissionsArray } from '#utils/bits';
-import { differenceBitField } from '#utils/common/comparators';
+import { differenceBitField } from '#common/comparators';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';

@@ -1,7 +1,7 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
-import { floatPromise } from '#utils/common';
+import { floatPromise } from '#common';
 import { Colors } from '#utils/constants';
 import { getStickyRoles } from '#utils/functions';
 import { Listener } from '@sapphire/framework';

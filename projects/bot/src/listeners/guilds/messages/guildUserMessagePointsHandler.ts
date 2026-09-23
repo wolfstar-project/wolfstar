@@ -1,7 +1,7 @@
 import { GuildEntity, GuildSettings, readSettings } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
-import { minutes } from '#utils/common';
+import { minutes } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, ListenerOptions } from '@sapphire/framework';
 import { RateLimitManager } from '@sapphire/ratelimits';

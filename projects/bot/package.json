@@ -5,20 +5,26 @@
 	"author": "WolfStar Project",
 	"license": "Apache-2.0",
 	"private": true,
-	"main": "dist/main.js",
+	"main": "dist/main.mjs",
 	"type": "module",
 	"imports": {
-		"#lib/*": "./dist/lib/*.js",
-		"#util/*": "./dist/util/*.js",
-		"#util": "./dist/util/index.js"
+		"#types": "./dist/lib/types/index.mjs",
+		"#types/*": "./dist/lib/types/*.mjs",
+		"#lib/*": "./dist/lib/*.mjs",
+		"#common": "./dist/lib/common/index.mjs",
+		"#common/*": "./dist/lib/common/*.mjs",
+		"#utils/*": "./dist/lib/utilities/*.mjs",
+		"#root/*": "./dist/*.mjs"
 	},
 	"scripts": {
 		"build": "stars build",
 		"dev": "stars dev",
 		"watch": "stars dev",
 		"clean": "node scripts/clean.mjs",
-		"start": "node --enable-source-maps dist/main.js",
-		"test": "vitest run --config ../../vitest.config.ts"
+		"start": "node --enable-source-maps dist/main.mjs",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"stars:info": "stars info"
 	},
 	"dependencies": {
 		"@discordjs/builders": "^1.14.1",
@@ -49,6 +55,7 @@
 		"@wolfstar/cli": "^0.3.0",
 		"discord.js": "^14.27.0",
 		"tsdown": "0.23.0",
-		"typescript": "^7.0.2"
+		"typescript": "^7.0.2",
+		"vitest": "^5.0.0"
 	}
 }

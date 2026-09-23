@@ -1,6 +1,6 @@
 import { ratelimit } from '#lib/api/utils';
 import type { WolfCommand } from '#lib/structures';
-import { seconds } from '#utils/common';
+import { seconds } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Command } from '@sapphire/framework';
 import { ApiRequest, ApiResponse, methods, Route, RouteOptions } from '@sapphire/plugin-api';

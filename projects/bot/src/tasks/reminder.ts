@@ -1,6 +1,6 @@
 import { ResponseType, Task, type PartialResponseValue } from '#lib/database';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
-import { resolveOnErrorCodes } from '#utils/common';
+import { resolveOnErrorCodes } from '#common';
 import { time, TimestampStyles } from '@discordjs/builders';
 import { RESTJSONErrorCodes } from 'discord-api-types/v9';
 import i18next from 'i18next';

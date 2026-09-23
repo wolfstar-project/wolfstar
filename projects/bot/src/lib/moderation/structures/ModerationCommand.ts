@@ -3,7 +3,7 @@ import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures/commands/WolfCommand';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
-import { floatPromise, seconds, years } from '#utils/common';
+import { floatPromise, seconds, years } from '#common';
 import { deleteMessage, isGuildOwner } from '#utils/functions';
 import type { ModerationActionsSendOptions } from '#utils/Security/ModerationActions';
 import { cast } from '#utils/util';

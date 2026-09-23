@@ -1,6 +1,6 @@
 import type { Constructor } from '@sapphire/utilities';
 import { BitField, Permissions, SystemChannelFlags } from 'discord.js';
-import { max } from './common';
+import { max } from '#common';
 
 function toMap<S extends string, N extends number | bigint>(ctor: Constructor<BitField<S, N>>) {
 	return new Map(Object.entries(Reflect.get(ctor, 'FLAGS')).map(([key, value]) => [value as N, key as S] as const));

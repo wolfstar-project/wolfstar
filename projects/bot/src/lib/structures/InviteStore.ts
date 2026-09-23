@@ -1,5 +1,5 @@
 import { api } from '#lib/discord/Api';
-import { minutes, resolveOnErrorCodes } from '#utils/common';
+import { minutes, resolveOnErrorCodes } from '#common';
 import { Collection } from '@discordjs/collection';
 import { RESTGetAPIInviteResult, RESTJSONErrorCodes } from 'discord-api-types/v9';
 

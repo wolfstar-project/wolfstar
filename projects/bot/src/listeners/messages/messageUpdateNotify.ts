@@ -2,7 +2,7 @@ import { GuildSettings, readSettings } from '#lib/database';
 import { SkyraEmbed } from '#lib/discord';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
-import { isGuildMessage } from '#utils/common';
+import { isGuildMessage } from '#common';
 import { Colors } from '#utils/constants';
 import { escapeMarkdown } from '#utils/External/escapeMarkdown';
 import { ApplyOptions } from '@sapphire/decorators';

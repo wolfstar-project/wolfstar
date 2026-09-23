@@ -1,7 +1,7 @@
 import { SkyraEmbed } from '#lib/discord';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { GuildMessage } from '#lib/types';
-import { months, seconds } from '#utils/common';
+import { months, seconds } from '#common';
 import { Colors, Emojis } from '#utils/constants';
 import { time, TimestampStyles } from '@discordjs/builders';
 import { Command, RegisterCommand, RegisterSubcommand } from '@wolfstar/http-framework';

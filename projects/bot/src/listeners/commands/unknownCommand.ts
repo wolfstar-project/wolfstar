@@ -1,7 +1,7 @@
 import { getFromId } from '#lib/customCommands';
 import { GuildSettings, readSettings } from '#lib/database';
 import type { GuildMessage } from '#lib/types';
-import { isGuildMessage } from '#utils/common';
+import { isGuildMessage } from '#common';
 import { isModerator } from '#utils/functions';
 import { Events, Listener, UnknownCommandPayload } from '@sapphire/framework';
 

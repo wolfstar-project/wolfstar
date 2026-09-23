@@ -1,6 +1,6 @@
 import { flattenChannel } from '#lib/api/ApiTransformers';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import { seconds } from '#utils/common';
+import { seconds } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApiRequest, ApiResponse, HttpCodes, methods, Route, RouteOptions } from '@sapphire/plugin-api';
 

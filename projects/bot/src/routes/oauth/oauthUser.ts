@@ -1,5 +1,5 @@
 import { authenticated, ratelimit } from '#lib/api/utils';
-import { minutes } from '#utils/common';
+import { minutes } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { ApiRequest, ApiResponse, HttpCodes, methods, MimeTypes, Route, RouteOptions } from '@sapphire/plugin-api';
