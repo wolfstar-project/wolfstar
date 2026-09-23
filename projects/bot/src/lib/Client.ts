@@ -1,9 +1,6 @@
 // oxlint-disable no-new
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { Client, container } from '@wolfstar/http-framework';
-import '@wolfstar/plugin-api/register';
-import '@wolfstar/plugin-i18next/register';
-import '@wolfstar/plugin-subcommands-advanced/register';
 import { MessageBroker, Redis, Cache, RedisOptions } from 'wolfstar-shared';
 import * as Sentry from '@sentry/node';
 import { fileURLToPath } from 'node:url';

@@ -15,6 +15,10 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Test runner:** vitest (globals enabled, setup in `tests/setup.ts`)
 - **Package manager:** pnpm (workspace)
 
+## Plugins
+
+`@wolfstar/plugin-api`, `plugin-i18next`, `plugin-subcommands-advanced` and `plugin-logger` are registered automatically: the Stars CLI injects `import '@wolfstar/plugin-*/register'` into `src/main.ts` for every `@wolfstar/plugin-*` package in `dependencies`. Do not add manual `/register` imports; add or remove the dependency instead.
+
 ## Database
 
 - **ORM:** Prisma ORM 8 (`@prisma/orm-postgres`), accessed via `db` exported from `projects/database`
@@ -45,6 +49,7 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Tooling:** [Tolgee](https://tolgee.io/) (migrated from Crowdin)
 - **Config:** `.tolgeerc.cjs` (project id, locale↔Tolgee-tag mapping, push file list, pull output path)
 - **Locale files:** `src/languages/{discordLocale}/{namespace}.json` (e.g. `en-US/globals.json`, `en-US/commands/admin.json`)
+- **Typed keys:** `pnpm --filter wolfstar-bot i18n:generate` (`stars codegen`) regenerates `projects/bot/src/@types/i18next.d.ts` from `src/locales/en-US` via `@wolfstar/i18next-type-generator`; `stars codegen --check` fails when it is stale. Run it after editing `en-US` files, never hand-edit the output
 - **Base locale:** `en-US` is push-only — it is the local source of truth and a pull never writes it
 - **Pull remap script:** `scripts/tolgee-pull-remap.ts` — merges `tolgee pull` output from `.tolgee-pull/{tolgeeTag}/` onto the matching `src/languages/{discordLocale}/` files. It drops untranslated values (`null`, blank, empty ICU plural shells), rejects translations whose i18next placeholders don't match `en-US`, prunes keys `en-US` no longer defines, and rewrites files in repo style (tabs, trailing newline) keeping the existing key order — so the diff only ever shows real translation changes
 - **Sanitizing helpers:** `scripts/lib/locale-sanitize.ts`, shared with `tests/languages/locales.test.ts` so the definition of a valid locale file lives in one place
