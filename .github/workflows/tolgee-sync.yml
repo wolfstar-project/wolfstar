@@ -24,7 +24,7 @@ jobs:
                   token: ${{ secrets.WOLFSTAR_TOKEN }}
                   fetch-depth: 0
             - name: Install pnpm and Node.js v24
-              uses: pnpm/setup@v2
+              uses: pnpm/setup@v3
               with:
                   runtime: node@24
                   cache: true
