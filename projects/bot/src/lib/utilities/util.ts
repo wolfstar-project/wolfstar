@@ -3,7 +3,7 @@ import { DiscordSnowflake } from '@sapphire/snowflake';
 import { parseURL } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { APIMessage, APIUser } from 'discord-api-types/v10';
-import type { Guild } from 'wolfstar-shared';
+import type { Guild } from '@wolfstar/plugin-gateway';
 import { ZeroWidthSpace } from './constants';
 
 /**

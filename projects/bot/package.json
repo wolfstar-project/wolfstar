@@ -39,17 +39,20 @@
 		"@wolfstar/env-utilities": "^2.1.1",
 		"@wolfstar/http-framework": "^5.1.0",
 		"@wolfstar/plugin-api": "^1.1.6",
+		"@wolfstar/plugin-cache": "^0.3.0-next-20260927082257",
+		"@wolfstar/plugin-gateway": "^0.2.0-next-20260927082257",
 		"@wolfstar/plugin-i18next": "^2.0.4",
 		"@wolfstar/plugin-logger": "^0.2.0",
+		"@wolfstar/plugin-sharder": "^0.1.1-next-20260927082257",
 		"@wolfstar/plugin-subcommands-advanced": "^2.0.4",
 		"@wolfstar/shared-http-pieces": "^2.0.6",
 		"@wolfstar/start-banner": "^2.1.1",
 		"colorette": "^2.0.20",
 		"discord-api-types": "^0.38.55",
 		"gradient-string": "^3.0.0",
+		"ioredis": "^6.0.0",
 		"tslib": "^2.8.1",
-		"wolfstar-database": "workspace:^",
-		"wolfstar-shared": "workspace:^"
+		"wolfstar-database": "workspace:^"
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",

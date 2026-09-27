@@ -4,7 +4,7 @@ import { envParseString } from '@wolfstar/env-utilities';
 import { createBanner } from '@wolfstar/start-banner';
 import { bold } from 'colorette';
 import { vice } from 'gradient-string';
-import { container } from 'wolfstar-shared';
+import { container } from '@wolfstar/http-framework';
 
 initializeApp();
 
@@ -40,8 +40,9 @@ console.log(
 				String.raw`(_______/  (__|  \__)|___/    |__|  \___)(___/    \___) `
 			],
 			extra: [
-				` Skyra ${envParseString('CLIENT_VERSION')} Gateway`,
+				` WolfStar ${envParseString('CLIENT_VERSION')}`,
 				...container.stores.map((store) => `├─ Loaded ${store.size.toString().padEnd(3, ' ')} ${store.name}.`),
+				` ├ WebSocket: ${container.gatewayClient.gateway.options.shardCount ?? 'auto'} shards`,
 				` └ Redis    : ${container.redis.options.host}:${container.redis.options.port}`
 			]
 		})

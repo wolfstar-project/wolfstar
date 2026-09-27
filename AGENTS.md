@@ -17,7 +17,9 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 
 ## Plugins
 
-`@wolfstar/plugin-api`, `plugin-i18next`, `plugin-subcommands-advanced` and `plugin-logger` are registered automatically: the Stars CLI injects `import '@wolfstar/plugin-*/register'` into `src/main.ts` for every `@wolfstar/plugin-*` package in `dependencies`. Do not add manual `/register` imports; add or remove the dependency instead.
+`@wolfstar/plugin-api`, `plugin-i18next`, `plugin-subcommands-advanced`, `plugin-logger`, `plugin-gateway`, `plugin-cache` and `plugin-sharder` are registered automatically: the Stars CLI injects `import '@wolfstar/plugin-*/register'` into `src/main.ts` for every `@wolfstar/plugin-*` package in `dependencies`. Do not add manual `/register` imports; add or remove the dependency instead.
+
+- **Gateway:** the bot runs the Discord gateway in-process with `@wolfstar/plugin-gateway`. `createClient()` in `src/lib/Client.ts` builds a `GatewayClient` (intents, shards) backed by a `@wolfstar/plugin-cache` Redis cache (`container.redis`, prefix `wolfstar:cache`) and a Redis session store (prefix `wolfstar:sessions`, so a restart resumes the shards instead of identifying again), and `loadAll()` calls `container.gatewayClient.start()`, which loads the pieces, serves HTTP interactions and connects the shards. Gateway events reach regular listener pieces (`EventGatewayListener`). There is no separate gateway process or Redis stream broker any more. `plugin-gateway`, `plugin-cache` and `plugin-sharder` are on their `next` prereleases, which carry the fixes from wolfstar-project/plugins#121; move them to `latest` once released
 
 ## Database
 

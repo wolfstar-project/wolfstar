@@ -1,7 +1,7 @@
 import { container } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 
-// TODO: Move this to /gateway
+// TODO: Port onto `@wolfstar/plugin-gateway`: the gateway now runs in-process, in `GatewayClient#gateway`.
 
 /**
  * Represents a {@link GuildMemberFetchQueue.shards} entry.

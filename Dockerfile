@@ -28,7 +28,6 @@ COPY --chown=node:node .npmrc .
 COPY --chown=node:node .husky/ .husky/
 COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
-COPY --chown=node:node projects/gateway/package.json projects/gateway/package.json
 COPY --chown=node:node projects/shared/package.json projects/shared/package.json
 
 ENTRYPOINT ["dumb-init", "--"]
@@ -44,15 +43,14 @@ ENV NODE_ENV="development"
 COPY --chown=node:node tsconfig.base.json tsconfig.base.json
 COPY --chown=node:node scripts/ scripts/
 
-# wolfstar-bot links wolfstar-shared and wolfstar-database as workspace
-# dependencies, so both have to be built before it.
-COPY --chown=node:node projects/shared/ projects/shared/
+# wolfstar-bot links wolfstar-database as a workspace dependency, so it has to
+# be built before it.
 COPY --chown=node:node projects/database/ projects/database/
 COPY --chown=node:node projects/bot/ projects/bot/
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter wolfstar-database prisma:generate
-RUN pnpm --filter wolfstar-shared --filter wolfstar-database --filter wolfstar-bot run build
+RUN pnpm --filter wolfstar-database --filter wolfstar-bot run build
 
 # ================ #
 #   Runner Stage   #
@@ -65,7 +63,6 @@ ENV NODE_OPTIONS="--enable-source-maps --max_old_space_size=4096"
 
 COPY --chown=node:node projects/bot/src/.env projects/bot/src/.env
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
-COPY --chown=node:node --from=builder /usr/src/app/projects/shared/dist projects/shared/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 
 # Not --offline: the runner is a fresh layer off `base` with an empty pnpm

@@ -257,12 +257,21 @@ importers:
       '@wolfstar/plugin-api':
         specifier: ^1.1.6
         version: 1.1.6(@wolfstar/http-framework@5.1.0)
+      '@wolfstar/plugin-cache':
+        specifier: ^0.3.0-next-20260927082257
+        version: 0.3.0-next-20260927082257
+      '@wolfstar/plugin-gateway':
+        specifier: ^0.2.0-next-20260927082257
+        version: 0.2.0-next-20260927082257(@wolfstar/http-framework@5.1.0)
       '@wolfstar/plugin-i18next':
         specifier: ^2.0.4
         version: 2.0.4(@wolfstar/http-framework@5.1.0)(@wolfstar/i18next-type-generator@3.1.4)(typescript@7.0.2)
       '@wolfstar/plugin-logger':
         specifier: ^0.2.0
         version: 0.2.0(@sentry/node@10.75.3)(@wolfstar/http-framework@5.1.0)(consola@3.4.2)
+      '@wolfstar/plugin-sharder':
+        specifier: ^0.1.1-next-20260927082257
+        version: 0.1.1-next-20260927082257
       '@wolfstar/plugin-subcommands-advanced':
         specifier: ^2.0.4
         version: 2.0.4(@wolfstar/http-framework@5.1.0)
@@ -281,15 +290,15 @@ importers:
       gradient-string:
         specifier: ^3.0.0
         version: 3.0.0
+      ioredis:
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
       wolfstar-database:
         specifier: workspace:^
         version: link:../database
-      wolfstar-shared:
-        specifier: workspace:^
-        version: link:../shared
     devDependencies:
       '@rollup/plugin-alias':
         specifier: 6.0.0
@@ -334,43 +343,6 @@ importers:
       prisma:
         specifier: 8.0.0-rc.15
         version: 8.0.0-rc.15(@types/node@24.13.2)(@types/react@19.2.17)(@vercel/nft@1.11.0)(magicast@0.5.3)(pg@8.23.0)(rollup@4.61.1)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.0)(vitest@5.0.0)(ws@8.21.0)
-      tsdown:
-        specifier: 0.23.0
-        version: 0.23.0(typescript@7.0.2)
-      typescript:
-        specifier: ^7.0.2
-        version: 7.0.2
-
-  projects/gateway:
-    dependencies:
-      '@discordjs/rest':
-        specifier: ^2.6.3
-        version: 2.6.3
-      '@discordjs/ws':
-        specifier: ^2.0.4
-        version: 2.0.4
-      '@sapphire/utilities':
-        specifier: ^3.18.2
-        version: 3.18.2
-      '@wolfstar/env-utilities':
-        specifier: ^2.0.8
-        version: 2.0.8
-      '@wolfstar/start-banner':
-        specifier: ^2.1.0
-        version: 2.1.0
-      discord-api-types:
-        specifier: ^0.38.55
-        version: 0.38.55
-      gradient-string:
-        specifier: ^3.0.0
-        version: 3.0.0
-      wolfstar-shared:
-        specifier: workspace:^
-        version: link:../shared
-    devDependencies:
-      '@rollup/plugin-alias':
-        specifier: 6.0.0
-        version: 6.0.0(rollup@4.61.1)
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(typescript@7.0.2)
@@ -758,9 +730,17 @@ packages:
     resolution: {integrity: sha512-LiSusze9Tc7qF03sLCujF5iZp7K+vRNEDBZ86FT9aQAv3vxMLihUvKvpsCWiQ2DJq1tVckopKm1rxomgNUc9hg==}
     engines: {node: '>=18'}
 
+  '@discordjs/core@2.6.0':
+    resolution: {integrity: sha512-rQ1Jvn4sMlFhfj3WMbtfQUBqDZ5/QEsH/HIHY+RQ/28rRyK/N95mEf/0Tp72ITKK0zdzoTSGo1AgZI/P5JnLBw==}
+    engines: {node: '>=20'}
+
   '@discordjs/formatters@0.6.2':
     resolution: {integrity: sha512-y4UPwWhH6vChKRkGdMB4odasUbHOUwy7KL+OVwF86PvT6QVOwElx+TiI1/6kcmcEe+g5YRXJFiXSXUdabqZOvQ==}
     engines: {node: '>=16.11.0'}
+
+  '@discordjs/formatters@1.0.0-dev.1790035407-dbb749062':
+    resolution: {integrity: sha512-eIp0jh8vVq0buhuW32/OJAHL6fxJtlCazaJUs4ul+thPcxSb1p0THxdL6dA1PZ9L6n6C3jiD5I+ZfITdcx7nag==}
+    engines: {node: '>=24.17.0'}
 
   '@discordjs/rest@2.6.1':
     resolution: {integrity: sha512-wwQdgjeaoYFiaG+atbqx6aJDpqW7JHAo0HrQkBTbYzM3/PJ3GweQIpgElNcGZ26DCUOXMyawYd0YF7vtr+fZXg==}
@@ -769,6 +749,10 @@ packages:
   '@discordjs/rest@2.6.3':
     resolution: {integrity: sha512-wvOylxNYJkwKjctS/Mn5GP1w9r3/rzyH+ThD1JlAca6zEdlHs8QWBBUQJpU5Q+W6DoIj/Ljh1IPlZs7hTU+UAg==}
     engines: {node: '>=18'}
+
+  '@discordjs/structures@1.0.0-dev.1790035407-dbb749062':
+    resolution: {integrity: sha512-KXFjxtLPneEE3BroTrcrx7nvHXwFkv/UYe0iwWe1/sNHuKjRJ6HGQMZRlMGj+4WB7LbGG/PORG+6dj+4m6hQPg==}
+    engines: {node: '>=24.17.0'}
 
   '@discordjs/util@1.2.0':
     resolution: {integrity: sha512-3LKP7F2+atl9vJFhaBjn4nOaSWahZ/yWjOvA4e5pnXkt2qyXRCHLxoBQy81GFtLGCq7K9lPm9R517M1U+/90Qg==}
@@ -2711,10 +2695,6 @@ packages:
       vite:
         optional: true
 
-  '@wolfstar/env-utilities@2.0.8':
-    resolution: {integrity: sha512-8i7Cq0L2s0x13di9ksDJp7pFQc7YZIjJmhk5rYzo4olm7aCXuvos14VnBzJ924xhgrKnnq1G4HFJwN+mV+bqCQ==}
-    engines: {node: '>=20'}
-
   '@wolfstar/env-utilities@2.1.1':
     resolution: {integrity: sha512-cvFrzQCVK17ErIYE5iwr09HA1Kvw8PECig08cF5qtVwYTml0HE/NRS2+alEhSd09tlpIB6UrdrPMaCtbSpzmJg==}
     engines: {node: '>=20'}
@@ -2760,6 +2740,16 @@ packages:
     peerDependencies:
       '@wolfstar/http-framework': ^3.0.0
 
+  '@wolfstar/plugin-cache@0.3.0-next-20260927082257':
+    resolution: {integrity: sha512-JCp5IY4OYszVuf52K2E8OM8N1qGMHaw6AU3WP8T1/Cov5CZqxC9Fb8avyzAT6DFv34siBgi+t5csHSf68M/Ldw==}
+    engines: {node: '>=20.0.0'}
+
+  '@wolfstar/plugin-gateway@0.2.0-next-20260927082257':
+    resolution: {integrity: sha512-o1aunN8dlllzrURp5QB5iycdwvE0Axo66zkuvTPYjEaRuDf2NmKo3H3c/3q8HGZ1VJdL9ClMN8U5Q57F78cHQw==}
+    engines: {node: '>=24.17.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0
+
   '@wolfstar/plugin-i18next@2.0.3':
     resolution: {integrity: sha512-tz65AcO7vTpYnSeWyuOfaHvAVhGyjk79uPAl2ow4oloEcDytkrylLmRbT1KM7AfaRTL+6l0TE50epesSVMp0bA==}
     engines: {node: '>=20.0.0'}
@@ -2799,6 +2789,10 @@ packages:
       winston:
         optional: true
 
+  '@wolfstar/plugin-sharder@0.1.1-next-20260927082257':
+    resolution: {integrity: sha512-MldtRHetV0T0R22J4am4BP1fy2nhkt1HsZFSRkz0m9AeDvbkVFrnp0KVtBqdNlafltYa6Gkl7joAqzH+lWl3SQ==}
+    engines: {node: '>=20.0.0'}
+
   '@wolfstar/plugin-subcommands-advanced@2.0.4':
     resolution: {integrity: sha512-em8+z+AB/CtjqGMF49GR3adwg0X2/+deZh8x1ppmvCJsL0kgbugjl+Fob4H6Fd7sH4RxoTiFRqtEznQ3CMn0Dw==}
     engines: {node: '>=20.0.0'}
@@ -2811,10 +2805,6 @@ packages:
 
   '@wolfstar/shared-http-pieces@2.0.6':
     resolution: {integrity: sha512-ThLUQGR1uWQ9a4NQI+otsK+m3rkbpXIwK0DPcgJ6VIKlgOUYxztU4BR8j4HV8ZH8/k9OwHo3by9W/fXEQZHLaw==}
-    engines: {node: '>=20'}
-
-  '@wolfstar/start-banner@2.1.0':
-    resolution: {integrity: sha512-JQNP2089LHvMYRvjj/icZGbZE+kYwA+rlWi1aeqexJgSFgDo5eEs4um2OXYLzH4l1HvaTqcUns+QSdKbQ0dRJQ==}
     engines: {node: '>=20'}
 
   '@wolfstar/start-banner@2.1.1':
@@ -5825,7 +5815,23 @@ snapshots:
 
   '@discordjs/collection@2.1.1': {}
 
+  '@discordjs/core@2.6.0':
+    dependencies:
+      '@discordjs/rest': 2.6.3
+      '@discordjs/util': 1.2.0
+      '@discordjs/ws': 2.0.4
+      '@sapphire/snowflake': 3.5.5
+      '@vladfrangu/async_event_emitter': 2.4.7
+      discord-api-types: 0.38.55
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@discordjs/formatters@0.6.2':
+    dependencies:
+      discord-api-types: 0.38.55
+
+  '@discordjs/formatters@1.0.0-dev.1790035407-dbb749062':
     dependencies:
       discord-api-types: 0.38.55
 
@@ -5852,6 +5858,12 @@ snapshots:
       magic-bytes.js: 1.13.0
       tslib: 2.8.1
       undici: 6.28.1
+
+  '@discordjs/structures@1.0.0-dev.1790035407-dbb749062':
+    dependencies:
+      '@discordjs/formatters': 1.0.0-dev.1790035407-dbb749062
+      '@sapphire/snowflake': 3.5.5
+      discord-api-types: 0.38.55
 
   '@discordjs/util@1.2.0':
     dependencies:
@@ -7466,11 +7478,6 @@ snapshots:
       - react-devtools-core
       - utf-8-validate
 
-  '@wolfstar/env-utilities@2.0.8':
-    dependencies:
-      dotenv: 17.4.2
-      dotenv-expand: 13.0.0
-
   '@wolfstar/env-utilities@2.1.1':
     dependencies:
       '@sapphire/pieces': 4.4.1
@@ -7553,6 +7560,24 @@ snapshots:
       '@vladfrangu/async_event_emitter': 2.4.7
       '@wolfstar/http-framework': 5.1.0(@types/react@19.2.17)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)
 
+  '@wolfstar/plugin-cache@0.3.0-next-20260927082257':
+    dependencies:
+      discord-api-types: 0.38.55
+
+  '@wolfstar/plugin-gateway@0.2.0-next-20260927082257(@wolfstar/http-framework@5.1.0)':
+    dependencies:
+      '@discordjs/core': 2.6.0
+      '@discordjs/rest': 2.6.3
+      '@discordjs/structures': 1.0.0-dev.1790035407-dbb749062
+      '@discordjs/ws': 2.0.4
+      '@sapphire/pieces': 4.4.1
+      '@wolfstar/http-framework': 5.1.0(@types/react@19.2.17)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)
+      '@wolfstar/plugin-cache': 0.3.0-next-20260927082257
+      discord-api-types: 0.38.55
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@wolfstar/plugin-i18next@2.0.3(@wolfstar/http-framework@5.1.0)(@wolfstar/i18next-type-generator@3.1.4)(typescript@7.0.2)':
     dependencies:
       '@discordjs/collection': 2.1.1
@@ -7591,6 +7616,10 @@ snapshots:
     optionalDependencies:
       '@sentry/node': 10.75.3(@opentelemetry/core@2.11.0)(supports-color@7.2.0)
       consola: 3.4.2
+
+  '@wolfstar/plugin-sharder@0.1.1-next-20260927082257':
+    dependencies:
+      '@sapphire/result': 2.8.0
 
   '@wolfstar/plugin-subcommands-advanced@2.0.4(@wolfstar/http-framework@5.1.0)':
     dependencies:
@@ -7643,8 +7672,6 @@ snapshots:
       - varlock
       - vite
       - webpack
-
-  '@wolfstar/start-banner@2.1.0': {}
 
   '@wolfstar/start-banner@2.1.1': {}
 
