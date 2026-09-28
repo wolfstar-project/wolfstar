@@ -25,7 +25,6 @@ COPY --chown=node:node .npmrc .
 COPY --chown=node:node .husky/ .husky/
 COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
-COPY --chown=node:node projects/shared/package.json projects/shared/package.json
 
 ENTRYPOINT ["dumb-init", "--"]
 

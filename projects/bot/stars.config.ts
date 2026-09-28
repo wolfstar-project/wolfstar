@@ -4,7 +4,6 @@ import { aliasEntries } from './scripts/aliases.ts';
 
 export default defineConfig({
 	entry: 'src/main.ts',
-	future: { compatibilityVersion: 4 },
 	imports: {
 		// Legacy modules still export many duplicate names; keep the framework presets
 		// enabled without scanning the application itself until that migration is complete.

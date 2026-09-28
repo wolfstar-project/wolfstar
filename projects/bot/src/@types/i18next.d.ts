@@ -2006,12 +2006,6 @@ declare module "i18next" {
         embedDescriptionWithGame: "{{userName}} is now live - Streaming {{gameName}}!";
         offlinePostfix: "Skyra Twitch Notifications";
       };
-      fuzzySearch: {
-        aborted: "Successfully aborted the prompt.";
-        invalidIndex: "That number was out of range, aborting prompt.";
-        invalidNumber: "I expected you to give me a (single digit) number, got a potato.";
-        matches: "I found multiple matches! **Please select a number within 0 and {{matches}}**:\n{{codeblock}}\nWrite **ABORT** if you want to exit the prompt.";
-      };
       globals: {
         default: "{{key}} has not been localized for en-US yet.";
         defaultLanguage: "Default Language";

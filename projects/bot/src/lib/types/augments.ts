@@ -1,3 +1,8 @@
+// The Stars CLI imports every plugin's `register` entrypoint at build time only, so the type checker never sees the
+// `ClientOptions` augmentations those plugins declare unless they are referenced here.
+/// <reference types="@wolfstar/plugin-api" />
+/// <reference types="@wolfstar/plugin-i18next" />
+/// <reference types="@wolfstar/plugin-subcommands-advanced" />
 import type { BooleanString, IntegerString } from '@wolfstar/env-utilities';
 
 declare module '@wolfstar/env-utilities' {
