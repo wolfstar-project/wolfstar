@@ -42,7 +42,7 @@ export class UserCommand extends WolfCommand {
 		for (const entry of entries.values()) {
 			const clone = entry.clone();
 			entry.setReason(reason).setImageURL(imageURL);
-			this.container.client.emit(Events.ModerationEntryEdit, clone, entry);
+			this.container.gatewayClient.emit(Events.ModerationEntryEdit, clone, entry);
 		}
 
 		return sendTemporaryMessage(

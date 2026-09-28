@@ -81,7 +81,7 @@ export class UserListener extends Listener<typeof Events.CommandError> {
 			const report = captureException(error, { tags: { command: args.command.name } });
 			return args.t(LanguageKeys.Events.Errors.UnexpectedErrorWithContext, { report });
 		} catch (error) {
-			this.container.client.emit(Events.Error, error);
+			this.container.gatewayClient.emit(Events.Error, error);
 			return args.t(LanguageKeys.Events.Errors.UnexpectedError);
 		}
 	}
@@ -111,7 +111,7 @@ export class UserListener extends Listener<typeof Events.CommandError> {
 	}
 
 	private async sendErrorChannel(message: Message, command: Command, parameters: string, error: Error) {
-		const webhook = this.container.client.webhookError;
+		const webhook = this.container.gatewayClient.webhookError;
 		if (webhook === null) return;
 
 		const lines = [this.getLinkLine(message.url), this.getCommandLine(command), this.getArgumentsLine(parameters), this.getErrorLine(error)];
@@ -125,7 +125,7 @@ export class UserListener extends Listener<typeof Events.CommandError> {
 		try {
 			await webhook.send({ embeds: [embed] });
 		} catch (err) {
-			this.container.client.emit(Events.Error, err);
+			this.container.gatewayClient.emit(Events.Error, err);
 		}
 	}
 

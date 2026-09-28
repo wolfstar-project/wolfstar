@@ -86,7 +86,7 @@ export class UserCommand extends WolfCommand {
 		const entries = (await getModeration(message.guild).fetch(target.id)).filter((log) => !log.invalidated && !log.appealType);
 		if (!entries.size) this.error(LanguageKeys.Commands.Moderation.ModerationsEmpty);
 
-		const user = this.container.client.user!;
+		const user = this.container.gatewayClient.user!;
 		const display = new SkyraPaginatedMessage({
 			template: new MessageEmbed()
 				.setColor(await this.container.db.fetchColor(message))

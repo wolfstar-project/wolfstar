@@ -29,7 +29,7 @@ export class UserListener extends Listener {
 					: t(LanguageKeys.Events.Guilds.Members.GuildMemberRemove);
 
 		const time = this.processJoinedTimestamp(member);
-		this.container.client.emit(Events.GuildMessageLog, guild, logChannelId, key, () =>
+		this.container.gatewayClient.emit(Events.GuildMessageLog, guild, logChannelId, key, () =>
 			new MessageEmbed()
 				.setColor(Colors.Red)
 				.setAuthor({ name: `${user.username}#${user.discriminator} (${user.id})`, iconURL: getDisplayAvatar(user.id, user) })

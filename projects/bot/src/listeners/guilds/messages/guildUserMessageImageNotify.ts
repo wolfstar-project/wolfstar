@@ -63,7 +63,7 @@ export class UserListener extends Listener {
 				const buffer = Buffer.from(await (await result.blob()).arrayBuffer());
 				const filename = `image${extname(url.pathname)}`;
 
-				this.container.client.emit(Events.GuildMessageLog, message.guild, logChannelId, key, (): MessageOptions => {
+				this.container.gatewayClient.emit(Events.GuildMessageLog, message.guild, logChannelId, key, (): MessageOptions => {
 					const embed = new MessageEmbed()
 						.setColor(Colors.Yellow)
 						.setAuthor({

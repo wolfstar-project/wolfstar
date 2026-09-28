@@ -16,7 +16,7 @@ export class UserListener extends Listener {
 
 		const promises = [
 			...map(
-				filter(this.container.client.guilds.cache.values(), (guild) => guild.members.cache.has(user.id)),
+				filter(this.container.gatewayClient.guilds.cache.values(), (guild) => guild.members.cache.has(user.id)),
 				(guild) => this.processGuild(guild, user, prevUsername, nextUserName)
 			)
 		];
@@ -31,7 +31,7 @@ export class UserListener extends Listener {
 
 		if (logChannelId) {
 			// Send the Username log
-			this.container.client.emit(Events.GuildMessageLog, guild, logChannelId, GuildSettings.Channels.Logs.MemberUserNameUpdate, () =>
+			this.container.gatewayClient.emit(Events.GuildMessageLog, guild, logChannelId, GuildSettings.Channels.Logs.MemberUserNameUpdate, () =>
 				this.buildEmbed(user, language, this.getNameDescription(language, previous, next), LanguageKeys.Events.Guilds.Members.UsernameUpdate)
 			);
 		}

@@ -12,7 +12,7 @@ const { FLAGS } = Permissions;
 export class UserListener extends Listener {
 	public async run(member: GuildMember) {
 		if (await this.handleStickyRoles(member)) return;
-		this.container.client.emit(Events.NotMutedMemberAdd, member);
+		this.container.gatewayClient.emit(Events.NotMutedMemberAdd, member);
 	}
 
 	private async handleStickyRoles(member: GuildMember) {
@@ -34,7 +34,7 @@ export class UserListener extends Listener {
 			floatPromise(role ? member.roles.add(role) : writeSettings(member, [[GuildSettings.Roles.Muted, null]]));
 
 			// Handle log
-			this.container.client.emit(Events.GuildMessageLog, member.guild, logChannelId, key, () =>
+			this.container.gatewayClient.emit(Events.GuildMessageLog, member.guild, logChannelId, key, () =>
 				new MessageEmbed()
 					.setColor(Colors.Amber)
 					.setAuthor({

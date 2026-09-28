@@ -84,7 +84,7 @@ export class UserModerationEvent extends ModerationListener<ArgumentType, unknow
 	}
 
 	protected async onLogMessage([data]: Readonly<ArgumentType>) {
-		const user = await this.container.client.users.fetch(data.userId);
+		const user = await this.container.gatewayClient.users.fetch(data.userId);
 		const t = await fetchT(data.guild);
 		return new MessageEmbed()
 			.setColor(Colors.Red)
@@ -100,7 +100,7 @@ export class UserModerationEvent extends ModerationListener<ArgumentType, unknow
 	}
 
 	protected onLog(args: Readonly<ArgumentType>) {
-		this.container.client.emit(
+		this.container.gatewayClient.emit(
 			Events.GuildMessageLog,
 			args[0].guild,
 			args[2],

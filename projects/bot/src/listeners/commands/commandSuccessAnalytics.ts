@@ -7,6 +7,6 @@ import { CommandSuccessPayload, Listener, ListenerOptions } from '@sapphire/fram
 export class UserListener extends Listener<Events.CommandSuccess> {
 	public run(payload: CommandSuccessPayload) {
 		const command = payload.command as WolfCommand;
-		this.container.client.emit(Events.CommandUsageAnalytics, command.name, command.category);
+		this.container.gatewayClient.emit(Events.CommandUsageAnalytics, command.name, command.category);
 	}
 }

@@ -8,9 +8,9 @@ export class UserListener extends Listener {
 	public run(data: GatewayMessageDeleteDispatch['d']): void {
 		if (!data.guild_id) return;
 
-		const guild = this.container.client.guilds.cache.get(data.guild_id);
+		const guild = this.container.gatewayClient.guilds.cache.get(data.guild_id);
 		if (!guild || !guild.channels.cache.has(data.channel_id)) return;
 
-		this.container.client.emit(Events.RawMessageDelete, guild, data);
+		this.container.gatewayClient.emit(Events.RawMessageDelete, guild, data);
 	}
 }

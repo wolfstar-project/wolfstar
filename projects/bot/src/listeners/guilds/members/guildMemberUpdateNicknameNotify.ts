@@ -20,7 +20,7 @@ export class UserListener extends Listener {
 		const nextNickname = next.nickname;
 		const { user } = next;
 		if (prevNickname !== nextNickname) {
-			this.container.client.emit(Events.GuildMessageLog, next.guild, logChannelId, key, () =>
+			this.container.gatewayClient.emit(Events.GuildMessageLog, next.guild, logChannelId, key, () =>
 				new MessageEmbed()
 					.setColor(Colors.Yellow)
 					.setAuthor({ name: `${user.tag} (${user.id})`, iconURL: user.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })

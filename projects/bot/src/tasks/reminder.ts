@@ -8,7 +8,7 @@ import i18next from 'i18next';
 export class UserTask extends Task {
 	public async run(data: ReminderTaskData): Promise<PartialResponseValue | null> {
 		// Fetch the user to send the message to
-		const user = await resolveOnErrorCodes(this.container.client.users.fetch(data.user), RESTJSONErrorCodes.UnknownUser);
+		const user = await resolveOnErrorCodes(this.container.gatewayClient.users.fetch(data.user), RESTJSONErrorCodes.UnknownUser);
 
 		if (user) {
 			const timestamp = time(new Date(), TimestampStyles.ShortDateTime);

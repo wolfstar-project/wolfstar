@@ -25,8 +25,8 @@ export class UserListener extends Listener {
 		const { guildBoost } = await set.clients.ensure();
 		const add = Math.round((Math.random() * 4 + 4) * (guildBoost.includes(message.guild.id) ? 1.5 : 1));
 
-		this.container.client.emit(Events.GuildUserMessageSocialPointsAddUser, message, Math.round(add));
-		this.container.client.emit(Events.GuildUserMessageSocialPointsAddMember, message, Math.round(add * multiplier));
+		this.container.gatewayClient.emit(Events.GuildUserMessageSocialPointsAddUser, message, Math.round(add));
+		this.container.gatewayClient.emit(Events.GuildUserMessageSocialPointsAddMember, message, Math.round(add * multiplier));
 	}
 
 	/**

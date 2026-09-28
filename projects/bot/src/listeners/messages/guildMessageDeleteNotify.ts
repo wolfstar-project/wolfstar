@@ -27,7 +27,7 @@ export class UserListener extends Listener {
 		if (ignoredDeletes.some((id) => id === message.channel.id && message.channel.parentId === id)) return;
 		if (ignoredAll.some((id) => id === message.channel.id || message.channel.parentId === id)) return;
 
-		this.container.client.emit(Events.GuildMessageLog, message.guild, logChannelId, key, () =>
+		this.container.gatewayClient.emit(Events.GuildMessageLog, message.guild, logChannelId, key, () =>
 			new MessageEmbed()
 				.setColor(Colors.Red)
 				.setAuthor({

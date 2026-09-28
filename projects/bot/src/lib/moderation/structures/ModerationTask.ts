@@ -5,7 +5,7 @@ import type { Guild, User } from 'discord.js';
 
 export abstract class ModerationTask<T = unknown> extends Task {
 	public async run(data: ModerationData<T>): Promise<PartialResponseValue> {
-		const guild = this.container.client.guilds.cache.get(data.guildID);
+		const guild = this.container.gatewayClient.guilds.cache.get(data.guildID);
 		// If the guild is not available, cancel the task.
 		if (typeof guild === 'undefined') return { type: ResponseType.Ignore };
 

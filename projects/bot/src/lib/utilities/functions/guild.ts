@@ -39,7 +39,7 @@ function getProperty<K extends keyof GuildUtilities>(property: K) {
 }
 
 function resolveGuild(resolvable: GuildResolvable): Guild {
-	const guild = container.client.guilds.resolve(resolvable);
+	const guild = container.gatewayClient.guilds.resolve(resolvable);
 	if (guild === null) throw new TypeError(`${resolvable} resolved to null.`);
 
 	return guild;

@@ -5,6 +5,6 @@ import { GatewayDispatchEvents, GatewayGuildCreateDispatch } from 'discord-api-t
 @ApplyOptions<ListenerOptions>({ event: GatewayDispatchEvents.GuildCreate, emitter: 'ws' })
 export class UserListener extends Listener {
 	public run(data: GatewayGuildCreateDispatch['d'], shardId: number) {
-		this.container.client.guildMemberFetchQueue.add(shardId, data.id);
+		this.container.gatewayClient.guildMemberFetchQueue.add(shardId, data.id);
 	}
 }

@@ -28,7 +28,7 @@ export class UserListener extends Listener {
 			const member = await channel.guild.members.fetch(data.user_id);
 			if (member.roles.cache.has(roleEntry.role)) await member.roles.remove(roleEntry.role);
 		} catch (error) {
-			this.container.client.emit(Events.Error, error);
+			this.container.gatewayClient.emit(Events.Error, error);
 		}
 	}
 }

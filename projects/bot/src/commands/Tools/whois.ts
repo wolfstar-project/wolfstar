@@ -67,7 +67,7 @@ export class UserCommand extends Command {
 			.setThumbnail(user.displayAvatarURL({ size: 256, format: 'png', dynamic: true }))
 			.setDescription(this.getUserInformation(user))
 			.addField(titles.createdAt, fields.createdAt)
-			.setFooter({ text: fields.footer, iconURL: this.container.client.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
+			.setFooter({ text: fields.footer, iconURL: this.container.gatewayClient.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
 			.setTimestamp();
 	}
 
@@ -90,7 +90,7 @@ export class UserCommand extends Command {
 			.setDescription(this.getUserInformation(member.user, this.getBoostIcon(member.premiumSinceTimestamp)))
 			.addField(titles.joined, member.joinedTimestamp ? fields.joinedWithTimestamp : fields.joinedUnknown, true)
 			.addField(titles.createdAt, fields.createdAt, true)
-			.setFooter({ text: fields.footer, iconURL: this.container.client.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
+			.setFooter({ text: fields.footer, iconURL: this.container.gatewayClient.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
 			.setTimestamp();
 
 		this.applyMemberRoles(t, member, embed);

@@ -49,7 +49,7 @@ export class UserListener extends Listener {
 				const message = await parsed.channel.messages.fetch(parsed.messageId);
 				await sendTemporaryMessage(message, await resolveKey(message, LanguageKeys.Events.Reactions.SelfRoleHierarchy));
 			} else {
-				this.container.client.emit(Events.Error, error);
+				this.container.gatewayClient.emit(Events.Error, error);
 			}
 		}
 	}

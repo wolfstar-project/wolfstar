@@ -15,7 +15,7 @@ export class UserRoute extends Route {
 	public async [methods.GET](request: ApiRequest, response: ApiResponse) {
 		const guildId = request.params.guild;
 
-		const guild = this.container.client.guilds.cache.get(guildId);
+		const guild = this.container.gatewayClient.guilds.cache.get(guildId);
 		if (!guild) return response.error(HttpCodes.BadRequest);
 
 		const member = await guild.members.fetch(request.auth!.id).catch(() => null);
@@ -35,7 +35,7 @@ export class UserRoute extends Route {
 			return response.status(HttpCodes.BadRequest).json(['Invalid body.']);
 		}
 
-		const guild = this.container.client.guilds.cache.get(requestBody.guild_id);
+		const guild = this.container.gatewayClient.guilds.cache.get(requestBody.guild_id);
 		if (!guild) return response.status(HttpCodes.BadRequest).json(['Guild not found.']);
 
 		const member = await guild.members.fetch(request.auth!.id).catch(() => null);

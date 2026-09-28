@@ -205,8 +205,8 @@ describe('AuditLogManager', () => {
 			// read logsCommand / logsSettings from the stored settings.
 			manager = new AuditLogManager(settingsStub);
 
-			vi.spyOn(container.client.guilds.cache as any, 'get').mockReturnValue(guildStub);
-			emitSpy = vi.spyOn(container.client as any, 'emit').mockReturnValue(true);
+			vi.spyOn(container.gatewayClient.guilds.cache as any, 'get').mockReturnValue(guildStub);
+			emitSpy = vi.spyOn(container.gatewayClient as any, 'emit').mockReturnValue(true);
 
 			// Mock container.i18n so the real fetchT (from @sapphire/plugin-i18next,
 			// already loaded by the setup file) resolves via the shared container.
@@ -217,8 +217,8 @@ describe('AuditLogManager', () => {
 
 			// Provide a real-ish User and bot user so embed builders don't crash.
 			const stubbedUser = createUser();
-			vi.spyOn(container.client.users, 'fetch').mockResolvedValue(stubbedUser as never);
-			Reflect.set(container.client, 'user', stubbedUser);
+			vi.spyOn(container.gatewayClient.users, 'fetch').mockResolvedValue(stubbedUser as never);
+			Reflect.set(container.gatewayClient, 'user', stubbedUser);
 		});
 
 		afterEach(() => {
@@ -266,7 +266,7 @@ describe('AuditLogManager', () => {
 		});
 
 		test('GIVEN guild not in cache THEN DB write succeeds and no emit is fired', async () => {
-			vi.spyOn(container.client.guilds.cache as any, 'get').mockReturnValue(undefined);
+			vi.spyOn(container.gatewayClient.guilds.cache as any, 'get').mockReturnValue(undefined);
 			await manager.command(ACTOR_ID, { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
 			await new Promise((r) => setImmediate(r));
 			expect(eventCreateSpy).toHaveBeenCalledOnce();

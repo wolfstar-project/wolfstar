@@ -169,7 +169,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected onLog(message: GuildMessage, logChannelId: string | Nullish, language: TFunction, value: T): Awaitable<void> {
-		this.container.client.emit(
+		this.container.gatewayClient.emit(
 			Events.GuildMessageLog,
 			message.guild,
 			logChannelId,

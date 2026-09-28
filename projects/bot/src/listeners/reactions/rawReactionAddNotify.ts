@@ -37,7 +37,7 @@ export class UserListener extends Listener {
 		const emojiId = getEmojiId(emoji);
 		if (allowedEmojis.some((allowedEmoji) => getEmojiId(allowedEmoji) === emojiId)) return;
 
-		this.container.client.emit(Events.ReactionBlocked, data, emoji);
+		this.container.gatewayClient.emit(Events.ReactionBlocked, data, emoji);
 		if (isNullish(logChannelId) || (!twemojiEnabled && data.emoji.id === null)) return;
 
 		if (ignoreChannels.includes(data.channel.id)) return;
@@ -46,10 +46,10 @@ export class UserListener extends Listener {
 
 		if ((await this.retrieveCount(data, emoji)) > 1) return;
 
-		const user = await this.container.client.users.fetch(data.userId);
+		const user = await this.container.gatewayClient.users.fetch(data.userId);
 		if (user.bot) return;
 
-		this.container.client.emit(Events.GuildMessageLog, data.guild, logChannelId, key, () =>
+		this.container.gatewayClient.emit(Events.GuildMessageLog, data.guild, logChannelId, key, () =>
 			new MessageEmbed()
 				.setColor(Colors.Green)
 				.setAuthor({ name: `${user.tag} (${user.id})`, iconURL: user.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })

@@ -10,7 +10,7 @@ import type { TextChannel } from 'discord.js';
 @ApplyOptions<ListenerOptions>({ event: GatewayDispatchEvents.MessageReactionAdd, emitter: 'ws' })
 export class UserListener extends Listener {
 	public run(raw: GatewayMessageReactionAddDispatch['d']) {
-		const channel = this.container.client.channels.cache.get(raw.channel_id) as TextChannel | undefined;
+		const channel = this.container.gatewayClient.channels.cache.get(raw.channel_id) as TextChannel | undefined;
 		if (!channel || !isGuildBasedChannel(channel) || !canReadMessages(channel)) return;
 
 		const data: LLRCData = {
@@ -23,20 +23,20 @@ export class UserListener extends Listener {
 				requireColons: raw.emoji.require_colons ?? null,
 				roles: raw.emoji.roles || null,
 				// eslint-disable-next-line @typescript-eslint/dot-notation
-				user: (raw.emoji.user && this.container.client.users['_add'](raw.emoji.user)) ?? { id: raw.user_id }
+				user: (raw.emoji.user && this.container.gatewayClient.users['_add'](raw.emoji.user)) ?? { id: raw.user_id }
 			},
 			guild: channel.guild,
 			messageId: raw.message_id,
 			userId: raw.user_id
 		};
 
-		for (const llrc of this.container.client.llrCollectors) {
+		for (const llrc of this.container.gatewayClient.llrCollectors) {
 			llrc.send(data);
 		}
 
 		const emoji = getEmojiString(data.emoji);
 		if (emoji === null) return;
 
-		this.container.client.emit(Events.RawReactionAdd, data, emoji);
+		this.container.gatewayClient.emit(Events.RawReactionAdd, data, emoji);
 	}
 }

@@ -14,7 +14,7 @@ export class UserListener extends Listener {
 		const [logChannelId, t] = await readSettings(member, (settings) => [settings[key], settings.getLanguage()]);
 		if (isNullish(logChannelId)) return;
 
-		this.container.client.emit(Events.GuildMessageLog, member.guild, logChannelId, key, () =>
+		this.container.gatewayClient.emit(Events.GuildMessageLog, member.guild, logChannelId, key, () =>
 			new MessageEmbed()
 				.setColor(Colors.Green)
 				.setAuthor({

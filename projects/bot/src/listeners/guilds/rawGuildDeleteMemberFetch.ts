@@ -5,6 +5,6 @@ import { GatewayDispatchEvents, GatewayGuildDeleteDispatch } from 'discord-api-t
 @ApplyOptions<ListenerOptions>({ event: GatewayDispatchEvents.GuildDelete, emitter: 'ws' })
 export class UserListener extends Listener {
 	public run(data: GatewayGuildDeleteDispatch['d'], shardId: number) {
-		this.container.client.guildMemberFetchQueue.remove(shardId, data.id);
+		this.container.gatewayClient.guildMemberFetchQueue.remove(shardId, data.id);
 	}
 }

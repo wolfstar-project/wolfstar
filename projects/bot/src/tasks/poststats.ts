@@ -29,7 +29,7 @@ export class UserTask extends Task {
 		const rawUsers = client.guilds.cache.reduce((acc, val) => acc + (val.memberCount ?? 0), 0);
 
 		this.processAnalytics(rawGuilds, rawUsers);
-		if (this.container.client.dev) return { type: ResponseType.Finished };
+		if (this.container.gatewayClient.dev) return { type: ResponseType.Finished };
 
 		const guilds = rawGuilds.toString();
 		const users = rawUsers.toString();
@@ -97,6 +97,6 @@ export class UserTask extends Task {
 	}
 
 	private processAnalytics(guilds: number, users: number) {
-		this.container.client.emit(Events.AnalyticsSync, guilds, users);
+		this.container.gatewayClient.emit(Events.AnalyticsSync, guilds, users);
 	}
 }

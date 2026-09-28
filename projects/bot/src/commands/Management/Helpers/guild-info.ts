@@ -140,7 +140,7 @@ export class UserCommand extends WolfCommand {
 
 	private async getSummaryMembers(args: WolfCommand.Args): Promise<string> {
 		const guild = args.message.guild!;
-		const owner = await this.container.client.users.fetch(guild.ownerId);
+		const owner = await this.container.gatewayClient.users.fetch(guild.ownerId);
 
 		return args.t(LanguageKeys.Commands.Management.GuildInfoMembers, { memberCount: guild.memberCount, owner });
 	}

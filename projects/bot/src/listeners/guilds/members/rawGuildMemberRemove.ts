@@ -6,10 +6,10 @@ import { GatewayDispatchEvents, GatewayGuildMemberRemoveDispatch } from 'discord
 @ApplyOptions<ListenerOptions>({ event: GatewayDispatchEvents.GuildMemberRemove, emitter: 'ws' })
 export class UserListener extends Listener {
 	public run(data: GatewayGuildMemberRemoveDispatch['d']) {
-		const guild = this.container.client.guilds.cache.get(data.guild_id);
+		const guild = this.container.gatewayClient.guilds.cache.get(data.guild_id);
 		if (!guild || !guild.available) return;
 
 		const member = guild.members.cache.get(data.user.id) ?? null;
-		this.container.client.emit(Events.RawMemberRemove, guild, member, data);
+		this.container.gatewayClient.emit(Events.RawMemberRemove, guild, member, data);
 	}
 }

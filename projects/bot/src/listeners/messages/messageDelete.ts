@@ -6,6 +6,6 @@ import type { Message } from 'discord.js';
 export class UserListener extends Listener {
 	public run(message: Message) {
 		if (message.partial || !isGuildMessage(message) || message.author.bot) return;
-		this.container.client.emit(Events.GuildMessageDelete, message);
+		this.container.gatewayClient.emit(Events.GuildMessageDelete, message);
 	}
 }

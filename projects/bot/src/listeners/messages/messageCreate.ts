@@ -14,6 +14,6 @@ export class UserListener extends Listener {
 		if (message.author.bot) return;
 
 		// Emit UserMessage
-		this.container.client.emit(Events.UserMessage, message);
+		this.container.gatewayClient.emit(Events.UserMessage, message);
 	}
 }

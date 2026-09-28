@@ -11,7 +11,7 @@ export class UserRoute extends Route {
 	public async [methods.GET](request: ApiRequest, response: ApiResponse) {
 		const guildId = request.params.guild;
 
-		const guild = this.container.client.guilds.cache.get(guildId);
+		const guild = this.container.gatewayClient.guilds.cache.get(guildId);
 		if (!guild) return response.error(HttpCodes.BadRequest);
 
 		const member = await guild.members.fetch(request.auth!.id).catch(() => null);

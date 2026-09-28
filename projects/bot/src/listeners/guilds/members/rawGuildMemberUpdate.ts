@@ -17,7 +17,7 @@ export class UserListener extends Listener {
 	private readonly requiredPermissions = new Permissions(Permissions.FLAGS.VIEW_AUDIT_LOG);
 
 	public run(data: GatewayGuildMemberUpdateDispatch['d']) {
-		const guild = this.container.client.guilds.cache.get(data.guild_id);
+		const guild = this.container.gatewayClient.guilds.cache.get(data.guild_id);
 
 		// If the guild does not exist for some reason, skip:
 		if (typeof guild === 'undefined') return;

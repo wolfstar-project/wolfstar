@@ -6,6 +6,6 @@ import type { Message } from 'discord.js';
 @ApplyOptions<ListenerOptions>({ event: Events.UserMessage })
 export class UserListener extends Listener {
 	public run(message: Message) {
-		if (message.guild) this.container.client.emit(Events.GuildUserMessage, message);
+		if (message.guild) this.container.gatewayClient.emit(Events.GuildUserMessage, message);
 	}
 }

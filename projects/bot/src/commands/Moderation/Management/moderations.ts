@@ -58,7 +58,7 @@ export class UserPaginatedMessageCommand extends PaginatedMessageCommand {
 
 		if (!entries.size) this.error(LanguageKeys.Commands.Moderation.ModerationsEmpty, { prefix });
 
-		const user = this.container.client.user!;
+		const user = this.container.gatewayClient.user!;
 		const display = new SkyraPaginatedMessage({
 			template: new MessageEmbed()
 				.setColor(await this.container.db.fetchColor(message))

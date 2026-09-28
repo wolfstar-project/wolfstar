@@ -17,7 +17,7 @@ export function createClient(options: ClientOptions = {}) {
 		password: envParseString('REDIS_PASSWORD')
 	});
 
-	// The client registers itself as `container.client`:
+	// The client registers itself as `container.gatewayClient`:
 	// oxlint-disable-next-line no-new
 	new GatewayClient({
 		discordToken: envParseString('DISCORD_TOKEN'),

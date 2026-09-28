@@ -7,7 +7,7 @@ import { Listener, ListenerOptions } from '@sapphire/framework';
 export class UserListener extends Listener {
 	public async run(message: GuildMessage, add: number) {
 		const difference = await this.addPoints(message.author.id, message.guild.id, add);
-		this.container.client.emit(Events.GuildUserMessageSocialPointsAddMemberReward, message, difference);
+		this.container.gatewayClient.emit(Events.GuildUserMessageSocialPointsAddMemberReward, message, difference);
 	}
 
 	private async addPoints(userId: string, guildId: string, points: number): Promise<Difference<number>> {

@@ -186,7 +186,7 @@ export class AuditLogManager {
 			timestamp: Date;
 		}
 	): Promise<void> {
-		const guild = container.client.guilds.cache.get(this.#guildId);
+		const guild = container.gatewayClient.guilds.cache.get(this.#guildId);
 		if (!guild) return;
 
 		const channelKey = action === 'guild.command.execute' ? 'logsCommand' : 'logsSettings';
@@ -229,7 +229,7 @@ export class AuditLogManager {
 							timestamp: params.timestamp
 						});
 
-		container.client.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
+		container.gatewayClient.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
 	}
 
 	#buildCommandExecuteEmbed(t: TFunction, actor: User, payload: CommandExecutePayload): EmbedBuilder {
@@ -254,7 +254,7 @@ export class AuditLogManager {
 			.setDescription(description)
 			.setFooter({
 				text: t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle),
-				iconURL: container.client.user!.displayAvatarURL({ size: 128 })
+				iconURL: container.gatewayClient.user!.displayAvatarURL({ size: 128 })
 			})
 			.setTimestamp(timestamp);
 	}
@@ -276,7 +276,7 @@ export class AuditLogManager {
 			.setColor(color)
 			.setAuthor(this.#getEmbedAuthor(actor))
 			.setDescription(descLines.join('\n'))
-			.setFooter({ text: actionTitle, iconURL: container.client.user!.displayAvatarURL({ size: 128 }) })
+			.setFooter({ text: actionTitle, iconURL: container.gatewayClient.user!.displayAvatarURL({ size: 128 }) })
 			.setTimestamp(timestamp);
 
 		if (action !== 'guild.settings.access-denied') {
@@ -306,7 +306,7 @@ export class AuditLogManager {
 
 	async #fetchUser(userId: string): Promise<User> {
 		try {
-			return await container.client.users.fetch(userId);
+			return await container.gatewayClient.users.fetch(userId);
 		} catch {
 			return { id: userId, username: 'Unknown User', discriminator: '0000', avatar: null, bot: false, system: false } as User;
 		}

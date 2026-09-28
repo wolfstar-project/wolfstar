@@ -165,7 +165,7 @@ export class ScheduleManager {
 		if (!this.queue.length) {
 			this._clearInterval();
 		} else if (!this.interval) {
-			this.interval = setInterval(this.execute.bind(this), container.client.options.schedule?.interval ?? 5000).unref();
+			this.interval = setInterval(this.execute.bind(this), container.gatewayClient.options.schedule?.interval ?? 5000).unref();
 		}
 	}
 
