@@ -34,6 +34,7 @@
 		"@sapphire/utilities": "^3.18.2",
 		"@sentry/node": "^10.75.3",
 		"@skyra/char": "^1.0.3",
+		"@varlock/proton-pass-plugin": "^2.0.1",
 		"@wolfstar/env-utilities": "^2.2.1",
 		"@wolfstar/http-framework": "^5.1.2",
 		"@wolfstar/plugin-api": "^1.1.7",
@@ -49,6 +50,7 @@
 		"discord-api-types": "^0.38.55",
 		"gradient-string": "^3.0.0",
 		"ioredis": "^6.0.0",
+		"varlock": "^1.21.1",
 		"wolfstar-database": "workspace:^"
 	},
 	"devDependencies": {
@@ -56,5 +58,8 @@
 		"@wolfstar/i18next-type-generator": "^3.1.5",
 		"typescript": "^7.0.2",
 		"vitest": "^5.0.0"
+	},
+	"varlock": {
+		"loadPath": "./src/"
 	}
 }

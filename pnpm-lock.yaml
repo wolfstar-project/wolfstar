@@ -189,6 +189,9 @@ importers:
       '@types/node':
         specifier: ^24.13.2
         version: 24.13.2
+      '@varlock/proton-pass-plugin':
+        specifier: ^2.0.1
+        version: 2.0.1(varlock@1.21.1)
       '@vitest/coverage-v8':
         specifier: ^5.0.0
         version: 5.0.0(vitest@5.0.0)
@@ -216,6 +219,9 @@ importers:
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
+      varlock:
+        specifier: ^1.21.1
+        version: 1.21.1
       vite:
         specifier: ^8.3.0
         version: 8.3.0(@types/node@24.13.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)
@@ -246,9 +252,12 @@ importers:
       '@skyra/char':
         specifier: ^1.0.3
         version: 1.0.3
+      '@varlock/proton-pass-plugin':
+        specifier: ^2.0.1
+        version: 2.0.1(varlock@1.21.1)
       '@wolfstar/env-utilities':
         specifier: ^2.2.1
-        version: 2.2.1
+        version: 2.2.1(varlock@1.21.1)
       '@wolfstar/http-framework':
         specifier: ^5.1.2
         version: 5.1.2(@types/react@19.2.17)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)
@@ -275,7 +284,7 @@ importers:
         version: 2.0.5(@wolfstar/http-framework@5.1.2)
       '@wolfstar/shared-http-pieces':
         specifier: ^2.0.7
-        version: 2.0.7(@opentelemetry/core@2.11.0)(@types/react@19.2.17)(@wolfstar/i18next-type-generator@3.1.5)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(supports-color@7.2.0)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)
+        version: 2.0.7(@opentelemetry/core@2.11.0)(@types/react@19.2.17)(@wolfstar/i18next-type-generator@3.1.5)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(supports-color@7.2.0)(tsdown@0.23.0)(typescript@7.0.2)(varlock@1.21.1)(vite@8.3.0)
       '@wolfstar/start-banner':
         specifier: ^2.1.2
         version: 2.1.2
@@ -291,6 +300,9 @@ importers:
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
+      varlock:
+        specifier: ^1.21.1
+        version: 1.21.1
       wolfstar-database:
         specifier: workspace:^
         version: link:../database
@@ -313,12 +325,12 @@ importers:
       '@prisma/orm-postgres':
         specifier: 8.0.0-rc.11
         version: 8.0.0-rc.11(@prisma/cli-engine@0.4.0)(magicast@0.5.3)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.0)
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
       pg:
         specifier: ^8.23.0
         version: 8.23.0
+      varlock:
+        specifier: ^1.21.1
+        version: 1.21.1
     devDependencies:
       '@rollup/plugin-alias':
         specifier: 6.0.0
@@ -2529,6 +2541,30 @@ packages:
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [win32]
+
+  '@varlock/native-helper-darwin@1.21.1':
+    resolution: {integrity: sha512-hh7lB6cO/qEVJTgPY5ebVicwnbM7ROkIWjOkZ+k6PYWaoyj+UrUTymF5nHkqzg0TaZ+EA5z/eboFoZhrbsOHGw==}
+    os: [darwin]
+
+  '@varlock/native-helper-linux-arm64@1.21.1':
+    resolution: {integrity: sha512-ppN2UIrJKDVALBzZwVXzIokAch8j2eyeABEHZn5LkMS3auXBVdVVkqN9QPIe7/Ii91LIV5mwWMeVJrV1paTI5Q==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@varlock/native-helper-linux-x64@1.21.1':
+    resolution: {integrity: sha512-jAbIyjBJ0gyyg4C95P7KXufXtCR/K624Gib/6CUasO6dBnYVJ0SpbK2Ym41jgDYlJuYgkLKJuUHSrGNcAflzcA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@varlock/native-helper-win32-x64@1.21.1':
+    resolution: {integrity: sha512-HaEry0HnJPY+opHiNUgQvpQ1yFZMMIVmpLZExTinQXu9Im81aovoR1By6LQsx1H4qFDyeEqcq2glV74WzHCNyA==}
+    os: [win32, linux]
+
+  '@varlock/proton-pass-plugin@2.0.1':
+    resolution: {integrity: sha512-SMu6eWK9s4Dxec9PHuvYmPGpurbE2Heo6phoD6lXeX0YoCK9pmd07mZuKkMmUxpA/o2yoXu27UOAtbLV5klZiQ==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      varlock: ^1.17.1
 
   '@vercel/detect-agent@1.2.5':
     resolution: {integrity: sha512-0krENrjuitlW8s6TJu0MlqCevyCU7K7JK63jZAf7xZ6n17tx+vUEwzHT3sTxawtwZxaW21hu+oFUpoOrm49FsQ==}
@@ -4961,6 +4997,11 @@ packages:
       typescript:
         optional: true
 
+  varlock@1.21.1:
+    resolution: {integrity: sha512-Qfy8/3DBEDlPcfQ8gR/Qs7YA5ERmUT2g0GqMPwz/uL00UqP8/heAAUGrwoBO8H6l4tWjPG35Ews680I78Ci0Aw==}
+    engines: {bun: '>=1.3.3', node: '>=22.3.0'}
+    hasBin: true
+
   verkit@0.3.2:
     resolution: {integrity: sha512-zj/ob3UsvJGN0whEAKFp53REA5X66hvffVqoCtVQAakJKnKlH+/PcOfMoFwIG/o4rElqLv/ycAFlx8ZlXUorCg==}
     engines: {node: '>=18.12.0'}
@@ -7212,6 +7253,22 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
+  '@varlock/native-helper-darwin@1.21.1':
+    optional: true
+
+  '@varlock/native-helper-linux-arm64@1.21.1':
+    optional: true
+
+  '@varlock/native-helper-linux-x64@1.21.1':
+    optional: true
+
+  '@varlock/native-helper-win32-x64@1.21.1':
+    optional: true
+
+  '@varlock/proton-pass-plugin@2.0.1(varlock@1.21.1)':
+    dependencies:
+      varlock: 1.21.1
+
   '@vercel/detect-agent@1.2.5': {}
 
   '@vercel/nft@1.11.0(rollup@4.61.1)(supports-color@7.2.0)':
@@ -7291,11 +7348,13 @@ snapshots:
       - react-devtools-core
       - utf-8-validate
 
-  '@wolfstar/env-utilities@2.2.1':
+  '@wolfstar/env-utilities@2.2.1(varlock@1.21.1)':
     dependencies:
       '@sapphire/pieces': 4.4.1
       dotenv: 17.4.2
       dotenv-expand: 13.0.0
+    optionalDependencies:
+      varlock: 1.21.1
 
   '@wolfstar/http-framework@5.1.2(@types/react@19.2.17)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)':
     dependencies:
@@ -7429,13 +7488,13 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@wolfstar/shared-http-pieces@2.0.7(@opentelemetry/core@2.11.0)(@types/react@19.2.17)(@wolfstar/i18next-type-generator@3.1.5)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(supports-color@7.2.0)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)':
+  '@wolfstar/shared-http-pieces@2.0.7(@opentelemetry/core@2.11.0)(@types/react@19.2.17)(@wolfstar/i18next-type-generator@3.1.5)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(supports-color@7.2.0)(tsdown@0.23.0)(typescript@7.0.2)(varlock@1.21.1)(vite@8.3.0)':
     dependencies:
       '@discordjs/builders': 1.14.1
       '@discordjs/collection': 2.1.1
       '@sapphire/pieces': 4.4.1
       '@sentry/node': 10.75.3(@opentelemetry/core@2.11.0)(supports-color@7.2.0)
-      '@wolfstar/env-utilities': 2.2.1
+      '@wolfstar/env-utilities': 2.2.1(varlock@1.21.1)
       '@wolfstar/http-framework': 5.1.2(@types/react@19.2.17)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.8)(rollup@4.61.1)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.0)
       '@wolfstar/plugin-i18next': 2.1.1(@wolfstar/http-framework@5.1.2)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)
       discord-api-types: 0.38.55
@@ -9741,6 +9800,13 @@ snapshots:
   valibot@1.2.0(typescript@7.0.2):
     optionalDependencies:
       typescript: 7.0.2
+
+  varlock@1.21.1:
+    optionalDependencies:
+      '@varlock/native-helper-darwin': 1.21.1
+      '@varlock/native-helper-linux-arm64': 1.21.1
+      '@varlock/native-helper-linux-x64': 1.21.1
+      '@varlock/native-helper-win32-x64': 1.21.1
 
   verkit@0.3.2: {}
 
