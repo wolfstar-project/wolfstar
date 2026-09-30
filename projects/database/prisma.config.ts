@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'varlock/auto-load';
 import { definePrismaConfig } from 'prisma/config';
 import { defineConfig as definePostgresConfig } from '@prisma/orm-postgres/config';
 

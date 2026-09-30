@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'varlock/auto-load';
 import postgres from '@prisma/orm-postgres/runtime';
 import type { Contract, Models } from './generated/prisma/contract.js';
 import contractJson from './generated/prisma/contract.json' with { type: 'json' };

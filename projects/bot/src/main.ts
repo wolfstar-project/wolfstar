@@ -1,11 +1,10 @@
+// Must stay the first import: it loads and validates the environment before any module reads it.
+import 'varlock/auto-load';
 import { createClient, loadAll } from '#lib/Client';
-import { initializeApp } from '#lib/setup/all';
 import { envParseBoolean, envParseString } from '@wolfstar/env-utilities';
 import { container } from '@wolfstar/http-framework';
 import { createBanner } from '@wolfstar/start-banner';
 import { vice } from 'gradient-string';
-
-initializeApp();
 
 createClient();
 await loadAll();
