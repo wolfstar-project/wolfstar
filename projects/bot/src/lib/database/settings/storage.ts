@@ -1,7 +1,7 @@
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData } from '#lib/database/settings/types';
-import { container } from '@sapphire/framework';
-import type { Snowflake } from 'discord.js';
+import { container } from '@wolfstar/http-framework';
+import type { Snowflake } from 'discord-api-types/v10';
 import type { Database } from 'wolfstar-database';
 
 /**

@@ -3,7 +3,7 @@ import { SchemaKey, type ConfigurableKeyValueOptions } from '#lib/database/setti
 import type { GuildDataKey } from '#lib/database/settings/types';
 import type { TypedT } from '#lib/types';
 import { objectEntries } from '@sapphire/utilities';
-import { Collection } from 'discord.js';
+import { Collection } from '@discordjs/collection';
 
 export type SchemaDataKey = Exclude<GuildDataKey, 'id'>;
 

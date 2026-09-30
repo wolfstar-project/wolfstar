@@ -4,8 +4,11 @@ import { fetchGuildData, writeGuildData } from '#lib/database/settings/storage';
 import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
 import type { GuildData, ReadonlyGuildData } from '#lib/database/settings/types';
 import { AsyncQueue } from '@sapphire/async-queue';
-import { container, type Awaitable } from '@sapphire/framework';
-import { Collection, type GuildResolvable, type Snowflake } from 'discord.js';
+import type { Awaitable } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
+import { Collection } from '@discordjs/collection';
+import type { GuildResolvable } from '@wolfstar/plugin-gateway';
+import type { Snowflake } from 'discord-api-types/v10';
 
 const cache = new Collection<string, GuildData>();
 const queue = new Collection<string, Promise<GuildData>>();

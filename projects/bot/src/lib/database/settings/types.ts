@@ -1,6 +1,6 @@
 import type { DeepReadonly, PickByValue } from '@sapphire/utilities';
 import type { APIGuildMember } from 'discord-api-types/v10';
-import type { Snowflake } from 'discord.js';
+import type { Snowflake } from 'discord-api-types/v10';
 import type { Models } from 'wolfstar-database';
 
 /**
