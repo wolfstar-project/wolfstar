@@ -1,11 +1,7 @@
 {
-	"extends": "../../../tsconfig.base.json",
+	"extends": "../.stars/tsconfig.json",
 	"compilerOptions": {
-		"allowJs": true,
-		"experimentalDecorators": true,
-		"noEmit": true,
 		"rootDir": "..",
-		"resolvePackageJsonImports": true,
 		"paths": {
 			"#lib/*": ["./lib/*"],
 			"#common": ["./lib/common/index"],
