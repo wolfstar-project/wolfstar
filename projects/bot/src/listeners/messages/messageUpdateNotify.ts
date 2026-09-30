@@ -2,7 +2,6 @@ import { GuildSettings, readSettings } from '#lib/database';
 import { SkyraEmbed } from '#lib/discord';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
-import { isGuildMessage } from '#common';
 import { Colors } from '#utils/constants';
 import { escapeMarkdown } from '#utils/External/escapeMarkdown';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -15,7 +14,7 @@ import type { Message } from 'discord.js';
 @ApplyOptions<ListenerOptions>({ event: Events.MessageUpdate })
 export class UserListener extends Listener {
 	public async run(old: Message, message: Message) {
-		if (!isGuildMessage(message) || old.content === message.content || message.author.bot) return;
+		if (!message.inGuild() || old.content === message.content || message.author.bot) return;
 
 		const key = GuildSettings.Channels.Logs[isNsfwChannel(message.channel) ? 'MessageUpdateNsfw' : 'MessageUpdate'];
 		const [ignoredChannels, logChannelId, ignoredEdits, ignoredAll, t] = await readSettings(message.guild, (settings) => [
