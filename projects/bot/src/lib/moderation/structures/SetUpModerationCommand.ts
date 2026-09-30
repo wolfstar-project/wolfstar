@@ -2,7 +2,6 @@ import { readSettings } from '#lib/database';
 import type { RoleTypeVariation } from '#lib/moderation';
 import { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
-import { translateKey } from '#lib/structures/commands/utils';
 import { container } from '@wolfstar/http-framework';
 
 /**
@@ -35,7 +34,7 @@ export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, Val
 		if (role) return;
 
 		if (!(await hasCommandPermissionLevel(interaction, CommandPermissionLevel.Administrator))) {
-			throw translateKey(context.t, 'commands/moderation:restrictLowlevel');
+			throw context.t('commands/moderation:restrictLowlevel');
 		}
 
 		await this.action.setup({

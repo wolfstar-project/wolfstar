@@ -1,4 +1,3 @@
-import { envParseNumber } from '@wolfstar/env-utilities';
 import { cpus } from 'node:os';
 import type {
 	IncomingPayload,
@@ -12,7 +11,7 @@ import { WorkerHandler } from '#lib/moderation/workers/WorkerHandler';
 export class WorkerManager {
 	public readonly workers: WorkerHandler[] = [];
 
-	public constructor(count = envParseNumber('WORKER_COUNT', cpus().length)) {
+	public constructor(count = Number(process.env.WORKER_COUNT ?? cpus().length)) {
 		for (let i = 0; i < count; ++i) {
 			this.workers.push(new WorkerHandler());
 		}

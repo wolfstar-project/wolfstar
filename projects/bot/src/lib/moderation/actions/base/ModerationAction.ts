@@ -357,14 +357,17 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 		const t = await fetchGuildT(guild);
 		const title = getTitle(t, entry);
 		const values = { guild: guild.name, title };
+		// The `{{duration, duration}}` placeholders are formatted by i18next, which the typed options do not model:
 		const duration = entry.duration!;
-		const description = entry.reason
-			? entry.duration
-				? t('commands/moderation:moderationDmDescriptionWithReasonWithDuration', { ...values, reason: entry.reason, duration })
-				: t('commands/moderation:moderationDmDescriptionWithReason', { ...values, reason: entry.reason })
-			: entry.duration
-				? t('commands/moderation:moderationDmDescriptionWithDuration', { ...values, duration })
-				: t('commands/moderation:moderationDmDescription', values);
+		const description = (
+			entry.reason
+				? entry.duration
+					? t('commands/moderation:moderationDmDescriptionWithReasonWithDuration', { ...values, reason: entry.reason, duration } as never)
+					: t('commands/moderation:moderationDmDescriptionWithReason', { ...values, reason: entry.reason })
+				: entry.duration
+					? t('commands/moderation:moderationDmDescriptionWithDuration', { ...values, duration } as never)
+					: t('commands/moderation:moderationDmDescription', values)
+		) as string;
 		const embed = new EmbedBuilder() //
 			.setDescription(description)
 			.setFooter({ text: t('commands/moderation:moderationDmFooter') });

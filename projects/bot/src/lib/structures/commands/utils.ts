@@ -29,3 +29,17 @@ export type TranslationKey = ParseKeys<AnyNamespace>;
 export function translateKey(t: TFunction, key: TranslationKey, options?: Record<string, unknown>): string {
 	return (t as unknown as (key: string, options?: Record<string, unknown>) => string)(key, options);
 }
+
+/**
+ * A translation function that takes the keys of every namespace, see {@linkcode createTranslator}.
+ */
+export type Translator = (key: TranslationKey, options?: Record<string, unknown>) => string;
+
+/**
+ * Binds {@linkcode translateKey} to a function, so the commands can call `t('namespace:key', options)`.
+ *
+ * @param t - The function to translate with, e.g. the one `getSupportedUserLanguageT(interaction)` returns.
+ */
+export function createTranslator(t: TFunction): Translator {
+	return (key, options) => translateKey(t, key, options);
+}

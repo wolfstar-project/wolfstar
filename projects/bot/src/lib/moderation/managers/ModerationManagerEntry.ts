@@ -1,5 +1,4 @@
 import { fromModerationRow, type ModerationRecord, type ModerationRow } from '#lib/moderation/managers/ModerationRecord';
-import type { ScheduleEntry } from '#lib/schedule';
 import { minutes } from '#utils/common';
 import { TypeMetadata, type TypeVariation } from '#utils/moderationConstants';
 import { isNullishOrZero } from '@sapphire/utilities';
@@ -155,8 +154,10 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 	/**
 	 * The scheduled task for this moderation entry.
 	 */
-	public get task() {
-		return container.client.schedules.queue.find((task) => this.#isMatchingTask(task)) ?? null;
+	public get task(): ModerationManagerEntry.ScheduledTask | null {
+		// The schedule manager is not part of the container yet, without it there are no tasks to find:
+		const schedules = Reflect.get(container.client, 'schedules') as { queue: ModerationManagerEntry.ScheduledTask[] } | undefined;
+		return schedules?.queue.find((task) => this.#isMatchingTask(task)) ?? null;
 	}
 
 	/**
@@ -273,7 +274,7 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 		};
 	}
 
-	#isMatchingTask(task: ScheduleEntry) {
+	#isMatchingTask(task: ModerationManagerEntry.ScheduledTask) {
 		return task.data !== null && task.data.caseID === this.id && task.data.guildID === this.guild.id;
 	}
 
@@ -312,6 +313,14 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 }
 
 export namespace ModerationManagerEntry {
+	/**
+	 * The subset of a scheduled task that the entry needs to find and delete its undo task.
+	 */
+	export interface ScheduledTask {
+		data: { caseID?: number; guildID?: string } | null;
+		delete(): Promise<unknown>;
+	}
+
 	export interface Data<Type extends TypeVariation = TypeVariation> {
 		id: number;
 		createdAt: number;

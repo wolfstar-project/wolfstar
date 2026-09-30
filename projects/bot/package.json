@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@discordjs/builders": "^1.14.1",
 		"@discordjs/collection": "^2.1.1",
+		"@discordjs/rest": "^2.6.3",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/result": "^2.8.0",
 		"@sapphire/utilities": "^3.18.2",
@@ -47,6 +48,7 @@
 		"@wolfstar/shared-http-pieces": "^2.0.7",
 		"@wolfstar/start-banner": "^2.1.2",
 		"colorette": "^2.0.20",
+		"confusables": "^1.1.1",
 		"discord-api-types": "^0.38.55",
 		"gradient-string": "^3.0.0",
 		"ioredis": "^6.0.0",

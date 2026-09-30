@@ -122,7 +122,12 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		const t = await fetchGuildT(guild);
 		const manageable = await this.#fetchManageableChannels(guild);
 		const permissions = this.roleOverridesMerged.array.map((key) => inlineCode(t(`permissions:${key}` as TranslationKey)));
-		const content = t('moderationActions:sharedRoleSetupAsk', { role: role.name, channels: manageable.length, permissions });
+		// The `{{LOADING}}` placeholder is a default variable of the i18next instance, which the typed options do not model:
+		const content = t('moderationActions:sharedRoleSetupAsk', {
+			role: role.name,
+			channels: manageable.length,
+			permissions: permissions.join(', ')
+		} as never) as unknown as string;
 		if (await confirm(content)) {
 			await this.updateChannelsOverrides(guild, role);
 		}

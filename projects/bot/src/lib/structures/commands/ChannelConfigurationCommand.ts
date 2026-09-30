@@ -7,12 +7,8 @@ import { Command, type TransformedArguments } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { ApplicationIntegrationType, ChannelType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
-/**
- * The key used when the channel is removed from the configuration, because none of the options was given.
- *
- * @remarks Not part of `commands/management` yet: it needs `"configurationChannelReset"` in the `en-US` locale.
- */
-const ResetKey = 'commands/management:configurationChannelReset' as TranslationKey;
+/** The key used when the channel is removed from the configuration, because none of the options was given. */
+const ResetKey = 'commands/management:configurationChannelReset';
 
 /**
  * The key used when the configured value is the same one that was given.

@@ -3,14 +3,14 @@ import { getAction, type ActionByType, type GetContextType } from '#lib/moderati
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
-import { translateKey, type GuildChatInputInteraction, type TranslationKey as Key } from '#lib/structures/commands/utils';
+import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { resolveTimeSpan } from '#utils/resolvers';
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import type { Awaitable } from '@sapphire/utilities';
 import { Command, UserError, container, type TransformedArguments } from '@wolfstar/http-framework';
 import type { Guild, GuildMember, User } from '@wolfstar/plugin-gateway';
-import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
+import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import {
 	ApplicationIntegrationType,
 	InteractionContextType,
@@ -115,7 +115,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
-		const t = getSupportedUserLanguageT(interaction);
+		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const settings = await this.readMessageSettings(interaction.guildId);
 
 		// The response is public when the guild wants the moderation messages displayed, otherwise only the moderator sees it:
@@ -196,7 +196,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		if (this.isUndoAction) {
 			// If this command is an undo action, and the action is not active, throw an error.
 			if (!isActive) {
-				throw translateKey(context.t, this.getActionStatusKey(context));
+				throw context.t(this.getActionStatusKey(context));
 			}
 
 			// @ts-expect-error mismatching types due to unions
@@ -205,7 +205,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 		// If this command is not an undo action, and the action is active, throw an error.
 		if (isActive) {
-			throw translateKey(context.t, this.getActionStatusKey(context));
+			throw context.t(this.getActionStatusKey(context));
 		}
 
 		// @ts-expect-error mismatching types due to unions
@@ -280,20 +280,20 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	): Promise<GuildMember | null> {
 		const { guild, target, t } = context;
 		if (target.id === interaction.user.id) {
-			throw translateKey(t, 'moderation:actionTargetSelf');
+			throw t('moderation:actionTargetSelf');
 		}
 
 		if (target.id === guild.ownerId) {
-			throw translateKey(t, 'moderation:actionTargetGuildOwner');
+			throw t('moderation:actionTargetGuildOwner');
 		}
 
 		if (target.id === container.gatewayClient.user?.id) {
-			throw translateKey(t, 'moderation:actionTargetWolf');
+			throw t('moderation:actionTargetWolf');
 		}
 
 		const { members } = container.gatewayClient;
 		const member = await members.fetch(guild.id, target.id).catch(() => {
-			if (this.requiredMember) throw translateKey(t, 'errors:userNotInGuild');
+			if (this.requiredMember) throw t('errors:userNotInGuild');
 			return null;
 		});
 
@@ -303,14 +303,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			// Wolf cannot moderate members with higher role position than her:
 			const me = await members.fetchMe(guild.id);
 			if (targetHighestRolePosition >= (await getHighestRolePosition(me))) {
-				throw translateKey(t, 'moderation:actionTargetHigherHierarchyWolf');
+				throw t('moderation:actionTargetHigherHierarchyWolf');
 			}
 
 			// A member who isn't a server owner is not allowed to moderate somebody with higher role than them:
 			if (interaction.user.id !== guild.ownerId) {
 				const author = await members.fetch(guild.id, interaction.user.id);
 				if (targetHighestRolePosition >= (await getHighestRolePosition(author))) {
-					throw translateKey(t, 'moderation:actionTargetHigherHierarchyAuthor');
+					throw t('moderation:actionTargetHigherHierarchyAuthor');
 				}
 			}
 		}
@@ -363,7 +363,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 * @throws The translated error when the `duration` option is not valid.
 	 */
 	protected resolveParameters(
-		t: TFunction,
+		t: Translator,
 		guild: Guild,
 		moderator: User,
 		target: User,
@@ -387,14 +387,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 * @param t - The function to translate with, in the language of the author.
 	 * @param args - The options of the slash command.
 	 */
-	protected resolveParametersDuration(t: TFunction, args: ModerationCommand.Arguments): number | null {
+	protected resolveParametersDuration(t: Translator, args: ModerationCommand.Arguments): number | null {
 		if (!this.supportsSchedule && !this.requiredDuration) return null;
 		if (args.duration === undefined) return null;
 
 		const result = resolveTimeSpan(args.duration, { minimum: this.minimumDuration, maximum: this.maximumDuration });
 		if (result.isOk()) return result.unwrap();
 
-		throw translateKey(t, result.unwrapErr() as Key, {
+		throw t(result.unwrapErr() as Key, {
 			parameter: args.duration,
 			minimum: this.minimumDuration,
 			maximum: this.maximumDuration
@@ -438,19 +438,19 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		};
 	}
 
-	private formatOutput(t: TFunction, settings: ModerationCommand.MessageSettings, target: User, log: ModerationManager.Entry) {
+	private formatOutput(t: Translator, settings: ModerationCommand.MessageSettings, target: User, log: ModerationManager.Entry) {
 		const reason = settings.reasonDisplay ? log.reason : null;
 		const key = reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
-		return translateKey(t, key, { count: 1, range: log.id, users: [`\`${target.tag}\``], reason });
+		return t(key, { count: 1, range: log.id, users: [`\`${target.tag}\``], reason });
 	}
 
-	private formatFailure(t: TFunction, target: User, error: unknown) {
+	private formatFailure(t: Translator, target: User, error: unknown) {
 		const message =
 			error instanceof UserError
-				? translateKey(t, error.identifier as Key, error.context as Record<string, unknown>)
+				? t(error.identifier as Key, error.context as Record<string, unknown>)
 				: String(error instanceof Error ? error.message : error);
 		const users = [`- ${target.tag} → ${message}`];
-		return translateKey(t, 'commands/moderation:moderationFailed', { users: users.join('\n'), count: users.length });
+		return t('commands/moderation:moderationFailed', { users: users.join('\n'), count: users.length });
 	}
 }
 
@@ -531,7 +531,7 @@ export type ModerationBuilder = SlashCommandOptionsOnlyBuilder | SlashCommandSub
  * | `dm`       | boolean    | always                                                      |
  * | `authored` | boolean    | always                                                      |
  *
- * Their names and descriptions are the `commands/moderation:optionsUser`, `optionsDuration`, `optionsReason`,
+ * Their names and descriptions are the `commands/shared:optionsUser`, `optionsDuration`, `optionsReason`,
  * `optionsImage`, `optionsDm` and `optionsAuthored` keys (`…Name` and `…Description`).
  *
  * @param builder - The builder to apply the data to.
@@ -565,28 +565,26 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 	const requiredDuration = action.durationRequired && !isUndoAction;
 	const supportsSchedule = action.isUndoActionAvailable && !isUndoAction;
 
-	let result = builder.addUserOption((option) => applyLocalizedBuilder(option, 'commands/moderation:optionsUser').setRequired(true));
+	let result = builder.addUserOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsUser').setRequired(true));
 
 	if (requiredDuration) {
-		result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/moderation:optionsDuration').setRequired(true));
+		result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDuration').setRequired(true));
 	}
 
 	if (options.requiredOptions) result = options.requiredOptions(result);
 
 	if (supportsSchedule && !requiredDuration) {
-		result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/moderation:optionsDuration').setRequired(false));
+		result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDuration').setRequired(false));
 	}
 
-	result = result.addStringOption((option) =>
-		applyLocalizedBuilder(option, 'commands/moderation:optionsReason').setMaxLength(500).setRequired(false)
-	);
+	result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsReason').setMaxLength(500).setRequired(false));
 
 	if (options.optionalOptions) result = options.optionalOptions(result);
 
 	return result
-		.addAttachmentOption((option) => applyLocalizedBuilder(option, 'commands/moderation:optionsImage').setRequired(false))
-		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/moderation:optionsDm').setRequired(false))
-		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/moderation:optionsAuthored').setRequired(false));
+		.addAttachmentOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsImage').setRequired(false))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDm').setRequired(false))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }
 
 export namespace ModerationCommand {
@@ -638,7 +636,7 @@ export namespace ModerationCommand {
 		/**
 		 * The function to translate with, in the language of the author of the interaction.
 		 */
-		t: TFunction;
+		t: Translator;
 
 		/**
 		 * The guild the command was run in.
