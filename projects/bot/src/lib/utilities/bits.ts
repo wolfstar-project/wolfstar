@@ -1,48 +1,82 @@
-import type { Constructor } from '@sapphire/utilities';
-import { BitField, Permissions, SystemChannelFlags } from 'discord.js';
-import { max } from '#common';
+import { GuildSystemChannelFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
-function toMap<S extends string, N extends number | bigint>(ctor: Constructor<BitField<S, N>>) {
-	return new Map(Object.entries(Reflect.get(ctor, 'FLAGS')).map(([key, value]) => [value as N, key as S] as const));
-}
+type BitFlagValue = number | bigint;
 
-function toInitialOffset<S>(map: Map<number, S>) {
-	let i: number;
-	let max: number;
-	for (i = 0, max = Math.max(...map.keys()); max !== 0; ++i, max >>= 1);
-	return i;
-}
+/**
+ * A minimal, dependency-free counterpart of `BitField` from `@sapphire/bitfield`, exposing the subset the
+ * moderation code relies on: `flags`, `has`, `any`, `toArray` and `resolve`.
+ */
+export class BitField<Flags extends Record<string, BitFlagValue>> {
+	public readonly flags: Flags;
+	readonly #zero: BitFlagValue;
+	readonly #entries: readonly (readonly [keyof Flags & string, BitFlagValue])[];
 
-function toInitialBigIntOffset<S>(map: Map<bigint, S>) {
-	let i: bigint;
-	let maximum: bigint;
-	for (i = 0n, maximum = max(...map.keys()); maximum !== 0n; ++i, maximum >>= 1n);
-	return i;
-}
-
-function toArray<S, N extends number | bigint>(map: Map<N, S>, maxOffset: N, bits: N): S[] {
-	const output: S[] = [];
-
-	const [zeroValue, bitValue] = (typeof bits == 'bigint' ? [0n, 1n] : [0, 1]) as [N, N];
-	for (let i = zeroValue; i <= maxOffset; ++i) {
-		const offset = (bitValue << i) as N;
-		if ((bits & offset) === zeroValue) continue;
-
-		const value = map.get(offset);
-		if (value !== undefined) output.push(value);
+	public constructor(flags: Flags) {
+		this.flags = flags;
+		this.#entries = Object.entries(flags) as [keyof Flags & string, BitFlagValue][];
+		this.#zero = this.#entries.some(([, value]) => typeof value === 'bigint') ? 0n : 0;
 	}
 
-	return output;
+	/**
+	 * Checks whether `field` has every bit of `bits`.
+	 */
+	public has<T extends BitFlagValue>(field: T, bits: T): boolean {
+		return ((field as any) & (bits as any)) === bits;
+	}
+
+	/**
+	 * Checks whether `field` has at least one bit of `bits`.
+	 */
+	public any<T extends BitFlagValue>(field: T, bits: T): boolean {
+		return ((field as any) & (bits as any)) !== this.#zero;
+	}
+
+	/**
+	 * Resolves a flag name, a number, or an array of them, into the combined bits.
+	 */
+	public resolve(resolvable: keyof Flags | BitFlagValue | readonly (keyof Flags | BitFlagValue)[]): BitFlagValue {
+		if (Array.isArray(resolvable)) {
+			return resolvable.reduce<BitFlagValue>((acc, value) => (acc as any) | (this.resolve(value) as any), this.#zero);
+		}
+
+		if (typeof resolvable === 'number' || typeof resolvable === 'bigint') return resolvable;
+		return this.flags[resolvable as keyof Flags];
+	}
+
+	/**
+	 * Gets the names of the flags set in `field`.
+	 */
+	public toArray(field: BitFlagValue): (keyof Flags & string)[] {
+		const output: (keyof Flags & string)[] = [];
+		for (const [name, value] of this.#entries) {
+			if (((field as any) & (value as any)) === value && value !== this.#zero) output.push(name);
+		}
+
+		return output;
+	}
 }
 
-export const permissionsFlags = toMap(Permissions);
-export const permissionsOffset = toInitialBigIntOffset(permissionsFlags);
+/**
+ * Gets the entries of an object, typed.
+ */
+function objectEntries<T extends Record<string, unknown>>(value: T) {
+	return Object.entries(value) as { [K in keyof T & string]: [K, T[K]] }[keyof T & string][];
+}
+
+const { ManageEmojisAndStickers: _ManageEmojisAndStickers, ...PermissionFlagsWithoutDeprecated } = PermissionFlagsBits;
+
+export const PermissionsBits = new BitField(PermissionFlagsWithoutDeprecated);
+export const PermissionsBitsList = objectEntries(PermissionsBits.flags);
 export function toPermissionsArray(bits: bigint) {
-	return toArray(permissionsFlags, permissionsOffset, bits);
+	return PermissionsBits.toArray(bits);
 }
 
-export const channelFlags = toMap(SystemChannelFlags);
-export const channelOffset = toInitialOffset(channelFlags);
+const SystemChannelFlagsObject = Object.fromEntries(Object.entries(GuildSystemChannelFlags).filter(([, value]) => typeof value === 'number')) as {
+	[K in Exclude<keyof typeof GuildSystemChannelFlags, `${number}`>]: (typeof GuildSystemChannelFlags)[K];
+};
+
+export const SystemChannelFlag = new BitField(SystemChannelFlagsObject);
+export const SystemChannelFlagList = objectEntries(SystemChannelFlag.flags);
 export function toChannelsArray(bits: number) {
-	return toArray(channelFlags, channelOffset, bits);
+	return SystemChannelFlag.toArray(bits);
 }

@@ -1,75 +1,126 @@
 import { getRootData } from '@sapphire/pieces';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 import { join } from 'node:path';
 
 export const mainFolder = getRootData().root;
 export const rootFolder = join(mainFolder, '..');
-export const assetsFolder = join(rootFolder, 'assets');
-export const socialFolder = join(assetsFolder, 'images', 'social');
-export const cdnFolder = process.env.NODE_ENV === 'production' ? join('/var', 'www', 'skyra.pw', 'cdn') : join(assetsFolder, 'public');
 
 export const ZeroWidthSpace = '\u200B';
 export const LongWidthSpace = '\u3000';
 
+export const EmojiData = {
+	MessageAttachmentIcon: { id: '1262394450580340786', name: 'MessageAttachmentIcon', animated: false },
+	IntegrationIcon: { id: '1251906194759749653', name: 'IntegrationIcon', animated: false },
+	MembersIcon: { id: '1262394698287550474', name: 'MembersIcon', animated: false }
+} as const;
+
+export const ModeratorPermissionsList = [
+	['ManageChannels', PermissionFlagsBits.ManageChannels],
+	['ManageRoles', PermissionFlagsBits.ManageRoles],
+	['CreateGuildExpressions', PermissionFlagsBits.CreateGuildExpressions],
+	['ManageGuildExpressions', PermissionFlagsBits.ManageGuildExpressions],
+	['ManageWebhooks', PermissionFlagsBits.ManageWebhooks],
+	['ManageGuild', PermissionFlagsBits.ManageGuild],
+	['KickMembers', PermissionFlagsBits.KickMembers],
+	['BanMembers', PermissionFlagsBits.BanMembers],
+	['ModerateMembers', PermissionFlagsBits.ModerateMembers],
+	['MentionEveryone', PermissionFlagsBits.MentionEveryone],
+	['ManageMessages', PermissionFlagsBits.ManageMessages],
+	['ManageThreads', PermissionFlagsBits.ManageThreads],
+	['CreateEvents', PermissionFlagsBits.CreateEvents],
+	['ManageEvents', PermissionFlagsBits.ManageEvents],
+	['Administrator', PermissionFlagsBits.Administrator]
+] as const;
+
+export const ModeratorPermissionsBits = ModeratorPermissionsList.reduce((acc, [, bit]) => acc | bit, 0n);
+
 export const enum Emojis {
-	ArrowB = '<:ArrowB:694594285269680179>',
-	ArrowBL = '<:ArrowBL:694594285118685259>',
-	ArrowBR = '<:ArrowBR:694594285445578792>',
-	ArrowL = '<:ArrowL:694594285521207436>',
-	ArrowR = '<:ArrowR:694594285466812486>',
-	ArrowT = '<:ArrowT:694594285487652954>',
-	ArrowTL = '<:ArrowTL:694594285625933854>',
-	ArrowTR = '<:ArrowTR:694594285412155393>',
-	BoostLevel1 = '<:boostlvl1:764841388243681322>',
-	BoostLevel2 = '<:boostlvl2:764841388449071134>',
-	BoostLevel3 = '<:boostlvl3:764841388029902891>',
-	BoostLevel4 = '<:boostlvl4:764841388336349225>',
-	BoostLevel5 = '<:boostlvl5:764841388449202198>',
-	BoostLevel6 = '<:boostlvl6:764841388445532200>',
-	BoostLevel7 = '<:boostlvl7:764841388150882305>',
-	BoostLevel8 = '<:boostlvl8:764841388462178344>',
-	BoostLevel9 = '<:boostlvl9:764841388470698014>',
-	Bot = '<:bot:764788923851079702>',
-	Frame = '<:frame:764845055356698644>',
-	GreenTick = '<:greenTick:637706251253317669>',
-	GreenTickSerialized = 's637706251253317669',
-	Loading = '<a:sloading:656988867403972629>',
-	RedCross = '<:redCross:637706251257511973>',
-	Shiny = '<:shiny:612364146792726539>',
-	Star = '<:Star:736337719982030910>',
-	StarEmpty = '<:StarEmpty:736337232738254849>',
-	StarHalf = '<:StarHalf:736337529900499034>',
-	/** This is the default Twemoji, uploaded as a custom emoji because iOS and Android do not render the emoji properly */
-	MaleSignEmoji = '<:2642:845772713770614874>',
-	/** This is the default Twemoji, uploaded as a custom emoji because iOS and Android do not render the emoji properly */
-	FemaleSignEmoji = '<:2640:845772713729720320>'
+	// ArrowB = '<:ArrowB:694594285269680179>',
+	// ArrowBL = '<:ArrowBL:694594285118685259>',
+	// ArrowBR = '<:ArrowBR:694594285445578792>',
+	// ArrowL = '<:ArrowL:694594285521207436>',
+	// ArrowR = '<:ArrowR:694594285466812486>',
+	// ArrowT = '<:ArrowT:694594285487652954>',
+	// ArrowTL = '<:ArrowTL:694594285625933854>',
+	// ArrowTR = '<:ArrowTR:694594285412155393>',
+	ArrowLeft = '<:ArrowL:973978245580075069>',
+	ArrowRight = '<:ArrowR:973978026536747008>',
+	ArrowLeftFast = '<:ArrowFastL:973976973120528484>',
+	ArrowRightFast = '<:ArrowFastR:973977208978800640>',
+	Stop = '<:Stop:973961000313303060>',
+	BoostLevel1 = '<:boostlvl1:935169049523019786>',
+	BoostLevel2 = '<:boostlvl2:935169110311063612>',
+	BoostLevel3 = '<:boostlvl3:935169145056686101>',
+	BoostLevel4 = '<:boostlvl4:935169181362569246>',
+	BoostLevel5 = '<:boostlvl5:935170651117998080>',
+	BoostLevel6 = '<:boostlvl6:935170683653193788>',
+	BoostLevel7 = '<:boostlvl7:935170720365944942>',
+	BoostLevel8 = '<:boostlvl8:935170763894439996>',
+	BoostLevel9 = '<:boostlvl9:935170794374447184>',
+	Bot = '<:bot:1262395021173456916>',
+	IntegrationIcon = '<:IntegrationIcon:1251906194759749653>',
+	Frame = '<:frame:1262396085176107040>',
+	GreenTick = '<:greenTick:1043562833905987685>',
+	GreenTickSerialized = 's1043562833905987685',
+	Loading = '<a:loading:1257373445151395901>',
+	RedCross = '<:redCross:1043562794336919605>',
+	Calendar = '<:calendar_icon:1262390721399492650>',
+	Hourglass = '<:hourglass:1262391693823578245>',
+	Member = '<:member:1262381522942558208>',
+	ShieldMember = '<:shield_member:1262389159155335198>',
+	Moderator = '<:moderator:1262383567388938240>',
+	AutoModerator = '<:auto_moderator:1226106862147993650>',
+	SpammerIcon = '<:spammer:1262395235640676353>',
+	QuarantinedIcon = '<:quarantined:1262395690143973396>',
+	Reply = '<:reply:1262387069909733406>',
+	ReplyInactive = '<:reply_inactive:1262386545529196568>',
+	Flag = '<:flag:1262387528774848522>',
+	FlagInactive = '<:flag_inactive:1262387790348419129>',
+	Timer = '<:timer:985524723490381826>',
+	Bucket = '<:bucket:1262384919783411813>',
+	Delete = '<:delete:1262382721276186704>',
+	DeleteInactive = '<:delete_inactive:1262382743115923478>',
+	Timeout = '<:timeout:1262379856470212659>',
+	Kick = '<:kick:1262378332633174017>',
+	Softban = '<:softban:1262384411245150208>',
+	Ban = '<:ban:1262378308050489468>'
 }
 
 export const enum BrandingColors {
-	Primary = 0x1e88e5,
-	Secondary = 0xff9d01
+	Primary = 0x050505,
+	Secondary = 0xfd171b
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type O = object;
+export const enum Urls {
+	GitHubOrganization = 'https://github.com/wolfstar-project',
+	GitHubRepository = 'https://github.com/wolfstar-project/wolfstar',
+	Website = 'https://wolfstar.rocks'
+}
+
+export const enum CdnUrls {
+	EscapeRopeGif = 'https://cdn.wolfstar.rocks/wolfstar-assets/escape_rope.gif',
+	RevolvingHeartTwemoji = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@v14.0.2/assets/72x72/1f49e.png'
+}
+
+export const enum Invites {
+	Skyra = 'https://discord.com/api/oauth2/authorize?client_id=266624760782258186&permissions=292557286486&scope=bot%20applications.commands',
+	Dragonite = 'https://discord.com/api/oauth2/authorize?client_id=931264626614763530&permissions=81920&scope=bot%20applications.commands',
+	Iriss = 'https://discord.com/api/oauth2/authorize?client_id=948377113457745990&permissions=326417868864&scope=bot%20applications.commands',
+	Nekokai = 'https://discord.com/api/oauth2/authorize?client_id=939613684592934992&permissions=16384&scope=bot%20applications.commands',
+	Teryl = 'https://discord.com/api/oauth2/authorize?client_id=948377583626637343&permissions=1074004032&scope=applications.commands%20bot',
+	Artiel = 'https://discord.com/api/oauth2/authorize?client_id=948377028028145755&permissions=51200&scope=applications.commands%20bot'
+}
 
 export const enum LanguageFormatters {
-	AndList = 'andList',
 	Duration = 'duration',
 	ExplicitContentFilter = 'explicitContentFilter',
 	MessageNotifications = 'messageNotifications',
 	Number = 'number',
 	NumberCompact = 'numberCompact',
 	HumanLevels = 'humanLevels',
-	InlineCodeblock = 'inlineCodeBlock',
-	CodeBlock = 'codeBlock',
-	JsCodeBlock = 'jsCodeBlock',
-	Ordinal = 'ordinal',
-	OrList = 'orList',
 	Permissions = 'permissions',
-	Random = 'random',
 	DateTime = 'dateTime',
-	ToTitleCase = 'toTitleCase',
-	PermissionsAndList = 'permissionsAndList'
+	HumanDateTime = 'humanDateTime'
 }
 
 export const enum Colors {

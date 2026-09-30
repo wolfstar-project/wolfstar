@@ -1,5 +1,5 @@
-import { resolveT, TResolvable } from '#lib/i18n/translate';
+import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 
-export function formatNumber(t: TResolvable, value: number): string {
-	return resolveT(t)('globals:numberValue', { value });
+export function formatNumber(t: TFunction<AnyNamespace>, value: number): string {
+	return t('globals:numberValue', { value });
 }

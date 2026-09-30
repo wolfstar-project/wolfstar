@@ -1,6 +1,45 @@
 import { formatEmoji } from '@discordjs/builders';
-import { FormattedCustomEmojiWithGroups, TwemojiRegex } from '@sapphire/discord-utilities';
+import { container } from '@wolfstar/http-framework';
 import { isNullish } from '@sapphire/utilities';
+
+/**
+ * Matches a formatted custom emoji, exposing the `animated`, `name` and `id` groups, same as `FormattedCustomEmojiWithGroups`
+ * from `@sapphire/discord-utilities`.
+ */
+const FormattedCustomEmojiWithGroups = /(?<animated>a?):(?<name>[^:]+):(?<id>\d{17,20})/;
+
+// Based on the identifiers at https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/72x72/
+export type EncodedTwemoji = `${1 | 2 | 3}${string}` | 'a9' | 'ae' | 'e50a';
+
+// Hacky workaround for codes Discord and Windows use that don't exist on Twemoji's CDN.
+const TwemojiExceptions = {
+	'\u2764\uFE0F': '2764' // (❤️)
+} as Record<string, EncodedTwemoji>;
+
+/**
+ * Transforms the given emoji to a code point string that can be used for the CDN.
+ * @param emoji The emoji to encode
+ * @example
+ * ```typescript
+ * twemoji('😃');
+ * // → '1f603'
+ * ```
+ */
+export function getEncodedTwemoji(emoji: string): EncodedTwemoji {
+	return TwemojiExceptions[emoji] ?? [...emoji].map((point) => point.codePointAt(0)!.toString(16)).join('-');
+}
+
+/**
+ * Gets the CDN URL for a Twemoji.
+ * @param emoji The encoded Twemoji to use.
+ */
+export function getTwemojiUrl<E extends EncodedTwemoji>(emoji: E) {
+	return `https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/72x72/${emoji}.png` as const;
+}
+
+export function getCustomEmojiUrl(id: string, animated: boolean) {
+	return container.rest.cdn.emoji(id, { extension: animated ? 'gif' : 'png', size: 64 });
+}
 
 interface EmojiObjectPartial {
 	name: string | null;
@@ -14,13 +53,34 @@ export interface EmojiObject extends EmojiObjectPartial {
 export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 
 const customEmojiRegExp = /^[as]\d{17,19}$/;
+const allowedTwemojiRanges: ReadonlyArray<[number, number]> = [
+	[0x1f000, 0x1ffff], // Most emoji blocks including symbols & pictographs
+	[0x2600, 0x27bf], // Misc symbols / dingbats
+	[0x2300, 0x23ff] // Misc technical
+];
+
+function matchesTwemoji(emoji: string) {
+	const codepoints = [...emoji];
+
+	if (codepoints.length !== 1) return false;
+
+	const code = emoji.codePointAt(0);
+	if (code === undefined) return false;
+
+	return allowedTwemojiRanges.some(([start, end]) => code >= start && code <= end);
+}
 
 /**
  * Checks whether or not the emoji is a valid twemoji.
  * @param emoji The emoji to validate.
  */
 export function isValidTwemoji(emoji: string) {
-	return TwemojiRegex.test(emoji);
+	if (emoji.includes('%')) return false;
+
+	if (customEmojiRegExp.test(emoji)) return false;
+	if (FormattedCustomEmojiWithGroups.test(emoji)) return false;
+
+	return matchesTwemoji(emoji);
 }
 
 export function isValidCustomEmoji(emoji: string) {
@@ -33,7 +93,13 @@ export function isValidCustomEmoji(emoji: string) {
  * @param emoji The emoji to validate.
  */
 export function isValidSerializedTwemoji(emoji: string): emoji is SerializedEmoji {
-	return isValidTwemoji(decodeURIComponent(emoji));
+	if (!emoji.includes('%')) return false;
+
+	try {
+		return matchesTwemoji(decodeURIComponent(emoji));
+	} catch {
+		return false;
+	}
 }
 
 /**
@@ -76,7 +142,7 @@ export function getEmojiTextFormat(emoji: SerializedEmoji): string {
  * Formats an emoji in the format that we can use to for reactions on Discord messages.
  */
 export function getEmojiReactionFormat(emoji: SerializedEmoji): string {
-	return isSerializedTwemoji(emoji) ? emoji : `emoji:${emoji.slice(1)}`;
+	return isSerializedTwemoji(emoji) ? decodeURIComponent(emoji) : `emoji:${emoji.slice(1)}`;
 }
 
 /**
@@ -116,11 +182,4 @@ export function resolveEmojiId(emoji: EmojiObject | SerializedEmoji): string {
 	if (isNullish(emoji)) return '';
 
 	return typeof emoji === 'string' ? getEmojiId(emoji) : (emoji.id ?? encodeURIComponent(emoji.name!));
-}
-
-/**
- * Compared whether the identifiers for both emojis are the same, ignoring name and animated.
- */
-export function areEmojisEqual(a: EmojiObject | SerializedEmoji, b: EmojiObject | SerializedEmoji) {
-	return resolveEmojiId(a) === resolveEmojiId(b);
 }

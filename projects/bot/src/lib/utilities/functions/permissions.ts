@@ -1,32 +1,44 @@
-import type { GuildEntity } from '#lib/database/entities';
-import { GuildSettings } from '#lib/database/keys';
-import { readSettings } from '#lib/database/settings';
+import { readSettings, type ReadonlyGuildData } from '#lib/database';
 import { OWNERS } from '#root/config';
-import { hasAtLeastOneKeyInMap } from '@sapphire/utilities';
-import { GuildMember, Permissions } from 'discord.js';
+import type { GuildMember } from '@wolfstar/plugin-gateway';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-export function isModerator(member: GuildMember) {
-	return isGuildOwner(member) || readSettings(member, (settings) => checkModerator(member, settings) || checkAdministrator(member, settings));
+export async function isModerator(member: GuildMember) {
+	if (isGuildOwner(member)) return true;
+
+	const settings = await readSettings(member.guildId);
+	return (await checkModerator(member, settings)) || (await checkAdministrator(member, settings));
 }
 
-export function isAdmin(member: GuildMember) {
-	return isGuildOwner(member) || readSettings(member, (settings) => checkAdministrator(member, settings));
+export async function isAdmin(member: GuildMember) {
+	if (isGuildOwner(member)) return true;
+
+	const settings = await readSettings(member.guildId);
+	return checkAdministrator(member, settings);
 }
 
+/**
+ * Checks whether the member owns the guild.
+ * @remarks The owner is read from the cached guild of the member, so this returns `false` if the guild is not cached.
+ */
 export function isGuildOwner(member: GuildMember) {
-	return member.id === member.guild.ownerId;
+	return member.guild?.ownerId === member.id;
 }
 
 export function isOwner(member: GuildMember) {
-	return OWNERS.includes(member.id);
+	return member.id !== null && OWNERS.includes(member.id);
 }
 
-function checkModerator(member: GuildMember, settings: GuildEntity) {
-	const roles = settings[GuildSettings.Roles.Moderator];
-	return roles.length === 0 ? member.permissions.has(Permissions.FLAGS.BAN_MEMBERS) : hasAtLeastOneKeyInMap(member.roles.cache, roles);
+async function checkModerator(member: GuildMember, settings: ReadonlyGuildData) {
+	const roles = settings.rolesModerator;
+	return roles.length === 0 ? (await member.fetchPermissions()).has(PermissionFlagsBits.BanMembers) : hasAtLeastOneRole(member, roles);
 }
 
-function checkAdministrator(member: GuildMember, settings: GuildEntity) {
-	const roles = settings[GuildSettings.Roles.Admin];
-	return roles.length === 0 ? member.permissions.has(Permissions.FLAGS.MANAGE_GUILD) : hasAtLeastOneKeyInMap(member.roles.cache, roles);
+async function checkAdministrator(member: GuildMember, settings: ReadonlyGuildData) {
+	const roles = settings.rolesAdmin;
+	return roles.length === 0 ? (await member.fetchPermissions()).has(PermissionFlagsBits.ManageGuild) : hasAtLeastOneRole(member, roles);
+}
+
+function hasAtLeastOneRole(member: GuildMember, roles: readonly string[]) {
+	return roles.some((role) => member.roleIds.includes(role));
 }
