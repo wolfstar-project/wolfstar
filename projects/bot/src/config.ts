@@ -1,4 +1,4 @@
-import { GatewayIntentBits, type ClientOptions } from 'discord.js';
+import { type ClientOptions } from '@wolfstar/plugin-gateway';
 
 export const OWNERS: string[] = ['242043489611808769'];
 

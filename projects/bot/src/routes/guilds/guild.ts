@@ -3,7 +3,7 @@ import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import { api } from '#lib/discord/Api';
 import { seconds } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ApiRequest, ApiResponse, HttpCodes, methods, Route, RouteOptions } from '@sapphire/plugin-api';
+import { ApiRequest, ApiResponse, HttpCodes, methods, Route, RouteOptions } from '@wolfstar/plugin-api';
 
 @ApplyOptions<RouteOptions>({ route: 'guilds/:guild' })
 export class UserRoute extends Route {
