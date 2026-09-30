@@ -1,56 +1,57 @@
-import { GuildSettings, readSettings } from '#lib/database';
-import { ModerationCommand } from '#lib/moderation';
-import { getModeration, getSecurity } from '#utils/functions';
-import type { Unlock } from '#utils/moderationConstants';
-import { getImage } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import type { ArgumentTypes } from '@sapphire/utilities';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { readSettings } from '#lib/database';
+import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { getModeration } from '#utils/functions';
+import { getSeconds } from '#utils/moderation-utilities';
+import { TypeVariation, type Unlock } from '#utils/moderationConstants';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<ModerationCommand.Options>({
-	aliases: ['b'],
-	description: 'commands/moderation:banDescription',
-	detailedDescription: 'commands/moderation:banExtended',
-	optionalDuration: true,
-	options: ['d', 'day', 'days'],
-	requiredClientPermissions: [PermissionFlagsBits.BanMembers],
-	requiredMember: false
-})
-export class UserModerationCommand extends ModerationCommand {
-	public async prehandle(...[message]: ArgumentTypes<ModerationCommand['prehandle']>) {
-		return (await readSettings(message.guild, GuildSettings.Events.BanAdd)) ? { unlock: getModeration(message.guild).createLock() } : null;
+type Type = TypeVariation.Ban;
+type ValueType = Unlock | null;
+
+/**
+ * Bans a user, optionally scheduling the unban and deleting up to 7 days of their messages.
+ *
+ * - The `delete-days` option replaces the `--seconds`, `--minutes`, `--hours` and `--days` flags of the prefix command.
+ * - `moderationTrackBans` replaces the `events.ban-add` setting: when enabled, the ban listener creates a case for the
+ *   bans that were not made with the bot, so the command holds a lock until its own case exists.
+ */
+@RegisterCommand((builder) =>
+	applyModerationBuilder(builder, {
+		root: 'commands/moderation:ban',
+		type: TypeVariation.Ban,
+		permissions: PermissionFlagsBits.BanMembers,
+		optionalOptions: (options) =>
+			options.addIntegerOption((option) =>
+				applyLocalizedBuilder(option, 'commands/moderation:banOptionsDeleteDays').setMinValue(0).setMaxValue(7).setRequired(false)
+			)
+	})
+)
+export class UserCommand extends ModerationCommand<Type, ValueType> {
+	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
+		super(context, { ...options, type: TypeVariation.Ban });
 	}
 
-	public async handle(...[message, context]: ArgumentTypes<ModerationCommand['handle']>) {
-		return getSecurity(message.guild).actions.ban(
-			{
-				userId: context.target.id,
-				moderatorId: message.author.id,
-				duration: context.duration,
-				imageURL: getImage(message),
-				reason: context.reason
-			},
-			await this.getDays(context.args),
-			await this.getTargetDM(message, context.args, context.target)
-		);
+	protected override async preHandle(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters) {
+		const settings = await readSettings(interaction.guildId);
+		return settings.moderationTrackBans ? { unlock: getModeration(context.guild).createLock() } : null;
 	}
 
-	public posthandle(...[, { preHandled }]: ArgumentTypes<ModerationCommand<Unlock>['posthandle']>) {
-		if (preHandled) preHandled.unlock();
+	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
+		return getSeconds({ days: (context.args as ModerationCommand.Arguments & { 'delete-days'?: number })['delete-days'] });
 	}
 
-	public async checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand<Unlock>['checkModeratable']>) {
-		const member = await super.checkModeratable(message, context);
-		if (member && !member.bannable) throw context.args.t('commands/moderation:banNotBannable');
+	protected override postHandle(_interaction: ModerationCommand.Interaction, { preHandled }: ModerationCommand.PostHandleParameters<ValueType>) {
+		preHandled?.unlock();
+	}
+
+	protected override async checkTargetCanBeModerated(
+		interaction: ModerationCommand.Interaction,
+		context: ModerationCommand.HandlerParameters<ValueType>
+	) {
+		const member = await super.checkTargetCanBeModerated(interaction, context);
+		if (member && !(await member.fetchBannable())) throw context.t('commands/moderation:banNotBannable');
 		return member;
-	}
-
-	private async getDays(args: ModerationCommand.Args) {
-		const value = args.getOption('d', 'day', 'days');
-		if (value === null) return 0;
-
-		const parsed = Number(value);
-		if (Number.isInteger(parsed) && parsed >= 0 && parsed <= 7) return parsed;
-		return 0;
 	}
 }

@@ -1,62 +1,35 @@
-import { GuildSettings, readSettings } from '#lib/database';
-import { ModerationCommand } from '#lib/moderation';
-import type { GuildMessage } from '#lib/types';
-import { getModeration, getSecurity } from '#utils/functions';
-import type { Unlock } from '#utils/moderationConstants';
-import { getImage } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import { fromAsync } from '@sapphire/framework';
-import { resolveKey } from '@sapphire/plugin-i18next';
-import type { ArgumentTypes } from '@sapphire/utilities';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { readSettings } from '#lib/database';
+import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { getModeration } from '#utils/functions';
+import { TypeVariation, type Unlock } from '#utils/moderationConstants';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<ModerationCommand.Options>({
-	aliases: ['ub'],
-	description: 'commands/moderation:unbanDescription',
-	detailedDescription: 'commands/moderation:unbanExtended',
-	requiredClientPermissions: [PermissionFlagsBits.BanMembers],
-	requiredMember: false
-})
-export class UserModerationCommand extends ModerationCommand {
-	public async prehandle(message: GuildMessage) {
-		const result = await fromAsync(message.guild.bans.fetch());
-		const bans = result.success ? result.value.map((ban) => ban.user.id) : null;
+type Type = TypeVariation.Ban;
+type ValueType = Unlock | null;
 
-		// If the fetch failed, throw an error saying that the fetch failed:
-		if (bans === null) {
-			throw await resolveKey(message, 'system:fetchBansFail');
-		}
-
-		// If there were no bans, throw an error saying that the ban list is empty:
-		if (bans.length === 0) {
-			throw await resolveKey(message, 'errors:guildBansEmpty');
-		}
-
-		return {
-			bans,
-			unlock: (await readSettings(message.guild, GuildSettings.Events.BanRemove)) ? getModeration(message.guild).createLock() : null
-		};
+/**
+ * Unbans a user. `moderationTrackBans` replaces the `events.ban-remove` setting, see the `ban` command.
+ */
+@RegisterCommand((builder) =>
+	applyModerationBuilder(builder, {
+		root: 'commands/moderation:unban',
+		type: TypeVariation.Ban,
+		isUndoAction: true,
+		permissions: PermissionFlagsBits.BanMembers
+	})
+)
+export class UserCommand extends ModerationCommand<Type, ValueType> {
+	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
+		super(context, { ...options, type: TypeVariation.Ban, isUndoAction: true, requiredMember: false });
 	}
 
-	public async handle(...[message, context]: ArgumentTypes<ModerationCommand['handle']>) {
-		return getSecurity(message.guild).actions.unBan(
-			{
-				userId: context.target.id,
-				moderatorId: message.author.id,
-				reason: context.reason,
-				imageURL: getImage(message),
-				duration: context.duration
-			},
-			await this.getTargetDM(message, context.args, context.target)
-		);
+	protected override async preHandle(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters) {
+		const settings = await readSettings(interaction.guildId);
+		return settings.moderationTrackBans ? { unlock: getModeration(context.guild).createLock() } : null;
 	}
 
-	public posthandle(...[, { preHandled }]: ArgumentTypes<ModerationCommand<Unlock>['posthandle']>) {
-		if (preHandled) preHandled.unlock();
-	}
-
-	public checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand<Unlock & { bans: string[] }>['checkModeratable']>) {
-		if (!context.preHandled.bans.includes(context.target.id)) throw context.args.t('errors:guildBansNotFound');
-		return super.checkModeratable(message, context);
+	protected override postHandle(_interaction: ModerationCommand.Interaction, { preHandled }: ModerationCommand.PostHandleParameters<ValueType>) {
+		preHandled?.unlock();
 	}
 }

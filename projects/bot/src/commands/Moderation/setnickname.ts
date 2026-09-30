@@ -1,40 +1,41 @@
-import { HandledCommandContext, ModerationCommand } from '#lib/moderation';
-import type { GuildMessage } from '#lib/types';
-import { years } from '#common';
-import { getSecurity } from '#utils/functions';
-import { getImage } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { TypeVariation } from '#utils/moderationConstants';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<ModerationCommand.Options>({
-	aliases: ['sn'],
-	description: 'commands/moderation:setNicknameDescription',
-	detailedDescription: 'commands/moderation:setNicknameExtended',
-	optionalDuration: true,
-	requiredClientPermissions: [PermissionFlagsBits.ManageNicknames],
-	requiredMember: true
-})
-export class UserModerationCommand extends ModerationCommand {
-	protected async resolveOverloads(args: ModerationCommand.Args) {
-		return {
-			targets: await args.repeat('user', { times: 10 }),
-			nickname: args.finished ? null : await args.pick('string'),
-			duration: this.optionalDuration ? await args.pick('timespan', { minimum: 0, maximum: years(5) }).catch(() => null) : null,
-			reason: args.finished ? null : await args.rest('string')
-		};
+type Type = TypeVariation.SetNickname;
+type ValueType = null;
+
+interface Arguments extends ModerationCommand.Arguments {
+	nickname?: string;
+}
+
+/**
+ * Sets, or resets when the `nickname` option is left out, the nickname of a member. Leaving the nickname out resets it
+ * back to the username of the user, like the prefix command did.
+ */
+@RegisterCommand((builder) =>
+	applyModerationBuilder(builder, {
+		root: 'commands/moderation:setNickname',
+		type: TypeVariation.SetNickname,
+		permissions: PermissionFlagsBits.ManageNicknames,
+		optionalOptions: (options) =>
+			options.addStringOption((option) =>
+				applyLocalizedBuilder(option, 'commands/moderation:setNicknameOptionsNickname').setMaxLength(32).setRequired(false)
+			)
+	})
+)
+export class UserCommand extends ModerationCommand<Type, ValueType> {
+	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
+		super(context, { ...options, type: TypeVariation.SetNickname, requiredMember: true });
 	}
 
-	protected async handle(message: GuildMessage, context: HandledCommandContext & { nickname: string }) {
-		return getSecurity(message.guild).actions.setNickname(
-			{
-				userId: context.target.id,
-				moderatorId: message.author.id,
-				reason: context.reason,
-				imageURL: getImage(message),
-				duration: context.duration
-			},
-			context.nickname,
-			await this.getTargetDM(message, context.args, context.target)
-		);
+	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
+		return (context.args as Arguments).nickname ?? null;
+	}
+
+	protected override getActionStatusKey(context: ModerationCommand.HandlerParameters<ValueType>) {
+		return (context.args as Arguments).nickname === undefined ? 'moderation:actionIsNotActiveNickname' : 'moderation:actionIsActiveNickname';
 	}
 }

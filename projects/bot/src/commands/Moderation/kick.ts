@@ -1,45 +1,44 @@
-import { GuildSettings, readSettings } from '#lib/database';
-import { ModerationCommand } from '#lib/moderation';
-import { getModeration, getSecurity } from '#utils/functions';
-import type { Unlock } from '#utils/moderationConstants';
-import { getImage } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import type { ArgumentTypes } from '@sapphire/utilities';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { readSettings } from '#lib/database';
+import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { getModeration } from '#utils/functions';
+import { TypeVariation, type Unlock } from '#utils/moderationConstants';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<ModerationCommand.Options>({
-	aliases: ['k'],
-	description: 'commands/moderation:kickDescription',
-	detailedDescription: 'commands/moderation:kickExtended',
-	requiredClientPermissions: [PermissionFlagsBits.KickMembers],
-	requiredMember: true
-})
-export class UserModerationCommand extends ModerationCommand {
-	public async prehandle(...[message]: ArgumentTypes<ModerationCommand['prehandle']>) {
-		return (await readSettings(message.guild, GuildSettings.Channels.Logs.MemberRemove))
-			? { unlock: getModeration(message.guild).createLock() }
-			: null;
+type Type = TypeVariation.Kick;
+type ValueType = Unlock | null;
+
+/**
+ * Kicks a member. The command holds a lock while the member remove log is enabled, so the log can tell the removal was a
+ * kick once the case exists.
+ */
+@RegisterCommand((builder) =>
+	applyModerationBuilder(builder, {
+		root: 'commands/moderation:kick',
+		type: TypeVariation.Kick,
+		permissions: PermissionFlagsBits.KickMembers
+	})
+)
+export class UserCommand extends ModerationCommand<Type, ValueType> {
+	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
+		super(context, { ...options, type: TypeVariation.Kick, requiredMember: true });
 	}
 
-	public async handle(...[message, context]: ArgumentTypes<ModerationCommand['handle']>) {
-		return getSecurity(message.guild).actions.kick(
-			{
-				userId: context.target.id,
-				moderatorId: message.author.id,
-				reason: context.reason,
-				imageURL: getImage(message)
-			},
-			await this.getTargetDM(message, context.args, context.target)
-		);
+	protected override async preHandle(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters) {
+		const settings = await readSettings(interaction.guildId);
+		return settings.logsMemberRemove ? { unlock: getModeration(context.guild).createLock() } : null;
 	}
 
-	public posthandle(...[, { preHandled }]: ArgumentTypes<ModerationCommand<Unlock>['posthandle']>) {
-		if (preHandled) preHandled.unlock();
+	protected override postHandle(_interaction: ModerationCommand.Interaction, { preHandled }: ModerationCommand.PostHandleParameters<ValueType>) {
+		preHandled?.unlock();
 	}
 
-	public async checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand['checkModeratable']>) {
-		const member = await super.checkModeratable(message, context);
-		if (member && !member.kickable) throw context.args.t('commands/moderation:kickNotKickable');
+	protected override async checkTargetCanBeModerated(
+		interaction: ModerationCommand.Interaction,
+		context: ModerationCommand.HandlerParameters<ValueType>
+	) {
+		const member = await super.checkTargetCanBeModerated(interaction, context);
+		if (member && !(await member.fetchKickable())) throw context.t('commands/moderation:kickNotKickable');
 		return member;
 	}
 }

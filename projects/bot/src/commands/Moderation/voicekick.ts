@@ -1,33 +1,23 @@
-import { ModerationCommand } from '#lib/moderation';
-import { getSecurity } from '#utils/functions';
-import { getImage } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import type { ArgumentTypes } from '@sapphire/utilities';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { TypeVariation } from '#utils/moderationConstants';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<ModerationCommand.Options>({
-	aliases: ['vk', 'vkick'],
-	description: 'commands/moderation:voiceKickDescription',
-	detailedDescription: 'commands/moderation:voiceKickExtended',
-	requiredClientPermissions: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers],
-	requiredMember: true
-})
-export class UserModerationCommand extends ModerationCommand {
-	public async handle(...[message, context]: ArgumentTypes<ModerationCommand['handle']>) {
-		return getSecurity(message.guild).actions.voiceKick(
-			{
-				userId: context.target.id,
-				moderatorId: message.author.id,
-				reason: context.reason,
-				imageURL: getImage(message)
-			},
-			await this.getTargetDM(message, context.args, context.target)
-		);
-	}
+type Type = TypeVariation.VoiceKick;
+type ValueType = null;
 
-	public async checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand['checkModeratable']>) {
-		const member = await super.checkModeratable(message, context);
-		if (member && !member.voice.channelId) throw context.args.t('errors:guildMemberNotVoicechannel');
-		return member;
+/**
+ * Disconnects a member from their voice channel.
+ */
+@RegisterCommand((builder) =>
+	applyModerationBuilder(builder, {
+		root: 'commands/moderation:voiceKick',
+		type: TypeVariation.VoiceKick,
+		permissions: PermissionFlagsBits.MoveMembers
+	})
+)
+export class UserCommand extends ModerationCommand<Type, ValueType> {
+	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
+		super(context, { ...options, type: TypeVariation.VoiceKick, requiredMember: true });
 	}
 }
