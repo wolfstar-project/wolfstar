@@ -20,7 +20,6 @@
 		"build": "stars build",
 		"i18n:generate": "stars codegen",
 		"dev": "stars dev",
-		"watch": "stars dev",
 		"clean": "node scripts/clean.mjs",
 		"start": "node --enable-source-maps dist/main.mjs",
 		"test": "vitest run",
@@ -39,7 +38,7 @@
 		"@wolfstar/http-framework": "^5.1.2",
 		"@wolfstar/plugin-api": "^1.1.7",
 		"@wolfstar/plugin-cache": "^0.5.0",
-		"@wolfstar/plugin-gateway": "^0.6.0",
+		"@wolfstar/plugin-gateway": "^0.8.0",
 		"@wolfstar/plugin-i18next": "^2.1.1",
 		"@wolfstar/plugin-logger": "^0.2.1",
 		"@wolfstar/plugin-sharder": "^0.1.1",
@@ -54,11 +53,7 @@
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",
-		"@sapphire/framework": "^5.5.1",
-		"@wolfstar/cli": "^2.0.2",
 		"@wolfstar/i18next-type-generator": "^3.1.5",
-		"discord.js": "^14.27.0",
-		"tsdown": "0.23.0",
 		"typescript": "^7.0.2",
 		"vitest": "^5.0.0"
 	}
