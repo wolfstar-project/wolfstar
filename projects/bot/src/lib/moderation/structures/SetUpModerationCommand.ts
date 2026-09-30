@@ -1,79 +1,59 @@
-import { GuildEntity, readSettings, writeSettings } from '#lib/database';
-import type { GuildMessage } from '#lib/types';
-import { getSecurity, isAdmin, promptConfirmation, promptForMessage } from '#utils/functions';
-import type { ModerationSetupRestriction } from '#utils/Security/ModerationActions';
-import type { Argument, PieceContext } from '@sapphire/framework';
-import { send } from '@sapphire/plugin-editable-commands';
-import type { PickByValue } from '@sapphire/utilities';
-import type { Role } from 'discord.js';
-import { ModerationCommand } from './ModerationCommand';
+import { readSettings } from '#lib/database';
+import type { RoleTypeVariation } from '#lib/moderation';
+import { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { translateKey } from '#lib/structures/commands/utils';
+import { container } from '@wolfstar/http-framework';
 
-export abstract class SetUpModerationCommand extends ModerationCommand {
-	public readonly roleKey: PickByValue<GuildEntity, string | undefined | null>;
-	public readonly setUpKey: ModerationSetupRestriction;
-
-	public constructor(context: PieceContext, options: SetUpModerationCommand.Options) {
-		super(context, options);
-		this.roleKey = options.roleKey;
-		this.setUpKey = options.setUpKey;
+/**
+ * A moderation command that needs a role (the `mute` and `restrict` ones), which is set up when it is missing.
+ *
+ * @remarks
+ *
+ * The prefix command asked the author, through message prompts, whether to configure an existing role or to create a
+ * new one. A slash command cannot wait for a message inside its handler, so when the role is missing:
+ *
+ * - an author that is not an administrator is told to ask one (`restrictLowlevel`), like before.
+ * - an administrator gets a new role created, with the channel overrides applied, through
+ *   {@linkcode RoleModerationAction.setup}. To use an existing role instead, configure it in the settings first.
+ */
+export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, ValueType> extends ModerationCommand<Type, ValueType> {
+	public constructor(context: ModerationCommand.LoaderContext, options: SetUpModerationCommand.Options<Type>) {
+		super(context, {
+			requiredMember: true,
+			actionStatusKey: options.isUndoAction ? 'moderation:actionIsNotActiveRestrictionRole' : 'moderation:actionIsActiveRestrictionRole',
+			...options
+		});
 	}
 
-	private get role() {
-		return this.container.stores.get('arguments').get('role') as Argument<Role>;
-	}
-
-	public async messageRun(message: GuildMessage, args: ModerationCommand.Args, context: ModerationCommand.Context): Promise<GuildMessage | null> {
-		await this.inhibit(message, args, context);
-		return super.messageRun(message, args, context);
-	}
-
-	public async inhibit(message: GuildMessage, args: ModerationCommand.Args, context: ModerationCommand.Context) {
-		// If the command messageRun is not this one (potentially help command) or the guild is null, return with no error.
-		const [id, t] = await readSettings(message.guild, (settings) => [settings[this.roleKey], settings.getLanguage()]);
+	protected override async inhibit(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters) {
+		const settings = await readSettings(context.guild);
+		const roleId = settings[this.action.roleKey];
 
 		// Verify for role existence.
-		const role = (id && message.guild.roles.cache.get(id)) ?? null;
-		if (role) return undefined;
+		const role = roleId ? await container.gatewayClient.roles.get(context.guild.id, roleId) : undefined;
+		if (role) return;
 
-		// If there
-		if (!(await isAdmin(message.member!))) {
-			this.error('commands/moderation:restrictLowlevel');
+		if (!(await hasCommandPermissionLevel(interaction, CommandPermissionLevel.Administrator))) {
+			throw translateKey(context.t, 'commands/moderation:restrictLowlevel');
 		}
 
-		if (await promptConfirmation(message, t('moderationActions:sharedRoleSetupExisting'))) {
-			const role = await this.askForRole(message, args, context);
-			if (!role.success) return this.error(role.error);
-			await writeSettings(message.guild, [[this.roleKey, role.value.id]]);
-		} else if (await promptConfirmation(message, t('moderationActions:sharedRoleSetupNew'))) {
-			await getSecurity(message.guild).actions.restrictionSetup(message, this.setUpKey);
-
-			const content = t('moderation:success');
-			await send(message, content);
-		} else {
-			this.error('commands/management:commandHandlerAborted');
-		}
-
-		return undefined;
-	}
-
-	protected async askForRole(message: GuildMessage, args: SetUpModerationCommand.Args, context: SetUpModerationCommand.Context) {
-		const result = await promptForMessage(message, args.t('moderationActions:sharedRoleSetupExistingName'));
-		if (result === null) this.error('moderationActions:sharedRoleSetupNoMessage');
-
-		const argument = this.role;
-		return argument.run(result, { args, argument, command: this, commandContext: context, message });
+		await this.action.setup({
+			guild: context.guild,
+			author: context.moderator,
+			confirm: () => true
+		});
 	}
 }
 
 export namespace SetUpModerationCommand {
-	/**
-	 * The ModerationCommand Options
-	 */
-	export interface Options extends ModerationCommand.Options {
-		roleKey: PickByValue<GuildEntity, string | undefined | null>;
-		setUpKey: ModerationSetupRestriction;
-	}
+	export type Options<Type extends RoleTypeVariation> = ModerationCommand.Options<Type>;
 
-	export type Args = ModerationCommand.Args;
-	export type Context = ModerationCommand.Context;
+	export type LoaderContext = ModerationCommand.LoaderContext;
+	export type Interaction = ModerationCommand.Interaction;
+	export type Arguments = ModerationCommand.Arguments;
+
+	export type Parameters = ModerationCommand.Parameters;
+	export type HandlerParameters<ValueType = null> = ModerationCommand.HandlerParameters<ValueType>;
+	export type PostHandleParameters<ValueType = null> = ModerationCommand.PostHandleParameters<ValueType>;
 }

@@ -1,13 +1,10 @@
-import { rootFolder } from '#utils/constants';
+import { WorkerResponseHandler } from '#lib/moderation/workers/WorkerResponseHandler';
+import { OutgoingType, type IncomingPayload, type NoId, type OutgoingHeartbeatPayload, type OutgoingPayload } from '#lib/moderation/workers/types';
 import { AsyncQueue } from '@sapphire/async-queue';
-import { container } from '@sapphire/framework';
-import { envParseString } from '@wolfstar/env-utilities';
 import { cyan, green, red, yellow } from 'colorette';
+import { container } from '@wolfstar/http-framework';
 import { once } from 'node:events';
-import { join } from 'node:path';
-import { Worker } from 'node:worker_threads';
-import { IncomingPayload, NoId, OutgoingPayload, OutgoingType } from './types';
-import { WorkerResponseHandler } from './WorkerResponseHandler';
+import { SHARE_ENV, Worker } from 'node:worker_threads';
 
 export class WorkerHandler {
 	public lastHeartBeat!: number;
@@ -63,12 +60,8 @@ export class WorkerHandler {
 	public spawn() {
 		this.online = false;
 		this.lastHeartBeat = 0;
-		this.worker = new Worker(WorkerHandler.workerTsLoader, {
-			workerData: {
-				path: WorkerHandler.filename
-			}
-		});
-		this.worker.on('message', (message: OutgoingPayload) => this.handleMessage(message));
+		this.worker = new Worker(WorkerHandler.filename, { env: SHARE_ENV });
+		this.worker.on('message', (message: OutgoingPayload) => this.handleWorkerMessage(message));
 		this.worker.once('online', () => this.handleOnline());
 		this.worker.once('exit', (code: number) => this.handleExit(code));
 		return this;
@@ -98,12 +91,16 @@ export class WorkerHandler {
 		return this.id++;
 	}
 
-	private handleMessage(message: OutgoingPayload) {
+	private handleWorkerMessage(message: OutgoingPayload) {
 		if (message.type === OutgoingType.Heartbeat) {
 			this.lastHeartBeat = Date.now();
 			return;
 		}
 
+		this.handleMessage(message);
+	}
+
+	private handleMessage(message: Exclude<OutgoingPayload, OutgoingHeartbeatPayload>) {
 		this.response.resolve(message.id, message);
 	}
 
@@ -132,8 +129,12 @@ export class WorkerHandler {
 		}
 	}
 
-	private static readonly workerTsLoader = join(rootFolder, 'scripts', 'workerTsLoader.js');
 	private static readonly logsEnabled = process.env.NODE_ENV !== 'test';
-	private static readonly filename = join(__dirname, `worker.${envParseString('NODE_ENV') === 'test' ? 't' : 'j'}s`);
+	/**
+	 * The worker is a standalone module (`worker.mts`) with no imports but `confusables`, so it can be ran as is by
+	 * Node.js when the sources are loaded directly (tests), and it is emitted as `worker.mjs` by the build.
+	 */
+	private static readonly filename = new URL(import.meta.url.endsWith('.mjs') ? 'worker.mjs' : 'worker.mts', import.meta.url);
+
 	private static readonly maximumId = Number.MAX_SAFE_INTEGER;
 }
