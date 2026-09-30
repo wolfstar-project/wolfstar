@@ -4,6 +4,7 @@ import {
 	readSettingsAdder,
 	writeSettingsTransaction,
 	type AdderKey,
+	type AutoModerationHardAction,
 	type GuildData,
 	type GuildDataValue,
 	type GuildSettingsOfType,
@@ -11,7 +12,7 @@ import {
 	type SchemaDataKey
 } from '#lib/database';
 import type { Adder } from '#lib/database/utils/Adder';
-import { AutoModerationOnInfraction, AutoModerationPunishment } from '#lib/moderation/structures/AutoModerationOnInfraction';
+import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { Colors, Emojis } from '#utils/constants';
@@ -60,7 +61,7 @@ export abstract class AutoModerationCommand extends Command<AutoModerationComman
 	protected readonly adderPropertyName: AdderKey;
 	protected readonly keyEnabled: GuildSettingsOfType<boolean>;
 	protected readonly keyOnInfraction: GuildSettingsOfType<number>;
-	protected readonly keyPunishment: GuildSettingsOfType<number | null>;
+	protected readonly keyPunishment: GuildSettingsOfType<AutoModerationHardAction>;
 	protected readonly keyPunishmentDuration: GuildSettingsOfType<bigint | number | null>;
 	protected readonly keyPunishmentThreshold: GuildSettingsOfType<number | null>;
 	protected readonly keyPunishmentThresholdPeriod: GuildSettingsOfType<number | null>;
@@ -227,7 +228,7 @@ export abstract class AutoModerationCommand extends Command<AutoModerationComman
 			.setDescription(this.showEnabledOnInfraction(t, settings[this.keyOnInfraction]));
 
 		const punishment = settings[this.keyPunishment];
-		if (!isNullishOrZero(punishment)) {
+		if (!isNullish(punishment)) {
 			embed.addFields({
 				name: translateKey(t, `${Root}:showPunishmentTitle`),
 				value: this.showEnabledOnPunishment(
@@ -258,7 +259,7 @@ export abstract class AutoModerationCommand extends Command<AutoModerationComman
 
 	protected showEnabledOnPunishment(
 		t: TFunction,
-		punishment: AutoModerationPunishment,
+		punishment: AutoModerationHardAction & string,
 		punishmentDuration: bigint | number | null,
 		adder: Adder<string> | null
 	): string {
@@ -268,7 +269,7 @@ export abstract class AutoModerationCommand extends Command<AutoModerationComman
 		if (isNullishOrZero(punishmentDuration)) {
 			line = translateKey(t, `${Root}:showPunishment`, { name, emoji });
 			// Add strikethrough if the punishment is a timeout and the duration is not set:
-			if (punishment === AutoModerationPunishment.Timeout) line = strikethrough(line);
+			if (punishment === 'Timeout') line = strikethrough(line);
 		} else {
 			line = translateKey(t, `${Root}:showPunishmentTemporary`, {
 				name,
@@ -280,22 +281,20 @@ export abstract class AutoModerationCommand extends Command<AutoModerationComman
 		return isNullish(adder) ? line : `${line}\n${this.showEnabledOnPunishmentThreshold(t, adder)}`;
 	}
 
-	protected showEnabledOnPunishmentNameKey(punishment: AutoModerationPunishment): { key: TranslationKey; emoji: string } {
+	protected showEnabledOnPunishmentNameKey(punishment: AutoModerationHardAction & string): { key: TranslationKey; emoji: string } {
 		switch (punishment) {
-			case AutoModerationPunishment.Ban:
+			case 'Ban':
 				return { key: 'moderation:typeBan', emoji: Emojis.Ban };
-			case AutoModerationPunishment.Kick:
+			case 'Kick':
 				return { key: 'moderation:typeKick', emoji: Emojis.Kick };
-			case AutoModerationPunishment.Timeout:
+			case 'Timeout':
 				return { key: 'moderation:typeTimeout', emoji: Emojis.Timeout };
-			case AutoModerationPunishment.Mute:
-				return { key: 'moderation:typeMute', emoji: Emojis.Timeout };
-			case AutoModerationPunishment.Softban:
+			case 'VoiceKick':
+				return { key: 'moderation:typeVoiceKick', emoji: Emojis.Kick };
+			case 'Softban':
 				return { key: 'moderation:typeSoftban', emoji: Emojis.Softban };
-			case AutoModerationPunishment.Warning:
+			case 'Warning':
 				return { key: 'moderation:typeWarning', emoji: Emojis.Flag };
-			case AutoModerationPunishment.None:
-				throw new Error('Unreachable');
 		}
 	}
 
@@ -333,15 +332,15 @@ export abstract class AutoModerationCommand extends Command<AutoModerationComman
 			.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsActionAlert`))
 			.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsActionLog`))
 			.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsActionDelete`))
-			.addIntegerOption((option) =>
+			.addStringOption((option) =>
 				applyLocalizedBuilder(option, `${Root}:optionsPunishment`) //
 					.setChoices(
-						createLocalizedChoice('moderation:typeWarning', { value: AutoModerationPunishment.Warning }),
-						createLocalizedChoice('moderation:typeTimeout', { value: AutoModerationPunishment.Timeout }),
-						createLocalizedChoice('moderation:typeMute', { value: AutoModerationPunishment.Mute }),
-						createLocalizedChoice('moderation:typeKick', { value: AutoModerationPunishment.Kick }),
-						createLocalizedChoice('moderation:typeSoftban', { value: AutoModerationPunishment.Softban }),
-						createLocalizedChoice('moderation:typeBan', { value: AutoModerationPunishment.Ban })
+						createLocalizedChoice('moderation:typeWarning', { value: 'Warning' }),
+						createLocalizedChoice('moderation:typeTimeout', { value: 'Timeout' }),
+						createLocalizedChoice('moderation:typeKick', { value: 'Kick' }),
+						createLocalizedChoice('moderation:typeSoftban', { value: 'Softban' }),
+						createLocalizedChoice('moderation:typeBan', { value: 'Ban' }),
+						createLocalizedChoice('moderation:typeVoiceKick', { value: 'VoiceKick' })
 					)
 			)
 			.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsPunishmentDuration`))
@@ -418,7 +417,7 @@ export namespace AutoModerationCommand {
 		adderPropertyName: AdderKey;
 		keyEnabled: GuildSettingsOfType<boolean>;
 		keyOnInfraction: GuildSettingsOfType<number>;
-		keyPunishment: GuildSettingsOfType<number | null>;
+		keyPunishment: GuildSettingsOfType<AutoModerationHardAction>;
 		keyPunishmentDuration: GuildSettingsOfType<bigint | number | null>;
 		keyPunishmentThreshold: GuildSettingsOfType<number | null>;
 		keyPunishmentThresholdPeriod: GuildSettingsOfType<number | null>;

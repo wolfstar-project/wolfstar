@@ -59,13 +59,3 @@ export namespace AutoModerationOnInfraction {
 	export type Flag = keyof typeof flags;
 	export type Resolvable = Flag | number | readonly Resolvable[];
 }
-
-export enum AutoModerationPunishment {
-	None,
-	Warning,
-	Kick,
-	Mute,
-	Softban,
-	Ban,
-	Timeout
-}
