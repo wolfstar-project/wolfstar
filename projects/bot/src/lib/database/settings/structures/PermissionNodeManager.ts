@@ -2,8 +2,7 @@ import type { PermissionsNode, ReadonlyGuildData } from '#lib/database/settings/
 import { matchAny } from '#lib/database/utils/matchers/Command';
 import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { WolfCommand } from '#lib/structures';
-import { resolveGuild } from '#common';
-import { UserError } from '@sapphire/framework';
+import { container, UserError } from '@sapphire/framework';
 import { Collection, Role, type GuildMember, type User } from 'discord.js';
 
 export const enum PermissionNodeAction {
@@ -17,16 +16,21 @@ export class PermissionNodeManager {
 	private sorted = new Collection<string, PermissionsManagerNode>();
 	#cachedRawPermissionRoles: readonly PermissionsNode[] = [];
 	#cachedRawPermissionUsers: readonly PermissionsNode[] = [];
+	#generation = 0;
+	#ready: Promise<void> = Promise.resolve();
 
 	public constructor(settings: ReadonlyGuildData) {
-		this.refresh(settings);
+		// The failure is already logged by `refresh`:
+		this.refresh(settings).catch(() => null);
 	}
 
 	public settingsPropertyFor(target: PermissionNodeValueResolvable) {
 		return (target instanceof Role ? 'permissionsRoles' : 'permissionsUsers') satisfies keyof ReadonlyGuildData;
 	}
 
-	public run(member: GuildMember, command: WolfCommand) {
+	public async run(member: GuildMember, command: WolfCommand) {
+		// The role order comes from the guild's roles, which are fetched asynchronously:
+		await this.#ready;
 		return this.runUser(member, command) ?? this.runRole(member, command);
 	}
 
@@ -102,29 +106,46 @@ export class PermissionNodeManager {
 		return nodes.toSpliced(nodeIndex, 1);
 	}
 
-	public refresh(settings: ReadonlyGuildData): readonly PermissionsNode[] {
-		const nodes = settings.permissionsRoles;
-		this.#cachedRawPermissionRoles = nodes;
+	/**
+	 * Reads the permission nodes of the settings and sorts the role nodes by the position of their role, which needs the
+	 * guild's roles, so it is asynchronous. {@link PermissionNodeManager.run} waits for the latest refresh.
+	 * @returns The role nodes, without the ones whose role no longer exists.
+	 */
+	public refresh(settings: ReadonlyGuildData): Promise<readonly PermissionsNode[]> {
+		this.#cachedRawPermissionRoles = settings.permissionsRoles;
 		this.#cachedRawPermissionUsers = settings.permissionsUsers;
 
+		const promise = this.#sort(settings, ++this.#generation);
+		this.#ready = promise.then(
+			() => undefined,
+			(error: unknown) => container.logger.error(error)
+		);
+
+		return promise;
+	}
+
+	async #sort(settings: ReadonlyGuildData, generation: number): Promise<readonly PermissionsNode[]> {
+		const nodes = settings.permissionsRoles;
 		if (nodes.length === 0) {
 			this.sorted.clear();
 			return nodes;
 		}
 
 		// Generate sorted data and detect useless nodes to remove
-		const { pendingToAdd, pendingToRemove } = this.generateSorted(settings, nodes);
+		const { pendingToAdd, pendingToRemove } = await this.generateSorted(settings, nodes);
 
-		// Set up everything
-		const sorted = new Collection<string, PermissionsManagerNode>();
-		for (const pending of pendingToAdd) {
-			sorted.set(pending.id, {
-				allow: new Set(pending.allow),
-				deny: new Set(pending.deny)
-			});
+		// A newer refresh started while the roles were being fetched, its result wins:
+		if (generation === this.#generation) {
+			const sorted = new Collection<string, PermissionsManagerNode>();
+			for (const pending of pendingToAdd) {
+				sorted.set(pending.id, {
+					allow: new Set(pending.allow),
+					deny: new Set(pending.deny)
+				});
+			}
+
+			this.sorted = sorted;
 		}
-
-		this.sorted = sorted;
 
 		let copy: PermissionsNode[] | null = null;
 
@@ -166,8 +187,8 @@ export class PermissionNodeManager {
 		return null;
 	}
 
-	private generateSorted(settings: ReadonlyGuildData, nodes: readonly PermissionsNode[]) {
-		const { pendingToRemove, sortedRoles } = this.getSortedRoles(settings, nodes);
+	private async generateSorted(settings: ReadonlyGuildData, nodes: readonly PermissionsNode[]) {
+		const { pendingToRemove, sortedRoles } = await this.getSortedRoles(settings, nodes);
 
 		const sortedNodes: PermissionsNode[] = [];
 		for (const sortedRole of sortedRoles.values()) {
@@ -183,38 +204,15 @@ export class PermissionNodeManager {
 		};
 	}
 
-	private getSortedRoles(settings: ReadonlyGuildData, rawNodes: readonly PermissionsNode[]) {
+	private async getSortedRoles(settings: ReadonlyGuildData, rawNodes: readonly PermissionsNode[]) {
 		const ids = new Set(rawNodes.map((rawNode) => rawNode.id));
-		const guild = resolveGuild(settings.id);
 
-		// I know we should never rely on private methods, however, `Guild#_sortedRoles`
-		// exists in v13 and is called every time the `Role#position` getter is called,
-		// so to avoid doing a very expensive call for each role, we will call this once
-		// and then handle whatever it returns. This has a cost of O(n * log(n)), which is
-		// pretty good. For 255 role permission nodes, this would do 1,413 checks.
-		//
-		// An alternative is to filter, then map the roles by their position, but that has
-		// a cost of O(n) * O(n * log(n)), which is really bad, with a total amount of
-		// 360,320 checks.
-		//
-		// Although that's also theoretical, `Guild#_sortedRoles` calls `Util.discordSort`
-		// with the role cache, which besides checking for positions, also does up to 4
-		// string operations (`String#slice()` and `Number(string)` in each), which is
-		// already a performance killer.
-		//
-		// eslint-disable-next-line @typescript-eslint/dot-notation
-		const roles = guild['_sortedRoles']()
-			// Set#delete returns `true` when the entry exists, so we will use this
-			// to automatically sweep the valid entries and leave the invalid ones out
-			.filter((role) => ids.delete(role.id));
+		// `fetchAll` returns the guild's roles highest first. Set#delete returns `true` when the entry exists, so it
+		// sweeps the valid entries and leaves the ones whose role is gone in `ids`.
+		const roles = await container.gatewayClient.roles.fetchAll(settings.id);
+		const sortedRoles = roles.filter((role) => ids.delete(role.id));
 
-		// Guild#_sortedRoles sorts in the inverse order, so we need to turn it into an array and reverse it:
-		const reversed = [...roles.values()].reverse();
-
-		return {
-			pendingToRemove: ids,
-			sortedRoles: reversed
-		};
+		return { pendingToRemove: ids, sortedRoles };
 	}
 
 	private getName(type: PermissionNodeAction) {
