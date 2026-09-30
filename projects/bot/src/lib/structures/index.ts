@@ -1,3 +1,3 @@
 export * from './InviteStore';
-export * from './commands/WolfCommand';
+export * from './commands';
 export * from './managers';
