@@ -1,13 +1,12 @@
 import { AdderKey, GuildEntity, GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { SelfModerationCommand } from '#lib/moderation';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { PickByValue } from '@sapphire/utilities';
 
 @ApplyOptions<SelfModerationCommand.Options>({
 	aliases: ['attachment-mode', 'attachments-mode', 'att-mode', 'manageAttachment', 'manageattachment'],
-	description: LanguageKeys.Commands.Management.AttachmentsModeDescription,
-	detailedDescription: LanguageKeys.Commands.Management.AttachmentsModeExtended
+	description: 'commands/management:attachmentsModeDescription',
+	detailedDescription: 'commands/management:attachmentsModeExtended'
 })
 export class UserSelfModerationCommand extends SelfModerationCommand {
 	protected $adder: AdderKey = 'attachments';

@@ -1,6 +1,5 @@
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import type { ReadonlyGuildData } from '#lib/database/settings/types';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { translate } from '#lib/i18n/translate';
 import type { WolfArgs } from '#lib/structures';
 import { AliasPiece, ArgumentError, UserError } from '@sapphire/framework';
@@ -97,7 +96,7 @@ export abstract class Serializer<T> extends AliasPiece {
 
 			if (minimum === maximum) {
 				return this.error(
-					t(inclusive ? LanguageKeys.Serializers.MinMaxExactlyInclusive : LanguageKeys.Serializers.MinMaxExactlyExclusive, {
+					t(inclusive ? 'serializers:minMaxExactlyInclusive' : 'serializers:minMaxExactlyExclusive', {
 						name,
 						min: minimum
 					})
@@ -105,7 +104,7 @@ export abstract class Serializer<T> extends AliasPiece {
 			}
 
 			return this.error(
-				t(inclusive ? LanguageKeys.Serializers.MinMaxBothInclusive : LanguageKeys.Serializers.MinMaxBothExclusive, {
+				t(inclusive ? 'serializers:minMaxBothInclusive' : 'serializers:minMaxBothExclusive', {
 					name,
 					min: minimum,
 					max: maximum
@@ -119,7 +118,7 @@ export abstract class Serializer<T> extends AliasPiece {
 			}
 
 			return this.error(
-				t(inclusive ? LanguageKeys.Serializers.MinMaxMinInclusive : LanguageKeys.Serializers.MinMaxMinExclusive, {
+				t(inclusive ? 'serializers:minMaxMinInclusive' : 'serializers:minMaxMinExclusive', {
 					name,
 					min: minimum
 				})
@@ -132,7 +131,7 @@ export abstract class Serializer<T> extends AliasPiece {
 			}
 
 			return this.error(
-				t(inclusive ? LanguageKeys.Serializers.MinMaxMaxInclusive : LanguageKeys.Serializers.MinMaxMaxExclusive, {
+				t(inclusive ? 'serializers:minMaxMaxInclusive' : 'serializers:minMaxMaxExclusive', {
 					name,
 					max: maximum
 				})

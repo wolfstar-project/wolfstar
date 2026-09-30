@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -22,12 +21,12 @@ export class UserListener extends Listener {
 					iconURL: member.user.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 				})
 				.setDescription(
-					t(LanguageKeys.Events.Guilds.Members.GuildMemberAddDescription, {
+					t('events/guilds-members:guildMemberAddDescription', {
 						mention: member.toString(),
 						time: Date.now() - member.user.createdTimestamp
 					})
 				)
-				.setFooter({ text: t(LanguageKeys.Events.Guilds.Members.GuildMemberAdd) })
+				.setFooter({ text: t('events/guilds-members:guildMemberAdd') })
 				.setTimestamp()
 		);
 	}

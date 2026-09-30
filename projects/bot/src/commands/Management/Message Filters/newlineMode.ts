@@ -1,13 +1,12 @@
 import { AdderKey, GuildEntity, GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { SelfModerationCommand } from '#lib/moderation';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { PickByValue } from '@sapphire/utilities';
 
 @ApplyOptions<SelfModerationCommand.Options>({
 	aliases: ['newline-mode', 'nl-mode'],
-	description: LanguageKeys.Commands.Management.NewlineModeDescription,
-	detailedDescription: LanguageKeys.Commands.Management.NewlineModeExtended
+	description: 'commands/management:newlineModeDescription',
+	detailedDescription: 'commands/management:newlineModeExtended'
 })
 export class UserSelfModerationCommand extends SelfModerationCommand {
 	protected $adder: AdderKey = 'newlines';

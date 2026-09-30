@@ -1,6 +1,5 @@
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
 import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/types';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types';
 import { channelMention, EmbedBuilder } from '@discordjs/builders';
 import { container } from '@sapphire/framework';
@@ -237,15 +236,15 @@ export class AuditLogManager {
 		const formattedCommandName = commandType === 'chat-input' ? this.#formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
 		const typeLabel =
 			commandType === 'chat-input'
-				? t(LanguageKeys.Events.Guilds.Logs.CommandTypeChatInput)
+				? t('events/guilds-logs:commandTypeChatInput')
 				: commandType === 'context-menu'
-					? t(LanguageKeys.Events.Guilds.Logs.CommandTypeContextMenu)
-					: t(LanguageKeys.Events.Guilds.Logs.CommandTypeMessage);
+					? t('events/guilds-logs:commandTypeContextMenu')
+					: t('events/guilds-logs:commandTypeMessage');
 
 		const description = [
-			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldType)}:** ${typeLabel}`,
-			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldCommand)}:** ${formattedCommandName}`,
-			`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldChannel)}:** ${channelMention(channelId)}`
+			`❯ **${t('events/guilds-logs:logFieldType')}:** ${typeLabel}`,
+			`❯ **${t('events/guilds-logs:logFieldCommand')}:** ${formattedCommandName}`,
+			`❯ **${t('events/guilds-logs:logFieldChannel')}:** ${channelMention(channelId)}`
 		].join('\n');
 
 		return new EmbedBuilder()
@@ -253,7 +252,7 @@ export class AuditLogManager {
 			.setAuthor(this.#getEmbedAuthor(actor))
 			.setDescription(description)
 			.setFooter({
-				text: t(LanguageKeys.Events.Guilds.Logs.CommandExecuteTitle),
+				text: t('events/guilds-logs:commandExecuteTitle'),
 				iconURL: container.gatewayClient.user!.displayAvatarURL({ size: 128 })
 			})
 			.setTimestamp(timestamp);
@@ -266,11 +265,11 @@ export class AuditLogManager {
 
 		const actionTitle =
 			action === 'guild.settings.access-denied'
-				? t(LanguageKeys.Events.Guilds.Logs.SettingsAccessDeniedTitle)
-				: t(LanguageKeys.Events.Guilds.Logs.SettingsUpdateTitle);
+				? t('events/guilds-logs:settingsAccessDeniedTitle')
+				: t('events/guilds-logs:settingsUpdateTitle');
 
-		const descLines = [`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldAction)}:** ${actionTitle}`];
-		if (reason) descLines.push(`❯ **${t(LanguageKeys.Events.Guilds.Logs.LogFieldReason)}:** ${reason}`);
+		const descLines = [`❯ **${t('events/guilds-logs:logFieldAction')}:** ${actionTitle}`];
+		if (reason) descLines.push(`❯ **${t('events/guilds-logs:logFieldReason')}:** ${reason}`);
 
 		const embed = new EmbedBuilder()
 			.setColor(color)

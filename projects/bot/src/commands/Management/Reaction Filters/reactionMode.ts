@@ -1,13 +1,12 @@
 import { AdderKey, GuildEntity, GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { SelfModerationCommand } from '#lib/moderation';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { PickByValue } from '@sapphire/utilities';
 
 @ApplyOptions<SelfModerationCommand.Options>({
 	aliases: ['reaction-mode', 'r-mode'],
-	description: LanguageKeys.Commands.Management.ReactionModeDescription,
-	detailedDescription: LanguageKeys.Commands.Management.ReactionModeExtended
+	description: 'commands/management:reactionModeDescription',
+	detailedDescription: 'commands/management:reactionModeExtended'
 })
 export class UserSelfModerationCommand extends SelfModerationCommand {
 	protected $adder: AdderKey = 'reactions';

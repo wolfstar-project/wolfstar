@@ -1,5 +1,4 @@
 import type { ModerationEntity } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand, SkyraPaginatedMessage } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -20,8 +19,8 @@ const COLORS = [0x80f31f, 0xa5de0b, 0xc7c101, 0xe39e03, 0xf6780f, 0xfe5326, 0xfb
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['hd', 'ho'],
-	description: LanguageKeys.Commands.Moderation.HistoryDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.HistoryExtended,
+	description: 'commands/moderation:historyDescription',
+	detailedDescription: 'commands/moderation:historyExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	runIn: [CommandOptionsRunTypeEnum.GuildAny],
 	subCommands: ['details', { input: 'overview', default: true }]
@@ -60,15 +59,15 @@ export class UserCommand extends WolfCommand {
 		}
 
 		const index = Math.min(COLORS.length - 1, warnings + mutes + kicks + bans);
-		const footer = args.t(LanguageKeys.Commands.Moderation.HistoryFooterNew, {
+		const footer = args.t('commands/moderation:historyFooterNew', {
 			warnings,
 			mutes,
 			kicks,
 			bans,
-			warningsText: args.t(LanguageKeys.Commands.Moderation.HistoryFooterWarning, { count: warnings }),
-			mutesText: args.t(LanguageKeys.Commands.Moderation.HistoryFooterMutes, { count: mutes }),
-			kicksText: args.t(LanguageKeys.Commands.Moderation.HistoryFooterKicks, { count: kicks }),
-			bansText: args.t(LanguageKeys.Commands.Moderation.HistoryFooterBans, { count: bans })
+			warningsText: args.t('commands/moderation:historyFooterWarning', { count: warnings }),
+			mutesText: args.t('commands/moderation:historyFooterMutes', { count: mutes }),
+			kicksText: args.t('commands/moderation:historyFooterKicks', { count: kicks }),
+			bansText: args.t('commands/moderation:historyFooterBans', { count: bans })
 		});
 
 		const embed = new MessageEmbed()
@@ -84,14 +83,14 @@ export class UserCommand extends WolfCommand {
 		const response = await sendLoadingMessage(message, args.t);
 
 		const entries = (await getModeration(message.guild).fetch(target.id)).filter((log) => !log.invalidated && !log.appealType);
-		if (!entries.size) this.error(LanguageKeys.Commands.Moderation.ModerationsEmpty);
+		if (!entries.size) this.error('commands/moderation:moderationsEmpty');
 
 		const user = this.container.gatewayClient.user!;
 		const display = new SkyraPaginatedMessage({
 			template: new MessageEmbed()
 				.setColor(await this.container.db.fetchColor(message))
 				.setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
-				.setTitle(args.t(LanguageKeys.Commands.Moderation.ModerationsAmount, { count: entries.size }))
+				.setTitle(args.t('commands/moderation:moderationsAmount', { count: entries.size }))
 		});
 
 		// Fetch usernames

@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HandledCommandContext, ModerationCommand } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -11,8 +10,8 @@ import type { Role } from 'discord.js';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['rro'],
-	description: LanguageKeys.Commands.Moderation.RemoveRoleDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.RemoveRoleExtended,
+	description: 'commands/moderation:removeroleDescription',
+	detailedDescription: 'commands/moderation:removeroleExtended',
 	optionalDuration: true,
 	permissionLevel: PermissionLevels.Administrator,
 	requiredClientPermissions: [PermissionFlagsBits.ManageRoles],

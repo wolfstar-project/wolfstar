@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationCommand } from '#lib/moderation';
 import { getModeration, getSecurity } from '#utils/functions';
 import type { Unlock } from '#utils/moderationConstants';
@@ -10,8 +9,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['k'],
-	description: LanguageKeys.Commands.Moderation.KickDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.KickExtended,
+	description: 'commands/moderation:kickDescription',
+	detailedDescription: 'commands/moderation:kickExtended',
 	requiredClientPermissions: [PermissionFlagsBits.KickMembers],
 	requiredMember: true
 })
@@ -40,7 +39,7 @@ export class UserModerationCommand extends ModerationCommand {
 
 	public async checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand['checkModeratable']>) {
 		const member = await super.checkModeratable(message, context);
-		if (member && !member.kickable) throw context.args.t(LanguageKeys.Commands.Moderation.KickNotKickable);
+		if (member && !member.kickable) throw context.args.t('commands/moderation:kickNotKickable');
 		return member;
 	}
 }

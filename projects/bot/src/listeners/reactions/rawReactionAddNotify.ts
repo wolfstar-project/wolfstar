@@ -1,6 +1,5 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { api } from '#lib/discord/Api';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { getEmojiId, getEmojiReactionFormat, SerializedEmoji } from '#utils/functions';
@@ -62,12 +61,10 @@ export class UserListener extends Listener {
 					[
 						`**Emoji**: ${data.emoji.name}${data.emoji.id === null ? '' : ` [${data.emoji.id}]`}`,
 						`**Channel**: ${data.channel}`,
-						`**Message**: [${t(LanguageKeys.Misc.JumpTo)}](https://discord.com/channels/${data.guild.id}/${data.channel.id}/${
-							data.messageId
-						})`
+						`**Message**: [${t('system:jumpTo')}](https://discord.com/channels/${data.guild.id}/${data.channel.id}/${data.messageId})`
 					].join('\n')
 				)
-				.setFooter({ text: `${t(LanguageKeys.Events.Reactions.Reaction)} • ${data.channel.name}` })
+				.setFooter({ text: `${t('events/reactions:reaction')} • ${data.channel.name}` })
 				.setTimestamp()
 		);
 	}

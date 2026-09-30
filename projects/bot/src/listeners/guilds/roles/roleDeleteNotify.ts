@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';
@@ -21,7 +20,7 @@ export class UserListener extends Listener<typeof Events.GuildRoleDelete> {
 		const embed = new MessageEmbed()
 			.setColor(Colors.Red)
 			.setAuthor({ name: `${role.name} (${role.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.RoleDelete) })
+			.setFooter({ text: t('events/guilds-logs:roleDelete') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}

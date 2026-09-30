@@ -1,5 +1,4 @@
 import { GuildSettings, ModerationEntity, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures/commands/WolfCommand';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -81,15 +80,13 @@ export abstract class ModerationCommand<T = unknown> extends WolfCommand {
 				const cases = sorted.map(({ log }) => log.caseId);
 				const users = sorted.map(({ target }) => `\`${target.tag}\``);
 				const range = cases.length === 1 ? cases[0] : `${cases[0]}..${cases[cases.length - 1]}`;
-				const langKey = logReason
-					? LanguageKeys.Commands.Moderation.ModerationOutputWithReason
-					: LanguageKeys.Commands.Moderation.ModerationOutput;
+				const langKey = logReason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
 				output.push(args.t(langKey, { count: cases.length, range, users, reason: logReason }));
 			}
 
 			if (errored.length) {
 				const users = errored.map(({ error, target }) => `- ${target.tag} → ${typeof error === 'string' ? error : error.message}`);
-				output.push(args.t(LanguageKeys.Commands.Moderation.ModerationFailed, { users, count: users.length }));
+				output.push(args.t('commands/moderation:moderationFailed', { users, count: users.length }));
 			}
 
 			// Else send the message as usual.
@@ -112,15 +109,15 @@ export abstract class ModerationCommand<T = unknown> extends WolfCommand {
 
 	protected async checkModeratable(message: GuildMessage, context: HandledCommandContext<T>) {
 		if (context.target.id === message.author.id) {
-			throw context.args.t(LanguageKeys.Commands.Moderation.UserSelf);
+			throw context.args.t('moderation:userSelf');
 		}
 
 		if (context.target.id === process.env.CLIENT_ID) {
-			throw context.args.t(LanguageKeys.Commands.Moderation.ToSkyra);
+			throw context.args.t('moderation:toSkyra');
 		}
 
 		const member = await message.guild.members.fetch(context.target.id).catch(() => {
-			if (this.requiredMember) throw context.args.t(LanguageKeys.Misc.UserNotInGuild);
+			if (this.requiredMember) throw context.args.t('errors:userNotInGuild');
 			return null;
 		});
 
@@ -129,12 +126,12 @@ export abstract class ModerationCommand<T = unknown> extends WolfCommand {
 
 			// Skyra cannot moderate members with higher role position than her:
 			if (targetHighestRolePosition >= message.guild.me!.roles.highest.position) {
-				throw context.args.t(LanguageKeys.Commands.Moderation.RoleHigherSkyra);
+				throw context.args.t('moderation:roleHigherSkyra');
 			}
 
 			// A member who isn't a server owner is not allowed to moderate somebody with higher role than them:
 			if (!isGuildOwner(message.member) && targetHighestRolePosition >= message.member.roles.highest.position) {
-				throw context.args.t(LanguageKeys.Commands.Moderation.RoleHigher);
+				throw context.args.t('moderation:roleHigher');
 			}
 		}
 
@@ -169,7 +166,7 @@ export abstract class ModerationCommand<T = unknown> extends WolfCommand {
 
 		const result = await args.pickResult('timespan', { minimum: 0, maximum: years(5) });
 		if (result.success) return result.value;
-		if (result.error.identifier === LanguageKeys.Arguments.TimeSpan) return null;
+		if (result.error.identifier === 'arguments:timeSpan') return null;
 		throw result.error;
 	}
 }

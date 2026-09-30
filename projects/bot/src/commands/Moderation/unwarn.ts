@@ -1,5 +1,4 @@
 import { GuildSettings, ModerationEntity, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HandledCommandContext, ModerationCommand } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise } from '#common';
@@ -11,8 +10,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['uw', 'unwarning'],
-	description: LanguageKeys.Commands.Moderation.UnwarnDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.UnwarnExtended
+	description: 'commands/moderation:unwarnDescription',
+	detailedDescription: 'commands/moderation:unwarnExtended'
 })
 export class UserModerationCommand extends ModerationCommand {
 	public async messageRun(message: GuildMessage, args: ModerationCommand.Args) {
@@ -27,7 +26,7 @@ export class UserModerationCommand extends ModerationCommand {
 
 		const modlog = await getModeration(message.guild).fetch(caseId);
 		if (!modlog || !modlog.isType(TypeCodes.Warning)) {
-			this.error(LanguageKeys.Commands.Moderation.GuildWarnNotFound);
+			this.error('errors:guildWarnNotFound');
 		}
 
 		const user = await modlog.fetchUser();
@@ -40,15 +39,12 @@ export class UserModerationCommand extends ModerationCommand {
 
 		if (messageDisplay) {
 			const originalReason = reasonDisplay ? unwarnLog.reason : null;
-			const content = args.t(
-				originalReason ? LanguageKeys.Commands.Moderation.ModerationOutputWithReason : LanguageKeys.Commands.Moderation.ModerationOutput,
-				{
-					count: 1,
-					range: unwarnLog.caseId,
-					users: [`\`${user.tag}\``],
-					reason: originalReason
-				}
-			);
+			const content = args.t(originalReason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput', {
+				count: 1,
+				range: unwarnLog.caseId,
+				users: [`\`${user.tag}\``],
+				reason: originalReason
+			});
 
 			return send(message, content) as Promise<GuildMessage>;
 		}

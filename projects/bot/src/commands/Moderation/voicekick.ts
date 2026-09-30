@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationCommand } from '#lib/moderation';
 import { getSecurity } from '#utils/functions';
 import { getImage } from '#utils/util';
@@ -8,8 +7,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['vk', 'vkick'],
-	description: LanguageKeys.Commands.Moderation.VoiceKickDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.VoiceKickExtended,
+	description: 'commands/moderation:voiceKickDescription',
+	detailedDescription: 'commands/moderation:voiceKickExtended',
 	requiredClientPermissions: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers],
 	requiredMember: true
 })
@@ -28,7 +27,7 @@ export class UserModerationCommand extends ModerationCommand {
 
 	public async checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand['checkModeratable']>) {
 		const member = await super.checkModeratable(message, context);
-		if (member && !member.voice.channelId) throw context.args.t(LanguageKeys.Commands.Moderation.GuildMemberNotVoicechannel);
+		if (member && !member.voice.channelId) throw context.args.t('errors:guildMemberNotVoicechannel');
 		return member;
 	}
 }

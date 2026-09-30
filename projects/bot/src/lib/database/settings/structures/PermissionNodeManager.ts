@@ -1,6 +1,5 @@
 import type { PermissionsNode, ReadonlyGuildData } from '#lib/database/settings/types';
 import { matchAny } from '#lib/database/utils/matchers/Command';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { WolfCommand } from '#lib/structures';
 import { container, UserError } from '@sapphire/framework';
 import { Collection, Role, type GuildMember, type User } from 'discord.js';
@@ -57,7 +56,7 @@ export class PermissionNodeManager {
 			(action === PermissionNodeAction.Allow && previous.allow.includes(command)) ||
 			(action === PermissionNodeAction.Deny && previous.deny.includes(command))
 		) {
-			throw new UserError({ identifier: LanguageKeys.Serializers.PermissionNodeDuplicatedCommand, context: { command } });
+			throw new UserError({ identifier: 'serializers:permissionNodeDuplicatedCommand', context: { command } });
 		}
 
 		const node: PermissionsNode = {
@@ -74,14 +73,14 @@ export class PermissionNodeManager {
 
 		const nodeIndex = nodes.findIndex((n) => n.id === target.id);
 		if (nodeIndex === -1) {
-			throw new UserError({ identifier: LanguageKeys.Commands.Management.PermissionNodesNodeNotExists });
+			throw new UserError({ identifier: 'commands/management:permissionNodesNodeNotExists' });
 		}
 
 		const property = this.getName(action);
 		const previous = nodes[nodeIndex];
 		const commandIndex = previous[property].indexOf(command);
 		if (commandIndex === -1) {
-			throw new UserError({ identifier: LanguageKeys.Commands.Management.PermissionNodesCommandNotExists });
+			throw new UserError({ identifier: 'commands/management:permissionNodesCommandNotExists' });
 		}
 
 		const node: PermissionsNode = {
@@ -100,7 +99,7 @@ export class PermissionNodeManager {
 
 		const nodeIndex = nodes.findIndex((n) => n.id === target.id);
 		if (nodeIndex === -1) {
-			throw new UserError({ identifier: LanguageKeys.Commands.Management.PermissionNodesNodeNotExists, context: { target } });
+			throw new UserError({ identifier: 'commands/management:permissionNodesNodeNotExists', context: { target } });
 		}
 
 		return nodes.toSpliced(nodeIndex, 1);

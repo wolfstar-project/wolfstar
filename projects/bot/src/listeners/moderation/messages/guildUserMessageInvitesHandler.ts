@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
@@ -14,8 +13,8 @@ const enum CodeType {
 }
 
 @ApplyOptions<ModerationMessageListener.Options>({
-	reasonLanguageKey: LanguageKeys.Events.Moderation.Messages.ModerationInvites,
-	reasonLanguageKeyWithMaximum: LanguageKeys.Events.Moderation.Messages.ModerationInvitesWithMaximum,
+	reasonLanguageKey: 'events/moderation:invites',
+	reasonLanguageKeyWithMaximum: 'events/moderation:invitesWithMaximum',
 	keyEnabled: GuildSettings.Selfmod.Invites.Enabled,
 	ignoredChannelsPath: GuildSettings.Selfmod.Invites.IgnoredChannels,
 	ignoredRolesPath: GuildSettings.Selfmod.Invites.IgnoredRoles,
@@ -59,7 +58,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	}
 
 	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t(LanguageKeys.Events.Moderation.Messages.InviteFilterAlert, { user: message.author.toString() }));
+		return sendTemporaryMessage(message, t('events/moderation:inviteFilterAlert', { user: message.author.toString() }));
 	}
 
 	protected onLogMessage(message: GuildMessage, t: TFunction, links: readonly string[]) {
@@ -69,8 +68,8 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 				name: `${message.author.tag} (${message.author.id})`,
 				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 			})
-			.setDescription(t(LanguageKeys.Events.Moderation.Messages.InviteFilterLog, { links, count: links.length }))
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t(LanguageKeys.Events.Moderation.Messages.InviteFooter)}` })
+			.setDescription(t('events/moderation:inviteFilterLog', { links, count: links.length }))
+			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:inviteLink')}` })
 			.setTimestamp();
 	}
 

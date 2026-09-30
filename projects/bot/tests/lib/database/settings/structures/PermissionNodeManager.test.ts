@@ -1,7 +1,6 @@
 import { PermissionNodeAction, PermissionNodeManager, type PermissionsNode } from '#lib/database';
 import { GuildData } from '#lib/database/settings';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { UserError } from '@sapphire/framework';
 import type { Guild, GuildMember, Role, User } from 'discord.js';
 
@@ -127,7 +126,7 @@ describe('PermissionNodeManager', () => {
 				expect(caughtError).toBeDefined();
 				const casted = caughtError as UserError;
 				expect(casted).toBeInstanceOf(UserError);
-				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
+				expect(casted.identifier).toBe('commands/management:permissionNodesNodeNotExists');
 				expect((casted.context as { target: typeof user }).target).toBe(user);
 			});
 		});
@@ -146,7 +145,7 @@ describe('PermissionNodeManager', () => {
 				expect(caughtError).toBeDefined();
 				const casted = caughtError as UserError;
 				expect(casted).toBeInstanceOf(UserError);
-				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
+				expect(casted.identifier).toBe('commands/management:permissionNodesNodeNotExists');
 				expect((casted.context as { target: typeof member }).target).toBe(member);
 			});
 		});
@@ -165,7 +164,7 @@ describe('PermissionNodeManager', () => {
 				expect(caughtError).toBeDefined();
 				const casted = caughtError as UserError;
 				expect(casted).toBeInstanceOf(UserError);
-				expect(casted.identifier).toBe(LanguageKeys.Commands.Management.PermissionNodesNodeNotExists);
+				expect(casted.identifier).toBe('commands/management:permissionNodesNodeNotExists');
 				expect((casted.context as { target: typeof role }).target).toBe(role);
 			});
 		});

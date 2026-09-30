@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationData, ModerationTask } from '#lib/moderation';
 import { getSecurity } from '#utils/functions';
 import { fetchT } from '@sapphire/plugin-i18next';
@@ -14,7 +13,7 @@ export class UserModerationTask extends ModerationTask {
 			{
 				moderatorId: process.env.CLIENT_ID,
 				userId: data.userID,
-				reason: `[MODERATION] Warning released after ${t(LanguageKeys.Globals.DurationValue, { value: data.duration })}`
+				reason: `[MODERATION] Warning released after ${t('globals:durationValue', { value: data.duration })}`
 			},
 			data.caseID,
 			await this.getTargetDM(guild, await this.container.gatewayClient.users.fetch(data.userID))

@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';
@@ -28,21 +27,21 @@ export class UserListener extends Listener<typeof Events.GuildEmojiCreate> {
 			.setThumbnail(next.url)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.EmojiCreate) })
+			.setFooter({ text: t('events/guilds-logs:emojiCreate') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
 
 	private *getEmojiInformation(t: TFunction, next: GuildEmoji) {
-		if (next.animated) yield t(LanguageKeys.Events.Guilds.Logs.EmojiCreateAnimated);
-		if (!next.available) yield t(LanguageKeys.Events.Guilds.Logs.EmojiCreateUnAvailable);
-		if (next.managed) yield t(LanguageKeys.Events.Guilds.Logs.EmojiCreateManaged);
-		if (next.requiresColons) yield t(LanguageKeys.Events.Guilds.Logs.EmojiCreateRequiresColons);
+		if (next.animated) yield t('events/guilds-logs:emojiCreateAnimated');
+		if (!next.available) yield t('events/guilds-logs:emojiCreateUnAvailable');
+		if (next.managed) yield t('events/guilds-logs:emojiCreateManaged');
+		if (next.requiresColons) yield t('events/guilds-logs:emojiCreateRequiresColons');
 
 		const roles = next.roles.cache;
 		if (roles.size !== 0) {
 			const values = [...next.roles.cache.values()].map((role) => role.toString());
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiCreateRoles, { values, count: values.length });
+			yield t('events/guilds-logs:emojiCreateRoles', { values, count: values.length });
 		}
 	}
 }

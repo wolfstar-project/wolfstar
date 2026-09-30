@@ -2,7 +2,6 @@ import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { Serializer } from '#lib/database/settings/structures/Serializer';
 import type { GuildDataKey, ReadonlyGuildData } from '#lib/database/settings/types';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { WolfArgs } from '#lib/structures';
 import type { TypedT } from '#lib/types';
 import { resolveGuild } from '#common';
@@ -122,7 +121,7 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 		}
 
 		const value = settings[this.property];
-		return isNullish(value) ? t(LanguageKeys.Commands.Admin.ConfSettingNotSet) : serializer.stringify(value, context);
+		return isNullish(value) ? t('commands/admin:confSettingNotSet') : serializer.stringify(value, context);
 	}
 
 	public async getContext(settings: ReadonlyGuildData, language: TFunction): Promise<Serializer.UpdateContext> {

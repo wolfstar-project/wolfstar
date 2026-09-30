@@ -1,7 +1,6 @@
 import { SchemaGroup, type NonEmptyArray } from '#lib/database/settings/schema/SchemaGroup';
 import { SchemaKey, type ConfigurableKeyValueOptions } from '#lib/database/settings/schema/SchemaKey';
 import type { GuildDataKey } from '#lib/database/settings/types';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { TypedT } from '#lib/types';
 import { objectEntries } from '@sapphire/utilities';
 import { Collection } from 'discord.js';
@@ -31,34 +30,34 @@ export function getConfiguration() {
 	cachedConfiguration ??= makeKeys({
 		language: {
 			type: 'language',
-			description: LanguageKeys.Settings.Language,
+			description: 'settings:language',
 			default: 'en-US'
 		},
 
 		// Modules
-		modulesAutomod: { type: 'boolean', name: 'modules.automod', description: LanguageKeys.Settings.ModulesAutomod, default: true },
-		modulesModeration: { type: 'boolean', name: 'modules.moderation', description: LanguageKeys.Settings.ModulesModeration, default: true },
-		modulesLogs: { type: 'boolean', name: 'modules.logs', description: LanguageKeys.Settings.ModulesLogs, default: true },
-		modulesCommands: { type: 'boolean', name: 'modules.commands', description: LanguageKeys.Settings.ModulesCommands, default: true },
-		modulesRoles: { type: 'boolean', name: 'modules.roles', description: LanguageKeys.Settings.ModulesRoles, default: true },
+		modulesAutomod: { type: 'boolean', name: 'modules.automod', description: 'settings:modulesAutomod', default: true },
+		modulesModeration: { type: 'boolean', name: 'modules.moderation', description: 'settings:modulesModeration', default: true },
+		modulesLogs: { type: 'boolean', name: 'modules.logs', description: 'settings:modulesLogs', default: true },
+		modulesCommands: { type: 'boolean', name: 'modules.commands', description: 'settings:modulesCommands', default: true },
+		modulesRoles: { type: 'boolean', name: 'modules.roles', description: 'settings:modulesRoles', default: true },
 
 		// Auto-moderation
-		automodChannel: { type: 'guildTextChannel', name: 'automod.channel', description: LanguageKeys.Settings.AutomodChannel },
-		automodTrackNative: { type: 'boolean', name: 'automod.track-native', description: LanguageKeys.Settings.AutomodTrackNative },
+		automodChannel: { type: 'guildTextChannel', name: 'automod.channel', description: 'settings:automodChannel' },
+		automodTrackNative: { type: 'boolean', name: 'automod.track-native', description: 'settings:automodTrackNative' },
 		...autoModerationRule('selfmodAttachments', 'selfmod.attachments', {
-			enabled: LanguageKeys.Settings.SelfmodAttachmentsEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodAttachmentsIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodAttachmentsIgnoredChannels
+			enabled: 'settings:selfmodAttachmentsEnabled',
+			ignoredRoles: 'settings:selfmodAttachmentsIgnoredRoles',
+			ignoredChannels: 'settings:selfmodAttachmentsIgnoredChannels'
 		}),
 		...autoModerationRule('selfmodCapitals', 'selfmod.capitals', {
-			enabled: LanguageKeys.Settings.SelfmodCapitalsEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodCapitalsIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodCapitalsIgnoredChannels
+			enabled: 'settings:selfmodCapitalsEnabled',
+			ignoredRoles: 'settings:selfmodCapitalsIgnoredRoles',
+			ignoredChannels: 'settings:selfmodCapitalsIgnoredChannels'
 		}),
 		selfmodCapitalsMinimum: {
 			type: 'integer',
 			name: 'selfmod.capitals.minimum',
-			description: LanguageKeys.Settings.SelfmodCapitalsMinimum,
+			description: 'settings:selfmodCapitalsMinimum',
 			minimum: 5,
 			maximum: 2000,
 			default: 15
@@ -66,97 +65,97 @@ export function getConfiguration() {
 		selfmodCapitalsMaximum: {
 			type: 'integer',
 			name: 'selfmod.capitals.maximum',
-			description: LanguageKeys.Settings.SelfmodCapitalsMaximum,
+			description: 'settings:selfmodCapitalsMaximum',
 			minimum: 10,
 			maximum: 100,
 			default: 50
 		},
 		...autoModerationRule('selfmodInvites', 'selfmod.invites', {
-			enabled: LanguageKeys.Settings.SelfmodInvitesEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodInvitesIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodInvitesIgnoredChannels
+			enabled: 'settings:selfmodInvitesEnabled',
+			ignoredRoles: 'settings:selfmodInvitesIgnoredRoles',
+			ignoredChannels: 'settings:selfmodInvitesIgnoredChannels'
 		}),
 		selfmodInvitesAllowedCodes: {
 			type: 'string',
 			name: 'selfmod.invites.allowed-codes',
-			description: LanguageKeys.Settings.SelfmodInvitesIgnoredCodes,
+			description: 'settings:selfmodInvitesIgnoredCodes',
 			array: true
 		},
 		selfmodInvitesAllowedGuilds: {
 			type: 'snowflake',
 			name: 'selfmod.invites.allowed-guilds',
-			description: LanguageKeys.Settings.SelfmodInvitesIgnoredGuilds,
+			description: 'settings:selfmodInvitesIgnoredGuilds',
 			array: true
 		},
 		...autoModerationRule('selfmodLinks', 'selfmod.links', {
-			enabled: LanguageKeys.Settings.SelfmodLinksEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodLinksIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodLinksIgnoredChannels
+			enabled: 'settings:selfmodLinksEnabled',
+			ignoredRoles: 'settings:selfmodLinksIgnoredRoles',
+			ignoredChannels: 'settings:selfmodLinksIgnoredChannels'
 		}),
 		selfmodLinksAllowed: {
 			type: 'string',
 			name: 'selfmod.links.allowed',
-			description: LanguageKeys.Settings.SelfmodLinksAllowed,
+			description: 'settings:selfmodLinksAllowed',
 			array: true
 		},
 		...autoModerationRule('selfmodMentions', 'selfmod.mentions', {
-			enabled: LanguageKeys.Settings.SelfmodMentionsEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodMentionsIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodMentionsIgnoredChannels
+			enabled: 'settings:selfmodMentionsEnabled',
+			ignoredRoles: 'settings:selfmodMentionsIgnoredRoles',
+			ignoredChannels: 'settings:selfmodMentionsIgnoredChannels'
 		}),
 		selfmodMentionsOverrides: {
 			type: 'notAllowed',
 			name: 'selfmod.mentions.overrides',
-			description: LanguageKeys.Settings.DashboardOnlyKey,
+			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
 		...autoModerationRule('selfmodNewlines', 'selfmod.newlines', {
-			enabled: LanguageKeys.Settings.SelfmodNewlinesEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodNewlinesIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodNewlinesIgnoredChannels
+			enabled: 'settings:selfmodNewlinesEnabled',
+			ignoredRoles: 'settings:selfmodNewlinesIgnoredRoles',
+			ignoredChannels: 'settings:selfmodNewlinesIgnoredChannels'
 		}),
 		selfmodNewlinesMaximum: {
 			type: 'integer',
 			name: 'selfmod.newlines.maximum',
-			description: LanguageKeys.Settings.SelfmodNewlinesMaximum,
+			description: 'settings:selfmodNewlinesMaximum',
 			minimum: 10,
 			maximum: 100,
 			default: 20
 		},
 		...autoModerationRule('noMentionSpam', 'no-mention-spam', {
-			enabled: LanguageKeys.Settings.NoMentionSpamEnabled,
-			ignoredRoles: LanguageKeys.Settings.NoMentionSpamIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.NoMentionSpamIgnoredChannels
+			enabled: 'settings:noMentionSpamEnabled',
+			ignoredRoles: 'settings:noMentionSpamIgnoredRoles',
+			ignoredChannels: 'settings:noMentionSpamIgnoredChannels'
 		}),
 		noMentionSpamAlerts: {
 			type: 'boolean',
 			name: 'no-mention-spam.alerts',
-			description: LanguageKeys.Settings.NoMentionSpamAlerts
+			description: 'settings:noMentionSpamAlerts'
 		},
 		noMentionSpamMentionsAllowed: {
 			type: 'integer',
 			name: 'no-mention-spam.mentions-allowed',
-			description: LanguageKeys.Settings.NoMentionSpamMentionsAllowed,
+			description: 'settings:noMentionSpamMentionsAllowed',
 			minimum: 0,
 			default: 20
 		},
 		noMentionSpamTimePeriod: {
 			type: 'integer',
 			name: 'no-mention-spam.time-period',
-			description: LanguageKeys.Settings.NoMentionSpamTimePeriod,
+			description: 'settings:noMentionSpamTimePeriod',
 			minimum: 0,
 			default: 8
 		},
 		...autoModerationRule('selfmodWords', 'selfmod.words', {
-			enabled: LanguageKeys.Settings.SelfmodFilterEnabled,
-			ignoredRoles: LanguageKeys.Settings.SelfmodFilterIgnoredRoles,
-			ignoredChannels: LanguageKeys.Settings.SelfmodFilterIgnoredChannels
+			enabled: 'settings:selfmodFilterEnabled',
+			ignoredRoles: 'settings:selfmodFilterIgnoredRoles',
+			ignoredChannels: 'settings:selfmodFilterIgnoredChannels'
 		}),
 		selfmodWordsList: {
 			type: 'string',
 			name: 'selfmod.words.list',
-			description: LanguageKeys.Settings.DashboardOnlyKey,
+			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
@@ -166,69 +165,69 @@ export function getConfiguration() {
 			// @ts-expect-error Serializer 'commandmatch' exists but is not camel cased.
 			type: 'commandmatch',
 			name: 'commands.disabled',
-			description: LanguageKeys.Settings.DisabledCommands,
+			description: 'settings:disabledCommands',
 			maximum: 32,
 			array: true
 		},
 		commandsDisabledChannels: {
 			type: 'guildTextChannel',
 			name: 'commands.disabled-channels',
-			description: LanguageKeys.Settings.DisabledChannels,
+			description: 'settings:disabledChannels',
 			array: true
 		},
 		commandsDisabledInChannels: {
 			type: 'notAllowed',
 			name: 'commands.disabled-in-channels',
-			description: LanguageKeys.Settings.DashboardOnlyKey,
+			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
 
 		// Logs
-		logsMemberAdd: logChannel('member-add', LanguageKeys.Settings.Channels.Logs.MemberAdd),
-		logsMemberRemove: logChannel('member-remove', LanguageKeys.Settings.Channels.Logs.MemberRemove),
-		logsMemberNicknameUpdate: logChannel('member-nickname-update', LanguageKeys.Settings.Channels.Logs.MemberNickNameUpdate),
-		logsMemberUsernameUpdate: logChannel('member-username-update', LanguageKeys.Settings.Channels.Logs.MemberUserNameUpdate),
-		logsMessageDelete: logChannel('message-delete', LanguageKeys.Settings.Channels.Logs.MessageDelete),
-		logsMessageDeleteNsfw: logChannel('message-delete-nsfw', LanguageKeys.Settings.Channels.Logs.MessageDeleteNsfw),
-		logsMessageUpdate: logChannel('message-update', LanguageKeys.Settings.Channels.Logs.MessageUpdate),
-		logsMessageUpdateNsfw: logChannel('message-update-nsfw', LanguageKeys.Settings.Channels.Logs.MessageUpdateNsfw),
-		logsPrune: logChannel('prune', LanguageKeys.Settings.Channels.Logs.Prune),
-		logsReaction: logChannel('reaction', LanguageKeys.Settings.Channels.Logs.Reaction),
-		logsRoleCreate: logChannel('role-create', LanguageKeys.Settings.Channels.Logs.RoleCreate),
-		logsRoleUpdate: logChannel('role-update', LanguageKeys.Settings.Channels.Logs.RoleUpdate),
-		logsRoleDelete: logChannel('role-delete', LanguageKeys.Settings.Channels.Logs.RoleDelete),
-		logsChannelCreate: logChannel('channel-create', LanguageKeys.Settings.Channels.Logs.ChannelCreate),
-		logsChannelUpdate: logChannel('channel-update', LanguageKeys.Settings.Channels.Logs.ChannelUpdate),
-		logsChannelDelete: logChannel('channel-delete', LanguageKeys.Settings.Channels.Logs.ChannelDelete),
-		logsEmojiCreate: logChannel('emoji-create', LanguageKeys.Settings.Channels.Logs.EmojiCreate),
-		logsEmojiUpdate: logChannel('emoji-update', LanguageKeys.Settings.Channels.Logs.EmojiUpdate),
-		logsEmojiDelete: logChannel('emoji-delete', LanguageKeys.Settings.Channels.Logs.EmojiDelete),
-		logsEmojiAdd: logChannel('emoji-add', LanguageKeys.Settings.Channels.Logs.EmojiAdd),
+		logsMemberAdd: logChannel('member-add', 'settings:channelsLogsMemberAdd'),
+		logsMemberRemove: logChannel('member-remove', 'settings:channelsLogsMemberRemove'),
+		logsMemberNicknameUpdate: logChannel('member-nickname-update', 'settings:channelsLogsMemberNickNameUpdate'),
+		logsMemberUsernameUpdate: logChannel('member-username-update', 'settings:channelsLogsMemberUserNameUpdate'),
+		logsMessageDelete: logChannel('message-delete', 'settings:channelsLogsMessageDelete'),
+		logsMessageDeleteNsfw: logChannel('message-delete-nsfw', 'settings:channelsLogsMessageDeleteNsfw'),
+		logsMessageUpdate: logChannel('message-update', 'settings:channelsLogsMessageUpdate'),
+		logsMessageUpdateNsfw: logChannel('message-update-nsfw', 'settings:channelsLogsMessageUpdateNsfw'),
+		logsPrune: logChannel('prune', 'settings:channelsLogsPrune'),
+		logsReaction: logChannel('reaction', 'settings:channelsLogsReaction'),
+		logsRoleCreate: logChannel('role-create', 'settings:channelsLogsRoleCreate'),
+		logsRoleUpdate: logChannel('role-update', 'settings:channelsLogsRoleUpdate'),
+		logsRoleDelete: logChannel('role-delete', 'settings:channelsLogsRoleDelete'),
+		logsChannelCreate: logChannel('channel-create', 'settings:channelsLogsChannelCreate'),
+		logsChannelUpdate: logChannel('channel-update', 'settings:channelsLogsChannelUpdate'),
+		logsChannelDelete: logChannel('channel-delete', 'settings:channelsLogsChannelDelete'),
+		logsEmojiCreate: logChannel('emoji-create', 'settings:channelsLogsEmojiCreate'),
+		logsEmojiUpdate: logChannel('emoji-update', 'settings:channelsLogsEmojiUpdate'),
+		logsEmojiDelete: logChannel('emoji-delete', 'settings:channelsLogsEmojiDelete'),
+		logsEmojiAdd: logChannel('emoji-add', 'settings:channelsLogsEmojiAdd'),
 		logsEmojiAddIncludeTwemoji: {
 			type: 'boolean',
 			name: 'logs.emoji-add-include-twemoji',
-			description: LanguageKeys.Settings.Channels.Logs.EmojiAddIncludeTwemoji
+			description: 'settings:channelsLogsEmojiAddIncludeTwemoji'
 		},
-		logsServerUpdate: logChannel('server-update', LanguageKeys.Settings.Channels.Logs.ServerUpdate),
-		logsCommand: logChannel('command', LanguageKeys.Settings.Channels.Logs.Command),
-		logsSettings: logChannel('settings', LanguageKeys.Settings.Channels.Logs.Settings),
+		logsServerUpdate: logChannel('server-update', 'settings:channelsLogsServerUpdate'),
+		logsCommand: logChannel('command', 'settings:channelsLogsCommand'),
+		logsSettings: logChannel('settings', 'settings:channelsLogsSettings'),
 		logsIgnoreAll: {
 			type: 'guildTextChannel',
 			name: 'logs.ignore.all',
-			description: LanguageKeys.Settings.Channels.Ignore.All,
+			description: 'settings:channelsIgnoreAll',
 			array: true
 		},
 		logsIgnoreMessages: {
 			type: 'guildTextChannel',
 			name: 'logs.ignore.messages',
-			description: LanguageKeys.Settings.Channels.Ignore.Messages,
+			description: 'settings:channelsIgnoreMessages',
 			array: true
 		},
 		logsIgnoreReactions: {
 			type: 'guildTextChannel',
 			name: 'logs.ignore.reactions',
-			description: LanguageKeys.Settings.Channels.Ignore.ReactionAdd,
+			description: 'settings:channelsIgnoreReactionAdd',
 			array: true
 		},
 
@@ -236,64 +235,64 @@ export function getConfiguration() {
 		moderationChannel: {
 			type: 'guildTextChannel',
 			name: 'moderation.channel',
-			description: LanguageKeys.Settings.Channels.Logs.Moderation
+			description: 'settings:channelsLogsModeration'
 		},
 		moderationTrackBans: {
 			type: 'boolean',
 			name: 'moderation.track-bans',
-			description: LanguageKeys.Settings.ModerationTrackBans
+			description: 'settings:moderationTrackBans'
 		},
 		moderationTrackTimeouts: {
 			type: 'boolean',
 			name: 'moderation.track-timeouts',
-			description: LanguageKeys.Settings.ModerationTrackTimeouts
+			description: 'settings:moderationTrackTimeouts'
 		},
 
 		// Permissions
 		permissionsUsers: {
 			type: 'permissionNode',
 			name: 'permissions.users',
-			description: LanguageKeys.Settings.DashboardOnlyKey,
+			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
 		permissionsRoles: {
 			type: 'permissionNode',
 			name: 'permissions.roles',
-			description: LanguageKeys.Settings.DashboardOnlyKey,
+			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
 
 		// Roles
-		rolesInitial: { type: 'role', name: 'roles.initial', description: LanguageKeys.Settings.RolesInitial, array: true },
-		rolesInitialHumans: { type: 'role', name: 'roles.initial-humans', description: LanguageKeys.Settings.RolesInitialHumans, array: true },
-		rolesInitialRobots: { type: 'role', name: 'roles.initial-robots', description: LanguageKeys.Settings.RolesInitialBots, array: true },
-		rolesAdmin: { type: 'role', name: 'roles.admin', description: LanguageKeys.Settings.RolesAdmin, array: true },
-		rolesModerator: { type: 'role', name: 'roles.moderator', description: LanguageKeys.Settings.RolesModerator, array: true },
-		rolesMuted: { type: 'role', name: 'roles.muted', description: LanguageKeys.Settings.RolesMuted },
-		rolesPublic: { type: 'role', name: 'roles.public', description: LanguageKeys.Settings.RolesPublic, array: true },
-		rolesRemoveInitial: { type: 'boolean', name: 'roles.remove-initial', description: LanguageKeys.Settings.RolesRemoveInitial },
+		rolesInitial: { type: 'role', name: 'roles.initial', description: 'settings:rolesInitial', array: true },
+		rolesInitialHumans: { type: 'role', name: 'roles.initial-humans', description: 'settings:rolesInitialHumans', array: true },
+		rolesInitialRobots: { type: 'role', name: 'roles.initial-robots', description: 'settings:rolesInitialBots', array: true },
+		rolesAdmin: { type: 'role', name: 'roles.admin', description: 'settings:rolesAdmin', array: true },
+		rolesModerator: { type: 'role', name: 'roles.moderator', description: 'settings:rolesModerator', array: true },
+		rolesMuted: { type: 'role', name: 'roles.muted', description: 'settings:rolesMuted' },
+		rolesPublic: { type: 'role', name: 'roles.public', description: 'settings:rolesPublic', array: true },
+		rolesRemoveInitial: { type: 'boolean', name: 'roles.remove-initial', description: 'settings:rolesRemoveInitial' },
 		rolesUniqueRoleSets: {
 			type: 'notAllowed',
 			name: 'roles.unique-role-sets',
-			description: LanguageKeys.Settings.DashboardOnlyKey,
+			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
 		rolesRestrictedReaction: {
 			type: 'role',
 			name: 'roles.restricted-reaction',
-			description: LanguageKeys.Settings.RolesRestrictedReaction
+			description: 'settings:rolesRestrictedReaction'
 		},
-		rolesRestrictedEmbed: { type: 'role', name: 'roles.restricted-embed', description: LanguageKeys.Settings.RolesRestrictedEmbed },
-		rolesRestrictedEmoji: { type: 'role', name: 'roles.restricted-emoji', description: LanguageKeys.Settings.RolesRestrictedEmoji },
+		rolesRestrictedEmbed: { type: 'role', name: 'roles.restricted-embed', description: 'settings:rolesRestrictedEmbed' },
+		rolesRestrictedEmoji: { type: 'role', name: 'roles.restricted-emoji', description: 'settings:rolesRestrictedEmoji' },
 		rolesRestrictedAttachment: {
 			type: 'role',
 			name: 'roles.restricted-attachment',
-			description: LanguageKeys.Settings.RolesRestrictedAttachment
+			description: 'settings:rolesRestrictedAttachment'
 		},
-		rolesRestrictedVoice: { type: 'role', name: 'roles.restricted-voice', description: LanguageKeys.Settings.RolesRestrictedVoice }
+		rolesRestrictedVoice: { type: 'role', name: 'roles.restricted-voice', description: 'settings:rolesRestrictedVoice' }
 	});
 
 	return cachedConfiguration;
@@ -333,7 +332,7 @@ function autoModerationRule<const P extends AutoModerationRulePrefix>(
 	name: string,
 	descriptions: AutoModerationRuleDescriptions
 ): Record<`${P}${AutoModerationRuleSuffix}`, ConfigurableKeyOptions> {
-	const dashboardOnly = { description: LanguageKeys.Settings.DashboardOnlyKey, dashboardOnly: true } as const;
+	const dashboardOnly = { description: 'settings:dashboardOnlyKey', dashboardOnly: true } as const;
 	return {
 		[`${prefix}Enabled`]: { type: 'boolean', name: `${name}.enabled`, description: descriptions.enabled, default: false },
 		[`${prefix}IgnoredRoles`]: { type: 'role', name: `${name}.ignored-roles`, description: descriptions.ignoredRoles, array: true },

@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { CustomGet } from '#lib/types';
 import { Events } from '#lib/types/Enums';
 import { filter, map } from '#common';
@@ -32,18 +31,15 @@ export class UserListener extends Listener {
 		if (logChannelId) {
 			// Send the Username log
 			this.container.gatewayClient.emit(Events.GuildMessageLog, guild, logChannelId, GuildSettings.Channels.Logs.MemberUserNameUpdate, () =>
-				this.buildEmbed(user, language, this.getNameDescription(language, previous, next), LanguageKeys.Events.Guilds.Members.UsernameUpdate)
+				this.buildEmbed(user, language, this.getNameDescription(language, previous, next), 'events/guilds-members:usernameUpdate')
 			);
 		}
 	}
 
 	private getNameDescription(t: TFunction, previousName: string | null, nextName: string | null) {
 		const previous =
-			previousName === null
-				? LanguageKeys.Events.Guilds.Members.NameUpdatePreviousWasNotSet
-				: LanguageKeys.Events.Guilds.Members.NameUpdatePreviousWasSet;
-		const next =
-			nextName === null ? LanguageKeys.Events.Guilds.Members.NameUpdateNextWasNotSet : LanguageKeys.Events.Guilds.Members.NameUpdateNextWasSet;
+			previousName === null ? 'events/guilds-members:nameUpdatePreviousWasNotSet' : 'events/guilds-members:nameUpdatePreviousWasSet';
+		const next = nextName === null ? 'events/guilds-members:nameUpdateNextWasNotSet' : 'events/guilds-members:nameUpdateNextWasSet';
 		return [t(previous, { previousName }), t(next, { nextName })].join('\n');
 	}
 

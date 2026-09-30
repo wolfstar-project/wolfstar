@@ -1,6 +1,5 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { SkyraEmbed } from '#lib/discord';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationMessageListener } from '#lib/moderation';
 import { IncomingType, OutgoingType } from '#lib/moderation/workers';
 import type { GuildMessage } from '#lib/types';
@@ -14,8 +13,8 @@ import type { TextChannel } from 'discord.js';
 import type { TFunction } from 'i18next';
 
 @ApplyOptions<ModerationMessageListener.Options>({
-	reasonLanguageKey: LanguageKeys.Events.Moderation.Messages.ModerationWords,
-	reasonLanguageKeyWithMaximum: LanguageKeys.Events.Moderation.Messages.ModerationWordsWithMaximum,
+	reasonLanguageKey: 'events/moderation:words',
+	reasonLanguageKeyWithMaximum: 'events/moderation:wordsWithMaximum',
 	keyEnabled: GuildSettings.Selfmod.Filter.Enabled,
 	ignoredChannelsPath: GuildSettings.Selfmod.Filter.IgnoredChannels,
 	ignoredRolesPath: GuildSettings.Selfmod.Filter.IgnoredRoles,
@@ -41,14 +40,12 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	protected async onDelete(message: GuildMessage, t: TFunction, value: FilterResults) {
 		floatPromise(deleteMessage(message));
 		if (message.content.length > 25 && (await this.container.db.fetchModerationDirectMessageEnabled(message.author.id))) {
-			await message.author.send(
-				t(LanguageKeys.Events.Moderation.Messages.WordFilterDm, { filtered: codeBlock('md', cutText(value.filtered, 1900)) })
-			);
+			await message.author.send(t('events/moderation:wordFilterDm', { filtered: codeBlock('md', cutText(value.filtered, 1900)) }));
 		}
 	}
 
 	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t(LanguageKeys.Events.Moderation.Messages.WordFilter, { user: message.author.toString() }));
+		return sendTemporaryMessage(message, t('events/moderation:wordFilter', { user: message.author.toString() }));
 	}
 
 	protected onLogMessage(message: GuildMessage, t: TFunction, results: FilterResults) {
@@ -59,7 +56,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 				name: `${message.author.tag} (${message.author.id})`,
 				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t(LanguageKeys.Events.Moderation.Messages.WordFooter)}` })
+			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:wordFilterFooter')}` })
 			.setTimestamp();
 	}
 }

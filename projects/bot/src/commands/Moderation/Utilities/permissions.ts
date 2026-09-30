@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -12,8 +11,8 @@ import { MessageEmbed, Permissions, PermissionString } from 'discord.js';
 const PERMISSION_FLAGS = Object.keys(Permissions.FLAGS) as PermissionString[];
 
 @ApplyOptions<WolfCommand.Options>({
-	description: LanguageKeys.Commands.Moderation.PermissionsDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.PermissionsExtended,
+	description: 'commands/moderation:permissionsDescription',
+	detailedDescription: 'commands/moderation:permissionsExtended',
 	permissionLevel: PermissionLevels.Administrator,
 	requiredClientPermissions: [PermissionFlagsBits.EmbedLinks],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny]
@@ -22,14 +21,14 @@ export class UserCommand extends WolfCommand {
 	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
 		const user = args.finished ? message.author : await args.pick('userName');
 		const member = await message.guild.members.fetch(user.id).catch(() => {
-			this.error(LanguageKeys.Misc.UserNotInGuild);
+			this.error('errors:userNotInGuild');
 		});
 
 		const { permissions } = member;
 		const list = [ZeroWidthSpace];
 
 		if (permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
-			list.push(args.t(LanguageKeys.Commands.Moderation.PermissionsAll));
+			list.push(args.t('commands/moderation:permissionsAll'));
 		} else {
 			for (const flag of PERMISSION_FLAGS) {
 				list.push(`${permissions.has(flag) ? '🔹' : '🔸'} ${args.t(`permissions:${flag}`, flag)}`);
@@ -38,7 +37,7 @@ export class UserCommand extends WolfCommand {
 
 		const embed = new MessageEmbed()
 			.setColor(await this.container.db.fetchColor(message))
-			.setTitle(args.t(LanguageKeys.Commands.Moderation.Permissions, { username: user.tag, id: user.id }))
+			.setTitle(args.t('commands/moderation:permissions', { username: user.tag, id: user.id }))
 			.setDescription(list.join('\n'));
 		return send(message, { embeds: [embed] });
 	}

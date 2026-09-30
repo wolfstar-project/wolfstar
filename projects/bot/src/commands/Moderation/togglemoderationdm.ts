@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -6,8 +5,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['togglemdm', 'togglemoddm', 'tmdm'],
-	description: LanguageKeys.Commands.Moderation.ToggleModerationDmDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.ToggleModerationDmExtended
+	description: 'commands/moderation:toggleModerationDmDescription',
+	detailedDescription: 'commands/moderation:toggleModerationDmExtended'
 })
 export class UserCommand extends WolfCommand {
 	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
@@ -20,9 +19,7 @@ export class UserCommand extends WolfCommand {
 		});
 
 		const content = args.t(
-			updated.moderationDM
-				? LanguageKeys.Commands.Moderation.ToggleModerationDmToggledEnabled
-				: LanguageKeys.Commands.Moderation.ToggleModerationDmToggledDisabled
+			updated.moderationDM ? 'commands/moderation:toggleModerationDmToggledEnabled' : 'commands/moderation:toggleModerationDmToggledDisabled'
 		);
 		return send(message, content);
 	}

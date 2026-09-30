@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
@@ -35,7 +34,7 @@ export class UserListener extends Listener {
 					iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 				})
 				.setDescription(cutText(getContent(message) || '', 1900))
-				.setFooter({ text: t(LanguageKeys.Events.Messages.MessageDelete, { channel: `#${message.channel.name}` }) })
+				.setFooter({ text: t('events/messages:messageDelete', { channel: `#${message.channel.name}` }) })
 				.setImage(getImage(message)!)
 				.setTimestamp()
 		);

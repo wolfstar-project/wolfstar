@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { translate } from '#lib/i18n/translate';
 import { Identifiers } from '@sapphire/framework';
 
@@ -41,64 +40,64 @@ describe('translate', () => {
 		expect(translate(Identifiers.ArgumentUserError)).toBe(`arguments:${Identifiers.ArgumentUserError}`);
 	});
 
-	test('GIVEN ArgsUnavailable THEN returns LanguageKeys.Arguments.Unavailable', () => {
-		expect(translate(Identifiers.ArgsUnavailable)).toBe(LanguageKeys.Arguments.Unavailable);
+	test('GIVEN ArgsUnavailable THEN returns arguments:unavailable', () => {
+		expect(translate(Identifiers.ArgsUnavailable)).toBe('arguments:unavailable');
 	});
 
-	test('GIVEN ArgsMissing THEN returns LanguageKeys.Arguments.Missing', () => {
-		expect(translate(Identifiers.ArgsMissing)).toBe(LanguageKeys.Arguments.Missing);
+	test('GIVEN ArgsMissing THEN returns arguments:missing', () => {
+		expect(translate(Identifiers.ArgsMissing)).toBe('arguments:missing');
 	});
 
-	test('GIVEN CommandDisabled THEN returns LanguageKeys.Preconditions.DisabledGlobal', () => {
-		expect(translate(Identifiers.CommandDisabled)).toBe(LanguageKeys.Preconditions.DisabledGlobal);
+	test('GIVEN CommandDisabled THEN returns preconditions:disabledGlobal', () => {
+		expect(translate(Identifiers.CommandDisabled)).toBe('preconditions:disabledGlobal');
 	});
 
-	test('GIVEN PreconditionCooldown THEN returns LanguageKeys.Preconditions.Cooldown', () => {
-		expect(translate(Identifiers.PreconditionCooldown)).toBe(LanguageKeys.Preconditions.Cooldown);
+	test('GIVEN PreconditionCooldown THEN returns preconditions:cooldown', () => {
+		expect(translate(Identifiers.PreconditionCooldown)).toBe('preconditions:cooldown');
 	});
 
-	test('GIVEN PreconditionDMOnly THEN returns LanguageKeys.Preconditions.DmOnly', () => {
-		expect(translate(Identifiers.PreconditionDMOnly)).toBe(LanguageKeys.Preconditions.DmOnly);
+	test('GIVEN PreconditionDMOnly THEN returns preconditions:dmOnly', () => {
+		expect(translate(Identifiers.PreconditionDMOnly)).toBe('preconditions:dmOnly');
 	});
 
-	test('GIVEN PreconditionGuildNewsOnly THEN returns LanguageKeys.Preconditions.GuildNewsOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildNewsOnly)).toBe(LanguageKeys.Preconditions.GuildNewsOnly);
+	test('GIVEN PreconditionGuildNewsOnly THEN returns preconditions:guildNewsOnly', () => {
+		expect(translate(Identifiers.PreconditionGuildNewsOnly)).toBe('preconditions:guildNewsOnly');
 	});
 
-	test('GIVEN PreconditionGuildNewsThreadOnly THEN returns LanguageKeys.Preconditions.GuildNewsThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildNewsThreadOnly)).toBe(LanguageKeys.Preconditions.GuildNewsThreadOnly);
+	test('GIVEN PreconditionGuildNewsThreadOnly THEN returns preconditions:guildNewsThreadOnly', () => {
+		expect(translate(Identifiers.PreconditionGuildNewsThreadOnly)).toBe('preconditions:guildNewsThreadOnly');
 	});
 
-	test('GIVEN PreconditionGuildOnly THEN returns LanguageKeys.Preconditions.GuildOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildOnly)).toBe(LanguageKeys.Preconditions.GuildOnly);
+	test('GIVEN PreconditionGuildOnly THEN returns preconditions:guildOnly', () => {
+		expect(translate(Identifiers.PreconditionGuildOnly)).toBe('preconditions:guildOnly');
 	});
 
-	test('GIVEN PreconditionGuildPrivateThreadOnly THEN returns LanguageKeys.Preconditions.GuildPrivateThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildPrivateThreadOnly)).toBe(LanguageKeys.Preconditions.GuildPrivateThreadOnly);
+	test('GIVEN PreconditionGuildPrivateThreadOnly THEN returns preconditions:guildPrivateThreadOnly', () => {
+		expect(translate(Identifiers.PreconditionGuildPrivateThreadOnly)).toBe('preconditions:guildPrivateThreadOnly');
 	});
 
-	test('GIVEN PreconditionGuildPublicThreadOnly THEN returns LanguageKeys.Preconditions.GuildPublicThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildPublicThreadOnly)).toBe(LanguageKeys.Preconditions.GuildPublicThreadOnly);
+	test('GIVEN PreconditionGuildPublicThreadOnly THEN returns preconditions:guildPublicThreadOnly', () => {
+		expect(translate(Identifiers.PreconditionGuildPublicThreadOnly)).toBe('preconditions:guildPublicThreadOnly');
 	});
 
-	test('GIVEN PreconditionGuildTextOnly THEN returns LanguageKeys.Preconditions.GuildTextOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildTextOnly)).toBe(LanguageKeys.Preconditions.GuildTextOnly);
+	test('GIVEN PreconditionGuildTextOnly THEN returns preconditions:guildTextOnly', () => {
+		expect(translate(Identifiers.PreconditionGuildTextOnly)).toBe('preconditions:guildTextOnly');
 	});
 
-	test('GIVEN PreconditionNSFW THEN returns LanguageKeys.Preconditions.Nsfw', () => {
-		expect(translate(Identifiers.PreconditionNSFW)).toBe(LanguageKeys.Preconditions.Nsfw);
+	test('GIVEN PreconditionNSFW THEN returns preconditions:nsfw', () => {
+		expect(translate(Identifiers.PreconditionNSFW)).toBe('preconditions:nsfw');
 	});
 
-	test('GIVEN PreconditionClientPermissions THEN returns LanguageKeys.Preconditions.ClientPermissions', () => {
-		expect(translate(Identifiers.PreconditionClientPermissions)).toBe(LanguageKeys.Preconditions.ClientPermissions);
+	test('GIVEN PreconditionClientPermissions THEN returns preconditions:clientPermissions', () => {
+		expect(translate(Identifiers.PreconditionClientPermissions)).toBe('preconditions:clientPermissions');
 	});
 
-	test('GIVEN PreconditionUserPermissions THEN returns LanguageKeys.Preconditions.UserPermissions', () => {
-		expect(translate(Identifiers.PreconditionUserPermissions)).toBe(LanguageKeys.Preconditions.UserPermissions);
+	test('GIVEN PreconditionUserPermissions THEN returns preconditions:userPermissions', () => {
+		expect(translate(Identifiers.PreconditionUserPermissions)).toBe('preconditions:userPermissions');
 	});
 
-	test('GIVEN PreconditionThreadOnly THEN returns LanguageKeys.Preconditions.ThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionThreadOnly)).toBe(LanguageKeys.Preconditions.ThreadOnly);
+	test('GIVEN PreconditionThreadOnly THEN returns preconditions:threadOnly', () => {
+		expect(translate(Identifiers.PreconditionThreadOnly)).toBe('preconditions:threadOnly');
 	});
 
 	test('GIVEN unknown identifier THEN returns identifier', () => {

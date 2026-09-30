@@ -1,5 +1,4 @@
 import { SkyraEmbed } from '#lib/discord';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { GuildMessage } from '#lib/types';
 import { months, seconds } from '#common';
 import { Colors, Emojis } from '#utils/constants';
@@ -11,9 +10,7 @@ import type { TFunction } from 'i18next';
 const sortRanks = (x: Role, y: Role) => Number(y.position > x.position) || Number(x.position === y.position) - 1;
 const { FLAGS } = Permissions;
 
-@RegisterCommand((builder) =>
-	applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.RootName, LanguageKeys.Commands.Whois.RootDescription).setDMPermission(false)
-)
+@RegisterCommand((builder) => applyLocalizedBuilder(builder, 'commands/whois:name', 'commands/whois:description').setDMPermission(false))
 export class UserCommand extends Command {
 	private readonly kAdministratorPermission = FLAGS.ADMINISTRATOR;
 	private readonly kKeyPermissions: [PermissionString, bigint][] = [
@@ -30,18 +27,18 @@ export class UserCommand extends Command {
 	];
 
 	@RegisterSubcommand((builder) =>
-		applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.User) //
-			.addUserOption((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.OptionsUser))
+		applyLocalizedBuilder(builder, 'commands/whois:user') //
+			.addUserOption((builder) => applyLocalizedBuilder(builder, 'commands/whois:optionsUser'))
 	)
 	public async handleUser(interaction: Command.ChatInputInteraction) {}
 
 	@RegisterSubcommand((builder) =>
-		applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.Role) //
-			.addRoleOption((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.OptionsRole))
+		applyLocalizedBuilder(builder, 'commands/whois:role') //
+			.addRoleOption((builder) => applyLocalizedBuilder(builder, 'commands/whois:optionsRole'))
 	)
 	public async handleRole(interaction: Command.ChatInputInteraction) {}
 
-	@RegisterSubcommand((builder) => applyLocalizedBuilder(builder, LanguageKeys.Commands.Whois.Server))
+	@RegisterSubcommand((builder) => applyLocalizedBuilder(builder, 'commands/whois:server'))
 	public async handleServer(interaction: Command.ChatInputInteraction) {}
 
 	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
@@ -55,8 +52,8 @@ export class UserCommand extends Command {
 	private user(t: TFunction, user: User) {
 		const userCreatedAtTimestampSeconds = seconds.fromMilliseconds(user.createdTimestamp);
 
-		const titles = t(LanguageKeys.Commands.Whois.UserTitles);
-		const fields = t(LanguageKeys.Commands.Whois.UserFields, {
+		const titles = t('commands/tools:whoisUserTitles');
+		const fields = t('commands/tools:whoisUserFields', {
 			user,
 			userCreatedAt: time(userCreatedAtTimestampSeconds, TimestampStyles.ShortDateTime),
 			userCreatedAtOffset: time(userCreatedAtTimestampSeconds, TimestampStyles.RelativeTime)
@@ -67,7 +64,10 @@ export class UserCommand extends Command {
 			.setThumbnail(user.displayAvatarURL({ size: 256, format: 'png', dynamic: true }))
 			.setDescription(this.getUserInformation(user))
 			.addField(titles.createdAt, fields.createdAt)
-			.setFooter({ text: fields.footer, iconURL: this.container.gatewayClient.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
+			.setFooter({
+				text: fields.footer,
+				iconURL: this.container.gatewayClient.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
+			})
 			.setTimestamp();
 	}
 
@@ -75,8 +75,8 @@ export class UserCommand extends Command {
 		const userCreatedAtTimestampSeconds = seconds.fromMilliseconds(member.user.createdTimestamp);
 		const memberJoinedAtTimestampSeconds = seconds.fromMilliseconds(member.joinedTimestamp!);
 
-		const titles = t(LanguageKeys.Commands.Whois.MemberTitles);
-		const fields = t(LanguageKeys.Commands.Whois.MemberFields, {
+		const titles = t('commands/tools:whoisMemberTitles');
+		const fields = t('commands/tools:whoisMemberFields', {
 			member,
 			memberCreatedAt: time(userCreatedAtTimestampSeconds, TimestampStyles.ShortDateTime),
 			memberCreatedAtOffset: time(userCreatedAtTimestampSeconds, TimestampStyles.RelativeTime),
@@ -90,7 +90,10 @@ export class UserCommand extends Command {
 			.setDescription(this.getUserInformation(member.user, this.getBoostIcon(member.premiumSinceTimestamp)))
 			.addField(titles.joined, member.joinedTimestamp ? fields.joinedWithTimestamp : fields.joinedUnknown, true)
 			.addField(titles.createdAt, fields.createdAt, true)
-			.setFooter({ text: fields.footer, iconURL: this.container.gatewayClient.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
+			.setFooter({
+				text: fields.footer,
+				iconURL: this.container.gatewayClient.user!.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
+			})
 			.setTimestamp();
 
 		this.applyMemberRoles(t, member, embed);
@@ -109,12 +112,12 @@ export class UserCommand extends Command {
 
 		const roles = member.roles.cache.sorted(sortRanks);
 		roles.delete(member.guild.id);
-		embed.splitFields(t(LanguageKeys.Commands.Whois.MemberRoles, { count: roles.size }), [...roles.values()].join(' '));
+		embed.splitFields(t('commands/tools:whoisMemberRoles', { count: roles.size }), [...roles.values()].join(' '));
 	}
 
 	private applyMemberKeyPermissions(t: TFunction, member: GuildMember, embed: SkyraEmbed) {
 		if (member.permissions.has(this.kAdministratorPermission)) {
-			embed.addField(t(LanguageKeys.Commands.Whois.MemberPermissions), t(LanguageKeys.Commands.Whois.MemberPermissionsAll));
+			embed.addField(t('commands/tools:whoisMemberPermissions'), t('commands/tools:whoisMemberPermissionsAll'));
 			return;
 		}
 
@@ -124,7 +127,7 @@ export class UserCommand extends Command {
 		}
 
 		if (permissions.length > 0) {
-			embed.addField(t(LanguageKeys.Commands.Whois.MemberPermissions), permissions.join(', '));
+			embed.addField(t('commands/tools:whoisMemberPermissions'), permissions.join(', '));
 		}
 	}
 

@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toPermissionsArray } from '#utils/bits';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -25,21 +24,21 @@ export class UserListener extends Listener<typeof Events.GuildRoleCreate> {
 			.setColor(Colors.Green)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.RoleCreate) })
+			.setFooter({ text: t('events/guilds-logs:roleCreate') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
 
 	private *getRoleInformation(t: TFunction, role: Role) {
-		if (role.color !== 0x000000) yield t(LanguageKeys.Events.Guilds.Logs.RoleCreateColor, { value: role.hexColor });
-		if (role.hoist) yield t(LanguageKeys.Events.Guilds.Logs.RoleCreateHoist);
-		if (role.mentionable) yield t(LanguageKeys.Events.Guilds.Logs.RoleCreateMentionable);
+		if (role.color !== 0x000000) yield t('events/guilds-logs:roleCreateColor', { value: role.hexColor });
+		if (role.hoist) yield t('events/guilds-logs:roleCreateHoist');
+		if (role.mentionable) yield t('events/guilds-logs:roleCreateMentionable');
 
 		if (role.permissions.bitfield !== 0n) {
 			const values = toPermissionsArray(role.permissions.bitfield).map((key) => t(`permissions:${key}`));
-			yield t(LanguageKeys.Events.Guilds.Logs.RoleCreatePermissions, { values, count: values.length });
+			yield t('events/guilds-logs:roleCreatePermissions', { values, count: values.length });
 		}
 
-		yield t(LanguageKeys.Events.Guilds.Logs.RoleCreatePosition, { value: role.position });
+		yield t('events/guilds-logs:roleCreatePosition', { value: role.position });
 	}
 }

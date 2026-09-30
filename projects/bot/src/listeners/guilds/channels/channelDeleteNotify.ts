@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';
@@ -29,12 +28,12 @@ export class UserListener extends Listener<typeof Events.ChannelDelete> {
 			.setColor(Colors.Red)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.ChannelDelete) })
+			.setFooter({ text: t('events/guilds-logs:channelDelete') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
 
 	private *getChannelInformation(t: TFunction, channel: GuildBasedChannel) {
-		if (channel.parentId) yield t(LanguageKeys.Events.Guilds.Logs.ChannelCreateParent, { value: `<#${channel.parentId}>` });
+		if (channel.parentId) yield t('events/guilds-logs:channelCreateParent', { value: `<#${channel.parentId}>` });
 	}
 }

@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toChannelsArray } from '#utils/bits';
 import { seconds } from '#common';
 import { differenceArray, differenceBitField } from '#common/comparators';
@@ -47,7 +46,7 @@ export class UserListener extends Listener<typeof Events.GuildUpdate> {
 			.setColor(Colors.Yellow)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.ServerUpdate) })
+			.setFooter({ text: t('events/guilds-logs:serverUpdate') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
@@ -155,110 +154,110 @@ export class UserListener extends Listener<typeof Events.GuildUpdate> {
 	}
 
 	private displayAfkChannel(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateAfkChannelAdded, { value: `<#${next!}>` });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateAfkChannelRemoved, { value: `<#${previous}>` });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateAfkChannel, { previous: `<#${previous}>`, next: `<#${next}>` });
+		if (previous === null) return t('events/guilds-logs:serverUpdateAfkChannelAdded', { value: `<#${next!}>` });
+		if (next === null) return t('events/guilds-logs:serverUpdateAfkChannelRemoved', { value: `<#${previous}>` });
+		return t('events/guilds-logs:serverUpdateAfkChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
 	private displayAfkTimeout(t: TFunction, previous: number, next: number): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateAfkTimeout, { previous: seconds(previous), next: seconds(next) });
+		return t('events/guilds-logs:serverUpdateAfkTimeout', { previous: seconds(previous), next: seconds(next) });
 	}
 
 	private displayBanner(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateBannerAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateBannerRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateBanner, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateBannerAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateBannerRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateBanner', { previous, next });
 	}
 
 	private displayDefaultMessageNotifications(t: TFunction, previous: MessageNotifications, next: MessageNotifications): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDefaultMessageNotifications, { previous, next });
+		return t('events/guilds-logs:serverUpdateDefaultMessageNotifications', { previous, next });
 	}
 
 	private displayDescription(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDescriptionAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDescriptionRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDescription, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateDescriptionAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateDescriptionRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateDescription', { previous, next });
 	}
 
 	private displayDiscoverySplash(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDiscoverySplashAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDiscoverySplashRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateDiscoverySplash, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateDiscoverySplashAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateDiscoverySplashRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateDiscoverySplash', { previous, next });
 	}
 
 	private displayExplicitContentFilter(t: TFunction, previous: ExplicitContentFilterLevel, next: ExplicitContentFilterLevel): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateExplicitContentFilter, { previous, next });
+		return t('events/guilds-logs:serverUpdateExplicitContentFilter', { previous, next });
 	}
 
 	private *displayFeatures(t: TFunction, previous: Features, next: Features): IterableIterator<string> {
 		const difference = differenceArray(previous, next);
 		if (difference.added.length) {
 			const values = difference.added;
-			yield t(LanguageKeys.Events.Guilds.Logs.ServerUpdateFeaturesAdded, { values, count: values.length });
+			yield t('events/guilds-logs:serverUpdateFeaturesAdded', { values, count: values.length });
 		}
 
 		if (difference.removed.length) {
 			const values = difference.removed;
-			yield t(LanguageKeys.Events.Guilds.Logs.ServerUpdateFeaturesRemoved, { values, count: values.length });
+			yield t('events/guilds-logs:serverUpdateFeaturesRemoved', { values, count: values.length });
 		}
 	}
 
 	private displayIcon(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateIconAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateIconRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateIcon, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateIconAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateIconRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateIcon', { previous, next });
 	}
 
 	private displayMaximumMembers(t: TFunction, previous: number | null, next: number | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateMaximumMembersAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateMaximumMembersRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateMaximumMembers, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateMaximumMembersAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateMaximumMembersRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateMaximumMembers', { previous, next });
 	}
 
 	private displayMfaLevel(t: TFunction, next: MFALevel): string {
-		return t(next === 'ELEVATED' ? LanguageKeys.Events.Guilds.Logs.ServerUpdateMfaAdded : LanguageKeys.Events.Guilds.Logs.ServerUpdateMfaRemoved);
+		return t(next === 'ELEVATED' ? 'events/guilds-logs:serverUpdateMfaAdded' : 'events/guilds-logs:serverUpdateMfaRemoved');
 	}
 
 	private displayName(t: TFunction, previous: string, next: string): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateName, { previous, next });
+		return t('events/guilds-logs:serverUpdateName', { previous, next });
 	}
 
 	private displayOwner(t: TFunction, previous: string, next: string): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateOwner, { previous: `<@${previous}>`, next: `<@${next}>` });
+		return t('events/guilds-logs:serverUpdateOwner', { previous: `<@${previous}>`, next: `<@${next}>` });
 	}
 
 	private displayPreferredLocale(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePreferredLocaleAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePreferredLocaleRemoved, { value: previous! });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePreferredLocale, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdatePreferredLocaleAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdatePreferredLocaleRemoved', { value: previous! });
+		return t('events/guilds-logs:serverUpdatePreferredLocale', { previous, next });
 	}
 
 	private displayPremiumSubscriptionCount(t: TFunction, previous: number | null, next: number | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePremiumSubscriptionCountAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePremiumSubscriptionCountRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePremiumSubscriptionCount, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdatePremiumSubscriptionCountAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdatePremiumSubscriptionCountRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdatePremiumSubscriptionCount', { previous, next });
 	}
 
 	private displayPremiumTier(t: TFunction, previous: PremiumTier, next: PremiumTier): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePremiumTier, { previous, next });
+		return t('events/guilds-logs:serverUpdatePremiumTier', { previous, next });
 	}
 
 	private displayPublicUpdatesChannel(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePublicUpdatesChannelAdded, { value: `<#${next!}>` });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePublicUpdatesChannelRemoved, { value: `<#${previous}>` });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdatePublicUpdatesChannel, { previous: `<#${previous}>`, next: `<#${next}>` });
+		if (previous === null) return t('events/guilds-logs:serverUpdatePublicUpdatesChannelAdded', { value: `<#${next!}>` });
+		if (next === null) return t('events/guilds-logs:serverUpdatePublicUpdatesChannelRemoved', { value: `<#${previous}>` });
+		return t('events/guilds-logs:serverUpdatePublicUpdatesChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
 	private displayRulesChannel(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateRulesChannelAdded, { value: `<#${next!}>` });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateRulesChannelRemoved, { value: `<#${previous}>` });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateRulesChannel, { previous: `<#${previous}>`, next: `<#${next}>` });
+		if (previous === null) return t('events/guilds-logs:serverUpdateRulesChannelAdded', { value: `<#${next!}>` });
+		if (next === null) return t('events/guilds-logs:serverUpdateRulesChannelRemoved', { value: `<#${previous}>` });
+		return t('events/guilds-logs:serverUpdateRulesChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
 	private displaySplash(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSplashAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSplashRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSplash, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateSplashAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateSplashRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateSplash', { previous, next });
 	}
 
 	private *displaySystemChannelFlags(t: TFunction, previous: ChannelFlags, next: ChannelFlags): IterableIterator<string> {
@@ -266,42 +265,38 @@ export class UserListener extends Listener<typeof Events.GuildUpdate> {
 		const modified = differenceBitField(next.bitfield, previous.bitfield);
 		if (modified.added !== 0) {
 			const values = toChannelsArray(modified.added).map((value) => t(`guilds:${value}`));
-			yield t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSystemChannelFlagsAdded, { values, count: values.length });
+			yield t('events/guilds-logs:serverUpdateSystemChannelFlagsAdded', { values, count: values.length });
 		}
 
 		if (modified.removed !== 0) {
 			const values = toChannelsArray(modified.removed).map((value) => t(`guilds:${value}`));
-			yield t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSystemChannelFlagsRemoved, { values, count: values.length });
+			yield t('events/guilds-logs:serverUpdateSystemChannelFlagsRemoved', { values, count: values.length });
 		}
 	}
 
 	private displaySystemChannel(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSystemChannelAdded, { value: `<#${next!}>` });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSystemChannelRemoved, { value: `<#${previous}>` });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateSystemChannel, { previous: `<#${previous}>`, next: `<#${next}>` });
+		if (previous === null) return t('events/guilds-logs:serverUpdateSystemChannelAdded', { value: `<#${next!}>` });
+		if (next === null) return t('events/guilds-logs:serverUpdateSystemChannelRemoved', { value: `<#${previous}>` });
+		return t('events/guilds-logs:serverUpdateSystemChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
 	private displayVanityURLCode(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateVanityUrlAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateVanityUrlRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateVanityUrl, { previous, next });
+		if (previous === null) return t('events/guilds-logs:serverUpdateVanityUrlAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:serverUpdateVanityUrlRemoved', { value: previous });
+		return t('events/guilds-logs:serverUpdateVanityUrl', { previous, next });
 	}
 
 	private displayVerificationLevel(t: TFunction, previous: VerificationLevel, next: VerificationLevel): string {
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateVerificationLevel, { previous, next });
+		return t('events/guilds-logs:serverUpdateVerificationLevel', { previous, next });
 	}
 
 	private displayWidgetChannel(t: TFunction, previous: string | null, next: string | null): string {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateWidgetChannelAdded, { value: `<#${next!}>` });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateWidgetChannelRemoved, { value: `<#${previous}>` });
-		return t(LanguageKeys.Events.Guilds.Logs.ServerUpdateWidgetChannel, { previous: `<#${previous}>`, next: `<#${next}>` });
+		if (previous === null) return t('events/guilds-logs:serverUpdateWidgetChannelAdded', { value: `<#${next!}>` });
+		if (next === null) return t('events/guilds-logs:serverUpdateWidgetChannelRemoved', { value: `<#${previous}>` });
+		return t('events/guilds-logs:serverUpdateWidgetChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
 	private displayWidgetEnabled(t: TFunction, previous: boolean | null, next: boolean | null): string {
-		return t(
-			(next ?? !previous)
-				? LanguageKeys.Events.Guilds.Logs.ServerUpdateWidgetEnabled
-				: LanguageKeys.Events.Guilds.Logs.ServerUpdateWidgetDisabled
-		);
+		return t((next ?? !previous) ? 'events/guilds-logs:serverUpdateWidgetEnabled' : 'events/guilds-logs:serverUpdateWidgetDisabled');
 	}
 }

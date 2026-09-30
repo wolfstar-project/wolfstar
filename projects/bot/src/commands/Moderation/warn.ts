@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationCommand } from '#lib/moderation';
 import { getSecurity } from '#utils/functions';
 import { getImage } from '#utils/util';
@@ -7,8 +6,8 @@ import type { ArgumentTypes } from '@sapphire/utilities';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['w', 'warning'],
-	description: LanguageKeys.Commands.Moderation.WarnDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.WarnExtended,
+	description: 'commands/moderation:warnDescription',
+	detailedDescription: 'commands/moderation:warnExtended',
 	optionalDuration: true,
 	requiredMember: true
 })

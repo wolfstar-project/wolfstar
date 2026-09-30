@@ -1,5 +1,4 @@
 import type { ModerationEntity } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { PaginatedMessageCommand, SkyraPaginatedMessage } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -22,8 +21,8 @@ const enum Type {
 
 @ApplyOptions<PaginatedMessageCommand.Options>({
 	aliases: ['moderation'],
-	description: LanguageKeys.Commands.Moderation.ModerationsDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.ModerationsExtended,
+	description: 'commands/moderation:moderationsDescription',
+	detailedDescription: 'commands/moderation:moderationsExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	runIn: [CommandOptionsRunTypeEnum.GuildAny],
 	subCommands: [
@@ -56,14 +55,14 @@ export class UserPaginatedMessageCommand extends PaginatedMessageCommand {
 		const moderation = getModeration(message.guild);
 		const entries = (await (target ? moderation.fetch(target.id) : moderation.fetch())).filter(this.getFilter(action, target));
 
-		if (!entries.size) this.error(LanguageKeys.Commands.Moderation.ModerationsEmpty, { prefix });
+		if (!entries.size) this.error('commands/moderation:moderationsEmpty', { prefix });
 
 		const user = this.container.gatewayClient.user!;
 		const display = new SkyraPaginatedMessage({
 			template: new MessageEmbed()
 				.setColor(await this.container.db.fetchColor(message))
 				.setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
-				.setTitle(args.t(LanguageKeys.Commands.Moderation.ModerationsAmount, { count: entries.size }))
+				.setTitle(args.t('commands/moderation:moderationsAmount', { count: entries.size }))
 		});
 
 		// Fetch usernames

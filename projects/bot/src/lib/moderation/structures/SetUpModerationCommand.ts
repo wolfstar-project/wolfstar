@@ -1,5 +1,4 @@
 import { GuildEntity, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { GuildMessage } from '#lib/types';
 import { getSecurity, isAdmin, promptConfirmation, promptForMessage } from '#utils/functions';
 import type { ModerationSetupRestriction } from '#utils/Security/ModerationActions';
@@ -38,28 +37,28 @@ export abstract class SetUpModerationCommand extends ModerationCommand {
 
 		// If there
 		if (!(await isAdmin(message.member!))) {
-			this.error(LanguageKeys.Commands.Moderation.RestrictLowlevel);
+			this.error('commands/moderation:restrictLowlevel');
 		}
 
-		if (await promptConfirmation(message, t(LanguageKeys.Commands.Moderation.ActionSharedRoleSetupExisting))) {
+		if (await promptConfirmation(message, t('moderationActions:sharedRoleSetupExisting'))) {
 			const role = await this.askForRole(message, args, context);
 			if (!role.success) return this.error(role.error);
 			await writeSettings(message.guild, [[this.roleKey, role.value.id]]);
-		} else if (await promptConfirmation(message, t(LanguageKeys.Commands.Moderation.ActionSharedRoleSetupNew))) {
+		} else if (await promptConfirmation(message, t('moderationActions:sharedRoleSetupNew'))) {
 			await getSecurity(message.guild).actions.restrictionSetup(message, this.setUpKey);
 
-			const content = t(LanguageKeys.Commands.Moderation.Success);
+			const content = t('moderation:success');
 			await send(message, content);
 		} else {
-			this.error(LanguageKeys.Commands.Management.CommandHandlerAborted);
+			this.error('commands/management:commandHandlerAborted');
 		}
 
 		return undefined;
 	}
 
 	protected async askForRole(message: GuildMessage, args: SetUpModerationCommand.Args, context: SetUpModerationCommand.Context) {
-		const result = await promptForMessage(message, args.t(LanguageKeys.Commands.Moderation.ActionSharedRoleSetupExistingName));
-		if (result === null) this.error(LanguageKeys.Commands.Moderation.ActionSharedRoleSetupNoMessage);
+		const result = await promptForMessage(message, args.t('moderationActions:sharedRoleSetupExistingName'));
+		if (result === null) this.error('moderationActions:sharedRoleSetupNoMessage');
 
 		const argument = this.role;
 		return argument.run(result, { args, argument, command: this, commandContext: context, message });

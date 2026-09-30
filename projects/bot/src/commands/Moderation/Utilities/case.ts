@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -9,8 +8,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<WolfCommand.Options>({
-	description: LanguageKeys.Commands.Moderation.CaseDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.CaseExtended,
+	description: 'commands/moderation:caseDescription',
+	detailedDescription: 'commands/moderation:caseExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: [PermissionFlagsBits.EmbedLinks],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny],
@@ -26,7 +25,7 @@ export class UserCommand extends WolfCommand {
 			const embed = await entry.prepareEmbed();
 			return send(message, { embeds: [embed] });
 		}
-		this.error(LanguageKeys.Commands.Moderation.ReasonNotExists);
+		this.error('commands/moderation:reasonNotExists');
 	}
 
 	public async delete(message: GuildMessage, args: WolfCommand.Args) {
@@ -34,12 +33,12 @@ export class UserCommand extends WolfCommand {
 
 		const moderation = getModeration(message.guild);
 		const entry = await moderation.fetch(caseId);
-		if (!entry) this.error(LanguageKeys.Commands.Moderation.ReasonNotExists);
+		if (!entry) this.error('commands/moderation:reasonNotExists');
 
 		entry.remove();
 		moderation.delete(entry.caseId);
 
-		const content = args.t(LanguageKeys.Commands.Moderation.CaseDeleted, { case: entry.caseId });
+		const content = args.t('commands/moderation:caseDeleted', { case: entry.caseId });
 		return send(message, content);
 	}
 }

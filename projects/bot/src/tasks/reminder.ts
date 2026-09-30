@@ -1,5 +1,4 @@
 import { ResponseType, Task, type PartialResponseValue } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { resolveOnErrorCodes } from '#common';
 import { time, TimestampStyles } from '@discordjs/builders';
 import { RESTJSONErrorCodes } from 'discord-api-types/v9';
@@ -12,7 +11,7 @@ export class UserTask extends Task {
 
 		if (user) {
 			const timestamp = time(new Date(), TimestampStyles.ShortDateTime);
-			const reminderHeader = i18next.t(LanguageKeys.System.ReminderHeader, { timestamp });
+			const reminderHeader = i18next.t('system:reminderHeader', { timestamp });
 
 			await resolveOnErrorCodes(
 				//

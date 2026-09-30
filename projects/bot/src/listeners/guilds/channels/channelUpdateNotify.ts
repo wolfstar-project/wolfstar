@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toPermissionsArray } from '#utils/bits';
 import { seconds } from '#common';
 import { differenceBitField, differenceMap } from '#common/comparators';
@@ -37,7 +36,7 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 			.setColor(Colors.Yellow)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.ChannelUpdate) })
+			.setFooter({ text: t('events/guilds-logs:channelUpdate') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
@@ -76,27 +75,27 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 
 	private *differenceGuildChannel(t: TFunction, previous: GuildBasedChannelTypes, next: GuildBasedChannelTypes) {
 		if (previous.name !== next.name) {
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateName, { previous: previous.name, next: next.name });
+			yield t('events/guilds-logs:channelUpdateName', { previous: previous.name, next: next.name });
 		}
 
 		if (previous.parentId !== next.parentId) {
 			if (previous.parentId === null) {
-				yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateParentAdded, { value: `<#${next.parentId}>` });
+				yield t('events/guilds-logs:channelUpdateParentAdded', { value: `<#${next.parentId}>` });
 			} else if (next.parentId === null) {
-				yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateParentRemoved, { value: `<#${previous.parentId}>` });
+				yield t('events/guilds-logs:channelUpdateParentRemoved', { value: `<#${previous.parentId}>` });
 			} else {
-				yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateParent, { previous: `<#${previous.parentId}>`, next: `<#${next.parentId}>` });
+				yield t('events/guilds-logs:channelUpdateParent', { previous: `<#${previous.parentId}>`, next: `<#${next.parentId}>` });
 			}
 		}
 
 		if (previous.type !== next.type) {
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateType, { previous: previous.type, next: next.type });
+			yield t('events/guilds-logs:channelUpdateType', { previous: previous.type, next: next.type });
 		}
 	}
 
 	private *differencePositions(t: TFunction, previous: NonThreadGuildBasedChannelTypes, next: NonThreadGuildBasedChannelTypes) {
 		if (previous.position !== next.position) {
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdatePosition, { previous: previous.position, next: next.position });
+			yield t('events/guilds-logs:channelUpdatePosition', { previous: previous.position, next: next.position });
 		}
 	}
 
@@ -111,15 +110,15 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 			if (allow === 0n && deny === 0n) continue;
 
 			const mention = this.displayMention(added);
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateAddedPermissionsTitle, { value: mention });
+			yield t('events/guilds-logs:channelUpdateAddedPermissionsTitle', { value: mention });
 			if (allow !== 0n) {
 				const values = toPermissionsArray(allow).map((value) => t(`permissions:${value}`));
-				yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelCreatePermissionsAllow, { values, count: values.length });
+				yield LongWidthSpace + t('events/guilds-logs:channelCreatePermissionsAllow', { values, count: values.length });
 			}
 
 			if (deny !== 0n) {
 				const values = toPermissionsArray(deny).map((value) => t(`permissions:${value}`));
-				yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelCreatePermissionsDeny, { values, count: values.length });
+				yield LongWidthSpace + t('events/guilds-logs:channelCreatePermissionsDeny', { values, count: values.length });
 			}
 		}
 
@@ -129,7 +128,7 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 			if (allow === 0n && deny === 0n) continue;
 
 			const mention = this.displayMention(removed);
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateDeletedPermissionsTitle, { value: mention });
+			yield t('events/guilds-logs:channelUpdateDeletedPermissionsTitle', { value: mention });
 		}
 
 		for (const [previousPermission, nextPermission] of difference.updated.values()) {
@@ -144,17 +143,17 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 			if (sameAllow && sameDeny) continue;
 
 			const mention = this.displayMention(nextPermission);
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelUpdatePermissionsTitle, { value: mention });
+			yield t('events/guilds-logs:channelUpdatePermissionsTitle', { value: mention });
 			if (!sameAllow) {
 				const modified = differenceBitField(previousAllow, nextAllow);
 				if (modified.added !== 0n) {
 					const values = toPermissionsArray(modified.added).map((value) => t(`permissions:${value}`));
-					yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateAddedPermissionsAllow, { values, count: values.length });
+					yield LongWidthSpace + t('events/guilds-logs:channelUpdateAddedPermissionsAllow', { values, count: values.length });
 				}
 
 				if (modified.removed !== 0n) {
 					const values = toPermissionsArray(modified.removed).map((value) => t(`permissions:${value}`));
-					yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateRemovedPermissionsAllow, { values, count: values.length });
+					yield LongWidthSpace + t('events/guilds-logs:channelUpdateRemovedPermissionsAllow', { values, count: values.length });
 				}
 			}
 
@@ -162,12 +161,12 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 				const modified = differenceBitField(previousDeny, nextDeny);
 				if (modified.added !== 0n) {
 					const values = toPermissionsArray(modified.added).map((value) => t(`permissions:${value}`));
-					yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateAddedPermissionsDeny, { values, count: values.length });
+					yield LongWidthSpace + t('events/guilds-logs:channelUpdateAddedPermissionsDeny', { values, count: values.length });
 				}
 
 				if (modified.removed !== 0n) {
 					const values = toPermissionsArray(modified.removed).map((value) => t(`permissions:${value}`));
-					yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateRemovedPermissionsDeny, { values, count: values.length });
+					yield LongWidthSpace + t('events/guilds-logs:channelUpdateRemovedPermissionsDeny', { values, count: values.length });
 				}
 			}
 		}
@@ -196,32 +195,32 @@ export class UserListener extends Listener<typeof Events.ChannelUpdate> {
 	}
 
 	private displayNsfw(t: TFunction, previous: boolean, next: boolean) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateNsfw, {
-			previous: t(previous ? LanguageKeys.Globals.Yes : LanguageKeys.Globals.No),
-			next: t(next ? LanguageKeys.Globals.Yes : LanguageKeys.Globals.No)
+		return t('events/guilds-logs:channelUpdateNsfw', {
+			previous: t(previous ? 'globals:yes' : 'globals:no'),
+			next: t(next ? 'globals:yes' : 'globals:no')
 		});
 	}
 
 	private displayTopic(t: TFunction, previous: string | null, next: string | null) {
-		if (previous === null) return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateTopicAdded, { value: next! });
-		if (next === null) return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateTopicRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateTopic, { previous, next });
+		if (previous === null) return t('events/guilds-logs:channelUpdateTopicAdded', { value: next! });
+		if (next === null) return t('events/guilds-logs:channelUpdateTopicRemoved', { value: previous });
+		return t('events/guilds-logs:channelUpdateTopic', { previous, next });
 	}
 
 	private displayRateLimitPerUser(t: TFunction, previous: number, next: number) {
-		if (previous === 0) return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateRateLimitAdded, { value: seconds(next) });
-		if (next === 0) return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateRateLimitRemoved, { value: seconds(previous) });
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateRateLimit, { previous: seconds(previous), next: seconds(next) });
+		if (previous === 0) return t('events/guilds-logs:channelUpdateRateLimitAdded', { value: seconds(next) });
+		if (next === 0) return t('events/guilds-logs:channelUpdateRateLimitRemoved', { value: seconds(previous) });
+		return t('events/guilds-logs:channelUpdateRateLimit', { previous: seconds(previous), next: seconds(next) });
 	}
 
 	private displayBitrate(t: TFunction, previous: number, next: number) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateBitrate, { previous: previous / 1000, next: next / 1000 });
+		return t('events/guilds-logs:channelUpdateBitrate', { previous: previous / 1000, next: next / 1000 });
 	}
 
 	private displayUserLimit(t: TFunction, previous: number, next: number) {
-		if (previous === 0) return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateUserLimitAdded, { value: next });
-		if (next === 0) return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateUserLimitRemoved, { value: previous });
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelUpdateUserLimit, { previous, next });
+		if (previous === 0) return t('events/guilds-logs:channelUpdateUserLimitAdded', { value: next });
+		if (next === 0) return t('events/guilds-logs:channelUpdateUserLimitRemoved', { value: previous });
+		return t('events/guilds-logs:channelUpdateUserLimit', { previous, next });
 	}
 
 	private displayMention(permissions: PermissionOverwrites) {

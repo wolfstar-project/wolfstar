@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -15,8 +14,8 @@ const [kLowestNumberCode, kHighestNumberCode] = ['0'.charCodeAt(0), '9'.charCode
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['dh'],
-	description: LanguageKeys.Commands.Moderation.DehoistDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.DehoistExtended,
+	description: 'commands/moderation:dehoistDescription',
+	detailedDescription: 'commands/moderation:dehoistExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: [PermissionFlagsBits.ManageNicknames, PermissionFlagsBits.EmbedLinks],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny]
@@ -38,7 +37,7 @@ export class UserCommand extends WolfCommand {
 		}
 
 		if (hoistedMembers.length > 0) {
-			await send(message, args.t(LanguageKeys.Commands.Moderation.DehoistStarting, { count: hoistedMembers.length }));
+			await send(message, args.t('commands/moderation:dehoistStarting', { count: hoistedMembers.length }));
 		}
 
 		for (let i = 0; i < hoistedMembers.length; i++) {
@@ -61,7 +60,7 @@ export class UserCommand extends WolfCommand {
 			// update the counter every 10 dehoists
 			if ((i + 1) % 10 === 0) {
 				const deHoistPercentage = (i / hoistedMembers.length) * 100;
-				const content = args.t(LanguageKeys.Commands.Moderation.DehoistProgress, { count: i + 1, percentage: Math.round(deHoistPercentage) });
+				const content = args.t('commands/moderation:dehoistProgress', { count: i + 1, percentage: Math.round(deHoistPercentage) });
 				await send(message, content);
 			}
 		}
@@ -82,7 +81,7 @@ export class UserCommand extends WolfCommand {
 	}
 
 	private async prepareFinalEmbed(message: GuildMessage, t: TFunction, deHoistedMembers: number, erroredChanges: ErroredChange[]) {
-		const embedLanguage = t(LanguageKeys.Commands.Moderation.DehoistEmbed, {
+		const embedLanguage = t('commands/moderation:dehoistEmbed', {
 			dehoistedMemberCount: deHoistedMembers,
 			dehoistedWithErrorsCount: deHoistedMembers - erroredChanges.length,
 			errored: erroredChanges.length,

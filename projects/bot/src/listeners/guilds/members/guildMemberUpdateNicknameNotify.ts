@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -25,7 +24,7 @@ export class UserListener extends Listener {
 					.setColor(Colors.Yellow)
 					.setAuthor({ name: `${user.tag} (${user.id})`, iconURL: user.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
 					.setDescription(this.getNameDescription(t, prevNickname, nextNickname))
-					.setFooter({ text: t(LanguageKeys.Events.Guilds.Members.NicknameUpdate) })
+					.setFooter({ text: t('events/guilds-members:nicknameUpdate') })
 					.setTimestamp()
 			);
 		}
@@ -33,20 +32,10 @@ export class UserListener extends Listener {
 
 	private getNameDescription(t: TFunction, previousName: string | null, nextName: string | null) {
 		return [
-			t(
-				previousName === null
-					? LanguageKeys.Events.Guilds.Members.NameUpdatePreviousWasNotSet
-					: LanguageKeys.Events.Guilds.Members.NameUpdatePreviousWasSet,
-				{
-					previousName
-				}
-			),
-			t(
-				nextName === null
-					? LanguageKeys.Events.Guilds.Members.NameUpdateNextWasNotSet
-					: LanguageKeys.Events.Guilds.Members.NameUpdateNextWasSet,
-				{ nextName }
-			)
+			t(previousName === null ? 'events/guilds-members:nameUpdatePreviousWasNotSet' : 'events/guilds-members:nameUpdatePreviousWasSet', {
+				previousName
+			}),
+			t(nextName === null ? 'events/guilds-members:nameUpdateNextWasNotSet' : 'events/guilds-members:nameUpdateNextWasSet', { nextName })
 		].join('\n');
 	}
 }

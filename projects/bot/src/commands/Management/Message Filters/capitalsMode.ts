@@ -1,13 +1,12 @@
 import { AdderKey, GuildEntity, GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { SelfModerationCommand } from '#lib/moderation';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { PickByValue } from '@sapphire/utilities';
 
 @ApplyOptions<SelfModerationCommand.Options>({
 	aliases: ['capitals-mode', 'caps-mode'],
-	description: LanguageKeys.Commands.Management.CapitalsModeDescription,
-	detailedDescription: LanguageKeys.Commands.Management.CapitalsModeExtended
+	description: 'commands/management:capitalsModeDescription',
+	detailedDescription: 'commands/management:capitalsModeExtended'
 })
 export class UserSelfModerationCommand extends SelfModerationCommand {
 	protected $adder: AdderKey = 'capitals';

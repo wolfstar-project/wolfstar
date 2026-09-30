@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { LockdownManager, WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -15,8 +14,8 @@ import type { TFunction } from 'i18next';
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['lock', 'unlock'],
-	description: LanguageKeys.Commands.Moderation.LockdownDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.LockdownExtended,
+	description: 'commands/moderation:lockdownDescription',
+	detailedDescription: 'commands/moderation:lockdownExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ManageRoles],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny],
@@ -61,16 +60,16 @@ export class UserCommand extends WolfCommand {
 		// If there was a lockdown, abort lock
 		const lock = this.getLock(role, channel);
 		if (lock !== null) {
-			this.error(LanguageKeys.Commands.Moderation.LockdownLocked, { channel: channel.toString() });
+			this.error('commands/moderation:lockdownLocked', { channel: channel.toString() });
 		}
 
 		const allowed = this.isAllowed(role, channel);
 
 		// If they can send, begin locking
-		const response = await send(message, args.t(LanguageKeys.Commands.Moderation.LockdownLocking, { channel: channel.toString() }));
+		const response = await send(message, args.t('commands/moderation:lockdownLocking', { channel: channel.toString() }));
 		await channel.permissionOverwrites.edit(role, { SEND_MESSAGES: false });
 		if (canSendMessages(message.channel)) {
-			await response.edit(args.t(LanguageKeys.Commands.Moderation.LockdownLock, { channel: channel.toString() })).catch(() => null);
+			await response.edit(args.t('commands/moderation:lockdownLock', { channel: channel.toString() })).catch(() => null);
 		}
 
 		// Create the timeout
@@ -86,7 +85,7 @@ export class UserCommand extends WolfCommand {
 
 	private async handleUnlock(message: GuildMessage, args: WolfCommand.Args, role: Role, channel: NonThreadGuildTextBasedChannelTypes) {
 		const entry = this.getLock(role, channel);
-		if (entry === null) this.error(LanguageKeys.Commands.Moderation.LockdownUnlocked, { channel: channel.toString() });
+		if (entry === null) this.error('commands/moderation:lockdownUnlocked', { channel: channel.toString() });
 		if (entry.timeout) clearAccurateTimeout(entry.timeout);
 		return this.performUnlock(message, args.t, role, channel, entry.allowed);
 	}
@@ -112,7 +111,7 @@ export class UserCommand extends WolfCommand {
 		}
 
 		if (canSendMessages(message.channel)) {
-			const content = t(LanguageKeys.Commands.Moderation.LockdownOpen, { channel: channel.toString() });
+			const content = t('commands/moderation:lockdownOpen', { channel: channel.toString() });
 			await send(message, content);
 		}
 	}

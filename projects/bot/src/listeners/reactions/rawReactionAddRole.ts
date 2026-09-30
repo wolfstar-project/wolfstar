@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { resolveEmojiId, sendTemporaryMessage, SerializedEmoji } from '#utils/functions';
 import type { LLRCData } from '#utils/LongLivingReactionCollector';
@@ -47,7 +46,7 @@ export class UserListener extends Listener {
 		} catch (error) {
 			if (error instanceof DiscordAPIError && error.code === 50013) {
 				const message = await parsed.channel.messages.fetch(parsed.messageId);
-				await sendTemporaryMessage(message, await resolveKey(message, LanguageKeys.Events.Reactions.SelfRoleHierarchy));
+				await sendTemporaryMessage(message, await resolveKey(message, 'events/reactions:selfRoleHierarchy'));
 			} else {
 				this.container.gatewayClient.emit(Events.Error, error);
 			}

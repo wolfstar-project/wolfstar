@@ -1,5 +1,4 @@
 import { AdderKey, configurableKeys, GuildEntity, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -136,20 +135,18 @@ export abstract class SelfModerationCommand extends WolfCommand {
 			settings.getLanguage()
 		]);
 
-		const [yes, no] = [t(LanguageKeys.Arguments.BooleanEnabled), t(LanguageKeys.Arguments.BooleanDisabled)];
-		const codeBlockContent = t(LanguageKeys.Commands.Moderation.AutomaticParameterShow, {
+		const [yes, no] = [t('arguments:booleanEnabled'), t('arguments:booleanDisabled')];
+		const codeBlockContent = t('selfModeration:commandShow', {
 			kEnabled: enabled ? yes : no,
 			kAlert: SelfModerationCommand.has(softAction, ASKeys.Alert) ? yes : no,
 			kLog: SelfModerationCommand.has(softAction, ASKeys.Log) ? yes : no,
 			kDelete: SelfModerationCommand.has(softAction, ASKeys.Delete) ? yes : no,
 			kHardAction: t(SelfModerationCommand.displayHardAction(hardAction)),
 			hardActionDurationText: hardActionDuration
-				? t(LanguageKeys.Globals.DurationValue, { value: hardActionDuration })
-				: t(LanguageKeys.Commands.Moderation.AutomaticParameterShowDurationPermanent),
-			thresholdMaximumText: adder?.maximum ? adder.maximum : t(LanguageKeys.Commands.Moderation.AutomaticParameterShowUnset),
-			thresholdDurationText: adder?.duration
-				? t(LanguageKeys.Globals.DurationValue, { value: adder.duration })
-				: t(LanguageKeys.Commands.Moderation.AutomaticParameterShowUnset),
+				? t('globals:durationValue', { value: hardActionDuration })
+				: t('selfModeration:commandShowDurationPermanent'),
+			thresholdMaximumText: adder?.maximum ? adder.maximum : t('selfModeration:commandShowUnset'),
+			thresholdDurationText: adder?.duration ? t('globals:durationValue', { value: adder.duration }) : t('selfModeration:commandShowUnset'),
 			joinArrays: '\n'
 		});
 		const content = codeBlock('prolog', codeBlockContent);
@@ -161,7 +158,7 @@ export abstract class SelfModerationCommand extends WolfCommand {
 
 		const action = kActions.get(args.next().toLowerCase());
 		if (typeof action === 'undefined') {
-			return this.error(LanguageKeys.Commands.Moderation.AutomaticParameterInvalidMissingAction, { name: this.name });
+			return this.error('selfModeration:commandInvalidMissingAction', { name: this.name });
 		}
 
 		return action;
@@ -171,12 +168,12 @@ export abstract class SelfModerationCommand extends WolfCommand {
 		if (type === AKeys.Enable) return true;
 		if (type === AKeys.Disable) return false;
 		if (type === AKeys.Show) return null;
-		if (args.finished) this.error(LanguageKeys.Commands.Moderation.AutomaticParameterInvalidMissingArguments, { name: this.name });
+		if (args.finished) this.error('selfModeration:commandInvalidMissingArguments', { name: this.name });
 
 		if (type === AKeys.SoftAction) {
 			const softAction = kSoftActions.get(args.next().toLowerCase());
 			if (typeof softAction === 'undefined') {
-				this.error(LanguageKeys.Commands.Moderation.AutomaticParameterInvalidSoftAction, { name: this.name });
+				this.error('selfModeration:commandInvalidSoftaction', { name: this.name });
 			}
 
 			const previousSoftAction = await readSettings(args.message.guild!, this.keySoftAction);
@@ -186,7 +183,7 @@ export abstract class SelfModerationCommand extends WolfCommand {
 		if (type === AKeys.HardAction) {
 			const hardAction = kHardActions.get(args.next().toLowerCase());
 			if (typeof hardAction === 'undefined') {
-				this.error(LanguageKeys.Commands.Moderation.AutomaticParameterInvalidHardAction, { name: this.name });
+				this.error('selfModeration:commandInvalidHardaction', { name: this.name });
 			}
 
 			return hardAction;
@@ -232,39 +229,37 @@ export abstract class SelfModerationCommand extends WolfCommand {
 
 	private static displaySoftAction(t: TFunction, softAction: number) {
 		const actions: string[] = [];
-		if (SelfModerationCommand.has(softAction, ASKeys.Alert)) actions.push(t(LanguageKeys.Commands.Moderation.AutomaticValueSoftActionAlert));
-		if (SelfModerationCommand.has(softAction, ASKeys.Log)) actions.push(t(LanguageKeys.Commands.Moderation.AutomaticValueSoftActionLog));
-		if (SelfModerationCommand.has(softAction, ASKeys.Delete)) actions.push(t(LanguageKeys.Commands.Moderation.AutomaticValueSoftActionDelete));
+		if (SelfModerationCommand.has(softAction, ASKeys.Alert)) actions.push(t('selfModeration:softActionAlert'));
+		if (SelfModerationCommand.has(softAction, ASKeys.Log)) actions.push(t('selfModeration:softActionLog'));
+		if (SelfModerationCommand.has(softAction, ASKeys.Delete)) actions.push(t('selfModeration:softActionDelete'));
 		return actions;
 	}
 
 	private static getLanguageKey(t: TFunction, action: AKeys, value: unknown) {
 		switch (action) {
 			case AKeys.Enable:
-				return t(LanguageKeys.Commands.Moderation.AutomaticParameterEnabled);
+				return t('selfModeration:commandEnabled');
 			case AKeys.Disable:
-				return t(LanguageKeys.Commands.Moderation.AutomaticParameterDisabled);
+				return t('selfModeration:commandDisabled');
 			case AKeys.SoftAction: {
-				return value
-					? t(LanguageKeys.Commands.Moderation.AutomaticParameterSoftActionWithValue, { value: value as string })
-					: t(LanguageKeys.Commands.Moderation.AutomaticParameterSoftAction);
+				return value ? t('selfModeration:commandSoftActionWithValue', { value: value as string }) : t('selfModeration:commandSoftAction');
 			}
 			case AKeys.HardAction:
-				return t(LanguageKeys.Commands.Moderation.AutomaticParameterHardAction, { value: value as string });
+				return t('selfModeration:commandHardAction', { value: value as string });
 			case AKeys.HardActionDuration: {
 				return value
-					? t(LanguageKeys.Commands.Moderation.AutomaticParameterHardActionDurationWithValue, { value: value as number })
-					: t(LanguageKeys.Commands.Moderation.AutomaticParameterHardActionDuration);
+					? t('selfModeration:commandHardActionDurationWithValue', { value: value as number })
+					: t('selfModeration:commandHardActionDuration');
 			}
 			case AKeys.ThresholdMaximum: {
 				return value
-					? t(LanguageKeys.Commands.Moderation.AutomaticParameterThresholdMaximumWithValue, { value: value as number })
-					: t(LanguageKeys.Commands.Moderation.AutomaticParameterThresholdMaximum);
+					? t('selfModeration:commandThresholdMaximumWithValue', { value: value as number })
+					: t('selfModeration:commandThresholdMaximum');
 			}
 			case AKeys.ThresholdDuration: {
 				return value
-					? t(LanguageKeys.Commands.Moderation.AutomaticParameterThresholdDurationWithValue, { value: value as number })
-					: t(LanguageKeys.Commands.Moderation.AutomaticParameterThresholdDuration);
+					? t('selfModeration:commandThresholdDurationWithValue', { value: value as number })
+					: t('selfModeration:commandThresholdDuration');
 			}
 			default:
 				throw new Error('Unexpected.');
@@ -274,17 +269,17 @@ export abstract class SelfModerationCommand extends WolfCommand {
 	private static displayHardAction(hardAction: SelfModeratorHardActionFlags | null) {
 		switch (hardAction) {
 			case SelfModeratorHardActionFlags.Ban:
-				return LanguageKeys.Commands.Moderation.AutomaticValueHardActionBan;
+				return 'selfModeration:hardActionBan';
 			case SelfModeratorHardActionFlags.Kick:
-				return LanguageKeys.Commands.Moderation.AutomaticValueHardActionKick;
+				return 'selfModeration:hardActionKick';
 			case SelfModeratorHardActionFlags.Mute:
-				return LanguageKeys.Commands.Moderation.AutomaticValueHardActionMute;
+				return 'selfModeration:hardActionMute';
 			case SelfModeratorHardActionFlags.SoftBan:
-				return LanguageKeys.Commands.Moderation.AutomaticValueHardActionSoftBan;
+				return 'selfModeration:hardActionSoftban';
 			case SelfModeratorHardActionFlags.Warning:
-				return LanguageKeys.Commands.Moderation.AutomaticValueHardActionWarning;
+				return 'selfModeration:hardActionWarning';
 			default:
-				return LanguageKeys.Commands.Moderation.AutomaticValueHardActionNone;
+				return 'selfModeration:hardActionNone';
 		}
 	}
 

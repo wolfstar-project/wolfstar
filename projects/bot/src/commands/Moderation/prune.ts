@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -38,8 +37,8 @@ const includesOptions = ['include', 'includes', 'contain', 'contains'] as const;
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['purge', 'nuke', 'sweep'],
-	description: LanguageKeys.Commands.Moderation.PruneDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.PruneExtended,
+	description: 'commands/moderation:pruneDescription',
+	detailedDescription: 'commands/moderation:pruneExtended',
 	flags: [
 		...attachmentsFlags,
 		...imageFlags,
@@ -75,7 +74,7 @@ export class UserCommand extends WolfCommand {
 
 		// Filter the messages by their age
 		const filtered = messages.filter(filter);
-		if (filtered.size === 0) this.error(LanguageKeys.Commands.Moderation.PruneNoDeletes);
+		if (filtered.size === 0) this.error('commands/moderation:pruneNoDeletes');
 
 		const silent = args.getFlags(...silentFlags);
 		if (silent && filtered.size !== 100) {
@@ -92,7 +91,7 @@ export class UserCommand extends WolfCommand {
 		floatPromise(this.sendPruneLogs(message, args.t, filtered, filteredKeys));
 		if (silent) return null;
 
-		const content = args.t(LanguageKeys.Commands.Moderation.PruneAlert, { count: filteredKeys.length, total: limit });
+		const content = args.t('commands/moderation:pruneAlert', { count: filteredKeys.length, total: limit });
 		return sendTemporaryMessage(message, content, seconds(10));
 	}
 
@@ -164,7 +163,7 @@ export class UserCommand extends WolfCommand {
 
 			const authorName = `${message.author.tag} (${message.author.id})`;
 			const authorAvatar = message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true });
-			const description = t(LanguageKeys.Commands.Moderation.PruneLogMessage, {
+			const description = t('commands/moderation:pruneLogMessage', {
 				channel: (message.channel as TextChannel).toString(),
 				author: message.author.toString(),
 				count: messages.size
@@ -182,7 +181,7 @@ export class UserCommand extends WolfCommand {
 	}
 
 	private generateAttachment(t: TFunction, messages: Collection<string, GuildMessage>) {
-		const header = t(LanguageKeys.Commands.Moderation.PruneLogHeader);
+		const header = t('commands/moderation:pruneLogHeader');
 		const processed = messages
 			.map((message) => formatMessage(t, message))
 			.reverse()
@@ -194,7 +193,7 @@ export class UserCommand extends WolfCommand {
 	private static position = Args.make<Position>((parameter, { argument }) => {
 		const position = UserCommand.kCommandPrunePositions[parameter.toLowerCase()];
 		if (typeof position === 'undefined') {
-			return Args.error({ parameter, argument, identifier: LanguageKeys.Commands.Moderation.PruneInvalidPosition });
+			return Args.error({ parameter, argument, identifier: 'commands/moderation:pruneInvalidPosition' });
 		}
 
 		return Args.ok(position);

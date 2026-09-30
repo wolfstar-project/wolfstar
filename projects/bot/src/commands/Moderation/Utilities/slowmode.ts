@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types/Discord';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -13,8 +12,8 @@ const MAXIMUM_DURATION = hours(6);
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['sm'],
-	description: LanguageKeys.Commands.Moderation.SlowmodeDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.SlowmodeExtended,
+	description: 'commands/moderation:slowmodeDescription',
+	detailedDescription: 'commands/moderation:slowmodeExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: [PermissionFlagsBits.ManageChannels],
 	runIn: [CommandOptionsRunTypeEnum.GuildText]
@@ -29,10 +28,7 @@ export class UserCommand extends WolfCommand {
 		const channel = message.channel as TextChannel;
 		await channel.setRateLimitPerUser(seconds.fromMilliseconds(cooldown));
 
-		const content =
-			cooldown === 0
-				? args.t(LanguageKeys.Commands.Moderation.SlowmodeReset)
-				: args.t(LanguageKeys.Commands.Moderation.SlowmodeSet, { cooldown });
+		const content = cooldown === 0 ? args.t('commands/moderation:slowmodeReset') : args.t('commands/moderation:slowmodeSet', { cooldown });
 
 		return send(message, content);
 	}

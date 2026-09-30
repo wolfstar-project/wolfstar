@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand, SkyraPaginatedMessage } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { seconds } from '#common';
@@ -20,8 +19,8 @@ const paginatedMessagePermissions = new Permissions([Permissions.FLAGS.ADD_REACT
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['server-info'],
-	description: LanguageKeys.Commands.Management.GuildInfoDescription,
-	detailedDescription: LanguageKeys.Commands.Management.GuildInfoExtended,
+	description: 'commands/management:guildInfoDescription',
+	detailedDescription: 'commands/management:guildInfoExtended',
 	requiredClientPermissions: [PermissionFlagsBits.EmbedLinks],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny]
 })
@@ -76,13 +75,13 @@ export class UserCommand extends WolfCommand {
 	private async getSummary(args: WolfCommand.Args, roles: Role[], color: number): Promise<MessageEmbed> {
 		const guild = args.message.guild!;
 
-		const serverInfoTitles = args.t(LanguageKeys.Commands.Management.GuildInfoTitles);
+		const serverInfoTitles = args.t('commands/management:guildInfoTitles');
 		const roleCount = guild.roles.cache.size - 1;
 		return new MessageEmbed()
 			.setColor(color)
 			.setThumbnail(guild.iconURL({ size: 256, format: 'png', dynamic: true })!)
 			.setTitle(`${guild.name} [${guild.id}]`)
-			.addField(args.t(LanguageKeys.Commands.Tools.WhoisMemberRoles, { count: roleCount }), this.getSummaryRoles(args, roles))
+			.addField(args.t('commands/tools:whoisMemberRoles', { count: roleCount }), this.getSummaryRoles(args, roles))
 			.addField(serverInfoTitles.MEMBERS, await this.getSummaryMembers(args), true)
 			.addField(serverInfoTitles.CHANNELS, this.getSummaryChannels(args), true)
 			.addField(serverInfoTitles.OTHER, this.getSummaryOther(args));
@@ -90,30 +89,22 @@ export class UserCommand extends WolfCommand {
 
 	private getBanner(args: WolfCommand.Args, color: number): MessageEmbed {
 		const guild = args.message.guild!;
-		return this.getImage(args.t(LanguageKeys.Commands.Management.GuildInfoBanner), guild.bannerURL({ size: 4096, format: 'png' })!, color);
+		return this.getImage(args.t('commands/management:guildInfoBanner'), guild.bannerURL({ size: 4096, format: 'png' })!, color);
 	}
 
 	private getIcon(args: WolfCommand.Args, color: number): MessageEmbed {
 		const guild = args.message.guild!;
-		return this.getImage(
-			args.t(LanguageKeys.Commands.Management.GuildInfoIcon),
-			guild.iconURL({ size: 4096, format: 'png', dynamic: true })!,
-			color
-		);
+		return this.getImage(args.t('commands/management:guildInfoIcon'), guild.iconURL({ size: 4096, format: 'png', dynamic: true })!, color);
 	}
 
 	private getSplash(args: WolfCommand.Args, color: number): MessageEmbed {
 		const guild = args.message.guild!;
-		return this.getImage(args.t(LanguageKeys.Commands.Management.GuildInfoSplash), guild.splashURL({ size: 4096, format: 'png' })!, color);
+		return this.getImage(args.t('commands/management:guildInfoSplash'), guild.splashURL({ size: 4096, format: 'png' })!, color);
 	}
 
 	private getDiscoverySplash(args: WolfCommand.Args, color: number): MessageEmbed {
 		const guild = args.message.guild!;
-		return this.getImage(
-			args.t(LanguageKeys.Commands.Management.GuildInfoDiscoverySplash),
-			guild.discoverySplashURL({ size: 4096, format: 'png' })!,
-			color
-		);
+		return this.getImage(args.t('commands/management:guildInfoDiscoverySplash'), guild.discoverySplashURL({ size: 4096, format: 'png' })!, color);
 	}
 
 	private getImage(description: string, url: string, color: number): MessageEmbed {
@@ -129,20 +120,20 @@ export class UserCommand extends WolfCommand {
 	}
 
 	private getSummaryRoles(args: WolfCommand.Args, roles: Role[]): string {
-		if (roles.length <= roleLimit) return args.t(LanguageKeys.Globals.AndListValue, { value: roles.map(roleMention) });
+		if (roles.length <= roleLimit) return args.t('globals:andListValue', { value: roles.map(roleMention) });
 
 		const mentions = roles
 			.slice(0, roleLimit - 1)
 			.map(roleMention)
-			.concat(args.t(LanguageKeys.Commands.Tools.WhoisMemberRoleListAndMore, { count: roles.length - roleLimit - 1 }));
-		return args.t(LanguageKeys.Globals.AndListValue, { value: mentions });
+			.concat(args.t('commands/tools:whoisMemberRoleListAndMore', { count: roles.length - roleLimit - 1 }));
+		return args.t('globals:andListValue', { value: mentions });
 	}
 
 	private async getSummaryMembers(args: WolfCommand.Args): Promise<string> {
 		const guild = args.message.guild!;
 		const owner = await this.container.gatewayClient.users.fetch(guild.ownerId);
 
-		return args.t(LanguageKeys.Commands.Management.GuildInfoMembers, { memberCount: guild.memberCount, owner });
+		return args.t('commands/management:guildInfoMembers', { memberCount: guild.memberCount, owner });
 	}
 
 	private getSummaryChannels(args: WolfCommand.Args): string {
@@ -157,22 +148,22 @@ export class UserCommand extends WolfCommand {
 			else if (isCategoryChannel(channel)) cChannels++;
 		}
 
-		return args.t(LanguageKeys.Commands.Management.GuildInfoChannels, {
+		return args.t('commands/management:guildInfoChannels', {
 			text: tChannels,
 			voice: vChannels,
 			categories: cChannels,
 			afkChannelText: guild.afkChannelId
-				? args.t(LanguageKeys.Commands.Management.GuildInfoChannelsAfkChannelText, {
+				? args.t('commands/management:guildInfoChannelsAfkChannelText', {
 						afkChannel: guild.afkChannelId,
 						afkTime: guild.afkTimeout / 60
 					})
-				: `**${args.t(LanguageKeys.Globals.None)}**`
+				: `**${args.t('globals:none')}**`
 		});
 	}
 
 	private getSummaryOther(args: WolfCommand.Args): string {
 		const guild = args.message.guild!;
-		return args.t(LanguageKeys.Commands.Management.GuildInfoOther, {
+		return args.t('commands/management:guildInfoOther', {
 			size: guild.roles.cache.size,
 			createdAt: time(seconds.fromMilliseconds(guild.createdTimestamp), TimestampStyles.ShortDateTime),
 			verificationLevel: guild.verificationLevel

@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types/Enums';
 import { seconds } from '#common';
@@ -15,8 +14,8 @@ import { inspect } from 'node:util';
 
 @ApplyOptions<WolfCommand.Options>({
 	aliases: ['ev'],
-	description: LanguageKeys.Commands.System.EvalDescription,
-	detailedDescription: LanguageKeys.Commands.System.EvalExtended,
+	description: 'commands/system:evalDescription',
+	detailedDescription: 'commands/system:evalExtended',
 	flags: ['async', 'no-timeout', 'json', 'silent', 'log', 'showHidden', 'hidden', 'sql'],
 	options: ['wait', 'lang', 'language', 'output', 'output-to', 'depth'],
 	permissionLevel: PermissionLevels.BotOwner,
@@ -59,7 +58,7 @@ export class UserCommand extends WolfCommand {
 		if (flagTime === Infinity || flagTime === 0) return this.eval(message, args, code);
 		return Promise.race([
 			sleep(flagTime).then(() => ({
-				result: args.t(LanguageKeys.Commands.System.EvalTimeout, { seconds: seconds.fromMilliseconds(flagTime) }),
+				result: args.t('commands/system:evalTimeout', { seconds: seconds.fromMilliseconds(flagTime) }),
 				success: false,
 				time: '⏱ ...',
 				type: 'EvalTimeoutError'

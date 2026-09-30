@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -41,8 +40,8 @@ export class UserListener extends Listener {
 			new MessageEmbed()
 				.setColor(Colors.Yellow)
 				.setAuthor({ name: `${user.tag} (${user.id})`, iconURL: user.displayAvatarURL({ size: 128, format: 'png', dynamic: true }) })
-				.setDescription(this.getRoleDescription(t, addedRoles, removedRoles) || t(LanguageKeys.Events.Guilds.Members.GuildMemberNoUpdate))
-				.setFooter({ text: t(LanguageKeys.Events.Guilds.Members.RoleUpdate) })
+				.setDescription(this.getRoleDescription(t, addedRoles, removedRoles) || t('events/guilds-members:guildMemberNoUpdate'))
+				.setFooter({ text: t('events/guilds-members:roleUpdate') })
 				.setTimestamp()
 		);
 	}
@@ -51,7 +50,7 @@ export class UserListener extends Listener {
 		const description = [];
 		if (addedRoles.length) {
 			description.push(
-				t(LanguageKeys.Events.Guilds.Members.GuildMemberAddedRoles, {
+				t('events/guilds-members:guildMemberAddedRoles', {
 					addedRoles,
 					count: addedRoles.length
 				})
@@ -59,7 +58,7 @@ export class UserListener extends Listener {
 		}
 
 		if (removedRoles.length) {
-			description.push(t(LanguageKeys.Events.Guilds.Members.GuildMemberRemovedRoles, { removedRoles, count: removedRoles.length }));
+			description.push(t('events/guilds-members:guildMemberRemovedRoles', { removedRoles, count: removedRoles.length }));
 		}
 
 		return description.join('\n');

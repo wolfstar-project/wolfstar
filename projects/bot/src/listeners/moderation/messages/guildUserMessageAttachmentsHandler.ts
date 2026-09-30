@@ -1,5 +1,4 @@
 import { GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
@@ -9,8 +8,8 @@ import { MessageEmbed, TextChannel } from 'discord.js';
 import type { TFunction } from 'i18next';
 
 @ApplyOptions<ModerationMessageListener.Options>({
-	reasonLanguageKey: LanguageKeys.Events.Moderation.Messages.ModerationAttachments,
-	reasonLanguageKeyWithMaximum: LanguageKeys.Events.Moderation.Messages.ModerationAttachmentsWithMaximum,
+	reasonLanguageKey: 'events/moderation:attachments',
+	reasonLanguageKeyWithMaximum: 'events/moderation:attachmentsWithMaximum',
 	keyEnabled: GuildSettings.Selfmod.Attachments.Enabled,
 	ignoredChannelsPath: GuildSettings.Selfmod.Attachments.IgnoredChannels,
 	ignoredRolesPath: GuildSettings.Selfmod.Attachments.IgnoredRoles,
@@ -32,7 +31,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	}
 
 	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t(LanguageKeys.Events.Moderation.Messages.AttachmentFilter, { user: message.author.toString() }));
+		return sendTemporaryMessage(message, t('events/moderation:attachmentFilter', { user: message.author.toString() }));
 	}
 
 	protected onLogMessage(message: GuildMessage, t: TFunction) {
@@ -43,7 +42,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 				name: `${message.author.tag} (${message.author.id})`,
 				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t(LanguageKeys.Events.Moderation.Messages.AttachmentFilterFooter)}` })
+			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:attachmentFilter')}` })
 			.setTimestamp();
 	}
 }

@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationCommand } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { getModeration, getSecurity } from '#utils/functions';
@@ -13,8 +12,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['ub'],
-	description: LanguageKeys.Commands.Moderation.UnbanDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.UnbanExtended,
+	description: 'commands/moderation:unbanDescription',
+	detailedDescription: 'commands/moderation:unbanExtended',
 	requiredClientPermissions: [PermissionFlagsBits.BanMembers],
 	requiredMember: false
 })
@@ -25,12 +24,12 @@ export class UserModerationCommand extends ModerationCommand {
 
 		// If the fetch failed, throw an error saying that the fetch failed:
 		if (bans === null) {
-			throw await resolveKey(message, LanguageKeys.System.FetchBansFail);
+			throw await resolveKey(message, 'system:fetchBansFail');
 		}
 
 		// If there were no bans, throw an error saying that the ban list is empty:
 		if (bans.length === 0) {
-			throw await resolveKey(message, LanguageKeys.Commands.Moderation.GuildBansEmpty);
+			throw await resolveKey(message, 'errors:guildBansEmpty');
 		}
 
 		return {
@@ -57,7 +56,7 @@ export class UserModerationCommand extends ModerationCommand {
 	}
 
 	public checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand<Unlock & { bans: string[] }>['checkModeratable']>) {
-		if (!context.preHandled.bans.includes(context.target.id)) throw context.args.t(LanguageKeys.Commands.Moderation.GuildBansNotFound);
+		if (!context.preHandled.bans.includes(context.target.id)) throw context.args.t('errors:guildBansNotFound');
 		return super.checkModeratable(message, context);
 	}
 }

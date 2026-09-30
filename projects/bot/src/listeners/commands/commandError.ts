@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { translate } from '#lib/i18n/translate';
 import type { WolfCommand } from '#lib/structures';
 import { OWNERS } from '#root/config';
@@ -27,7 +26,7 @@ export class UserListener extends Listener<typeof Events.CommandError> {
 		// If the error was an AbortError or an Internal Server Error, tell the user to re-try:
 		if (error.name === 'AbortError' || error.message === 'Internal Server Error') {
 			logger.warn(`${this.getWarnError(message)} (${message.author.id}) | ${error.constructor.name}`);
-			return sendTemporaryMessage(message, args.t(LanguageKeys.System.DiscordAbortError));
+			return sendTemporaryMessage(message, args.t('system:discordAbortError'));
 		}
 
 		// Extract useful information about the DiscordAPIError
@@ -75,19 +74,19 @@ export class UserListener extends Listener<typeof Events.CommandError> {
 
 	private generateUnexpectedErrorMessage(args: Args, error: Error) {
 		if (OWNERS.includes(args.message.author.id)) return codeBlock('js', error.stack!);
-		if (!this.sentry) return args.t(LanguageKeys.Events.Errors.UnexpectedError);
+		if (!this.sentry) return args.t('events/errors:unexpectedError');
 
 		try {
 			const report = captureException(error, { tags: { command: args.command.name } });
-			return args.t(LanguageKeys.Events.Errors.UnexpectedErrorWithContext, { report });
+			return args.t('events/errors:unexpectedErrorWithContext', { report });
 		} catch (error) {
 			this.container.gatewayClient.emit(Events.Error, error);
-			return args.t(LanguageKeys.Events.Errors.UnexpectedError);
+			return args.t('events/errors:unexpectedError');
 		}
 	}
 
 	private stringError(message: Message, t: TFunction, error: string) {
-		return this.alert(message, t(LanguageKeys.Events.Errors.String, { mention: message.author.toString(), message: error }));
+		return this.alert(message, t('events/errors:string', { mention: message.author.toString(), message: error }));
 	}
 
 	private argumentError(message: Message, t: TFunction, error: ArgumentError<unknown>) {

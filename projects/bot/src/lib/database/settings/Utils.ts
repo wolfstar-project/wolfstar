@@ -3,7 +3,6 @@ import { getConfigurableGroups } from '#lib/database/settings/configuration';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import type { GuildData, ReadonlyGuildData } from '#lib/database/settings/types';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { WolfArgs } from '#lib/structures';
 import { UserError } from '@sapphire/framework';
 
@@ -30,7 +29,7 @@ export async function set(settings: ReadonlyGuildData, key: SchemaKey, args: Wol
 
 	if (serializer.equals(settings[key.property], parsed)) {
 		throw new UserError({
-			identifier: LanguageKeys.Settings.Gateway.DuplicateValue,
+			identifier: 'settings:validationDuplicatedValue',
 			context: {
 				path: key.name,
 				value: await key.stringify(settings, args.t, parsed)
@@ -50,7 +49,7 @@ export async function remove(settings: ReadonlyGuildData, key: SchemaKey, args: 
 		const index = values.findIndex((value) => serializer.equals(value, parsed));
 		if (index === -1) {
 			throw new UserError({
-				identifier: LanguageKeys.Settings.Gateway.MissingValue,
+				identifier: 'settings:validationMissingValue',
 				context: { path: key.name, value: await key.stringify(settings, args.t, parsed) }
 			});
 		}

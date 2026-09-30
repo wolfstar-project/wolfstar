@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { Events, PermissionLevels } from '#lib/types/Enums';
@@ -9,8 +8,8 @@ import { CommandOptionsRunTypeEnum } from '@sapphire/framework';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<WolfCommand.Options>({
-	description: LanguageKeys.Commands.Moderation.ReasonDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.ReasonExtended,
+	description: 'commands/moderation:reasonDescription',
+	detailedDescription: 'commands/moderation:reasonExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: [PermissionFlagsBits.EmbedLinks],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny]
@@ -25,7 +24,7 @@ export class UserCommand extends WolfCommand {
 		const moderation = getModeration(message.guild);
 		const entries = await moderation.fetch(cases);
 		if (!entries.size) {
-			this.error(LanguageKeys.Commands.Moderation.ModerationCaseNotExists, { count: cases.length });
+			this.error('moderation:caseNotExists', { count: cases.length });
 		}
 
 		const reason = await args.rest('string');
@@ -47,7 +46,7 @@ export class UserCommand extends WolfCommand {
 
 		return sendTemporaryMessage(
 			message,
-			args.t(LanguageKeys.Commands.Moderation.ReasonUpdated, {
+			args.t('commands/moderation:reasonUpdated', {
 				entries: cases,
 				newReason: reason,
 				count: cases.length

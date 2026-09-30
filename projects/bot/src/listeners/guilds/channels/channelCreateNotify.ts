@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { toPermissionsArray } from '#utils/bits';
 import { seconds } from '#common';
 import { Colors, LongWidthSpace } from '#utils/constants';
@@ -32,7 +31,7 @@ export class UserListener extends Listener<typeof Events.ChannelCreate> {
 			.setColor(Colors.Green)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.ChannelCreate) })
+			.setFooter({ text: t('events/guilds-logs:channelCreate') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
@@ -61,8 +60,8 @@ export class UserListener extends Listener<typeof Events.ChannelCreate> {
 	}
 
 	private *getGuildChannelInformation(t: TFunction, channel: GuildBasedChannel) {
-		if (channel.parentId) yield t(LanguageKeys.Events.Guilds.Logs.ChannelCreateParent, { value: `<#${channel.parentId}>` });
-		yield t(LanguageKeys.Events.Guilds.Logs.ChannelCreatePosition, { value: channel.position });
+		if (channel.parentId) yield t('events/guilds-logs:channelCreateParent', { value: `<#${channel.parentId}>` });
+		yield t('events/guilds-logs:channelCreatePosition', { value: channel.position });
 	}
 
 	private *getChannelPermissionOverwrites(t: TFunction, channel: GuildChannel) {
@@ -72,15 +71,15 @@ export class UserListener extends Listener<typeof Events.ChannelCreate> {
 			if (allow === 0n && deny === 0n) continue;
 
 			const mention = this.displayMention(overwrite);
-			yield t(LanguageKeys.Events.Guilds.Logs.ChannelCreatePermissionsTitle, { value: mention });
+			yield t('events/guilds-logs:channelCreatePermissionsTitle', { value: mention });
 			if (allow !== 0n) {
 				const values = toPermissionsArray(allow).map((value) => t(`permissions:${value}`));
-				yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelCreatePermissionsAllow, { values, count: values.length });
+				yield LongWidthSpace + t('events/guilds-logs:channelCreatePermissionsAllow', { values, count: values.length });
 			}
 
 			if (deny !== 0n) {
 				const values = toPermissionsArray(deny).map((value) => t(`permissions:${value}`));
-				yield LongWidthSpace + t(LanguageKeys.Events.Guilds.Logs.ChannelCreatePermissionsDeny, { values, count: values.length });
+				yield LongWidthSpace + t('events/guilds-logs:channelCreatePermissionsDeny', { values, count: values.length });
 			}
 		}
 	}
@@ -106,23 +105,23 @@ export class UserListener extends Listener<typeof Events.ChannelCreate> {
 	}
 
 	private displayNsfw(t: TFunction) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelCreateNsfw);
+		return t('events/guilds-logs:channelCreateNsfw');
 	}
 
 	private displayTopic(t: TFunction, value: string) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelCreateTopic, { value });
+		return t('events/guilds-logs:channelCreateTopic', { value });
 	}
 
 	private displayRateLimitPerUser(t: TFunction, value: number) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelCreateRateLimit, { value: seconds(value) });
+		return t('events/guilds-logs:channelCreateRateLimit', { value: seconds(value) });
 	}
 
 	private displayBitrate(t: TFunction, value: number) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelCreateBitrate, { value: value / 1000 });
+		return t('events/guilds-logs:channelCreateBitrate', { value: value / 1000 });
 	}
 
 	private displayUserLimit(t: TFunction, value: number) {
-		return t(LanguageKeys.Events.Guilds.Logs.ChannelCreateUserLimit, { value });
+		return t('events/guilds-logs:channelCreateUserLimit', { value });
 	}
 
 	private displayMention(permissions: PermissionOverwrites) {

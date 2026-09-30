@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HandledCommandContext, ModerationCommand } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { years } from '#common';
@@ -9,8 +8,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['sn'],
-	description: LanguageKeys.Commands.Moderation.SetNicknameDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.SetNicknameExtended,
+	description: 'commands/moderation:setNicknameDescription',
+	detailedDescription: 'commands/moderation:setNicknameExtended',
 	optionalDuration: true,
 	requiredClientPermissions: [PermissionFlagsBits.ManageNicknames],
 	requiredMember: true

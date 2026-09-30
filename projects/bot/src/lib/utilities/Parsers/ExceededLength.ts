@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { getHaste } from '#utils/APIs/Hastebin';
 import { promptForMessage } from '#utils/functions';
 import { canSendAttachments } from '@sapphire/discord.js-utilities';
@@ -14,13 +13,13 @@ export async function handleMessage<ED extends ExtraDataPartial>(
 	options: HandleMessageData<ED>
 ): Promise<Message | Message[] | null> {
 	const t = await fetchT(message);
-	const typeFooter = options.footer ? t(LanguageKeys.System.ExceededLengthOutputType, { type: options.footer }) : undefined;
-	const timeTaken = options.time ? t(LanguageKeys.System.ExceededLengthOutputTime, { time: options.time }) : undefined;
+	const typeFooter = options.footer ? t('system:exceededLengthOutputType', { type: options.footer }) : undefined;
+	const timeTaken = options.time ? t('system:exceededLengthOutputTime', { time: options.time }) : undefined;
 
 	switch (options.sendAs) {
 		case 'file': {
 			if (canSendAttachments(message.channel)) {
-				const output = t(LanguageKeys.System.ExceededLengthOutputFile);
+				const output = t('system:exceededLengthOutputFile');
 				const content = [output, typeFooter, timeTaken].filter(Boolean).join('\n');
 
 				const fileExtension = options.language ?? 'txt';
@@ -39,7 +38,7 @@ export async function handleMessage<ED extends ExtraDataPartial>(
 			}
 
 			if (options.url) {
-				const hastebinUrl = t(LanguageKeys.System.ExceededLengthOutputHastebin, { url: options.url });
+				const hastebinUrl = t('system:exceededLengthOutputHastebin', { url: options.url });
 
 				const content = [hastebinUrl, typeFooter, timeTaken].filter(Boolean).join('\n');
 				return send(message, content);
@@ -54,7 +53,7 @@ export async function handleMessage<ED extends ExtraDataPartial>(
 		case 'log': {
 			if (options.canLogToConsole) {
 				container.logger.info(options.result);
-				const output = t(LanguageKeys.System.ExceededLengthOutputConsole);
+				const output = t('system:exceededLengthOutputConsole');
 
 				const content = [output, typeFooter, timeTaken].filter(Boolean).join('\n');
 				return send(message, content);
@@ -77,14 +76,14 @@ export async function handleMessage<ED extends ExtraDataPartial>(
 			}
 
 			if (options.success) {
-				const parsedOutput = t(LanguageKeys.System.ExceededLengthOutput, { output: codeBlock(options.language!, options.result!) });
+				const parsedOutput = t('system:exceededLengthOutput', { output: codeBlock(options.language!, options.result!) });
 
 				const content = [parsedOutput, typeFooter, timeTaken].filter(Boolean).join('\n');
 				return send(message, content);
 			}
 
 			const output = codeBlock(options.language ?? 'ts', options.result!);
-			const content = t(LanguageKeys.Commands.System.EvalError, { time: options.time!, output, type: options.footer! });
+			const content = t('commands/system:evalError', { time: options.time!, output, type: options.footer! });
 			return send(message, content);
 		}
 	}
@@ -99,7 +98,7 @@ async function getTypeOutput<ED extends ExtraDataPartial>(message: Message, t: T
 
 	let choice: string;
 	do {
-		const content = await promptForMessage(message, t(LanguageKeys.System.ExceededLengthChooseOutput, { output: _options }));
+		const content = await promptForMessage(message, t('system:exceededLengthChooseOutput', { output: _options }));
 		choice = content?.toLowerCase() ?? 'none';
 	} while (!_options.concat('none', 'abort').includes(choice));
 

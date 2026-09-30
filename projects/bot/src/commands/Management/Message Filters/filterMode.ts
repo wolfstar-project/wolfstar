@@ -1,13 +1,12 @@
 import { AdderKey, GuildEntity, GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { SelfModerationCommand } from '#lib/moderation';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { PickByValue } from '@sapphire/utilities';
 
 @ApplyOptions<SelfModerationCommand.Options>({
 	aliases: ['word-filter-mode'],
-	description: LanguageKeys.Commands.Management.FilterModeDescription,
-	detailedDescription: LanguageKeys.Commands.Management.FilterModeExtended
+	description: 'commands/management:filterModeDescription',
+	detailedDescription: 'commands/management:filterModeExtended'
 })
 export class UserSelfModerationCommand extends SelfModerationCommand {
 	protected $adder: AdderKey = 'words';

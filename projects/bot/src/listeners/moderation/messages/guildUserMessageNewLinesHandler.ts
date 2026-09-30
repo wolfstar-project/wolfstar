@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
@@ -12,8 +11,8 @@ import type { TFunction } from 'i18next';
 const NEW_LINE = '\n';
 
 @ApplyOptions<ModerationMessageListener.Options>({
-	reasonLanguageKey: LanguageKeys.Events.Moderation.Messages.ModerationNewLine,
-	reasonLanguageKeyWithMaximum: LanguageKeys.Events.Moderation.Messages.ModerationNewLineWithMaximum,
+	reasonLanguageKey: 'events/moderation:newlines',
+	reasonLanguageKeyWithMaximum: 'events/moderation:newlinesWithMaximum',
 	keyEnabled: GuildSettings.Selfmod.NewLines.Enabled,
 	ignoredChannelsPath: GuildSettings.Selfmod.NewLines.IgnoredChannels,
 	ignoredRolesPath: GuildSettings.Selfmod.NewLines.IgnoredRoles,
@@ -43,7 +42,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	}
 
 	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t(LanguageKeys.Events.Moderation.Messages.NewLineFilter, { user: message.author.toString() }));
+		return sendTemporaryMessage(message, t('events/moderation:newlineFilter', { user: message.author.toString() }));
 	}
 
 	protected onLogMessage(message: GuildMessage, t: TFunction) {
@@ -54,7 +53,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 				name: `${message.author.tag} (${message.author.id})`,
 				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t(LanguageKeys.Events.Moderation.Messages.NewLineFooter)}` })
+			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:newlineFilterFooter')}` })
 			.setTimestamp();
 	}
 }

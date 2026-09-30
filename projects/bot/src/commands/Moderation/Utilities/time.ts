@@ -1,5 +1,4 @@
 import type { ModerationEntity } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -12,8 +11,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 import { Permissions, User } from 'discord.js';
 
 @ApplyOptions<WolfCommand.Options>({
-	description: LanguageKeys.Commands.Moderation.TimeDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.TimeExtended,
+	description: 'commands/moderation:timeDescription',
+	detailedDescription: 'commands/moderation:timeExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	runIn: [CommandOptionsRunTypeEnum.GuildAny]
 })
@@ -24,8 +23,8 @@ export class UserCommand extends WolfCommand {
 
 		const moderation = getModeration(message.guild);
 		const entry = await moderation.fetch(caseId);
-		if (!entry) this.error(LanguageKeys.Commands.Moderation.ModerationCaseNotExists, { count: 1 });
-		if (!cancel && entry.temporaryType) this.error(LanguageKeys.Commands.Moderation.TimeTimed);
+		if (!entry) this.error('moderation:caseNotExists', { count: 1 });
+		if (!cancel && entry.temporaryType) this.error('commands/moderation:timeTimed');
 
 		const user = await entry.fetchUser();
 		await this.validateAction(message, entry, user);
@@ -34,7 +33,7 @@ export class UserCommand extends WolfCommand {
 		)!;
 
 		if (cancel) {
-			if (!task) this.error(LanguageKeys.Commands.Moderation.TimeNotScheduled);
+			if (!task) this.error('commands/moderation:timeNotScheduled');
 
 			await moderation.fetchChannelMessages();
 			await entry.edit({
@@ -42,15 +41,15 @@ export class UserCommand extends WolfCommand {
 				moderatorId: message.author.id
 			});
 
-			this.error(LanguageKeys.Commands.Moderation.TimeAborted, { title: entry.title });
+			this.error('commands/moderation:timeAborted', { title: entry.title });
 		}
 
 		if (entry.appealType || entry.invalidated) {
-			this.error(LanguageKeys.Commands.Moderation.ModerationLogAppealed);
+			this.error('moderation:logAppealed');
 		}
 
 		if (task) {
-			this.error(LanguageKeys.Commands.Moderation.ModerationTimed, {
+			this.error('errors:modlogTimed', {
 				remaining: (task.data.timestamp as number) - Date.now()
 			});
 		}
@@ -62,7 +61,7 @@ export class UserCommand extends WolfCommand {
 			moderatorId: message.author.id
 		});
 
-		const content = args.t(LanguageKeys.Commands.Moderation.TimeScheduled, { title: entry.title, user, time: duration! });
+		const content = args.t('commands/moderation:timeScheduled', { title: entry.title, user, time: duration! });
 		return send(message, content);
 	}
 
@@ -101,37 +100,37 @@ export class UserCommand extends WolfCommand {
 			case TypeCodes.TemporaryRestrictionVoice:
 				return;
 			default:
-				this.error(LanguageKeys.Commands.Moderation.TimeUnsupportedType);
+				this.error('commands/moderation:timeUnsupportedType');
 		}
 	}
 
 	private async checkBan(message: GuildMessage, user: User) {
 		if (!message.guild.me!.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) {
-			this.error(LanguageKeys.Commands.Moderation.UnbanMissingPermission);
+			this.error('commands/moderation:unbanMissingPermission');
 		}
 
 		if (!(await getSecurity(message.guild).actions.userIsBanned(user))) {
-			this.error(LanguageKeys.Commands.Moderation.GuildBansNotFound);
+			this.error('errors:guildBansNotFound');
 		}
 	}
 
 	private async checkMute(message: GuildMessage, user: User) {
 		if (!message.guild.me!.permissions.has(Permissions.FLAGS.MANAGE_ROLES)) {
-			this.error(LanguageKeys.Commands.Moderation.UnmuteMissingPermission);
+			this.error('commands/moderation:unmuteMissingPermission');
 		}
 
 		if (!(await getSecurity(message.guild).actions.userIsMuted(user))) {
-			this.error(LanguageKeys.Commands.Moderation.MuteUserNotMuted);
+			this.error('commands/moderation:muteUserNotMuted');
 		}
 	}
 
 	private async checkVMute(message: GuildMessage, user: User) {
 		if (!message.guild.me!.permissions.has(Permissions.FLAGS.MUTE_MEMBERS)) {
-			this.error(LanguageKeys.Commands.Moderation.VmuteMissingPermission);
+			this.error('commands/moderation:vmuteMissingPermission');
 		}
 
 		if (!(await getSecurity(message.guild).actions.userIsVoiceMuted(user))) {
-			this.error(LanguageKeys.Commands.Moderation.VmuteUserNotMuted);
+			this.error('commands/moderation:vmuteUserNotMuted');
 		}
 	}
 

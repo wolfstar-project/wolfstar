@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import { CLIENT_OPTIONS } from '#root/config';
 import { SapphireClient } from '@sapphire/framework';
@@ -169,8 +168,8 @@ addCommand(
 	new Command(
 		{ name: 'ping', path: '::virtual::', store: commands, root: '::virtual::' },
 		{
-			description: LanguageKeys.Commands.General.V7Description,
-			detailedDescription: LanguageKeys.Commands.General.V7Extended,
+			description: 'commands/general:v7Description',
+			detailedDescription: 'commands/general:v7Extended',
 			aliases: ['pong'],
 			fullCategory: ['General']
 		}
@@ -181,8 +180,8 @@ addCommand(
 	new Command(
 		{ name: 'balance', path: '::virtual::', store: commands, root: '::virtual::' },
 		{
-			description: LanguageKeys.Commands.Admin.ConfDescription,
-			detailedDescription: LanguageKeys.Commands.Admin.ConfExtended,
+			description: 'commands/admin:confServerDescription',
+			detailedDescription: 'commands/admin:confServerExtended',
 			aliases: ['bal'],
 			fullCategory: ['Currency']
 		}
@@ -193,8 +192,8 @@ addCommand(
 	new Command(
 		{ name: 'define', path: '::virtual::', store: commands, root: '::virtual::' },
 		{
-			description: LanguageKeys.Commands.Tools.AvatarDescription,
-			detailedDescription: LanguageKeys.Commands.Tools.AvatarExtended,
+			description: 'commands/tools:avatarDescription',
+			detailedDescription: 'commands/tools:avatarExtended',
 			aliases: ['def', 'definition', 'defination', 'dictionary'],
 			fullCategory: ['Tools', 'Dictionary']
 		}

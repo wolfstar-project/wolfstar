@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HandledCommandContext, ModerationCommand } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -11,8 +10,8 @@ import type { Role } from 'discord.js';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['ar'],
-	description: LanguageKeys.Commands.Moderation.AddRoleDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.AddRoleExtended,
+	description: 'commands/moderation:addRoleDescription',
+	detailedDescription: 'commands/moderation:addRoleExtended',
 	optionalDuration: true,
 	permissionLevel: PermissionLevels.Administrator,
 	requiredClientPermissions: [PermissionFlagsBits.ManageRoles],

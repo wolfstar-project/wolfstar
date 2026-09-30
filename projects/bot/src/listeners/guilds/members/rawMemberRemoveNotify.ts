@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { getModeration } from '#utils/functions';
@@ -21,12 +20,12 @@ export class UserListener extends Listener {
 		const isModerationAction = await this.isModerationAction(guild, user);
 
 		const footer = isModerationAction.kicked
-			? t(LanguageKeys.Events.Guilds.Members.GuildMemberKicked)
+			? t('events/guilds-members:guildMemberKicked')
 			: isModerationAction.banned
-				? t(LanguageKeys.Events.Guilds.Members.GuildMemberBanned)
+				? t('events/guilds-members:guildMemberBanned')
 				: isModerationAction.softbanned
-					? t(LanguageKeys.Events.Guilds.Members.GuildMemberSoftBanned)
-					: t(LanguageKeys.Events.Guilds.Members.GuildMemberRemove);
+					? t('events/guilds-members:guildMemberSoftBanned')
+					: t('events/guilds-members:guildMemberRemove');
 
 		const time = this.processJoinedTimestamp(member);
 		this.container.gatewayClient.emit(Events.GuildMessageLog, guild, logChannelId, key, () =>
@@ -36,8 +35,8 @@ export class UserListener extends Listener {
 				.setDescription(
 					t(
 						time === -1
-							? LanguageKeys.Events.Guilds.Members.GuildMemberRemoveDescription
-							: LanguageKeys.Events.Guilds.Members.GuildMemberRemoveDescriptionWithJoinedAt,
+							? 'events/guilds-members:guildMemberRemoveDescription'
+							: 'events/guilds-members:guildMemberRemoveDescriptionWithJoinedAt',
 						{
 							mention: `<@${user.id}>`,
 							time

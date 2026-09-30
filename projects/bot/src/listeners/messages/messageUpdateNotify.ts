@@ -1,6 +1,5 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { SkyraEmbed } from '#lib/discord';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { escapeMarkdown } from '#utils/External/escapeMarkdown';
@@ -43,7 +42,7 @@ export class UserListener extends Listener {
 						.map((result) => (result.added ? `**${result.value}**` : result.removed ? `~~${result.value}~~` : result.value))
 						.join(' ')
 				)
-				.setFooter({ text: t(LanguageKeys.Events.Messages.MessageUpdate, { channel: `#${message.channel.name}` }) })
+				.setFooter({ text: t('events/messages:messageUpdate', { channel: `#${message.channel.name}` }) })
 				.setTimestamp()
 		);
 	}

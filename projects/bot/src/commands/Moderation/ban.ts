@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationCommand } from '#lib/moderation';
 import { getModeration, getSecurity } from '#utils/functions';
 import type { Unlock } from '#utils/moderationConstants';
@@ -10,8 +9,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<ModerationCommand.Options>({
 	aliases: ['b'],
-	description: LanguageKeys.Commands.Moderation.BanDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.BanExtended,
+	description: 'commands/moderation:banDescription',
+	detailedDescription: 'commands/moderation:banExtended',
 	optionalDuration: true,
 	options: ['d', 'day', 'days'],
 	requiredClientPermissions: [PermissionFlagsBits.BanMembers],
@@ -42,7 +41,7 @@ export class UserModerationCommand extends ModerationCommand {
 
 	public async checkModeratable(...[message, context]: ArgumentTypes<ModerationCommand<Unlock>['checkModeratable']>) {
 		const member = await super.checkModeratable(message, context);
-		if (member && !member.bannable) throw context.args.t(LanguageKeys.Commands.Moderation.BanNotBannable);
+		if (member && !member.bannable) throw context.args.t('commands/moderation:banNotBannable');
 		return member;
 	}
 

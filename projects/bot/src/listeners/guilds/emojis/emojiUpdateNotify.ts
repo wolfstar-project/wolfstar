@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { differenceMap } from '#common/comparators';
 import { Colors } from '#utils/constants';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -31,44 +30,44 @@ export class UserListener extends Listener<typeof Events.GuildEmojiUpdate> {
 			.setThumbnail(next.url)
 			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
 			.setDescription(changes.join('\n'))
-			.setFooter({ text: t(LanguageKeys.Events.Guilds.Logs.EmojiUpdate) })
+			.setFooter({ text: t('events/guilds-logs:emojiUpdate') })
 			.setTimestamp();
 		await channel.send({ embeds: [embed] });
 	}
 
 	private *differenceEmoji(t: TFunction, previous: GuildEmoji, next: GuildEmoji) {
-		const [no, yes] = [t(LanguageKeys.Globals.No), t(LanguageKeys.Globals.Yes)];
+		const [no, yes] = [t('globals:no'), t('globals:yes')];
 
 		if (previous.animated !== next.animated) {
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateAnimated, {
+			yield t('events/guilds-logs:emojiUpdateAnimated', {
 				previous: previous.animated ? yes : no,
 				next: next.animated ? yes : no
 			});
 		}
 
 		if (previous.available !== next.available) {
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateAvailable, {
+			yield t('events/guilds-logs:emojiUpdateAvailable', {
 				previous: previous.available ? yes : no,
 				next: next.available ? yes : no
 			});
 		}
 
 		if (previous.managed !== next.managed) {
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateManaged, {
+			yield t('events/guilds-logs:emojiUpdateManaged', {
 				previous: previous.managed ? yes : no,
 				next: next.managed ? yes : no
 			});
 		}
 
 		if (previous.name !== next.name) {
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateName, {
+			yield t('events/guilds-logs:emojiUpdateName', {
 				previous: previous.name,
 				next: next.name
 			});
 		}
 
 		if (previous.requiresColons !== next.requiresColons) {
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateRequiresColons, {
+			yield t('events/guilds-logs:emojiUpdateRequiresColons', {
 				previous: previous.requiresColons ? yes : no,
 				next: next.requiresColons ? yes : no
 			});
@@ -77,12 +76,12 @@ export class UserListener extends Listener<typeof Events.GuildEmojiUpdate> {
 		const modified = differenceMap(previous.roles.cache, next.roles.cache);
 		if (modified.added.size !== 0) {
 			const values = [...modified.added.keys()].map((id) => `<@&${id}>`);
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateRolesAdded, { values, count: values.length });
+			yield t('events/guilds-logs:emojiUpdateRolesAdded', { values, count: values.length });
 		}
 
 		if (modified.removed.size !== 0) {
 			const values = [...modified.removed.keys()].map((id) => `<@&${id}>`);
-			yield t(LanguageKeys.Events.Guilds.Logs.EmojiUpdateRolesRemoved, { values, count: values.length });
+			yield t('events/guilds-logs:emojiUpdateRolesRemoved', { values, count: values.length });
 		}
 	}
 }

@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import type { GuildMessage } from '#lib/types';
 import type { EmbedField, Guild, MessageAttachment, MessageEmbed, MessageEmbedFooter, MessageEmbedImage, User } from 'discord.js';
 import type { TFunction } from 'i18next';
@@ -21,7 +20,7 @@ function formatHeader(t: TFunction, message: GuildMessage): string {
  * of this function is placed inside of a codeblock.
  */
 function formatTimestamp(t: TFunction, timestamp: number): string {
-	return `[${t(LanguageKeys.Globals.DateTimeValue, { value: timestamp })}]`;
+	return `[${t('globals:dateTimeValue', { value: timestamp })}]`;
 }
 
 function formatAuthor(author: User): string {

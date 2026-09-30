@@ -1,5 +1,4 @@
 import { GuildSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { SetUpModerationCommand } from '#lib/moderation';
 import { getSecurity } from '#utils/functions';
 import { ModerationSetupRestriction } from '#utils/Security/ModerationActions';
@@ -10,8 +9,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<SetUpModerationCommand.Options>({
 	aliases: ['m'],
-	description: LanguageKeys.Commands.Moderation.MuteDescription,
-	detailedDescription: LanguageKeys.Commands.Moderation.MuteExtended,
+	description: 'commands/moderation:muteDescription',
+	detailedDescription: 'commands/moderation:muteExtended',
 	optionalDuration: true,
 	requiredClientPermissions: [PermissionFlagsBits.ManageRoles],
 	requiredMember: true,

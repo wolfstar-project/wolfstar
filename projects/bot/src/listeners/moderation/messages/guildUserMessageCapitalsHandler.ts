@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise } from '#common';
@@ -12,8 +11,8 @@ import { MessageEmbed, TextChannel } from 'discord.js';
 import type { TFunction } from 'i18next';
 
 @ApplyOptions<ModerationMessageListener.Options>({
-	reasonLanguageKey: LanguageKeys.Events.Moderation.Messages.ModerationCapitals,
-	reasonLanguageKeyWithMaximum: LanguageKeys.Events.Moderation.Messages.ModerationCapitalsWithMaximum,
+	reasonLanguageKey: 'events/moderation:capitals',
+	reasonLanguageKeyWithMaximum: 'events/moderation:capitalsWithMaximum',
 	keyEnabled: GuildSettings.Selfmod.Capitals.Enabled,
 	ignoredChannelsPath: GuildSettings.Selfmod.Capitals.IgnoredChannels,
 	ignoredRolesPath: GuildSettings.Selfmod.Capitals.IgnoredRoles,
@@ -51,14 +50,12 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	protected async onDelete(message: GuildMessage, t: TFunction, value: number) {
 		floatPromise(deleteMessage(message));
 		if (value > 25 && (await this.container.db.fetchModerationDirectMessageEnabled(message.author.id))) {
-			await message.author.send(
-				t(LanguageKeys.Events.Moderation.Messages.CapsFilterDm, { message: codeBlock('md', cutText(message.content, 1900)) })
-			);
+			await message.author.send(t('events/moderation:capsFilterDm', { message: codeBlock('md', cutText(message.content, 1900)) }));
 		}
 	}
 
 	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t(LanguageKeys.Events.Moderation.Messages.CapsFilter, { user: message.author.toString() }));
+		return sendTemporaryMessage(message, t('events/moderation:capsFilter', { user: message.author.toString() }));
 	}
 
 	protected onLogMessage(message: GuildMessage, t: TFunction) {
@@ -69,7 +66,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 				name: `${message.author.tag} (${message.author.id})`,
 				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
 			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t(LanguageKeys.Events.Moderation.Messages.CapsFilterFooter)}` })
+			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:capsFilterFooter')}` })
 			.setTimestamp();
 	}
 }

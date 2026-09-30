@@ -1,4 +1,3 @@
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { WolfCommand } from '#lib/structures';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types/Enums';
@@ -10,8 +9,8 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 import { MessageEmbed, Permissions } from 'discord.js';
 
 @ApplyOptions<WolfCommand.Options>({
-	description: LanguageKeys.Commands.Management.RoleInfoDescription,
-	detailedDescription: LanguageKeys.Commands.Management.RoleInfoExtended,
+	description: 'commands/management:roleInfoDescription',
+	detailedDescription: 'commands/management:roleInfoExtended',
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: [PermissionFlagsBits.EmbedLinks],
 	runIn: [CommandOptionsRunTypeEnum.GuildAny]
@@ -19,21 +18,21 @@ import { MessageEmbed, Permissions } from 'discord.js';
 export class UserCommand extends WolfCommand {
 	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
 		const role = args.finished ? message.member.roles.highest : await args.pick('roleName');
-		const roleInfoTitles = args.t(LanguageKeys.Commands.Management.RoleInfoTitles);
+		const roleInfoTitles = args.t('commands/management:roleInfoTitles');
 
 		const permissions = role.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
-			? args.t(LanguageKeys.Commands.Management.RoleInfoAll)
+			? args.t('commands/management:roleInfoAll')
 			: role.permissions.toArray().length > 0
 				? role.permissions
 						.toArray()
 						.map((key) => `+ **${args.t(`permissions:${key}`, key)}**`)
 						.join('\n')
-				: args.t(LanguageKeys.Commands.Management.RoleInfoNoPermissions);
+				: args.t('commands/management:roleInfoNoPermissions');
 
-		const description = args.t(LanguageKeys.Commands.Management.RoleInfoData, {
+		const description = args.t('commands/management:roleInfoData', {
 			role,
-			hoisted: args.t(role.hoist ? LanguageKeys.Globals.Yes : LanguageKeys.Globals.No),
-			mentionable: args.t(role.mentionable ? LanguageKeys.Globals.Yes : LanguageKeys.Globals.No)
+			hoisted: args.t(role.hoist ? 'globals:yes' : 'globals:no'),
+			mentionable: args.t(role.mentionable ? 'globals:yes' : 'globals:no')
 		});
 
 		const embed = new MessageEmbed()

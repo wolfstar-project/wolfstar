@@ -1,6 +1,5 @@
 import { GuildEntity, GuildSettings, readSettings } from '#lib/database';
 import { api } from '#lib/discord/Api';
-import { LanguageKeys } from '#lib/i18n/languageKeys';
 import { HardPunishment, ModerationListener, SelfModeratorBitField } from '#lib/moderation';
 import { Events } from '#lib/types/Enums';
 import { floatPromise, seconds } from '#common';
@@ -77,8 +76,8 @@ export class UserModerationEvent extends ModerationListener<ArgumentType, unknow
 
 	protected onAlert([data]: Readonly<ArgumentType>) {
 		floatPromise(
-			sendLocalized(data.channel, { keys: LanguageKeys.Events.Reactions.Filter, formatOptions: { user: `<@${data.userId}>` } }).then(
-				(message) => deleteMessage(message, seconds(15))
+			sendLocalized(data.channel, { keys: 'events/reactions:filter', formatOptions: { user: `<@${data.userId}>` } }).then((message) =>
+				deleteMessage(message, seconds(15))
 			)
 		);
 	}
@@ -94,8 +93,8 @@ export class UserModerationEvent extends ModerationListener<ArgumentType, unknow
 					? `https://twemoji.maxcdn.com/72x72/${twemoji(data.emoji.name!)}.png`
 					: `https://cdn.discordapp.com/emojis/${data.emoji.id}.${data.emoji.animated ? 'gif' : 'png'}?size=64`
 			)
-			.setDescription(`[${t(LanguageKeys.Misc.JumpTo)}](https://discord.com/channels/${data.guild.id}/${data.channel.id}/${data.messageId})`)
-			.setFooter({ text: `${data.channel.name} | ${t(LanguageKeys.Events.Reactions.FilterFooter)}` })
+			.setDescription(`[${t('system:jumpTo')}](https://discord.com/channels/${data.guild.id}/${data.channel.id}/${data.messageId})`)
+			.setFooter({ text: `${data.channel.name} | ${t('events/reactions:filterFooter')}` })
 			.setTimestamp();
 	}
 
