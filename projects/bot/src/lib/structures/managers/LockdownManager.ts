@@ -1,17 +1,16 @@
 import type { AccurateTimeout } from '#utils/Timers';
-import type { GuildTextBasedChannelTypes } from '@sapphire/discord.js-utilities';
-import { Collection, Role } from 'discord.js';
+import { Collection } from '@discordjs/collection';
 
 export class LockdownManager extends Collection<string, Collection<string, LockdownManager.Entry>> {
-	public add(role: Role, channel: LockdownManager.Channel, value: LockdownManager.Entry) {
+	public add(role: LockdownManager.Role, channel: LockdownManager.Channel, value: LockdownManager.Entry) {
 		const roles = this.acquire(channel);
 		roles.get(role.id)?.timeout?.stop();
 		roles.set(role.id, value);
 	}
 
-	public remove(role: Role): this;
-	public remove(role: Role, channel: LockdownManager.Channel): boolean;
-	public remove(role: Role, channel?: LockdownManager.Channel) {
+	public remove(role: LockdownManager.Role): this;
+	public remove(role: LockdownManager.Role, channel: LockdownManager.Channel): boolean;
+	public remove(role: LockdownManager.Role, channel?: LockdownManager.Channel) {
 		if (channel === undefined) return this.removeRole(role);
 
 		const channels = this.get(channel.id);
@@ -51,7 +50,7 @@ export class LockdownManager extends Collection<string, Collection<string, Lockd
 		return collection;
 	}
 
-	private removeRole(role: Role) {
+	private removeRole(role: LockdownManager.Role) {
 		for (const channel of this.values()) {
 			const entry = channel.get(role.id);
 			if (entry === undefined) continue;
@@ -65,7 +64,10 @@ export class LockdownManager extends Collection<string, Collection<string, Lockd
 }
 
 export namespace LockdownManager {
-	export type Channel = GuildTextBasedChannelTypes;
+	/** The part of a role the manager reads. */
+	export type Role = { readonly id: string };
+	/** The part of a channel the manager reads. */
+	export type Channel = { readonly id: string };
 	export interface Entry {
 		allowed: boolean | null;
 		timeout: AccurateTimeout | null;
