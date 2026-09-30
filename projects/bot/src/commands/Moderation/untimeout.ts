@@ -4,14 +4,15 @@ import { TypeVariation } from '#utils/moderationConstants';
 import { ApplyOptions, RegisterCommand } from '@wolfstar/http-framework';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-type Type = TypeVariation.Warning;
+type Type = TypeVariation.Timeout;
 type ValueType = null;
 
-@ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, type: TypeVariation.Warning })
+@ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, isUndoAction: true, type: TypeVariation.Timeout })
 @RegisterCommand((builder) =>
 	applyModerationBuilder(builder, {
-		root: 'commands/moderation:warn',
-		type: TypeVariation.Warning,
+		root: 'commands/moderation:timeoutUndo',
+		type: TypeVariation.Timeout,
+		isUndoAction: true,
 		permissions: PermissionFlagsBits.ModerateMembers
 	})
 )

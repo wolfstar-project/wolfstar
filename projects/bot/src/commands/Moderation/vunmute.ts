@@ -4,15 +4,16 @@ import { TypeVariation } from '#utils/moderationConstants';
 import { ApplyOptions, RegisterCommand } from '@wolfstar/http-framework';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-type Type = TypeVariation.Warning;
+type Type = TypeVariation.VoiceMute;
 type ValueType = null;
 
-@ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, type: TypeVariation.Warning })
+@ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, isUndoAction: true, type: TypeVariation.VoiceMute })
 @RegisterCommand((builder) =>
 	applyModerationBuilder(builder, {
-		root: 'commands/moderation:warn',
-		type: TypeVariation.Warning,
-		permissions: PermissionFlagsBits.ModerateMembers
+		root: 'commands/moderation:vunmute',
+		type: TypeVariation.VoiceMute,
+		isUndoAction: true,
+		permissions: PermissionFlagsBits.MuteMembers
 	})
 )
 export class UserModerationCommand extends ModerationCommand<Type, ValueType> {}

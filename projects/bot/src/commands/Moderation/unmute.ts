@@ -1,30 +1,19 @@
-import { GuildSettings } from '#lib/database';
-import { ModerationCommand, SetUpModerationCommand } from '#lib/moderation';
-import { getSecurity } from '#utils/functions';
-import { ModerationSetupRestriction } from '#utils/Security/ModerationActions';
-import { getImage } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import type { ArgumentTypes } from '@sapphire/utilities';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { SetUpModerationCommand } from '#lib/moderation';
+import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
+import { TypeVariation } from '#utils/moderationConstants';
+import { ApplyOptions, RegisterCommand } from '@wolfstar/http-framework';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<SetUpModerationCommand.Options>({
-	aliases: ['um'],
-	description: 'commands/moderation:unmuteDescription',
-	detailedDescription: 'commands/moderation:unmuteExtended',
-	requiredClientPermissions: [PermissionFlagsBits.ManageRoles],
-	roleKey: GuildSettings.Roles.Muted,
-	setUpKey: ModerationSetupRestriction.All
-})
-export class UserSetUpModerationCommand extends SetUpModerationCommand {
-	public async handle(...[message, context]: ArgumentTypes<ModerationCommand['handle']>) {
-		return getSecurity(message.guild).actions.unMute(
-			{
-				userId: context.target.id,
-				moderatorId: message.author.id,
-				reason: context.reason,
-				imageURL: getImage(message)
-			},
-			await this.getTargetDM(message, context.args, context.target)
-		);
-	}
-}
+type Type = TypeVariation.Mute;
+type ValueType = null;
+
+@ApplyOptions<SetUpModerationCommand.Options<Type>>({ type: TypeVariation.Mute, isUndoAction: true })
+@RegisterCommand((builder) =>
+	applyModerationBuilder(builder, {
+		root: 'commands/moderation:unmute',
+		type: TypeVariation.Mute,
+		isUndoAction: true,
+		permissions: PermissionFlagsBits.ManageRoles
+	})
+)
+export class UserSetUpModerationCommand extends SetUpModerationCommand<Type, ValueType> {}

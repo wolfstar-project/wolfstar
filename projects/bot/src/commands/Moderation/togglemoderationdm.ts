@@ -1,26 +1,42 @@
-import { WolfCommand } from '#lib/structures';
-import type { GuildMessage } from '#lib/types';
-import { ApplyOptions } from '@sapphire/decorators';
-import { send } from '@sapphire/plugin-editable-commands';
+import { createTranslator } from '#lib/structures/commands/utils';
+import { Command, RegisterCommand } from '@wolfstar/http-framework';
+import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
+import { ApplicationIntegrationType, InteractionContextType, MessageFlags } from 'discord-api-types/v10';
 
-@ApplyOptions<WolfCommand.Options>({
-	aliases: ['togglemdm', 'togglemoddm', 'tmdm'],
-	description: 'commands/moderation:toggleModerationDmDescription',
-	detailedDescription: 'commands/moderation:toggleModerationDmExtended'
-})
-export class UserCommand extends WolfCommand {
-	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
-		const { users } = this.container.db;
-		const updated = await users.lock([message.author.id], async (id) => {
-			const user = await users.ensure(id);
+@RegisterCommand((builder) =>
+	applyLocalizedBuilder(builder, 'commands/moderation:toggleModerationDm')
+		.setContexts(InteractionContextType.Guild)
+		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+)
+export class UserCommand extends Command {
+	public override async chatInputRun(interaction: Command.ChatInputInteraction) {
+		const t = createTranslator(getSupportedUserLanguageT(interaction));
 
-			user.moderationDM = !user.moderationDM;
-			return user.save();
-		});
+		const enabled = this.toggleModerationDirectMessageEnabled(interaction.user.id);
+		const key =
+			enabled === null
+				? 'commands/moderation:toggleModerationDmUnavailable'
+				: enabled
+					? 'commands/moderation:toggleModerationDmToggledEnabled'
+					: 'commands/moderation:toggleModerationDmToggledDisabled';
+		return interaction.reply({ content: t(key), flags: MessageFlags.Ephemeral });
+	}
 
-		const content = args.t(
-			updated.moderationDM ? 'commands/moderation:toggleModerationDmToggledEnabled' : 'commands/moderation:toggleModerationDmToggledDisabled'
-		);
-		return send(message, content);
+	/**
+	 * Toggles whether the user receives the moderation direct messages.
+	 *
+	 * @remarks
+	 *
+	 * The normalized `User` model of the (externally owned) Prisma 8 contract only has the `report` column, the old
+	 * `moderation_dm` one is not part of it, and `ModerationCommand.fetchUserModerationDmEnabled` does not read it either.
+	 * Until the column exists the preference cannot be persisted, so this returns `null` instead of claiming that it
+	 * was toggled. Once it exists, flip it here (`UPDATE ... SET moderation_dm = NOT moderation_dm RETURNING`) and return
+	 * the new value.
+	 *
+	 * @param _userId - The ID of the user to toggle the preference of.
+	 * @returns The new value, or `null` if it cannot be stored.
+	 */
+	private toggleModerationDirectMessageEnabled(_userId: string): boolean | null {
+		return null;
 	}
 }
