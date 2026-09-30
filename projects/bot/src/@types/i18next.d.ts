@@ -1008,6 +1008,7 @@ declare module "i18next" {
         rolesSubcommandClaimDescription: "Claim a public role.";
         rolesSubcommandUnclaimName: "unclaim";
         rolesSubcommandUnclaimDescription: "Give up a public role.";
+        configurationChannelReset: "The channel was reset.";
       };
       "commands/moderation": {
         permissions: "Permissions for {{username}} ({{id}})";
@@ -1866,6 +1867,12 @@ declare module "i18next" {
         optionsReasonDescription: "The reason, recorded in the moderation log.";
         optionsDurationName: "duration";
         optionsDurationDescription: "How long the action lasts, for example 30m, 2h or 7d.";
+        optionsImageName: "image";
+        optionsImageDescription: "An image to attach to the moderation case.";
+        optionsDmName: "dm";
+        optionsDmDescription: "Whether to send the user a direct message about the action.";
+        optionsAuthoredName: "authored";
+        optionsAuthoredDescription: "Whether to show your name in the direct message.";
         optionsRoleName: "role";
         optionsRoleDescription: "The role to use.";
         optionsChannelName: "channel";

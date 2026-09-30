@@ -671,5 +671,6 @@
 	"rolesSubcommandClaimName": "claim",
 	"rolesSubcommandClaimDescription": "Claim a public role.",
 	"rolesSubcommandUnclaimName": "unclaim",
-	"rolesSubcommandUnclaimDescription": "Give up a public role."
+	"rolesSubcommandUnclaimDescription": "Give up a public role.",
+	"configurationChannelReset": "The channel was reset."
 }
