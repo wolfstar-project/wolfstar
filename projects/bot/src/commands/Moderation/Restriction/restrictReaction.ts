@@ -1,0 +1,19 @@
+import { applyModerationSubcommandBuilder, SetUpModerationCommand } from '#lib/moderation';
+import { TypeVariation } from '#utils/moderationConstants';
+import { ApplyOptions } from '@wolfstar/http-framework';
+import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+
+type Type = TypeVariation.RestrictedReaction;
+type ValueType = null;
+
+/**
+ * `/restrict reaction`, see the `restrict` parent command.
+ */
+@ApplyOptions<SetUpModerationCommand.Options<Type>>({ type: TypeVariation.RestrictedReaction })
+@RegisterAsSubcommand('restrict', (builder) =>
+	applyModerationSubcommandBuilder(builder, {
+		root: 'commands/moderation:restrictReaction',
+		type: TypeVariation.RestrictedReaction
+	})
+)
+export class UserCommand extends SetUpModerationCommand<Type, ValueType> {}
