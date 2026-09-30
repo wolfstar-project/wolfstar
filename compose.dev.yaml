@@ -61,8 +61,10 @@ services:
             - influx
             - postgres2
         env_file:
-            - src/.env.development
-            - src/.env.development.local
+            - .env.development
+            - projects/bot/src/.env.development
+            - path: projects/bot/src/.env.development.local
+              required: false
         image: ghcr.io/wolfstar-project/wolfstar:latest
         networks:
             - wolfstar

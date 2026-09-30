@@ -57,7 +57,10 @@ FROM base AS runner
 ENV NODE_ENV="production"
 ENV NODE_OPTIONS="--enable-source-maps --max_old_space_size=4096"
 
-COPY --chown=node:node projects/bot/src/.env projects/bot/src/.env
+# The environment is described by the varlock schemas (the bot's imports the root one) and its values come from the
+# process environment at run time; see `.env.schema`. Secrets are never baked into the image.
+COPY --chown=node:node .env.schema .env.schema
+COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 
