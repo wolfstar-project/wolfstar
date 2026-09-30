@@ -21,6 +21,21 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 
 - **Gateway:** the bot runs the Discord gateway in-process with `@wolfstar/plugin-gateway`. `createClient()` in `src/lib/Client.ts` builds a `GatewayClient` (intents, shards) backed by a `@wolfstar/plugin-cache` Redis cache (`container.redis`, prefix `wolfstar:cache`) and a Redis session store (prefix `wolfstar:sessions`, so a restart resumes the shards instead of identifying again), and `loadAll()` calls `container.gatewayClient.start()`, which loads the pieces, serves HTTP interactions and connects the shards. Gateway events reach regular listener pieces (`EventGatewayListener`). There is no separate gateway process or Redis stream broker any more.
 
+## Environment (Varlock)
+
+Configuration is described by [Varlock](https://varlock.dev) schemas instead of `.env.example` files. **Never read, print or edit `.env`, `.env.local` or `.env.*.local` files** (they hold real secrets; `.claude/settings.json` denies it). Read the schemas instead and validate with `pnpm exec varlock load --agent` (sensitive values are redacted). The `varlock` skill (`.agents/skills/varlock`) and the docs MCP (`.mcp.json`) are available.
+
+- **Schemas:** one per package, sharing what is common through `@import`:
+    - `.env.schema` (root): `NODE_ENV` (drives `@currentEnv`), `DATABASE_URL`, `TOLGEE_API_KEY`, the Proton Pass plugin
+    - `projects/database/.env.schema`: imports `DATABASE_URL` from the root
+    - `projects/bot/src/.env.schema`: imports the shared items, declares everything the bot reads (`package.json#varlock.loadPath` is `./src/`). It generates `src/@types/env.d.ts` (do not edit it)
+    - An import must also `pick` what the picked items depend on (`NODE_ENV`, `USE_PROTON_PASS`, `PROTON_PASS_PERSONAL_ACCESS_TOKEN`)
+- **Values, lowest to highest precedence:** schema defaults → `.env.<NODE_ENV>` (tracked, throw-away local values only) → `.env.local` / `.env.<NODE_ENV>.local` (git-ignored) → the process environment. Deployed containers get theirs from the process environment.
+- **Secrets:** never in a tracked file. Set them in a `.local` file, or in Proton Pass with `USE_PROTON_PASS=true` in `.env.local` (`protonPass(pass://WolfStar/<item>/<field>)`, authenticated by `PROTON_PASS_PERSONAL_ACCESS_TOKEN` or by your `pass-cli login`). Only the items that are secret in production are `@sensitive` in production (`@sensitive=forEnv(production)`), so the committed local docker values are not flagged by `varlock scan`.
+- **Loading:** `import 'varlock/auto-load'` is the first import of `src/main.ts`, `tests/setup.ts`, `projects/database/src/index.ts` and `prisma.config.ts`; it validates the environment and fills `process.env`. Wrap other commands with `varlock run -- <cmd>` (the `tolgee:*` scripts do). `varlock scan --staged` runs in the pre-commit hook.
+- **Adding a variable:** declare it in the schema of the package that reads it (with `@type`, `@required`/`@optional`, `@sensitive` when it is a secret), add a local value to `.env.<NODE_ENV>` only if it is not a secret, then run `varlock load`.
+- **Tests:** `NODE_ENV=test` selects `.env.test`; Discord and Redis are not required there.
+
 ## Database
 
 - **ORM:** Prisma ORM 8 (`@prisma/orm-postgres`), accessed via `db` exported from `projects/database`
@@ -81,7 +96,7 @@ docker compose -f compose.dev.yaml up postgres2 -d
 pnpm prisma migrate deploy   # first-time only
 ```
 
-InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without InfluxDB, set `INFLUX_ENABLED=false` when starting the bot (see `src/.env`).
+InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without InfluxDB, set `INFLUX_ENABLED=false` when starting the bot (see `projects/bot/src/.env.schema`).
 
 ### Common commands
 
@@ -97,7 +112,7 @@ InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without Inf
 | Pull translations        | `pnpm tolgee:pull`                |
 | Push translations        | `pnpm tolgee:push`                |
 
-Unit tests import `#lib/setup` via `tests/setup.ts`, which loads `src/lib/setup/prisma.ts` and constructs `PrismaPg` from `process.env.DATABASE_URL`, so tests require a `DATABASE_URL`/PostgreSQL connection. They do not require a `DISCORD_TOKEN` because mocked Discord is provided by `tests/setup.ts` and `tests/mocks/MockInstances.ts`. Full bot startup requires a valid `DISCORD_TOKEN` in `src/.env` (or `src/.env.local`, gitignored).
+Unit tests import `#lib/setup` via `tests/setup.ts`, which loads `src/lib/setup/prisma.ts` and constructs `PrismaPg` from `process.env.DATABASE_URL`, so tests require a `DATABASE_URL`/PostgreSQL connection. They do not require a `DISCORD_TOKEN` because mocked Discord is provided by `tests/setup.ts` and `tests/mocks/MockInstances.ts`. Full bot startup requires a valid `DISCORD_TOKEN` and `DISCORD_PUBLIC_KEY`, see [Environment (Varlock)](#environment-varlock).
 
 ### REST API
 
