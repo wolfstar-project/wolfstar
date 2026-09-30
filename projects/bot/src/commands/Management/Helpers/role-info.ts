@@ -1,45 +1,99 @@
-import { WolfCommand } from '#lib/structures';
-import type { GuildMessage } from '#lib/types';
-import { PermissionLevels } from '#lib/types/Enums';
+import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
+import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
+import { PermissionsBits } from '#utils/bits';
 import { BrandingColors } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { CommandOptionsRunTypeEnum } from '@sapphire/framework';
-import { send } from '@sapphire/plugin-editable-commands';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { MessageEmbed, Permissions } from 'discord.js';
+import { EmbedBuilder } from '@discordjs/builders';
+import { Command, RegisterCommand, container, type TransformedArguments } from '@wolfstar/http-framework';
+import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
+import { ApplicationIntegrationType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<WolfCommand.Options>({
-	description: 'commands/management:roleInfoDescription',
-	detailedDescription: 'commands/management:roleInfoExtended',
-	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: [PermissionFlagsBits.EmbedLinks],
-	runIn: [CommandOptionsRunTypeEnum.GuildAny]
-})
-export class UserCommand extends WolfCommand {
-	public async messageRun(message: GuildMessage, args: WolfCommand.Args) {
-		const role = args.finished ? message.member.roles.highest : await args.pick('roleName');
-		const roleInfoTitles = args.t('commands/management:roleInfoTitles');
+/**
+ * The data of a role the command displays, whether it comes from the `role` option or from the roles of the member.
+ */
+interface RoleData {
+	id: string;
+	name: string;
+	color: number;
+	hoist: boolean;
+	mentionable: boolean;
+	position: number;
+	permissions: bigint;
+}
 
-		const permissions = role.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
-			? args.t('commands/management:roleInfoAll')
-			: role.permissions.toArray().length > 0
-				? role.permissions
-						.toArray()
-						.map((key) => `+ **${args.t(`permissions:${key}`, key)}**`)
+@RegisterCommand((builder) =>
+	applyLocalizedBuilder(builder, 'commands/management:roleInfo')
+		.setContexts(InteractionContextType.Guild)
+		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+		.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/management:roleInfoOptionsRole').setRequired(false))
+)
+export class UserCommand extends Command {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: UserCommand.Arguments) {
+		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+
+		const t = getSupportedUserLanguageT(interaction);
+		const role = options.role === undefined ? await this.getHighestRole(interaction) : this.fromApi(options.role);
+
+		const permissionsString = PermissionsBits.has(role.permissions, PermissionFlagsBits.Administrator)
+			? translateKey(t, 'commands/management:roleInfoAll')
+			: role.permissions > 0n
+				? PermissionsBits.toArray(role.permissions)
+						.map((name) => `+ ${translateKey(t, `permissions:${name}` as TranslationKey)}`)
 						.join('\n')
-				: args.t('commands/management:roleInfoNoPermissions');
+				: translateKey(t, 'commands/management:roleInfoNoPermissions');
 
-		const description = args.t('commands/management:roleInfoData', {
-			role,
-			hoisted: args.t(role.hoist ? 'globals:yes' : 'globals:no'),
-			mentionable: args.t(role.mentionable ? 'globals:yes' : 'globals:no')
+		const description = translateKey(t, 'commands/management:roleInfoData', {
+			role: { id: role.id, name: role.name, hexColor: `#${role.color.toString(16).padStart(6, '0')}`, rawPosition: role.position },
+			hoisted: translateKey(t, role.hoist ? 'globals:yes' : 'globals:no'),
+			mentionable: translateKey(t, role.mentionable ? 'globals:yes' : 'globals:no')
 		});
 
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor(role.color || BrandingColors.Secondary)
 			.setTitle(`${role.name} [${role.id}]`)
 			.setDescription(description)
-			.addField(roleInfoTitles.PERMISSIONS, permissions);
-		return send(message, { embeds: [embed] });
+			.addFields({ name: translateKey(t, 'commands/management:roleInfoTitles.PERMISSIONS' as TranslationKey), value: permissionsString });
+		return interaction.reply({ embeds: [embed.toJSON()] });
+	}
+
+	private fromApi(role: TransformedArguments.Role): RoleData {
+		return {
+			id: role.id,
+			name: role.name,
+			color: role.color,
+			hoist: role.hoist,
+			mentionable: role.mentionable,
+			position: role.position,
+			permissions: BigInt(role.permissions)
+		};
+	}
+
+	/**
+	 * Gets the highest role of the author, `@everyone` if they have no other, which is what `member.roles.highest` is.
+	 */
+	private async getHighestRole(interaction: GuildChatInputInteraction): Promise<RoleData> {
+		const memberRoles = new Set(interaction.member.roles);
+		const roles = await container.gatewayClient.roles.fetchAll(interaction.guildId);
+
+		let highest = roles.find((role) => role.id === interaction.guildId)!;
+		for (const role of roles) {
+			if (memberRoles.has(role.id) && role.position > highest.position) highest = role;
+		}
+
+		return {
+			id: highest.id,
+			name: highest.name,
+			color: highest.color,
+			hoist: highest.hoist,
+			mentionable: highest.mentionable,
+			position: highest.position,
+			permissions: BigInt(highest.permissions.bitField)
+		};
+	}
+}
+
+export namespace UserCommand {
+	export interface Arguments {
+		role?: TransformedArguments.Role;
 	}
 }

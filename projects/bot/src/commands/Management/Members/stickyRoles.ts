@@ -1,73 +1,130 @@
-import { WolfCommand } from '#lib/structures';
-import type { GuildMessage } from '#lib/types';
-import { PermissionLevels } from '#lib/types/Enums';
+import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
+import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
-import { ApplyOptions } from '@sapphire/decorators';
-import { CommandOptionsRunTypeEnum } from '@sapphire/framework';
-import { send } from '@sapphire/plugin-editable-commands';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { Command, RegisterCommand, RegisterSubcommand, container, type TransformedArguments } from '@wolfstar/http-framework';
+import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
+import { ApplicationIntegrationType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
-@ApplyOptions<WolfCommand.Options>({
-	description: 'commands/management:stickyRolesDescription',
-	detailedDescription: 'commands/management:stickyRolesExtended',
-	permissionLevel: PermissionLevels.Administrator,
-	requiredClientPermissions: [PermissionFlagsBits.ManageRoles],
-	runIn: [CommandOptionsRunTypeEnum.GuildAny],
-	subCommands: ['add', 'remove', 'reset', { input: 'show', default: true }]
-})
-export class UserCommand extends WolfCommand {
-	public async add(message: GuildMessage, args: WolfCommand.Args) {
-		const user = await args.pick('userName');
-		const role = await args.pick('roleName');
+const Root = 'commands/management:stickyRoles';
 
-		const stickyRoles = getStickyRoles(message.guild);
+@RegisterCommand((builder) =>
+	applyLocalizedBuilder(builder, Root)
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+		.setContexts(InteractionContextType.Guild)
+		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+)
+export class UserCommand extends Command {
+	@RegisterSubcommand((builder) =>
+		applyLocalizedBuilder(builder, `${Root}SubcommandAdd`)
+			.addUserOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsUser').setRequired(true))
+			.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsRole').setRequired(true))
+	)
+	public async add(interaction: GuildChatInputInteraction, options: UserCommand.UserRoleArguments) {
+		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+
+		const t = getSupportedUserLanguageT(interaction);
+		const { user, role } = options;
+
+		const stickyRoles = await this.getStickyRoles(interaction);
 		await stickyRoles.add(user.id, role.id);
 
-		const content = args.t('commands/management:stickyRolesAdd', { user: user.username });
-		return send(message, content);
+		const content = translateKey(t, 'commands/management:stickyRolesAdd', { user: user.user.username });
+		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
 	}
 
-	public async remove(message: GuildMessage, args: WolfCommand.Args) {
-		const user = await args.pick('userName');
+	@RegisterSubcommand((builder) =>
+		applyLocalizedBuilder(builder, `${Root}SubcommandRemove`)
+			.addUserOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsUser').setRequired(true))
+			.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsRole').setRequired(true))
+	)
+	public async remove(interaction: GuildChatInputInteraction, options: UserCommand.UserRoleArguments) {
+		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
-		const stickyRoles = getStickyRoles(message.guild);
+		const t = getSupportedUserLanguageT(interaction);
+		const { user, role } = options;
+
+		const stickyRoles = await this.getStickyRoles(interaction);
 		const roles = await stickyRoles.fetch(user.id);
-		if (!roles.length) this.error('commands/management:stickyRolesNotExists', { user: user.username });
+		if (roles.length === 0) {
+			const content = translateKey(t, 'commands/management:stickyRolesNotExists', { user: user.user.username });
+			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		}
 
-		const role = await args.pick('roleName');
 		await stickyRoles.remove(user.id, role.id);
 
-		const content = args.t('commands/management:stickyRolesRemove', { user: user.username });
-		return send(message, content);
+		const content = translateKey(t, 'commands/management:stickyRolesRemove', { user: user.user.username });
+		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
 	}
 
-	public async reset(message: GuildMessage, args: WolfCommand.Args) {
-		const user = await args.pick('userName');
+	@RegisterSubcommand((builder) =>
+		applyLocalizedBuilder(builder, `${Root}SubcommandReset`).addUserOption((option) =>
+			applyLocalizedBuilder(option, 'commands/shared:optionsUser').setRequired(true)
+		)
+	)
+	public async reset(interaction: GuildChatInputInteraction, options: UserCommand.UserArguments) {
+		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
-		const stickyRoles = getStickyRoles(message.guild);
+		const t = getSupportedUserLanguageT(interaction);
+		const { user } = options;
+
+		const stickyRoles = await this.getStickyRoles(interaction);
 		const roles = await stickyRoles.fetch(user.id);
-		if (!roles.length) this.error('commands/management:stickyRolesNotExists', { user: user.username });
+		if (roles.length === 0) {
+			const content = translateKey(t, 'commands/management:stickyRolesNotExists', { user: user.user.username });
+			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		}
 
 		await stickyRoles.clear(user.id);
 
-		const content = args.t('commands/management:stickyRolesReset', { user: user.username });
-		return send(message, content);
+		const content = translateKey(t, 'commands/management:stickyRolesReset', { user: user.user.username });
+		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
 	}
 
-	public async show(message: GuildMessage, args: WolfCommand.Args) {
-		const user = await args.pick('userName');
+	@RegisterSubcommand((builder) =>
+		applyLocalizedBuilder(builder, `${Root}SubcommandShow`).addUserOption((option) =>
+			applyLocalizedBuilder(option, 'commands/shared:optionsUser').setRequired(true)
+		)
+	)
+	public async show(interaction: GuildChatInputInteraction, options: UserCommand.UserArguments) {
+		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
-		const stickyRoles = getStickyRoles(message.guild);
+		const t = getSupportedUserLanguageT(interaction);
+		const { user } = options;
+
+		const stickyRoles = await this.getStickyRoles(interaction);
 		const sticky = await stickyRoles.fetch(user.id);
-		if (!sticky.length) this.error('commands/management:stickyRolesShowEmpty');
+		if (sticky.length === 0) {
+			return interaction.reply({ content: translateKey(t, 'commands/management:stickyRolesShowEmpty'), flags: MessageFlags.Ephemeral });
+		}
 
-		const roles = message.guild.roles.cache;
-		const names = sticky.map((role) => roles.get(role)!.name);
+		const names = await Promise.all(
+			sticky.map(async (roleId) => {
+				const role = await container.gatewayClient.roles.get(interaction.guildId, roleId);
+				return `\`${role?.name ?? roleId}\``;
+			})
+		);
 
-		const content = args.t('commands/management:stickyRolesShowSingle', {
-			user: user.username,
-			roles: names.map((name) => `\`${name}\``)
-		});
-		return send(message, content);
+		const content = translateKey(t, 'commands/management:stickyRolesShowSingle', { user: user.user.username, roles: names });
+		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+	}
+
+	private async getStickyRoles(interaction: GuildChatInputInteraction) {
+		// The guild is fetched so the utilities can be created even if it is not cached yet:
+		const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
+		return getStickyRoles(guild);
+	}
+}
+
+export namespace UserCommand {
+	export interface UserArguments {
+		user: TransformedArguments.User;
+	}
+
+	export interface UserRoleArguments extends UserArguments {
+		role: TransformedArguments.Role;
 	}
 }
