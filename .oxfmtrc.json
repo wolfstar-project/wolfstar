@@ -9,7 +9,14 @@
 	"trailingComma": "none",
 	"useTabs": true,
 	"sortPackageJson": false,
-	"ignorePatterns": ["projects/**/src/languages/**/*.json", "dist/", "projects/**/dist/"],
+	"ignorePatterns": [
+		"projects/**/src/languages/**/*.json",
+		"dist/",
+		"projects/**/dist/",
+		"projects/**/src/@types/*.d.ts",
+		".agents/",
+		"skills-lock.json"
+	],
 	"overrides": [
 		{
 			"files": ["README.md"],
