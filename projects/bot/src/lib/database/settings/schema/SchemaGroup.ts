@@ -78,7 +78,7 @@ export class SchemaGroup extends AliasedCollection<string, SchemaGroup | SchemaK
 		return this.getPathArray(key.split('.') as NonEmptyArray<string>);
 	}
 
-	public display(settings: ReadonlyGuildData, language: TFunction): string {
+	public async display(settings: ReadonlyGuildData, language: TFunction): Promise<string> {
 		const folders: string[] = [];
 		const sections = new Map<string, string[]>();
 		let longest = 0;
@@ -99,14 +99,9 @@ export class SchemaGroup extends AliasedCollection<string, SchemaGroup | SchemaK
 		if (folders.length) array.push('= Folders =', ...folders.sort(), '');
 		if (sections.size) {
 			for (const keyType of [...sections.keys()].sort()) {
-				array.push(
-					`= ${toTitleCase(keyType)}s =`,
-					...sections
-						.get(keyType)!
-						.sort()
-						.map((key) => `${key.padEnd(longest)} :: ${this.get(key)!.display(settings, language)}`),
-					''
-				);
+				const keys = sections.get(keyType)!.sort();
+				const displayed = await Promise.all(keys.map((key) => this.get(key)!.display(settings, language)));
+				array.push(`= ${toTitleCase(keyType)}s =`, ...keys.map((key, index) => `${key.padEnd(longest)} :: ${displayed[index]}`), '');
 			}
 		}
 

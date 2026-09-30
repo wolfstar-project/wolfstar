@@ -7,5 +7,5 @@ export interface ISchemaValue {
 	readonly name: string;
 	readonly dashboardOnly: boolean;
 	readonly parent: SchemaGroup | null;
-	display(settings: ReadonlyGuildData, language: TFunction): string;
+	display(settings: ReadonlyGuildData, language: TFunction): Promise<string>;
 }

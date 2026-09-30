@@ -93,7 +93,7 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 
 	public async parse(settings: ReadonlyGuildData, args: WolfArgs): Promise<ReadonlyGuildData[K]> {
 		const { serializer } = this;
-		const context = this.getContext(settings, args.t);
+		const context = await this.getContext(settings, args.t);
 
 		const result = await serializer.parse(args, context);
 		return result.match({
@@ -104,15 +104,15 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 		});
 	}
 
-	public stringify(settings: ReadonlyGuildData, t: TFunction, value: ReadonlyGuildData[K]): string {
+	public async stringify(settings: ReadonlyGuildData, t: TFunction, value: ReadonlyGuildData[K]): Promise<string> {
 		const { serializer } = this;
-		const context = this.getContext(settings, t);
+		const context = await this.getContext(settings, t);
 		return serializer.stringify(value, context);
 	}
 
-	public display(settings: ReadonlyGuildData, t: TFunction): string {
+	public async display(settings: ReadonlyGuildData, t: TFunction): Promise<string> {
 		const { serializer } = this;
-		const context = this.getContext(settings, t);
+		const context = await this.getContext(settings, t);
 
 		if (this.array) {
 			const values = settings[this.property] as readonly any[];
@@ -125,10 +125,10 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 		return isNullish(value) ? t(LanguageKeys.Commands.Admin.ConfSettingNotSet) : serializer.stringify(value, context);
 	}
 
-	public getContext(settings: ReadonlyGuildData, language: TFunction): Serializer.UpdateContext {
+	public async getContext(settings: ReadonlyGuildData, language: TFunction): Promise<Serializer.UpdateContext> {
 		return {
 			entity: settings,
-			guild: resolveGuild(settings.id),
+			guild: await resolveGuild(settings.id),
 			t: language,
 			entry: this
 		} satisfies Serializer.UpdateContext;

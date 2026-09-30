@@ -33,7 +33,7 @@ export async function set(settings: ReadonlyGuildData, key: SchemaKey, args: Wol
 			identifier: LanguageKeys.Settings.Gateway.DuplicateValue,
 			context: {
 				path: key.name,
-				value: key.stringify(settings, args.t, parsed)
+				value: await key.stringify(settings, args.t, parsed)
 			}
 		});
 	}
@@ -51,7 +51,7 @@ export async function remove(settings: ReadonlyGuildData, key: SchemaKey, args: 
 		if (index === -1) {
 			throw new UserError({
 				identifier: LanguageKeys.Settings.Gateway.MissingValue,
-				context: { path: key.name, value: key.stringify(settings, args.t, parsed) }
+				context: { path: key.name, value: await key.stringify(settings, args.t, parsed) }
 			});
 		}
 
