@@ -12,8 +12,17 @@
 	"numberValue": "{{value, number}}",
 	"numberCompactValue": "{{value, numberCompact}}",
 	"dateTimeValue": "{{value, dateTime}}",
-	"andListValue": "{{value, andList}}",
+	"andListValue": "{{value, list(conjunction)}}",
 	"orListValue": "{{value, orList}}",
 	"dateFormat": "MM/DD/YYYY",
-	"dateFormatExplanation": "Month/Day/Year"
+	"dateFormatExplanation": "Month/Day/Year",
+	"humanDateTimeValue": "{{value, humanDateTime}}",
+	"back": "Back",
+	"stop": "Stop",
+	"set": "Set",
+	"remove": "Remove",
+	"reset": "Reset",
+	"undo": "Undo",
+	"value": "Value",
+	"cancel": "Cancel"
 }

@@ -28,7 +28,7 @@
 	},
 	"guildInfoChannels": "• **{{text}}** Text, **{{voice}}** Voice, **{{categories}}** categories.\n• AFK: {{afkChannelText}}",
 	"guildInfoChannelsAfkChannelText": "**<#{{afkChannel}}>** after **{{afkTime}}**min",
-	"guildInfoMembers": "• **{{memberCount, number}}** member(s)\n• Owner: **{{owner.tag}}**\n  (ID: **{{owner.id}}**)",
+	"guildInfoMembers": "• **{{memberCount, number}}** member(s)\n• Owner: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)",
 	"guildInfoOther": "• Roles: **{{size}}**\n• Created: **{{createdAt}}**\n• Verification Level: **{{verificationLevel, humanLevels}}**",
 	"guildInfoBanner": "Banner Image",
 	"guildInfoIcon": "Icon Image",
@@ -87,7 +87,7 @@
 	"stickyRolesRemove": "Successfully removed the specified role from {{user}}.",
 	"stickyRolesAdd": "Successfully added the specified role as sticky to {{user}}.",
 	"stickyRolesShowEmpty": "There are no sticky roles to show.",
-	"stickyRolesShowSingle": "Sticky Role(s) for **{{user}}**: {{roles, andList}}.",
+	"stickyRolesShowSingle": "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.",
 	"createMuteDescription": "Prepare the mute system.",
 	"createMuteExtended": {
 		"extendedHelp": "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role."
@@ -160,20 +160,20 @@
 	"setIgnoreChannelsDescription": "Set a channel to the ignore channel list.",
 	"setIgnoreChannelsExtended": {
 		"usages": ["here/TextChannel"],
-		"extendedHelp": "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use Skyra's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, Skyra is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.",
+		"extendedHelp": "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use WolfStar's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, WolfStar is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.",
 		"explainedUsage": [
 			[
 				"channel",
 				"A TextChannel. You can either put the name of the channel, tag it, or type in \"here\" to select the channel the message was sent."
 			]
 		],
-		"reminder": "You cannot set the same channel twice, instead, Skyra will remove it.",
+		"reminder": "You cannot set the same channel twice, instead, WolfStar will remove it.",
 		"examples": ["#general", "here"]
 	},
 	"setImageLogsDescription": "Set the image logs channel.",
 	"setImageLogsExtended": {
 		"usages": ["here/TextChannel"],
-		"extendedHelp": "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.",
+		"extendedHelp": "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.",
 		"explainedUsage": [
 			[
 				"channel",
@@ -193,7 +193,7 @@
 			]
 		],
 		"examples": ["#member-logs", "here"],
-		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra."
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar."
 	},
 	"setMemberRemoveLogsDescription": "Set the member remove logs channel.",
 	"setMemberRemoveLogsExtended": {
@@ -206,7 +206,7 @@
 			]
 		],
 		"examples": ["#member-logs", "here"],
-		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra."
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar."
 	},
 	"setMessageUpdateLogsDescription": "Set the message update logs channel.",
 	"setMessageUpdateLogsExtended": {
@@ -218,7 +218,7 @@
 				"A TextChannel. You can either put the name of the channel, tag it, or type in \"here\" to configure the channel this command was used in."
 			]
 		],
-		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.",
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.",
 		"examples": ["#message-logs", "here"]
 	},
 	"setMessageDeleteLogsDescription": "Set the message delete logs channel.",
@@ -231,13 +231,13 @@
 				"A TextChannel. You can either put the name of the channel, tag it, or type in \"here\" to configure the channel this command was used in."
 			]
 		],
-		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.\nDue to Discord limitations, Skyra cannot know who deleted a message.",
+		"reminder": "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nDue to Discord limitations, WolfStar cannot know who deleted a message.",
 		"examples": ["#message-logs", "here"]
 	},
 	"setmodlogsDescription": "Set the mod logs channel.",
 	"setmodlogsExtended": {
 		"usages": ["here/TextChannel"],
-		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
+		"extendedHelp": "This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with \"claimable\" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the \"events\" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.",
 		"explainedUsage": [
 			[
 				"channel",
@@ -247,11 +247,11 @@
 		"reminder": "Due to Discord limitations, the auto-detection does not detect kicks. You need to use the `kick` command if you want to document them as a formal moderation log case.",
 		"examples": ["#mod-logs", "here"]
 	},
-	"setprefixDescription": "Set Skyra's prefix.",
+	"setprefixDescription": "Set WolfStar's prefix.",
 	"setprefixExtended": {
 		"usages": ["Prefix"],
-		"extendedHelp": "This command helps you setting up Skyra's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget Skyra's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `Skyra, ping`).",
-		"explainedUsage": [["Prefix", "The prefix to set. Default one in Skyra is `{{DEFAULT_PREFIX}}`."]],
+		"extendedHelp": "This command helps you setting up WolfStar's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget WolfStar's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `WolfStar, ping`).",
+		"explainedUsage": [["Prefix", "The prefix to set. Default one in WolfStar is `{{DEFAULT_PREFIX}}`."]],
 		"reminder": "Your prefix should only contain characters everyone can write and type.",
 		"examples": ["&", "="]
 	},
@@ -275,7 +275,7 @@
 			["User", "The user target for all the actions."],
 			["Role", "The role to add or remove."]
 		],
-		"examples": ["add Skyra Goddess", "show Skyra", "remove Skyra Goddess", "reset Skyra"],
+		"examples": ["add WolfStar Goddess", "show WolfStar", "remove WolfStar Goddess", "reset WolfStar"],
 		"reminder": "The member's roles will not be modified by this command, you need to add or remove them."
 	},
 	"attachmentsModeDescription": "Manage this server's flags for the attachments filter.",
@@ -587,5 +587,89 @@
 		"explainedUsage": [["roles", "The list of roles to claim or unclaim. Leave this empty to get a list of available roles."]],
 		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.",
 		"examples": ["Designer Programmer", "Designer"]
-	}
+	},
+	"createMuteName": "create-mute",
+	"permissionNodesName": "permission-nodes",
+	"managecommandautodeleteName": "command-auto-delete",
+	"manageCommandChannelName": "command-channel",
+	"manageReactionRolesName": "reaction-roles",
+	"setIgnoreChannelsName": "set-ignore-channels",
+	"setImageLogsName": "set-image-logs",
+	"setMemberAddLogsName": "set-member-add-logs",
+	"setMemberRemoveLogsName": "set-member-remove-logs",
+	"setMessageUpdateLogsName": "set-message-update-logs",
+	"setMessageDeleteLogsName": "set-message-delete-logs",
+	"setmodlogsName": "set-mod-logs",
+	"guildInfoName": "server-info",
+	"roleInfoName": "role-info",
+	"stickyRolesName": "sticky-roles",
+	"rolesName": "roles",
+	"setImageLogsOptionsChannelName": "channel",
+	"setImageLogsOptionsChannelDescription": "The channel to send the logs to, leave empty to disable them.",
+	"setMemberAddLogsOptionsChannelName": "channel",
+	"setMemberAddLogsOptionsChannelDescription": "The channel to send the logs to, leave empty to disable them.",
+	"setMemberRemoveLogsOptionsChannelName": "channel",
+	"setMemberRemoveLogsOptionsChannelDescription": "The channel to send the logs to, leave empty to disable them.",
+	"setMessageUpdateLogsOptionsChannelName": "channel",
+	"setMessageUpdateLogsOptionsChannelDescription": "The channel to send the logs to, leave empty to disable them.",
+	"setMessageDeleteLogsOptionsChannelName": "channel",
+	"setMessageDeleteLogsOptionsChannelDescription": "The channel to send the logs to, leave empty to disable them.",
+	"setmodlogsOptionsChannelName": "channel",
+	"setmodlogsOptionsChannelDescription": "The channel to send the logs to, leave empty to disable them.",
+	"setIgnoreChannelsOptionsChannelName": "channel",
+	"setIgnoreChannelsOptionsChannelDescription": "The channel to toggle in the ignore list, defaults to the current one.",
+	"permissionNodesSubcommandAddName": "add",
+	"permissionNodesSubcommandAddDescription": "Add a command to a permission node.",
+	"permissionNodesSubcommandRemoveName": "remove",
+	"permissionNodesSubcommandRemoveDescription": "Remove a command from a permission node.",
+	"permissionNodesSubcommandResetName": "reset",
+	"permissionNodesSubcommandResetDescription": "Remove every command from a permission node.",
+	"permissionNodesSubcommandShowName": "show",
+	"permissionNodesSubcommandShowDescription": "Show the permission nodes.",
+	"managecommandautodeleteSubcommandAddName": "add",
+	"managecommandautodeleteSubcommandAddDescription": "Set the auto-delete timer of a channel.",
+	"managecommandautodeleteSubcommandRemoveName": "remove",
+	"managecommandautodeleteSubcommandRemoveDescription": "Remove the auto-delete timer of a channel.",
+	"managecommandautodeleteSubcommandResetName": "reset",
+	"managecommandautodeleteSubcommandResetDescription": "Remove every auto-delete timer.",
+	"managecommandautodeleteSubcommandShowName": "show",
+	"managecommandautodeleteSubcommandShowDescription": "Show the auto-delete timers.",
+	"manageCommandChannelSubcommandAddName": "add",
+	"manageCommandChannelSubcommandAddDescription": "Block a command in a channel.",
+	"manageCommandChannelSubcommandRemoveName": "remove",
+	"manageCommandChannelSubcommandRemoveDescription": "Unblock a command in a channel.",
+	"manageCommandChannelSubcommandResetName": "reset",
+	"manageCommandChannelSubcommandResetDescription": "Unblock every command in a channel.",
+	"manageCommandChannelSubcommandShowName": "show",
+	"manageCommandChannelSubcommandShowDescription": "Show the blocked commands of a channel.",
+	"manageReactionRolesSubcommandAddName": "add",
+	"manageReactionRolesSubcommandAddDescription": "Add a reaction role.",
+	"manageReactionRolesSubcommandRemoveName": "remove",
+	"manageReactionRolesSubcommandRemoveDescription": "Remove a reaction role.",
+	"manageReactionRolesSubcommandResetName": "reset",
+	"manageReactionRolesSubcommandResetDescription": "Remove every reaction role.",
+	"manageReactionRolesSubcommandShowName": "show",
+	"manageReactionRolesSubcommandShowDescription": "Show the reaction roles.",
+	"stickyRolesSubcommandAddName": "add",
+	"stickyRolesSubcommandAddDescription": "Add a sticky role to a user.",
+	"stickyRolesSubcommandRemoveName": "remove",
+	"stickyRolesSubcommandRemoveDescription": "Remove a sticky role from a user.",
+	"stickyRolesSubcommandResetName": "reset",
+	"stickyRolesSubcommandResetDescription": "Remove every sticky role from a user.",
+	"stickyRolesSubcommandShowName": "show",
+	"stickyRolesSubcommandShowDescription": "Show the sticky roles of a user.",
+	"permissionNodesOptionsTypeName": "type",
+	"permissionNodesOptionsTypeDescription": "Whether the command is allowed or denied.",
+	"permissionNodesOptionsTypeChoiceAllow": "allow",
+	"permissionNodesOptionsTypeChoiceDeny": "deny",
+	"managecommandautodeleteOptionsDurationName": "duration",
+	"managecommandautodeleteOptionsDurationDescription": "How long to wait before deleting the replies, for example 30s or 2m.",
+	"manageReactionRolesOptionsMessageName": "message",
+	"manageReactionRolesOptionsMessageDescription": "The ID of the message to attach the reaction role to, leave empty to apply it to any message.",
+	"rolesSubcommandListName": "list",
+	"rolesSubcommandListDescription": "List the public roles of this server.",
+	"rolesSubcommandClaimName": "claim",
+	"rolesSubcommandClaimDescription": "Claim a public role.",
+	"rolesSubcommandUnclaimName": "unclaim",
+	"rolesSubcommandUnclaimDescription": "Give up a public role."
 }

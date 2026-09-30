@@ -3,5 +3,10 @@
 	"LOW": "Low",
 	"MEDIUM": "Medium",
 	"HIGH": "High",
-	"VERY_HIGH": "Highest"
+	"VERY_HIGH": "Highest",
+	"None": "None",
+	"Low": "Low",
+	"Medium": "Medium",
+	"High": "High",
+	"VeryHigh": "Highest"
 }

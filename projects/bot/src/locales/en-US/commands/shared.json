@@ -1,0 +1,30 @@
+{
+	"deprecatedMessage": "Message based commands are **deprecated**, and will be removed in the future. You should use the {{command}} slash command instead!",
+	"slashOnlyDetailedDescription": {
+		"extendedHelp": "This command is only available via slash commands. Please use the slash command instead."
+	},
+	"slashOnlyErrorMessage": "This command is only available via slash commands. Please use the slash command instead.",
+	"optionsUserName": "user",
+	"optionsUserDescription": "The user to target.",
+	"optionsReasonName": "reason",
+	"optionsReasonDescription": "The reason, recorded in the moderation log.",
+	"optionsDurationName": "duration",
+	"optionsDurationDescription": "How long the action lasts, for example 30m, 2h or 7d.",
+	"optionsRoleName": "role",
+	"optionsRoleDescription": "The role to use.",
+	"optionsChannelName": "channel",
+	"optionsChannelDescription": "The channel to use, defaults to the current one.",
+	"optionsShowName": "show",
+	"optionsShowDescription": "Whether to show the response publicly (default: no).",
+	"optionsCommandName": "command",
+	"optionsCommandDescription": "The name of the command.",
+	"optionsEmojiName": "emoji",
+	"optionsEmojiDescription": "The emoji to use.",
+	"optionsTargetName": "target",
+	"optionsTargetDescription": "The role or user to configure.",
+	"addName": "add",
+	"removeName": "remove",
+	"resetName": "reset",
+	"showName": "show",
+	"listName": "list"
+}

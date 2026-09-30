@@ -10,6 +10,275 @@ import "i18next";
 declare module "i18next" {
   interface CustomTypeOptions {
     resources: {
+      arguments: {
+        boolean_one: "I could not resolve `{{parameter}}` to a boolean, the only possible values is: {{possibles}}";
+        boolean_other: "I could not resolve `{{parameter}}` to a boolean, the possible values are: {{possibles, orList}}";
+        booleanError: "I could not resolve `{{parameter}}` to a boolean, the only possible value is: {{possibles}}";
+        booleanDisabled: "Disabled";
+        booleanEnabled: "Enabled";
+        booleanFalseOptions: ["false", "f", "no", "n", "off", "disable", "disabled", "0", "-"];
+        booleanTrueOptions: ["true", "t", "yes", "y", "on", "enable", "enabled", "1", "+"];
+        caseNoEntries: "I could not resolve `{{parameter}}` to a case, as there are no moderation cases in this server!";
+        caseUnknownEntry: "I could not resolve `{{parameter}}` to a case, make sure you typed its number correctly!";
+        caseNotInThisGuild: "I somehow resolved `{{parameter}}` to a case, but it is not from this server!";
+        caseLatestOptions: ["last", "latest"];
+        categoryChannelError: "I could not resolve `{{parameter}}` to a category channel, please make sure you typed its name or ID correctly!";
+        channelError: "I could not resolve `{{parameter}}` to a channel, make sure you typed its name or ID correctly!";
+        command: "I could not resolve `{{parameter}}` to a command! Make sure you typed its name or one of its aliases correctly!";
+        commandMatch: "I could not match `{{parameter}}` to a command nor category, these are some of the valid formats:\n\n- `ping` (matches the ping command only).\n- `management.*` (matches all commands under the **Management** category).\n- `management.configuration.*` (matches all commands under **Management** > **Configuration** sub-category).\n\n> **Hint**: When checking `{{commandContext.commandPrefix}}help`, the category of each command is located at the top of the embed.";
+        dateError: "I could not resolve `{{parameter}}` to a date, there are some of the valid formats:\n\n$t(arguments:dateFormats)";
+        dateFormats: "- `2016-11-24` (YYYY-MM-DD)\n- `2016-11-24T23:56` (YYYY-MM-DDTHH:mm)\n- `2016-11-24T23:56:12` (YYYY-MM-DDTHH:mm:ss)\n- `2016-11-24T23:56:12.000` (YYYY-MM-DDTHH:mm:ss.sss)\n\n> **Tip**: The last 3 formats accept `Z` at the end to mark the time as UTC. Alternatively, you can input your timezone's offset by adding `+HH:MM`, e.g. `+01:00`.";
+        dateTooEarly: "The parameter `{{parameter}}` resolved to a date earlier than {{minimum, dateTime}}, which is not allowed!";
+        dateTooFar: "The parameter `{{parameter}}` resolved to a date older than {{maximum, dateTime}}, which is not allowed!";
+        dmChannelError: "I could not resolve `{{parameter}}` to a DM channel, make sure you typed its ID correctly!";
+        duration: "I could not resolve `{{parameter}}` to a valid duration, there are some of the valid formats:\n\n$t(arguments:durationFormats)";
+        durationFormats: '- `4h` (4 hours).\n- `20m5s` (20 minutes and 5 seconds).\n- `"1w 2d 16h 40m 10s"` (1 week, 2 days, 16 hours, 40 minutes, and 10 seconds).';
+        emojiError: "I could not resolve `{{parameter}}` to a valid emoji, are you sure you used a valid twemoji (e.g. 🌊) or an emoji (e.g. {{GREENTICK}})?";
+        floatError: "I could not resolve `{{parameter}}` to a number!";
+        floatTooLarge: "The parameter `{{parameter}}` is too high! It needs to be at most {{maximum}}!";
+        floatTooSmall: "The parameter `{{parameter}}` is too low! It needs to be at least {{minimum}}!";
+        guildChannelError: "I could not resolve `{{parameter}}` to a channel from this server, please make sure you typed its name or ID correctly!";
+        guildChannelMismatchingError: "The parameter `{{parameter}}` resolved to an incompatible channel type in this server, please try another channel!";
+        guildChannelMissingGuildError: "I was not able to resolve `{{parameter}}` because this argument requires to be run in a server channel.";
+        guildPrivateThreadChannelError: "I could not resolve `{{parameter}}` to a private thread channel, please make sure you typed its name or ID correctly!";
+        guildPublicThreadChannelError: "I could not resolve `{{parameter}}` to a public thread channel, please make sure you typed its name or ID correctly!";
+        guildStageVoiceChannelError: "I could not resolve `{{parameter}}` to a stage voice channel, please make sure you typed its name or ID correctly!";
+        guildTextChannelError: "I could not resolve `{{parameter}}` to a text channel, please make sure you typed its name or ID correctly!\n\n> **Tip**: You can also mention it!";
+        guildThreadChannelError: "I could not resolve `{{parameter}}` to a thread channel, please make sure you typed its name or ID correctly!";
+        guildVoiceChannelError: "I could not resolve `{{parameter}}` to a voice channel, please make sure you typed its name or ID correctly!";
+        hyperlinkError: "I could not resolve `{{parameter}}` to an hyperlink, they are usually formatted similarly as `https://discord.com`!";
+        integerError: "I could not resolve `{{parameter}}` to an integer!";
+        integerTooLarge: "The parameter `{{parameter}}` is too high! It needs to be at most {{maximum}}!";
+        integerTooSmall: "The parameter `{{parameter}}` is too low! It needs to be at least {{minimum}}!";
+        invite: "I could not resolve `{{parameter}}` to a valid invite link, they have one of the following formats:\n\n- `https://discord​.gg/6gakFR2`.\n- `https://discord​.com/invite/6gakFR2`.\n- `https://discordapp​.com/invite/6gakFR2`.\n\n> **Tip**: You can omit the `https://` part, `discord​.gg/6gakFR2` is also accepted as a valid parameter.";
+        language: "I could not resolve `{{parameter}}` to a valid language code!\n**Hint**: the following are supported: {{possibles, list(conjunction)}}.\n\n> **Tip**: You can add more (or improve the existing ones) at <https://translation.wolfstar.rocks>!";
+        memberError: "I could not resolve `{{parameter}}` to a member from this server, please make sure you typed their name or ID correctly!\n\n> **Tip**: You can also use mentions!";
+        memberMissingGuild: "I was not able to resolve `{{parameter}}` because this argument requires to be run in a server channel.";
+        messageError: "I could not resolve `{{parameter}}` to a message:\n\n- If you used an **ID** (e.g. `{{message.id}}`), make sure you copied the right ID from this channel (<#{{channel}}>), and not, for example, the author's ID.\n- If you used a **message link** (e.g. `{{message.url}}`), make sure it is from a channel from this server, and that both of us have permissions to read it.\n- You did not input a valid parameter, in that case, check the two above!";
+        missing: "You need to write another parameter!\n\n> **Tip**: You can do `{{commandContext.commandPrefix}}help {{command.name}}` to find out how to use this command.";
+        newsChannel: "I could not resolve `{{parameter}}` to an announcement channel, please make sure you typed its name or ID correctly!\n\n> **Tip**: You can also mention it!";
+        numberError: "I could not resolve `{{parameter}}` to a number!";
+        numberTooLarge: "The parameter `{{parameter}}` is too high! It needs to be at most {{maximum}}!";
+        numberTooSmall: "The parameter `{{parameter}}` is too low! It needs to be at least {{minimum}}!";
+        piece: "I could not resolve `{{parameter}}` to a piece! Make sure you typed its name or one of its aliases correctly!";
+        rangeInvalid: "`{{parameter}}` must be a number or a range of numbers.";
+        rangeMax_other: "`{{parameter}}` accepts a range of maximum {{maximum}} numbers";
+        rangeMax_one: "`{{parameter}}` accepts a range of maximum {{maximum}} number";
+        resetPossibles: ["off", "reset"];
+        roleError: "I could not resolve `{{parameter}}` to a role, please make sure you typed its name or ID correctly!\n\n> **Tip**: You can also mention it!";
+        roleMissingGuild: "I was not able to resolve `{{parameter}}` because this argument requires to be run in a server channel.";
+        snowflake: "I could not resolve `{{parameter}}` to a valid snowflake! They're numbers with 17 to 18 digits, for example, your message has a snowflake of `{{message.id}}`!";
+        store: "I could not resolve `{{parameter}}` to a valid store!\n**Hint**: the following are supported: {{possibles, list(conjunction)}}.";
+        stringTooLong: "The parameter `{{parameter}}` is too long! It needs to have less than {{maximum}} character(s)!";
+        stringTooShort: "The parameter `{{parameter}}` is too short! It needs to have at least {{minimum}} character(s)!";
+        time: "I could not resolve `{{parameter}}` to a valid time!\n**Hint**: the following formats are supported:\n\n$t(arguments:durationFormats)\n$t(arguments:dateFormats)";
+        timeSpan: "I could not resolve `{{parameter}}` to a valid duration, make sure you typed a valid integer or a duration formatted value. Some of the valid formats are:\n\n- `45` (45 seconds).\n$t(arguments:durationFormats)\n$t(arguments:dateFormats)";
+        timeSpanTooBig: "The parameter `{{parameter}}` resolved to a duration longer than {{maximum, duration}}, which is not allowed!";
+        timeSpanTooSmall: "The parameter `{{parameter}}` resolved to a duration shorter than {{minimum, duration}}, which is not allowed!";
+        tooFewWinners: "The parameter `{{parameter}}` resolved to a number that is too low, it must be at least 1!";
+        tooManyWinners: "The parameter `{{parameter}}` resolved to a number that is too high, it must be at maximum 20!";
+        unavailable: "Whoops! It seems I couldn't find a parser for a parameter, please contact my developers about it!";
+        userError: "I could not resolve `{{parameter}}` to a user, please make sure you typed their ID correctly!\n\n> **Tip**: You can also use mentions!";
+        enumEmptyError: "I was not able to resolve `{{parameter}}` because the list of possible values is empty.";
+        enumError: "I could not resolve `{{parameter}}` to a valid value, the possible values are: {{possibles, orList}}";
+      };
+      assertions: {
+        expectedNonThreadChannel: "Expected a regular text channel, but I received the thread channel {{channel}} instead.";
+      };
+      "commands/auto-moderation": {
+        showName: "show";
+        showDescription: "Show the current configuration for this server";
+        editName: "edit";
+        editDescription: "Edit the configuration for this server";
+        resetName: "reset";
+        resetDescription: "Reset a configuration key to its default value";
+        addName: "add";
+        removeName: "remove";
+        optionsEnabledName: "enabled";
+        optionsEnabledDescription: "Toggle the sub-system";
+        optionsActionAlertName: "alert";
+        optionsActionAlertDescription: "Toggle message alerts in the channel";
+        optionsActionLogName: "log";
+        optionsActionLogDescription: "Toggle message logs in the moderation logs channel, if set";
+        optionsActionDeleteName: "delete";
+        optionsActionDeleteDescription: "Toggle message deletions";
+        optionsPunishmentName: "punishment";
+        optionsPunishmentDescription: "Set the moderation action to take after the threshold is reached";
+        optionsPunishmentDurationName: "punishment-duration";
+        optionsPunishmentDurationDescription: "Set the duration for the punishment";
+        optionsThresholdName: "threshold";
+        optionsThresholdDescription: "Set the amount of infractions allowed within the set period";
+        optionsThresholdPeriodName: "threshold-period";
+        optionsThresholdPeriodDescription: "Set the time in which infractions will accumulate";
+        optionsKeyName: "key";
+        optionsKeyDescription: "The key to reset";
+        optionsKeyEnabled: "Enabled";
+        optionsKeyActionAlert: "Alert Messages";
+        optionsKeyActionLog: "Post Moderation Logs";
+        optionsKeyActionDelete: "Message Deletions";
+        optionsKeyPunishment: "Punishment";
+        optionsKeyPunishmentDuration: "Punishment Duration";
+        optionsKeyThreshold: "Punishment Threshold";
+        optionsKeyThresholdPeriod: "Punishment Threshold Period";
+        optionsKeyWords: "Words";
+        optionsWordName: "word";
+        optionsWordDescription: "The word to add or remove";
+        attachmentsName: "automod-attachments";
+        attachmentsDescription: "Manage the auto-moderator for attachments";
+        capitalsName: "automod-capitals";
+        capitalsDescription: "Manage the auto-moderator for capitalization";
+        wordsName: "automod-words";
+        wordsDescription: "Manage the auto-moderator for words";
+        invitesName: "automod-invites";
+        invitesDescription: "Manage the auto-moderator for invites";
+        linksName: "automod-links";
+        linksDescription: "Manage the auto-moderator for links";
+        spamName: "automod-spam";
+        spamDescription: "Manage the auto-moderator for spam";
+        newlinesName: "automod-newlines";
+        newlinesDescription: "Manage the auto-moderator for lines";
+        reactionsName: "automod-reactions";
+        reactionsDescription: "Manage the auto-moderator for reactions";
+        showDisabled: "Auto-moderator inactive";
+        showEnabled: "Auto-moderator active";
+        showReplyActive: "{{emoji}} **Alert Messages**";
+        showReplyInactive: "{{emoji}} ~~Alert Messages~~";
+        showLogActive: "{{emoji}} **Post Moderation Logs**";
+        showLogInactive: "{{emoji}} ~~Post Moderation Logs~~";
+        showDeleteActive: "{{emoji}} **Message Deletions**";
+        showDeleteInactive: "{{emoji}} ~~Message Deletions~~";
+        showPunishmentTitle: "Punishment active";
+        showPunishment: "{{emoji}} **Type:** {{name}}";
+        showPunishmentTemporary: "{{emoji}} **Type:** {{name}} for {{duration}}";
+        showPunishmentThreshold: "{{emoji}} **Applies after:** {{threshold, number}} infractions within {{period}}";
+        editSuccess: "Successfully edited the auto-moderator's settings.";
+        wordAddDescription: "Add a word to the filter list";
+        wordAddFiltered: "The word `{{word}}` was already on the filter list.";
+        wordRemoveDescription: "Remove a word from the filter list";
+        wordRemoveNotFiltered: "The word `{{word}}` was not on the filter list.";
+        wordShowList: "{{words, list(conjunction)}}";
+        wordShowListTitle_one: "Filtered Word ({{count, number}})";
+        wordShowListTitle_other: "Filtered Words ({{count, number}})";
+        wordShowListEmpty: "Please use {{command}} to add words to the filter list.";
+        wordShowListTitleEmpty: "No words are currently filtered";
+      };
+      "commands/case": {
+        name: "case";
+        description: "Manage or view moderation cases.";
+        viewName: "view";
+        viewDescription: "Retrieve a moderation case's information.";
+        archiveName: "archive";
+        archiveDescription: "Archive a moderation case.";
+        deleteName: "delete";
+        deleteDescription: "Delete a moderation case.";
+        editName: "edit";
+        editDescription: "Edit a moderation case.";
+        listName: "list";
+        listDescription: "List the moderation cases.";
+        optionsCaseName: "case";
+        optionsCaseDescription: "The number of the moderation case.";
+        optionsReasonName: "reason";
+        optionsReasonDescription: "The new reason for the moderation case.";
+        optionsDurationName: "duration";
+        optionsDurationDescription: "The new duration for the moderation case.";
+        optionsUserName: "user";
+        optionsUserDescription: "The user to filter the moderation cases by.";
+        optionsOverviewName: "overview";
+        optionsOverviewDescription: "Whether or not to show the overview of the moderation cases.";
+        optionsTypeName: "type";
+        optionsTypeDescription: "The type to filter the moderation cases by.";
+        optionsPendingOnlyName: "pending-only";
+        optionsPendingOnlyDescription: "Whether or not to show only the pending moderation cases.";
+        optionsShowName: "show";
+        optionsShowDescription: "Whether or not to show the response publicly.";
+        timeNotAllowed: "The type of the moderation case (**{{type}}**) does not allow for a duration.";
+        timeNotAllowedInCompletedEntries: "The moderation case `{{caseId}}` has already been completed and cannot be edited.";
+        timeEditNotSupported: "The type of the moderation case (**{{type}}**) does not allow editing the duration.";
+        timeTooEarly: "The duration of the moderation case would end before it starts ({{time}}). The duration starts at {{start}}.";
+        listEmpty: "There are no moderation cases with the selected filters.";
+        listDetailsTitle_one: "There is 1 entry.";
+        listDetailsTitle_other: "There are {{count}} entries.";
+        listDetailsModerator: "{{emoji}} **Moderator:** {{mention}} ({{userId}})";
+        listDetailsUser: "{{emoji}} **User:** {{mention}} ({{userId}})";
+        listDetailsExpires: "{{emoji}} **Expires {{time}}**";
+        listOverviewFooter: "This server has {{warnings}}, {{mutes}}, {{timeouts}}, {{kicks}}, and {{bans}}";
+        listOverviewFooterUser: "This user has {{warnings}}, {{mutes}}, {{timeouts}}, {{kicks}}, and {{bans}}";
+        listOverviewFooterWarning_one: "{{count}} warning";
+        listOverviewFooterWarning_other: "{{count}} warnings";
+        listOverviewFooterMutes_one: "{{count}} mute";
+        listOverviewFooterMutes_other: "{{count}} mutes";
+        listOverviewFooterTimeouts_one: "{{count}} timeout";
+        listOverviewFooterTimeouts_other: "{{count}} timeouts";
+        listOverviewFooterKicks_one: "{{count}} kick";
+        listOverviewFooterKicks_other: "{{count}} kicks";
+        listOverviewFooterBans_one: "{{count}} ban";
+        listOverviewFooterBans_other: "{{count}} bans";
+        editSuccess: "Successfully edited case {{caseId}}.";
+        archiveSuccess: "Successfully archived case {{caseId}}.";
+        deleteSuccess: "Successfully deleted case {{caseId}}.";
+      };
+      "commands/conf": {
+        name: "conf";
+        description: "Define per-server settings.";
+        menuName: "menu";
+        menuDescription: "Open an interactive settings menu";
+        showName: "show";
+        showDescription: "Show current settings or a specific key";
+        setName: "set";
+        setDescription: "Set a value for a configuration key";
+        removeName: "remove";
+        removeDescription: "Remove a value from a configuration key";
+        resetName: "reset";
+        resetDescription: "Reset a configuration key to its default value";
+        optionsKeyName: "key";
+        optionsKeyDescription: "The configuration key to modify";
+        optionsValueName: "value";
+        optionsValueDescription: "The value to set or remove";
+        updated: "Successfully updated the key **{{key}}**: {{response}}";
+        getNoExt: "The key **{{key}}** does not seem to exist.";
+        get: "The value for the key **{{key}}** is: `{{value}}`";
+        resetSuccess: "The key **{{key}}** has been reset to: `{{value}}`";
+        nochange: "The value for **{{key}}** was already that value.";
+        server: "Settings{{key}}:\n{{list}}";
+        serverDescription: "Define per-server settings.";
+        serverExtended: {
+          usages: [
+            "set NameOfKey Value for Key",
+            "show",
+            "show NameOfKey",
+            "remove NameOfKey Value for Key",
+            "reset NameOfKey",
+            "menu",
+          ];
+          extendedHelp: "Allows you to configure WolfStar from Discord, as a quick alternative to the [web dashboard](https://wolfstar.rocks).";
+          examples: [
+            "set language en-GB",
+            "set channels.moderation-logs #moderation-logs",
+            "show",
+            "show channels",
+            "remove roles.moderator Moderator",
+            "reset roles.moderator",
+            "menu",
+          ];
+          reminder: "There are keys and groups, keys that are within a group are named by `GroupName.KeyName`.";
+        };
+        menuRenderAtFolder: "Currently at: 📁 {{path}}";
+        menuRenderAtPiece: "Currently at: ⚙️ {{path}}";
+        menuRenderNokeys: "There are no configurable keys for this folder";
+        menuRenderSelect: "Use the menu below to navigate:";
+        menuRenderUpdate: "• Update Value → `set <value>`";
+        menuRenderRemove: "• Remove Value → `remove <value>`";
+        menuRenderReset: "• Reset Value → `reset`";
+        menuRenderUndo: "• Undo Update → `undo`";
+        menuRenderCvalue: "Current Value: {{value}}";
+        menuRenderBack: "Press ◀ to go back";
+        menuInputPrompt: "Choose or enter the new value for **{{path}}**";
+        menuSelectPlaceholder: "Choose an option…";
+        menuInvalidKey: "Invalid Key, please try again with any of the following options.";
+        menuInvalidAction: "Invalid Action, please try again with any of the following options.";
+        menuSaved: "Successfully saved all changes.";
+        settingNotSet: "Not Set";
+      };
       "commands/management": {
         commandModeEnable: "Enables the sub-system.";
         commandModeDisable: "Disables the sub-system.";
@@ -40,7 +309,7 @@ declare module "i18next" {
         };
         guildInfoChannels: "• **{{text}}** Text, **{{voice}}** Voice, **{{categories}}** categories.\n• AFK: {{afkChannelText}}";
         guildInfoChannelsAfkChannelText: "**<#{{afkChannel}}>** after **{{afkTime}}**min";
-        guildInfoMembers: "• **{{memberCount, number}}** member(s)\n• Owner: **{{owner.tag}}**\n  (ID: **{{owner.id}}**)";
+        guildInfoMembers: "• **{{memberCount, number}}** member(s)\n• Owner: **{{ownerTag}}**\n  (ID: **{{ownerId}}**)";
         guildInfoOther: "• Roles: **{{size}}**\n• Created: **{{createdAt}}**\n• Verification Level: **{{verificationLevel, humanLevels}}**";
         guildInfoBanner: "Banner Image";
         guildInfoIcon: "Icon Image";
@@ -99,7 +368,7 @@ declare module "i18next" {
         stickyRolesRemove: "Successfully removed the specified role from {{user}}.";
         stickyRolesAdd: "Successfully added the specified role as sticky to {{user}}.";
         stickyRolesShowEmpty: "There are no sticky roles to show.";
-        stickyRolesShowSingle: "Sticky Role(s) for **{{user}}**: {{roles, andList}}.";
+        stickyRolesShowSingle: "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.";
         createMuteDescription: "Prepare the mute system.";
         createMuteExtended: {
           extendedHelp: "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role.";
@@ -212,20 +481,20 @@ declare module "i18next" {
         setIgnoreChannelsDescription: "Set a channel to the ignore channel list.";
         setIgnoreChannelsExtended: {
           usages: ["here/TextChannel"];
-          extendedHelp: "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use Skyra's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, Skyra is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.";
+          extendedHelp: "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use WolfStar's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, WolfStar is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.";
           explainedUsage: [
             [
               "channel",
               'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to select the channel the message was sent.',
             ],
           ];
-          reminder: "You cannot set the same channel twice, instead, Skyra will remove it.";
+          reminder: "You cannot set the same channel twice, instead, WolfStar will remove it.";
           examples: ["#general", "here"];
         };
         setImageLogsDescription: "Set the image logs channel.";
         setImageLogsExtended: {
           usages: ["here/TextChannel"];
-          extendedHelp: "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.";
+          extendedHelp: "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
           explainedUsage: [
             [
               "channel",
@@ -245,7 +514,7 @@ declare module "i18next" {
             ],
           ];
           examples: ["#member-logs", "here"];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.";
+          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
         };
         setMemberRemoveLogsDescription: "Set the member remove logs channel.";
         setMemberRemoveLogsExtended: {
@@ -258,7 +527,7 @@ declare module "i18next" {
             ],
           ];
           examples: ["#member-logs", "here"];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.";
+          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
         };
         setMessageUpdateLogsDescription: "Set the message update logs channel.";
         setMessageUpdateLogsExtended: {
@@ -270,7 +539,7 @@ declare module "i18next" {
               'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to configure the channel this command was used in.',
             ],
           ];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.";
+          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
           examples: ["#message-logs", "here"];
         };
         setMessageDeleteLogsDescription: "Set the message delete logs channel.";
@@ -283,13 +552,13 @@ declare module "i18next" {
               'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to configure the channel this command was used in.',
             ],
           ];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.\nDue to Discord limitations, Skyra cannot know who deleted a message.";
+          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nDue to Discord limitations, WolfStar cannot know who deleted a message.";
           examples: ["#message-logs", "here"];
         };
         setmodlogsDescription: "Set the mod logs channel.";
         setmodlogsExtended: {
           usages: ["here/TextChannel"];
-          extendedHelp: 'This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with "claimable" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for Skyra.\nFor auto-detection, you need to individually set the "events" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.';
+          extendedHelp: 'This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with "claimable" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the "events" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.';
           explainedUsage: [
             [
               "channel",
@@ -299,12 +568,12 @@ declare module "i18next" {
           reminder: "Due to Discord limitations, the auto-detection does not detect kicks. You need to use the `kick` command if you want to document them as a formal moderation log case.";
           examples: ["#mod-logs", "here"];
         };
-        setprefixDescription: "Set Skyra's prefix.";
+        setprefixDescription: "Set WolfStar's prefix.";
         setprefixExtended: {
           usages: ["Prefix"];
-          extendedHelp: "This command helps you setting up Skyra's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget Skyra's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `Skyra, ping`).";
+          extendedHelp: "This command helps you setting up WolfStar's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget WolfStar's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `WolfStar, ping`).";
           explainedUsage: [
-            ["Prefix", "The prefix to set. Default one in Skyra is `{{DEFAULT_PREFIX}}`."],
+            ["Prefix", "The prefix to set. Default one in WolfStar is `{{DEFAULT_PREFIX}}`."],
           ];
           reminder: "Your prefix should only contain characters everyone can write and type.";
           examples: ["&", "="];
@@ -332,7 +601,12 @@ declare module "i18next" {
             ["User", "The user target for all the actions."],
             ["Role", "The role to add or remove."],
           ];
-          examples: ["add Skyra Goddess", "show Skyra", "remove Skyra Goddess", "reset Skyra"];
+          examples: [
+            "add WolfStar Goddess",
+            "show WolfStar",
+            "remove WolfStar Goddess",
+            "reset WolfStar",
+          ];
           reminder: "The member's roles will not be modified by this command, you need to add or remove them.";
         };
         attachmentsModeDescription: "Manage this server's flags for the attachments filter.";
@@ -650,6 +924,90 @@ declare module "i18next" {
           reminder: "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.";
           examples: ["Designer Programmer", "Designer"];
         };
+        createMuteName: "create-mute";
+        permissionNodesName: "permission-nodes";
+        managecommandautodeleteName: "command-auto-delete";
+        manageCommandChannelName: "command-channel";
+        manageReactionRolesName: "reaction-roles";
+        setIgnoreChannelsName: "set-ignore-channels";
+        setImageLogsName: "set-image-logs";
+        setMemberAddLogsName: "set-member-add-logs";
+        setMemberRemoveLogsName: "set-member-remove-logs";
+        setMessageUpdateLogsName: "set-message-update-logs";
+        setMessageDeleteLogsName: "set-message-delete-logs";
+        setmodlogsName: "set-mod-logs";
+        guildInfoName: "server-info";
+        roleInfoName: "role-info";
+        stickyRolesName: "sticky-roles";
+        rolesName: "roles";
+        setImageLogsOptionsChannelName: "channel";
+        setImageLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
+        setMemberAddLogsOptionsChannelName: "channel";
+        setMemberAddLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
+        setMemberRemoveLogsOptionsChannelName: "channel";
+        setMemberRemoveLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
+        setMessageUpdateLogsOptionsChannelName: "channel";
+        setMessageUpdateLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
+        setMessageDeleteLogsOptionsChannelName: "channel";
+        setMessageDeleteLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
+        setmodlogsOptionsChannelName: "channel";
+        setmodlogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
+        setIgnoreChannelsOptionsChannelName: "channel";
+        setIgnoreChannelsOptionsChannelDescription: "The channel to toggle in the ignore list, defaults to the current one.";
+        permissionNodesSubcommandAddName: "add";
+        permissionNodesSubcommandAddDescription: "Add a command to a permission node.";
+        permissionNodesSubcommandRemoveName: "remove";
+        permissionNodesSubcommandRemoveDescription: "Remove a command from a permission node.";
+        permissionNodesSubcommandResetName: "reset";
+        permissionNodesSubcommandResetDescription: "Remove every command from a permission node.";
+        permissionNodesSubcommandShowName: "show";
+        permissionNodesSubcommandShowDescription: "Show the permission nodes.";
+        managecommandautodeleteSubcommandAddName: "add";
+        managecommandautodeleteSubcommandAddDescription: "Set the auto-delete timer of a channel.";
+        managecommandautodeleteSubcommandRemoveName: "remove";
+        managecommandautodeleteSubcommandRemoveDescription: "Remove the auto-delete timer of a channel.";
+        managecommandautodeleteSubcommandResetName: "reset";
+        managecommandautodeleteSubcommandResetDescription: "Remove every auto-delete timer.";
+        managecommandautodeleteSubcommandShowName: "show";
+        managecommandautodeleteSubcommandShowDescription: "Show the auto-delete timers.";
+        manageCommandChannelSubcommandAddName: "add";
+        manageCommandChannelSubcommandAddDescription: "Block a command in a channel.";
+        manageCommandChannelSubcommandRemoveName: "remove";
+        manageCommandChannelSubcommandRemoveDescription: "Unblock a command in a channel.";
+        manageCommandChannelSubcommandResetName: "reset";
+        manageCommandChannelSubcommandResetDescription: "Unblock every command in a channel.";
+        manageCommandChannelSubcommandShowName: "show";
+        manageCommandChannelSubcommandShowDescription: "Show the blocked commands of a channel.";
+        manageReactionRolesSubcommandAddName: "add";
+        manageReactionRolesSubcommandAddDescription: "Add a reaction role.";
+        manageReactionRolesSubcommandRemoveName: "remove";
+        manageReactionRolesSubcommandRemoveDescription: "Remove a reaction role.";
+        manageReactionRolesSubcommandResetName: "reset";
+        manageReactionRolesSubcommandResetDescription: "Remove every reaction role.";
+        manageReactionRolesSubcommandShowName: "show";
+        manageReactionRolesSubcommandShowDescription: "Show the reaction roles.";
+        stickyRolesSubcommandAddName: "add";
+        stickyRolesSubcommandAddDescription: "Add a sticky role to a user.";
+        stickyRolesSubcommandRemoveName: "remove";
+        stickyRolesSubcommandRemoveDescription: "Remove a sticky role from a user.";
+        stickyRolesSubcommandResetName: "reset";
+        stickyRolesSubcommandResetDescription: "Remove every sticky role from a user.";
+        stickyRolesSubcommandShowName: "show";
+        stickyRolesSubcommandShowDescription: "Show the sticky roles of a user.";
+        permissionNodesOptionsTypeName: "type";
+        permissionNodesOptionsTypeDescription: "Whether the command is allowed or denied.";
+        permissionNodesOptionsTypeChoiceAllow: "allow";
+        permissionNodesOptionsTypeChoiceDeny: "deny";
+        managecommandautodeleteOptionsDurationName: "duration";
+        managecommandautodeleteOptionsDurationDescription: "How long to wait before deleting the replies, for example 30s or 2m.";
+        manageReactionRolesOptionsMessageName: "message";
+        manageReactionRolesOptionsMessageDescription: "The ID of the message to attach the reaction role to, leave empty to apply it to any message.";
+        rolesSubcommandListName: "list";
+        rolesSubcommandListDescription: "List the public roles of this server.";
+        rolesSubcommandClaimName: "claim";
+        rolesSubcommandClaimDescription: "Claim a public role.";
+        rolesSubcommandUnclaimName: "unclaim";
+        rolesSubcommandUnclaimDescription: "Give up a public role.";
       };
       "commands/moderation": {
         permissions: "Permissions for {{username}} ({{id}})";
@@ -709,12 +1067,12 @@ declare module "i18next" {
         unmuteMissingPermission: "I will need the **{{MANAGE_ROLES, permissions}}** permission to be able to unmute.";
         vmuteMissingPermission: "I will need the **{{MUTE_MEMBERS, permissions}}** permission to be able to voice unmute.";
         vmuteUserNotMuted: "This user is not voice muted.";
-        moderationOutput_one: "{{GREENTICK}} Created case {{range}} | {{users, andList}}.";
-        moderationOutput_other: "{{GREENTICK}} Created cases {{range}} | {{users, andList}}.";
-        moderationOutputWithReason_one: "{{GREENTICK}} Created case {{range}} | {{users, andList}}.\nWith the reason of: {{reason}}";
-        moderationOutputWithReason_other: "{{GREENTICK}} Created cases {{range}} | {{users, andList}}.\nWith the reason of: {{reason}}";
-        moderationFailed_one: "{{REDCROSS}} Failed to moderate user:\n{{users, andList}}";
-        moderationFailed_other: "{{REDCROSS}} Failed to moderate users:\n{{users, andList}}";
+        moderationOutput_one: "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.";
+        moderationOutput_other: "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.";
+        moderationOutputWithReason_one: "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}";
+        moderationOutputWithReason_other: "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}";
+        moderationFailed_one: "{{REDCROSS}} Failed to moderate user:\n{{users}}";
+        moderationFailed_other: "{{REDCROSS}} Failed to moderate users:\n{{users}}";
         moderationDmFooter: "To disable moderation DMs, write `toggleModerationDM`.";
         moderationDmDescription: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified";
         moderationDmDescriptionWithReason: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: {{reason}}";
@@ -784,7 +1142,7 @@ declare module "i18next" {
             "User1 User2 User3...User10",
             "User1 Duration",
             "User1 User2 Duration Reason",
-            "User --days",
+            "User --seconds=S --minutes=M --hours=H --days=D",
           ];
           explainedUsage: [
             ["User/User1/User2", "The user(s) to ban. Can be up to a total of 10 users."],
@@ -794,22 +1152,22 @@ declare module "i18next" {
             ],
             ["Reason", "The reason for the ban. This will also show in the server's audit logs."],
             [
-              "--days",
-              "The amount of days of messages to prune. Should be a number between a minimum of 0 and maximum of 7.",
+              "--seconds=S --minutes=M --hours=H --days=D",
+              "The amount of time worth of messages to delete, each flag is optional and can be combined. Up to 7 days.",
             ],
           ];
-          extendedHelp: "This command requires **{{BAN_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThis action can be optionally timed to create a temporary ban.";
+          extendedHelp: "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThis action can be optionally timed to create a temporary ban.";
           examples: ["@Pete", "@Pete Spamming all channels.", "@Pete @Jack @John 24h Raiding"];
         };
         dehoistDescription: "Shoot everyone with the Dehoistinator 3000";
         dehoistExtended: {
           extendedHelp: "The act of hoisting involves adding special characters in front of your nickname in order to appear higher in the members list.\nThis command replaces any member's nickname that includes those special characters with a special character that drags them to the bottom of the list.";
-          reminder: "This command requires **{{MANAGE_NICKNAMES, permissions}}**, and only members with lower role hierarchy position can be dehoisted.";
+          reminder: "This command requires **{{ManageNicknames, permissions}}**, and only members with lower role hierarchy position can be dehoisted.";
         };
         kickDescription: "Hit somebody with the 👢.";
         kickExtended: {
           usages: ["User", "User1 User2 User3...User10", "User Reason"];
-          extendedHelp: "This command requires **{{KICK_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be kicked by me. No, the server's owner cannot be kicked.";
+          extendedHelp: "This command requires **{{KickMembers, permissions}}**, and only members with lower role hierarchy position can be kicked by me. No, the server's owner cannot be kicked.";
           explainedUsage: [
             ["User/User1/User2", "The user(s) to kick. Can be up to a total of 10 users."],
             ["Reason", "The reason for the kick. This will also show in the server's audit logs."],
@@ -954,7 +1312,7 @@ declare module "i18next" {
             "Amount User after/before Message",
             "Amount --silent",
           ];
-          extendedHelp: "This command deletes the given amount of messages given a filter within the last 100 messages sent in the channel the command has been run.\nOptionally, you can add `--silent` to tell Skyra not to send a response message.";
+          extendedHelp: "This command deletes the given amount of messages given a filter within the last 100 messages sent in the channel the command has been run.\nOptionally, you can add `--silent` to tell WolfStar not to send a response message.";
           explainedUsage: [
             ["Amount", "The amount of messages to delete."],
             ["--f/file/files", "Deletes messages with attachments."],
@@ -1157,15 +1515,24 @@ declare module "i18next" {
         };
         softBanDescription: "Hit somebody with the ban hammer, destroying all their messages for some days, and unban it.";
         softBanExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
+          usages: [
+            "User",
+            "User1 User2 User3...User10",
+            "User1 Reason",
+            "User --seconds=S --minutes=M --hours=H --days=D",
+          ];
           explainedUsage: [
             ["User/User1/User2", "The user(s) to softban. Can be up to a total of 10 users."],
             [
               "Reason",
               "The reason for the softban. This will also show in the server's audit logs.",
             ],
+            [
+              "--seconds=S --minutes=M --hours=H --days=D",
+              "The amount of time worth of messages to delete, each flag is optional and can be combined. Up to 7 days.",
+            ],
           ];
-          extendedHelp: "This command requires **{{BAN_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThe ban feature from Discord has a feature that allows the moderator to remove all messages from all channels that have been sent in the last 'x' days, being a number between 0 (no days) and 7.\nThe user gets unbanned right after the ban, so it is like a kick, but that can prune many many messages.";
+          extendedHelp: "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThe ban feature from Discord has a feature that allows the moderator to remove all messages from all channels that have been sent in the last 'x' days, being a number between 0 (no days) and 7.\nThe user gets unbanned right after the ban, so it is like a kick, but that can prune many many messages.";
           examples: [
             "@Pete",
             "@Pete Spamming all channels",
@@ -1186,7 +1553,7 @@ declare module "i18next" {
               "The reason for the ban removal. This will also show in the server's audit logs.",
             ],
           ];
-          extendedHelp: "This command requires **{{BAN_MEMBERS, permissions}}**. It literally gets somebody from the rubbish bin, cleans them up, and allows the pass to this server's gates.";
+          extendedHelp: "This command requires **{{BanMembers, permissions}}**. It literally gets somebody from the rubbish bin, cleans them up, and allows the pass to this server's gates.";
           examples: ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"];
         };
         unmuteDescription: "Remove the scotch tape from a user.";
@@ -1371,12 +1738,157 @@ declare module "i18next" {
           extendedHelp: "This command files a warning to a user.\nThis kind of warning is meant to be **formal warnings**, as they will be shown in the 'warnings' command.\nIt is a good practise to do an informal warning before using this command.";
           examples: ["@Pete Attempted to mention everyone."];
         };
+        pruneNotSubcommandSameOFSameFlag: "{{REDCROSS}} You cannot use the same flag of the same subcommand cannot be used.";
+        timeoutApplyDescription: "Time out a user.";
+        timeoutApplyExtended: {
+          usages: ["Duration User", "Duration User Reason"];
+          explainedUsage: [
+            ["Duration", "The duration of the timeout. For example 24h for 24 hours."],
+            ["User", "The user to time out."],
+            [
+              "Reason",
+              "The reason for the timeout. This will also show in the server's audit logs.",
+            ],
+          ];
+          examples: ["30s @Pete", "2h @Pete Spamming all channels"];
+        };
+        timeoutUndoDescription: "Remove a time out from a user.";
+        timeoutUndoExtended: {
+          usages: ["User", "User Reason"];
+          explainedUsage: [
+            ["User", "The user to time out."],
+            [
+              "Reason",
+              "The reason for the timeout. This will also show in the server's audit logs.",
+            ],
+          ];
+          examples: ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"];
+        };
+        timeoutNotModeratable: "The target cannot be timed out by me.";
+        banName: "ban";
+        unbanName: "unban";
+        softBanName: "softban";
+        kickName: "kick";
+        muteName: "mute";
+        unmuteName: "unmute";
+        timeoutApplyName: "timeout";
+        timeoutUndoName: "untimeout";
+        vmuteName: "vmute";
+        vunmuteName: "vunmute";
+        voiceKickName: "voicekick";
+        warnName: "warn";
+        unwarnName: "unwarn";
+        addRoleName: "addrole";
+        removeroleName: "removerole";
+        setNicknameName: "setnickname";
+        dehoistName: "dehoist";
+        pruneName: "prune";
+        lockdownName: "lockdown";
+        toggleModerationDmName: "togglemoderationdm";
+        slowmodeName: "slowmode";
+        banOptionsDeleteDaysName: "delete-days";
+        banOptionsDeleteDaysDescription: "The amount of days of messages to delete, from 0 to 7.";
+        softBanOptionsDeleteDaysName: "delete-days";
+        softBanOptionsDeleteDaysDescription: "The amount of days of messages to delete, from 0 to 7.";
+        unwarnOptionsCaseName: "case";
+        unwarnOptionsCaseDescription: "The number of the warning case to appeal.";
+        addRoleOptionsRoleName: "role";
+        addRoleOptionsRoleDescription: "The role to add to the user.";
+        removeroleOptionsRoleName: "role";
+        removeroleOptionsRoleDescription: "The role to remove from the user.";
+        setNicknameOptionsNicknameName: "nickname";
+        setNicknameOptionsNicknameDescription: "The new nickname, leave empty to remove it.";
+        pruneOptionsAmountName: "amount";
+        pruneOptionsAmountDescription: "The amount of messages to delete, from 1 to 100.";
+        pruneOptionsFilterName: "filter";
+        pruneOptionsFilterDescription: "Only delete the messages matching this filter.";
+        pruneOptionsFilterChoiceAttachments: "Attachments";
+        pruneOptionsFilterChoiceImages: "Images";
+        pruneOptionsFilterChoiceAuthor: "Author";
+        pruneOptionsFilterChoiceBots: "Bots";
+        pruneOptionsFilterChoiceHumans: "Humans";
+        pruneOptionsFilterChoiceInvites: "Invites";
+        pruneOptionsFilterChoiceLinks: "Links";
+        pruneOptionsFilterChoiceYou: "Messages from me";
+        pruneOptionsFilterChoicePins: "Pinned messages";
+        pruneOptionsUserName: "user";
+        pruneOptionsUserDescription: "The author whose messages are deleted, used with the author filter.";
+        pruneOptionsBeforeName: "before";
+        pruneOptionsBeforeDescription: "Only delete the messages before this message ID.";
+        pruneOptionsAfterName: "after";
+        pruneOptionsAfterDescription: "Only delete the messages after this message ID.";
+        pruneOptionsSilentName: "silent";
+        pruneOptionsSilentDescription: "Whether to skip the confirmation message (default: no).";
+        lockdownOptionsActionName: "action";
+        lockdownOptionsActionDescription: "Whether to lock or unlock the channel, leave empty to toggle.";
+        lockdownOptionsActionChoiceLock: "lock";
+        lockdownOptionsActionChoiceUnlock: "unlock";
+        slowmodeOptionsDurationName: "duration";
+        slowmodeOptionsDurationDescription: "The new slowmode, from 0 to 6 hours, use 0 or reset to disable it.";
+        restrictName: "restrict";
+        restrictDescription: "Restrict a user from using a feature in all channels.";
+        unrestrictName: "unrestrict";
+        unrestrictDescription: "Remove a restriction from a user.";
+        restrictAttachmentName: "attachment";
+        unrestrictAttachmentName: "attachment";
+        restrictEmbedName: "embed";
+        unrestrictEmbedName: "embed";
+        restrictEmojiName: "emoji";
+        unrestrictEmojiName: "emoji";
+        restrictReactionName: "reaction";
+        unrestrictReactionName: "reaction";
+        restrictVoiceName: "voice";
+        unrestrictVoiceName: "voice";
+      };
+      "commands/permissions": {
+        name: "permissions";
+        description: "Get the user's permissions";
+        contextMenuName: "Inspect Permissions";
+        optionsUserName: "user";
+        optionsUserDescription: "The user to inspect the permissions of";
+        optionsListAllName: "list-all";
+        optionsListAllDescription: "Whether or not to display non-moderation permissions (default: False)";
+        optionsListMissingName: "list-missing";
+        optionsListMissingDescription: "Whether or not to display non-granted permissions (default: False)";
+        optionsShowName: "show";
+        optionsShowDescription: "Whether or not to show the message publicly (default: False)";
+        title: "Permissions for {{username}} ({{id}})";
+      };
+      "commands/shared": {
+        deprecatedMessage: "Message based commands are **deprecated**, and will be removed in the future. You should use the {{command}} slash command instead!";
+        slashOnlyDetailedDescription: {
+          extendedHelp: "This command is only available via slash commands. Please use the slash command instead.";
+        };
+        slashOnlyErrorMessage: "This command is only available via slash commands. Please use the slash command instead.";
+        optionsUserName: "user";
+        optionsUserDescription: "The user to target.";
+        optionsReasonName: "reason";
+        optionsReasonDescription: "The reason, recorded in the moderation log.";
+        optionsDurationName: "duration";
+        optionsDurationDescription: "How long the action lasts, for example 30m, 2h or 7d.";
+        optionsRoleName: "role";
+        optionsRoleDescription: "The role to use.";
+        optionsChannelName: "channel";
+        optionsChannelDescription: "The channel to use, defaults to the current one.";
+        optionsShowName: "show";
+        optionsShowDescription: "Whether to show the response publicly (default: no).";
+        optionsCommandName: "command";
+        optionsCommandDescription: "The name of the command.";
+        optionsEmojiName: "emoji";
+        optionsEmojiDescription: "The emoji to use.";
+        optionsTargetName: "target";
+        optionsTargetDescription: "The role or user to configure.";
+        addName: "add";
+        removeName: "remove";
+        resetName: "reset";
+        showName: "show";
+        listName: "list";
       };
       "commands/system": {
         evalDescription: "Evaluates arbitrary Javascript.";
         evalExtended: {
           usages: ["Expression"];
-          extendedHelp: "The eval command evaluates code as-in, any error thrown from it will be handled.\nIt also uses the flags feature. Write --silent, --depth=number or --async to customize the output.\nThe --wait flag changes the time the eval will run. Defaults to 10 seconds. Accepts time in milliseconds.\nThe --output and --output-to flag accept either `file`, `log`, `haste` or `hastebin`.\nThe --delete flag makes the command delete the message that executed the message after evaluation.\nThe --silent flag will make it output nothing.\nThe --depth flag accepts a number, for example, --depth=2, to customize util.inspect's depth.\nThe --async flag will wrap the code into an async function where you can enjoy the use of await, however, if you want to return something, you will need the return keyword\nThe --showHidden flag will enable the showHidden option in util.inspect.\nThe --lang and --language flags allow different syntax highlight for the output.\nThe --json flag converts the output to json\nThe --no-timeout flag disables the timeout\nIf the output is too large, it'll send the output as a file, or in the console if the bot does not have the {{ATTACH_FILES, permissions}} permission.";
+          extendedHelp: "The eval command evaluates code as-in, any error thrown from it will be handled.\nIt also uses the flags feature. Write --silent, --depth=number or --async to customize the output.\nThe --wait flag changes the time the eval will run. Defaults to 60 seconds. Accepts time in milliseconds.\nThe --silent flag will make it output nothing.\nThe --depth flag accepts a number, for example, --depth=2, to customize util.inspect's depth.\nThe --async flag will wrap the code into an async function where you can enjoy the use of await, however, if you want to return something, you will need the return keyword\nThe --showHidden flag will enable the showHidden option in util.inspect.\nThe --lang and --language flags allow different syntax highlight for the output.\nThe --json flag converts the output to json\nThe --no-timeout flag disables the timeout\nIf the output is too large, it'll send the output as a file.";
           explainedUsage: [["Expression", "The expression to evaluate"]];
           examples: ["msg.author.username;", "1 + 1;"];
           reminder: "Reserved for bot owners.";
@@ -1766,6 +2278,17 @@ declare module "i18next" {
         modlogTimed: "This moderation log is already timed. Expires in {{remaining, duration}}";
         unexpectedIssue: "An unexpected error popped up! Safely aborting this command...";
         userNotInGuild: "This user is not in this server.";
+        genericUnknownChannel: "I'm sorry, I tried to perform an action for a channel unknown to Discord and failed, this error has been reported to the developers.";
+        genericUnknownGuild: "I'm sorry, I tried to perform an action for a server unknown to Discord and failed, this error has been reported to the developers.";
+        genericUnknownMember: "I'm sorry, I tried to perform an action for a member unknown to Discord and failed, this error has been reported to the developers.";
+        genericUnknownMessage: "I'm sorry, I tried to perform an action for a message unknown to Discord and failed, this error has been reported to the developers.";
+        genericUnknownRole: "I'm sorry, I tried to perform an action for a role unknown to Discord and failed, this error has been reported to the developers.";
+        genericMissingAccess: "I'm sorry, I tried to perform an action for a resource without the necessary permissions and failed, this error has been reported to the developers.";
+        genericDiscordInternalServerError: "Oops, Discord broke itself, please try again later.";
+        genericDiscordGateway: "Oops, the network is struggling to communicate with Discord, please try again later.";
+        genericDiscordUnavailable: "Oops, Discord is currently unavailable, please try again later.";
+        queryCausedTooLongCustomId: "Due to Discord API limitations I was unable to resolve that request. {{customMessagePart}}This issue will be fixed in the future.";
+        settingsMenuCustomIdDeserializeFailed: "I am sorry, but that query failed. Please try again. If the problem persists, then please join the support server (use the /info command).";
       };
       "events/errors": {
         string: "{{REDCROSS}} Dear {{mention}}, {{message}}";
@@ -1778,9 +2301,9 @@ declare module "i18next" {
         channelCreatePosition: "• **Position**: `{{value, number}}`";
         channelCreatePermissionsTitle: "• **Permissions for {{value}}**";
         channelCreatePermissionsAllow_one: "- **Allowed Permission**: {{values}}";
-        channelCreatePermissionsAllow_other: "- **Allowed Permissions**: {{values, andList}}";
+        channelCreatePermissionsAllow_other: "- **Allowed Permissions**: {{values, list(conjunction)}}";
         channelCreatePermissionsDeny_one: "- **Denied Permission**: {{values}}";
-        channelCreatePermissionsDeny_other: "- **Denied Permissions**: {{values, andList}}";
+        channelCreatePermissionsDeny_other: "- **Denied Permissions**: {{values, list(conjunction)}}";
         channelCreateNsfw: "• **Set as NSFW**";
         channelCreateTopic: "• **Topic**: `{{value}}`";
         channelCreateRateLimit: "• **Rate Limit**: `{{value, duration}}`";
@@ -1796,16 +2319,16 @@ declare module "i18next" {
         channelUpdateParentRemoved: "• **Parent**: {{value}} → Not Set";
         channelUpdatePosition: "• **Position**: `{{previous, number}}` → `{{next, number}}`";
         channelUpdateAddedPermissionsAllow_one: "- **Added Allowed Permission**: {{values}}";
-        channelUpdateAddedPermissionsAllow_other: "- **Added Allowed Permissions**: {{values, andList}}";
+        channelUpdateAddedPermissionsAllow_other: "- **Added Allowed Permissions**: {{values, list(conjunction)}}";
         channelUpdateAddedPermissionsDeny_one: "- **Added Denied Permission**: {{values}}";
-        channelUpdateAddedPermissionsDeny_other: "- **Added Denied Permissions**: {{values, andList}}";
+        channelUpdateAddedPermissionsDeny_other: "- **Added Denied Permissions**: {{values, list(conjunction)}}";
         channelUpdateAddedPermissionsTitle: "• **Added Permissions for {{value}}**";
         channelUpdateDeletedPermissionsTitle: "• **Removed Permissions for {{value}}**";
         channelUpdatePermissionsTitle: "• **Updated Permissions for {{value}}**";
         channelUpdateRemovedPermissionsAllow_one: "- **Removed Allowed Permission**: {{values}}";
-        channelUpdateRemovedPermissionsAllow_other: "- **Removed Allowed Permissions**: {{values, andList}}";
+        channelUpdateRemovedPermissionsAllow_other: "- **Removed Allowed Permissions**: {{values, list(conjunction)}}";
         channelUpdateRemovedPermissionsDeny_one: "- **Removed Denied Permission**: {{values}}";
-        channelUpdateRemovedPermissionsDeny_other: "- **Removed Denied Permissions**: {{values, andList}}";
+        channelUpdateRemovedPermissionsDeny_other: "- **Removed Denied Permissions**: {{values, list(conjunction)}}";
         channelUpdateRateLimit: "• **Rate Limit**: `{{previous, duration}}` → `{{next, duration}}`";
         channelUpdateRateLimitAdded: "• **Rate Limit**: Not Set → `{{value, duration}}`";
         channelUpdateRateLimitRemoved: "• **Rate Limit**: `{{value, duration}}` → Not Set";
@@ -1831,15 +2354,15 @@ declare module "i18next" {
         emojiUpdateName: "• **Name**: `{{previous}}` → `{{next}}`";
         emojiUpdateRequiresColons: "• **Requires Colons**: `{{previous}}` → `{{next}}`";
         emojiUpdateRolesAdded_one: "• **Added Required Role**: {{values}}";
-        emojiUpdateRolesAdded_other: "• **Added Required Roles**: {{values, andList}}";
+        emojiUpdateRolesAdded_other: "• **Added Required Roles**: {{values, list(conjunction)}}";
         emojiUpdateRolesRemoved_one: "• **Removed Required Role**: {{values}}";
-        emojiUpdateRolesRemoved_other: "• **Removed Required Roles**: {{values, andList}}";
+        emojiUpdateRolesRemoved_other: "• **Removed Required Roles**: {{values, list(conjunction)}}";
         roleCreate: "Role Created";
         roleCreateColor: "• **Color**: `{{value}}`";
         roleCreateHoist: "• **Hoisted**";
         roleCreateMentionable: "• **Mentionable**";
         roleCreatePermissions_one: "• **With Permission**: {{values}}";
-        roleCreatePermissions_other: "• **With Permissions**: {{values, andList}}";
+        roleCreatePermissions_other: "• **With Permissions**: {{values, list(conjunction)}}";
         roleCreatePosition: "• **Position**: `{{value, number}}`";
         roleDelete: "Role Deleted";
         roleUpdate: "Role Updated";
@@ -1848,9 +2371,9 @@ declare module "i18next" {
         roleUpdateMentionable: "• **Mentionable**: `{{previous}}` → `{{next}}`";
         roleUpdateName: "• **Name**: `{{previous}}` → `{{next}}`";
         roleUpdatePermissionsAdded_one: "• **Added Permission**: {{values}}";
-        roleUpdatePermissionsAdded_other: "• **Added Permissions**: {{values, andList}}";
+        roleUpdatePermissionsAdded_other: "• **Added Permissions**: {{values, list(conjunction)}}";
         roleUpdatePermissionsRemoved_one: "• **Removed Permissions**: {{values}}";
-        roleUpdatePermissionsRemoved_other: "• **Removed Permissions**: {{values, andList}}";
+        roleUpdatePermissionsRemoved_other: "• **Removed Permissions**: {{values, list(conjunction)}}";
         roleUpdatePosition: "• **Position**: `{{previous, number}}` → `{{next, number}}`";
         serverUpdate: "Server Updated";
         serverUpdateAfkChannelAdded: "• **AFK Channel**: Not Set → {{value}}";
@@ -1869,9 +2392,9 @@ declare module "i18next" {
         serverUpdateDiscoverySplash: "• **Splash**: [Old]({{previous}}) → [New]({{next}})";
         serverUpdateExplicitContentFilter: "• **Explicit Content Filter**: `{{previous, explicitContentFilter}}` → `{{next, explicitContentFilter}}`";
         serverUpdateFeaturesAdded_one: "• **Added Feature**: {{values}}";
-        serverUpdateFeaturesAdded_other: "• **Added Features**: {{values, andList}}";
+        serverUpdateFeaturesAdded_other: "• **Added Features**: {{values, list(conjunction)}}";
         serverUpdateFeaturesRemoved_one: "• **Removed Feature**: {{values}}";
-        serverUpdateFeaturesRemoved_other: "• **Removed Features**: {{values, andList}}";
+        serverUpdateFeaturesRemoved_other: "• **Removed Features**: {{values, list(conjunction)}}";
         serverUpdateIconAdded: "• **Icon**: Not Set → [New]({{value}})";
         serverUpdateIconRemoved: "• **Icon**: [Old]({{value}}) → Not Set";
         serverUpdateIcon: "• **Icon**: [Old]({{previous}}) → [New]({{next}})";
@@ -1899,9 +2422,9 @@ declare module "i18next" {
         serverUpdateSplashRemoved: "• **Splash**: [Old]({{value}}) → Not Set";
         serverUpdateSplash: "• **Splash**: [Old]({{previous}}) → [New]({{next}})";
         serverUpdateSystemChannelFlagsAdded_one: "• **Added System Channel Option**: {{values}}";
-        serverUpdateSystemChannelFlagsAdded_other: "• **Added System Channel Options**: {{values, andList}}";
+        serverUpdateSystemChannelFlagsAdded_other: "• **Added System Channel Options**: {{values, list(conjunction)}}";
         serverUpdateSystemChannelFlagsRemoved_one: "• **Removed System Channel Option**: {{values}}";
-        serverUpdateSystemChannelFlagsRemoved_other: "• **Removed System Channel Options**: {{values, andList}}";
+        serverUpdateSystemChannelFlagsRemoved_other: "• **Removed System Channel Options**: {{values, list(conjunction)}}";
         serverUpdateSystemChannelAdded: "• **System Channel**: Not Set → {{value}}";
         serverUpdateSystemChannelRemoved: "• **System Channel**: {{value}} → Not Set";
         serverUpdateSystemChannel: "• **System Channel**: {{previous}} → {{next}}";
@@ -1927,20 +2450,23 @@ declare module "i18next" {
         commandTypeChatInput: "Chat Input";
         commandTypeContextMenu: "Context Menu";
         commandTypeMessage: "Message Command";
+        voiceChannelJoin: "Joined {{channel}}";
+        voiceChannelLeave: "Left {{channel}}";
+        voiceChannelMove: "Moved from {{oldChannel}} to {{newChannel}}";
       };
       "events/guilds-members": {
         guildMemberAdd: "User Joined";
-        guildMemberAddDescription: "{{mention}} | **Joined Discord**: {{time, duration}} ago.";
-        guildMemberAddedRoles_other: "**Added roles**: {{addedRoles, andList}}";
+        guildMemberAddDescription: "{{user}} joined Discord {{relativeTime}}";
+        guildMemberAddedRoles_other: "**Added roles**: {{addedRoles, list(conjunction)}}";
         guildMemberAddedRoles_one: "**Added role**: {{addedRoles}}";
         guildMemberAddMute: "Muted User joined";
         guildMemberBanned: "User Banned";
         guildMemberKicked: "User Kicked";
         guildMemberNoUpdate: "No update detected";
         guildMemberRemove: "User Left";
-        guildMemberRemoveDescription: "{{mention}} | **Joined Server**: Unknown.";
-        guildMemberRemoveDescriptionWithJoinedAt: "{{mention}} | **Joined Server**: {{time, duration}} ago.";
-        guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, andList}}";
+        guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
+        guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
+        guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";
         guildMemberSoftBanned: "User Softbanned";
         nameUpdateNextWasNotSet: "**Next**: Unset";
@@ -1954,6 +2480,16 @@ declare module "i18next" {
       "events/messages": {
         messageDelete: "Message Deleted • {{channel}}";
         messageUpdate: "Message Edited • {{channel}}";
+        messageDeleteUnknown: "Unknown Message Deleted • {{channel}}";
+        messageUpdateUnknown: "Unknown Message Edited • {{channel}}";
+        messageNotFound: "Unknown Message";
+        messageDeleteBulk_one: "{{count}} message deleted in {{channel}} by {{author}}";
+        messageDeleteBulk_other: "{{count}} messages deleted in {{channel}} by {{author}}";
+        messageDeleteBulkUnknown_one: "{{count}} message deleted in {{channel}}";
+        messageDeleteBulkUnknown_other: "{{count}} messages deleted in {{channel}}";
+        messageDeleteBulkFooter: "Multiple Messages Deleted";
+        voiceActivityFooter: "Voice Activity";
+        jumpToContext: "Jump to Context";
       };
       "events/moderation": {
         attachmentFilter: "{{REDCROSS}} Dear {{user}}, file attachments aren't allowed here.";
@@ -1966,8 +2502,8 @@ declare module "i18next" {
         capsFilterDm: "Speak lower! I know you need to express your thoughts. There is the message I deleted:{{message}}";
         capsFilterFooter: "Too Many UpperCases";
         inviteFilterAlert: "{{REDCROSS}} Dear {{user}}, invite links aren't allowed here.";
-        inviteFilterLog_one: "**Link**: {{links, andList}}";
-        inviteFilterLog_other: "**Links**: {{links, andList}}";
+        inviteFilterLog_one: "**Link**: {{links, list(conjunction)}}";
+        inviteFilterLog_other: "**Links**: {{links, list(conjunction)}}";
         inviteLink: "Invite link";
         invites: "[Auto-Moderation] Triggered invite filter, no threshold.";
         invitesWithMaximum: "[Auto-Moderation] Triggered invite filter, reached {{amount}} out of {{maximum}} infractions.";
@@ -1992,7 +2528,7 @@ declare module "i18next" {
       "events/noMentionSpam": {
         footer: "[NOMENTIONSPAM]";
         alert: "Be careful mentioning any more, as you are about to be banned for exceeding this server's mention threshold.";
-        message: "The banhammer has landed and now the user {{user.tag}} with id {{user.id}} is banned for mention spam.\nDo not worry! I'm here to help you! 😄";
+        message: "The banhammer has landed and now the user {{userTag}} with id {{userId}} is banned for mention spam.\nDo not worry! I'm here to help you! 😄";
         modlog: "[NOMENTIONSPAM] Automatic: Mention Spam threshold exceeded.\nThreshold: {{threshold}}.";
       };
       "events/reactions": {
@@ -2000,11 +2536,19 @@ declare module "i18next" {
         filterFooter: "Filtered Reaction";
         filter: "{{REDCROSS}} Hey {{user}}, please do not add that reaction!";
         selfRoleHierarchy: "{{REDCROSS}} My role needs to be higher than all self-assignable roles, otherwise I can't grant them to people!";
+        reactionDescription: "Reacted with {{emoji}} on {{message}}";
+        reactionFooter: "First Reaction Added";
       };
       "events/twitch": {
         embedDescription: "{{userName}} is now live!";
         embedDescriptionWithGame: "{{userName}} is now live - Streaming {{gameName}}!";
         offlinePostfix: "Skyra Twitch Notifications";
+      };
+      fuzzySearch: {
+        aborted: "Successfully aborted the prompt.";
+        invalidIndex: "That number was out of range, aborting prompt.";
+        invalidNumber: "I expected you to give me a (single digit) number, got a potato.";
+        matches: "I found multiple matches! **Please select a number within 0 and {{matches}}**:\n{{codeblock}}\nWrite **ABORT** if you want to exit the prompt.";
       };
       globals: {
         default: "{{key}} has not been localized for en-US yet.";
@@ -2020,10 +2564,19 @@ declare module "i18next" {
         numberValue: "{{value, number}}";
         numberCompactValue: "{{value, numberCompact}}";
         dateTimeValue: "{{value, dateTime}}";
-        andListValue: "{{value, andList}}";
+        andListValue: "{{value, list(conjunction)}}";
         orListValue: "{{value, orList}}";
         dateFormat: "MM/DD/YYYY";
         dateFormatExplanation: "Month/Day/Year";
+        humanDateTimeValue: "{{value, humanDateTime}}";
+        back: "Back";
+        stop: "Stop";
+        set: "Set";
+        remove: "Remove";
+        reset: "Reset";
+        undo: "Undo";
+        value: "Value";
+        cancel: "Cancel";
       };
       guilds: {
         explicitContentFilterDisabled: "Disabled";
@@ -2035,6 +2588,14 @@ declare module "i18next" {
         SUPPRESS_JOIN_NOTIFICATION_REPLIES: "Member join sticker reply buttons";
         SUPPRESS_PREMIUM_SUBSCRIPTIONS: "Server boost notifications";
         SUPPRESS_GUILD_REMINDER_NOTIFICATIONS: "Server setup tips";
+        defaultMessageNotificationsAllMessages: "All Messages";
+        defaultMessageNotificationsOnlyMentions: "Only @mentions";
+        SuppressJoinNotifications: "Member join notifications";
+        SuppressJoinNotificationReplies: "Member join sticker reply buttons";
+        SuppressPremiumSubscriptions: "Server boost notifications";
+        SuppressGuildReminderNotifications: "Server setup tips";
+        SuppressRoleSubscriptionPurchaseNotifications: "Suppress role subscription purchase notifications";
+        SuppressRoleSubscriptionPurchaseNotificationReplies: "Suppress replies for role subscription purchase notifications";
       };
       humanLevels: {
         NONE: "None";
@@ -2042,6 +2603,11 @@ declare module "i18next" {
         MEDIUM: "Medium";
         HIGH: "High";
         VERY_HIGH: "Highest";
+        None: "None";
+        Low: "Low";
+        Medium: "Medium";
+        High: "High";
+        VeryHigh: "Highest";
       };
       moderation: {
         caseNotExists_one: "{{REDCROSS}} I am sorry, but the selected moderation log case does not exist.";
@@ -2063,22 +2629,60 @@ declare module "i18next" {
         success: "Successfully executed the command.";
         toSkyra: "Why... I thought you loved me! 💔";
         userSelf: "Why would you do that to yourself?";
+        typeBan: "Ban";
+        typeKick: "Kick";
+        typeMute: "Mute";
+        typeRestrictedAttachment: "Attachment Restriction";
+        typeRestrictedEmbed: "Embed Restriction";
+        typeRestrictedEmoji: "Emoji Restriction";
+        typeRestrictedReaction: "Reaction Restriction";
+        typeRestrictedVoice: "Voice Restriction";
+        typeRoleAdd: "Role Add";
+        typeRoleRemove: "Role Remove";
+        typeSetNickname: "Nickname Set";
+        typeSoftban: "Softban";
+        typeTimeout: "Timeout";
+        typeVoiceKick: "Voice Kick";
+        typeVoiceMute: "Voice Mute";
+        typeWarning: "Warning";
+        metadataUndo: "Remove {{name}}";
+        metadataTemporary: "Temporary {{name}}";
+        embedUser: "{{tag}} ({{id}})";
+        embedDescription: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Reason:** {{reason}}";
+        embedDescriptionTemporary: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Expires {{time}}**\n❯ **Reason:** {{reason}}";
+        embedReasonNotSet: "*Please use {{command}} to set a reason.*";
+        embedFooter: "Case {{caseId}}";
+        actionIsActive: "This moderation action is still active for this user.";
+        actionIsNotActive: "This moderation action is not active for this user.";
+        actionIsActiveRole: "This user already has the selected role.";
+        actionIsNotActiveRole: "This user does not have the selected role.";
+        actionIsActiveRestrictionRole: "This user already has the configured restriction role.";
+        actionIsNotActiveRestrictionRole: "This user does not have the configured restriction role.";
+        actionIsActiveNickname: "This user already has the selected nickname.";
+        actionIsNotActiveNickname: "This user does not have the selected nickname.";
+        actionTargetSelf: "You cannot perform this action on yourself. Why would you do that anyways?";
+        actionTargetGuildOwner: "You cannot perform this action on the server owner.";
+        actionTargetWolf: "I... I cannot do that to myself! You broke my heart. 💔";
+        actionTargetHigherHierarchyWolf: "This action cannot be performed on a member with a role position that is higher than or equal to mine.";
+        actionTargetHigherHierarchyAuthor: "This action cannot be performed on a member with a role position that is higher than or equal to yours.";
       };
       moderationActions: {
         actions: {
-          addRole: "Added Role";
+          addRole: "Role Add";
           ban: "Ban";
           kick: "Kick";
           mute: "Mute";
-          removeRole: "Remove Role";
+          removeRole: "Role Remove";
           restrictedAttachment: "Attachment Restriction";
           restrictedEmbed: "Embed Restriction";
+          restrictedEmoji: "Emoji Restriction";
           restrictedReact: "Reaction Restriction";
           restrictedVoice: "Voice Restriction";
           setNickname: "Set Nickname";
           softban: "Softban";
           vkick: "Voice Kick";
           vmute: "Voice Mute";
+          warning: "Warning";
         };
         applyNoReason: "[Action] Applied {{action}}";
         applyReason: "[Action] Applied {{action}} | Reason: {{reason}}";
@@ -2101,6 +2705,10 @@ declare module "i18next" {
         softbanReason: "[Action] Applying Softban | Reason: {{reason}}";
         unSoftbanNoReason: "[Action] Applied Softban.";
         unSoftbanReason: "[Action] Applied Softban | Reason: {{reason}}";
+        actionCannotManageRoles: "I cannot give or remove roles in this server.";
+        actionRoleNotConfigured: "The role for this action is not configured.";
+        actionRoleHigherPosition: "I cannot give or remove the role for this action because it has higher or equal hierarchy position than me.";
+        actionRoleManaged: "I cannot give or remove the role for this action because it is managed by an integration.";
       };
       permissions: {
         ADD_REACTIONS: "Add Reactions";
@@ -2144,9 +2752,59 @@ declare module "i18next" {
         VIEW_AUDIT_LOG: "View Audit Log";
         VIEW_CHANNEL: "View Channels";
         VIEW_GUILD_INSIGHTS: "View Server Insights";
+        AddReactions: "Add Reactions";
+        Administrator: "Administrator";
+        AttachFiles: "Attach Files";
+        BanMembers: "Ban Members";
+        ChangeNickname: "Change Nickname";
+        Connect: "Connect";
+        CreateEvents: "Create Events";
+        CreateExpressions: "Create Expressions";
+        CreateGuildExpressions: "Create Expressions";
+        CreateInstantInvite: "Create Invite";
+        CreatePrivateThreads: "Create Private Threads";
+        CreatePublicThreads: "Create Public Threads";
+        DeafenMembers: "Deafen Members";
+        EmbedLinks: "Embed Links";
+        KickMembers: "Kick Members";
+        ManageChannels: "Manage Channels";
+        ManageEvents: "Manage Events";
+        ManageGuild: "Manage Server";
+        ManageGuildExpressions: "Manage Expressions";
+        ManageMessages: "Manage Messages";
+        ManageNicknames: "Manage Nicknames";
+        ManageRoles: "Manage Roles";
+        ManageThreads: "Manage Threads";
+        ManageWebhooks: "Manage Webhooks";
+        MentionEveryone: "Mention Everyone";
+        ModerateMembers: "Time out members";
+        MoveMembers: "Move Members";
+        MuteMembers: "Mute Members";
+        PrioritySpeaker: "Priority Speaker";
+        ReadMessageHistory: "Read Message History";
+        RequestToSpeak: "Request to Speak";
+        SendMessages: "Send Messages";
+        SendMessagesInThreads: "Send Messages in Threads";
+        SendPolls: "Create Polls";
+        SendTTSMessages: "Send Text-to-speech Messages";
+        SendVoiceMessages: "Send Voice Messages";
+        Speak: "Speak";
+        Stream: "Video";
+        UseApplicationCommands: "Use Application Commands";
+        UseEmbeddedActivities: "Use Activities";
+        UseExternalEmojis: "Use External Emojis";
+        UseExternalSounds: "Use External Sounds";
+        UseExternalStickers: "Use External Stickers";
+        UseSoundboard: "Use Soundboard";
+        UseVAD: "Use Voice Activity";
+        ViewAuditLog: "View Audit Log";
+        ViewChannel: "View Channels";
+        ViewCreatorMonetizationAnalytics: "View Creator Monetization Analytics";
+        ViewGuildInsights: "View Server Insights";
+        UseExternalApps: "Use External Apps";
       };
       preconditions: {
-        clientPermissions: "I don't have sufficient permissions! I'm missing: {{missing, permissionsAndList}}";
+        clientPermissions: "I don't have sufficient permissions! I'm missing: {{missing, permissions, list(conjunction)}}";
         cooldown: "You have just used this command. You can use this command again in {{remaining, duration}}.";
         dmOnly: "This command can only be used in DM channels.";
         guildNewsOnly: "This command can only be used in announcement channels.";
@@ -2157,14 +2815,22 @@ declare module "i18next" {
         guildTextOnly: "This command can only be used in text channels.";
         nsfw: "You may not use NSFW commands in this channel!";
         threadOnly: "This command can only be used in thread channels.";
-        userPermissions: "You don't have sufficient permissions! You're missing: {{missing, permissionsAndList}}";
+        userPermissions: "You don't have sufficient permissions! You're missing: {{missing, permissions, list(conjunction)}}";
         administrator: "You need administrator privileges to run `{{command.name}}`!";
-        disabledGlobal: "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official Skyra server: <https://join.skyra.pw>";
+        disabledGlobal: "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>";
         disabledGuild: "This command has been disabled by an admin in this server!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
         permissionNodes: "{{REDCROSS}} You do not have permission to use this command!";
         serverOwner: "You need to be the server's owner to run `{{command.name}}`!";
         subCommandGuildOnly: 'This subcommand can only be used in server channels due to Discord limitations. We will likely make this command available in DMs when we implement the new "buttons" feature.';
+        clientPermissionsNoClient: "This should never happen, I don't know who I am.";
+        clientPermissionsNoPermissions: "This should never happen, I failed to determine what permissions I have.";
+        runIn: "This command cannot be run in this channel type.";
+        userPermissionsNoPermissions: "This should never happen, I failed to determine what permissions you have.";
+        unavailable: "This should never happen, I could not find a required precondition for this command.";
+        missingMessageHandler: "This should never happen, one of the preconditions this command requires is missing a message handler.";
+        missingChatInputHandler: "This should never happen, one of the preconditions this command requires is missing a slash command handler.";
+        missingContextMenuHandler: "This should never happen, one of the preconditions this command requires is missing a context menu handler.";
       };
       promptList: {
         aborted: "Successfully aborted the prompt.";
@@ -2178,10 +2844,10 @@ declare module "i18next" {
         commandHardAction: "{{GREENTICK}} Successfully set punishment: {{value}}";
         commandHardActionDuration: "{{GREENTICK}} Successfully removed the punishment appeal timer.";
         commandHardActionDurationWithValue: "{{GREENTICK}} Successfully set the punishment appeal timer to: {{value, duration}}";
-        commandInvalidHardaction: "{{REDCROSS}} Value must be any of the following: `none`, `warn`, `mute`, `kick`, `softban`, or `ban`. Check `Skyra, help {{name}}` for more information.";
-        commandInvalidMissingAction: "{{REDCROSS}} Action must be any of the following: `enable`, `disable`, `action`, `punish`, `punish-duration`, `threshold-maximum`, `threshold-duration`, or `show`. Check `Skyra, help {{name}}` for more information.";
-        commandInvalidMissingArguments: "{{REDCROSS}} The specified action requires an extra argument to be passed. Check `Skyra, help {{name}}` for more information.";
-        commandInvalidSoftaction: "{{REDCROSS}} Value must be any of the following: `alert`, `log`, or `delete`. Check `Skyra, help {{name}}` for more information.";
+        commandInvalidHardaction: "{{REDCROSS}} Value must be any of the following: `none`, `warn`, `mute`, `kick`, `softban`, or `ban`. Check `WolfStar, help {{name}}` for more information.";
+        commandInvalidMissingAction: "{{REDCROSS}} Action must be any of the following: `enable`, `disable`, `action`, `punish`, `punish-duration`, `threshold-maximum`, `threshold-duration`, or `show`. Check `WolfStar, help {{name}}` for more information.";
+        commandInvalidMissingArguments: "{{REDCROSS}} The specified action requires an extra argument to be passed. Check `WolfStar, help {{name}}` for more information.";
+        commandInvalidSoftaction: "{{REDCROSS}} Value must be any of the following: `alert`, `log`, or `delete`. Check `WolfStar, help {{name}}` for more information.";
         commandShow: "Enabled      : {{kEnabled}}\nAction\n - Alert     : {{kAlert}}\n - Log       : {{kLog}}\n - Delete    : {{kDelete}}\nPunishment\n - Type      : {{kHardAction}}\n - Duration  : {{hardActionDurationText}}\nThreshold\n - Maximum   : {{thresholdMaximumText}}\n - Duration  : {{thresholdDurationText}}";
         commandShowDurationPermanent: "Permanent";
         commandShowUnset: "Unset";
@@ -2200,6 +2866,55 @@ declare module "i18next" {
         softActionAlert: "Alert";
         softActionDelete: "Delete";
         softActionLog: "Log";
+      };
+      serializers: {
+        customCommandInvalidAliases: 'The property "aliases" must be an array of strings.';
+        customCommandInvalidColor: 'The property "color" must be a number.';
+        customCommandInvalidContent: 'The property "content" must be a string.';
+        customCommandInvalidEmbed: 'The property "embed" must be a boolean.';
+        customCommandInvalidId: 'The property "id" must be a string.';
+        customCommandInvalidType_one: "The type {{tag.type}} is not valid, it must be the following: {{possibles, orList}}";
+        customCommandInvalidType_other: "The type {{tag.type}} is not valid, it must be one of the following: {{possibles, orList}}";
+        customCommandMissingParameter: "You need to write another parameter!\n\n> **Tip**: The type for the next argument is `{{type}}`!";
+        disabledCommandChannelsChannelsCommandDoesNotExist: "The command `{{name}}` does not exist.";
+        disabledCommandChannelsChannelsDoesNotExist: "The channel does not exist.";
+        invalidBool: "{{name}} must be true or false.";
+        invalidChannel: "{{name}} must be a channel tag or valid channel id.";
+        invalidCommand: "{{name}} must be a command name.";
+        invalidEmoji: "{{name}} must be a valid emoji.";
+        invalidFloat: "{{name}} must be a valid number.";
+        invalidGuild: "{{name}} must be a valid server ID.";
+        invalidInt: "{{name}} must be an integer.";
+        invalidInvite: "{{name}} must be a valid invite code.";
+        invalidRole: "{{name}} must be a role mention or role id.";
+        invalidSnowflake: "{{name}} must be a valid snowflake.";
+        invalidUrl: "{{name}} must be a valid url.";
+        invalidUser: "{{name}} must be a mention or valid user id.";
+        minMaxBothExclusive: "{{name}} must be between {{min}} and {{max}} exclusively.";
+        minMaxBothInclusive: "{{name}} must be between {{min}} and {{max}} inclusively.";
+        minMaxExactlyExclusive: "{{name}} must be exactly {{min}}.";
+        minMaxExactlyInclusive: "{{name}} must be exactly {{min}}.";
+        minMaxMaxExclusive: "{{name}} must be less than {{max}} exclusively.";
+        minMaxMaxInclusive: "{{name}} must be less than {{max}} inclusively";
+        minMaxMinExclusive: "{{name}} must be greater than {{min}} exclusively.";
+        minMaxMinInclusive: "{{name}} must be greater than {{min}} inclusively.";
+        permissionNodeDuplicatedCommand: "You have set `{{command}}` twice, either allow it, or deny it.";
+        permissionNodeInvalid: "Invalid data.";
+        permissionNodeInvalidCommand: "The command `{{command}}` does not exist or is invalid.";
+        permissionNodeInvalidTarget: "No data could be found from the ID.";
+        permissionNodeSecurityEveryoneAllows: "For security, the everyone role cannot have allows.";
+        permissionNodeSecurityGuarded: "For security and for me to work properly, you cannot deny the usage for the command `{{command}}`.";
+        wordIncluded: "The key `{{name}}` already includes the word `{{word}}`.";
+        permissionNodeSecurityOwner: "You cannot set permission overrides on the server owner.";
+        reactionRoleInvalid: "Invalid reaction role data.";
+        stickyRoleInvalid: "Invalid sticky role data.";
+        twitchSubscriptionInvalid: "Invalid data.";
+        twitchSubscriptionInvalidStreamer: "Invalid data streamer.";
+        uniqueRoleSetInvalid: "Invalid unique role set data.";
+        unknownChannel: "Unknown channel";
+        unknownRole: "Unknown role";
+        unknownUser: "Unknown user";
+        unsupported: "This configuration key cannot be updated via Discord at the moment, please use the dashboard at <https://wolfstar.rocks>!";
       };
       settings: {
         channelsMediaOnly: "The channels where only media attachments can be sent.";
@@ -2230,12 +2945,12 @@ declare module "i18next" {
         channelsLogsRoleDelete: "The channel for role deletion logs, if set, I send a message when a role is deleted.";
         channelsLogsRoleUpdate: "The channel for role update logs, if set, I send a message when a role is updated in any way. This message will contain the changes made to the role.";
         channelsLogsServerUpdate: "The channel for server update logs, if set, I send a message when the server is updated in any way. This message will contain the changes made to the server.";
-        dashboardOnlyKey: "This key can only be configured through [the web dashboard](https://skyra.pw)";
+        dashboardOnlyKey: "This key can only be configured through [the web dashboard](https://wolfstar.rocks)";
         disabledChannels: "A list of channels for disabled commands, for example, setting up a channel called general will forbid all users from using my commands there. Moderators+ override this purposely to allow them to moderate without switching channels.";
         disabledCommands: "The disabled commands, core commands may not be disabled, and moderators will override this. All commands must be in lower case.";
-        disableNaturalPrefix: "Whether or not I should listen for my natural prefix, `Skyra,`";
-        eventsBanAdd: "This event posts anonymous moderation logs when a user gets banned. You must set up `channels.moderation-logs`.";
-        eventsBanRemove: "This event posts anonymous moderation logs when a user gets unbanned. You must set up `channels.moderation-logs`.";
+        disableNaturalPrefix: "Whether or not I should listen for my natural prefix, `WolfStar,`";
+        eventsBanAdd: "This event posts non-bot moderation logs when a user gets banned. You must set up `channels.moderation-logs`.";
+        eventsBanRemove: "This event posts non-bot moderation logs when a user gets unbanned. You must set up `channels.moderation-logs`.";
         eventsTwemojiReactions: "Whether or not twemoji reactions are posted in the reaction logs channel.";
         language: "The language I will use for your server. It may not be available in the language you want.";
         messagesIgnoreChannels: "The channels configured to not increase the point counter for users.";
@@ -2287,15 +3002,15 @@ declare module "i18next" {
         selfmodLinksIgnoredChannels: "The channels that will be ignored by the links filter sub-system";
         selfmodLinksIgnoredRoles: "The roles that will be ignored by the links filters sub-system";
         selfmodLinksAllowed: "The links that are allowed";
-        selfmodMessagesEnabled: "Whether Skyra should attempt to remove duplicated messages or not.";
+        selfmodMessagesEnabled: "Whether WolfStar should attempt to remove duplicated messages or not.";
         selfmodMessagesIgnoredChannels: "The channels that will be ignored by the duplicate messages sub-system";
         selfmodMessagesIgnoredRoles: "The roles that will be ignored by the duplicate messages sub-system";
         selfmodMessagesMaximum: "The amount of duplicated messages required in the queue before taking action The queue size is configurable in `selfmod.messages.queue-size`.";
-        selfmodMessagesQueueSize: "The amount of messages Skyra will keep track of for the message duplication detection.";
+        selfmodMessagesQueueSize: "The amount of messages WolfStar will keep track of for the message duplication detection.";
         selfmodNewlinesEnabled: "Whether the new lines filter selfmod sub-system is enabled or not.";
         selfmodNewlinesIgnoredChannels: "The channels that will be ignored by the new lines sub-system";
         selfmodNewlinesIgnoredRoles: "The roles that will be ignored by the new lines sub-system";
-        selfmodNewlinesMaximum: "The maximum amount of new lines before Skyra will start applying penalties";
+        selfmodNewlinesMaximum: "The maximum amount of new lines before WolfStar will start applying penalties";
         selfmodReactionsBlocked: "The reactions that are blocked";
         selfmodReactionsEnabled: "Whether the reactions filter selfmod sub-system is enabled or not.";
         selfmodReactionsIgnoredChannels: "The channels that will be ignored by the reactions sub-system";
@@ -2315,7 +3030,7 @@ declare module "i18next" {
         suggestionsOnActionDm: "If this setting is enabled, Skyra will DM the suggestion's author every time it is updated.";
         suggestionsOnActionHideAuthor: "This setting allows you to update suggestions anonymously. It will substitute the updater's name with either `An administrator` or `A moderator`, according to their permission level.";
         suggestionsOnActionRePost: "If this setting is enabled, Skyra will repost the suggestion's message every time it is updated. If it is disabled, it will edit the original message.";
-        validationChooseKey: "You cannot configure a group, please pick one of the following keys: {{keys, andList}}.";
+        validationChooseKey: "You cannot configure a group, please pick one of the following keys: {{keys, list(conjunction)}}.";
         validationMissingValue: "The value ``{{value}}`` was not set in the key **{{path}}**.";
         validationDuplicatedValue: "The value for the key `{{path}}` was already set to ``{{value}}``!";
         modulesAutomod: "Whether the auto-moderation module is enabled.";
@@ -2332,11 +3047,16 @@ declare module "i18next" {
         selfmodMentionsEnabled: "Whether the mentions filter is enabled.";
         selfmodMentionsIgnoredChannels: "The channels where the mentions filter is not applied.";
         selfmodMentionsIgnoredRoles: "The roles that are not affected by the mentions filter.";
-        channelsLogsCommand: "The channel where I will log the commands that are run.";
+        channelsLogsCommand: "The channel for command execution logs, if set, I send a message whenever a bot command is used.";
         channelsLogsEmojiAdd: "The channel where I will log the reactions added to messages.";
         channelsLogsEmojiAddIncludeTwemoji: "Whether the reaction logs should include the default (Twemoji) emojis.";
-        channelsLogsSettings: "The channel where I will log the changes to my settings.";
+        channelsLogsSettings: "The channel for settings change logs, if set, I send a message whenever settings are updated, added, removed, or access is denied.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
+        channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
+        channelsLogsVoiceChannel: "The channel for voice channel logs, if set, I send a message when a user joins, leaves, or moves to another voice channel.";
+        eventsTimeout: "This event posts non-bot moderation logs when a user's timeout status changes. You must set up `channels.moderation-logs`.";
+        eventsUnknownMessages: "Whether or not I should post updates on unknown command messages.";
+        eventsIncludeBots: "Whether or not I should ignore bots in the server logs.";
       };
       system: {
         discordAbortError: "I had a small network error when messaging Discord, please run this command again!";

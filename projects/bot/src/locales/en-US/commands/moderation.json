@@ -56,12 +56,12 @@
 	"unmuteMissingPermission": "I will need the **{{MANAGE_ROLES, permissions}}** permission to be able to unmute.",
 	"vmuteMissingPermission": "I will need the **{{MUTE_MEMBERS, permissions}}** permission to be able to voice unmute.",
 	"vmuteUserNotMuted": "This user is not voice muted.",
-	"moderationOutput_one": "{{GREENTICK}} Created case {{range}} | {{users, andList}}.",
-	"moderationOutput_other": "{{GREENTICK}} Created cases {{range}} | {{users, andList}}.",
-	"moderationOutputWithReason_one": "{{GREENTICK}} Created case {{range}} | {{users, andList}}.\nWith the reason of: {{reason}}",
-	"moderationOutputWithReason_other": "{{GREENTICK}} Created cases {{range}} | {{users, andList}}.\nWith the reason of: {{reason}}",
-	"moderationFailed_one": "{{REDCROSS}} Failed to moderate user:\n{{users, andList}}",
-	"moderationFailed_other": "{{REDCROSS}} Failed to moderate users:\n{{users, andList}}",
+	"moderationOutput_one": "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutput_other": "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.",
+	"moderationOutputWithReason_one": "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}",
+	"moderationOutputWithReason_other": "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}",
+	"moderationFailed_one": "{{REDCROSS}} Failed to moderate user:\n{{users}}",
+	"moderationFailed_other": "{{REDCROSS}} Failed to moderate users:\n{{users}}",
 	"moderationDmFooter": "To disable moderation DMs, write `toggleModerationDM`.",
 	"moderationDmDescription": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified",
 	"moderationDmDescriptionWithReason": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: {{reason}}",
@@ -123,7 +123,13 @@
 	},
 	"banDescription": "Hit somebody with the ban hammer.",
 	"banExtended": {
-		"usages": ["User", "User1 User2 User3...User10", "User1 Duration", "User1 User2 Duration Reason", "User --days"],
+		"usages": [
+			"User",
+			"User1 User2 User3...User10",
+			"User1 Duration",
+			"User1 User2 Duration Reason",
+			"User --seconds=S --minutes=M --hours=H --days=D"
+		],
 		"explainedUsage": [
 			["User/User1/User2", "The user(s) to ban. Can be up to a total of 10 users."],
 			[
@@ -131,20 +137,23 @@
 				"The amount of time this ban should last. For example 24h for 24 hours. The user(s) will be automatically unbanned after this time."
 			],
 			["Reason", "The reason for the ban. This will also show in the server's audit logs."],
-			["--days", "The amount of days of messages to prune. Should be a number between a minimum of 0 and maximum of 7."]
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"The amount of time worth of messages to delete, each flag is optional and can be combined. Up to 7 days."
+			]
 		],
-		"extendedHelp": "This command requires **{{BAN_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThis action can be optionally timed to create a temporary ban.",
+		"extendedHelp": "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThis action can be optionally timed to create a temporary ban.",
 		"examples": ["@Pete", "@Pete Spamming all channels.", "@Pete @Jack @John 24h Raiding"]
 	},
 	"dehoistDescription": "Shoot everyone with the Dehoistinator 3000",
 	"dehoistExtended": {
 		"extendedHelp": "The act of hoisting involves adding special characters in front of your nickname in order to appear higher in the members list.\nThis command replaces any member's nickname that includes those special characters with a special character that drags them to the bottom of the list.",
-		"reminder": "This command requires **{{MANAGE_NICKNAMES, permissions}}**, and only members with lower role hierarchy position can be dehoisted."
+		"reminder": "This command requires **{{ManageNicknames, permissions}}**, and only members with lower role hierarchy position can be dehoisted."
 	},
 	"kickDescription": "Hit somebody with the 👢.",
 	"kickExtended": {
 		"usages": ["User", "User1 User2 User3...User10", "User Reason"],
-		"extendedHelp": "This command requires **{{KICK_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be kicked by me. No, the server's owner cannot be kicked.",
+		"extendedHelp": "This command requires **{{KickMembers, permissions}}**, and only members with lower role hierarchy position can be kicked by me. No, the server's owner cannot be kicked.",
 		"explainedUsage": [
 			["User/User1/User2", "The user(s) to kick. Can be up to a total of 10 users."],
 			["Reason", "The reason for the kick. This will also show in the server's audit logs."]
@@ -230,7 +239,7 @@
 	"pruneDescription": "Prunes a certain amount of messages w/o filter.",
 	"pruneExtended": {
 		"usages": ["Amount Flags User", "Amount Flags after/before Message", "Amount User", "Amount User after/before Message", "Amount --silent"],
-		"extendedHelp": "This command deletes the given amount of messages given a filter within the last 100 messages sent in the channel the command has been run.\nOptionally, you can add `--silent` to tell Skyra not to send a response message.",
+		"extendedHelp": "This command deletes the given amount of messages given a filter within the last 100 messages sent in the channel the command has been run.\nOptionally, you can add `--silent` to tell WolfStar not to send a response message.",
 		"explainedUsage": [
 			["Amount", "The amount of messages to delete."],
 			["--f/file/files", "Deletes messages with attachments."],
@@ -351,12 +360,16 @@
 	},
 	"softBanDescription": "Hit somebody with the ban hammer, destroying all their messages for some days, and unban it.",
 	"softBanExtended": {
-		"usages": ["User", "User1 User2 User3...User10", "User1 Reason"],
+		"usages": ["User", "User1 User2 User3...User10", "User1 Reason", "User --seconds=S --minutes=M --hours=H --days=D"],
 		"explainedUsage": [
 			["User/User1/User2", "The user(s) to softban. Can be up to a total of 10 users."],
-			["Reason", "The reason for the softban. This will also show in the server's audit logs."]
+			["Reason", "The reason for the softban. This will also show in the server's audit logs."],
+			[
+				"--seconds=S --minutes=M --hours=H --days=D",
+				"The amount of time worth of messages to delete, each flag is optional and can be combined. Up to 7 days."
+			]
 		],
-		"extendedHelp": "This command requires **{{BAN_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThe ban feature from Discord has a feature that allows the moderator to remove all messages from all channels that have been sent in the last 'x' days, being a number between 0 (no days) and 7.\nThe user gets unbanned right after the ban, so it is like a kick, but that can prune many many messages.",
+		"extendedHelp": "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThe ban feature from Discord has a feature that allows the moderator to remove all messages from all channels that have been sent in the last 'x' days, being a number between 0 (no days) and 7.\nThe user gets unbanned right after the ban, so it is like a kick, but that can prune many many messages.",
 		"examples": ["@Pete", "@Pete Spamming all channels", "@Pete 7 All messages sent in 7 are gone now, YEE HAH!"]
 	},
 	"toggleModerationDmDescription": "Toggle moderation DMs.",
@@ -370,7 +383,7 @@
 			["User/User1/User2", "The user(s) to unban. Can be up to a total of 10 users."],
 			["Reason", "The reason for the ban removal. This will also show in the server's audit logs."]
 		],
-		"extendedHelp": "This command requires **{{BAN_MEMBERS, permissions}}**. It literally gets somebody from the rubbish bin, cleans them up, and allows the pass to this server's gates.",
+		"extendedHelp": "This command requires **{{BanMembers, permissions}}**. It literally gets somebody from the rubbish bin, cleans them up, and allows the pass to this server's gates.",
 		"examples": ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"]
 	},
 	"unmuteDescription": "Remove the scotch tape from a user.",
@@ -493,5 +506,100 @@
 		],
 		"extendedHelp": "This command files a warning to a user.\nThis kind of warning is meant to be **formal warnings**, as they will be shown in the 'warnings' command.\nIt is a good practise to do an informal warning before using this command.",
 		"examples": ["@Pete Attempted to mention everyone."]
-	}
+	},
+	"pruneNotSubcommandSameOFSameFlag": "{{REDCROSS}} You cannot use the same flag of the same subcommand cannot be used.",
+	"timeoutApplyDescription": "Time out a user.",
+	"timeoutApplyExtended": {
+		"usages": ["Duration User", "Duration User Reason"],
+		"explainedUsage": [
+			["Duration", "The duration of the timeout. For example 24h for 24 hours."],
+			["User", "The user to time out."],
+			["Reason", "The reason for the timeout. This will also show in the server's audit logs."]
+		],
+		"examples": ["30s @Pete", "2h @Pete Spamming all channels"]
+	},
+	"timeoutUndoDescription": "Remove a time out from a user.",
+	"timeoutUndoExtended": {
+		"usages": ["User", "User Reason"],
+		"explainedUsage": [
+			["User", "The user to time out."],
+			["Reason", "The reason for the timeout. This will also show in the server's audit logs."]
+		],
+		"examples": ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"]
+	},
+	"timeoutNotModeratable": "The target cannot be timed out by me.",
+	"banName": "ban",
+	"unbanName": "unban",
+	"softBanName": "softban",
+	"kickName": "kick",
+	"muteName": "mute",
+	"unmuteName": "unmute",
+	"timeoutApplyName": "timeout",
+	"timeoutUndoName": "untimeout",
+	"vmuteName": "vmute",
+	"vunmuteName": "vunmute",
+	"voiceKickName": "voicekick",
+	"warnName": "warn",
+	"unwarnName": "unwarn",
+	"addRoleName": "addrole",
+	"removeroleName": "removerole",
+	"setNicknameName": "setnickname",
+	"dehoistName": "dehoist",
+	"pruneName": "prune",
+	"lockdownName": "lockdown",
+	"toggleModerationDmName": "togglemoderationdm",
+	"slowmodeName": "slowmode",
+	"banOptionsDeleteDaysName": "delete-days",
+	"banOptionsDeleteDaysDescription": "The amount of days of messages to delete, from 0 to 7.",
+	"softBanOptionsDeleteDaysName": "delete-days",
+	"softBanOptionsDeleteDaysDescription": "The amount of days of messages to delete, from 0 to 7.",
+	"unwarnOptionsCaseName": "case",
+	"unwarnOptionsCaseDescription": "The number of the warning case to appeal.",
+	"addRoleOptionsRoleName": "role",
+	"addRoleOptionsRoleDescription": "The role to add to the user.",
+	"removeroleOptionsRoleName": "role",
+	"removeroleOptionsRoleDescription": "The role to remove from the user.",
+	"setNicknameOptionsNicknameName": "nickname",
+	"setNicknameOptionsNicknameDescription": "The new nickname, leave empty to remove it.",
+	"pruneOptionsAmountName": "amount",
+	"pruneOptionsAmountDescription": "The amount of messages to delete, from 1 to 100.",
+	"pruneOptionsFilterName": "filter",
+	"pruneOptionsFilterDescription": "Only delete the messages matching this filter.",
+	"pruneOptionsFilterChoiceAttachments": "Attachments",
+	"pruneOptionsFilterChoiceImages": "Images",
+	"pruneOptionsFilterChoiceAuthor": "Author",
+	"pruneOptionsFilterChoiceBots": "Bots",
+	"pruneOptionsFilterChoiceHumans": "Humans",
+	"pruneOptionsFilterChoiceInvites": "Invites",
+	"pruneOptionsFilterChoiceLinks": "Links",
+	"pruneOptionsFilterChoiceYou": "Messages from me",
+	"pruneOptionsFilterChoicePins": "Pinned messages",
+	"pruneOptionsUserName": "user",
+	"pruneOptionsUserDescription": "The author whose messages are deleted, used with the author filter.",
+	"pruneOptionsBeforeName": "before",
+	"pruneOptionsBeforeDescription": "Only delete the messages before this message ID.",
+	"pruneOptionsAfterName": "after",
+	"pruneOptionsAfterDescription": "Only delete the messages after this message ID.",
+	"pruneOptionsSilentName": "silent",
+	"pruneOptionsSilentDescription": "Whether to skip the confirmation message (default: no).",
+	"lockdownOptionsActionName": "action",
+	"lockdownOptionsActionDescription": "Whether to lock or unlock the channel, leave empty to toggle.",
+	"lockdownOptionsActionChoiceLock": "lock",
+	"lockdownOptionsActionChoiceUnlock": "unlock",
+	"slowmodeOptionsDurationName": "duration",
+	"slowmodeOptionsDurationDescription": "The new slowmode, from 0 to 6 hours, use 0 or reset to disable it.",
+	"restrictName": "restrict",
+	"restrictDescription": "Restrict a user from using a feature in all channels.",
+	"unrestrictName": "unrestrict",
+	"unrestrictDescription": "Remove a restriction from a user.",
+	"restrictAttachmentName": "attachment",
+	"unrestrictAttachmentName": "attachment",
+	"restrictEmbedName": "embed",
+	"unrestrictEmbedName": "embed",
+	"restrictEmojiName": "emoji",
+	"unrestrictEmojiName": "emoji",
+	"restrictReactionName": "reaction",
+	"unrestrictReactionName": "reaction",
+	"restrictVoiceName": "voice",
+	"unrestrictVoiceName": "voice"
 }
