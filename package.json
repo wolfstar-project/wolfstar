@@ -86,7 +86,7 @@
 		"@sapphire/stopwatch": "^1.5.4",
 		"@sapphire/time-utilities": "^1.7.14",
 		"@sapphire/utilities": "^3.18.2",
-		"@sentry/node": "^10.73.0",
+		"@sentry/node": "^11.1.0",
 		"@skyra/ai": "^2.0.1",
 		"@skyra/char": "^1.0.3",
 		"@skyra/env-utilities": "^2.0.1",
