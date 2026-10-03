@@ -1,3 +1,4 @@
+import type { SerializedEmoji } from '#utils/functions';
 import type { DeepReadonly, PickByValue } from '@sapphire/utilities';
 import type { APIGuildMember } from 'discord-api-types/v10';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -237,6 +238,24 @@ export interface PermissionsNode {
 export interface DisabledCommandChannel {
 	channel: Snowflake;
 	commands: readonly Snowflake[];
+}
+
+/**
+ * An entry of the `commandsAutoDelete` setting: the channel, and the milliseconds to wait before deleting the replies.
+ */
+export type CommandAutoDelete = readonly [channelId: Snowflake, time: number];
+
+/**
+ * An entry of the `reactionRoles` setting.
+ */
+export interface ReactionRole {
+	emoji: SerializedEmoji;
+	/**
+	 * The message the reaction role is bound to, or `null` if it applies to every message of {@linkcode ReactionRole.channel}.
+	 */
+	message: Snowflake | null;
+	channel: Snowflake;
+	role: Snowflake;
 }
 
 export interface UniqueRoleSet {

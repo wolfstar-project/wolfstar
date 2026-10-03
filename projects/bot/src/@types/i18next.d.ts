@@ -2263,7 +2263,18 @@ declare module "i18next" {
         };
         voteContentNeeded: "{{REDCROSS}} You must give a topic for the poll.";
         voteReactionBlocked: "{{REDCROSS}} I was not able to add the reactions necessary for this command to work because you have me blocked! 😢";
+        whoisName: "whois";
         whoisDescription: "Who are you?";
+        whoisSubcommandUserName: "user";
+        whoisSubcommandUserDescription: "Get information about a user.";
+        whoisSubcommandRoleName: "role";
+        whoisSubcommandRoleDescription: "Get information about a role.";
+        whoisSubcommandServerName: "server";
+        whoisSubcommandServerDescription: "Get information about this server.";
+        whoisOptionsUserName: "user";
+        whoisOptionsUserDescription: "The user to get information about, defaults to you.";
+        whoisOptionsRoleName: "role";
+        whoisOptionsRoleDescription: "The role to get information about, defaults to your highest role.";
         whoisExtended: {
           usages: ["", "User"];
           extendedHelp: "Gets information on any server member. Also known as `userinfo` in many other bots.";
