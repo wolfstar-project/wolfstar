@@ -1,3 +1,4 @@
+import { isThenable } from '@sapphire/utilities';
 import { LoggerManager, ModerationManager, StickyRoleManager } from '#lib/moderation/managers';
 import { resolveGuildId } from '#utils/common';
 import { GuildSecurity } from '#utils/Security/GuildSecurity';
@@ -28,7 +29,8 @@ export function getGuildUtilities(resolvable: GuildResolvable): GuildUtilities {
 	const previous = cache.get(id);
 	if (previous !== undefined) return previous;
 
-	const guild = resolvable instanceof Guild ? resolvable : container.gatewayClient.guilds.cached(id);
+	const guild = resolvable instanceof Guild ? resolvable : container.gatewayClient.guilds.cache.get(id);
+	if (isThenable(guild)) throw new TypeError(`The guild ${id} cannot be read synchronously, its cache is asynchronous.`);
 	if (guild === undefined) throw new TypeError(`The guild ${id} is not cached.`);
 
 	const entry: GuildUtilities = {

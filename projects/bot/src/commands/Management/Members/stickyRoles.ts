@@ -103,7 +103,7 @@ export class UserCommand extends Command {
 
 		const names = await Promise.all(
 			sticky.map(async (roleId) => {
-				const role = await container.gatewayClient.roles.get(interaction.guildId, roleId);
+				const role = await container.gatewayClient.roles.cache.get(container.gatewayClient.roles.resolveKey(interaction.guildId, roleId));
 				return `\`${role?.name ?? roleId}\``;
 			})
 		);

@@ -111,7 +111,7 @@ export class UserCommand extends Command {
 
 		const list: string[] = [];
 		for (const [channelId, time] of commandsAutoDelete) {
-			const channel = await this.container.gatewayClient.channels.get(channelId);
+			const channel = await this.container.gatewayClient.channels.cache.get(channelId);
 			// The stored value is in milliseconds, unlike what the prefix command displayed:
 			if (channel && 'name' in channel)
 				list.push(`${String(channel.name).padEnd(26)} :: ${translateKey(t, 'globals:durationValue', { value: time })}`);

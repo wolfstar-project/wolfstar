@@ -39,7 +39,7 @@ async function formatContents(message: GuildMessage): Promise<string> {
 	if (guild === null) throw new TypeError('The guild of the message could not be resolved.');
 	if (message.content.length > 0) output.push(await formatContent(guild, message.content));
 	if (message.embeds.length > 0) output.push((await Promise.all(message.embeds.map((embed) => formatEmbed(guild, embed)))).join('\n'));
-	if (message.attachments.length > 0) output.push(message.attachments.map((attachment) => formatAttachment(attachment)).join('\n'));
+	if (message.attachments.size > 0) output.push([...message.attachments.values()].map((attachment) => formatAttachment(attachment)).join('\n'));
 	return output.join('\n');
 }
 

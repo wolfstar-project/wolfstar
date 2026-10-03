@@ -30,7 +30,9 @@ export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, Val
 		const roleId = settings[this.action.roleKey];
 
 		// Verify for role existence.
-		const role = roleId ? await container.gatewayClient.roles.get(context.guild.id, roleId) : undefined;
+		const role = roleId
+			? await container.gatewayClient.roles.cache.get(container.gatewayClient.roles.resolveKey(context.guild.id, roleId))
+			: undefined;
 		if (role) return;
 
 		if (!(await hasCommandPermissionLevel(interaction, CommandPermissionLevel.Administrator))) {

@@ -155,7 +155,7 @@ export class StickyRoleManager {
 		if (unique.length === 0) return unique;
 
 		const { roles } = container.gatewayClient;
-		const cached = await Promise.all(unique.map((roleId) => roles.get(this.#guild.id, roleId)));
+		const cached = await Promise.all(unique.map((roleId) => roles.cache.get(roles.resolveKey(this.#guild.id, roleId))));
 		if (cached.every((role) => !isNullish(role))) return unique;
 
 		const existing = new Set((await roles.fetchAll(this.#guild.id)).map((role) => role.id));

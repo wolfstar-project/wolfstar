@@ -414,7 +414,9 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		const roleId = settings[this.roleKey];
 		if (isNullish(roleId)) throw new UserError({ identifier: 'moderationActions:actionRoleNotConfigured' });
 
-		const role = (await container.gatewayClient.roles.get(guild.id, roleId)) ?? (await this.#fetchRoleFromApi(guild, roleId));
+		const role =
+			(await container.gatewayClient.roles.cache.get(container.gatewayClient.roles.resolveKey(guild.id, roleId))) ??
+			(await this.#fetchRoleFromApi(guild, roleId));
 		if (isNullish(role)) {
 			await writeSettings(guild, { [this.roleKey]: null });
 			throw new UserError({ identifier: 'moderationActions:actionRoleNotConfigured' });

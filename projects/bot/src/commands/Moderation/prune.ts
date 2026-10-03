@@ -232,7 +232,7 @@ export class UserCommand extends Command {
 
 		switch (args.filter) {
 			case 'attachments':
-				fns.push((message) => message.attachments.length > 0);
+				fns.push((message) => message.attachments.size > 0);
 				break;
 			case 'images':
 				fns.push((message) => message.attachments.some((attachment) => getImageUrl(attachment.url) !== undefined));

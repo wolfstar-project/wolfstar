@@ -94,7 +94,7 @@ export interface ImageAttachment {
 }
 
 export function* getImages(message: Message): IterableIterator<string> {
-	for (const attachment of message.attachments) {
+	for (const attachment of message.attachments.values()) {
 		// Skip if the attachment doesn't have a content type:
 		if (isNullishOrEmpty(attachment.contentType)) continue;
 		// Skip if the attachment doesn't have a size:
@@ -115,11 +115,11 @@ export function* getImages(message: Message): IterableIterator<string> {
 		}
 	}
 
-	for (const sticker of message.stickers) {
+	for (const sticker of message.stickers.values()) {
 		// Skip if the sticker is a lottie sticker:
-		if (sticker.format_type === StickerFormatType.Lottie) continue;
+		if (sticker.formatType === StickerFormatType.Lottie) continue;
 
-		yield container.rest.cdn.sticker(sticker.id, sticker.format_type === StickerFormatType.GIF ? 'gif' : 'png');
+		yield container.rest.cdn.sticker(sticker.id, sticker.formatType === StickerFormatType.GIF ? 'gif' : 'png');
 	}
 }
 
@@ -233,17 +233,17 @@ export async function cleanMentions(guild: Guild, input: string): Promise<string
 		switch (type) {
 			case '@':
 			case '@!': {
-				const user = await container.gatewayClient.users.get(id);
+				const user = await container.gatewayClient.users.cache.get(id);
 				replacements.set(match, user ? `@${user.username}` : `<${type}${ZeroWidthSpace}${id}>`);
 				break;
 			}
 			case '@&': {
-				const role = await container.gatewayClient.roles.get(guild.id, id);
+				const role = await container.gatewayClient.roles.cache.get(container.gatewayClient.roles.resolveKey(guild.id, id));
 				replacements.set(match, role ? `@${role.name}` : match);
 				break;
 			}
 			case '#': {
-				const channel = await container.gatewayClient.channels.get(id);
+				const channel = await container.gatewayClient.channels.cache.get(id);
 				replacements.set(match, channel && 'name' in channel && channel.name ? `#${channel.name}` : `<${type}${ZeroWidthSpace}${id}>`);
 				break;
 			}

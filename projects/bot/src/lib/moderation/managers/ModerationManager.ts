@@ -74,7 +74,7 @@ export class ModerationManager {
 		const settings = await readSettings(this.guild);
 		const channelId = settings.channelsLogsModeration;
 		if (isNullish(channelId)) return null;
-		const channel = await container.gatewayClient.channels.get(channelId);
+		const channel = await container.gatewayClient.channels.cache.get(channelId);
 		if (isNullish(channel) || !('send' in channel) || !('guildId' in channel) || channel.guildId !== this.guild.id) return null;
 		return channel as GuildTextBasedChannel;
 	}
