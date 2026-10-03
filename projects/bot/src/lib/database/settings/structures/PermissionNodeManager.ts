@@ -1,8 +1,8 @@
 import type { PermissionsNode, ReadonlyGuildData } from '#lib/database/settings/types';
 import { matchAny } from '#lib/database/utils/matchers/Command';
-import type { WolfCommand } from '#lib/structures';
-import { container, UserError } from '@sapphire/framework';
-import { Collection, Role, type GuildMember, type User } from 'discord.js';
+import { Collection } from '@discordjs/collection';
+import { container, UserError, type Command } from '@wolfstar/http-framework';
+import { Role, type GuildMember, type User } from '@wolfstar/plugin-gateway';
 
 export const enum PermissionNodeAction {
 	Allow,
@@ -27,7 +27,7 @@ export class PermissionNodeManager {
 		return (target instanceof Role ? 'permissionsRoles' : 'permissionsUsers') satisfies keyof ReadonlyGuildData;
 	}
 
-	public async run(member: GuildMember, command: WolfCommand) {
+	public async run(member: GuildMember, command: Command) {
 		// The role order comes from the guild's roles, which are fetched asynchronously:
 		await this.#ready;
 		return this.runUser(member, command) ?? this.runRole(member, command);
@@ -39,11 +39,12 @@ export class PermissionNodeManager {
 
 	public add(target: PermissionNodeValueResolvable, command: string, action: PermissionNodeAction): readonly PermissionsNode[] {
 		const nodes = this.#getPermissionNodes(target);
+		const id = this.#getId(target);
 
-		const nodeIndex = nodes.findIndex((n) => n.id === target.id);
+		const nodeIndex = nodes.findIndex((n) => n.id === id);
 		if (nodeIndex === -1) {
 			const node: PermissionsNode = {
-				id: target.id,
+				id,
 				allow: action === PermissionNodeAction.Allow ? [command] : [],
 				deny: action === PermissionNodeAction.Deny ? [command] : []
 			};
@@ -60,7 +61,7 @@ export class PermissionNodeManager {
 		}
 
 		const node: PermissionsNode = {
-			id: target.id,
+			id,
 			allow: action === PermissionNodeAction.Allow ? previous.allow.concat(command) : previous.allow,
 			deny: action === PermissionNodeAction.Deny ? previous.deny.concat(command) : previous.deny
 		};
@@ -70,8 +71,9 @@ export class PermissionNodeManager {
 
 	public remove(target: PermissionNodeValueResolvable, command: string, action: PermissionNodeAction): readonly PermissionsNode[] {
 		const nodes = this.#getPermissionNodes(target);
+		const id = this.#getId(target);
 
-		const nodeIndex = nodes.findIndex((n) => n.id === target.id);
+		const nodeIndex = nodes.findIndex((n) => n.id === id);
 		if (nodeIndex === -1) {
 			throw new UserError({ identifier: 'commands/management:permissionNodesNodeNotExists' });
 		}
@@ -84,7 +86,7 @@ export class PermissionNodeManager {
 		}
 
 		const node: PermissionsNode = {
-			id: target.id,
+			id,
 			allow: action === PermissionNodeAction.Allow ? previous.allow.toSpliced(commandIndex, 1) : previous.allow,
 			deny: action === PermissionNodeAction.Deny ? previous.deny.toSpliced(commandIndex, 1) : previous.deny
 		};
@@ -96,8 +98,9 @@ export class PermissionNodeManager {
 
 	public reset(target: PermissionNodeValueResolvable): readonly PermissionsNode[] {
 		const nodes = this.#getPermissionNodes(target);
+		const id = this.#getId(target);
 
-		const nodeIndex = nodes.findIndex((n) => n.id === target.id);
+		const nodeIndex = nodes.findIndex((n) => n.id === id);
 		if (nodeIndex === -1) {
 			throw new UserError({ identifier: 'commands/management:permissionNodesNodeNotExists', context: { target } });
 		}
@@ -160,7 +163,7 @@ export class PermissionNodeManager {
 		return copy ?? nodes;
 	}
 
-	private runUser(member: GuildMember, command: WolfCommand) {
+	private runUser(member: GuildMember, command: Command) {
 		// Assume sorted data
 		const permissionNodeRoles = this.#cachedRawPermissionUsers;
 		const memberId = member.id;
@@ -173,8 +176,8 @@ export class PermissionNodeManager {
 		return null;
 	}
 
-	private runRole(member: GuildMember, command: WolfCommand) {
-		const roles = member.roles.cache;
+	private runRole(member: GuildMember, command: Command) {
+		const roles = new Set(member.roles.ids);
 
 		// Assume sorted data
 		for (const [id, node] of this.sorted.entries()) {
@@ -223,6 +226,12 @@ export class PermissionNodeManager {
 			default:
 				throw new Error('Unreachable');
 		}
+	}
+
+	#getId(target: PermissionNodeValueResolvable): string {
+		const { id } = target;
+		if (id === null) throw new TypeError('The permission node target has no id.');
+		return id;
 	}
 
 	#getPermissionNodes(target: PermissionNodeValueResolvable): readonly PermissionsNode[] {
