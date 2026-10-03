@@ -16,9 +16,9 @@ overrides:
     # http-framework ^3: dedupe it onto the bot's copy, which accepts ^5.
     '@wolfstar/shared-http-pieces>@wolfstar/plugin-i18next': ^2.1.1
     ansi-regex: ^5.0.1
-    discord-api-types: ^0.38.55
-    minimist: ^1.2.6
-    vite: ^8.3.0
+    discord-api-types: ^0.38.56
+    minimist: ^1.2.8
+    vite: ^8.3.2
 
 dedupePeers: true
 

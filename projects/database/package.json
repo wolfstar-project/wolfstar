@@ -24,8 +24,8 @@
 		"prisma8:emit": "prisma contract emit"
 	},
 	"dependencies": {
-		"@prisma/orm-postgres": "8.0.0-rc.11",
-		"pg": "^8.23.0",
+		"@prisma/orm-postgres": "8.0.0-rc.14",
+		"pg": "^8.23.1",
 		"varlock": "^1.21.1"
 	},
 	"devDependencies": {
