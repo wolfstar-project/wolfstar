@@ -180,6 +180,9 @@ export interface GuildData {
 	rolesRestrictedEmoji: Snowflake | null;
 	rolesRestrictedAttachment: Snowflake | null;
 	rolesRestrictedVoice: Snowflake | null;
+
+	// StickyRole
+	stickyRoles: StickyRole[];
 }
 
 export type GuildDataKey = keyof GuildData;
@@ -239,6 +242,11 @@ export interface DisabledCommandChannel {
 export interface UniqueRoleSet {
 	name: string;
 	roles: readonly Snowflake[];
+}
+
+export interface StickyRole {
+	roles: readonly Snowflake[];
+	user: Snowflake;
 }
 
 export interface MentionsOverride {

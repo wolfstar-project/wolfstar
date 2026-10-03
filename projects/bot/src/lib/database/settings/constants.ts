@@ -139,7 +139,8 @@ export function getDefaultGuildSettings() {
 		rolesRestrictedEmbed: null,
 		rolesRestrictedEmoji: null,
 		rolesRestrictedAttachment: null,
-		rolesRestrictedVoice: null
+		rolesRestrictedVoice: null,
+		stickyRoles: []
 	} as const satisfies DefaultGuildData);
 
 	return cachedDefaultGuildSettings;

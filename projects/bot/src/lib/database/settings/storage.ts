@@ -1,5 +1,5 @@
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
-import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData } from '#lib/database/settings/types';
+import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData, StickyRole } from '#lib/database/settings/types';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 import type { Database } from 'wolfstar-database';
@@ -45,7 +45,7 @@ interface Column {
 	kind: ColumnKind;
 }
 
-type StoredKey = Exclude<GuildDataKey, 'id' | 'selfmodMentionsOverrides'>;
+type StoredKey = Exclude<GuildDataKey, 'id' | 'selfmodMentionsOverrides' | 'stickyRoles'>;
 
 function autoModerationRule(table: TableName, prefix: string, extra: Record<string, Column> = {}): Record<string, Column> {
 	return {
@@ -227,9 +227,10 @@ function toColumn(kind: ColumnKind, value: unknown): unknown {
  */
 export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData | null> {
 	const key = BigInt(id);
-	const [rows, overrides] = await Promise.all([
+	const [rows, overrides, stickyRoles] = await Promise.all([
 		Promise.all(Tables.map((name) => table(orm, name).first({ id: key }))),
-		orm.public.GuildAutoModerationMentionsOverrides.where({ parentId: key }).all()
+		orm.public.GuildAutoModerationMentionsOverrides.where({ parentId: key }).all(),
+		orm.public.StickyRole.where({ guildId: key }).all()
 	]);
 
 	const [guild] = rows;
@@ -254,6 +255,8 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
 			}) satisfies MentionsOverride
 	);
 
+	data.stickyRoles = stickyRoles.map((entry) => ({ user: String(entry.userId), roles: entry.roleIds.map(String) }) satisfies StickyRole);
+
 	return data;
 }
 
@@ -270,7 +273,8 @@ export async function writeGuildData(settings: ReadonlyGuildData, changes: Parti
 	const touched = new Set<TableName>();
 	for (const key of changedKeys) {
 		if (key === 'id') continue;
-		if (key === 'selfmodMentionsOverrides') touched.add('GuildAutoModerationMentions');
+		if (key === 'stickyRoles') touched.add('Guild');
+		else if (key === 'selfmodMentionsOverrides') touched.add('GuildAutoModerationMentions');
 		else touched.add(Columns[key].table);
 	}
 
@@ -297,6 +301,20 @@ export async function writeGuildData(settings: ReadonlyGuildData, changes: Parti
 			}
 
 			await table(tx.orm, name).upsert({ create, update });
+		}
+
+		if ('stickyRoles' in changes) {
+			const stickyRoles = tx.orm.public.StickyRole;
+			await stickyRoles.where({ guildId: id }).deleteAndCount();
+			if (settings.stickyRoles.length > 0) {
+				await stickyRoles.createAndCount(
+					settings.stickyRoles.map((entry) => ({
+						guildId: id,
+						userId: BigInt(entry.user),
+						roleIds: entry.roles.map((role) => BigInt(role))
+					}))
+				);
+			}
 		}
 
 		if ('selfmodMentionsOverrides' in changes) {

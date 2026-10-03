@@ -292,7 +292,14 @@ export function getConfiguration() {
 			name: 'roles.restricted-attachment',
 			description: 'settings:rolesRestrictedAttachment'
 		},
-		rolesRestrictedVoice: { type: 'role', name: 'roles.restricted-voice', description: 'settings:rolesRestrictedVoice' }
+		rolesRestrictedVoice: { type: 'role', name: 'roles.restricted-voice', description: 'settings:rolesRestrictedVoice' },
+		stickyRoles: {
+			type: 'notAllowed',
+			name: 'sticky-roles',
+			description: 'settings:dashboardOnlyKey',
+			array: true,
+			dashboardOnly: true
+		}
 	});
 
 	return cachedConfiguration;
