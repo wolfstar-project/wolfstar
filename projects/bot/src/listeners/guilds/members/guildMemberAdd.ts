@@ -17,7 +17,7 @@ export class UserListener extends Listener {
 	private async handleStickyRoles(member: GuildMember) {
 		if (!member.guild.me!.permissions.has(FLAGS.MANAGE_ROLES)) return false;
 
-		const stickyRoles = await getStickyRoles(member).fetch(member.id);
+		const stickyRoles = await (await getStickyRoles(member)).fetch(member.id);
 		if (stickyRoles.length === 0) return false;
 
 		// Handle the case the user is muted

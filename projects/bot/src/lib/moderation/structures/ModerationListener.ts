@@ -39,8 +39,8 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 
 	protected async onWarning(guild: Guild, userId: string) {
 		const duration = await readSettings(guild, this.hardPunishmentPath.actionDuration);
-		await this.createActionAndSend(guild, () =>
-			getSecurity(guild).actions.warning({
+		await this.createActionAndSend(guild, async () =>
+			(await getSecurity(guild)).actions.warning({
 				userId,
 				moderatorId: process.env.CLIENT_ID,
 				reason: '[Auto-Moderation] Threshold Reached.',
@@ -50,8 +50,8 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 	}
 
 	protected async onKick(guild: Guild, userId: string) {
-		await this.createActionAndSend(guild, () =>
-			getSecurity(guild).actions.kick({
+		await this.createActionAndSend(guild, async () =>
+			(await getSecurity(guild)).actions.kick({
 				userId,
 				moderatorId: process.env.CLIENT_ID,
 				reason: '[Auto-Moderation] Threshold Reached.'
@@ -61,8 +61,8 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 
 	protected async onMute(guild: Guild, userId: string) {
 		const duration = await readSettings(guild, this.hardPunishmentPath.actionDuration);
-		await this.createActionAndSend(guild, () =>
-			getSecurity(guild).actions.mute({
+		await this.createActionAndSend(guild, async () =>
+			(await getSecurity(guild)).actions.mute({
 				userId,
 				moderatorId: process.env.CLIENT_ID,
 				reason: '[Auto-Moderation] Threshold Reached.',
@@ -72,8 +72,8 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 	}
 
 	protected async onSoftBan(guild: Guild, userId: string) {
-		await this.createActionAndSend(guild, () =>
-			getSecurity(guild).actions.softBan(
+		await this.createActionAndSend(guild, async () =>
+			(await getSecurity(guild)).actions.softBan(
 				{
 					userId,
 					moderatorId: process.env.CLIENT_ID,
@@ -87,8 +87,8 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 	protected async onBan(guild: Guild, userId: string) {
 		const duration = await readSettings(guild, this.hardPunishmentPath.actionDuration);
 
-		await this.createActionAndSend(guild, () =>
-			getSecurity(guild).actions.ban(
+		await this.createActionAndSend(guild, async () =>
+			(await getSecurity(guild)).actions.ban(
 				{
 					userId,
 					moderatorId: process.env.CLIENT_ID,
@@ -101,7 +101,7 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 	}
 
 	protected async createActionAndSend(guild: Guild, performAction: () => unknown): Promise<void> {
-		const unlock = getModeration(guild).createLock();
+		const unlock = (await getModeration(guild)).createLock();
 		await performAction();
 		unlock();
 	}

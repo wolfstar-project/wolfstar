@@ -26,7 +26,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 
 	protected override async preHandle(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters) {
 		const settings = await readSettings(interaction.guildId);
-		return settings.logsMemberRemove ? { unlock: getModeration(context.guild).createLock() } : null;
+		return settings.logsMemberRemove ? { unlock: (await getModeration(context.guild)).createLock() } : null;
 	}
 
 	protected override postHandle(_interaction: ModerationCommand.Interaction, { preHandled }: ModerationCommand.PostHandleParameters<ValueType>) {

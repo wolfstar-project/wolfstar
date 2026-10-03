@@ -96,7 +96,7 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 		if (isNullish(entry)) return null;
 
 		if (!isNullishOrZero(entry.duration) && !entry.isCompleted()) {
-			await getModeration(options.guild).complete(entry);
+			await (await getModeration(options.guild)).complete(entry);
 		}
 		return entry;
 	}
@@ -111,7 +111,7 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 		options: ModerationAction.ModerationEntryFetchOptions<SearchType>
 	): Promise<ModerationManager.Entry<SearchType> | null> {
 		// Retrieve all the entries
-		const entries = await getModeration(options.guild).fetch({ userId: options.userId });
+		const entries = await (await getModeration(options.guild)).fetch({ userId: options.userId });
 
 		const type = options.type ?? this.type;
 		const metadata = options.metadata ?? null;
@@ -142,10 +142,10 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	 * @returns A Promise that resolves to the created moderation entry.
 	 */
 	public async apply(guild: Guild, options: ModerationAction.PartialOptions<Type>, data: ModerationAction.Data<ContextType> = {}) {
-		const moderation = getModeration(guild);
+		const moderation = await getModeration(guild);
 		const entry = moderation.create(await this.resolveOptions(guild, options, data));
 		try {
-			this.handleApplyPreOnStart(guild, entry, data);
+			await this.handleApplyPreOnStart(guild, entry, data);
 			await this.handleApplyPre(guild, entry, data);
 		} catch (error) {
 			await this.handleApplyPreOnError(error as Error, guild, entry, data);
@@ -165,10 +165,10 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	 * @returns A promise that resolves to the created entry.
 	 */
 	public async undo(guild: Guild, options: ModerationAction.PartialOptions<Type>, data: ModerationAction.Data<ContextType> = {}) {
-		const moderation = getModeration(guild);
+		const moderation = await getModeration(guild);
 		const entry = moderation.create(await this.resolveAppealOptions(guild, options, data));
 		try {
-			this.handleUndoPreOnStart(guild, entry, data);
+			await this.handleUndoPreOnStart(guild, entry, data);
 			await this.handleUndoPre(guild, entry, data);
 		} catch (error) {
 			await this.handleUndoPreOnError(error as Error, guild, entry, data);

@@ -32,12 +32,12 @@ export class ModerationActionTimeout extends ModerationAction<never, TypeVariati
 		await this.completeLastModerationEntryFromUser({ guild, userId: entry.userId });
 	}
 
-	protected override handleApplyPreOnStart(guild: Guild, entry: ModerationAction.Entry) {
-		getLogger(guild).timeout.set(entry.userId, { userId: entry.moderatorId, reason: entry.reason });
+	protected override async handleApplyPreOnStart(guild: Guild, entry: ModerationAction.Entry) {
+		(await getLogger(guild)).timeout.set(entry.userId, { userId: entry.moderatorId, reason: entry.reason });
 	}
 
-	protected override handleApplyPreOnError(_error: Error, guild: Guild, entry: ModerationAction.Entry) {
-		getLogger(guild).timeout.unset(entry.userId);
+	protected override async handleApplyPreOnError(_error: Error, guild: Guild, entry: ModerationAction.Entry) {
+		(await getLogger(guild)).timeout.unset(entry.userId);
 	}
 
 	protected override async handleUndoPre(guild: Guild, entry: ModerationAction.Entry) {
@@ -47,11 +47,11 @@ export class ModerationActionTimeout extends ModerationAction<never, TypeVariati
 		await this.completeLastModerationEntryFromUser({ guild, userId: entry.userId });
 	}
 
-	protected override handleUndoPreOnStart(guild: Guild, entry: ModerationAction.Entry) {
-		getLogger(guild).timeout.set(entry.userId, { userId: entry.moderatorId, reason: entry.reason });
+	protected override async handleUndoPreOnStart(guild: Guild, entry: ModerationAction.Entry) {
+		(await getLogger(guild)).timeout.set(entry.userId, { userId: entry.moderatorId, reason: entry.reason });
 	}
 
-	protected override handleUndoPreOnError(_error: Error, guild: Guild, entry: ModerationAction.Entry) {
-		getLogger(guild).timeout.unset(entry.userId);
+	protected override async handleUndoPreOnError(_error: Error, guild: Guild, entry: ModerationAction.Entry) {
+		(await getLogger(guild)).timeout.unset(entry.userId);
 	}
 }

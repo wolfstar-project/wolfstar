@@ -1,9 +1,7 @@
-import { isThenable } from '@sapphire/utilities';
 import { LoggerManager, ModerationManager, StickyRoleManager } from '#lib/moderation/managers';
-import { resolveGuildId } from '#utils/common';
+import { resolveGuild, resolveGuildId } from '#utils/common';
 import { GuildSecurity } from '#utils/Security/GuildSecurity';
-import { container } from '@wolfstar/http-framework';
-import { Guild, type GuildResolvable } from '@wolfstar/plugin-gateway';
+import type { GuildResolvable } from '@wolfstar/plugin-gateway';
 
 export interface GuildUtilities {
 	readonly logger: LoggerManager;
@@ -20,18 +18,20 @@ export const cache = new Map<string, GuildUtilities>();
 /**
  * Gets, and creates if needed, the utilities of a guild.
  *
- * @remarks The guild is read from the gateway cache, so it must have been received through the gateway already. This
- * is the case for every guild the bot is in, as they are cached when the shard receives `GUILD_CREATE`.
+ * @remarks The guild is resolved through the gateway client, which reads its cache and fetches the guild when it is
+ * missing, so it works with an asynchronous cache such as the Redis one.
  * @param resolvable The guild, an entity belonging to a guild, or a guild id.
  */
-export function getGuildUtilities(resolvable: GuildResolvable): GuildUtilities {
+export async function getGuildUtilities(resolvable: GuildResolvable): Promise<GuildUtilities> {
 	const id = resolveGuildId(resolvable);
 	const previous = cache.get(id);
 	if (previous !== undefined) return previous;
 
-	const guild = resolvable instanceof Guild ? resolvable : container.gatewayClient.guilds.cache.get(id);
-	if (isThenable(guild)) throw new TypeError(`The guild ${id} cannot be read synchronously, its cache is asynchronous.`);
-	if (guild === undefined) throw new TypeError(`The guild ${id} is not cached.`);
+	const guild = await resolveGuild(resolvable);
+
+	// Another call may have created the entry while the guild was being resolved:
+	const raced = cache.get(id);
+	if (raced !== undefined) return raced;
 
 	const entry: GuildUtilities = {
 		logger: new LoggerManager(guild),
@@ -58,5 +58,5 @@ export const getSecurity = getProperty('security');
 export const getStickyRoles = getProperty('stickyRoles');
 
 function getProperty<K extends keyof GuildUtilities>(property: K) {
-	return (resolvable: GuildResolvable): GuildUtilities[K] => getGuildUtilities(resolvable)[property];
+	return async (resolvable: GuildResolvable): Promise<GuildUtilities[K]> => (await getGuildUtilities(resolvable))[property];
 }

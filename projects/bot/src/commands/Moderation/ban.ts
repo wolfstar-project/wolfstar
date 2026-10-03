@@ -35,7 +35,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 
 	protected override async preHandle(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters) {
 		const settings = await readSettings(interaction.guildId);
-		return settings.moderationTrackBans ? { unlock: getModeration(context.guild).createLock() } : null;
+		return settings.moderationTrackBans ? { unlock: (await getModeration(context.guild)).createLock() } : null;
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {

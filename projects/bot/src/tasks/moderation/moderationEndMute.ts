@@ -6,7 +6,9 @@ import type { Guild } from 'discord.js';
 export class UserModerationTask extends ModerationTask {
 	protected async handle(guild: Guild, data: ModerationData) {
 		const t = await fetchT(guild);
-		await getSecurity(guild).actions.unMute(
+		await (
+			await getSecurity(guild)
+		).actions.unMute(
 			{
 				moderatorId: process.env.CLIENT_ID,
 				userId: data.userID,

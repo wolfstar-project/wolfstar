@@ -116,7 +116,7 @@ export class UserCommand extends Command {
 			const show = args.show ?? false;
 			const user = args.user?.user ?? null;
 
-			const moderation = getModeration(interaction.guildId);
+			const moderation = await getModeration(interaction.guildId);
 			let entries = [...(await moderation.fetch({ userId: user?.id })).values()];
 			if (!isNullish(args.type)) entries = entries.filter((entry) => entry.type === args.type);
 			if (args['pending-only'] ?? false) entries = entries.filter((entry) => !isNullishOrZero(entry.duration) && !entry.isCompleted());
@@ -167,7 +167,9 @@ export class UserCommand extends Command {
 				}
 			}
 
-			await getModeration(interaction.guildId).edit(entry, {
+			await (
+				await getModeration(interaction.guildId)
+			).edit(entry, {
 				reason: isNullish(args.reason) ? entry.reason : args.reason,
 				duration: isNullish(duration) ? entry.duration : duration || null
 			});
@@ -183,7 +185,7 @@ export class UserCommand extends Command {
 	public archive(interaction: GuildChatInputInteraction, args: { case: number }) {
 		return this.#handle(interaction, async (t) => {
 			const entry = await this.#getCase(interaction, args.case);
-			await getModeration(interaction.guildId).archive(entry);
+			await (await getModeration(interaction.guildId)).archive(entry);
 
 			return interaction.reply({ content: t('commands/case:archiveSuccess', { caseId: entry.id }), flags: MessageFlags.Ephemeral });
 		});
@@ -196,7 +198,7 @@ export class UserCommand extends Command {
 	public delete(interaction: GuildChatInputInteraction, args: { case: number }) {
 		return this.#handle(interaction, async (t) => {
 			const entry = await this.#getCase(interaction, args.case);
-			await getModeration(interaction.guildId).delete(entry);
+			await (await getModeration(interaction.guildId)).delete(entry);
 
 			return interaction.reply({ content: t('commands/case:deleteSuccess', { caseId: entry.id }), flags: MessageFlags.Ephemeral });
 		});

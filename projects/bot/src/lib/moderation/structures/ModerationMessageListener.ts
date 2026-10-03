@@ -104,8 +104,8 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected async onWarning(message: GuildMessage, t: TFunction, points: number, maximum: number, duration: number | null) {
-		await this.createActionAndSend(message, () =>
-			getSecurity(message.guild).actions.warning({
+		await this.createActionAndSend(message, async () =>
+			(await getSecurity(message.guild)).actions.warning({
 				userId: message.author.id,
 				moderatorId: process.env.CLIENT_ID,
 				reason: maximum === 0 ? t(this.reasonLanguageKey) : t(this.reasonLanguageKeyWithMaximum, { amount: points, maximum }),
@@ -115,8 +115,8 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected async onKick(message: GuildMessage, t: TFunction, points: number, maximum: number) {
-		await this.createActionAndSend(message, () =>
-			getSecurity(message.guild).actions.kick({
+		await this.createActionAndSend(message, async () =>
+			(await getSecurity(message.guild)).actions.kick({
 				userId: message.author.id,
 				moderatorId: process.env.CLIENT_ID,
 				reason: maximum === 0 ? t(this.reasonLanguageKey) : t(this.reasonLanguageKeyWithMaximum, { amount: points, maximum })
@@ -125,8 +125,8 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected async onMute(message: GuildMessage, t: TFunction, points: number, maximum: number, duration: number | null) {
-		await this.createActionAndSend(message, () =>
-			getSecurity(message.guild).actions.mute({
+		await this.createActionAndSend(message, async () =>
+			(await getSecurity(message.guild)).actions.mute({
 				userId: message.author.id,
 				moderatorId: process.env.CLIENT_ID,
 				reason: maximum === 0 ? t(this.reasonLanguageKey) : t(this.reasonLanguageKeyWithMaximum, { amount: points, maximum }),
@@ -136,8 +136,8 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected async onSoftBan(message: GuildMessage, t: TFunction, points: number, maximum: number) {
-		await this.createActionAndSend(message, () =>
-			getSecurity(message.guild).actions.softBan(
+		await this.createActionAndSend(message, async () =>
+			(await getSecurity(message.guild)).actions.softBan(
 				{
 					userId: message.author.id,
 					moderatorId: process.env.CLIENT_ID,
@@ -149,8 +149,8 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected async onBan(message: GuildMessage, t: TFunction, points: number, maximum: number, duration: number | null) {
-		await this.createActionAndSend(message, () =>
-			getSecurity(message.guild).actions.ban(
+		await this.createActionAndSend(message, async () =>
+			(await getSecurity(message.guild)).actions.ban(
 				{
 					userId: message.author.id,
 					moderatorId: process.env.CLIENT_ID,
@@ -163,7 +163,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 	}
 
 	protected async createActionAndSend(message: GuildMessage, performAction: () => unknown): Promise<void> {
-		const unlock = getModeration(message.guild).createLock();
+		const unlock = (await getModeration(message.guild)).createLock();
 		await performAction();
 		unlock();
 	}

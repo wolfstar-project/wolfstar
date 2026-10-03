@@ -8,7 +8,7 @@ import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 const IntegerPattern = /^-?\d+$/;
 
 export async function resolveCaseId(parameter: string, t: TFunction<AnyNamespace>, guild: GuildResolvable): Promise<Result<number, UserError>> {
-	const maximum = await getModeration(guild).getCurrentId();
+	const maximum = await (await getModeration(guild)).getCurrentId();
 	if (maximum === 0) return err(new UserError({ identifier: 'arguments:caseNoEntries' }));
 
 	const latestOptions = t('arguments:caseLatestOptions', { returnObjects: true }) as unknown as readonly string[];
@@ -31,7 +31,7 @@ export async function resolveCase(
 	const result = await resolveCaseId(parameter, t, guild);
 	return result.match({
 		ok: async (value) => {
-			const entry = await getModeration(guild).fetch(value);
+			const entry = await (await getModeration(guild)).fetch(value);
 			return entry ? ok(entry) : err(new UserError({ identifier: 'arguments:caseUnknownEntry', context: { parameter } }));
 		},
 		err: (error) => err(error)

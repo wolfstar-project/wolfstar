@@ -8,7 +8,7 @@ export class UserListener extends Listener {
 	public async run({ guild, user }: GuildBan) {
 		if (!guild.available || !(await readSettings(guild, GuildSettings.Events.BanRemove))) return;
 
-		const moderation = getModeration(guild);
+		const moderation = await getModeration(guild);
 		await moderation.waitLock();
 		await moderation
 			.create({

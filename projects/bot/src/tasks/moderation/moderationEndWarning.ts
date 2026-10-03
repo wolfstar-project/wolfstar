@@ -9,7 +9,9 @@ export class UserModerationTask extends ModerationTask {
 		if (!me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return null;
 
 		const t = await fetchT(guild);
-		await getSecurity(guild).actions.unWarning(
+		await (
+			await getSecurity(guild)
+		).actions.unWarning(
 			{
 				moderatorId: process.env.CLIENT_ID,
 				userId: data.userID,

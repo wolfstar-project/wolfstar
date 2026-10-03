@@ -199,7 +199,7 @@ export class UserCommand extends Command {
 	}
 
 	private async bulkDeleteMessages(guildId: string, channelId: string, messages: readonly Message[]) {
-		const logger = getLogger(guildId);
+		const logger = await getLogger(guildId);
 		logger.prune.set(channelId, { userId: container.gatewayClient.user!.id });
 
 		const { messages: manager } = container.gatewayClient;

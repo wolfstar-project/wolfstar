@@ -1,9 +1,8 @@
 import { writeSettings } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions';
-import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
+import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { Command, RegisterCommand, UserError, container } from '@wolfstar/http-framework';
-import {}
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { ApplicationIntegrationType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
@@ -28,10 +27,8 @@ import { ApplicationIntegrationType, InteractionContextType, MessageFlags, Permi
 		.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/management:createMuteOptionsRole').setRequired(false))
 )
 export class UserCommand extends Command {
+	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: UserCommand.Arguments) {
-		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		const t = getSupportedUserLanguageT(interaction);
 		const { role } = options;
 		if (role) {

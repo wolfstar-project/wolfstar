@@ -9,7 +9,9 @@ export class UserModerationTask extends ModerationTask {
 		if (!me.permissions.has(Permissions.FLAGS.MANAGE_ROLES)) return null;
 
 		const t = await fetchT(guild);
-		await getSecurity(guild).actions.unAddRole(
+		await (
+			await getSecurity(guild)
+		).actions.unAddRole(
 			{
 				moderatorId: process.env.CLIENT_ID,
 				userId: data.userID,

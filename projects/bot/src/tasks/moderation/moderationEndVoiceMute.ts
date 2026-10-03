@@ -9,7 +9,9 @@ export class UserModerationTask extends ModerationTask {
 		if (!me.permissions.has(Permissions.FLAGS.MUTE_MEMBERS)) return null;
 
 		const t = await fetchT(guild);
-		await getSecurity(guild).actions.unVoiceMute(
+		await (
+			await getSecurity(guild)
+		).actions.unVoiceMute(
 			{
 				moderatorId: process.env.CLIENT_ID,
 				userId: data.userID,

@@ -49,7 +49,7 @@ export class UserListener extends Listener {
 	}
 
 	private async isModerationAction(guild: Guild, user: GatewayGuildMemberRemoveDispatch['d']['user']): Promise<IsModerationAction> {
-		const moderation = getModeration(guild);
+		const moderation = await getModeration(guild);
 		await moderation.waitLock();
 
 		const latestLogForUser = moderation.getLatestLogForUser(user.id);

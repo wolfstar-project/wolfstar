@@ -1,6 +1,5 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { BrandingColors } from '#utils/constants';
 import { EmbedBuilder, type SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { Command, container, type TransformedArguments } from '@wolfstar/http-framework';
@@ -34,7 +33,6 @@ export class UserCommand extends Command {
 			.registerSubcommand((builder) => registerRoleSubcommand(builder, 'Unclaim'), 'chatInputRunUnclaim');
 	}
 
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public async chatInputRunList(interaction: UserCommand.Interaction) {
 		const t = getSupportedUserLanguageT(interaction);
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
@@ -70,12 +68,10 @@ export class UserCommand extends Command {
 		return deferred.update({ embeds: [embed.toJSON()] });
 	}
 
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public async chatInputRunClaim(interaction: UserCommand.Interaction, options: UserCommand.RoleArguments) {
 		return this.#run(interaction, options.role, true);
 	}
 
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public async chatInputRunUnclaim(interaction: UserCommand.Interaction, options: UserCommand.RoleArguments) {
 		return this.#run(interaction, options.role, false);
 	}

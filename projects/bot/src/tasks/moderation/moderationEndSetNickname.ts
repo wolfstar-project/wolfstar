@@ -9,7 +9,9 @@ export class UserModerationTask extends ModerationTask {
 		if (!me.permissions.has(Permissions.FLAGS.MANAGE_NICKNAMES)) return null;
 
 		const t = await fetchT(guild);
-		await getSecurity(guild).actions.unSetNickname(
+		await (
+			await getSecurity(guild)
+		).actions.unSetNickname(
 			{
 				moderatorId: process.env.CLIENT_ID,
 				userId: data.userID,

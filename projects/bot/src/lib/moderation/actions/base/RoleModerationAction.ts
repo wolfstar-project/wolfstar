@@ -185,7 +185,7 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 			throw new UserError({ identifier: 'moderationActions:actionRoleHigherPosition' });
 		}
 
-		await getStickyRoles(guild).add(entry.userId, role.id);
+		await (await getStickyRoles(guild)).add(entry.userId, role.id);
 
 		const reason = await this.getReason(guild, entry.reason);
 		const data = this.replace
@@ -210,7 +210,7 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 			throw new UserError({ identifier: 'moderationActions:actionRoleHigherPosition' });
 		}
 
-		await getStickyRoles(guild).remove(entry.userId, role.id);
+		await (await getStickyRoles(guild)).remove(entry.userId, role.id);
 
 		const reason = await this.getReason(guild, entry.reason, true);
 		if (this.replace) {
