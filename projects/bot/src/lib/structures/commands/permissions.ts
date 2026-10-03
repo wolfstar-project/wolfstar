@@ -1,8 +1,9 @@
 import { readSettings } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { createFunctionPrecondition } from '@wolfstar/decorators';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
+import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
 /**
  * The replacement of the `PermissionLevels` the prefix commands declared.
@@ -58,6 +59,18 @@ export async function hasCommandPermissionLevel(interaction: GuildChatInputInter
 }
 
 /**
+ * Resolves the message that tells the author of an interaction that they cannot run a command of the given level.
+ *
+ * @param interaction - The interaction that was denied.
+ * @param level - The level the command requires.
+ */
+function getCommandPermissionDenialMessage(interaction: GuildChatInputInteraction, level: CommandPermissionLevel): string {
+	const t = getSupportedUserLanguageT(interaction);
+	const command = { name: interaction.data.name };
+	return translateKey(t, level === CommandPermissionLevel.Administrator ? 'preconditions:administrator' : 'preconditions:moderator', { command });
+}
+
+/**
  * Runs {@linkcode hasCommandPermissionLevel} and, when the author is not allowed, resolves the message to tell them.
  *
  * @param interaction - The interaction to check.
@@ -66,8 +79,33 @@ export async function hasCommandPermissionLevel(interaction: GuildChatInputInter
  */
 export async function getCommandPermissionDenial(interaction: GuildChatInputInteraction, level: CommandPermissionLevel): Promise<string | null> {
 	if (await hasCommandPermissionLevel(interaction, level)) return null;
+	return getCommandPermissionDenialMessage(interaction, level);
+}
 
-	const t = getSupportedUserLanguageT(interaction);
-	const command = { name: interaction.data.name };
-	return translateKey(t, level === CommandPermissionLevel.Administrator ? 'preconditions:administrator' : 'preconditions:moderator', { command });
+/**
+ * Decorator that only runs the decorated method when the author of the interaction is allowed to run a command of the
+ * given level, see {@linkcode hasCommandPermissionLevel}. Otherwise, the author gets an ephemeral reply with the
+ * localized reason and the method is skipped.
+ *
+ * @remarks The decorated method must receive the interaction as its first argument, and, as with every decorator
+ * created by `createFunctionPrecondition`, it always returns a `Promise`.
+ * @param level - The level the command requires.
+ * @returns A method decorator.
+ * @example
+ * ```typescript
+ * @RegisterCommand((builder) => applyLocalizedBuilder(builder, 'commands/management:rolesName', 'commands/management:rolesDescription'))
+ * export class UserCommand extends Command {
+ * 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
+ * 	public override chatInputRun(interaction: GuildChatInputInteraction) {
+ * 		// Only runs for administrators.
+ * 	}
+ * }
+ * ```
+ */
+export function RequiresCommandPermissionLevel(level: CommandPermissionLevel): MethodDecorator {
+	return createFunctionPrecondition(
+		(interaction: GuildChatInputInteraction) => hasCommandPermissionLevel(interaction, level),
+		(interaction: GuildChatInputInteraction) =>
+			interaction.reply({ content: getCommandPermissionDenialMessage(interaction, level), flags: MessageFlags.Ephemeral })
+	);
 }
