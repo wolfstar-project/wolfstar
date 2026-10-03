@@ -1,14 +1,11 @@
-import { AutoModerationCommand } from '#lib/moderation/structures/AutoModerationCommand';
-import { ApplyOptions } from '@wolfstar/http-framework';
+import { createAutoModerationCommandBuilder } from '#lib/moderation/structures/AutoModerationCommand';
+import { AutoModerationRules } from '#lib/moderation/structures/AutoModerationRules';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
 
-@ApplyOptions<AutoModerationCommand.Options>({
-	localizedNameKey: 'commands/auto-moderation:capitals',
-	adderPropertyName: 'capitals',
-	keyEnabled: 'selfmodCapitalsEnabled',
-	keyOnInfraction: 'selfmodCapitalsSoftAction',
-	keyPunishment: 'selfmodCapitalsHardAction',
-	keyPunishmentDuration: 'selfmodCapitalsHardActionDuration',
-	keyPunishmentThreshold: 'selfmodCapitalsThresholdMaximum',
-	keyPunishmentThresholdPeriod: 'selfmodCapitalsThresholdDuration'
-})
-export class UserCommand extends AutoModerationCommand {}
+/**
+ * The parent of the `automod-capitals` subcommands, which are wired onto this command by
+ * `@wolfstar/plugin-subcommands-advanced`, see the `automod-capitals` folder.
+ */
+@RegisterCommand(createAutoModerationCommandBuilder(AutoModerationRules.capitals))
+export class UserCommand extends Subcommand {}

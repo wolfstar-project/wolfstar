@@ -1,14 +1,11 @@
-import { AutoModerationCommand } from '#lib/moderation/structures/AutoModerationCommand';
-import { ApplyOptions } from '@wolfstar/http-framework';
+import { createAutoModerationCommandBuilder } from '#lib/moderation/structures/AutoModerationCommand';
+import { AutoModerationRules } from '#lib/moderation/structures/AutoModerationRules';
+import { RegisterCommand } from '@wolfstar/http-framework';
+import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
 
-@ApplyOptions<AutoModerationCommand.Options>({
-	localizedNameKey: 'commands/auto-moderation:newlines',
-	adderPropertyName: 'newlines',
-	keyEnabled: 'selfmodNewlinesEnabled',
-	keyOnInfraction: 'selfmodNewlinesSoftAction',
-	keyPunishment: 'selfmodNewlinesHardAction',
-	keyPunishmentDuration: 'selfmodNewlinesHardActionDuration',
-	keyPunishmentThreshold: 'selfmodNewlinesThresholdMaximum',
-	keyPunishmentThresholdPeriod: 'selfmodNewlinesThresholdDuration'
-})
-export class UserCommand extends AutoModerationCommand {}
+/**
+ * The parent of the `automod-newlines` subcommands, which are wired onto this command by
+ * `@wolfstar/plugin-subcommands-advanced`, see the `automod-newlines` folder.
+ */
+@RegisterCommand(createAutoModerationCommandBuilder(AutoModerationRules.newlines))
+export class UserCommand extends Subcommand {}
