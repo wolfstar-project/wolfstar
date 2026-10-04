@@ -4,7 +4,7 @@
 	"logAppealed": "{{REDCROSS}} I am sorry, but the selected moderation log has expired or cannot be cannot be made temporary.",
 	"logDescriptionTypeAndUser": "❯ **Type**: {{data.type}}\n❯ **User:** {{data.userName}}#{{data.userDiscriminator}} ({{data.userId}})",
 	"logDescriptionWithReason": "❯ **Reason:** {{data.reason}}{{data.formattedDuration}}",
-	"logDescriptionWithoutReason": "❯ **Reason:** Please use `{{data.prefix}}reason {{data.caseId}} <reason>` to set the reason.{{data.formattedDuration}}",
+	"logDescriptionWithoutReason": "❯ **Reason:** Please use `/case edit case:{{data.caseId}} reason:<reason>` to set the reason.{{data.formattedDuration}}",
 	"logExpiresIn": "\n❯ **Expires In**: {{duration, duration}}",
 	"logFooter": "Case {{caseId}}",
 	"muteCannotManageRoles": "I must have **{{MANAGE_ROLES, permissions}}** permissions to be able to mute.",

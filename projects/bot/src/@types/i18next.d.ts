@@ -2579,7 +2579,7 @@ declare module "i18next" {
         logAppealed: "{{REDCROSS}} I am sorry, but the selected moderation log has expired or cannot be cannot be made temporary.";
         logDescriptionTypeAndUser: "❯ **Type**: {{data.type}}\n❯ **User:** {{data.userName}}#{{data.userDiscriminator}} ({{data.userId}})";
         logDescriptionWithReason: "❯ **Reason:** {{data.reason}}{{data.formattedDuration}}";
-        logDescriptionWithoutReason: "❯ **Reason:** Please use `{{data.prefix}}reason {{data.caseId}} <reason>` to set the reason.{{data.formattedDuration}}";
+        logDescriptionWithoutReason: "❯ **Reason:** Please use `/case edit case:{{data.caseId}} reason:<reason>` to set the reason.{{data.formattedDuration}}";
         logExpiresIn: "\n❯ **Expires In**: {{duration, duration}}";
         logFooter: "Case {{caseId}}";
         muteCannotManageRoles: "I must have **{{MANAGE_ROLES, permissions}}** permissions to be able to mute.";
@@ -2910,7 +2910,6 @@ declare module "i18next" {
         dashboardOnlyKey: "This key can only be configured through [the web dashboard](https://wolfstar.rocks)";
         disabledChannels: "A list of channels for disabled commands, for example, setting up a channel called general will forbid all users from using my commands there. Moderators+ override this purposely to allow them to moderate without switching channels.";
         disabledCommands: "The disabled commands, core commands may not be disabled, and moderators will override this. All commands must be in lower case.";
-        disableNaturalPrefix: "Whether or not I should listen for my natural prefix, `WolfStar,`";
         eventsBanAdd: "This event posts non-bot moderation logs when a user gets banned. You must set up `channels.moderation-logs`.";
         eventsBanRemove: "This event posts non-bot moderation logs when a user gets unbanned. You must set up `channels.moderation-logs`.";
         eventsTwemojiReactions: "Whether or not twemoji reactions are posted in the reaction logs channel.";
@@ -2925,7 +2924,6 @@ declare module "i18next" {
         noMentionSpamEnabled: "Whether or not I should have the ban hammer ready for mention spammers.";
         noMentionSpamMentionsAllowed: 'The minimum amount of "points" a user must accumulate before landing the hammer. A user mention will count as 1 point, a role mention as 2 points, and an everyone/here mention as 5 points.';
         noMentionSpamTimePeriod: "The amount of time in seconds in which the mention bucket should refresh. For example, if this is set to `8` and you mentioned two users 7 seconds apart, the bucket would run from start with the accumulated amount of points.";
-        prefix: "A prefix is an affix that is added in front of the word, in this case, the message. It allows bots to distinguish between a regular message and a command.";
         rolesAdmin: "The administrator roles. Administrators have access to all moderation and management commands. Defaults to anyone with the {{MANAGE_GUILD, permissions}} permission.";
         rolesInitial: "The initial role, if configured, I will give it to users as soon as they join.";
         rolesInitialHumans: "If configured, I will give this role to regular users upon joining. (not bots)";
@@ -3050,7 +3048,6 @@ declare module "i18next" {
         messagePromptTimeout: "The prompt has timed out.";
         noResults: "I wasn't able to find any results for that query";
         parseError: "{{REDCROSS}} I failed to process the data I was given, sorry~!";
-        prefixReminder: "The prefix in this server is set to: `{{prefix}}`";
         queryFail: "I am sorry, but the application could not resolve your request. Are you sure you wrote the name correctly?";
         textPromptAbortOptions: ["abort", "cancel", "stop"];
         reminderHeader: "⏲ Hey there! You asked to be reminded at {{timestamp}} about:";
