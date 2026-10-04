@@ -6,9 +6,9 @@ import { container } from '@wolfstar/http-framework';
 import { createBroker, forwardGatewayDispatches, replayGatewayDispatches } from '@wolfstar/plugin-broker';
 import { createRedisCache, createRedisSessionStore } from '@wolfstar/plugin-cache';
 import { GatewayClient } from '@wolfstar/plugin-gateway';
-import * as Sentry from '@sentry/node';
+import { initializeSentry } from '@wolfstar/shared-http-pieces';
 import { GatewayIntentBits } from 'discord-api-types/v10';
-import { Redis, type RedisOptions } from 'ioredis';
+import '#lib/setup/redis';
 import { fileURLToPath } from 'node:url';
 
 /**
@@ -17,17 +17,8 @@ import { fileURLToPath } from 'node:url';
  */
 export const isWorker = () => envParseString('BOT_MODE', 'gateway') === 'worker';
 
-export function createClient(options: ClientOptions = {}) {
+export function createClient() {
 	const worker = isWorker();
-
-	container.redis = new Redis({
-		...options.redis,
-		lazyConnect: true,
-		host: envParseString('REDIS_HOST'),
-		port: envParseInteger('REDIS_PORT'),
-		db: envParseInteger('REDIS_DB'),
-		password: envParseString('REDIS_PASSWORD')
-	});
 
 	// The client registers itself as `container.gatewayClient`:
 	// oxlint-disable-next-line no-new
@@ -91,20 +82,8 @@ export function createClient(options: ClientOptions = {}) {
 	const srcFolderURL = new URL('..', import.meta.url);
 	container.stores.registerPath(fileURLToPath(srcFolderURL));
 
-	// Load in Sentry for error logging
-	if (process.env.SENTRY_DSN) {
-		Sentry.init({
-			dsn: process.env.SENTRY_DSN,
-			integrations: [
-				Sentry.modulesIntegration(),
-				Sentry.functionToStringIntegration(),
-				Sentry.linkedErrorsIntegration(),
-				Sentry.consoleIntegration(),
-				Sentry.httpIntegration({ breadcrumbs: true }),
-				Sentry.rewriteFramesIntegration({ root: fileURLToPath(new URL('..', srcFolderURL)) })
-			]
-		});
-	}
+	// Reports the errors to Sentry when `SENTRY_DSN` is set:
+	initializeSentry({ root: new URL('../..', import.meta.url) });
 }
 
 export async function loadAll() {
@@ -124,19 +103,4 @@ export async function loadAll() {
 			port: envParseInteger('HTTP_PORT', 3000)
 		}
 	});
-}
-
-export interface ClientOptions {
-	redis?: Omit<RedisOptions, 'lazyConnect' | 'host' | 'port' | 'db' | 'password'>;
-}
-
-declare module '@sapphire/pieces' {
-	interface Container {
-		redis: Redis;
-
-		// db: DbSet;
-		// schedule: ScheduleManager;
-		// settings: SettingsManager;
-		// workers: WorkerManager;
-	}
 }
