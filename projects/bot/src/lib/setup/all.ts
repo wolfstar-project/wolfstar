@@ -2,6 +2,7 @@ import { envParseString } from '@wolfstar/env-utilities';
 import { initializeSentry, setInvite, setRepository } from '@wolfstar/shared-http-pieces';
 import '#lib/setup/prisma';
 import '#lib/setup/redis';
+import '@wolfstar/shared-http-pieces/register';
 
 export function initializeApp() {
 	setRepository('wolfstar');

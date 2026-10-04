@@ -1799,6 +1799,7 @@ declare module "i18next" {
         title: "Permissions for {{username}} ({{id}})";
       };
       "commands/shared": {
+        infoEmbedDescription: "WolfStar is a multipurpose Discord bot with moderation, management and fun tools, built by the WolfStar Project.";
         deprecatedMessage: "Message based commands are **deprecated**, and will be removed in the future. You should use the {{command}} slash command instead!";
         slashOnlyDetailedDescription: {
           extendedHelp: "This command is only available via slash commands. Please use the slash command instead.";
