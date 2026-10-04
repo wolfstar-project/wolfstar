@@ -1,4 +1,4 @@
-import { readSettings } from '#lib/database';
+import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { UndoTaskName } from '#lib/moderation/common';
 import { translateKey } from '#lib/structures/commands/utils';
@@ -93,18 +93,9 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		const settings: Partial<Record<string, unknown>> = await readSettings(guild);
 		return {
 			moderator: null,
-			sendDirectMessage: settings.messagesModerationDm === true && (await this.fetchUserModerationDmEnabled(targetId)),
+			sendDirectMessage: settings.messagesModerationDm === true && (await fetchUserReportEnabled(targetId)),
 			context
 		};
-	}
-
-	/**
-	 * Whether the user accepts direct messages about the moderation actions taken on them.
-	 *
-	 * @remarks The setting of the user is not stored yet, so every user accepts them, like `ModerationCommand` assumes.
-	 */
-	protected fetchUserModerationDmEnabled(_userId: Snowflake): Promise<boolean> {
-		return Promise.resolve(true);
 	}
 
 	protected abstract handle(guild: Guild, data: ModerationData<T>): unknown;

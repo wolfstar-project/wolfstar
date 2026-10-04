@@ -50,7 +50,6 @@
 	"reasonUpdated_other": "{{GREENTICK}} Updated {{count}} cases\n └─ **Set their reasons to:** {{newReason}}",
 	"toggleModerationDmToggledEnabled": "{{GREENTICK}} Successfully enabled moderation DMs.",
 	"toggleModerationDmToggledDisabled": "{{GREENTICK}} Successfully disabled moderation DMs",
-	"toggleModerationDmUnavailable": "{{REDCROSS}} Moderation DMs cannot be toggled yet, the preference cannot be stored at the moment.",
 	"unbanMissingPermission": "I will need the **{{BAN_MEMBERS, permissions}}** permission to be able to unban.",
 	"unmuteMissingPermission": "I will need the **{{MANAGE_ROLES, permissions}}** permission to be able to unmute.",
 	"vmuteMissingPermission": "I will need the **{{MUTE_MEMBERS, permissions}}** permission to be able to voice unmute.",

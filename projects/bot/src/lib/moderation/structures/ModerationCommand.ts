@@ -1,4 +1,4 @@
-import { readSettings } from '#lib/database';
+import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
@@ -403,18 +403,13 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	}
 
 	/**
-	 * Fetches whether the target wants to receive the moderation direct messages.
-	 *
-	 * @remarks
-	 *
-	 * The normalized `User` model of the Prisma 8 contract only has the `report` column, the old `moderation_dm` one is
-	 * not part of it, so every user is considered to accept the direct messages until the column is back.
+	 * Whether the target accepts the direct messages about the moderation actions taken on them, the `report` column of
+	 * the `User` model (see the `togglemoderationdm` command).
 	 *
 	 * @param userId - The ID of the target.
 	 */
-	protected fetchUserModerationDmEnabled(userId: string): Awaitable<boolean>;
-	protected fetchUserModerationDmEnabled() {
-		return true;
+	protected fetchUserModerationDmEnabled(userId: string): Awaitable<boolean> {
+		return fetchUserReportEnabled(userId);
 	}
 
 	/**
