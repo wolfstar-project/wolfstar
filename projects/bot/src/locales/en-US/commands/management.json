@@ -49,14 +49,6 @@
 	"filterReset": "{{GREENTICK}} Success! The filter has been reset.",
 	"filterShowEmpty": "The list of filtered words is empty!",
 	"filterShow": "Filtered words in this server: {{words}}",
-	"manageCommandChannelShow": "List of disabled commands in {{channel}}: {{commands}}",
-	"manageCommandChannelShowEmpty": "The list of disabled commands for the specified channel is empty!",
-	"manageCommandChannelAddAlreadyset": "The command you are trying to disable is already disabled!",
-	"manageCommandChannelAdd": "Successfully disabled the command {{command}} for the channel {{channel}}!",
-	"manageCommandChannelRemoveNotset": "The command you are trying to enable was not disabled for {{channel}}.",
-	"manageCommandChannelRemove": "Successfully enabled the command {{command}} for the channel {{channel}}!",
-	"manageCommandChannelResetEmpty": "This channel had no disabled command, so I decided to do nothing.",
-	"manageCommandChannelReset": "Successfully enabled all disabled commands in {{channel}}, enjoy!",
 	"manageReactionRolesShowEmpty": "There are no reaction roles set up in this server.",
 	"manageReactionRolesAddChannel": "{{GREENTICK}} Success! I will now give the role when people react with {{emoji}} to any message from {{channel}}!",
 	"manageReactionRolesAddPrompt": "Listening now! Please react to a message and I will bind the reaction with the role!",
@@ -75,7 +67,6 @@
 	"setMessageUpdateLogsSet": "Successfully set the message update logs channel to {{channel}}.",
 	"setMessageDeleteLogsSet": "Successfully set the message delete logs channel to {{channel}}.",
 	"setModLogsSet": "Successfully set the mod logs channel to {{channel}}.",
-	"setPrefixSet": "Successfully set the prefix to `{{prefix}}`. Use `{{prefix}}setPrefix NewPrefix` to change it again.",
 	"stickyRolesNotExists": "The user {{user}} does not have any sticky roles or does not have the specified one.",
 	"stickyRolesReset": "Successfully removed all sticky roles from {{user}}.",
 	"stickyRolesRemove": "Successfully removed the specified role from {{user}}.",
@@ -105,19 +96,6 @@
 		],
 		"examples": ["add staff allow warn", "add moderators deny ban", "remove staff allow warn", "reset staff", "show staff"],
 		"reminder": "The server owner cannot have any actions, nor the `everyone` role can have allowed commands."
-	},
-	"manageCommandChannelDescription": "Manage per-channel blocked command list.",
-	"manageCommandChannelExtended": {
-		"usages": ["add TextChannel Command", "remove TextChannel Command", "reset TextChannel", "show TextChannel"],
-		"extendedHelp": "This command manages this server's per-channel blocked command list, it serves well to disable certain commands you do not want to be used in certain channels (to disable a command globally, use the `disabledCommands` settings key to disable in all channels.",
-		"explainedUsage": [
-			["show [channel]", "Show the list of commands blocked in the specified channel."],
-			["add [channel] <command>", "Add a command to the specified channel's list of blocked commands."],
-			["remove [channel] <command>", "Remove a command from the specified channel's list of blocked commands."],
-			["reset [channel]", "Clear the list of commands blocked in the specified channel."]
-		],
-		"reminder": "The channel argument is optional, but it uses fuzzy search when possible.",
-		"examples": ["add #general profile", "remove #general profile", "reset #general", "show #general"]
 	},
 	"manageReactionRolesDescription": "Manage the reaction roles for this server.",
 	"manageReactionRolesExtended": {
@@ -227,14 +205,6 @@
 		],
 		"reminder": "Due to Discord limitations, the auto-detection does not detect kicks. You need to use the `kick` command if you want to document them as a formal moderation log case.",
 		"examples": ["#mod-logs", "here"]
-	},
-	"setprefixDescription": "Set WolfStar's prefix.",
-	"setprefixExtended": {
-		"usages": ["Prefix"],
-		"extendedHelp": "This command helps you setting up WolfStar's prefix. A prefix is an affix that is added in front of the word, in this case, the message.\nIt allows bots to distinguish between a regular message and a command. By nature, the prefix between should be different to avoid conflicts.\nIf you forget WolfStar's prefix, simply mention her with nothing else and she will tell you the current prefix.\nAlternatively, you can prefix the commands with her name and a comma (for example `WolfStar, ping`).",
-		"explainedUsage": [["Prefix", "The prefix to set. Default one in WolfStar is `{{DEFAULT_PREFIX}}`."]],
-		"reminder": "Your prefix should only contain characters everyone can write and type.",
-		"examples": ["&", "="]
 	},
 	"guildInfoDescription": "Check the information of the server.",
 	"guildInfoExtended": {
@@ -571,7 +541,6 @@
 	},
 	"createMuteName": "create-mute",
 	"permissionNodesName": "permission-nodes",
-	"manageCommandChannelName": "command-channel",
 	"manageReactionRolesName": "reaction-roles",
 	"setIgnoreChannelsName": "set-ignore-channels",
 	"setImageLogsName": "set-image-logs",
@@ -606,14 +575,6 @@
 	"permissionNodesSubcommandResetDescription": "Remove every command from a permission node.",
 	"permissionNodesSubcommandShowName": "show",
 	"permissionNodesSubcommandShowDescription": "Show the permission nodes.",
-	"manageCommandChannelSubcommandAddName": "add",
-	"manageCommandChannelSubcommandAddDescription": "Block a command in a channel.",
-	"manageCommandChannelSubcommandRemoveName": "remove",
-	"manageCommandChannelSubcommandRemoveDescription": "Unblock a command in a channel.",
-	"manageCommandChannelSubcommandResetName": "reset",
-	"manageCommandChannelSubcommandResetDescription": "Unblock every command in a channel.",
-	"manageCommandChannelSubcommandShowName": "show",
-	"manageCommandChannelSubcommandShowDescription": "Show the blocked commands of a channel.",
 	"manageReactionRolesSubcommandAddName": "add",
 	"manageReactionRolesSubcommandAddDescription": "Add a reaction role.",
 	"manageReactionRolesSubcommandRemoveName": "remove",

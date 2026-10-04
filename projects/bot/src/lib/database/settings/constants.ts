@@ -93,7 +93,6 @@ export function getDefaultGuildSettings() {
 		selfmodWordsIgnoredChannels: [],
 		commandsDisabled: [],
 		commandsDisabledChannels: [],
-		commandsDisabledInChannels: [],
 		logsMemberAdd: null,
 		logsMemberRemove: null,
 		logsMemberNicknameUpdate: null,

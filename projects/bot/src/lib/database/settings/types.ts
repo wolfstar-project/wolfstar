@@ -126,7 +126,6 @@ export interface GuildData {
 	// GuildCommands
 	commandsDisabled: string[];
 	commandsDisabledChannels: Snowflake[];
-	commandsDisabledInChannels: DisabledCommandChannel[];
 
 	// GuildLogs
 	logsMemberAdd: Snowflake | null;
@@ -233,11 +232,6 @@ export interface PermissionsNode {
 	allow: readonly Snowflake[];
 	deny: readonly Snowflake[];
 	id: Snowflake;
-}
-
-export interface DisabledCommandChannel {
-	channel: Snowflake;
-	commands: readonly Snowflake[];
 }
 
 /**

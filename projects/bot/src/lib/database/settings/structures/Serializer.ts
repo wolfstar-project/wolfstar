@@ -155,7 +155,6 @@ export namespace Serializer {
 		| 'guildCategoryChannel'
 		| 'command'
 		| 'commandMatch'
-		| 'disabledCommandChannel'
 		| 'emoji'
 		| 'guild'
 		| 'invite'

@@ -7,8 +7,6 @@
 	"customCommandInvalidType_one": "The type {{tag.type}} is not valid, it must be the following: {{possibles, orList}}",
 	"customCommandInvalidType_other": "The type {{tag.type}} is not valid, it must be one of the following: {{possibles, orList}}",
 	"customCommandMissingParameter": "You need to write another parameter!\n\n> **Tip**: The type for the next argument is `{{type}}`!",
-	"disabledCommandChannelsChannelsCommandDoesNotExist": "The command `{{name}}` does not exist.",
-	"disabledCommandChannelsChannelsDoesNotExist": "The channel does not exist.",
 	"invalidBool": "{{name}} must be true or false.",
 	"invalidChannel": "{{name}} must be a channel tag or valid channel id.",
 	"invalidCommand": "{{name}} must be a command name.",

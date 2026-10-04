@@ -175,13 +175,6 @@ export function getConfiguration() {
 			description: 'settings:disabledChannels',
 			array: true
 		},
-		commandsDisabledInChannels: {
-			type: 'notAllowed',
-			name: 'commands.disabled-in-channels',
-			description: 'settings:dashboardOnlyKey',
-			array: true,
-			dashboardOnly: true
-		},
 
 		// Logs
 		logsMemberAdd: logChannel('member-add', 'settings:channelsLogsMemberAdd'),

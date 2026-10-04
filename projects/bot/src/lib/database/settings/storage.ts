@@ -118,8 +118,7 @@ const Columns = {
 	...autoModerationRule('GuildAutoModerationWords', 'selfmodWords', columns('GuildAutoModerationWords', { selfmodWordsList: ['words', 'value'] })),
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
-		commandsDisabledChannels: ['disabledChannels', 'snowflakes'],
-		commandsDisabledInChannels: ['disabledInChannels', 'value']
+		commandsDisabledChannels: ['disabledChannels', 'snowflakes']
 	}),
 	...columns('GuildLogs', {
 		logsMemberAdd: ['memberAdd', 'snowflake'],
