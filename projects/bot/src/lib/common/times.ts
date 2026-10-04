@@ -1,5 +1,17 @@
-import { Time } from '@sapphire/time-utilities';
 import { roundNumber } from '@sapphire/utilities';
+
+/**
+ * The amount of milliseconds of the common units of time, same values as `Time` from `@sapphire/time-utilities`.
+ */
+export const enum Time {
+	Millisecond = 1,
+	Second = 1000,
+	Minute = 1000 * 60,
+	Hour = 1000 * 60 * 60,
+	Day = 1000 * 60 * 60 * 24,
+	Month = 1000 * 60 * 60 * 24 * (365 / 12),
+	Year = 1000 * 60 * 60 * 24 * 365
+}
 
 /**
  * Converts a number of seconds to milliseconds.
@@ -17,6 +29,33 @@ export function seconds(seconds: number): number {
  */
 seconds.fromMilliseconds = (milliseconds: number): number => {
 	return roundNumber(milliseconds / Time.Second);
+};
+
+/**
+ * Converts a number of minutes to seconds.
+ * @param minutes The amount of minutes
+ * @returns The amount of seconds `minutes` equals to.
+ */
+seconds.fromMinutes = (minutes: number): number => {
+	return minutes * 60;
+};
+
+/**
+ * Converts a number of hours to seconds.
+ * @param hours The amount of hours
+ * @returns The amount of seconds `hours` equals to.
+ */
+seconds.fromHours = (hours: number): number => {
+	return hours * 60 * 60;
+};
+
+/**
+ * Converts a number of days to seconds.
+ * @param days The amount of days
+ * @returns The amount of seconds `days` equals to.
+ */
+seconds.fromDays = (days: number): number => {
+	return days * 60 * 60 * 24;
 };
 
 /**

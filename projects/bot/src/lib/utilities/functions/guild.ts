@@ -1,5 +1,5 @@
 import { LoggerManager, ModerationManager, StickyRoleManager } from '#lib/moderation/managers';
-import { resolveGuild, resolveGuildId } from '#utils/common';
+import { resolveGuild, resolveGuildId } from '#common';
 import { GuildSecurity } from '#utils/Security/GuildSecurity';
 import type { GuildResolvable } from '@wolfstar/plugin-gateway';
 

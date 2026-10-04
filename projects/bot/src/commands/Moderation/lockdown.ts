@@ -1,6 +1,6 @@
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
-import { floatPromise } from '#utils/common';
+import { floatPromise } from '#common';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { clearAccurateTimeout, setAccurateTimeout, type AccurateTimeout } from '#utils/Timers';
 import { channelMention } from '@discordjs/formatters';

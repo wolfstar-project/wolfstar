@@ -4,7 +4,7 @@ import { ModerationManagerEntry } from '#lib/moderation/managers/ModerationManag
 import { toModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { SortedCollection } from '#lib/structures/data';
 import { Events } from '#lib/types';
-import { createReferPromise, desc, floatPromise, minutes, orMix, seconds, type BooleanFn, type ReferredPromise } from '#utils/common';
+import { createReferPromise, desc, floatPromise, minutes, orMix, seconds, type BooleanFn, type ReferredPromise } from '#common';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 import { AsyncQueue } from '@sapphire/async-queue';
 import { isNullish } from '@sapphire/utilities';

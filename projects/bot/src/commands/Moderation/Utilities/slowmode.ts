@@ -5,7 +5,7 @@ import {
 	type GuildChatInputInteraction,
 	type TranslationKey
 } from '#lib/structures/commands';
-import { hours, seconds } from '#utils/common';
+import { hours, seconds } from '#common';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { Command, RegisterCommand, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type AnyNamespace, type TFunction } from '@wolfstar/plugin-i18next';

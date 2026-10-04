@@ -2,7 +2,7 @@ import { AdderKey, GuildEntity, GuildSettings, readSettings } from '#lib/databas
 import type { AdderError } from '#lib/database/utils/Adder';
 import type { CustomFunctionGet, CustomGet, GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
-import { floatPromise } from '#utils/common';
+import { floatPromise } from '#common';
 import { getModeration, getSecurity, isModerator } from '#utils/functions';
 import { canSendMessages, GuildTextBasedChannelTypes } from '@sapphire/discord.js-utilities';
 import { Listener, ListenerOptions, PieceContext } from '@sapphire/framework';

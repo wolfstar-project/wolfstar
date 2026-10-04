@@ -1,6 +1,6 @@
 import { writeSettings, type GuildSettingsOfType } from '#lib/database';
 import { PruneLoggerTypeManager, TimeoutLoggerTypeManager } from '#lib/moderation/managers/loggers';
-import { toErrorCodeResult } from '#utils/common';
+import { toErrorCodeResult } from '#common';
 import { getCodeStyle, getLogPrefix } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { isFunction, isNullish, isNullishOrEmpty, type Awaitable, type Nullish } from '@sapphire/utilities';

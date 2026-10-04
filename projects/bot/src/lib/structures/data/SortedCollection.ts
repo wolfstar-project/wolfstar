@@ -1,4 +1,4 @@
-import { asc } from '#utils/common';
+import { asc } from '#common';
 import { isFunction } from '@sapphire/utilities';
 
 /**

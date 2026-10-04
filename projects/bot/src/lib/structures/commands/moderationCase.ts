@@ -1,7 +1,7 @@
 import type { ModerationManager } from '#lib/moderation';
 import { getTitle } from '#lib/moderation/common';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
-import { desc, seconds } from '#utils/common';
+import { desc, seconds } from '#common';
 import { BrandingColors, Emojis } from '#utils/constants';
 import { TypeVariation } from '#utils/moderationConstants';
 import { resolveCase } from '#utils/resolvers';

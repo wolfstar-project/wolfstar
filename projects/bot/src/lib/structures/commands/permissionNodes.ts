@@ -1,6 +1,6 @@
 import { PermissionNodeAction } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { resolveOnErrorCodes } from '#utils/common';
+import { resolveOnErrorCodes } from '#common';
 import type { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { UserError, container, type TransformedArguments } from '@wolfstar/http-framework';
 import { Role, type GuildMember } from '@wolfstar/plugin-gateway';

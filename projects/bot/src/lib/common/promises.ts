@@ -1,13 +1,23 @@
-import { container } from '@sapphire/framework';
-import { Awaitable, isThenable } from '@sapphire/utilities';
-import type { RESTJSONErrorCodes } from 'discord-api-types/v9';
-import { DiscordAPIError } from 'discord.js';
+import { DiscordAPIError } from '@discordjs/rest';
+import { err, ok, type Result } from '@sapphire/result';
+import { isThenable, type Awaitable } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
+import type { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 export async function resolveOnErrorCodes<T>(promise: Promise<T>, ...codes: readonly RESTJSONErrorCodes[]) {
 	try {
 		return await promise;
 	} catch (error) {
-		if (error instanceof DiscordAPIError && codes.includes(error.code)) return null;
+		if (error instanceof DiscordAPIError && codes.includes(error.code as RESTJSONErrorCodes)) return null;
+		throw error;
+	}
+}
+
+export async function toErrorCodeResult<T>(promise: Promise<T>): Promise<Result<T, RESTJSONErrorCodes>> {
+	try {
+		return ok(await promise);
+	} catch (error) {
+		if (error instanceof DiscordAPIError) return err(error.code as RESTJSONErrorCodes);
 		throw error;
 	}
 }
@@ -33,6 +43,5 @@ export function createReferPromise<T>(): ReferredPromise<T> {
 		reject = rej;
 	});
 
-	// noinspection JSUnusedAssignment
 	return { promise, resolve: resolve!, reject: reject! };
 }

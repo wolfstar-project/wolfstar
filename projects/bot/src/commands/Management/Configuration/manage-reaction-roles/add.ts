@@ -1,7 +1,7 @@
 import { writeSettings, writeSettingsTransaction, type ReactionRole } from '#lib/database';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { minutes } from '#utils/common';
+import { minutes } from '#common';
 import { getEmojiObject, getEmojiString, getEmojiTextFormat } from '#utils/functions';
 import { LongLivingReactionCollector } from '#utils/LongLivingReactionCollector';
 import { channelMention } from '@discordjs/builders';

@@ -1,8 +1,7 @@
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { urlRegex } from '#utils/Links/UrlRegex';
-import { days, floatPromise, seconds } from '#utils/common';
-import { andMix, type BooleanFn } from '#utils/common/comparators';
+import { andMix, days, floatPromise, seconds, type BooleanFn } from '#common';
 import { deleteMessage, getLogger } from '#utils/functions';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { getImageUrl } from '#utils/util';

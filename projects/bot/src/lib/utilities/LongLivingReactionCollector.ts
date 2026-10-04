@@ -1,4 +1,4 @@
-import { minutes } from '#utils/common';
+import { minutes } from '#common';
 import { noop } from '@sapphire/utilities';
 
 export type LongLivingReactionCollectorListener = (reaction: LLRCData) => void;

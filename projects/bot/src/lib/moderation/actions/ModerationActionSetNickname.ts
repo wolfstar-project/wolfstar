@@ -1,6 +1,6 @@
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
-import { resolveOnErrorCodes } from '#utils/common';
+import { resolveOnErrorCodes } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';

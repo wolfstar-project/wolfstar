@@ -1,4 +1,4 @@
-import { createReferPromise, type ReferredPromise } from '#utils/common';
+import { createReferPromise, type ReferredPromise } from '#common';
 import { TimeoutError } from '#lib/moderation/workers/errors/TimeoutError';
 import type { OutgoingPayload } from '#lib/moderation/workers/types';
 

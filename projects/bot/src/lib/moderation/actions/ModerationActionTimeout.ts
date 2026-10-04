@@ -1,5 +1,5 @@
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
-import { days, resolveOnErrorCodes } from '#utils/common';
+import { days, resolveOnErrorCodes } from '#common';
 import { getLogger } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish } from '@sapphire/utilities';

@@ -1,5 +1,5 @@
 import type { Parameter, TypedFT } from '#types';
-import { seconds, Time } from '#utils/common';
+import { seconds, Time } from '#common';
 import { err, ok, type Result } from '@sapphire/result';
 
 export function resolveTimeSpan(parameter: string, options?: TimeSpanOptions): Result<number, TypedFT<Parameter>> {

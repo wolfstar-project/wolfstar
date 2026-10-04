@@ -1,6 +1,6 @@
 import { TranslationMappings, UndoTaskNameMappings, getColor } from '#lib/moderation/common/constants';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
-import { seconds } from '#utils/common';
+import { seconds } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
 import { getFullEmbedAuthor, getTag } from '#utils/util';
 import { EmbedBuilder, TimestampStyles, chatInputApplicationCommandMention, time } from '@discordjs/builders';

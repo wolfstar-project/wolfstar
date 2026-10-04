@@ -9,7 +9,7 @@ import {
 } from '#lib/structures/commands/permissionNodes';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { resolveOnErrorCodes } from '#utils/common';
+import { resolveOnErrorCodes } from '#common';
 import { isNullish } from '@sapphire/utilities';
 import { UserError } from '@wolfstar/http-framework';
 import { Role } from '@wolfstar/plugin-gateway';
