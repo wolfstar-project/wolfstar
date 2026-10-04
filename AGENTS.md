@@ -56,7 +56,9 @@ Configuration is described by [Varlock](https://varlock.dev) schemas instead of 
 - **Context:** `SettingsContext` in `src/lib/database/settings/context/SettingsContext.ts`
     - Holds `AdderManager`, `PermissionNodeManager`, word filter regex, rate limiter
     - Has `update(settings, data)` for patching context on settings change
-- **Structures:** `src/lib/database/settings/structures/` (AdderManager, PermissionNodeManager, Serializer, SerializerStore)
+- **Structures:** `src/lib/database/settings/structures/` (AdderManager, PermissionNodeManager, AuditLogManager)
+- **Schema:** `configuration.ts` describes every key (`SchemaKey`: type, range, default, `dashboardOnly`) in groups (`SchemaGroup`) by its dotted name. There are no serializer pieces: the `type` of a key tells `lib/structures/settings-menu` how to display and edit it
+- **`/conf`:** `src/commands/Admin/conf.ts` opens the settings menu, a Components V2 message rendered by `lib/structures/settings-menu` (module select menu, one row per key with its edit button, paginated). The `conf` interaction handler (`src/interaction-handlers/conf.ts`) reads what a click does from its custom ID (`conf.<ownerId>.<verb>:<target>:<page>`), so the menu keeps no state. It uses `@wolfstar/http-framework-utilities` for the custom IDs and for the reset confirmation (`MessagePrompter`), whose handlers `lib/setup/all.ts` registers with `@wolfstar/http-framework-utilities/register`
 - **Exports:** `src/lib/database/settings/index.ts` re-exports all
 - **Top-level:** `src/lib/database/index.ts` re-exports settings + matchers
 

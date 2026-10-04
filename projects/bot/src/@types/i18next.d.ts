@@ -220,7 +220,7 @@ declare module "i18next" {
       };
       "commands/conf": {
         name: "conf";
-        description: "Define per-server settings.";
+        description: "Open the settings menu of the server.";
         menuName: "menu";
         menuDescription: "Open an interactive settings menu";
         showName: "show";
@@ -279,6 +279,39 @@ declare module "i18next" {
         menuInvalidAction: "Invalid Action, please try again with any of the following options.";
         menuSaved: "Successfully saved all changes.";
         settingNotSet: "Not Set";
+        menuTitle: "Core Configurations";
+        menuSubtitle: "Select a module to configure the settings of {{guild}}.";
+        menuModulePlaceholder: "Select a module";
+        menuModuleGeneral: "General";
+        menuGroupCount_one: "{{count}} setting";
+        menuGroupCount_other: "{{count}} settings";
+        menuValueEnabled: "Enabled";
+        menuValueDisabled: "Disabled";
+        menuValueNone: "None";
+        menuValueMore: "and {{count}} more";
+        menuCurrentValue: "Current value";
+        menuBack: "Back";
+        menuCancel: "Cancel";
+        menuPage: "Page {{page}}/{{total}}";
+        menuSelectRole: "Select the roles";
+        menuSelectChannel: "Select the channels";
+        menuSelectLanguage: "Select a language";
+        menuModalLabel: "New value, leave empty to reset";
+        menuModalLabelList: "One value per line, leave empty to reset";
+        menuResetKey: "Reset to default";
+        menuResetTitle: "Reset Configurations";
+        menuResetDescription: "Resets the settings of this module to their defaults.";
+        menuResetButton: "Reset";
+        menuResetConfirm_one: "This resets **{{count}}** setting of **{{module}}** to its default. Continue?";
+        menuResetConfirm_other: "This resets **{{count}}** settings of **{{module}}** to their defaults. Continue?";
+        menuResetCancelled: "Nothing was reset.";
+        menuResetDone: "The settings of **{{module}}** have been reset.";
+        menuWrongUser: "This menu is not for you, run the command to open your own.";
+        menuInvalidNumber: "`{{value}}` is not a valid number.";
+        menuInvalidSnowflake: "`{{value}}` is not a valid ID.";
+        menuInvalidCommand: "`{{value}}` does not match any command. Use a command name, `category.*` or `*`.";
+        menuValueTooLong: "The value starting with `{{value}}` is too long, the maximum is {{max}} characters.";
+        menuTooManyValues: "**{{name}}** accepts at most {{max}} values.";
       };
       "commands/lockdown": {
         name: "lockdown";

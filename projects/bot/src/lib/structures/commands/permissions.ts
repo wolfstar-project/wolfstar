@@ -39,7 +39,10 @@ export enum CommandPermissionLevel {
  * @param interaction - The interaction to check.
  * @param level - The level the command requires.
  */
-export async function hasCommandPermissionLevel(interaction: GuildChatInputInteraction, level: CommandPermissionLevel): Promise<boolean> {
+export async function hasCommandPermissionLevel(
+	interaction: Pick<GuildChatInputInteraction, 'guildId' | 'member'>,
+	level: CommandPermissionLevel
+): Promise<boolean> {
 	const { member } = interaction;
 	const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
 	if (member.user.id === guild.ownerId) return true;
