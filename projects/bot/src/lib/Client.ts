@@ -6,9 +6,7 @@ import { container } from '@wolfstar/http-framework';
 import { createBroker, forwardGatewayDispatches, replayGatewayDispatches } from '@wolfstar/plugin-broker';
 import { createRedisCache, createRedisSessionStore } from '@wolfstar/plugin-cache';
 import { GatewayClient } from '@wolfstar/plugin-gateway';
-import { initializeSentry } from '@wolfstar/shared-http-pieces';
 import { GatewayIntentBits } from 'discord-api-types/v10';
-import '#lib/setup/redis';
 import { isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
 
@@ -76,9 +74,6 @@ export function createClient() {
 
 	const srcFolderURL = new URL('..', import.meta.url);
 	container.stores.registerPath(fileURLToPath(srcFolderURL));
-
-	// Reports the errors to Sentry when `SENTRY_DSN` is set:
-	initializeSentry({ root: new URL('../..', import.meta.url) });
 }
 
 export async function loadAll() {
