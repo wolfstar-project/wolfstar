@@ -19,8 +19,8 @@ import { PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
  * {@linkcode ModerationData}. The outcomes of the original schedule map to the job this way:
  *
  * - ignore, when the bot is not in the guild anymore: the job ends, there is nothing to undo.
- * - delay, when the gateway is not ready yet: the task throws, and the job is tried again 20 seconds later (see
- *   `UndoTaskJobOptions`).
+ * - delay, when the gateway is not ready yet or the guild is not available (a Discord outage): the task throws, and
+ *   the job is tried again 20 seconds later (see `UndoTaskJobOptions`).
  * - finished: whatever the outcome of {@linkcode ModerationTask.handle}, the case is marked as completed.
  */
 export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTaskName> {
@@ -32,8 +32,11 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		if (!gatewayClient.isClientReady()) throw new Error('The gateway client is not ready yet.');
 
 		const guild = await gatewayClient.guilds.resolve(data.guildID);
-		// If the guild is not available, cancel the task.
+		// If the bot is not in the guild anymore, cancel the task.
 		if (guild === null) return;
+
+		// If the guild is not available, re-schedule the task the same way, it is tried again 20 seconds later.
+		if (!guild.available) throw new Error(`The guild ${guild.id} is not available.`);
 
 		// Run the abstract handle function.
 		try {
