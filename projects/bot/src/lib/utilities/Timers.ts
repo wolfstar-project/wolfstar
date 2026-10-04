@@ -1,3 +1,8 @@
+/**
+ * The longest delay `setTimeout` accepts, it fires immediately for a longer one.
+ */
+const MaximumTimeoutDelay = 2 ** 31 - 1;
+
 export function setAccurateTimeout<T extends readonly any[]>(fn: (...args: T) => void, delay: number, ...args: T) {
 	const end = Date.now() + delay;
 	const context: AccurateTimeout<T> = {
@@ -9,7 +14,7 @@ export function setAccurateTimeout<T extends readonly any[]>(fn: (...args: T) =>
 				fn(...args);
 			} else {
 				// eslint-disable-next-line @typescript-eslint/unbound-method
-				context.timeout = setTimeout(context.cb, delay, ...args).unref();
+				context.timeout = setTimeout(context.cb, Math.min(remaining, MaximumTimeoutDelay), ...args).unref();
 			}
 		},
 		stop() {
@@ -18,7 +23,7 @@ export function setAccurateTimeout<T extends readonly any[]>(fn: (...args: T) =>
 	};
 
 	// eslint-disable-next-line @typescript-eslint/unbound-method
-	context.timeout = setTimeout(context.cb, delay, ...args).unref();
+	context.timeout = setTimeout(context.cb, Math.min(delay, MaximumTimeoutDelay), ...args).unref();
 	return context;
 }
 

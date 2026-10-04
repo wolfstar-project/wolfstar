@@ -280,6 +280,45 @@ declare module "i18next" {
         menuSaved: "Successfully saved all changes.";
         settingNotSet: "Not Set";
       };
+      "commands/lockdown": {
+        name: "lockdown";
+        description: "Manage the lockdown of a channel, a thread or the whole server.";
+        actionName: "action";
+        actionDescription: "Whether to lock or unlock.";
+        actionLock: "lock";
+        actionUnlock: "unlock";
+        roleName: "role";
+        roleDescription: "The role to lock down, defaults to @everyone.";
+        channelName: "channel";
+        channelDescription: "The channel or thread to lock down, defaults to the current one.";
+        durationName: "duration";
+        durationDescription: "How long the lockdown lasts, from 30 seconds to a month. Only applies when locking.";
+        globalName: "global";
+        globalDescription: "⚠️ Whether to lock down the whole server instead of a channel.";
+        auditLogLockRequestedBy: "Locked down at the request of {{user}}";
+        auditLogUnlockRequestedBy: "Unlocked at the request of {{user}}";
+        guildLocked: "{{role}} is already locked down in the server.";
+        guildUnlocked: "{{role}} is not locked down in the server.";
+        guildUnmanageable: "I cannot manage the role {{role}}, make sure I have **Manage Roles** and that the role is below my highest one.";
+        guildUnknownRole: "I could not find the role {{role}}, try with another one.";
+        guildLockFailed: "The role {{role}} could not be locked down, please try again later.";
+        guildUnlockFailed: "The role {{role}} could not be unlocked, please try again later.";
+        successGuild: "Updated the lockdown of {{role}} in the server.";
+        threadLocked: "The thread {{channel}} is already locked.";
+        threadUnlocked: "The thread {{channel}} is not locked.";
+        threadUnmanageable: "I cannot manage the thread {{channel}}, make sure I have **Manage Threads** and try again.";
+        threadUnknownChannel: "I could not find the thread {{channel}}, try with another one.";
+        threadLockFailed: "The thread {{channel}} could not be locked, please try again later.";
+        threadUnlockFailed: "The thread {{channel}} could not be unlocked, please try again later.";
+        successThread: "Updated the lockdown of the thread {{channel}}.";
+        channelLocked: "The channel {{channel}} is already locked down for {{role}}.";
+        channelUnlocked: "The channel {{channel}} is not locked down for {{role}}.";
+        channelUnmanageable: "I cannot manage the channel {{channel}}, make sure I have **Manage Channels** and **Manage Roles** in it and try again.";
+        channelUnknownChannel: "I could not find the channel {{channel}}, try with another one.";
+        channelLockFailed: "The channel {{channel}} could not be locked down, please try again later.";
+        channelUnlockFailed: "The channel {{channel}} could not be unlocked, please try again later.";
+        successChannel: "Updated the lockdown of the channel {{channel}} for {{role}}.";
+      };
       "commands/management": {
         commandModeEnable: "Enables the sub-system.";
         commandModeDisable: "Disables the sub-system.";
@@ -972,11 +1011,6 @@ declare module "i18next" {
           fieldErrorTitle: "The users we encountered an error for:";
         };
         kickNotKickable: "The target is not kickable for me.";
-        lockdownLock: "The channel {{channel}} is now locked.";
-        lockdownLocking: "{{LOADING}} Locking the channel {{channel}}... I might not be able to reply after this.";
-        lockdownLocked: "The channel {{channel}} was already locked.";
-        lockdownUnlocked: "The channel {{channel}} was not locked.";
-        lockdownOpen: "The lockdown for the channel {{channel}} has been released.";
         muteMuted: "The target user is already muted.";
         muteUserNotMuted: "This user is not muted.";
         restrictLowlevel: "{{REDCROSS}} I'm sorry, there is no restriction role configured. Please ask an Administrator or the server owner to set it up.";
@@ -1105,33 +1139,6 @@ declare module "i18next" {
             ["Reason", "The reason for the kick. This will also show in the server's audit logs."],
           ];
           examples: ["@Sarah", "@Sarah Spamming general chat."];
-        };
-        lockdownDescription: "Close the gates for this channel!";
-        lockdownExtended: {
-          usages: [
-            "",
-            "lock Role TextChannel Duration",
-            "unlock Role TextChannel",
-            "Role TextChannel Duration",
-          ];
-          extendedHelp: "This command requires **{{MANAGE_CHANNELS, permissions}}** in order to be able to manage the permissions for a channel.\nThis command removes the permission **{{SEND_MESSAGES, permissions}}** to the `@everyone` role so nobody but the members with roles that have their own overrides (besides administrators, who bypass channel overrides) can send messages.\nOptionally, you can pass time as second argument.";
-          explainedUsage: [
-            [
-              "lock/unlock",
-              'Whether to lock or unlock the channel. Defaults to "lock" if the channel is currently unlocked, or "unlock" if it is currently locked.',
-            ],
-            ["Role", "The role to lock. Defaults to the `@everyone` role."],
-            ["TextChannel", "The channel to lock. Defaults to the current channel."],
-            ["Duration", "The amount of time this lock should last. Defaults to infinite."],
-          ];
-          examples: [
-            "",
-            "#general",
-            "lock #general 5m",
-            "unlock #general",
-            "lock Members #general",
-          ];
-          reminder: 'If your members need a role such as "member" to send messages in the channel to begin with then this command will not work. It is in our backlog of work to add make the role that should be locked configurable.';
         };
         muteDescription: "Mute a user in all text and voice channels.";
         muteExtended: {
@@ -1715,7 +1722,6 @@ declare module "i18next" {
         setNicknameName: "setnickname";
         dehoistName: "dehoist";
         pruneName: "prune";
-        lockdownName: "lockdown";
         toggleModerationDmName: "togglemoderationdm";
         slowmodeName: "slowmode";
         banOptionsDeleteDaysName: "delete-days";
@@ -1763,10 +1769,6 @@ declare module "i18next" {
         pruneOptionsStartswithDescription: "Only delete the messages that start with this text.";
         pruneOptionsEndswithName: "endswith";
         pruneOptionsEndswithDescription: "Only delete the messages that end with this text.";
-        lockdownOptionsActionName: "action";
-        lockdownOptionsActionDescription: "Whether to lock or unlock the channel, leave empty to toggle.";
-        lockdownOptionsActionChoiceLock: "lock";
-        lockdownOptionsActionChoiceUnlock: "unlock";
         slowmodeOptionsDurationName: "duration";
         slowmodeOptionsDurationDescription: "The new slowmode, from 0 to 6 hours, use 0 or reset to disable it.";
         restrictName: "restrict";

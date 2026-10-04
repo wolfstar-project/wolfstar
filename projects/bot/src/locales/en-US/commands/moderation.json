@@ -32,11 +32,6 @@
 		"fieldErrorTitle": "The users we encountered an error for:"
 	},
 	"kickNotKickable": "The target is not kickable for me.",
-	"lockdownLock": "The channel {{channel}} is now locked.",
-	"lockdownLocking": "{{LOADING}} Locking the channel {{channel}}... I might not be able to reply after this.",
-	"lockdownLocked": "The channel {{channel}} was already locked.",
-	"lockdownUnlocked": "The channel {{channel}} was not locked.",
-	"lockdownOpen": "The lockdown for the channel {{channel}} has been released.",
 	"muteMuted": "The target user is already muted.",
 	"muteUserNotMuted": "This user is not muted.",
 	"restrictLowlevel": "{{REDCROSS}} I'm sorry, there is no restriction role configured. Please ask an Administrator or the server owner to set it up.",
@@ -162,22 +157,6 @@
 			["Reason", "The reason for the kick. This will also show in the server's audit logs."]
 		],
 		"examples": ["@Sarah", "@Sarah Spamming general chat."]
-	},
-	"lockdownDescription": "Close the gates for this channel!",
-	"lockdownExtended": {
-		"usages": ["", "lock Role TextChannel Duration", "unlock Role TextChannel", "Role TextChannel Duration"],
-		"extendedHelp": "This command requires **{{MANAGE_CHANNELS, permissions}}** in order to be able to manage the permissions for a channel.\nThis command removes the permission **{{SEND_MESSAGES, permissions}}** to the `@everyone` role so nobody but the members with roles that have their own overrides (besides administrators, who bypass channel overrides) can send messages.\nOptionally, you can pass time as second argument.",
-		"explainedUsage": [
-			[
-				"lock/unlock",
-				"Whether to lock or unlock the channel. Defaults to \"lock\" if the channel is currently unlocked, or \"unlock\" if it is currently locked."
-			],
-			["Role", "The role to lock. Defaults to the `@everyone` role."],
-			["TextChannel", "The channel to lock. Defaults to the current channel."],
-			["Duration", "The amount of time this lock should last. Defaults to infinite."]
-		],
-		"examples": ["", "#general", "lock #general 5m", "unlock #general", "lock Members #general"],
-		"reminder": "If your members need a role such as \"member\" to send messages in the channel to begin with then this command will not work. It is in our backlog of work to add make the role that should be locked configurable."
 	},
 	"muteDescription": "Mute a user in all text and voice channels.",
 	"muteExtended": {
@@ -549,7 +528,6 @@
 	"setNicknameName": "setnickname",
 	"dehoistName": "dehoist",
 	"pruneName": "prune",
-	"lockdownName": "lockdown",
 	"toggleModerationDmName": "togglemoderationdm",
 	"slowmodeName": "slowmode",
 	"banOptionsDeleteDaysName": "delete-days",
@@ -597,10 +575,6 @@
 	"pruneOptionsStartswithDescription": "Only delete the messages that start with this text.",
 	"pruneOptionsEndswithName": "endswith",
 	"pruneOptionsEndswithDescription": "Only delete the messages that end with this text.",
-	"lockdownOptionsActionName": "action",
-	"lockdownOptionsActionDescription": "Whether to lock or unlock the channel, leave empty to toggle.",
-	"lockdownOptionsActionChoiceLock": "lock",
-	"lockdownOptionsActionChoiceUnlock": "unlock",
 	"slowmodeOptionsDurationName": "duration",
 	"slowmodeOptionsDurationDescription": "The new slowmode, from 0 to 6 hours, use 0 or reset to disable it.",
 	"restrictName": "restrict",

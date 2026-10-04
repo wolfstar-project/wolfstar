@@ -1,11 +1,22 @@
+import { months, toErrorCodeResult } from '#common';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
-import { floatPromise } from '#common';
+import {
+	LockdownGuildPermissions,
+	LockdownType,
+	getChannelLockdownPermissions,
+	isLockdownChannel,
+	isLockdownThread,
+	lockdowns,
+	type LockdownChannel,
+	type LockdownData
+} from '#lib/structures/managers/LockdownManager';
+import { PermissionsBits } from '#utils/bits';
 import { resolveTimeSpan } from '#utils/resolvers';
-import { clearAccurateTimeout, setAccurateTimeout, type AccurateTimeout } from '#utils/Timers';
-import { channelMention } from '@discordjs/formatters';
+import { getTag } from '#utils/util';
+import { channelMention, roleMention } from '@discordjs/formatters';
 import { Command, RegisterCommand, container, type TransformedArguments } from '@wolfstar/http-framework';
-import type { AnnouncementChannel, PermissionsString, TextChannel } from '@wolfstar/plugin-gateway';
+import type { AnyThreadChannel, Role } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import {
 	ApplicationIntegrationType,
@@ -13,76 +24,81 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	OverwriteType,
-	PermissionFlagsBits
+	PermissionFlagsBits,
+	RESTJSONErrorCodes,
+	type Snowflake
 } from 'discord-api-types/v10';
 
-type LockableChannel = TextChannel | AnnouncementChannel;
+const Root = 'commands/lockdown';
 
 /**
- * The longest a lockdown can last, `setTimeout` fires immediately for a delay that does not fit in 32 bits.
+ * The shortest and the longest a lockdown can last.
  */
-const MaximumDuration = 2 ** 31 - 1;
-
-const RequiredClientPermissions = ['ManageChannels', 'ManageRoles'] as const satisfies readonly PermissionsString[];
-
-interface LockdownEntry {
-	/**
-	 * What the `SendMessages` permission was before the lockdown, `null` when the role had no override for it.
-	 */
-	allowed: boolean | null;
-
-	/**
-	 * The timer that releases the lockdown, `null` for a lockdown that lasts until it is released by hand.
-	 */
-	timeout: AccurateTimeout | null;
-}
+const MinimumDuration = 30_000;
+const MaximumDuration = months(1);
 
 interface Arguments {
-	action?: 'lock' | 'unlock';
+	action: 'lock' | 'unlock';
 	role?: TransformedArguments.Role;
 	channel?: TransformedArguments.Channel;
 	duration?: string;
+	global?: boolean;
 }
 
+type LockdownTarget =
+	| { readonly kind: 'guild' }
+	| { readonly kind: 'channel'; readonly channel: LockdownChannel }
+	| { readonly kind: 'thread'; readonly channel: AnyThreadChannel };
+
 /**
- * Locks or unlocks a channel for a role by toggling the `SendMessages` permission override.
+ * Locks or unlocks a channel, a thread or the whole server for a role.
  *
  * @remarks
  *
- * The `action` option is `lock`, `unlock`, or empty to toggle the lockdown. `role` defaults to `@everyone`, `channel` to the channel the
- * command was run in, and `duration` only applies when the channel gets locked.
+ * - A channel is locked by denying the permissions to write, create threads and, for the voice-based ones and the
+ *   categories, to connect, to the role. Unlocking gives back what the role had in the channel before.
+ * - A thread is locked with its own lock.
+ * - With `global`, the permissions to write are taken away from the role in the whole server instead.
+ * - `role` defaults to `@everyone`, `channel` to the channel the command was run in, and `duration` only applies when
+ *   locking.
  *
- * The lockdowns started by the command are tracked in this module, since `GuildSecurity#lockdowns` (the
- * `LockdownManager`) is not ported to the gateway structures yet. A channel that has a denied `SendMessages`
- * override for the role is also considered locked, even if the lockdown was not started by this process.
+ * What a lockdown changed is kept by the `LockdownManager`, see there for what happens to the temporary
+ * ones when the process restarts.
  */
 @RegisterCommand((builder) =>
-	applyLocalizedBuilder(builder, 'commands/moderation:lockdown')
+	applyLocalizedBuilder(builder, `${Root}:name`, `${Root}:description`)
 		.setContexts(InteractionContextType.Guild)
 		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
-		.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles)
 		.addStringOption((option) =>
-			applyLocalizedBuilder(option, 'commands/moderation:lockdownOptionsAction')
+			applyLocalizedBuilder(option, `${Root}:action`)
 				.setChoices(
-					createLocalizedChoice('commands/moderation:lockdownOptionsActionChoiceLock', { value: 'lock' }),
-					createLocalizedChoice('commands/moderation:lockdownOptionsActionChoiceUnlock', { value: 'unlock' })
+					createLocalizedChoice(`${Root}:actionLock`, { value: 'lock' }),
+					createLocalizedChoice(`${Root}:actionUnlock`, { value: 'unlock' })
+				)
+				.setRequired(true)
+		)
+		.addRoleOption((option) => applyLocalizedBuilder(option, `${Root}:role`).setRequired(false))
+		.addChannelOption((option) =>
+			applyLocalizedBuilder(option, `${Root}:channel`)
+				.addChannelTypes(
+					ChannelType.GuildText,
+					ChannelType.GuildAnnouncement,
+					ChannelType.GuildVoice,
+					ChannelType.GuildStageVoice,
+					ChannelType.GuildCategory,
+					ChannelType.GuildForum,
+					ChannelType.GuildMedia,
+					ChannelType.PublicThread,
+					ChannelType.PrivateThread,
+					ChannelType.AnnouncementThread
 				)
 				.setRequired(false)
 		)
-		.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsRole').setRequired(false))
-		.addChannelOption((option) =>
-			applyLocalizedBuilder(option, 'commands/shared:optionsChannel')
-				.addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
-				.setRequired(false)
-		)
-		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDuration').setRequired(false))
+		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:duration`).setRequired(false))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:global`).setRequired(false))
 )
 export class UserCommand extends Command {
-	/**
-	 * The lockdowns started by this command, by channel ID and then by role ID.
-	 */
-	private static readonly lockdowns = new Map<string, Map<string, LockdownEntry>>();
-
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Arguments) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
@@ -90,124 +106,270 @@ export class UserCommand extends Command {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 
-		const channel = await this.resolveChannel(interaction, args);
-		if (channel === null) return fail(t('preconditions:guildTextOnly'));
-
-		// Both permissions are needed in the channel to edit its overrides:
-		const missing = await this.getMissingClientPermissions(interaction.guildId, channel);
-		if (missing.length > 0) return fail(t('preconditions:clientPermissions', { missing }));
-
-		const roleId = args.role?.id ?? interaction.guildId;
-		const mention = channelMention(channel.id);
-		const lock = this.getLock(roleId, channel);
-
-		// An empty action toggles, `lock` and `unlock` fail when the channel is already in the requested state:
-		const unlock = args.action === undefined ? lock !== null : args.action === 'unlock';
-		if (unlock) {
-			if (lock === null) return fail(t('commands/moderation:lockdownUnlocked', { channel: mention }));
-
-			const deferred = await interaction.defer();
-			if (lock.timeout) clearAccurateTimeout(lock.timeout);
-			await this.performUnlock(roleId, channel, lock.allowed);
-			return deferred.update({ content: t('commands/moderation:lockdownOpen', { channel: mention }) });
-		}
-
-		if (lock !== null) return fail(t('commands/moderation:lockdownLocked', { channel: mention }));
-
 		let duration: number | null = null;
-		if (args.duration !== undefined) {
-			const result = resolveTimeSpan(args.duration, { minimum: 0, maximum: MaximumDuration });
+		if (args.action === 'lock' && args.duration !== undefined) {
+			const result = resolveTimeSpan(args.duration, { minimum: MinimumDuration, maximum: MaximumDuration });
 			if (result.isErr()) {
-				return fail(t(result.unwrapErr(), { parameter: args.duration, minimum: 0, maximum: MaximumDuration }));
+				return fail(t(result.unwrapErr(), { parameter: args.duration, minimum: MinimumDuration, maximum: MaximumDuration }));
 			}
 
 			duration = result.unwrap();
 		}
 
-		const deferred = await interaction.defer();
-		await this.performLock(t, roleId, channel, duration);
-		return deferred.update({ content: t('commands/moderation:lockdownLock', { channel: mention }) });
+		const target = await this.resolveTarget(interaction, args);
+		if (target === null)
+			return fail(t(`${Root}:channelUnknownChannel`, { channel: channelMention(args.channel?.id ?? interaction.channelId ?? '') }));
+
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+		const user = interaction.user;
+		const roleId = args.role?.id ?? interaction.guildId;
+		const content =
+			args.action === 'lock'
+				? await this.lock(t, interaction.guildId, user, roleId, target, duration)
+				: await this.unlock(t, interaction.guildId, user, roleId, target);
+		return deferred.update({ content });
 	}
 
-	private async performLock(t: Translator, roleId: string, channel: LockableChannel, duration: number | null) {
-		const allowed = this.isAllowed(roleId, channel);
-		await channel.permissionOverwrites.edit(roleId, { SendMessages: false }, { type: OverwriteType.Role });
-
-		// Create the timeout, which announces the release in the channel since there is no command to answer anymore:
-		const timeout = duration ? setAccurateTimeout(() => floatPromise(this.releaseLockdown(t, roleId, channel, allowed)), duration) : null;
-		this.addLock(roleId, channel, { allowed, timeout });
-	}
-
-	private async releaseLockdown(t: Translator, roleId: string, channel: LockableChannel, allowed: boolean | null) {
-		await this.performUnlock(roleId, channel, allowed);
-
-		// The bot may not be able to write in the channel:
-		await channel.send(t('commands/moderation:lockdownOpen', { channel: channelMention(channel.id) })).catch(() => null);
-	}
-
-	private async performUnlock(roleId: string, channel: LockableChannel, allowed: boolean | null) {
-		this.removeLock(roleId, channel);
-
-		const overwrites = channel.permissionOverwrites.resolve(roleId);
-		if (overwrites === null) return;
-
-		// If the only permission overwrite is the denied SendMessages, clean up the entire permission; if the permission
-		// was denied, reset it to the default state, otherwise don't run an extra query
-		if (overwrites.allow.bitField === 0n && overwrites.deny.bitField === PermissionFlagsBits.SendMessages) {
-			await overwrites.delete();
-		} else if (overwrites.deny.has(PermissionFlagsBits.SendMessages)) {
-			await overwrites.edit({ SendMessages: allowed });
+	private lock(
+		t: Translator,
+		guildId: Snowflake,
+		user: GuildChatInputInteraction['user'],
+		roleId: Snowflake,
+		target: LockdownTarget,
+		duration: number | null
+	) {
+		const reason = t(`${Root}:auditLogLockRequestedBy`, { user: getTag(user) });
+		switch (target.kind) {
+			case 'guild':
+				return this.lockGuild(t, guildId, user.id, roleId, reason, duration);
+			case 'thread':
+				return this.lockThread(t, user.id, target.channel, reason, duration);
+			case 'channel':
+				return this.lockChannel(t, user.id, target.channel, roleId, reason, duration);
 		}
 	}
 
-	private isAllowed(roleId: string, channel: LockableChannel): boolean | null {
-		return channel.permissionOverwrites.resolve(roleId)?.allow.has(PermissionFlagsBits.SendMessages, false) ?? null;
+	private unlock(t: Translator, guildId: Snowflake, user: GuildChatInputInteraction['user'], roleId: Snowflake, target: LockdownTarget) {
+		const reason = t(`${Root}:auditLogUnlockRequestedBy`, { user: getTag(user) });
+		switch (target.kind) {
+			case 'guild':
+				return this.unlockGuild(t, guildId, user.id, roleId, reason);
+			case 'thread':
+				return this.unlockThread(t, guildId, user.id, target.channel, reason);
+			case 'channel':
+				return this.unlockChannel(t, user.id, target.channel, roleId, reason);
+		}
 	}
 
-	private getLock(roleId: string, channel: LockableChannel): LockdownEntry | null {
-		const entry = UserCommand.lockdowns.get(channel.id)?.get(roleId);
-		if (entry) return entry;
+	// Server
 
-		const denied = channel.permissionOverwrites.resolve(roleId)?.deny.has(PermissionFlagsBits.SendMessages);
-		return denied === true ? { allowed: null, timeout: null } : null;
+	private async lockGuild(t: Translator, guildId: Snowflake, userId: Snowflake, roleId: Snowflake, reason: string, duration: number | null) {
+		const role = await this.fetchRole(guildId, roleId);
+		const mention = roleMention(roleId);
+		if (role === null) return t(`${Root}:guildUnknownRole`, { role: mention });
+
+		// Locked means none of the permissions is left:
+		const permissionsOriginal = role.permissions.bitField & LockdownGuildPermissions;
+		if (permissionsOriginal === 0n) return t(`${Root}:guildLocked`, { role: mention });
+
+		const result = await toErrorCodeResult(role.setPermissions(role.permissions.bitField & ~LockdownGuildPermissions, reason));
+		if (result.isErr()) return this.guildError(t, role, result.unwrapErr(), 'guildLockFailed');
+
+		lockdowns.add(
+			{ type: LockdownType.Guild, guildId, userId, roleId, permissionsApplied: LockdownGuildPermissions, permissionsOriginal },
+			duration
+		);
+		return t(`${Root}:successGuild`, { role: mention });
 	}
 
-	private addLock(roleId: string, channel: LockableChannel, entry: LockdownEntry) {
-		let roles = UserCommand.lockdowns.get(channel.id);
-		if (roles === undefined) {
-			roles = new Map();
-			UserCommand.lockdowns.set(channel.id, roles);
+	private async unlockGuild(t: Translator, guildId: Snowflake, userId: Snowflake, roleId: Snowflake, reason: string) {
+		const role = await this.fetchRole(guildId, roleId);
+		const mention = roleMention(roleId);
+		if (role === null) return t(`${Root}:guildUnknownRole`, { role: mention });
+
+		if ((role.permissions.bitField & LockdownGuildPermissions) === LockdownGuildPermissions) return t(`${Root}:guildUnlocked`, { role: mention });
+
+		// Without what the lockdown changed, give all of them back:
+		const data: LockdownData = lockdowns.get({ type: LockdownType.Guild, guildId, roleId }) ?? {
+			type: LockdownType.Guild,
+			guildId,
+			userId,
+			roleId,
+			permissionsApplied: LockdownGuildPermissions,
+			permissionsOriginal: LockdownGuildPermissions
+		};
+		const result = await toErrorCodeResult(lockdowns.release(data, reason));
+		if (result.isErr()) return this.guildError(t, role, result.unwrapErr(), 'guildUnlockFailed');
+
+		return t(`${Root}:successGuild`, { role: mention });
+	}
+
+	private guildError(t: Translator, role: Role, code: RESTJSONErrorCodes, failed: 'guildLockFailed' | 'guildUnlockFailed') {
+		const mention = roleMention(role.id);
+		if (code === RESTJSONErrorCodes.UnknownRole) return t(`${Root}:guildUnknownRole`, { role: mention });
+		if (code === RESTJSONErrorCodes.MissingPermissions || code === RESTJSONErrorCodes.MissingAccess)
+			return t(`${Root}:guildUnmanageable`, { role: mention });
+
+		container.logger.error(`[Lockdown] Discord answered ${code} while changing the role ${role.id}`);
+		return t(`${Root}:${failed}`, { role: mention });
+	}
+
+	// Threads
+
+	private async lockThread(t: Translator, userId: Snowflake, channel: AnyThreadChannel, reason: string, duration: number | null) {
+		const mention = channelMention(channel.id);
+		if (channel.locked) return t(`${Root}:threadLocked`, { channel: mention });
+		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageThreads)))
+			return t(`${Root}:threadUnmanageable`, { channel: mention });
+
+		const result = await toErrorCodeResult(Promise.resolve(channel.setLocked(true, reason)).then(() => undefined));
+		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadLockFailed');
+
+		lockdowns.add({ type: LockdownType.Thread, guildId: channel.guildId, userId, channelId: channel.id }, duration);
+		return t(`${Root}:successThread`, { channel: mention });
+	}
+
+	private async unlockThread(t: Translator, guildId: Snowflake, userId: Snowflake, channel: AnyThreadChannel, reason: string) {
+		const mention = channelMention(channel.id);
+		if (!channel.locked) return t(`${Root}:threadUnlocked`, { channel: mention });
+		if (!(await this.canManage(guildId, channel, PermissionFlagsBits.ManageThreads)))
+			return t(`${Root}:threadUnmanageable`, { channel: mention });
+
+		const data: LockdownData = { type: LockdownType.Thread, guildId, userId, channelId: channel.id };
+		const result = await toErrorCodeResult(lockdowns.release(data, reason));
+		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadUnlockFailed');
+
+		return t(`${Root}:successThread`, { channel: mention });
+	}
+
+	// Channels
+
+	private async lockChannel(
+		t: Translator,
+		userId: Snowflake,
+		channel: LockdownChannel,
+		roleId: Snowflake,
+		reason: string,
+		duration: number | null
+	) {
+		const mention = channelMention(channel.id);
+		const role = roleMention(roleId);
+		const permissionsApplied = getChannelLockdownPermissions(channel.type);
+
+		// Locked means none of the permissions is left in the channel:
+		const effective = await channel.fetchPermissionsFor(roleId);
+		if ((effective.bitField & permissionsApplied) === 0n) return t(`${Root}:channelLocked`, { channel: mention, role });
+		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles))) {
+			return t(`${Root}:channelUnmanageable`, { channel: mention });
 		}
 
-		roles.get(roleId)?.timeout?.stop();
-		roles.set(roleId, entry);
+		const existing = channel.permissionOverwrites.resolve(roleId);
+		const permissionsOriginalAllow = (existing?.allow.bitField ?? 0n) & permissionsApplied;
+		const permissionsOriginalDeny = (existing?.deny.bitField ?? 0n) & permissionsApplied;
+
+		const deny = Object.fromEntries(PermissionsBits.toArray(permissionsApplied).map((name) => [name, false]));
+		const result = await toErrorCodeResult(channel.permissionOverwrites.edit(roleId, deny, { type: OverwriteType.Role, reason }));
+		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelLockFailed');
+
+		lockdowns.add(
+			{
+				type: LockdownType.Channel,
+				guildId: channel.guildId,
+				userId,
+				channelId: channel.id,
+				roleId,
+				permissionsApplied,
+				permissionsOriginalAllow,
+				permissionsOriginalDeny
+			},
+			duration
+		);
+		return t(`${Root}:successChannel`, { channel: mention, role });
 	}
 
-	private removeLock(roleId: string, channel: LockableChannel) {
-		const roles = UserCommand.lockdowns.get(channel.id);
-		if (roles === undefined) return;
+	private async unlockChannel(t: Translator, userId: Snowflake, channel: LockdownChannel, roleId: Snowflake, reason: string) {
+		const mention = channelMention(channel.id);
+		const role = roleMention(roleId);
+		const permissionsApplied = getChannelLockdownPermissions(channel.type);
 
-		roles.get(roleId)?.timeout?.stop();
-		roles.delete(roleId);
-		if (roles.size === 0) UserCommand.lockdowns.delete(channel.id);
+		const effective = await channel.fetchPermissionsFor(roleId);
+		if ((effective.bitField & permissionsApplied) === permissionsApplied) return t(`${Root}:channelUnlocked`, { channel: mention, role });
+		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles))) {
+			return t(`${Root}:channelUnmanageable`, { channel: mention });
+		}
+
+		// Without what the lockdown changed, reset the permissions that were applied to the default state:
+		const data: LockdownData = lockdowns.get({ type: LockdownType.Channel, channelId: channel.id, roleId }) ?? {
+			type: LockdownType.Channel,
+			guildId: channel.guildId,
+			userId,
+			channelId: channel.id,
+			roleId,
+			permissionsApplied,
+			permissionsOriginalAllow: 0n,
+			permissionsOriginalDeny: 0n
+		};
+		const result = await toErrorCodeResult(lockdowns.release(data, reason));
+		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelUnlockFailed');
+
+		return t(`${Root}:successChannel`, { channel: mention, role });
+	}
+
+	private channelError(
+		t: Translator,
+		mention: string,
+		code: RESTJSONErrorCodes,
+		kind: 'channel' | 'thread',
+		failed: 'channelLockFailed' | 'channelUnlockFailed' | 'threadLockFailed' | 'threadUnlockFailed'
+	) {
+		if (code === RESTJSONErrorCodes.UnknownChannel) return t(`${Root}:${kind}UnknownChannel`, { channel: mention });
+		if (code === RESTJSONErrorCodes.MissingPermissions || code === RESTJSONErrorCodes.MissingAccess)
+			return t(`${Root}:${kind}Unmanageable`, { channel: mention });
+
+		container.logger.error(`[Lockdown] Discord answered ${code} while changing ${mention}`);
+		return t(`${Root}:${failed}`, { channel: mention });
+	}
+
+	// Resolution
+
+	/**
+	 * Resolves what to lock: the whole server with `global`, otherwise the `channel` option or the channel the command
+	 * was run in.
+	 *
+	 * @returns The target, or `null` when the channel is not one that can be locked down.
+	 */
+	private async resolveTarget(interaction: GuildChatInputInteraction, args: Arguments): Promise<LockdownTarget | null> {
+		const channelId = args.channel?.id ?? (args.global ? undefined : interaction.channelId);
+		if (channelId === undefined) return { kind: 'guild' };
+
+		const channel = await container.gatewayClient.channels.fetch(channelId).catch(() => null);
+		if (channel === null) return null;
+		if (isLockdownThread(channel)) return { kind: 'thread', channel };
+		return isLockdownChannel(channel) ? { kind: 'channel', channel } : null;
+	}
+
+	private async fetchRole(guildId: Snowflake, roleId: Snowflake): Promise<Role | null> {
+		const roles = await container.gatewayClient.roles.fetchAll(guildId);
+		return roles.find((role) => role.id === roleId) ?? null;
 	}
 
 	/**
-	 * Resolves the channel to lock, the `channel` option or the one the command was run in.
-	 *
-	 * @returns The channel, or `null` when it is not a text or announcement channel (a thread has no overrides).
+	 * Checks whether the bot has permissions in a channel, or in the parent of a thread, which has no overwrites of its own.
 	 */
-	private async resolveChannel(interaction: GuildChatInputInteraction, args: Arguments): Promise<LockableChannel | null> {
-		const channelId = args.channel?.id ?? interaction.channelId;
-		if (channelId === undefined) return null;
+	private async canManage(guildId: Snowflake, channel: LockdownChannel | AnyThreadChannel, permissions: bigint) {
+		const target = isLockdownThread(channel) ? await this.fetchParent(channel) : channel;
+		// Let Discord answer when the parent is unknown:
+		if (target === null) return true;
 
-		const channel = await container.gatewayClient.channels.fetch(channelId);
-		return channel.type === ChannelType.GuildText || channel.type === ChannelType.GuildAnnouncement ? (channel as LockableChannel) : null;
+		const me = await container.gatewayClient.members.fetchMe(guildId);
+		const effective = await target.fetchPermissionsFor(me);
+		return (effective.bitField & permissions) === permissions;
 	}
 
-	private async getMissingClientPermissions(guildId: string, channel: LockableChannel) {
-		const me = await container.gatewayClient.members.fetchMe(guildId);
-		const permissions = await channel.fetchPermissionsFor(me);
-		return RequiredClientPermissions.filter((permission) => !permissions.has(permission));
+	private async fetchParent(thread: AnyThreadChannel): Promise<LockdownChannel | null> {
+		if (!thread.parentId) return null;
+
+		const parent = await container.gatewayClient.channels.fetch(thread.parentId).catch(() => null);
+		return parent !== null && isLockdownChannel(parent) ? parent : null;
 	}
 }
