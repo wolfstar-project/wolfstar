@@ -333,12 +333,6 @@ declare module "i18next" {
         filterReset: "{{GREENTICK}} Success! The filter has been reset.";
         filterShowEmpty: "The list of filtered words is empty!";
         filterShow: "Filtered words in this server: {{words}}";
-        manageCommandAutoDeleteShowEmpty: "There are no command autodelete configured right now.";
-        manageCommandAutoDeleteShow: "All command autodeletes configured:{{codeblock}}";
-        manageCommandAutoDeleteAdd: "{{GREENTICK}} Success! All successful commands in {{channel}} will be deleted after {{time, duration}}!";
-        manageCommandAutoDeleteRemove: "{{GREENTICK}} Success! Commands will not be automatically deleted in {{channel}} anymore!";
-        manageCommandAutoDeleteRemoveNotset: "{{REDCROSS}} The channel {{channel}} was not configured to automatically delete messages!";
-        manageCommandAutoDeleteReset: "All the command autodeletes have been reset.";
         manageCommandChannelShow: "List of disabled commands in {{channel}}: {{commands}}";
         manageCommandChannelShowEmpty: "The list of disabled commands for the specified channel is empty!";
         manageCommandChannelAddAlreadyset: "The command you are trying to disable is already disabled!";

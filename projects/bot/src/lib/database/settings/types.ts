@@ -241,11 +241,6 @@ export interface DisabledCommandChannel {
 }
 
 /**
- * An entry of the `commandsAutoDelete` setting: the channel, and the milliseconds to wait before deleting the replies.
- */
-export type CommandAutoDelete = readonly [channelId: Snowflake, time: number];
-
-/**
  * An entry of the `reactionRoles` setting.
  */
 export interface ReactionRole {
