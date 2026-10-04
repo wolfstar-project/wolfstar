@@ -140,6 +140,29 @@ export type CoercedEnvSchema = {
   BROKER_MAX_LENGTH: number;
   
   /**
+   * **BOT_MODE**  
+   * Role of this process: `gateway` connects to Discord, serves the interactions and the API and, with BROKER_ENABLED,  
+   * forwards the dispatches. A `worker` never connects: it replays the forwarded dispatches from the stream, on a client  
+   * sharing the same Redis cache, so run exactly one gateway process.  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M7.885%2010.23L12%203.463l4.116%206.769zm9.606%2011q-1.558%200-2.64-1.081t-1.082-2.64t1.082-2.649t2.64-1.09t2.649%201.09t1.09%202.649t-1.09%202.64t-2.649%201.082m-13.722-.5v-6.462h6.462v6.462z%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  BOT_MODE: "gateway" | "worker";
+  
+  /**
+   * **BROKER_GROUP**  
+   * Consumer group the workers share the stream through (worker only)  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  BROKER_GROUP: string;
+  
+  /**
+   * **BROKER_CONSUMER**  
+   * Name of this worker, unique per replica and stable across its restarts so it reclaims its own pending entries (worker only)  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  BROKER_CONSUMER: string;
+  
+  /**
    * **WORKER_COUNT**  
    * Number of threads that run the message filters. Defaults to the number of CPUs when unset.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M26%2012h-4v2h4v2h-3v2h3v2h-4v2h4a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-7%2010h-6v-4a2%202%200%200%201%202-2h2v-2h-4v-2h4a2%202%200%200%201%202%202v2a2%202%200%200%201-2%202h-2v2h4ZM8%2020v-8H6v1H4v2h2v5H4v2h6v-2z%22%2F%3E%3C%2Fsvg%3E)   
@@ -257,11 +280,11 @@ export type CoercedEnvSchema = {
   
 };
 
-type _CoercedEnvSchema_94202c2f = CoercedEnvSchema;
+type _CoercedEnvSchema_79d0acd5 = CoercedEnvSchema;
 
 declare module 'varlock/env' {
-  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_94202c2f> {}
-  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_94202c2f, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'WORKER_COUNT' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_ORG_ANALYTICS_BUCKET' | 'NODE_ENV' | 'USE_PROTON_PASS'>> {}
+  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_79d0acd5> {}
+  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_79d0acd5, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'WORKER_COUNT' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_ORG_ANALYTICS_BUCKET' | 'NODE_ENV' | 'USE_PROTON_PASS'>> {}
 }
 
 
@@ -271,17 +294,17 @@ export type EnvSchemaAsStrings = {
       : (NonNullable<CoercedEnvSchema[Property]> extends boolean ? ('true' | 'false') : string)
 };
 
-type _EnvSchemaAsStrings_94202c2f = EnvSchemaAsStrings;
+type _EnvSchemaAsStrings_79d0acd5 = EnvSchemaAsStrings;
 declare global {
 
   // add types for global import.meta.env
-  interface ImportMetaEnv extends _EnvSchemaAsStrings_94202c2f {}
+  interface ImportMetaEnv extends _EnvSchemaAsStrings_79d0acd5 {}
   interface ImportMeta {
     readonly env: ImportMetaEnv;
   }
 
   // add types for global process.env
   namespace NodeJS {
-    interface ProcessEnv extends _EnvSchemaAsStrings_94202c2f {}
+    interface ProcessEnv extends _EnvSchemaAsStrings_79d0acd5 {}
   }
 }
