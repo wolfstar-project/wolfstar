@@ -25,7 +25,6 @@ declare module "i18next" {
         categoryChannelError: "I could not resolve `{{parameter}}` to a category channel, please make sure you typed its name or ID correctly!";
         channelError: "I could not resolve `{{parameter}}` to a channel, make sure you typed its name or ID correctly!";
         command: "I could not resolve `{{parameter}}` to a command! Make sure you typed its name or one of its aliases correctly!";
-        commandMatch: "I could not match `{{parameter}}` to a command nor category, these are some of the valid formats:\n\n- `ping` (matches the ping command only).\n- `management.*` (matches all commands under the **Management** category).\n- `management.configuration.*` (matches all commands under **Management** > **Configuration** sub-category).\n\n> **Hint**: When checking `{{commandContext.commandPrefix}}help`, the category of each command is located at the top of the embed.";
         dateError: "I could not resolve `{{parameter}}` to a date, there are some of the valid formats:\n\n$t(arguments:dateFormats)";
         dateFormats: "- `2016-11-24` (YYYY-MM-DD)\n- `2016-11-24T23:56` (YYYY-MM-DDTHH:mm)\n- `2016-11-24T23:56:12` (YYYY-MM-DDTHH:mm:ss)\n- `2016-11-24T23:56:12.000` (YYYY-MM-DDTHH:mm:ss.sss)\n\n> **Tip**: The last 3 formats accept `Z` at the end to mark the time as UTC. Alternatively, you can input your timezone's offset by adding `+HH:MM`, e.g. `+01:00`.";
         dateTooEarly: "The parameter `{{parameter}}` resolved to a date earlier than {{minimum, dateTime}}, which is not allowed!";
@@ -55,7 +54,6 @@ declare module "i18next" {
         memberError: "I could not resolve `{{parameter}}` to a member from this server, please make sure you typed their name or ID correctly!\n\n> **Tip**: You can also use mentions!";
         memberMissingGuild: "I was not able to resolve `{{parameter}}` because this argument requires to be run in a server channel.";
         messageError: "I could not resolve `{{parameter}}` to a message:\n\n- If you used an **ID** (e.g. `{{message.id}}`), make sure you copied the right ID from this channel (<#{{channel}}>), and not, for example, the author's ID.\n- If you used a **message link** (e.g. `{{message.url}}`), make sure it is from a channel from this server, and that both of us have permissions to read it.\n- You did not input a valid parameter, in that case, check the two above!";
-        missing: "You need to write another parameter!\n\n> **Tip**: You can do `{{commandContext.commandPrefix}}help {{command.name}}` to find out how to use this command.";
         newsChannel: "I could not resolve `{{parameter}}` to an announcement channel, please make sure you typed its name or ID correctly!\n\n> **Tip**: You can also mention it!";
         numberError: "I could not resolve `{{parameter}}` to a number!";
         numberTooLarge: "The parameter `{{parameter}}` is too high! It needs to be at most {{maximum}}!";
@@ -857,7 +855,7 @@ declare module "i18next" {
               "The list of roles to claim or unclaim. Leave this empty to get a list of available roles.",
             ],
           ];
-          reminder: "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.";
+          reminder: "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles by setting `roles.public` in the server configuration.";
           examples: ["Designer Programmer", "Designer"];
         };
         createMuteName: "create-mute";
@@ -1048,7 +1046,6 @@ declare module "i18next" {
           ];
           examples: ["", "@Pete", "mutes @Pete", "warnings"];
         };
-        moderationsEmpty: "There are no active moderations that will expire at some future date or time. If you want to see all moderations in this server use: `{{prefix}}history`.";
         moderationsAmount_one: "There is 1 entry.";
         moderationsAmount_other: "There are {{count}} entries.";
         mutesDescription: "List all mutes from this server or from a user.";

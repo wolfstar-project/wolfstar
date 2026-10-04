@@ -536,7 +536,7 @@
 		"usages": ["Role", ""],
 		"extendedHelp": "Public roles are roles that are available for everyone.\nAn administrator must configure them with the configuration command.",
 		"explainedUsage": [["roles", "The list of roles to claim or unclaim. Leave this empty to get a list of available roles."]],
-		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles using `{{prefix}}conf set roles.public ExamplePublicRole`.",
+		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles by setting `roles.public` in the server configuration.",
 		"examples": ["Designer Programmer", "Designer"]
 	},
 	"createMuteName": "create-mute",

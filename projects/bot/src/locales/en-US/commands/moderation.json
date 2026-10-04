@@ -103,7 +103,6 @@
 		],
 		"examples": ["", "@Pete", "mutes @Pete", "warnings"]
 	},
-	"moderationsEmpty": "There are no active moderations that will expire at some future date or time. If you want to see all moderations in this server use: `{{prefix}}history`.",
 	"moderationsAmount_one": "There is 1 entry.",
 	"moderationsAmount_other": "There are {{count}} entries.",
 	"mutesDescription": "List all mutes from this server or from a user.",
