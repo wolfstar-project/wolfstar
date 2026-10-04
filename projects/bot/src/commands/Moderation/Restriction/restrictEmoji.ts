@@ -1,6 +1,6 @@
 import { applyModerationSubcommandBuilder, SetUpModerationCommand } from '#lib/moderation';
 import { TypeVariation } from '#utils/moderationConstants';
-import { ApplyOptions } from '@wolfstar/http-framework';
+import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 
 type Type = TypeVariation.RestrictedEmoji;

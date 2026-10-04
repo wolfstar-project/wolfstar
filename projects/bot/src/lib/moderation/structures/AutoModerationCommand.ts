@@ -1,7 +1,7 @@
 import { getConfigurableKeys, type AdderKey, type AutoModerationHardAction, type GuildSettingsOfType } from '#lib/database';
 import type { GuildChatInputInteraction, TranslationKey } from '#lib/structures/commands/utils';
 import type { SlashCommandBuilder, SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import { ApplyOptions } from '@wolfstar/http-framework';
+import { ApplyOptions } from '@wolfstar/decorators';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';

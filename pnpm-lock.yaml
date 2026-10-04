@@ -7,153 +7,153 @@ importers:
     configDependencies: {}
     packageManagerDependencies:
       pnpm:
-        specifier: 12.4.1
-        version: 12.4.1
+        specifier: 12.8.1
+        version: 12.8.1
 
 packages:
 
-  '@pnpm/exe.android-arm64@12.4.1':
-    resolution: {integrity: sha512-/HwsqXMSmlOfgtV9+O0ratzjV6Vd/8n1hh4rGHpCGmDURvt52MwZxdbhyxP4K03ZfvgSDvotFPr8O+RzE5Eu8A==}
+  '@pnpm/exe.android-arm64@12.8.1':
+    resolution: {integrity: sha512-siDxcidfz5eM6L2tJfik+i2bbUEw8UC7MZ3Yl2HYdRmqbdhHGAOQACtOOu6QVW4Jul4/w5wVKm+wM8ACtgh1Pg==}
     cpu: [arm64]
     os: [android]
 
-  '@pnpm/exe.android-x64@12.4.1':
-    resolution: {integrity: sha512-+l74Qb4c2YjOzNKHXJLg+1wr8xHM1ckkUhnU5KRUK9TJqiiczt6yeTZqqzHIlJ8i6pAoj5V0OJevDRwnQKLgrQ==}
+  '@pnpm/exe.android-x64@12.8.1':
+    resolution: {integrity: sha512-0F/uqPRc3aN4vLHsa0f+6fTtmsigFQ9/yxEU43fionF//pNHEd5e97b3w/nKIgqYMCUQCJphmBRMA9Q8/wlo9Q==}
     cpu: [x64]
     os: [android]
 
-  '@pnpm/exe.darwin-arm64@12.4.1':
-    resolution: {integrity: sha512-6rkZkT3iGfaxknUdGHraqSWFvTa6N0ajAHluv9Ax0GRWs0sIcGNiFhDopv6xSZCsJZmG483aNS/b6UEDy3blfw==}
+  '@pnpm/exe.darwin-arm64@12.8.1':
+    resolution: {integrity: sha512-/rwavvMQJsl2RIxOHBnDF+4Gk+fhQFAY4M3PQZoKskJOEnaJcygG9p1xby6wcQcbS4d9dIubv09CQhufTgfmpw==}
     cpu: [arm64]
     os: [darwin]
 
-  '@pnpm/exe.darwin-x64@12.4.1':
-    resolution: {integrity: sha512-Vb1CHlR88HghC1qUxjxjs82zQSXnXacPD+btG2CmG8Q/hBU7Q0/b2YWJKSQqZXicunV5khFtfTlAwJddV9RkYA==}
+  '@pnpm/exe.darwin-x64@12.8.1':
+    resolution: {integrity: sha512-htYt2gN7zqJKLhC99Ft6EUiO7myjZAZXfmGCTJUL1v+o7vE9hZdE1+fAkk4Oj1ZHNRti6b2woOxEkRkAusi8OQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@pnpm/exe.freebsd-x64@12.4.1':
-    resolution: {integrity: sha512-iT3iHz3Nl0Sxxj7UPOtZ/aQ81AFsQhjoeWMAlPkSRO04gsgDGAXv3UYxOFaesMWsfNxaGn0A+CITbuCHFF66FA==}
+  '@pnpm/exe.freebsd-x64@12.8.1':
+    resolution: {integrity: sha512-PB5BULNgytxvExoOXUUeseS/DcpPENs+cg3iA6xHHeaLT4ctEGKSGXEbuj7USeqvo8JBpAx039hivnbzGqDwnA==}
     cpu: [x64]
     os: [freebsd]
 
-  '@pnpm/exe.linux-arm64-musl@12.4.1':
-    resolution: {integrity: sha512-aBooZfNXM5f+OGUgCAMFWpE/kAhsWfvmqIyMtHy6zl3aNxyInWrcY/Saln/UElzo7lZWMC0Yktroxd/2J26lNQ==}
+  '@pnpm/exe.linux-arm64-musl@12.8.1':
+    resolution: {integrity: sha512-kKeyC/ArjrgdciQRBrOL0j9HtOI4gDRgoyP+eJ1CQKyadpKlf/DhDDyspXe07R3B9KagTVLUF2nlt6Dr5quFIg==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-arm64@12.4.1':
-    resolution: {integrity: sha512-TlOdacTTP09BgcMvwWBFRsu8VAjfwqwnslBj+XSq1JFM3ck4f3k+1O/747EuctxZxs3/o785b6Q3s7Pd92Ptsg==}
+  '@pnpm/exe.linux-arm64@12.8.1':
+    resolution: {integrity: sha512-q4s9a9X2O3N9aeUFooW24orNrxvu20+jyVUFR5RanPCqOKKPBrgs2iywMkBBx1aXkkzdWT54/mfz8Be8sJlWEw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-ppc64@12.4.1':
-    resolution: {integrity: sha512-r/ab/MlIBo75oizUP5ITiziCCrnXz4SJwfErLQ+603AshB+Yq7xTMCoMtzTSCAMu6aaymIKkAFtZvd2J75Wq0w==}
+  '@pnpm/exe.linux-ppc64@12.8.1':
+    resolution: {integrity: sha512-F7XSjKJthwCh/L6abZiMpAfo2Cm61SZIT3e4dfgiIjESndlWaXCnfLKngSgZ/SEMsdmHT6dud3+kWIB3tw0/xQ==}
     cpu: [ppc64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-riscv64@12.4.1':
-    resolution: {integrity: sha512-C/D1QWdKMiB8+wv/spl1rGITFUuqC+aI/fb6h8NB5sqxsOaGXeYc/g891oCuzggHn6SODk9p+I09hI76x/cMNw==}
+  '@pnpm/exe.linux-riscv64@12.8.1':
+    resolution: {integrity: sha512-z1ecpIK/ZY08Unk69KWWE9867oaKUytGUjrHnBoGFAAhsK+q+0cfvBH+f5fWobJ7FX97leMlLO+gkJolddM45Q==}
     cpu: [riscv64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-s390x@12.4.1':
-    resolution: {integrity: sha512-nxz5zD4yXt94uzbStDk0QTPKW+aE92hH1b5tFXK9ctB1HE9Xcq1vjTiA2LsZMFC6p4gdu5OwQeFqYNAVGa6QlA==}
+  '@pnpm/exe.linux-s390x@12.8.1':
+    resolution: {integrity: sha512-KU6tnrBfu4uKXTq6N5qJwSm8FSrs9Wc8b5AUEsHK9bRXwNdsZ1/lRxG1++X29SKRW9OSNuDSjxASv5mAvGo1gA==}
     cpu: [s390x]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-x64-musl@12.4.1':
-    resolution: {integrity: sha512-5AwgFdGhVUg2kIweYGfxzSLEHiIG77PQhZAkXC3TwofQHsu1Wr+TrV5/rNX2PopFnHRzuE581zoB8F6Wle32yg==}
+  '@pnpm/exe.linux-x64-musl@12.8.1':
+    resolution: {integrity: sha512-eUE8BWJkDr2tJb/yrk0yVnszlmNqFarVxUlqiZ9BAkct28Nq/5g2H0tvMDmPA7fAQW3STNj+omJPPRVT+4s5sQ==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-x64@12.4.1':
-    resolution: {integrity: sha512-FJOZuuuQMhp0oLzBtcKkLXknBI92hfkmSnlKc47vfin4HrmfID5khY2lGekL9tCzk1cpR+HShEw/meFl+nHtzQ==}
+  '@pnpm/exe.linux-x64@12.8.1':
+    resolution: {integrity: sha512-8bDZ0lZlCdi2rvnFul7EYgcC7zKeWSe76y8JV2oXobaS8p9i9d6PSf6LgLtTM0fI7R9Oh4eLCbveXyNDMmvZ+g==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.win32-arm64@12.4.1':
-    resolution: {integrity: sha512-OO7eKBL9S+xk5hRy+JUUZSNJknGuGe3GEUffsrlC2LbqKF02g+VX1anGIzSbJDvkkdnpJhSlxF5AUz2JzJu2Jw==}
+  '@pnpm/exe.win32-arm64@12.8.1':
+    resolution: {integrity: sha512-MsT0dlrRxnCRCHCaosNbhWpEiAFnFuMEu3KuDJDU41BXgTwiINxU8goloUSUDejWZUqKaUqNC/qUTihl9nFtqg==}
     cpu: [arm64]
     os: [win32]
 
-  '@pnpm/exe.win32-x64@12.4.1':
-    resolution: {integrity: sha512-x7gJHZgHo6hp354xCYA2NvoFzYJkHwovt2kVsUBK5EmXULLcP51JGMq09CX+5FRFJUZFKoXjLu3mZWmfP7o6PQ==}
+  '@pnpm/exe.win32-x64@12.8.1':
+    resolution: {integrity: sha512-SWtPe0PsbTTk//gJND10tMdOfCYjrkq5+qV49hzVhY7xz2iJ339Rc+xwASlcvbwTfrvH39YNqpKYibD+CRGLwA==}
     cpu: [x64]
     os: [win32]
 
-  pnpm@12.4.1:
-    resolution: {integrity: sha512-LoHjmdc/6DkNqyXgaqeIq3pZCCSNL1o3D4K0gRR6ano2e/gEj5pv22Rg8hpm8FQt7bi5TKLIcjWWdBkgsWVtTA==}
+  pnpm@12.8.1:
+    resolution: {integrity: sha512-9kupB1B/XOr+BsjTjmBS0BeURFgOwSed3Vv8EctIqoomRLZlmOB+dh2oSHKp/FfV+QK4f6SdAkGY1VhhKqu+RQ==}
     engines: {node: '>=18.*'}
     hasBin: true
 
 snapshots:
 
-  '@pnpm/exe.android-arm64@12.4.1':
+  '@pnpm/exe.android-arm64@12.8.1':
     optional: true
 
-  '@pnpm/exe.android-x64@12.4.1':
+  '@pnpm/exe.android-x64@12.8.1':
     optional: true
 
-  '@pnpm/exe.darwin-arm64@12.4.1':
+  '@pnpm/exe.darwin-arm64@12.8.1':
     optional: true
 
-  '@pnpm/exe.darwin-x64@12.4.1':
+  '@pnpm/exe.darwin-x64@12.8.1':
     optional: true
 
-  '@pnpm/exe.freebsd-x64@12.4.1':
+  '@pnpm/exe.freebsd-x64@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-arm64-musl@12.4.1':
+  '@pnpm/exe.linux-arm64-musl@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-arm64@12.4.1':
+  '@pnpm/exe.linux-arm64@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-ppc64@12.4.1':
+  '@pnpm/exe.linux-ppc64@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-riscv64@12.4.1':
+  '@pnpm/exe.linux-riscv64@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-s390x@12.4.1':
+  '@pnpm/exe.linux-s390x@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-x64-musl@12.4.1':
+  '@pnpm/exe.linux-x64-musl@12.8.1':
     optional: true
 
-  '@pnpm/exe.linux-x64@12.4.1':
+  '@pnpm/exe.linux-x64@12.8.1':
     optional: true
 
-  '@pnpm/exe.win32-arm64@12.4.1':
+  '@pnpm/exe.win32-arm64@12.8.1':
     optional: true
 
-  '@pnpm/exe.win32-x64@12.4.1':
+  '@pnpm/exe.win32-x64@12.8.1':
     optional: true
 
-  pnpm@12.4.1:
+  pnpm@12.8.1:
     optionalDependencies:
-      '@pnpm/exe.android-arm64': 12.4.1
-      '@pnpm/exe.android-x64': 12.4.1
-      '@pnpm/exe.darwin-arm64': 12.4.1
-      '@pnpm/exe.darwin-x64': 12.4.1
-      '@pnpm/exe.freebsd-x64': 12.4.1
-      '@pnpm/exe.linux-arm64': 12.4.1
-      '@pnpm/exe.linux-arm64-musl': 12.4.1
-      '@pnpm/exe.linux-ppc64': 12.4.1
-      '@pnpm/exe.linux-riscv64': 12.4.1
-      '@pnpm/exe.linux-s390x': 12.4.1
-      '@pnpm/exe.linux-x64': 12.4.1
-      '@pnpm/exe.linux-x64-musl': 12.4.1
-      '@pnpm/exe.win32-arm64': 12.4.1
-      '@pnpm/exe.win32-x64': 12.4.1
+      '@pnpm/exe.android-arm64': 12.8.1
+      '@pnpm/exe.android-x64': 12.8.1
+      '@pnpm/exe.darwin-arm64': 12.8.1
+      '@pnpm/exe.darwin-x64': 12.8.1
+      '@pnpm/exe.freebsd-x64': 12.8.1
+      '@pnpm/exe.linux-arm64': 12.8.1
+      '@pnpm/exe.linux-arm64-musl': 12.8.1
+      '@pnpm/exe.linux-ppc64': 12.8.1
+      '@pnpm/exe.linux-riscv64': 12.8.1
+      '@pnpm/exe.linux-s390x': 12.8.1
+      '@pnpm/exe.linux-x64': 12.8.1
+      '@pnpm/exe.linux-x64-musl': 12.8.1
+      '@pnpm/exe.win32-arm64': 12.8.1
+      '@pnpm/exe.win32-x64': 12.8.1
 
 ---
 lockfileVersion: '9.0'
@@ -266,37 +266,43 @@ importers:
         version: 2.0.1(varlock@1.21.1)
       '@wolfstar/decorators':
         specifier: ^0.1.0
-        version: 0.1.0(@wolfstar/http-framework@5.1.2)
+        version: 0.1.0(@wolfstar/http-framework@6.1.1)
       '@wolfstar/env-utilities':
         specifier: ^2.2.1
         version: 2.2.1(varlock@1.21.1)
       '@wolfstar/http-framework':
-        specifier: ^5.1.2
-        version: 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+        specifier: ^6.1.1
+        version: 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/kit':
+        specifier: ^0.1.1
+        version: 0.1.1(magicast@0.5.5)
       '@wolfstar/plugin-api':
-        specifier: ^2.0.0
-        version: 2.0.0(@wolfstar/http-framework@5.1.2)
+        specifier: ^2.0.1
+        version: 2.0.1(@wolfstar/http-framework@6.1.1)
       '@wolfstar/plugin-broker':
-        specifier: ^0.4.0
-        version: 0.4.0(@wolfstar/http-framework@5.1.2)(msgpackr@2.1.0)
+        specifier: ^0.4.1
+        version: 0.4.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-cache':
         specifier: ^0.5.1
         version: 0.5.1(msgpackr@2.1.0)
       '@wolfstar/plugin-gateway':
-        specifier: ^0.9.0
-        version: 0.9.0(@wolfstar/http-framework@5.1.2)(msgpackr@2.1.0)
+        specifier: ^0.9.1
+        version: 0.9.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-i18next':
-        specifier: ^2.1.1
-        version: 2.1.1(@wolfstar/http-framework@5.1.2)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)
+        specifier: ^2.1.2
+        version: 2.1.2(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)
       '@wolfstar/plugin-logger':
-        specifier: ^0.2.1
-        version: 0.2.1(@sentry/node@10.76.0)(@wolfstar/http-framework@5.1.2)(consola@3.4.2)
+        specifier: ^0.2.2
+        version: 0.2.2(@sentry/node@10.76.0)(@wolfstar/http-framework@6.1.1)(consola@3.4.2)
+      '@wolfstar/plugin-scheduled-tasks':
+        specifier: ^0.1.0
+        version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(ioredis@6.0.0)(pg@8.23.1)
       '@wolfstar/plugin-sharder':
         specifier: ^0.1.1
         version: 0.1.1
       '@wolfstar/plugin-subcommands-advanced':
-        specifier: ^2.0.5
-        version: 2.0.5(@wolfstar/http-framework@5.1.2)
+        specifier: ^2.0.6
+        version: 2.0.6(@wolfstar/http-framework@6.1.1)
       '@wolfstar/shared-http-pieces':
         specifier: ^2.0.9
         version: 2.0.9(@opentelemetry/core@2.11.0)(@wolfstar/i18next-type-generator@3.1.5)(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(supports-color@7.2.0)(tsdown@0.23.0)(typescript@7.0.2)(varlock@1.21.1)(vite@8.3.2)
@@ -2197,6 +2203,10 @@ packages:
     resolution: {integrity: sha512-xzvBr1Q1c4lCe7i6sRnrofxeO1QTP/LKQ6A6qy0iB4x5yfiSfARMEQEghojzTNALDTcv8En04qYNIco9/K9eZQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
+  '@sapphire/stopwatch@1.5.4':
+    resolution: {integrity: sha512-IVI48D2yAz411bSttXyTkBH0p2vhrXoqWLn5loDDSAAEUGkM1r5KNCX2027ifQ8svdoMkUfIGjFueR+satLeWw==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+
   '@sapphire/ts-config@5.0.3':
     resolution: {integrity: sha512-bFyGYHFT3TpOf5Sg2P+zY2ad0t5IA2epc5HtewlghhL7MYvbZvxtKsdaNaMwAdNObBx7hpiQm5OcOhyzEwQvbQ==}
     engines: {node: '>=v16.0.0', npm: '>=8.0.0'}
@@ -2554,8 +2564,8 @@ packages:
     resolution: {integrity: sha512-Xfe6rpCTxSxfbswi/W/Pz7zp1WWSNn4A0eW4mLkQUewCrXXtMj31lCg+iQyTkh/CkusZSq9eDflu7tjEDXUY6g==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
-  '@wolfstar/cli@2.1.0':
-    resolution: {integrity: sha512-5GPxuoY5acCXpL6MVhi/GShpGEa3Q50d9ATSnW0OBNVolUlFxZT1ej2XnY9wO/ixLw6ij16gvJwZOWu//sC9Rw==}
+  '@wolfstar/cli@2.3.0':
+    resolution: {integrity: sha512-fUEDCcP5WlFNTT4xKP7Lp/QORYlSM4S+jY76COjfZa/Su1uGkRfYVOWSPVy3am+ArsBapDoUVtfy2iTcPvI/CA==}
     engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
@@ -2588,13 +2598,8 @@ packages:
       varlock:
         optional: true
 
-  '@wolfstar/http-framework@5.1.2':
-    resolution: {integrity: sha512-92JX/Xi+ve6E6lMkssTt4s3hhrTmbrYrKdaY4UWcWFNtVcHO51m9UXEmma2peoodsMpmXRTW7ex45kxVDXZL4w==}
-    engines: {node: '>=20'}
-    hasBin: true
-
-  '@wolfstar/http-framework@6.0.1':
-    resolution: {integrity: sha512-xdFA8eg2FEMO5IX50o1HjtW8imJbRfJi5ATxM/5G8wh+OLsAFhOSDIdPd6cI60dfsY+zgWI4nB4xeZPYULdWQQ==}
+  '@wolfstar/http-framework@6.1.1':
+    resolution: {integrity: sha512-yyC9Jsopjpyaso0UKssfvagqr+XEJtdUg4mG9tdJwNaMcdNU2zWUTZVmwb/sdxASuEACH2jjUvJV48XEP27p0w==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -2607,8 +2612,12 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@wolfstar/nitro-server@0.2.4':
-    resolution: {integrity: sha512-ghrJyoWqqfGW5g8+RuCk/ZUz5VDF2FOOfqWlWPo0LSni9oQ+pXx9wqGfJhJi+Vi5S60d/nzCj1h3IRz4UlXcpw==}
+  '@wolfstar/kit@0.1.1':
+    resolution: {integrity: sha512-0dk/A0H1EQy1Lc5X0Rv4TPEZhEoJV1vhGjGnc1RCBZnhkemA61K8+kF2kTR/YHDk3nEmo97NS3GR8K8zNDjiCw==}
+    engines: {node: '>=20'}
+
+  '@wolfstar/nitro-server@0.2.6':
+    resolution: {integrity: sha512-QnvuDuzSvNd6N6MjnSWle1Gqm+H2dLmfIftYEefpPWn6UTDeIw0npu2aG0cH6B6gYPsEVn5/QkApwqbgs3d2Kw==}
     engines: {node: '>=22'}
     peerDependencies:
       nitro: '>=3.0.0-0'
@@ -2619,17 +2628,17 @@ packages:
       vite:
         optional: true
 
-  '@wolfstar/plugin-api@2.0.0':
-    resolution: {integrity: sha512-IsojHvgVKsGpOQm+9XdY3TXACRWJaHKCMOcHlyu6zWyF4k0NkwVQo7K7HOy1QGh2j2Nk684dJY8va/uimQNF8w==}
+  '@wolfstar/plugin-api@2.0.1':
+    resolution: {integrity: sha512-ORHK7hSqlt2gVK5UBtt8B++n6a4NGbVT2YNlVFpUL9avUhm/5zngfIJTXdFflHtoGbLSSlnq76lhg7FCN6DA1g==}
     engines: {node: '>=20.18.1'}
     peerDependencies:
-      '@wolfstar/http-framework': ^3.6.0 || ^5.0.0
+      '@wolfstar/http-framework': ^3.6.0 || ^5.0.0 || ^6.0.0
 
-  '@wolfstar/plugin-broker@0.4.0':
-    resolution: {integrity: sha512-EHdT9SnHB1T0SzcS+bAuZ5xKQiqNs0a8SFbed9aK81+6HqWgjXtBgniArJKvM/SiRP0njsIIWm8IQ/lfwX0ZyQ==}
+  '@wolfstar/plugin-broker@0.4.1':
+    resolution: {integrity: sha512-RumqWmXVJzfCSB1lJGKGW+z1OvUk9xrd1KHVw2XmCCJyTDRSYSNVj5ihNN2wb9YEK8tHUR/79Mdl4GKLqaw7hQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0
+      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
 
   '@wolfstar/plugin-cache@0.5.1':
     resolution: {integrity: sha512-gwvliWPVL2jUcbiCIHiQrmGINokm9LLyU6e/RFcO6BNADRshs7hjF58JItbWkLr5vTyC7trmcafOH1vFrEyDIQ==}
@@ -2640,28 +2649,28 @@ packages:
       msgpackr:
         optional: true
 
-  '@wolfstar/plugin-gateway@0.9.0':
-    resolution: {integrity: sha512-1SmjxyoaL7bnvQd/zIqY/ndTNKhj2OndsQ56Kk7xOYJDeIt1ItuF3YaBoNtIpv0TYjqRKs9HmZl7Z1JPMNAD4Q==}
+  '@wolfstar/plugin-gateway@0.9.1':
+    resolution: {integrity: sha512-Ao+MvLktcThfZGkL+mECDzEtf3xyXZ62T0AuMf/EvPQi/dFosNmCIiZAuZ2wywpEtANPPqvJj2Z59p65IUyQhg==}
     engines: {node: '>=24.17.0'}
     peerDependencies:
-      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0
+      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
 
-  '@wolfstar/plugin-i18next@2.1.1':
-    resolution: {integrity: sha512-4l/inaa866LrsAFri+JhPzxrKRIvUkVP8d0YgAg3oKhw4BWNchaZAOZv5a77U0012WDTsCIlK3HQ27mG4CfsLg==}
+  '@wolfstar/plugin-i18next@2.1.2':
+    resolution: {integrity: sha512-6FNXLhUpTMxSzuRreuM9JNEiM90K8gjerYcZSfhPRb6mYC6LsduKGNxO1NZs7orrkJhcs8VaVD0l/TnqLjSkmA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@wolfstar/http-framework': ^3.1.0 || ^5.0.0
+      '@wolfstar/http-framework': ^3.1.0 || ^5.0.0 || ^6.0.0
       '@wolfstar/i18next-type-generator': ^3.0.0
     peerDependenciesMeta:
       '@wolfstar/i18next-type-generator':
         optional: true
 
-  '@wolfstar/plugin-logger@0.2.1':
-    resolution: {integrity: sha512-a/b79de4bfuXAag2DrBZBo7OZxWK6CJSdJ8WiND9lB2wsExMiiGO9tKhRxkRkW863e6pcgCZjmrgJglzzSVbCw==}
+  '@wolfstar/plugin-logger@0.2.2':
+    resolution: {integrity: sha512-xt5QGYY8IpbfJFwyVLBANlYU9YjOzCa8ueGdPNRTYcDIOowwk6TNEvjsjs+qYOfwZCrFVnBzmOpzcfS7vDGVkA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@sentry/node': ^8.0.0 || ^9.0.0 || ^10.0.0
-      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0
+      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
       consola: ^3.0.0
       evlog: ^2.0.0
       winston: ^3.0.0
@@ -2675,22 +2684,25 @@ packages:
       winston:
         optional: true
 
+  '@wolfstar/plugin-scheduled-tasks@0.1.0':
+    resolution: {integrity: sha512-ghTTPnI9cEz72cBKzuqVkN6jPBUCWdhnIJgHl93pX/fsmRXz3HX6YaDqcy//Xg93AyNSvgDWudRBXY3T20bbFA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^6.1.0
+      '@wolfstar/kit': ^0.1.0
+
   '@wolfstar/plugin-sharder@0.1.1':
     resolution: {integrity: sha512-X/ZbVzA52wfncvas3Wubkv+I2gyPUayGoLh33zmHwahZMx7AR53KEF0D0FfJmQY+SekL/OQ+4pQ1WLPYr2LfCg==}
     engines: {node: '>=20.0.0'}
 
-  '@wolfstar/plugin-subcommands-advanced@2.0.5':
-    resolution: {integrity: sha512-h+Zj6qkS6yfsi0HawNfolxQMBACcfGZ/4Bk442gcGCSarhQpNcAft18Aql2ECFA7rq71Z9xDyzNkrfTi80i8oQ==}
+  '@wolfstar/plugin-subcommands-advanced@2.0.6':
+    resolution: {integrity: sha512-fL0Sh/hcLc9fI4P35VIoHczoZrE7xnAx7LrRTDa3B4g7XYglaHWki9UliPg1S+y2IcPlAmCI2ZeBHaWTIETUsw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@wolfstar/http-framework': ^3.1.0 || ^5.0.0
+      '@wolfstar/http-framework': ^3.1.0 || ^5.0.0 || ^6.0.0
 
-  '@wolfstar/schema@0.2.1':
-    resolution: {integrity: sha512-Iw4n3rRGf74oG6+CbESsSAQDYW398Q8TeqcEmaDtEShArYgD8buGJO/QIuYwZPJHlTmBO8Nt+ECy2gq81bR5kQ==}
-    engines: {node: '>=20'}
-
-  '@wolfstar/schema@0.4.0':
-    resolution: {integrity: sha512-4lfMLzhVpz7mobS0wrKzWUbJYImtENyGn9EJ7BT24qzxlUN0w0TwthY3CXSxQENNqTMvVNDqSExZUqRHbULEDQ==}
+  '@wolfstar/schema@0.6.0':
+    resolution: {integrity: sha512-vK0RcEjT+M+hi0yFsgbBQ06XYQNUOWcgbWNgDSezMhjl3wjWIa5Vrt+u4m8hvIcezco3z4Y66sVdChXz95Qo4w==}
     engines: {node: '>=20'}
 
   '@wolfstar/shared-http-pieces@2.0.9':
@@ -2701,8 +2713,8 @@ packages:
     resolution: {integrity: sha512-gc/yTU7P04UlEmN65kM4sBQsfu+nIduH29XGrn643kCi1ap/BXF7dnnStTq0kXk8AGUKsyKJLK3y/w4RwV+hmA==}
     engines: {node: '>=20'}
 
-  '@wolfstar/vite-server@0.3.0':
-    resolution: {integrity: sha512-kpgE/PKaBKwb5owtV0MNzzreqk/cdKH97cXUnAss3E7CpN5Rb/RhubyPt2rND8zOiT7VPD0mz3W32iOtSsMFig==}
+  '@wolfstar/vite-server@0.4.1':
+    resolution: {integrity: sha512-3Ks5Q349KPN2mRjTW7ftNfH+8WhmdeltsXaTpfvqws3gXGretiAJDd3ovu1228URhBJszz+7dVR9EW/qVQ5WIg==}
     engines: {node: '>=22'}
     peerDependencies:
       vite: ^8.3.2
@@ -3073,6 +3085,24 @@ packages:
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
 
+  bullmq@6.3.11:
+    resolution: {integrity: sha512-ylSY3FYil6E9IjqVtT+WHcZvS1rgTZ0L3Aev62u45NXQFe+H37a1AuC3WDATR7ScNDet1Ah8MnP3lf8XaUbPUw==}
+    engines: {node: '>=14.17.0'}
+    peerDependencies:
+      bullmq-otel: '>=2.0.0'
+      ioredis: '>=5.0.0'
+      pg: '>=8.0.0'
+      redis: '>=5.0.0'
+    peerDependenciesMeta:
+      bullmq-otel:
+        optional: true
+      ioredis:
+        optional: true
+      pg:
+        optional: true
+      redis:
+        optional: true
+
   bundle-name@4.1.1:
     resolution: {integrity: sha512-DdH81/zPLVS11EUgWq3tEu/xn+EzljlMYooDNdzWEnFha3R3NBMpMV1UqYIpjYHV/SgpFKMIX1Oh7o06SjM/oA==}
     engines: {node: '>=18'}
@@ -3278,8 +3308,8 @@ packages:
     resolution: {integrity: sha512-rcQ1bsQO9799wq24uE5AM2tAILy4gXGIK/njFWcVQkGNZ96edlpY+A7bjwvzjYvLDyzmG1MmMLZhpcsb+klNMQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  cookie-es@1.2.3:
-    resolution: {integrity: sha512-lXVyvUvrNXblMqzIRrxHb57UUVmqsSWlxqt3XIjCkUP0wDAf6uicO6KMbEgYrMNtEvWgWHwe42CKxPu9MYAnWw==}
+  cookie-es@3.1.1:
+    resolution: {integrity: sha512-UaXxwISYJPTr9hwQxMFYZ7kNhSXboMXP+Z3TRX6f1/NyaGPfuNUZOWP1pUEb75B2HjfklIYLVRfWiFZJyC6Npg==}
 
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -3300,6 +3330,10 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  cron-parser@5.10.1:
+    resolution: {integrity: sha512-pKRrRagItwk9rGIStcUyMxFX34x56zoX3KDf9HJ4ttwkXIK1qxK63EvXvEDmlxI9AdPJ+Y7TEKRftRlW5eSS7A==}
+    engines: {node: '>=18'}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -4016,6 +4050,10 @@ packages:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
     engines: {node: 20 || >=22}
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   magic-bytes.js@1.13.1:
     resolution: {integrity: sha512-x5sn4UX2k5gCWlcfmoFwG4TPie8+dctESyqOBdhB5p6MsgWXdBKGmt9nXPObj/JI50TTL928lc5Yt1WntMn1bw==}
 
@@ -4106,6 +4144,9 @@ packages:
     resolution: {integrity: sha512-Y2tUNy4ouw6tq5oDSKeQYGOyhkUBhNOcGV/02KC+6kd9eDGqdZd++mjMiIDilrBYvjEnCYvVtsuHCuP+okSfug==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  node-abort-controller@3.1.1:
+    resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==}
 
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
@@ -6902,6 +6943,10 @@ snapshots:
 
   '@sapphire/snowflake@3.5.5': {}
 
+  '@sapphire/stopwatch@1.5.4':
+    dependencies:
+      tslib: 2.8.1
+
   '@sapphire/ts-config@5.0.3':
     dependencies:
       tslib: 2.8.1
@@ -7226,13 +7271,14 @@ snapshots:
 
   '@vladfrangu/async_event_emitter@2.4.7': {}
 
-  '@wolfstar/cli@2.1.0(magicast@0.5.5)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
+  '@wolfstar/cli@2.3.0(magicast@0.5.5)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
     dependencies:
       '@clack/prompts': 1.8.1
       '@sapphire/ts-config': 5.0.3
-      '@wolfstar/nitro-server': 0.2.4(magicast@0.5.5)(vite@8.3.2)
-      '@wolfstar/schema': 0.4.0(magicast@0.5.5)
-      '@wolfstar/vite-server': 0.3.0(magicast@0.5.5)(vite@8.3.2)
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
+      '@wolfstar/nitro-server': 0.2.6(magicast@0.5.5)(vite@8.3.2)
+      '@wolfstar/schema': 0.6.0(magicast@0.5.5)
+      '@wolfstar/vite-server': 0.4.1(magicast@0.5.5)(vite@8.3.2)
       chokidar: 5.0.0
       citty: 0.2.2
       colorette: 2.0.20
@@ -7254,9 +7300,9 @@ snapshots:
       - react-devtools-core
       - utf-8-validate
 
-  '@wolfstar/decorators@0.1.0(@wolfstar/http-framework@5.1.2)':
+  '@wolfstar/decorators@0.1.0(@wolfstar/http-framework@6.1.1)':
     dependencies:
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
 
   '@wolfstar/env-utilities@2.2.1(varlock@1.21.1)':
     dependencies:
@@ -7266,7 +7312,7 @@ snapshots:
     optionalDependencies:
       varlock: 1.21.1
 
-  '@wolfstar/http-framework@5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
+  '@wolfstar/http-framework@6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
     dependencies:
       '@discordjs/builders': 1.14.1
       '@discordjs/collection': 2.1.1
@@ -7276,46 +7322,8 @@ snapshots:
       '@sapphire/result': 2.8.0
       '@sapphire/utilities': 3.18.2
       '@vladfrangu/async_event_emitter': 2.4.7
-      '@wolfstar/cli': 2.1.0(magicast@0.5.5)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/schema': 0.2.1(magicast@0.5.5)
-      chokidar: 5.0.0
-      discord-api-types: 0.38.56
-      mlly: 1.8.2
-      unimport: 7.0.2(acorn@8.18.0)(esbuild@0.28.2)(rolldown@1.2.12)(vite@8.3.2)
-    transitivePeerDependencies:
-      - '@farmfe/core'
-      - '@rsbuild/core'
-      - '@rspack/core'
-      - '@types/react'
-      - acorn
-      - bufferutil
-      - bun-types-no-globals
-      - esbuild
-      - magicast
-      - nitro
-      - oxc-parser
-      - react-devtools-core
-      - rolldown
-      - rollup
-      - tsdown
-      - typescript
-      - unloader
-      - utf-8-validate
-      - vite
-      - webpack
-
-  '@wolfstar/http-framework@6.0.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
-    dependencies:
-      '@discordjs/builders': 1.14.1
-      '@discordjs/collection': 2.1.1
-      '@discordjs/rest': 2.6.3
-      '@discordjs/util': 1.2.0
-      '@sapphire/pieces': 4.4.1
-      '@sapphire/result': 2.8.0
-      '@sapphire/utilities': 3.18.2
-      '@vladfrangu/async_event_emitter': 2.4.7
-      '@wolfstar/cli': 2.1.0(magicast@0.5.5)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/schema': 0.4.0(magicast@0.5.5)
+      '@wolfstar/cli': 2.3.0(magicast@0.5.5)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/schema': 0.6.0(magicast@0.5.5)
       chokidar: 5.0.0
       discord-api-types: 0.38.56
       mlly: 1.8.2
@@ -7358,10 +7366,17 @@ snapshots:
       - svelte
       - vite-plus
 
-  '@wolfstar/nitro-server@0.2.4(magicast@0.5.5)(vite@8.3.2)':
+  '@wolfstar/kit@0.1.1(magicast@0.5.5)':
     dependencies:
-      '@wolfstar/schema': 0.4.0(magicast@0.5.5)
-      '@wolfstar/vite-server': 0.3.0(magicast@0.5.5)(vite@8.3.2)
+      '@wolfstar/schema': 0.6.0(magicast@0.5.5)
+      semver: 7.8.5
+    transitivePeerDependencies:
+      - magicast
+
+  '@wolfstar/nitro-server@0.2.6(magicast@0.5.5)(vite@8.3.2)':
+    dependencies:
+      '@wolfstar/schema': 0.6.0(magicast@0.5.5)
+      '@wolfstar/vite-server': 0.4.1(magicast@0.5.5)(vite@8.3.2)
       chokidar: 5.0.0
       picomatch: 4.0.7
     optionalDependencies:
@@ -7369,19 +7384,19 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@wolfstar/plugin-api@2.0.0(@wolfstar/http-framework@5.1.2)':
+  '@wolfstar/plugin-api@2.0.1(@wolfstar/http-framework@6.1.1)':
     dependencies:
       '@sapphire/iana-mime-types': 1.32.0
       '@sapphire/pieces': 4.4.1
       '@vladfrangu/async_event_emitter': 2.4.7
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      cookie-es: 1.2.3
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      cookie-es: 3.1.1
       tldts: 7.4.16
       undici: 7.30.0
 
-  '@wolfstar/plugin-broker@0.4.0(@wolfstar/http-framework@5.1.2)(msgpackr@2.1.0)':
+  '@wolfstar/plugin-broker@0.4.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)':
     dependencies:
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       '@wolfstar/plugin-cache': 0.5.1(msgpackr@2.1.0)
     transitivePeerDependencies:
       - msgpackr
@@ -7392,7 +7407,7 @@ snapshots:
     optionalDependencies:
       msgpackr: 2.1.0
 
-  '@wolfstar/plugin-gateway@0.9.0(@wolfstar/http-framework@5.1.2)(msgpackr@2.1.0)':
+  '@wolfstar/plugin-gateway@0.9.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)':
     dependencies:
       '@discordjs/collection': 2.1.1
       '@discordjs/core': 2.6.0
@@ -7400,7 +7415,7 @@ snapshots:
       '@discordjs/structures': 1.0.0-pr-11602.1789066132-275cd4b42
       '@discordjs/ws': 2.0.4
       '@sapphire/pieces': 4.4.1
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       '@wolfstar/plugin-cache': 0.5.1(msgpackr@2.1.0)
       discord-api-types: 0.38.56
     transitivePeerDependencies:
@@ -7408,13 +7423,13 @@ snapshots:
       - msgpackr
       - utf-8-validate
 
-  '@wolfstar/plugin-i18next@2.1.1(@wolfstar/http-framework@5.1.2)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)':
+  '@wolfstar/plugin-i18next@2.1.2(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)':
     dependencies:
       '@discordjs/collection': 2.1.1
       '@sapphire/pieces': 4.4.1
       '@sapphire/result': 2.8.0
       '@sapphire/utilities': 3.18.2
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       '@wolfstar/i18next-backend': 2.0.12
       chokidar: 5.0.0
       discord-api-types: 0.38.56
@@ -7424,48 +7439,37 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@wolfstar/plugin-i18next@2.1.1(@wolfstar/http-framework@6.0.1)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)':
+  '@wolfstar/plugin-logger@0.2.2(@sentry/node@10.76.0)(@wolfstar/http-framework@6.1.1)(consola@3.4.2)':
     dependencies:
-      '@discordjs/collection': 2.1.1
-      '@sapphire/pieces': 4.4.1
-      '@sapphire/result': 2.8.0
-      '@sapphire/utilities': 3.18.2
-      '@wolfstar/http-framework': 6.0.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/i18next-backend': 2.0.12
-      chokidar: 5.0.0
-      discord-api-types: 0.38.56
-      i18next: 26.4.2(typescript@7.0.2)
-    optionalDependencies:
-      '@wolfstar/i18next-type-generator': 3.1.5
-    transitivePeerDependencies:
-      - typescript
-
-  '@wolfstar/plugin-logger@0.2.1(@sentry/node@10.76.0)(@wolfstar/http-framework@5.1.2)(consola@3.4.2)':
-    dependencies:
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
     optionalDependencies:
       '@sentry/node': 10.76.0(@opentelemetry/core@2.11.0)(supports-color@7.2.0)
       consola: 3.4.2
+
+  '@wolfstar/plugin-scheduled-tasks@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(ioredis@6.0.0)(pg@8.23.1)':
+    dependencies:
+      '@sapphire/stopwatch': 1.5.4
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
+      bullmq: 6.3.11(ioredis@6.0.0)(pg@8.23.1)
+    transitivePeerDependencies:
+      - bullmq-otel
+      - ioredis
+      - pg
+      - redis
 
   '@wolfstar/plugin-sharder@0.1.1':
     dependencies:
       '@sapphire/result': 2.8.0
 
-  '@wolfstar/plugin-subcommands-advanced@2.0.5(@wolfstar/http-framework@5.1.2)':
+  '@wolfstar/plugin-subcommands-advanced@2.0.6(@wolfstar/http-framework@6.1.1)':
     dependencies:
       '@discordjs/builders': 1.14.1
       '@discordjs/collection': 2.1.1
-      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       discord-api-types: 0.38.56
 
-  '@wolfstar/schema@0.2.1(magicast@0.5.5)':
-    dependencies:
-      c12: 3.3.4(magicast@0.5.5)
-      nostics: 1.3.0
-    transitivePeerDependencies:
-      - magicast
-
-  '@wolfstar/schema@0.4.0(magicast@0.5.5)':
+  '@wolfstar/schema@0.6.0(magicast@0.5.5)':
     dependencies:
       c12: 3.3.4(magicast@0.5.5)
       nostics: 1.3.0
@@ -7479,8 +7483,8 @@ snapshots:
       '@sapphire/pieces': 4.4.1
       '@sentry/node': 10.76.0(@opentelemetry/core@2.11.0)(supports-color@7.2.0)
       '@wolfstar/env-utilities': 2.2.1(varlock@1.21.1)
-      '@wolfstar/http-framework': 6.0.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/plugin-i18next': 2.1.1(@wolfstar/http-framework@6.0.1)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/plugin-i18next': 2.1.2(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)
       discord-api-types: 0.38.56
       i18next: 25.10.10(typescript@7.0.2)
       tslib: 2.8.1
@@ -7513,9 +7517,9 @@ snapshots:
 
   '@wolfstar/start-banner@2.1.2': {}
 
-  '@wolfstar/vite-server@0.3.0(magicast@0.5.5)(vite@8.3.2)':
+  '@wolfstar/vite-server@0.4.1(magicast@0.5.5)(vite@8.3.2)':
     dependencies:
-      '@wolfstar/schema': 0.4.0(magicast@0.5.5)
+      '@wolfstar/schema': 0.6.0(magicast@0.5.5)
       srvx: 1.0.5
     optionalDependencies:
       vite: 8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
@@ -7805,6 +7809,17 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
+  bullmq@6.3.11(ioredis@6.0.0)(pg@8.23.1):
+    dependencies:
+      cron-parser: 5.10.1
+      msgpackr: 2.1.0
+      node-abort-controller: 3.1.1
+      semver: 7.8.5
+      tslib: 2.8.1
+    optionalDependencies:
+      ioredis: 6.0.0(supports-color@7.2.0)
+      pg: 8.23.1
+
   bundle-name@4.1.1:
     dependencies:
       run-applescript: 7.1.0
@@ -7991,7 +8006,7 @@ snapshots:
 
   convert-to-spaces@2.0.1: {}
 
-  cookie-es@1.2.3: {}
+  cookie-es@3.1.1: {}
 
   core-util-is@1.0.3: {}
 
@@ -8010,6 +8025,10 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 7.0.2
+
+  cron-parser@5.10.1:
+    dependencies:
+      luxon: 3.7.2
 
   cross-spawn@7.0.6:
     dependencies:
@@ -8721,6 +8740,8 @@ snapshots:
 
   lru-cache@11.5.3: {}
 
+  luxon@3.7.2: {}
+
   magic-bytes.js@1.13.1: {}
 
   magic-string@0.30.21:
@@ -8808,6 +8829,8 @@ snapshots:
   nano-staged@1.0.2: {}
 
   nanoid@3.3.19: {}
+
+  node-abort-controller@3.1.1: {}
 
   node-fetch-native@1.6.7: {}
 
