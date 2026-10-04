@@ -1,8 +1,6 @@
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
-import { fetchGuildData, writeGuildData } from '#lib/database/settings/storage';
 import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
-import type { GuildData, ReadonlyGuildData } from '#lib/database/settings/types';
+import { fetchGuildData, getDefaultGuildSettings, writeGuildData, type GuildData, type ReadonlyGuildData } from 'wolfstar-database';
 import { AsyncQueue } from '@sapphire/async-queue';
 import type { Awaitable } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -134,7 +132,7 @@ export class Transaction {
 
 		try {
 			// Write the merged settings, so the rows created for the first time carry every column and not just the changes:
-			await writeGuildData({ ...this.settings, ...this.#changes }, this.#changes);
+			await writeGuildData(container.prisma, { ...this.settings, ...this.#changes }, this.#changes);
 
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;

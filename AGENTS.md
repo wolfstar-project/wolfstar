@@ -51,8 +51,8 @@ Configuration is described by [Varlock](https://varlock.dev) schemas instead of 
 
 ## Settings System
 
-- **Data:** `GuildData` (`src/lib/database/settings/types.ts`) is flat. Each key is prefixed by the Prisma 8 table it is stored in (`rolesAdmin` → `GuildRoles.admin`, `logsMemberAdd` → `GuildLogs.memberAdd`, `selfmodLinksEnabled` → `GuildAutoModerationLinks.enabled`, …). Snowflakes are strings in `GuildData`, `bigint` in the database
-- **Storage:** `src/lib/database/settings/storage.ts` maps every key to its table and column, reads a guild from all the tables, and writes changes in one transaction. Missing rows are created in foreign-key order (`Guild` → `Modules` → `GuildAutoModeration` → rule tables). To add a setting, add the column to `types.ts`, `constants.ts`, `configuration.ts` and the `Columns` map in `storage.ts`
+- **Data:** `GuildData` (`projects/database/src/settings/types.ts`, exported by `wolfstar-database`) is flat. Each key is prefixed by the Prisma 8 table it is stored in (`rolesAdmin` → `GuildRoles.admin`, `logsMemberAdd` → `GuildLogs.memberAdd`, `selfmodLinksEnabled` → `GuildAutoModerationLinks.enabled`, …). Snowflakes are strings in `GuildData`, `bigint` in the database
+- **Storage:** `projects/database/src/settings/storage.ts` (`fetchGuildData`, `writeGuildData(db, …)`, in `wolfstar-database`) maps every key to its table and column, reads a guild from all the tables, and writes changes in one transaction. Missing rows are created in foreign-key order (`Guild` → `Modules` → `GuildAutoModeration` → rule tables). To add a setting, add the column to `types.ts`, `constants.ts` (both in `projects/database/src/settings/`), `configuration.ts` (bot) and the `Columns` map in `storage.ts`
 - **Cache:** In-memory `Collection<string, GuildData>` in `src/lib/database/settings/functions.ts`
 - **Context:** `SettingsContext` in `src/lib/database/settings/context/SettingsContext.ts`
     - Holds `AdderManager`, `PermissionNodeManager`, word filter regex, rate limiter

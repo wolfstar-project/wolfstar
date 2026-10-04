@@ -1,4 +1,5 @@
-import { getConfigurableKeys, type AdderKey, type AutoModerationHardAction, type GuildSettingsOfType } from '#lib/database';
+import { getConfigurableKeys, type AdderKey } from '#lib/database';
+import { type AutoModerationHardAction, type GuildSettingsOfType } from 'wolfstar-database';
 import type { GuildChatInputInteraction, TranslationKey } from '#lib/structures/commands/utils';
 import type { SlashCommandBuilder, SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { ApplyOptions } from '@wolfstar/decorators';

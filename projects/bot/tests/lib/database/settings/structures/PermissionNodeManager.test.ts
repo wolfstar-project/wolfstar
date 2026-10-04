@@ -1,6 +1,5 @@
-import { PermissionNodeAction, PermissionNodeManager, type PermissionsNode } from '#lib/database';
-import { GuildData } from '#lib/database/settings';
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
+import { PermissionNodeAction, PermissionNodeManager } from '#lib/database';
+import { getDefaultGuildSettings, type GuildData, type PermissionsNode } from 'wolfstar-database';
 import { UserError } from '@sapphire/framework';
 import type { Guild, GuildMember, Role, User } from 'discord.js';
 

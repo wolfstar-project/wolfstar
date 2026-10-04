@@ -1,6 +1,5 @@
 import { AuditLogManager } from '#lib/database';
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 import { container } from '@sapphire/framework';
 import { Events } from '#lib/types';
 import { EmbedBuilder } from '@discordjs/builders';

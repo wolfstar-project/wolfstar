@@ -1,5 +1,5 @@
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { Translator } from '#lib/structures/commands/utils';
 import { Result } from '@sapphire/result';
 import type { Awaitable } from '@sapphire/utilities';

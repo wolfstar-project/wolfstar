@@ -1,4 +1,5 @@
-import { readSettings, type PermissionsNode } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { type PermissionsNode } from 'wolfstar-database';
 import {
 	PermissionNodesRoot,
 	checkPermissions,

@@ -1,4 +1,4 @@
-import type { DashboardAuditAction } from '#lib/database/settings/types';
+import type { DashboardAuditAction } from 'wolfstar-database';
 
 export const DASHBOARD_AUDIT_ACTIONS = [
 	'guild.settings.update',

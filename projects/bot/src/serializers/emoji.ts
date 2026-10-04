@@ -1,5 +1,6 @@
 import { Serializer } from '#lib/database';
-import { getEmojiObject, getEmojiString, getEmojiTextFormat, isValidSerializedEmoji, type SerializedEmoji } from '#utils/functions';
+import { getEmojiObject, getEmojiString, getEmojiTextFormat, isValidSerializedEmoji } from '#utils/functions';
+import type { SerializedEmoji } from 'wolfstar-database';
 import type { Awaitable } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<SerializedEmoji> {

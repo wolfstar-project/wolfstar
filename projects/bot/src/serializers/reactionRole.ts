@@ -1,4 +1,5 @@
-import { Serializer, type ReactionRole } from '#lib/database';
+import { Serializer } from '#lib/database';
+import { type ReactionRole } from 'wolfstar-database';
 import { getEmojiTextFormat, isValidSerializedEmoji } from '#utils/functions';
 import { isObject, type Awaitable } from '@sapphire/utilities';
 

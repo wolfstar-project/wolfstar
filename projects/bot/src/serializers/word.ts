@@ -1,4 +1,5 @@
-import { Serializer, readSettingsWordFilterRegExp, type ReadonlyGuildData } from '#lib/database';
+import { Serializer, readSettingsWordFilterRegExp } from '#lib/database';
+import { type ReadonlyGuildData } from 'wolfstar-database';
 import type { Awaitable } from '@sapphire/utilities';
 import { remove as removeConfusables } from 'confusables';
 

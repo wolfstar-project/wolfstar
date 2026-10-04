@@ -1,6 +1,7 @@
 import { GuildSettings, readSettings } from '#lib/database';
 import { Events } from '#lib/types/Enums';
-import { resolveEmojiId, sendTemporaryMessage, SerializedEmoji } from '#utils/functions';
+import { resolveEmojiId, sendTemporaryMessage } from '#utils/functions';
+import type { SerializedEmoji } from 'wolfstar-database';
 import type { LLRCData } from '#utils/LongLivingReactionCollector';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, ListenerOptions } from '@sapphire/framework';

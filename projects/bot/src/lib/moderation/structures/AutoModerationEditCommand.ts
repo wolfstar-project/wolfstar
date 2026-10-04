@@ -1,4 +1,5 @@
-import { writeSettingsTransaction, type GuildData, type GuildDataValue, type SchemaDataKey } from '#lib/database';
+import { writeSettingsTransaction, type SchemaDataKey } from '#lib/database';
+import { type GuildData, type GuildDataValue } from 'wolfstar-database';
 import { AutoModerationCommand, getAutoModerationLimits, registerAutoModerationSubcommand } from '#lib/moderation/structures/AutoModerationCommand';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';

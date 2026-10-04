@@ -1,4 +1,5 @@
-import { readSettings, writeSettings, type StickyRole } from '#lib/database';
+import { readSettings, writeSettings } from '#lib/database';
+import { type StickyRole } from 'wolfstar-database';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';

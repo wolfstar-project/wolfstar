@@ -1,5 +1,5 @@
 import type { Command } from '@wolfstar/http-framework';
-import type { PermissionsNode, ReadonlyGuildData } from '#lib/database/settings/types';
+import type { PermissionsNode, ReadonlyGuildData } from 'wolfstar-database';
 import { matchAny } from '#lib/database/utils/matchers/Command';
 import { Collection } from '@discordjs/collection';
 import { container, UserError } from '@wolfstar/http-framework';

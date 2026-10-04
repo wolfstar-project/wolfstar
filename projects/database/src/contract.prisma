@@ -251,7 +251,7 @@ namespace public {
     id                 BigInt   @id(map: "GuildCommands_pkey")
     disabled           String[] @default([]) @noCheck(elementNotNull)
     disabledChannels   BigInt[] @default([]) @noCheck(elementNotNull) @map("disabled_channels")
-    disabledInChannels Jsonb    @default(dbgenerated("'[]'::jsonb")) @map("disabled_in_channels")
+    disabledInChannels Jsonb    @default(sql`'[]'::jsonb`) @map("disabled_in_channels")
     modules            Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildCommands_id_fkey")
 
     @@control(external)
@@ -303,8 +303,8 @@ namespace public {
 
   model GuildPermissions {
     id      BigInt  @id(map: "GuildPermissions_pkey")
-    users   Jsonb   @default(dbgenerated("'[]'::jsonb"))
-    roles   Jsonb   @default(dbgenerated("'[]'::jsonb"))
+    users   Jsonb   @default(sql`'[]'::jsonb`)
+    roles   Jsonb   @default(sql`'[]'::jsonb`)
     modules Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildPermissions_id_fkey")
 
     @@control(external)
@@ -320,7 +320,7 @@ namespace public {
     muted                BigInt?
     public               BigInt[] @default([]) @noCheck(elementNotNull)
     removeInitial        Boolean  @default(false) @map("remove_initial")
-    uniqueRoleSets       Jsonb    @default(dbgenerated("'[]'::jsonb")) @map("unique_role_sets")
+    uniqueRoleSets       Jsonb    @default(sql`'[]'::jsonb`) @map("unique_role_sets")
     restrictedReaction   BigInt?  @map("restricted_reaction")
     restrictedEmbed      BigInt?  @map("restricted_embed")
     restrictedEmoji      BigInt?  @map("restricted_emoji")

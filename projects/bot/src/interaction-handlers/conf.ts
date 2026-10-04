@@ -3,10 +3,10 @@ import {
 	getConfigurableKeys,
 	reset,
 	writeSettings,
-	type ReadonlyGuildData,
 	type SchemaDataKey,
 	type Serializer
 } from '#lib/database';
+import { type ReadonlyGuildData } from 'wolfstar-database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import {

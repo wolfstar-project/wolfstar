@@ -1,5 +1,6 @@
 import { encodedBunnyTwemoji, serializedAnimatedSkyraGlasses, serializedStaticSkyra } from '#mocks/constants';
-import { areEmojisEqual, SerializedEmoji } from '#utils/functions/emojis';
+import { areEmojisEqual } from '#utils/functions/emojis';
+import type { SerializedEmoji } from 'wolfstar-database';
 
 describe('areEmojisEqual', () => {
 	test('GIVEN two encoded twemoji THEN true', () => {

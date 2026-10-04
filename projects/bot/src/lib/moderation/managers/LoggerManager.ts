@@ -1,4 +1,5 @@
-import { writeSettings, type GuildSettingsOfType } from '#lib/database';
+import { writeSettings } from '#lib/database';
+import { type GuildSettingsOfType } from 'wolfstar-database';
 import { PruneLoggerTypeManager, TimeoutLoggerTypeManager } from '#lib/moderation/managers/loggers';
 import { toErrorCodeResult } from '#common';
 import { getCodeStyle, getLogPrefix } from '#utils/functions';

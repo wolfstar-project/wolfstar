@@ -4,7 +4,8 @@ import { HardPunishment, ModerationListener, SelfModeratorBitField } from '#lib/
 import { Events } from '#lib/types/Enums';
 import { floatPromise, seconds } from '#common';
 import { Colors } from '#utils/constants';
-import { deleteMessage, getEmojiReactionFormat, SerializedEmoji } from '#utils/functions';
+import { deleteMessage, getEmojiReactionFormat } from '#utils/functions';
+import type { SerializedEmoji } from 'wolfstar-database';
 import type { LLRCData } from '#utils/LongLivingReactionCollector';
 import { twemoji } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';

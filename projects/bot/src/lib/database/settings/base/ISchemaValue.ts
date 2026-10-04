@@ -1,5 +1,5 @@
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { Translator } from '#lib/structures/commands/utils';
 
 export interface ISchemaValue {

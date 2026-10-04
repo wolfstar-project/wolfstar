@@ -1,5 +1,5 @@
 import { SettingsContext } from '#lib/database/settings/context/SettingsContext';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
 

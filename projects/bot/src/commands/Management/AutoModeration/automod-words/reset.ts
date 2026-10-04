@@ -1,4 +1,5 @@
-import type { GuildDataValue, SchemaDataKey } from '#lib/database';
+import type { SchemaDataKey } from '#lib/database';
+import type { GuildDataValue } from 'wolfstar-database';
 import { AutoModerationResetCommand } from '#lib/moderation/structures/AutoModerationResetCommand';
 import { AutoModerationRules } from '#lib/moderation/structures/AutoModerationRules';
 import type { Awaitable } from '@sapphire/utilities';

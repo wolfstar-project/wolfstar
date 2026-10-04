@@ -1,4 +1,5 @@
-import { Serializer, type StickyRole } from '#lib/database';
+import { Serializer } from '#lib/database';
+import { type StickyRole } from 'wolfstar-database';
 import { isObject } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<StickyRole> {

@@ -1,4 +1,5 @@
-import { writeSettingsTransaction, type GuildSettingsOfType } from '#lib/database';
+import { writeSettingsTransaction } from '#lib/database';
+import { type GuildSettingsOfType } from 'wolfstar-database';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { channelMention, type SlashCommandBuilder } from '@discordjs/builders';

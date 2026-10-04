@@ -1,4 +1,5 @@
-import { writeSettings, writeSettingsTransaction, type ReactionRole } from '#lib/database';
+import { writeSettings, writeSettingsTransaction } from '#lib/database';
+import { type ReactionRole } from 'wolfstar-database';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { minutes } from '#common';
