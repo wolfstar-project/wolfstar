@@ -1,10 +1,15 @@
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
-import type { GuildDataKey } from '#lib/database/settings/types';
+import type { Serializer } from '#lib/database/settings/structures/Serializer';
+import type { GuildDataKey, ReadonlyGuildData } from '#lib/database/settings/types';
+import type { Translator } from '#lib/structures/commands/utils';
 import type { TypedT } from '#lib/types';
+import { resolveGuild } from '#common';
+import { isNullish } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
 
 /**
- * The kinds of value a key accepts, which tell how it is displayed and edited (see `lib/structures/settings-menu`).
+ * The kinds of value a key accepts, each the name or an alias of the serializer piece that reads and displays it.
  */
 export type SchemaKeyType =
 	| 'boolean'
@@ -107,6 +112,59 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 		this.array = options.array;
 		this.default = options.default;
 		this.dashboardOnly = options.dashboardOnly ?? false;
+	}
+
+	public get serializer(): Serializer<ReadonlyGuildData[K]> {
+		const value = container.stores.get('serializers').get(this.type);
+		if (typeof value === 'undefined') throw new Error(`The serializer for '${this.type}' does not exist.`);
+		return value as Serializer<ReadonlyGuildData[K]>;
+	}
+
+	/**
+	 * Parses the text a user wrote into a value of this key.
+	 * @throws The translated reason the text is not a valid value.
+	 */
+	public async parse(settings: ReadonlyGuildData, t: Translator, input: string): Promise<ReadonlyGuildData[K]> {
+		const { serializer } = this;
+		const context = await this.getContext(settings, t);
+
+		const result = await serializer.parse(input, context);
+		return result.match({
+			ok: (value) => value,
+			err: (error) => {
+				throw error.message;
+			}
+		});
+	}
+
+	public async stringify(settings: ReadonlyGuildData, t: Translator, value: ReadonlyGuildData[K]): Promise<string> {
+		const { serializer } = this;
+		const context = await this.getContext(settings, t);
+		return serializer.stringify(value, context);
+	}
+
+	public async display(settings: ReadonlyGuildData, t: Translator): Promise<string> {
+		const { serializer } = this;
+		const context = await this.getContext(settings, t);
+
+		if (this.array) {
+			const values = settings[this.property] as readonly any[];
+			return isNullish(values) || values.length === 0
+				? 'None'
+				: `[ ${(await Promise.all(values.map((value) => serializer.stringify(value, context)))).join(' | ')} ]`;
+		}
+
+		const value = settings[this.property];
+		return isNullish(value) ? t('commands/conf:settingNotSet') : serializer.stringify(value, context);
+	}
+
+	public async getContext(settings: ReadonlyGuildData, t: Translator): Promise<Serializer.UpdateContext> {
+		return {
+			entity: settings,
+			guild: await resolveGuild(settings.id),
+			t,
+			entry: this
+		} satisfies Serializer.UpdateContext;
 	}
 }
 

@@ -2,6 +2,7 @@ import { envParseString } from '@wolfstar/env-utilities';
 import { initializeSentry, setInvite, setRepository } from '@wolfstar/shared-http-pieces';
 import '#lib/setup/prisma';
 import '#lib/setup/redis';
+import '#lib/setup/serializers';
 import '@wolfstar/shared-http-pieces/register';
 // Registers the handlers of the prompts and the paginated messages, the Stars CLI only does it for the plugins:
 import '@wolfstar/http-framework-utilities/register';
