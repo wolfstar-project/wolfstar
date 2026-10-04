@@ -28,12 +28,12 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 Configuration is described by [Varlock](https://varlock.dev) schemas instead of `.env.example` files. **Never read, print or edit `.env`, `.env.local` or `.env.*.local` files** (they hold real secrets; `.claude/settings.json` denies it). Read the schemas instead and validate with `pnpm exec varlock load --agent` (sensitive values are redacted). The `varlock` skill (`.agents/skills/varlock`) and the docs MCP (`.mcp.json`) are available.
 
 - **Schemas:** one per package, sharing what is common through `@import`:
-    - `.env.schema` (root): `NODE_ENV` (drives `@currentEnv`), `DATABASE_URL`, `TOLGEE_API_KEY`, the Proton Pass plugin
+    - `.env.schema` (root): `NODE_ENV` (drives `@currentEnv`), `DATABASE_URL`, `TOLGEE_API_KEY`
     - `projects/database/.env.schema`: imports `DATABASE_URL` from the root
     - `projects/bot/src/.env.schema`: imports the shared items, declares everything the bot reads (`package.json#varlock.loadPath` is `./src/`). It generates `src/@types/env.d.ts` (do not edit it)
-    - An import must also `pick` what the picked items depend on (`NODE_ENV`, `USE_PROTON_PASS`, `PROTON_PASS_PERSONAL_ACCESS_TOKEN`)
+    - An import must also `pick` what the picked items depend on (`NODE_ENV`)
 - **Values, lowest to highest precedence:** schema defaults → `.env.<NODE_ENV>` (tracked, throw-away local values only) → `.env.local` / `.env.<NODE_ENV>.local` (git-ignored) → the process environment. Deployed containers get theirs from the process environment.
-- **Secrets:** never in a tracked file. Set them in a `.local` file, or in Proton Pass with `USE_PROTON_PASS=true` in `.env.local` (`protonPass(pass://WolfStar/<item>/<field>)`, authenticated by `PROTON_PASS_PERSONAL_ACCESS_TOKEN` or by your `pass-cli login`). Only the items that are secret in production are `@sensitive` in production (`@sensitive=forEnv(production)`), so the committed local docker values are not flagged by `varlock scan`.
+- **Secrets:** never in a tracked file. Set them in a `.local` file or in the process environment. Only the items that are secret in production are `@sensitive` in production (`@sensitive=forEnv(production)`), so the committed local docker values are not flagged by `varlock scan`.
 - **Loading:** `import 'varlock/auto-load'` is the first import of `src/main.ts`, `tests/setup.ts`, `projects/database/src/index.ts` and `prisma.config.ts`; it validates the environment and fills `process.env`. Wrap other commands with `varlock run -- <cmd>` (the `tolgee:*` scripts do). `varlock scan --staged` runs in the pre-commit hook.
 - **Adding a variable:** declare it in the schema of the package that reads it (with `@type`, `@required`/`@optional`, `@sensitive` when it is a secret), add a local value to `.env.<NODE_ENV>` only if it is not a secret, then run `varlock load`.
 - **Tests:** `NODE_ENV=test` selects `.env.test`; Discord and Redis are not required there.

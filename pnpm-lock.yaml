@@ -189,9 +189,6 @@ importers:
       '@types/node':
         specifier: ^24.19.1
         version: 24.19.1
-      '@varlock/proton-pass-plugin':
-        specifier: ^2.0.1
-        version: 2.0.1(varlock@1.21.1)
       '@vitest/coverage-v8':
         specifier: ^5.0.3
         version: 5.0.3(vitest@5.0.3)
@@ -264,9 +261,6 @@ importers:
       '@skyra/char':
         specifier: ^1.0.3
         version: 1.0.3
-      '@varlock/proton-pass-plugin':
-        specifier: ^2.0.1
-        version: 2.0.1(varlock@1.21.1)
       '@wolfstar/decorators':
         specifier: ^0.1.0
         version: 0.1.0(@wolfstar/http-framework@6.1.1)
@@ -2523,12 +2517,6 @@ packages:
   '@varlock/native-helper-win32-x64@1.21.1':
     resolution: {integrity: sha512-HaEry0HnJPY+opHiNUgQvpQ1yFZMMIVmpLZExTinQXu9Im81aovoR1By6LQsx1H4qFDyeEqcq2glV74WzHCNyA==}
     os: [win32, linux]
-
-  '@varlock/proton-pass-plugin@2.0.1':
-    resolution: {integrity: sha512-SMu6eWK9s4Dxec9PHuvYmPGpurbE2Heo6phoD6lXeX0YoCK9pmd07mZuKkMmUxpA/o2yoXu27UOAtbLV5klZiQ==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      varlock: ^1.17.1
 
   '@vercel/detect-agent@1.2.5':
     resolution: {integrity: sha512-0krENrjuitlW8s6TJu0MlqCevyCU7K7JK63jZAf7xZ6n17tx+vUEwzHT3sTxawtwZxaW21hu+oFUpoOrm49FsQ==}
@@ -7243,10 +7231,6 @@ snapshots:
 
   '@varlock/native-helper-win32-x64@1.21.1':
     optional: true
-
-  '@varlock/proton-pass-plugin@2.0.1(varlock@1.21.1)':
-    dependencies:
-      varlock: 1.21.1
 
   '@vercel/detect-agent@1.2.5': {}
 

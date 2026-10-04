@@ -28,7 +28,6 @@
 		"@sapphire/ts-config": "^5.0.3",
 		"@tolgee/cli": "^2.20.0",
 		"@types/node": "^24.19.1",
-		"@varlock/proton-pass-plugin": "^2.0.1",
 		"@vitest/coverage-v8": "^5.0.3",
 		"cz-conventional-changelog": "^3.3.0",
 		"golar": "^0.1.10",

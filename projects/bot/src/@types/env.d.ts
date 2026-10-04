@@ -264,27 +264,20 @@ export type CoercedEnvSchema = {
   NODE_ENV: "development" | "production" | "test";
   
   /**
-   * **USE_PROTON_PASS**  
-   * Turns the Proton Pass lookups on. Set it to `true` in `.env.local` once you have a vault with the items below.  
-   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M23%2023a7%207%200%201%201%207-7a7.01%207.01%200%200%201-7%207m0-12a5%205%200%201%200%205%205a5.006%205.006%200%200%200-5-5%22%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%2216%22%20r%3D%227%22%20fill%3D%22%23808080%22%2F%3E%3C%2Fsvg%3E)   
-   */
-  USE_PROTON_PASS: boolean;
-  
-  /**
    * **DATABASE_URL** 🔐 _sensitive_  
-   * Test defaults shared by every package. The unit tests only build the Prisma client, they do not need a live  
-   * database, but the client refuses to be created without a connection string.  
+   * Local development defaults shared by every package: the PostgreSQL container of `compose.dev.yaml`.  
+   * Only throw-away local credentials belong here. Real ones go in `.env.development.local` (git-ignored).  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
   DATABASE_URL: string;
   
 };
 
-type _CoercedEnvSchema_79d0acd5 = CoercedEnvSchema;
+type _CoercedEnvSchema_42a6c7b4 = CoercedEnvSchema;
 
 declare module 'varlock/env' {
-  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_79d0acd5> {}
-  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_79d0acd5, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'WORKER_COUNT' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_ORG_ANALYTICS_BUCKET' | 'NODE_ENV' | 'USE_PROTON_PASS'>> {}
+  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_42a6c7b4> {}
+  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_42a6c7b4, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'WORKER_COUNT' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_ORG_ANALYTICS_BUCKET' | 'NODE_ENV'>> {}
 }
 
 
@@ -294,17 +287,17 @@ export type EnvSchemaAsStrings = {
       : (NonNullable<CoercedEnvSchema[Property]> extends boolean ? ('true' | 'false') : string)
 };
 
-type _EnvSchemaAsStrings_79d0acd5 = EnvSchemaAsStrings;
+type _EnvSchemaAsStrings_42a6c7b4 = EnvSchemaAsStrings;
 declare global {
 
   // add types for global import.meta.env
-  interface ImportMetaEnv extends _EnvSchemaAsStrings_79d0acd5 {}
+  interface ImportMetaEnv extends _EnvSchemaAsStrings_42a6c7b4 {}
   interface ImportMeta {
     readonly env: ImportMetaEnv;
   }
 
   // add types for global process.env
   namespace NodeJS {
-    interface ProcessEnv extends _EnvSchemaAsStrings_79d0acd5 {}
+    interface ProcessEnv extends _EnvSchemaAsStrings_42a6c7b4 {}
   }
 }
