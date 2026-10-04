@@ -1,7 +1,8 @@
 import { ModerationCommand } from '#lib/moderation';
 import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
 import { TypeVariation } from '#utils/moderationConstants';
-import { ApplyOptions, RegisterCommand } from '@wolfstar/http-framework';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { RegisterCommand } from '@wolfstar/http-framework';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
 type Type = TypeVariation.VoiceMute;
