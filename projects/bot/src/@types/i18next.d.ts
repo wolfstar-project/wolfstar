@@ -1603,7 +1603,8 @@ declare module "i18next" {
           extendedHelp: "This command appeals a warning, it requires no permissions, you only give me the moderation log case to appeal and the reason.";
           examples: ["0 Whoops, wrong dude.", "42 Turns out this was the definition of life."];
         };
-        vmuteDescription: "Throw somebody's microphone out the window.";
+        vmuteDescription: "Mute or unmute a user's microphone in voice channels.";
+        vmuteAddDescription: "Throw somebody's microphone out the window.";
         vmuteExtended: {
           usages: [
             "User",
@@ -1644,7 +1645,7 @@ declare module "i18next" {
           extendedHelp: "This command requires the permissions **{{MANAGE_CHANNELS, permissions}}** to create a temporary (hidden) voice channel, and **{{MOVE_MEMBERS, permissions}}** to move the user to the temporary channel.\nAfter this, the channel is quickly deleted, making the user leave the voice channel.\nFor scared moderators, this command has almost no impact in the average user, as the channel is created in a way only me and the selected user can see and join, then quickly deleted.";
           examples: ["@Pete", "@Pete Spamming all channels"];
         };
-        vunmuteDescription: "Get somebody's microphone back so they can talk.";
+        vmuteRemoveDescription: "Get somebody's microphone back so they can talk.";
         vunmuteExtended: {
           usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
           explainedUsage: [
@@ -1680,7 +1681,8 @@ declare module "i18next" {
           examples: ["@Pete Attempted to mention everyone."];
         };
         pruneNotSubcommandSameOFSameFlag: "{{REDCROSS}} You cannot use the same flag of the same subcommand cannot be used.";
-        timeoutApplyDescription: "Time out a user.";
+        timeoutDescription: "Time out a user, or remove a time out.";
+        timeoutAddDescription: "Time out a user.";
         timeoutApplyExtended: {
           usages: ["Duration User", "Duration User Reason"];
           explainedUsage: [
@@ -1693,7 +1695,7 @@ declare module "i18next" {
           ];
           examples: ["30s @Pete", "2h @Pete Spamming all channels"];
         };
-        timeoutUndoDescription: "Remove a time out from a user.";
+        timeoutRemoveDescription: "Remove a time out from a user.";
         timeoutUndoExtended: {
           usages: ["User", "User Reason"];
           explainedUsage: [
@@ -1715,10 +1717,12 @@ declare module "i18next" {
         muteAddName: "add";
         muteRemoveName: "remove";
         muteCreateName: "create";
-        timeoutApplyName: "timeout";
-        timeoutUndoName: "untimeout";
+        timeoutName: "timeout";
+        timeoutAddName: "add";
+        timeoutRemoveName: "remove";
         vmuteName: "vmute";
-        vunmuteName: "vunmute";
+        vmuteAddName: "add";
+        vmuteRemoveName: "remove";
         voiceKickName: "voicekick";
         warnName: "warn";
         unwarnName: "unwarn";

@@ -1,20 +1,21 @@
 import { ModerationCommand } from '#lib/moderation';
-import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
+import { applyModerationSubcommandBuilder } from '#lib/moderation/structures/ModerationCommand';
 import { TypeVariation } from '#utils/moderationConstants';
 import { ApplyOptions } from '@wolfstar/decorators';
-import { RegisterCommand } from '@wolfstar/http-framework';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
+import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 
 type Type = TypeVariation.Timeout;
 type ValueType = null;
 
+/**
+ * `/timeout remove`, see the `timeout` parent command.
+ */
 @ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, isUndoAction: true, type: TypeVariation.Timeout })
-@RegisterCommand((builder) =>
-	applyModerationBuilder(builder, {
-		root: 'commands/moderation:timeoutUndo',
+@RegisterAsSubcommand('timeout', (builder) =>
+	applyModerationSubcommandBuilder(builder, {
+		root: 'commands/moderation:timeoutRemove',
 		type: TypeVariation.Timeout,
-		isUndoAction: true,
-		permissions: PermissionFlagsBits.ModerateMembers
+		isUndoAction: true
 	})
 )
 export class UserModerationCommand extends ModerationCommand<Type, ValueType> {}

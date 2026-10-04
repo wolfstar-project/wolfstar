@@ -1,19 +1,16 @@
-import { ModerationCommand } from '#lib/moderation';
-import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
-import { TypeVariation } from '#utils/moderationConstants';
-import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
+import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
+import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
-type Type = TypeVariation.VoiceMute;
-type ValueType = null;
-
-@ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, type: TypeVariation.VoiceMute })
+/**
+ * The parent of the `vmute` subcommands (`add` and `remove`), which live in their own classes in the `vmute` directory
+ * and are wired onto this command by `@wolfstar/plugin-subcommands-advanced`.
+ */
 @RegisterCommand((builder) =>
-	applyModerationBuilder(builder, {
-		root: 'commands/moderation:vmute',
-		type: TypeVariation.VoiceMute,
-		permissions: PermissionFlagsBits.MuteMembers
-	})
+	applyLocalizedBuilder(builder, 'commands/moderation:vmute')
+		.setContexts(InteractionContextType.Guild)
+		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+		.setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers)
 )
-export class UserModerationCommand extends ModerationCommand<Type, ValueType> {}
+export class UserCommand extends Subcommand {}
