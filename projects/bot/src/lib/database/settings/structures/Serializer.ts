@@ -154,7 +154,6 @@ export namespace Serializer {
 		| 'guildVoiceChannel'
 		| 'guildCategoryChannel'
 		| 'command'
-		| 'commandAutoDelete'
 		| 'commandMatch'
 		| 'disabledCommandChannel'
 		| 'emoji'

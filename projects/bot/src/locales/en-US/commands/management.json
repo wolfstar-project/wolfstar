@@ -106,19 +106,6 @@
 		"examples": ["add staff allow warn", "add moderators deny ban", "remove staff allow warn", "reset staff", "show staff"],
 		"reminder": "The server owner cannot have any actions, nor the `everyone` role can have allowed commands."
 	},
-	"managecommandautodeleteDescription": "Manage per-channel auto-delete timer.",
-	"managecommandautodeleteExtended": {
-		"usages": ["add TextChannel Seconds", "remove TextChannel", "reset", "show", ""],
-		"extendedHelp": "This command manages this server's per-channel command auto-delete timer, it serves well to leave a channel clean from commands.",
-		"explainedUsage": [
-			["add", "Add an auto-delete timer for the specified channel."],
-			["remove", "Remove the auto-timer from the specified channel."],
-			["reset", "Clear all auto-delete timers."],
-			["show", "Show the auto-delete timer for all channels."]
-		],
-		"reminder": "The channel argument is optional, defaulting to the message's channel, but it uses fuzzy search when possible.",
-		"examples": ["show", "add #general 4s", "remove #general", "reset"]
-	},
 	"manageCommandChannelDescription": "Manage per-channel blocked command list.",
 	"manageCommandChannelExtended": {
 		"usages": ["add TextChannel Command", "remove TextChannel Command", "reset TextChannel", "show TextChannel"],
@@ -584,7 +571,6 @@
 	},
 	"createMuteName": "create-mute",
 	"permissionNodesName": "permission-nodes",
-	"managecommandautodeleteName": "command-auto-delete",
 	"manageCommandChannelName": "command-channel",
 	"manageReactionRolesName": "reaction-roles",
 	"setIgnoreChannelsName": "set-ignore-channels",
@@ -620,14 +606,6 @@
 	"permissionNodesSubcommandResetDescription": "Remove every command from a permission node.",
 	"permissionNodesSubcommandShowName": "show",
 	"permissionNodesSubcommandShowDescription": "Show the permission nodes.",
-	"managecommandautodeleteSubcommandAddName": "add",
-	"managecommandautodeleteSubcommandAddDescription": "Set the auto-delete timer of a channel.",
-	"managecommandautodeleteSubcommandRemoveName": "remove",
-	"managecommandautodeleteSubcommandRemoveDescription": "Remove the auto-delete timer of a channel.",
-	"managecommandautodeleteSubcommandResetName": "reset",
-	"managecommandautodeleteSubcommandResetDescription": "Remove every auto-delete timer.",
-	"managecommandautodeleteSubcommandShowName": "show",
-	"managecommandautodeleteSubcommandShowDescription": "Show the auto-delete timers.",
 	"manageCommandChannelSubcommandAddName": "add",
 	"manageCommandChannelSubcommandAddDescription": "Block a command in a channel.",
 	"manageCommandChannelSubcommandRemoveName": "remove",
@@ -656,8 +634,6 @@
 	"permissionNodesOptionsTypeDescription": "Whether the command is allowed or denied.",
 	"permissionNodesOptionsTypeChoiceAllow": "allow",
 	"permissionNodesOptionsTypeChoiceDeny": "deny",
-	"managecommandautodeleteOptionsDurationName": "duration",
-	"managecommandautodeleteOptionsDurationDescription": "How long to wait before deleting the replies, for example 30s or 2m.",
 	"manageReactionRolesOptionsMessageName": "message",
 	"manageReactionRolesOptionsMessageDescription": "The ID of the message to attach the reaction role to, leave empty to apply it to any message.",
 	"manageReactionRolesOptionsChannelName": "channel",
