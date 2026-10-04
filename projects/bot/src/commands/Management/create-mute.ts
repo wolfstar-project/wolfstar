@@ -7,17 +7,14 @@ import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plug
 import { ApplicationIntegrationType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
 /**
- * Prepares the mute system, which replaces the prefix `create-mute` command.
+ * Prepares the mute system.
  *
  * @remarks
- *
- * The prefix command asked, through message prompts, whether to configure an existing role or to create a new one, and
- * whether the channel overrides should be updated. A slash command cannot wait for a message, so:
  *
  * - with the `role` option, that role is configured as the muted role.
  * - without it, a new role is created and the channel overrides are applied, like `SetUpModerationCommand` does.
  *
- * The 5 minutes cooldown of the prefix command is dropped, the command is guarded by its default member permissions.
+ * There is no cooldown, the command is guarded by its default member permissions.
  */
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/management:createMute')

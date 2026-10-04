@@ -6,10 +6,10 @@ import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
 /**
- * The replacement of the `PermissionLevels` the prefix commands declared.
+ * The permission levels a command can require.
  *
- * - `Moderator`: the old `PermissionLevels.Moderator`.
- * - `Administrator`: the old `PermissionLevels.Administrator`.
+ * - `Moderator`: the `rolesModerator` roles, or everybody when none is configured.
+ * - `Administrator`: the `rolesAdmin` roles, or the `Manage Server` permission when none is configured.
  */
 export enum CommandPermissionLevel {
 	Moderator,
@@ -25,15 +25,16 @@ export enum CommandPermissionLevel {
  *
  * 1. Discord hides and rejects the command for the members that do not hold the permissions given to
  *    `setDefaultMemberPermissions`. A server can widen or narrow that through `Server Settings > Integrations`, which
- *    replaces the `permissionNodes` overrides of the prefix commands for every command that is registered with Discord.
- * 2. This function then applies the role configuration of the guild (`rolesModerator` and `rolesAdmin`), which is what
- *    `PermissionLevels` resolved to before: when a list of roles is configured, membership in one of them is required,
- *    and when the list is empty the level falls back to the permission Discord already checked.
+ *    is how a server overrides the permissions of every command that is registered with Discord.
+ * 2. This function then applies the role configuration of the guild (`rolesModerator` and `rolesAdmin`): when a list of
+ *    roles is configured, membership in one of them is required, and when the list is empty the level falls back to the
+ *    permission Discord already checked.
  *
  * The guild owner always passes.
  *
- * `PermissionNodeManager` (the `permission-nodes` command) still matches commands by their prefix name, category and
- * aliases, which slash commands do not have. Until it resolves slash command names, its nodes are not consulted here.
+ * The `permissionNodes` of the guild, managed by `PermissionNodeManager` (the `permission-nodes` command), are matched
+ * against the name and the category of the http-framework command pieces (see `lib/database/utils/matchers/Command.ts`),
+ * but they are not consulted here: this function only applies the Discord permissions and the role configuration.
  *
  * @param interaction - The interaction to check.
  * @param level - The level the command requires.

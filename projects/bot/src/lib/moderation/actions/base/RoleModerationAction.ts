@@ -95,9 +95,8 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 	 *
 	 * @remarks
 	 *
-	 * Unlike the prefix command this was ported from, the confirmation is not
-	 * bound to a message: the caller provides the `confirm` callback (an
-	 * interaction prompt, for example).
+	 * The confirmation is not bound to a message: the caller provides the
+	 * `confirm` callback (an interaction prompt, for example).
 	 *
 	 * @param options - The guild where the setup is being performed, the user
 	 * that triggered the setup and the confirmation callback.

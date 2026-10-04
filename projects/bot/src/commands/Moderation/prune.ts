@@ -67,14 +67,13 @@ const FilterChoices = {
  *
  * @remarks
  *
- * The prefix command combined any number of flags (`--bots --links`) and subcommands (`prune bots`), that is now one
- * `filter` choice, which can be combined with the `user`, `age`, `include`, `match`, `startswith` and `endswith`
- * options. The `before` and `after` options replace the positional message argument, and default to the latest
- * messages since there is no command message to start from. Pinned messages are kept unless the `pins` filter is
- * used, which only deletes them.
+ * The `filter` choice selects what to delete, and can be combined with the `user`, `age`, `include`, `match`,
+ * `startswith` and `endswith` options. The `before` and `after` options default to the latest messages, since there is
+ * no command message to start from. Pinned messages are kept unless the `pins` filter is used, which only deletes
+ * them.
  *
  * The response is temporary: it is deleted after 10 seconds, or right away with `silent`, which also keeps it private
- * while the messages are being deleted (the prefix command did not delete anything with `--silent`, that was a bug).
+ * while the messages are being deleted.
  */
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/moderation:prune')

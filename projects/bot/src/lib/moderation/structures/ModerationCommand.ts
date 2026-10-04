@@ -52,9 +52,10 @@ import {
  *
  * @remarks
  *
- * - One user is moderated per invocation, the prefix commands accepted up to 10 of them.
- * - `--dm`/`--no-dm` are the `dm` boolean option, `--authored`/`--no-author` are the `authored` boolean option.
- * - The image of the case is the optional `image` attachment, the prefix commands took it from the message.
+ * - One user is moderated per invocation.
+ * - Whether the user is notified is the `dm` boolean option, and whether the moderator is shown is the `authored`
+ *   boolean option.
+ * - The image of the case is the optional `image` attachment.
  * - The permission level check is {@linkcode CommandPermissionLevel.Moderator}, see {@linkcode hasCommandPermissionLevel}.
  */
 export abstract class ModerationCommand<Type extends TypeVariation, ValueType> extends Command<ModerationCommand.Options<Type>> {
@@ -423,8 +424,8 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 *
 	 * The keys (`messagesModerationDm`, `messagesModerationReasonDisplay`, `messagesModerationMessageDisplay` and
 	 * `messagesModeratorNameDisplay`) are not part of the flattened `GuildData` anymore, since the normalized contract
-	 * has no table for them. They are read when a guild has them, and default to what they were in the prefix commands:
-	 * the DM is opt-in, and everything else is displayed.
+	 * has no table for them. They are read when a guild has them, and default to: the DM is opt-in, and
+	 * everything else is displayed.
 	 *
 	 * @param guildId - The ID of the guild.
 	 */

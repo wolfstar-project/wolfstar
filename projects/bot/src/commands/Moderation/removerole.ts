@@ -13,8 +13,7 @@ interface Arguments extends ModerationCommand.Arguments {
 }
 
 /**
- * Removes a role from a user. The command requires the administrator level, like the prefix command did, and Discord hides it from members without
- * `Manage Server` by default.
+ * Removes a role from a user. The command requires the administrator level, and Discord hides it from members without `Manage Server` by default.
  */
 @RegisterCommand((builder) =>
 	applyModerationBuilder(builder, {

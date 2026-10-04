@@ -9,10 +9,9 @@ import { container } from '@wolfstar/http-framework';
  *
  * @remarks
  *
- * The prefix command asked the author, through message prompts, whether to configure an existing role or to create a
- * new one. A slash command cannot wait for a message inside its handler, so when the role is missing:
+ * A slash command cannot wait for a message inside its handler, so when the role is missing:
  *
- * - an author that is not an administrator is told to ask one (`restrictLowlevel`), like before.
+ * - an author that is not an administrator is told to ask one (`restrictLowlevel`).
  * - an administrator gets a new role created, with the channel overrides applied, through
  *   {@linkcode RoleModerationAction.setup}. To use an existing role instead, configure it in the settings first.
  */

@@ -10,11 +10,8 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  *
  * @remarks
  *
- * - This replaces the `case`, `reason`, `time`, `history` and `moderations` prefix commands, and the
- *   `case-deprecations` command that only pointed the prefix aliases to this command: the prefix aliases do not exist
- *   in the slash command stack, so that command was dropped.
- * - The paginated message of `list` is a single reply of the page given in the `page` option.
- * - `edit` with `duration` set to `0` removes the duration of the case, which is what `time --cancel` did.
+ * - `list` replies with a single page, the one given in the `page` option.
+ * - `edit` with `duration` set to `0` removes the duration of the case.
  * - Every subcommand requires the moderator permission level.
  */
 @RegisterCommand((builder) =>

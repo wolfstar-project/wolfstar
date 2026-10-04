@@ -10,7 +10,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
 import { MessageFlags } from 'discord-api-types/v10';
 
 /**
- * The amount of reaction roles in each embed, what a page of the prefix command had.
+ * The amount of reaction roles in each embed.
  */
 const EntriesPerEmbed = 15;
 
@@ -35,7 +35,7 @@ export class UserCommand extends Command {
 		const member = await this.container.gatewayClient.members.fetch(interaction.guildId, interaction.user.id);
 		const color = await getColor({ member });
 
-		// The prefix command paginated the list, the interaction sends every page as an embed instead:
+		// Every chunk of the list is sent as an embed of the same message:
 		const embeds = chunk(reactionRoles as readonly ReactionRole[], EntriesPerEmbed)
 			.slice(0, MaximumEmbeds)
 			.map((bulk) =>

@@ -13,7 +13,7 @@ type ValueType = Unlock | null;
 /**
  * Bans a user, optionally scheduling the unban and deleting up to 7 days of their messages.
  *
- * - The `delete-days` option replaces the `--seconds`, `--minutes`, `--hours` and `--days` flags of the prefix command.
+ * - The `delete-days` option sets how many days of messages are deleted, up to 7.
  * - `moderationTrackBans` replaces the `events.ban-add` setting: when enabled, the ban listener creates a case for the
  *   bans that were not made with the bot, so the command holds a lock until its own case exists.
  */

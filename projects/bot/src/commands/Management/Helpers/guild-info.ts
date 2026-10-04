@@ -30,7 +30,7 @@ export class UserCommand extends Command {
 		const color = await getColor({ member });
 		const roles = await this.getRoles(guild);
 
-		// The prefix command displayed each of these as a page, the interaction sends them as embeds of the same message:
+		// The summary and the images are sent as embeds of the same message:
 		const embeds = [await this.getSummary(t, guild, roles, color)];
 		if (guild.icon) embeds.push(this.getImage(translateKey(t, 'commands/management:guildInfoIcon'), guild.iconURL(ImageOptions)!, color));
 		if (guild.banner) embeds.push(this.getImage(translateKey(t, 'commands/management:guildInfoBanner'), guild.bannerURL(ImageOptions)!, color));

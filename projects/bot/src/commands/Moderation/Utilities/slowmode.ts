@@ -18,9 +18,8 @@ const MaximumDuration = hours(6);
  *
  * @remarks
  *
- * - The prefix command took the duration, or `reset`, as its argument, it is the required `duration` option now, which
- *   accepts `reset` and `off` (see `arguments:resetPossibles`) too.
- * - The `sm` alias was dropped, slash commands have no aliases.
+ * - The required `duration` option accepts a duration, or `reset` and `off` (see `arguments:resetPossibles`) to reset
+ *   the slowmode.
  */
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/moderation:slowmodeName', 'commands/moderation:slowmodeDescription')

@@ -22,8 +22,7 @@ const MaximumContentLength = 2000;
 /**
  * `/permission-nodes show`, see the `permission-nodes` parent command.
  *
- * The prefix command defaulted to `show` and listed every node when it had no target, which is what this does without
- * a `target`.
+ * Lists every node when it has no `target`.
  */
 @RegisterAsSubcommand('permission-nodes', (builder) =>
 	applyLocalizedBuilder(builder, `${PermissionNodesRoot}:permissionNodesSubcommandShow`) //

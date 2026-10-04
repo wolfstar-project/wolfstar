@@ -13,7 +13,7 @@ interface Arguments extends ModerationCommand.Arguments {
 
 /**
  * Sets, or resets when the `nickname` option is left out, the nickname of a member. Leaving the nickname out resets it
- * back to the username of the user, like the prefix command did.
+ * back to the username of the user.
  */
 @RegisterCommand((builder) =>
 	applyModerationBuilder(builder, {

@@ -13,7 +13,7 @@ type ValueType = Unlock | null;
 /**
  * Bans and unbans a user right after, deleting up to 7 days of their messages.
  *
- * - The `delete-days` option replaces the `--seconds`, `--minutes`, `--hours` and `--days` flags of the prefix command.
+ * - The `delete-days` option sets how many days of messages are deleted, up to 7.
  * - `moderationTrackBans` replaces the `events.ban-add` and `events.ban-remove` settings, see the `ban` command.
  */
 @RegisterCommand((builder) =>

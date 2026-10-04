@@ -4,7 +4,7 @@ import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
 /**
- * Configures the permission nodes of the server, which replaces the prefix `permission-nodes` command.
+ * Configures the permission nodes of the server.
  *
  * @remarks
  *
@@ -13,8 +13,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  *   `command` option with autocomplete, and the `type` (`allow` or `deny`) as a choice.
  * - The command is resolved with `CommandMatcher`, so it is `*`, a `category.*` or `category.subCategory.*`, or the name
  *   of a command with an optional category and sub-category. The nodes are edited with `PermissionNodeManager`.
- * - The prefix command defaulted to `show` and listed every node when it had no target, which is what `show` does
- *   without a `target`.
+ * - `show` lists every node when it has no `target`.
  * - The autocomplete stays on the parent: the plugin routes `chatInputRun` to the children, but autocomplete
  *   interactions are dispatched by the name of the top-level command and never reach them.
  */

@@ -25,8 +25,6 @@ import {
 /**
  * The `permissions` command, which lists the permissions of a member, available as a slash command and as the
  * `Inspect Permissions` user context menu command.
- *
- * @remarks The prefix command only answered with a deprecation message, so it is not ported.
  */
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/permissions:name', 'commands/permissions:description')

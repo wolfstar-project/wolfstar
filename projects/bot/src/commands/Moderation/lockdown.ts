@@ -49,8 +49,7 @@ interface Arguments {
  *
  * @remarks
  *
- * The prefix command had the `lock`, `unlock` and `auto` subcommands, they are the `action` option (`lock`, `unlock`,
- * or leave it empty to toggle, which is what `auto` did). `role` defaults to `@everyone`, `channel` to the channel the
+ * The `action` option is `lock`, `unlock`, or empty to toggle the lockdown. `role` defaults to `@everyone`, `channel` to the channel the
  * command was run in, and `duration` only applies when the channel gets locked.
  *
  * The lockdowns started by the command are tracked in this module, since `GuildSecurity#lockdowns` (the

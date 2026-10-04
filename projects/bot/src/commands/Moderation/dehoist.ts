@@ -19,8 +19,8 @@ interface ErroredChange {
 /**
  * Replaces the first character of the nickname of every member that hoists themselves in the member list.
  *
- * The prefix command edited its reply for the progress, so does this one, through the deferred interaction response.
- * The response is ephemeral to avoid flooding the channel, the progress is reported every 10 members.
+ * The reply is edited to report the progress, through the deferred interaction response. The response is ephemeral to
+ * avoid flooding the channel, and the progress is reported every 10 members.
  */
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/moderation:dehoist')
