@@ -6,7 +6,8 @@ import {
 	type ReadonlyGuildData,
 	type SchemaDataKey,
 	type SchemaGroup,
-	type SchemaKey
+	type SchemaKey,
+	type Serializer
 } from '#lib/database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
@@ -19,6 +20,8 @@ import {
 	getSettingTitle,
 	getVisibleKeys,
 	parseSettingInput,
+	validateSettingPick,
+	type SettingsMenuContext,
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
@@ -63,7 +66,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (interaction instanceof ModalSubmitInteraction) {
 			const key = this.getKey(action);
 			if (key === null || action.verb !== 'submit') return fail(t('commands/conf:getNoExt', { key: action.target }));
-			return this.submit(interaction, guildId, action, key, t);
+			return this.submit(interaction, guildId, action, key);
 		}
 
 		switch (action.verb) {
@@ -89,7 +92,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'edit':
 				return this.edit(interaction, guildId, action, key);
 			case 'pick':
-				return this.write(interaction, guildId, action, key, () => this.getPicked(interaction, key));
+				return this.pick(interaction, guildId, action, key);
 			default:
 				return fail(getDefaultExpiredReply());
 		}
@@ -127,14 +130,35 @@ export class UserInteractionHandler extends InteractionHandler {
 		}
 	}
 
-	private async submit(interaction: ModalInteraction, guildId: Snowflake, action: SettingsMenuAction, key: SchemaKey, t: Translator) {
-		const parsed = parseSettingInput(t, key, getModalValue(interaction.data.components, SettingsModalInputId) ?? '');
+	private async submit(interaction: ModalInteraction, guildId: Snowflake, action: SettingsMenuAction, key: SchemaKey) {
+		const context = await createSettingsMenuContext(interaction, guildId, action.ownerId);
+		const input = getModalValue(interaction.data.components, SettingsModalInputId) ?? '';
+		const parsed = await parseSettingInput(this.getSerializerContext(context, key), input);
 		if (!parsed.ok) return interaction.reply({ content: parsed.error, flags: MessageFlags.Ephemeral });
 
 		await writeSettings(guildId, { [key.property]: parsed.value }, interaction.user.id);
+		return interaction.update(
+			renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), this.getGroup(key), action.page)
+		);
+	}
 
+	/**
+	 * Stores what was picked in the select menu of the editor of a key, once its serializer accepts every value.
+	 */
+	private async pick(interaction: ComponentInteraction, guildId: Snowflake, action: SettingsMenuAction, key: SchemaKey) {
 		const context = await createSettingsMenuContext(interaction, guildId, action.ownerId);
-		return interaction.update(renderSettingsGroup(context, key.parent ?? getConfigurableGroups(), action.page));
+		const parsed = await validateSettingPick(this.getSerializerContext(context, key), getSelectValues(interaction));
+		if (!parsed.ok) return interaction.reply({ content: parsed.error, flags: MessageFlags.Ephemeral });
+
+		return this.write(interaction, guildId, action, key, () => parsed.value);
+	}
+
+	private getSerializerContext(context: SettingsMenuContext, key: SchemaKey): Serializer.UpdateContext {
+		return { entry: key, entity: context.settings, guild: context.guild, t: context.t };
+	}
+
+	private getGroup(key: SchemaKey) {
+		return key.parent ?? getConfigurableGroups();
 	}
 
 	/**
@@ -196,16 +220,6 @@ export class UserInteractionHandler extends InteractionHandler {
 	private getModule(interaction: ComponentInteraction) {
 		const [value] = getSelectValues(interaction);
 		return value === undefined || value === RootModuleValue ? '' : value;
-	}
-
-	/**
-	 * The value picked in the select menu of the editor of a key: the list for the keys that hold one, otherwise the
-	 * value, or the default of the key when the selection was cleared.
-	 */
-	private getPicked(interaction: ComponentInteraction, key: SchemaKey) {
-		const values = getSelectValues(interaction);
-		if (key.array) return values;
-		return values[0] ?? key.default;
 	}
 }
 

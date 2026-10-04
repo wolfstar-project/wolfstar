@@ -1,4 +1,4 @@
-import { getConfigurableGroups, getConfigurableKeys, type ReadonlyGuildData } from '#lib/database';
+import { getConfigurableGroups, getConfigurableKeys, SerializerStore, type ReadonlyGuildData, type SchemaKey, type Serializer } from '#lib/database';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import {
 	decodeSettingsMenuId,
@@ -14,6 +14,11 @@ import {
 	resolveSettingGroup,
 	type SettingsMenuContext
 } from '#lib/structures/settings-menu';
+import { UserSerializer as NumberSerializer } from '#root/serializers/number';
+import { UserSerializer as SnowflakeSerializer } from '#root/serializers/snowflake';
+import { UserSerializer as StringSerializer } from '#root/serializers/string';
+import { container } from '@wolfstar/http-framework';
+import type { Guild } from '@wolfstar/plugin-gateway';
 import { ComponentType, MessageFlags } from 'discord-api-types/v10';
 
 const ownerId = '266624760782258186';
@@ -23,7 +28,12 @@ const guildId = '254360814063058944';
 const t = (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key);
 
 function createContext(overrides: Partial<ReadonlyGuildData> = {}): SettingsMenuContext {
-	return { t, ownerId, guildName: 'WolfStar', settings: { ...getDefaultGuildSettings(), id: guildId, ...overrides } as ReadonlyGuildData };
+	return {
+		t,
+		ownerId,
+		guild: { id: guildId, name: 'WolfStar' } as Guild,
+		settings: { ...getDefaultGuildSettings(), id: guildId, ...overrides } as ReadonlyGuildData
+	};
 }
 
 /**
@@ -158,23 +168,39 @@ describe('settings menu', () => {
 			expect(display('moderationChannel')).toBe('commands/conf:settingNotSet');
 		});
 
-		test('GIVEN a number THEN it is checked against the range of the key', () => {
-			const key = getConfigurableKeys().get('selfmodCapitalsMinimum')!;
+		describe('parsing', () => {
+			beforeAll(async () => {
+				container.stores.register(new SerializerStore());
+				await container.stores.loadPiece({ store: 'serializers', name: 'number', piece: NumberSerializer });
+				await container.stores.loadPiece({ store: 'serializers', name: 'snowflake', piece: SnowflakeSerializer });
+				await container.stores.loadPiece({ store: 'serializers', name: 'string', piece: StringSerializer });
+				// The pieces registered by hand are constructed when the store loads:
+				await container.stores.get('serializers').loadAll();
+			});
 
-			expect(parseSettingInput(t, key, ' 20 ')).toEqual({ ok: true, value: 20 });
-			expect(parseSettingInput(t, key, '')).toEqual({ ok: true, value: key.default });
-			expect(parseSettingInput(t, key, '2').ok).toBe(false);
-			expect(parseSettingInput(t, key, '2.5').ok).toBe(false);
-			expect(parseSettingInput(t, key, 'abc').ok).toBe(false);
-		});
+			const parse = (key: SchemaKey, input: string) => {
+				const context = createContext();
+				return parseSettingInput({ entry: key, entity: context.settings, guild: context.guild, t } satisfies Serializer.UpdateContext, input);
+			};
 
-		test('GIVEN a list THEN it takes one value per line, without duplicates', () => {
-			const codes = getConfigurableKeys().get('selfmodInvitesAllowedCodes')!;
-			const guilds = getConfigurableKeys().get('selfmodInvitesAllowedGuilds')!;
+			test('GIVEN a number THEN it is checked against the range of the key', async () => {
+				const key = getConfigurableKeys().get('selfmodCapitalsMinimum')!;
 
-			expect(parseSettingInput(t, codes, 'a\n b \n\na')).toEqual({ ok: true, value: ['a', 'b'] });
-			expect(parseSettingInput(t, guilds, '254360814063058944')).toEqual({ ok: true, value: ['254360814063058944'] });
-			expect(parseSettingInput(t, guilds, 'not-an-id').ok).toBe(false);
+				expect(await parse(key, ' 20 ')).toEqual({ ok: true, value: 20 });
+				expect(await parse(key, '')).toEqual({ ok: true, value: key.default });
+				expect((await parse(key, '2')).ok).toBe(false);
+				expect((await parse(key, '2.5')).ok).toBe(false);
+				expect((await parse(key, 'abc')).ok).toBe(false);
+			});
+
+			test('GIVEN a list THEN it takes one value per line, without duplicates', async () => {
+				const codes = getConfigurableKeys().get('selfmodInvitesAllowedCodes')!;
+				const guilds = getConfigurableKeys().get('selfmodInvitesAllowedGuilds')!;
+
+				expect(await parse(codes, 'a\n b \n\na')).toEqual({ ok: true, value: ['a', 'b'] });
+				expect(await parse(guilds, '254360814063058944')).toEqual({ ok: true, value: ['254360814063058944'] });
+				expect((await parse(guilds, 'not-an-id')).ok).toBe(false);
+			});
 		});
 	});
 });

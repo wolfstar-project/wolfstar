@@ -307,10 +307,7 @@ declare module "i18next" {
         menuResetCancelled: "Nothing was reset.";
         menuResetDone: "The settings of **{{module}}** have been reset.";
         menuWrongUser: "This menu is not for you, run the command to open your own.";
-        menuInvalidNumber: "`{{value}}` is not a valid number.";
-        menuInvalidSnowflake: "`{{value}}` is not a valid ID.";
-        menuInvalidCommand: "`{{value}}` does not match any command. Use a command name, `category.*` or `*`.";
-        menuValueTooLong: "The value starting with `{{value}}` is too long, the maximum is {{max}} characters.";
+        menuInvalidValue: "That is not a valid value for **{{name}}**.";
         menuTooManyValues: "**{{name}}** accepts at most {{max}} values.";
       };
       "commands/lockdown": {

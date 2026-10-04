@@ -1,5 +1,5 @@
-import { CommandMatcher, getConfigurableGroups, isSchemaGroup, type ReadonlyGuildData, type SchemaGroup, type SchemaKey } from '#lib/database';
-import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
+import { getConfigurableGroups, isSchemaGroup, type ReadonlyGuildData, type SchemaGroup, type SchemaKey, type Serializer } from '#lib/database';
+import type { Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -31,13 +31,15 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 		case 'integer':
 		case 'number':
 		case 'float':
-			return key.array ? 'readonly' : 'number';
-		case 'string':
-		case 'snowflake':
-		case 'commandMatch':
-			return 'text';
-		default:
+			return 'number';
+		// The serializers of these have no parser, they are only configurable on the dashboard:
+		case 'notAllowed':
+		case 'permissionNode':
+		case 'reactionRole':
+		case 'stickyRole':
 			return 'readonly';
+		default:
+			return 'text';
 	}
 }
 
@@ -47,7 +49,7 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 export function getSettingChannelTypes(key: SchemaKey): ChannelType[] {
 	switch (key.type) {
 		case 'guildVoiceChannel':
-			return [ChannelType.GuildVoice, ChannelType.GuildStageVoice];
+			return [ChannelType.GuildVoice];
 		case 'guildCategoryChannel':
 			return [ChannelType.GuildCategory];
 		case 'categoryOrTextChannel':
@@ -72,7 +74,6 @@ export function getSettingMaximumValues(key: SchemaKey) {
 }
 
 const MaximumTextValues = 100;
-const MaximumTextValueLength = 100;
 
 /**
  * The title of a group or of a key, from the last part of its path: `ignored-roles` is `Ignored Roles`.
@@ -190,89 +191,73 @@ export function getAvailableLanguages(): string[] {
 }
 
 /**
- * The result of parsing what a user wrote in the modal of a key: the value to store, or the translated reason it is not
- * valid.
+ * The result of reading a value for a key: the value to store, or the translated reason it is not valid.
  */
 export type ParsedSetting = { ok: true; value: unknown } | { ok: false; error: string };
 
 /**
- * Parses what a user wrote in the modal of a `number` or `text` key.
+ * Parses what a user wrote in the modal of a `number` or `text` key, with the serializer of the key.
  *
  * @remarks
  *
  * An empty input resets the key to its default. A key that holds a list takes one value per line, and the list
  * replaces the stored one.
  *
- * @param t - The function to translate the errors with.
- * @param key - The key the input is for.
+ * @param context - The context of the serializer.
  * @param input - What the user wrote.
  */
-export function parseSettingInput(t: Translator, key: SchemaKey, input: string): ParsedSetting {
+export async function parseSettingInput(context: Serializer.UpdateContext, input: string): Promise<ParsedSetting> {
+	const { entry: key, t } = context;
 	const trimmed = input.trim();
 	if (trimmed === '') return { ok: true, value: key.default };
+	if (!key.array) return parseSettingValue(context, trimmed);
 
-	if (getSettingKind(key) === 'number') return parseNumber(t, key, trimmed);
-	if (!key.array) return parseText(t, key, trimmed);
-
-	const lines = [...new Set(trimmed.split('\n').map((line) => line.trim())).values()].filter((line) => line !== '');
-	const maximum = getSettingMaximumValues(key);
-	if (lines.length > maximum) return { ok: false, error: t('commands/conf:menuTooManyValues', { name: key.name, max: maximum }) };
-
+	const lines = trimmed.split('\n').filter((line) => line.trim() !== '');
+	const { serializer } = key;
 	const values: unknown[] = [];
 	for (const line of lines) {
-		const parsed = parseText(t, key, line);
+		const parsed = await parseSettingValue(context, line);
 		if (!parsed.ok) return parsed;
-		values.push(parsed.value);
+		if (!values.some((value) => serializer.equals(value as never, parsed.value as never))) values.push(parsed.value);
 	}
+
+	const maximum = getSettingMaximumValues(key);
+	if (values.length > maximum) return { ok: false, error: t('commands/conf:menuTooManyValues', { name: key.name, max: maximum }) };
 
 	return { ok: true, value: values };
 }
 
-function parseNumber(t: Translator, key: SchemaKey, input: string): ParsedSetting {
-	const value = Number(input);
-	const valid = key.type === 'integer' ? /^-?\d+$/.test(input) && Number.isSafeInteger(value) : Number.isFinite(value);
-	if (!valid) return { ok: false, error: t('commands/conf:menuInvalidNumber', { value: input }) };
-
-	const { minimum, maximum, inclusive, name } = key;
-	const aboveMinimum = minimum === null || (inclusive ? value >= minimum : value > minimum);
-	const belowMaximum = maximum === null || (inclusive ? value <= maximum : value < maximum);
-	if (aboveMinimum && belowMaximum) return { ok: true, value };
-
-	return { ok: false, error: t(getRangeErrorKey(minimum, maximum, inclusive), { name, min: minimum, max: maximum }) };
-}
-
-function getRangeErrorKey(minimum: number | null, maximum: number | null, inclusive: boolean): TranslationKey {
-	if (minimum !== null && maximum !== null) return inclusive ? 'serializers:minMaxBothInclusive' : 'serializers:minMaxBothExclusive';
-	if (minimum !== null) return inclusive ? 'serializers:minMaxMinInclusive' : 'serializers:minMaxMinExclusive';
-	return inclusive ? 'serializers:minMaxMaxInclusive' : 'serializers:minMaxMaxExclusive';
-}
-
-function parseText(t: Translator, key: SchemaKey, input: string): ParsedSetting {
-	if (input.length > MaximumTextValueLength) {
-		return { ok: false, error: t('commands/conf:menuValueTooLong', { value: input.slice(0, 20), max: MaximumTextValueLength }) };
-	}
-
-	switch (key.type) {
-		case 'snowflake':
-			return /^\d{17,20}$/.test(input)
-				? { ok: true, value: input }
-				: { ok: false, error: t('commands/conf:menuInvalidSnowflake', { value: input }) };
-		case 'commandMatch':
-			return matchesAnyCommand(input)
-				? { ok: true, value: input }
-				: { ok: false, error: t('commands/conf:menuInvalidCommand', { value: input }) };
-		default:
-			return { ok: true, value: input };
-	}
+async function parseSettingValue(context: Serializer.UpdateContext, input: string): Promise<ParsedSetting> {
+	const result = await context.entry.serializer.parse(input, context);
+	return result.match<ParsedSetting, ParsedSetting>({
+		ok: (value) => ({ ok: true, value }),
+		err: (error) => ({ ok: false, error: error.message })
+	});
 }
 
 /**
- * Whether a command pattern (`*`, `category.*`, `category.command` or `command`) matches at least one command.
+ * Validates the values picked in the select menu of a key, with the serializer of the key.
+ *
+ * @param context - The context of the serializer.
+ * @param values - The picked values.
+ * @returns The value to store: the list for the keys that hold one, otherwise the value, or the default of the key when
+ * the selection was cleared.
  */
-function matchesAnyCommand(pattern: string) {
-	for (const command of container.stores.get('commands').values()) {
-		if (CommandMatcher.match(pattern, command)) return true;
+export async function validateSettingPick(context: Serializer.UpdateContext, values: readonly string[]): Promise<ParsedSetting> {
+	const { entry: key, t } = context;
+	const { serializer } = key;
+
+	for (const value of values) {
+		try {
+			if (!(await serializer.isValid(value as never, context))) {
+				return { ok: false, error: t('commands/conf:menuInvalidValue', { name: key.name }) };
+			}
+		} catch (error) {
+			// The serializers throw the translated reason:
+			return { ok: false, error: typeof error === 'string' ? error : error instanceof Error ? error.message : String(error) };
+		}
 	}
 
-	return false;
+	if (key.array) return { ok: true, value: [...values] };
+	return { ok: true, value: values[0] ?? key.default };
 }

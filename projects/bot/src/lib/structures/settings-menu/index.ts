@@ -10,8 +10,7 @@ export * from '#lib/structures/settings-menu/render';
 export * from '#lib/structures/settings-menu/values';
 
 /**
- * Creates the context the settings menu is rendered with: the language of the user, and the name and the settings of the
- * guild.
+ * Creates the context the settings menu is rendered with: the language of the user, the guild and its settings.
  *
  * @param interaction - The interaction the menu answers.
  * @param guildId - The ID of the guild the settings are of.
@@ -26,7 +25,7 @@ export async function createSettingsMenuContext(
 	return {
 		t: createTranslator(getSupportedUserLanguageT(interaction)),
 		ownerId,
-		guildName: guild.name,
+		guild,
 		settings: await readSettings(guildId)
 	};
 }

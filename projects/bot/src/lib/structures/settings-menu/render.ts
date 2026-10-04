@@ -32,6 +32,7 @@ import {
 	type APITextDisplayComponent,
 	type Snowflake
 } from 'discord-api-types/v10';
+import type { Guild } from '@wolfstar/plugin-gateway';
 
 /**
  * How many entries a page of a group shows. A message holds 40 components, and every entry takes three of them (the
@@ -68,9 +69,9 @@ export interface SettingsMenuContext {
 	ownerId: Snowflake;
 
 	/**
-	 * The name of the guild the settings are of.
+	 * The guild the settings are of.
 	 */
-	guildName: string;
+	guild: Guild;
 
 	/**
 	 * The settings of the guild.
@@ -198,7 +199,15 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 export function renderSettingsModal(context: SettingsMenuContext, key: SchemaKey, page: number): APIModalInteractionResponseCallbackData {
 	const { t } = context;
 	const value = context.settings[key.property] as unknown;
-	const current = key.array ? ((value ?? []) as readonly unknown[]).join('\n') : value === null || value === undefined ? '' : String(value);
+	// A duration is stored in milliseconds, but written as `1h30m`, so it is not written back:
+	const current =
+		key.type === 'timespan'
+			? ''
+			: key.array
+				? ((value ?? []) as readonly unknown[]).join('\n')
+				: value === null || value === undefined
+					? ''
+					: String(value);
 
 	return {
 		custom_id: encodeSettingsMenuId({ ownerId: context.ownerId, verb: 'submit', target: key.property, page }),
@@ -249,7 +258,7 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
 		accent_color: AccentColor,
 		components: [
 			section(
-				`## ${t('commands/conf:menuTitle')}\n${t('commands/conf:menuSubtitle', { guild: context.guildName })}`,
+				`## ${t('commands/conf:menuTitle')}\n${t('commands/conf:menuSubtitle', { guild: context.guild.name })}`,
 				button(refreshId, { emoji: '🔄' })
 			),
 			row([
