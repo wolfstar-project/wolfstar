@@ -41,6 +41,7 @@
 		"@wolfstar/env-utilities": "^2.2.1",
 		"@wolfstar/http-framework": "^5.1.2",
 		"@wolfstar/plugin-api": "^2.0.0",
+		"@wolfstar/plugin-broker": "^0.4.0",
 		"@wolfstar/plugin-cache": "^0.5.1",
 		"@wolfstar/plugin-gateway": "^0.9.0",
 		"@wolfstar/plugin-i18next": "^2.1.1",

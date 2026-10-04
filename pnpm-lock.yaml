@@ -273,6 +273,9 @@ importers:
       '@wolfstar/plugin-api':
         specifier: ^2.0.0
         version: 2.0.0(@wolfstar/http-framework@5.1.2)
+      '@wolfstar/plugin-broker':
+        specifier: ^0.4.0
+        version: 0.4.0(@wolfstar/http-framework@5.1.2)(msgpackr@2.1.0)
       '@wolfstar/plugin-cache':
         specifier: ^0.5.1
         version: 0.5.1(msgpackr@2.1.0)
@@ -2568,6 +2571,12 @@ packages:
     engines: {node: '>=20.18.1'}
     peerDependencies:
       '@wolfstar/http-framework': ^3.6.0 || ^5.0.0
+
+  '@wolfstar/plugin-broker@0.4.0':
+    resolution: {integrity: sha512-EHdT9SnHB1T0SzcS+bAuZ5xKQiqNs0a8SFbed9aK81+6HqWgjXtBgniArJKvM/SiRP0njsIIWm8IQ/lfwX0ZyQ==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^3.4.0 || ^5.0.0
 
   '@wolfstar/plugin-cache@0.5.1':
     resolution: {integrity: sha512-gwvliWPVL2jUcbiCIHiQrmGINokm9LLyU6e/RFcO6BNADRshs7hjF58JItbWkLr5vTyC7trmcafOH1vFrEyDIQ==}
@@ -7288,6 +7297,13 @@ snapshots:
       cookie-es: 1.2.3
       tldts: 7.4.16
       undici: 7.30.0
+
+  '@wolfstar/plugin-broker@0.4.0(@wolfstar/http-framework@5.1.2)(msgpackr@2.1.0)':
+    dependencies:
+      '@wolfstar/http-framework': 5.1.2(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/plugin-cache': 0.5.1(msgpackr@2.1.0)
+    transitivePeerDependencies:
+      - msgpackr
 
   '@wolfstar/plugin-cache@0.5.1(msgpackr@2.1.0)':
     dependencies:
