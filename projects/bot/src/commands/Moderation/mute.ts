@@ -1,19 +1,16 @@
-import { SetUpModerationCommand } from '#lib/moderation';
-import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
-import { TypeVariation } from '#utils/moderationConstants';
-import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
+import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
+import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
-type Type = TypeVariation.Mute;
-type ValueType = null;
-
-@ApplyOptions<SetUpModerationCommand.Options<Type>>({ type: TypeVariation.Mute })
+/**
+ * The parent of the `mute` subcommands (`add`, `remove` and `create`), which live in their own classes in the `mute` directory
+ * and are wired onto this command by `@wolfstar/plugin-subcommands-advanced`. `create` requires the administrator level.
+ */
 @RegisterCommand((builder) =>
-	applyModerationBuilder(builder, {
-		root: 'commands/moderation:mute',
-		type: TypeVariation.Mute,
-		permissions: PermissionFlagsBits.ManageRoles
-	})
+	applyLocalizedBuilder(builder, 'commands/moderation:mute')
+		.setContexts(InteractionContextType.Guild)
+		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 )
-export class UserSetUpModerationCommand extends SetUpModerationCommand<Type, ValueType> {}
+export class UserCommand extends Subcommand {}

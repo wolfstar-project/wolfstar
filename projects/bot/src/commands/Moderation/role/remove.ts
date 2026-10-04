@@ -1,9 +1,10 @@
-import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { applyModerationSubcommandBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { TypeVariation } from '#utils/moderationConstants';
-import { RegisterCommand, type TransformedArguments } from '@wolfstar/http-framework';
+import type { TransformedArguments } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
-import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { MessageFlags } from 'discord-api-types/v10';
 
 type Type = TypeVariation.RoleRemove;
 type ValueType = null;
@@ -13,13 +14,12 @@ interface Arguments extends ModerationCommand.Arguments {
 }
 
 /**
- * Removes a role from a user. The command requires the administrator level, and Discord hides it from members without `Manage Server` by default.
+ * `/role remove`, see the `role` parent command. Removes a role from a user. The command requires the administrator level.
  */
-@RegisterCommand((builder) =>
-	applyModerationBuilder(builder, {
-		root: 'commands/moderation:removerole',
+@RegisterAsSubcommand('role', (builder) =>
+	applyModerationSubcommandBuilder(builder, {
+		root: 'commands/moderation:roleRemove',
 		type: TypeVariation.RoleRemove,
-		permissions: PermissionFlagsBits.ManageGuild,
 		requiredOptions: (options) =>
 			options.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/moderation:removeroleOptionsRole').setRequired(true))
 	})

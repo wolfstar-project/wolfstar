@@ -1,22 +1,20 @@
 import { readSettings } from '#lib/database';
-import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { applyModerationSubcommandBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { getModeration } from '#utils/functions';
 import { TypeVariation, type Unlock } from '#utils/moderationConstants';
-import { RegisterCommand } from '@wolfstar/http-framework';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
+import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 
 type Type = TypeVariation.Ban;
 type ValueType = Unlock | null;
 
 /**
- * Unbans a user. `moderationTrackBans` replaces the `events.ban-remove` setting, see the `ban` command.
+ * `/ban remove`, see the `ban` parent command. Unbans a user. `moderationTrackBans` replaces the `events.ban-remove` setting, see `/ban add`.
  */
-@RegisterCommand((builder) =>
-	applyModerationBuilder(builder, {
-		root: 'commands/moderation:unban',
+@RegisterAsSubcommand('ban', (builder) =>
+	applyModerationSubcommandBuilder(builder, {
+		root: 'commands/moderation:banRemove',
 		type: TypeVariation.Ban,
-		isUndoAction: true,
-		permissions: PermissionFlagsBits.BanMembers
+		isUndoAction: true
 	})
 )
 export class UserCommand extends ModerationCommand<Type, ValueType> {

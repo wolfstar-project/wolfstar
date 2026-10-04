@@ -2,26 +2,25 @@ import { writeSettings } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { Command, RegisterCommand, UserError, container } from '@wolfstar/http-framework';
+import { UserError, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { ApplicationIntegrationType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { MessageFlags } from 'discord-api-types/v10';
 
 /**
- * Prepares the mute system.
+ * `/mute create`, see the `mute` parent command. Prepares the mute system.
  *
  * @remarks
  *
  * - with the `role` option, that role is configured as the muted role.
  * - without it, a new role is created and the channel overrides are applied, like `SetUpModerationCommand` does.
  *
- * There is no cooldown, the command is guarded by its default member permissions.
+ * It requires the administrator permission level.
  */
-@RegisterCommand((builder) =>
-	applyLocalizedBuilder(builder, 'commands/management:createMute')
-		.setContexts(InteractionContextType.Guild)
-		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-		.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/management:createMuteOptionsRole').setRequired(false))
+@RegisterAsSubcommand('mute', (builder) =>
+	applyLocalizedBuilder(builder, 'commands/moderation:muteCreate').addRoleOption((option) =>
+		applyLocalizedBuilder(option, 'commands/management:createMuteOptionsRole').setRequired(false)
+	)
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)

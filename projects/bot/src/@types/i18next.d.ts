@@ -394,7 +394,6 @@ declare module "i18next" {
         stickyRolesAdd: "Successfully added the specified role as sticky to {{user}}.";
         stickyRolesShowEmpty: "There are no sticky roles to show.";
         stickyRolesShowSingle: "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.";
-        createMuteDescription: "Prepare the mute system.";
         createMuteExtended: {
           extendedHelp: "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role.";
         };
@@ -897,7 +896,6 @@ declare module "i18next" {
           reminder: "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles by setting `roles.public` in the server configuration.";
           examples: ["Designer Programmer", "Designer"];
         };
-        createMuteName: "create-mute";
         permissionNodesName: "permission-nodes";
         manageReactionRolesName: "reaction-roles";
         setIgnoreChannelsName: "set-ignore-channels";
@@ -1101,7 +1099,8 @@ declare module "i18next" {
           examples: ["0", "reset", "4m"];
           reminder: "To reset a channel's ratelimit per user, you can use either 0 or 'reset'.";
         };
-        banDescription: "Hit somebody with the ban hammer.";
+        banDescription: "Ban or unban a user.";
+        banAddDescription: "Hit somebody with the ban hammer.";
         banExtended: {
           usages: [
             "User",
@@ -1140,7 +1139,8 @@ declare module "i18next" {
           ];
           examples: ["@Sarah", "@Sarah Spamming general chat."];
         };
-        muteDescription: "Mute a user in all text and voice channels.";
+        muteDescription: "Mute or unmute a user, or prepare the mute system.";
+        muteAddDescription: "Mute a user in all text and voice channels.";
         muteExtended: {
           usages: [
             "User",
@@ -1191,7 +1191,8 @@ declare module "i18next" {
           examples: ["@Pete peeehteeerrr", "@ꓑ𝗲੮ẻ Pete Unmentionable name"];
           reminder: "Leaving out the new nickname will reset it back to the user's username";
         };
-        addRoleDescription: "Adds a role to a user.";
+        roleDescription: "Add or remove a role of a user.";
+        roleAddDescription: "Adds a role to a user.";
         addRoleExtended: {
           usages: [
             "User",
@@ -1215,7 +1216,7 @@ declare module "i18next" {
           extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner roles cannot be changed.";
           examples: ["@John member", "@John member Make John a member"];
         };
-        removeroleDescription: "Removes a role from a user";
+        roleRemoveDescription: "Removes a role from a user";
         removeroleExtended: {
           usages: [
             "User",
@@ -1482,7 +1483,7 @@ declare module "i18next" {
         toggleModerationDmExtended: {
           extendedHelp: "This command allows you to toggle moderation DMs. By default, they are on, meaning that any moderation action (automatic or manual) will DM you, but you can disable them with this command.";
         };
-        unbanDescription: "Unban somebody from this server.";
+        banRemoveDescription: "Unban somebody from this server.";
         unbanExtended: {
           usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
           explainedUsage: [
@@ -1495,7 +1496,8 @@ declare module "i18next" {
           extendedHelp: "This command requires **{{BanMembers, permissions}}**. It literally gets somebody from the rubbish bin, cleans them up, and allows the pass to this server's gates.";
           examples: ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"];
         };
-        unmuteDescription: "Remove the scotch tape from a user.";
+        muteRemoveDescription: "Remove the scotch tape from a user.";
+        muteCreateDescription: "Prepare the mute system.";
         unmuteExtended: {
           usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
           explainedUsage: [
@@ -1705,11 +1707,14 @@ declare module "i18next" {
         };
         timeoutNotModeratable: "The target cannot be timed out by me.";
         banName: "ban";
-        unbanName: "unban";
+        banAddName: "add";
+        banRemoveName: "remove";
         softBanName: "softban";
         kickName: "kick";
         muteName: "mute";
-        unmuteName: "unmute";
+        muteAddName: "add";
+        muteRemoveName: "remove";
+        muteCreateName: "create";
         timeoutApplyName: "timeout";
         timeoutUndoName: "untimeout";
         vmuteName: "vmute";
@@ -1717,8 +1722,9 @@ declare module "i18next" {
         voiceKickName: "voicekick";
         warnName: "warn";
         unwarnName: "unwarn";
-        addRoleName: "addrole";
-        removeroleName: "removerole";
+        roleName: "role";
+        roleAddName: "add";
+        roleRemoveName: "remove";
         setNicknameName: "setnickname";
         dehoistName: "dehoist";
         pruneName: "prune";

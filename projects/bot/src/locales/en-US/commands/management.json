@@ -73,7 +73,6 @@
 	"stickyRolesAdd": "Successfully added the specified role as sticky to {{user}}.",
 	"stickyRolesShowEmpty": "There are no sticky roles to show.",
 	"stickyRolesShowSingle": "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.",
-	"createMuteDescription": "Prepare the mute system.",
 	"createMuteExtended": {
 		"extendedHelp": "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role."
 	},
@@ -539,7 +538,6 @@
 		"reminder": "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles by setting `roles.public` in the server configuration.",
 		"examples": ["Designer Programmer", "Designer"]
 	},
-	"createMuteName": "create-mute",
 	"permissionNodesName": "permission-nodes",
 	"manageReactionRolesName": "reaction-roles",
 	"setIgnoreChannelsName": "set-ignore-channels",
