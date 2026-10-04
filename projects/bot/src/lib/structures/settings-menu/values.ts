@@ -1,4 +1,4 @@
-import { getConfigurableGroups, isSchemaGroup, type ReadonlyGuildData, type SchemaGroup, type SchemaKey, type Serializer } from '#lib/database';
+import { getConfigurableGroups, isSchemaGroup, type ReadonlyGuildData, type Serializer } from '#lib/database';
 import type { Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';

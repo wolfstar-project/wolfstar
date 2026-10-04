@@ -1,7 +1,8 @@
+import type { Command } from '@wolfstar/http-framework';
 import type { PermissionsNode, ReadonlyGuildData } from '#lib/database/settings/types';
 import { matchAny } from '#lib/database/utils/matchers/Command';
 import { Collection } from '@discordjs/collection';
-import { container, UserError, type Command } from '@wolfstar/http-framework';
+import { container, UserError } from '@wolfstar/http-framework';
 import { Role, type GuildMember, type User } from '@wolfstar/plugin-gateway';
 
 export const enum PermissionNodeAction {

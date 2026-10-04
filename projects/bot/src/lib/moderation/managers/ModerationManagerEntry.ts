@@ -1,6 +1,6 @@
 import { fromModerationRow, type ModerationRecord, type ModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { minutes } from '#common';
-import { TypeMetadata, type TypeVariation } from '#utils/moderationConstants';
+import { TypeMetadata } from '#utils/moderationConstants';
 import { isNullishOrZero } from '@sapphire/utilities';
 import { UserError, container } from '@wolfstar/http-framework';
 import type { Guild, User } from '@wolfstar/plugin-gateway';

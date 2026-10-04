@@ -1,4 +1,4 @@
-import { getAction, type ModerationManager } from '#lib/moderation';
+import { getAction } from '#lib/moderation';
 import { getTranslationKey } from '#lib/moderation/common';
 import {
 	CommandPermissionLevel,

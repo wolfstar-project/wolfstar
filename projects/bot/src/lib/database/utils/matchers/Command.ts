@@ -1,5 +1,6 @@
+import type { Command } from '@wolfstar/http-framework';
 import { isNullish } from '@sapphire/utilities';
-import { container, type Command } from '@wolfstar/http-framework';
+import { container } from '@wolfstar/http-framework';
 
 /**
  * The commands are matched by the names they are stored with, which can be, from the most to the least specific:

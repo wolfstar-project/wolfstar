@@ -1,6 +1,6 @@
 import { readSettingsWordFilterRegExp, writeSettingsTransaction, type ReadonlyGuildData } from '#lib/database';
 import { AutoModerationRules } from '#lib/moderation/structures/AutoModerationRules';
-import { IncomingType, OutgoingType, type WorkerManager } from '#lib/moderation/workers';
+import { IncomingType, OutgoingType } from '#lib/moderation/workers';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';

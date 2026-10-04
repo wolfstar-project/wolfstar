@@ -1,4 +1,5 @@
-import { RegisterCommand, container, type Command } from '@wolfstar/http-framework';
+import type { Command } from '@wolfstar/http-framework';
+import { RegisterCommand, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';

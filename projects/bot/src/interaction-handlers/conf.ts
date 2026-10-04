@@ -5,8 +5,6 @@ import {
 	writeSettings,
 	type ReadonlyGuildData,
 	type SchemaDataKey,
-	type SchemaGroup,
-	type SchemaKey,
 	type Serializer
 } from '#lib/database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';

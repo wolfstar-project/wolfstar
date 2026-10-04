@@ -3,7 +3,7 @@ import type { TranslationMappings } from '#lib/moderation/common/constants';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { seconds, years } from '#common';
 import { getCodeStyle, getLogPrefix, getModeration } from '#utils/functions';
-import { TypeMetadata, type TypeVariation } from '#utils/moderationConstants';
+import { TypeMetadata } from '#utils/moderationConstants';
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';

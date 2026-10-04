@@ -1,9 +1,10 @@
+import type { PartialMessage } from '@wolfstar/http-framework';
 import { BrandingColors, Urls, ZeroWidthSpace } from '#utils/constants';
 import { EmbedBuilder, type EmbedAuthorOptions } from '@discordjs/builders';
 import type { ImageURLOptions } from '@discordjs/rest';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { isNullishOrEmpty, isNullishOrZero, tryParseURL, type Nullish } from '@sapphire/utilities';
-import { container, type PartialMessage } from '@wolfstar/http-framework';
+import { container } from '@wolfstar/http-framework';
 import type { Guild, GuildMember, Message, User } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import { StickerFormatType, type APIUser, type Snowflake } from 'discord-api-types/v10';
