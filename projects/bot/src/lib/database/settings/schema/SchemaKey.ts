@@ -1,13 +1,38 @@
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
-import type { Serializer } from '#lib/database/settings/structures/Serializer';
-import type { GuildDataKey, ReadonlyGuildData } from '#lib/database/settings/types';
-import type { WolfArgs } from '#lib/structures';
+import type { GuildDataKey } from '#lib/database/settings/types';
 import type { TypedT } from '#lib/types';
-import { resolveGuild } from '#common';
-import { container } from '@sapphire/framework';
-import type { TFunction } from '@sapphire/plugin-i18next';
-import { isNullish } from '@sapphire/utilities';
+
+/**
+ * The kinds of value a key accepts, which tell how it is displayed and edited (see `lib/structures/settings-menu`).
+ */
+export type SchemaKeyType =
+	| 'boolean'
+	| 'categoryOrTextChannel'
+	| 'guildTextChannel'
+	| 'guildVoiceChannel'
+	| 'guildCategoryChannel'
+	| 'command'
+	| 'commandMatch'
+	| 'emoji'
+	| 'guild'
+	| 'invite'
+	| 'language'
+	| 'notAllowed'
+	| 'number'
+	| 'integer'
+	| 'float'
+	| 'permissionNode'
+	| 'reactionRole'
+	| 'role'
+	| 'snowflake'
+	| 'stickyRole'
+	| 'string'
+	| 'timespan'
+	| 'uniqueRoleSet'
+	| 'url'
+	| 'user'
+	| 'word';
 
 export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchemaValue {
 	/**
@@ -48,7 +73,7 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 	/**
 	 * The type of the value this property accepts.
 	 */
-	public readonly type: Serializer.Name;
+	public readonly type: SchemaKeyType;
 
 	/**
 	 * Whether or not this accepts multiple values.
@@ -82,55 +107,6 @@ export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchema
 		this.array = options.array;
 		this.default = options.default;
 		this.dashboardOnly = options.dashboardOnly ?? false;
-	}
-
-	public get serializer(): Serializer<ReadonlyGuildData[K]> {
-		const value = container.stores.get('serializers').get(this.type);
-		if (typeof value === 'undefined') throw new Error(`The serializer for '${this.type}' does not exist.`);
-		return value as Serializer<ReadonlyGuildData[K]>;
-	}
-
-	public async parse(settings: ReadonlyGuildData, args: WolfArgs): Promise<ReadonlyGuildData[K]> {
-		const { serializer } = this;
-		const context = await this.getContext(settings, args.t);
-
-		const result = await serializer.parse(args, context);
-		return result.match({
-			ok: (value) => value,
-			err: (error) => {
-				throw error.message;
-			}
-		});
-	}
-
-	public async stringify(settings: ReadonlyGuildData, t: TFunction, value: ReadonlyGuildData[K]): Promise<string> {
-		const { serializer } = this;
-		const context = await this.getContext(settings, t);
-		return serializer.stringify(value, context);
-	}
-
-	public async display(settings: ReadonlyGuildData, t: TFunction): Promise<string> {
-		const { serializer } = this;
-		const context = await this.getContext(settings, t);
-
-		if (this.array) {
-			const values = settings[this.property] as readonly any[];
-			return isNullish(values) || values.length === 0
-				? 'None'
-				: `[ ${values.map((value) => serializer.stringify(value, context)).join(' | ')} ]`;
-		}
-
-		const value = settings[this.property];
-		return isNullish(value) ? t('commands/admin:confSettingNotSet') : serializer.stringify(value, context);
-	}
-
-	public async getContext(settings: ReadonlyGuildData, language: TFunction): Promise<Serializer.UpdateContext> {
-		return {
-			entity: settings,
-			guild: await resolveGuild(settings.id),
-			t: language,
-			entry: this
-		} satisfies Serializer.UpdateContext;
 	}
 }
 

@@ -1,9 +1,7 @@
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { AliasedCollection } from '#lib/database/settings/structures/collections/AliasedCollection';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
-import type { TFunction } from '@sapphire/plugin-i18next';
-import { codeBlock, isNullish, toTitleCase } from '@sapphire/utilities';
+import { isNullish, toTitleCase } from '@sapphire/utilities';
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
@@ -76,35 +74,5 @@ export class SchemaGroup extends AliasedCollection<string, SchemaGroup | SchemaK
 
 	public getPathString(key: string): SchemaGroup | SchemaKey | null {
 		return this.getPathArray(key.split('.') as NonEmptyArray<string>);
-	}
-
-	public async display(settings: ReadonlyGuildData, language: TFunction): Promise<string> {
-		const folders: string[] = [];
-		const sections = new Map<string, string[]>();
-		let longest = 0;
-		for (const [key, value] of this.entries()) {
-			if (value.dashboardOnly) continue;
-			if (value.type === 'Group') {
-				folders.push(`// ${key}`);
-			} else {
-				const values = sections.get(value.type) ?? [];
-				values.push(key);
-
-				if (key.length > longest) longest = key.length;
-				if (values.length === 1) sections.set(value.type, values);
-			}
-		}
-
-		const array: string[] = [];
-		if (folders.length) array.push('= Folders =', ...folders.sort(), '');
-		if (sections.size) {
-			for (const keyType of [...sections.keys()].sort()) {
-				const keys = sections.get(keyType)!.sort();
-				const displayed = await Promise.all(keys.map((key) => this.get(key)!.display(settings, language)));
-				array.push(`= ${toTitleCase(keyType)}s =`, ...keys.map((key, index) => `${key.padEnd(longest)} :: ${displayed[index]}`), '');
-			}
-		}
-
-		return codeBlock('asciidoc', array.join('\n'));
 	}
 }

@@ -162,8 +162,7 @@ export function getConfiguration() {
 
 		// Commands
 		commandsDisabled: {
-			// @ts-expect-error Serializer 'commandmatch' exists but is not camel cased.
-			type: 'commandmatch',
+			type: 'commandMatch',
 			name: 'commands.disabled',
 			description: 'settings:disabledCommands',
 			maximum: 32,

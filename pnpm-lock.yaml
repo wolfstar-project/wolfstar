@@ -249,6 +249,9 @@ importers:
       '@sapphire/bitfield':
         specifier: ^1.2.4
         version: 1.2.4
+      '@sapphire/ratelimits':
+        specifier: ^2.4.11
+        version: 2.4.11
       '@sapphire/result':
         specifier: ^2.8.0
         version: 2.8.0
@@ -273,6 +276,9 @@ importers:
       '@wolfstar/http-framework':
         specifier: ^6.1.1
         version: 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/http-framework-utilities':
+        specifier: ^0.1.0
+        version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.9.1)(discord-api-types@0.38.56)
       '@wolfstar/kit':
         specifier: ^0.1.1
         version: 0.1.1(magicast@0.5.5)
@@ -2191,6 +2197,10 @@ packages:
     resolution: {integrity: sha512-2v49P++RzHGb23bdjSa9u7flkdvhrq94IUO9PneY538TILN5QiMxfaXVK+pDR2YR7jpQYBy9APwtFDes2Svykg==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
+  '@sapphire/ratelimits@2.4.11':
+    resolution: {integrity: sha512-O6FNA/P0wxU4Ve9gxL948CoZw7+sSpujyUR2CLyLLCNuNvuFGFxPCJVl5crFVLXMIyBIrc2qk+/H9bsqsyQK1Q==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+
   '@sapphire/result@2.8.0':
     resolution: {integrity: sha512-693yWouX+hR9uJm1Jgq0uSSjbSD3UrblMaxiuGbHPjSwzLCSZTcm0h3kvdVhq3o/yl4+oeAWW3hiaJ0TELuRJQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
@@ -2589,6 +2599,12 @@ packages:
     peerDependencies:
       '@wolfstar/http-framework': ^6.0.0
 
+  '@wolfstar/discord-utilities@0.1.0':
+    resolution: {integrity: sha512-Pk6lzHc+ktUKHK+Ay/rg86+fI03Au21RxCBL4GnkM0LXxI/B23xADjt/5iNa3YtD7mbGylW5YSsF4NKNM5ndIw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      discord-api-types: ^0.38.56
+
   '@wolfstar/env-utilities@2.2.1':
     resolution: {integrity: sha512-XWSc+rQJdE8L2MJT1nAIFsD6s8AMyjPWDsuFlRjK0Vv1ClwL3RVCIts5h+WVSa2UDcNOo2y8jdeDjGSbn4ozaQ==}
     engines: {node: '>=20'}
@@ -2596,6 +2612,17 @@ packages:
       varlock: ^1.19.0
     peerDependenciesMeta:
       varlock:
+        optional: true
+
+  '@wolfstar/http-framework-utilities@0.1.0':
+    resolution: {integrity: sha512-fBOk95Ft8vLWF6kl3dT8P/EchprTgVlRs1CKHLhMhmLqv6l8yChJiYMgyzsWWOnws2FZhQu/1p1EJKyki2KILQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^6.0.0
+      '@wolfstar/plugin-gateway': ^0.8.0
+      discord-api-types: ^0.38.56
+    peerDependenciesMeta:
+      '@wolfstar/plugin-gateway':
         optional: true
 
   '@wolfstar/http-framework@6.1.1':
@@ -6934,6 +6961,8 @@ snapshots:
       '@sapphire/utilities': 3.18.2
       tslib: 2.8.1
 
+  '@sapphire/ratelimits@2.4.11': {}
+
   '@sapphire/result@2.8.0': {}
 
   '@sapphire/shapeshift@4.0.0':
@@ -7304,6 +7333,10 @@ snapshots:
     dependencies:
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
 
+  '@wolfstar/discord-utilities@0.1.0(discord-api-types@0.38.56)':
+    dependencies:
+      discord-api-types: 0.38.56
+
   '@wolfstar/env-utilities@2.2.1(varlock@1.21.1)':
     dependencies:
       '@sapphire/pieces': 4.4.1
@@ -7311,6 +7344,14 @@ snapshots:
       dotenv-expand: 13.0.0
     optionalDependencies:
       varlock: 1.21.1
+
+  '@wolfstar/http-framework-utilities@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.9.1)(discord-api-types@0.38.56)':
+    dependencies:
+      '@wolfstar/discord-utilities': 0.1.0(discord-api-types@0.38.56)
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      discord-api-types: 0.38.56
+    optionalDependencies:
+      '@wolfstar/plugin-gateway': 0.9.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)
 
   '@wolfstar/http-framework@6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
     dependencies:

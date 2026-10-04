@@ -1,12 +1,20 @@
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
 import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/types';
 import { Events } from '#lib/types';
-import { channelMention, EmbedBuilder } from '@discordjs/builders';
-import { container } from '@sapphire/framework';
-import { fetchT, type TFunction } from '@sapphire/plugin-i18next';
-import { Colors, chatInputApplicationCommandMention, type User } from 'discord.js';
+import { Colors } from '#utils/constants';
+import { getDisplayAvatar, getEmbedAuthor } from '#utils/util';
+import { channelMention, chatInputApplicationCommandMention, EmbedBuilder } from '@discordjs/builders';
+import { container } from '@wolfstar/http-framework';
+import type { User } from '@wolfstar/plugin-gateway';
+import { fetchT, type AnyNamespace, type TFunction as BaseTFunction } from '@wolfstar/plugin-i18next';
+import type { APIUser } from 'discord-api-types/v10';
 import { randomUUID } from 'node:crypto';
 import type { Models } from 'wolfstar-database';
+
+/**
+ * The translation function of a guild, which resolves the keys of every namespace at runtime.
+ */
+type TFunction = BaseTFunction<AnyNamespace>;
 
 type TimestampString = Models.public_AuditEvent['timestamp'];
 type JsonColumn = Models.public_AuditEvent['changes'];
@@ -185,14 +193,14 @@ export class AuditLogManager {
 			timestamp: Date;
 		}
 	): Promise<void> {
-		const guild = container.gatewayClient.guilds.cache.get(this.#guildId);
+		const guild = await container.gatewayClient.guilds.fetch(this.#guildId).catch(() => null);
 		if (!guild) return;
 
 		const channelKey = action === 'guild.command.execute' ? 'logsCommand' : 'logsSettings';
 		const channelId = this.#settings[channelKey];
 		if (!channelId) return;
 
-		const t = await fetchT(guild);
+		const t = (await fetchT(guild)) as unknown as TFunction;
 		const actor = await this.#fetchUser(params.actorId);
 
 		const makeMessage =
@@ -231,7 +239,7 @@ export class AuditLogManager {
 		container.gatewayClient.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
 	}
 
-	#buildCommandExecuteEmbed(t: TFunction, actor: User, payload: CommandExecutePayload): EmbedBuilder {
+	#buildCommandExecuteEmbed(t: TFunction, actor: User | APIUser, payload: CommandExecutePayload): EmbedBuilder {
 		const { commandName, commandId, commandType, channelId, timestamp } = payload;
 		const formattedCommandName = commandType === 'chat-input' ? this.#formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
 		const typeLabel =
@@ -249,16 +257,16 @@ export class AuditLogManager {
 
 		return new EmbedBuilder()
 			.setColor(Colors.Blue)
-			.setAuthor(this.#getEmbedAuthor(actor))
+			.setAuthor(getEmbedAuthor(actor))
 			.setDescription(description)
 			.setFooter({
 				text: t('events/guilds-logs:commandExecuteTitle'),
-				iconURL: container.gatewayClient.user!.displayAvatarURL({ size: 128 })
+				iconURL: getDisplayAvatar(container.gatewayClient.user!, { size: 128 })
 			})
 			.setTimestamp(timestamp);
 	}
 
-	#buildSettingsChangeEmbed(t: TFunction, actor: User, payload: SettingsChangePayload): EmbedBuilder {
+	#buildSettingsChangeEmbed(t: TFunction, actor: User | APIUser, payload: SettingsChangePayload): EmbedBuilder {
 		const { action, before, after, reason, timestamp } = payload;
 
 		const color = action === 'guild.settings.access-denied' ? Colors.Yellow : action === 'guild.settings.remove' ? Colors.Red : Colors.Green;
@@ -273,9 +281,9 @@ export class AuditLogManager {
 
 		const embed = new EmbedBuilder()
 			.setColor(color)
-			.setAuthor(this.#getEmbedAuthor(actor))
+			.setAuthor(getEmbedAuthor(actor))
 			.setDescription(descLines.join('\n'))
-			.setFooter({ text: actionTitle, iconURL: container.gatewayClient.user!.displayAvatarURL({ size: 128 }) })
+			.setFooter({ text: actionTitle, iconURL: getDisplayAvatar(container.gatewayClient.user!, { size: 128 }) })
 			.setTimestamp(timestamp);
 
 		if (action !== 'guild.settings.access-denied') {
@@ -303,11 +311,11 @@ export class AuditLogManager {
 		return embed;
 	}
 
-	async #fetchUser(userId: string): Promise<User> {
+	async #fetchUser(userId: string): Promise<User | APIUser> {
 		try {
 			return await container.gatewayClient.users.fetch(userId);
 		} catch {
-			return { id: userId, username: 'Unknown User', discriminator: '0000', avatar: null, bot: false, system: false } as User;
+			return { id: userId, username: 'Unknown User', discriminator: '0000', global_name: null, avatar: null };
 		}
 	}
 
@@ -324,10 +332,6 @@ export class AuditLogManager {
 		if (typeof value === 'string') return value.length === 0 ? '""' : value;
 		if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') return String(value);
 		return '`' + JSON.stringify(value) + '`';
-	}
-
-	#getEmbedAuthor(user: User) {
-		return { name: user.username, iconURL: typeof user.displayAvatarURL === 'function' ? user.displayAvatarURL({ size: 128 }) : undefined };
 	}
 
 	#truncateFieldValue(value: string): string {
