@@ -12,5 +12,6 @@ export class UserModerationTask extends ModerationTask {
 		const reason = await this.getReason(guild, 'Timeout released', data.duration);
 		const entry = moderation.create({ user: data.userID, type: TypeVariation.Timeout, metadata: TypeMetadata.Undo, reason });
 		await moderation.insert(entry);
+		return null;
 	}
 }

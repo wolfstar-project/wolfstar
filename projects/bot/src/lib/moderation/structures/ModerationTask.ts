@@ -7,6 +7,7 @@ import type { SchemaKeys } from '#utils/moderationConstants';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import { fetchT } from '@wolfstar/plugin-i18next';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
+import { PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
 
 /**
  * The base of the tasks that undo a temporary moderation action when its time is up (`moderationEnd*`, in
@@ -14,23 +15,31 @@ import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
  *
  * @remarks
  *
- * `ModerationManager` schedules one when a case with a duration is created, as a job that carries
- * {@linkcode ModerationData}, and removes it when the case is edited, completed or deleted. Whatever the outcome of
- * {@linkcode ModerationTask.handle}, the case is marked as completed, so a task that cannot undo its action (the member
- * left, the bot lost its permissions) is not tried forever.
+ * The `moderationEntryAdd` and `moderationEntryEdit` listeners schedule one as a job that carries
+ * {@linkcode ModerationData}. The outcomes of the original schedule map to the job this way:
+ *
+ * - ignore, when the bot is not in the guild anymore: the job ends, there is nothing to undo.
+ * - delay, when the gateway is not ready yet: the task throws, and the job is tried again 20 seconds later (see
+ *   `UndoTaskJobOptions`).
+ * - finished: whatever the outcome of {@linkcode ModerationTask.handle}, the case is marked as completed.
  */
 export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTaskName> {
 	public override async run(payload: ModerationData) {
 		const data = payload as ModerationData<T>;
+		const { gatewayClient } = this.container;
 
-		// The bot is not in the guild anymore, there is nothing to undo:
-		const guild = await this.container.gatewayClient.guilds.resolve(data.guildID);
+		// If the guilds are not available yet, re-schedule the task by failing the job, which is tried again later.
+		if (!gatewayClient.isClientReady()) throw new Error('The gateway client is not ready yet.');
+
+		const guild = await gatewayClient.guilds.resolve(data.guildID);
+		// If the guild is not available, cancel the task.
 		if (guild === null) return;
 
+		// Run the abstract handle function.
 		try {
 			await this.handle(guild, data);
-		} catch (error) {
-			this.container.logger.debug(`[${this.name}] Could not undo the case ${data.caseID} of ${data.guildID}:`, error);
+		} catch {
+			/* noop */
 		}
 
 		// Mark the moderation entry as complete.
@@ -39,6 +48,18 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		} catch {
 			// The case was deleted in the meantime.
 		}
+	}
+
+	/**
+	 * Whether the bot has guild-wide permissions, the tasks do nothing without the ones their action needs.
+	 *
+	 * @param guild - The guild the case belongs to.
+	 * @param permissions - The permissions to check, see {@linkcode PermissionFlagsBits}.
+	 */
+	protected async hasPermissions(guild: Guild, permissions: bigint) {
+		const me = await this.container.gatewayClient.members.fetchMe(guild.id);
+		const granted = (await me.fetchPermissions()).bitField;
+		return (granted & PermissionFlagsBits.Administrator) !== 0n || (granted & permissions) === permissions;
 	}
 
 	/**
@@ -54,15 +75,33 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 	}
 
 	/**
-	 * The data of the action that undoes the case: nobody is shown as the moderator, and the user is told when the
-	 * guild sends direct messages for its moderation actions.
+	 * The data of the action that undoes the case: nobody is shown as the moderator, and the user is told when both
+	 * the guild and the user have the moderation direct messages on.
 	 *
 	 * @param guild - The guild the case belongs to.
+	 * @param targetId - The user the case is about.
 	 * @param context - The context of the action, e.g. the role to give back.
 	 */
-	protected async getActionData<ContextType = never>(guild: Guild, context?: ContextType): Promise<ModerationAction.Data<ContextType>> {
+	protected async getActionData<ContextType = never>(
+		guild: Guild,
+		targetId: Snowflake,
+		context?: ContextType
+	): Promise<ModerationAction.Data<ContextType>> {
 		const settings: Partial<Record<string, unknown>> = await readSettings(guild);
-		return { moderator: null, sendDirectMessage: settings.messagesModerationDm === true, context };
+		return {
+			moderator: null,
+			sendDirectMessage: settings.messagesModerationDm === true && (await this.fetchUserModerationDmEnabled(targetId)),
+			context
+		};
+	}
+
+	/**
+	 * Whether the user accepts direct messages about the moderation actions taken on them.
+	 *
+	 * @remarks The setting of the user is not stored yet, so every user accepts them, like `ModerationCommand` assumes.
+	 */
+	protected fetchUserModerationDmEnabled(_userId: Snowflake): Promise<boolean> {
+		return Promise.resolve(true);
 	}
 
 	protected abstract handle(guild: Guild, data: ModerationData<T>): unknown;

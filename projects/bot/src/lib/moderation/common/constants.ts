@@ -143,3 +143,19 @@ const Metadata = new Map<TypeCodes, Colors>([
 	[TypeCodes.TemporaryVoiceMute, Colors.Amber300],
 	[TypeCodes.TemporaryWarning, Colors.Yellow300]
 ]) as ReadonlyMap<TypeCodes, Colors>;
+
+/**
+ * How long a task that undoes a case waits before it is tried again, when it asks to be delayed.
+ */
+export const UndoTaskRetryDelay = 20_000;
+
+/**
+ * The options of the jobs that undo a case: a task that asks to be delayed is tried again
+ * {@linkcode UndoTaskRetryDelay} later, and the job leaves the queue once it is done.
+ */
+export const UndoTaskJobOptions = {
+	attempts: 5,
+	backoff: { type: 'fixed', delay: UndoTaskRetryDelay },
+	removeOnComplete: true,
+	removeOnFail: true
+} as const;

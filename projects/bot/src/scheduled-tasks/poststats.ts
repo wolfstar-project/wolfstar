@@ -14,29 +14,33 @@ enum Lists {
 }
 
 /**
- * Posts, every ten minutes, how many servers the bot is in to the bot lists it has a token for, and to the analytics.
+ * Posts, every ten minutes, how many servers and users the bot has to the bot lists it has a token for, and to the
+ * analytics.
  *
  * @remarks
  *
- * The counts are the approximate ones Discord keeps for the application, there is no local cache of every guild to
- * count. The bot lists are only posted to in production.
+ * The servers are counted in the gateway cache. Their members are not all cached, so the users are the sum of the
+ * approximate member counts Discord gives for the guilds of the bot. The bot lists are only posted to in production.
  */
 export class UserTask extends ScheduledTask<'poststats'> {
 	public constructor(context: ScheduledTask.LoaderContext) {
-		super(context, { pattern: '*/10 * * * *' });
+		// A run that asks to be delayed is tried again 30 seconds later:
+		super(context, { pattern: '*/10 * * * *', customJobOptions: { attempts: 2, backoff: { type: 'fixed', delay: 30_000 } } });
 	}
 
 	public override async run() {
 		const { logger, gatewayClient } = this.container;
 
-		const application = await gatewayClient.api.applications.getCurrent();
-		const rawGuilds = application.approximate_guild_count ?? 0;
-		const rawUsers = application.approximate_user_install_count ?? 0;
+		// If the websocket isn't ready, delay the execution by 30 seconds:
+		if (!gatewayClient.isClientReady()) throw new Error('The gateway client is not ready yet.');
 
-		this.container.client.emit(Events.AnalyticsSync, rawGuilds, rawUsers);
-		if (process.env.NODE_ENV !== 'production') return;
+		const rawGuilds = await gatewayClient.guilds.cache.getSize();
+		const rawUsers = await this.fetchMemberCount();
 
-		const clientId = application.id;
+		this.processAnalytics(rawGuilds, rawUsers);
+		if (process.env.NODE_ENV !== 'production') return null;
+
+		const clientId = gatewayClient.user!.id;
 		const guilds = rawGuilds.toString();
 		const users = rawUsers.toString();
 		const results = (
@@ -76,9 +80,31 @@ export class UserTask extends ScheduledTask<'poststats'> {
 		).filter((value) => value !== null);
 
 		if (results.length) logger.trace(`${header} [ ${guilds} [G] ] [ ${users} [U] ] | ${results.join(' | ')}`);
+		return null;
 	}
 
-	private async query(url: string, body: string, token: string | null | undefined, list: Lists) {
+	/**
+	 * Sums the approximate member counts of every guild the bot is in, 200 guilds at a time.
+	 */
+	private async fetchMemberCount() {
+		const { api } = this.container.gatewayClient;
+
+		let total = 0;
+		let after: string | undefined;
+		while (true) {
+			const guilds = await api.users.getGuilds({ limit: 200, with_counts: true, after });
+			for (const guild of guilds) total += guild.approximate_member_count ?? 0;
+
+			if (guilds.length < 200) return total;
+			after = guilds.at(-1)!.id;
+		}
+	}
+
+	private processAnalytics(guilds: number, users: number) {
+		this.container.client.emit(Events.AnalyticsSync, guilds, users);
+	}
+
+	public async query(url: string, body: string, token: string | null | undefined, list: Lists) {
 		if (!token) return null;
 
 		try {

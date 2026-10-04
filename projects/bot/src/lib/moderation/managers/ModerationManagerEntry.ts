@@ -1,4 +1,5 @@
 import { fromModerationRow, type ModerationRecord, type ModerationRow } from '#lib/moderation/managers/ModerationRecord';
+import { getUndoTaskId, type UndoTaskName } from '#lib/moderation/common/util';
 import { minutes } from '#common';
 import { TypeMetadata } from '#utils/moderationConstants';
 import { isNullishOrZero } from '@sapphire/utilities';
@@ -152,6 +153,17 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 	}
 
 	/**
+	 * Fetches the scheduled task for this moderation entry, the job that undoes it when its time is up.
+	 *
+	 * @returns The job, or `null` when there is none (or no scheduled tasks to look in).
+	 */
+	public async fetchTask(): Promise<ModerationManagerEntry.ScheduledTask | null> {
+		// The scheduled tasks are a plugin of the client, there is none without it:
+		if (!('tasks' in container)) return null;
+		return (await container.tasks.get<UndoTaskName>(getUndoTaskId(this.guild.id, this.id))) ?? null;
+	}
+
+	/**
 	 * The timestamp when the moderation entry expires, if any.
 	 *
 	 * @remarks
@@ -300,6 +312,11 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 }
 
 export namespace ModerationManagerEntry {
+	/**
+	 * The job that undoes a moderation entry when its time is up.
+	 */
+	export type ScheduledTask = NonNullable<Awaited<ReturnType<typeof container.tasks.get<UndoTaskName>>>>;
+
 	export interface Data<Type extends TypeVariation = TypeVariation> {
 		id: number;
 		createdAt: number;

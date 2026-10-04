@@ -1,44 +1,56 @@
-import { GuildSettings, ModerationEntity, writeSettings } from '#lib/database';
+import { writeSettings } from '#lib/database';
+import type { ModerationManager } from '#lib/moderation';
+import { fetchGuildT, getEmbed, getUndoTaskId, getUndoTaskName, UndoTaskJobOptions } from '#lib/moderation/common';
 import { resolveOnErrorCodes } from '#common';
-import { SchemaKeys } from '#utils/moderationConstants';
-import { canSendEmbeds } from '@sapphire/discord.js-utilities';
-import { Listener } from '@sapphire/framework';
-import { RESTJSONErrorCodes } from 'discord-api-types/v9';
+import { getModeration } from '#utils/functions';
+import { isNullishOrZero } from '@sapphire/utilities';
+import { Listener } from '@wolfstar/http-framework';
+import { canSendEmbeds } from '@wolfstar/http-framework-utilities/gateway';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 export class UserListener extends Listener {
-	public run(entry: ModerationEntity) {
+	public run(entry: ModerationManager.Entry) {
 		return Promise.all([this.sendMessage(entry), this.scheduleDuration(entry)]);
 	}
 
-	private async sendMessage(entry: ModerationEntity) {
-		const channel = await entry.fetchChannel();
-		if (channel === null || !canSendEmbeds(channel)) return;
+	private async sendMessage(entry: ModerationManager.Entry) {
+		const moderation = await getModeration(entry.guild);
+		const channel = await moderation.fetchChannel();
+		if (channel === null || !(await canSendEmbeds(channel))) return;
 
-		const messageEmbed = await entry.prepareEmbed();
-
-		const options = { embeds: [messageEmbed] };
+		const t = await fetchGuildT(entry.guild);
+		const options = { embeds: [(await getEmbed(t, entry)).toJSON()] };
 		try {
 			await resolveOnErrorCodes(channel.send(options), RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.MissingPermissions);
-		} catch (error) {
-			await writeSettings(entry.guild, [[GuildSettings.Channels.Logs.Moderation, null]]);
+		} catch {
+			await writeSettings(entry.guild, { moderationChannel: null }, this.container.gatewayClient.user!.id);
 		}
 	}
 
-	private async scheduleDuration(entry: ModerationEntity) {
-		const taskName = entry.duration === null ? null : entry.appealTaskName;
-		if (taskName !== null) {
-			await this.container.schedule
-				.add(taskName, entry.duration! + Date.now(), {
-					catchUp: true,
-					data: {
-						[SchemaKeys.Case]: entry.caseId,
-						[SchemaKeys.User]: entry.userId,
-						[SchemaKeys.Guild]: entry.guildId,
-						[SchemaKeys.Duration]: entry.duration,
-						[SchemaKeys.ExtraData]: entry.extraData
+	private async scheduleDuration(entry: ModerationManager.Entry) {
+		if (isNullishOrZero(entry.duration)) return;
+
+		const taskName = getUndoTaskName(entry.type);
+		if (taskName === null) return;
+
+		await this.container.tasks
+			.create(
+				{
+					name: taskName,
+					payload: {
+						caseID: entry.id,
+						userID: entry.userId,
+						guildID: entry.guild.id,
+						duration: entry.duration,
+						extraData: entry.extraData
 					}
-				})
-				.catch((error) => this.container.logger.fatal(error));
-		}
+				},
+				{
+					repeated: false,
+					delay: Math.max(0, entry.expiresTimestamp! - Date.now()),
+					customJobOptions: { jobId: getUndoTaskId(entry.guild.id, entry.id), ...UndoTaskJobOptions }
+				}
+			)
+			.catch((error) => this.container.logger.fatal(error));
 	}
 }

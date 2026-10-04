@@ -38,6 +38,13 @@ export function getTranslationKey<const Type extends TypeVariation>(type: Type):
  */
 export type UndoTaskName = (typeof UndoTaskNameMappings)[keyof typeof UndoTaskNameMappings];
 
+/**
+ * The ID of the job that undoes a case when its time is up, which is how it is found again to reschedule or remove it.
+ */
+export function getUndoTaskId(guildId: Snowflake, caseId: number) {
+	return `moderation-${guildId}-${caseId}`;
+}
+
 export function getUndoTaskName(type: TypeVariation): UndoTaskName | null {
 	return type in UndoTaskNameMappings ? UndoTaskNameMappings[type as keyof typeof UndoTaskNameMappings] : null;
 }

@@ -11,6 +11,7 @@ export class UserTask extends ScheduledTask<'syncResourceAnalytics'> {
 
 	public override run() {
 		this.container.client.emit(Events.ResourceAnalyticsSync);
+		return null;
 	}
 }
 
