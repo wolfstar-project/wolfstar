@@ -1,6 +1,5 @@
 import { PermissionsBits } from '#utils/bits';
-import { clearAccurateTimeout, setAccurateTimeout, type AccurateTimeout } from '#utils/Timers';
-import { DiscordAPIError, HTTPError } from '@discordjs/rest';
+import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import type {
 	AnnouncementChannel,
@@ -167,10 +166,16 @@ export function getChannelLockdownPermissions(type: ChannelType) {
 }
 
 /**
- * How many times the release of a lockdown is tried again when Discord does not answer, and how long to wait for each.
+ * The Redis hash the lockdowns are kept in, by {@linkcode LockdownManager.keyOf}.
  */
-const MaximumReleaseAttempts = 5;
-const ReleaseRetryDelay = 30_000;
+const LockdownsHash = 'wolfstar:lockdowns';
+
+/**
+ * How many times Discord is asked again when it does not answer the release of a temporary lockdown, and how long to
+ * wait before each of them.
+ */
+const ReleaseAttempts = 5;
+const ReleaseBackoff = 30_000;
 
 const IgnoredReleaseErrors = new Set<RESTJSONErrorCodes>([
 	RESTJSONErrorCodes.UnknownGuild,
@@ -180,13 +185,28 @@ const IgnoredReleaseErrors = new Set<RESTJSONErrorCodes>([
 	RESTJSONErrorCodes.MissingPermissions
 ]);
 
-interface LockdownEntry {
-	data: LockdownData;
+/**
+ * Whether there is nothing to do about an error of {@linkcode LockdownManager.release}: what the lockdown applied to
+ * is gone, or the bot can no longer reach it, so trying again would not change anything.
+ */
+export function isIgnorableReleaseError(error: unknown) {
+	return error instanceof DiscordAPIError && IgnoredReleaseErrors.has(error.code as RESTJSONErrorCodes);
+}
 
+/**
+ * What the `moderationEndLockdown` task of a temporary lockdown carries.
+ */
+export interface LockdownTaskPayload {
 	/**
-	 * The timer that releases the lockdown, `null` for a lockdown that lasts until it is released by hand.
+	 * The key of the lockdown, see {@linkcode LockdownManager.keyOf}.
 	 */
-	timeout: AccurateTimeout | null;
+	key: string;
+}
+
+declare module '@wolfstar/plugin-scheduled-tasks' {
+	interface ScheduledTasks {
+		moderationEndLockdown: LockdownTaskPayload;
+	}
 }
 
 /**
@@ -194,95 +214,108 @@ interface LockdownEntry {
  *
  * @remarks
  *
- * What a lockdown changed is kept so that releasing it restores what was there before instead of guessing, and the
- * temporary ones are released by a timer. Both only live as long as the process does: there is no persisted schedule
- * to ask for them again after a restart, so a lockdown that was running then has to be released by hand, which
- * falls back to removing the permissions it applied.
+ * What a lockdown changed is kept in Redis, so that releasing it restores what was there before instead of guessing,
+ * and survives a restart. A temporary lockdown also has a `moderationEndLockdown` scheduled task, a BullMQ job that
+ * releases it when it is due, and that is removed when the lockdown is released by hand.
  */
 export class LockdownManager {
-	readonly #entries = new Map<string, LockdownEntry>();
-
 	/**
-	 * Gets the lockdown of a role in a channel, or in the server, or of a thread.
+	 * Gets what a lockdown of a role in a channel, or in the server, or of a thread, changed.
 	 *
 	 * @param target - What the lockdown is applied to, the role is only needed for the ones that are not of a thread.
 	 */
-	public get(target: LockdownTarget): LockdownData | null {
-		return this.#entries.get(LockdownManager.keyOf(target))?.data ?? null;
+	public async get(target: LockdownTarget): Promise<LockdownData | null> {
+		return this.getByKey(LockdownManager.keyOf(target));
 	}
 
 	/**
-	 * Remembers a lockdown, and releases it after `duration` milliseconds when it is given.
+	 * Gets what a lockdown changed from its key.
+	 *
+	 * @param key - The key of the lockdown, see {@linkcode LockdownManager.keyOf}.
+	 */
+	public async getByKey(key: string): Promise<LockdownData | null> {
+		const value = await container.redis.hget(LockdownsHash, key);
+		return value === null ? null : deserialize(value);
+	}
+
+	/**
+	 * Remembers a lockdown, and schedules its release when `duration` is given.
 	 *
 	 * @param data - What the lockdown changed.
-	 * @param duration - How long the lockdown lasts, `null` to keep it until it is released by hand.
+	 * @param duration - How long the lockdown lasts in milliseconds, `null` to keep it until it is released by hand.
 	 */
-	public add(data: LockdownData, duration: number | null) {
+	public async add(data: LockdownData, duration: number | null) {
 		const key = LockdownManager.keyOf(data);
-		this.#entries.get(key)?.timeout?.stop();
+		await container.redis.hset(LockdownsHash, key, serialize(data));
 
-		const timeout = duration ? setAccurateTimeout(() => void this.#expire(key, data, 1), duration) : null;
-		this.#entries.set(key, { data, timeout });
+		// A job with the same ID is left alone by BullMQ, so the one of a previous lockdown has to go first:
+		await container.tasks.delete(key).catch(() => null);
+		if (duration) {
+			await container.tasks.create(
+				{ name: 'moderationEndLockdown', payload: { key } },
+				{
+					repeated: false,
+					delay: duration,
+					customJobOptions: {
+						jobId: key,
+						attempts: ReleaseAttempts,
+						backoff: { type: 'exponential', delay: ReleaseBackoff },
+						removeOnComplete: true,
+						removeOnFail: true
+					}
+				}
+			);
+		}
 	}
 
 	/**
-	 * Forgets a lockdown, without releasing it.
+	 * Forgets a lockdown, and its scheduled release, without releasing it.
 	 *
 	 * @param target - What the lockdown is applied to.
-	 * @returns Whether there was one.
 	 */
-	public remove(target: LockdownTarget) {
+	public async remove(target: LockdownTarget) {
 		const key = LockdownManager.keyOf(target);
-		const entry = this.#entries.get(key);
-		if (entry === undefined) return false;
-
-		if (entry.timeout) clearAccurateTimeout(entry.timeout);
-		return this.#entries.delete(key);
+		await container.redis.hdel(LockdownsHash, key);
+		await container.tasks.delete(key).catch(() => null);
 	}
 
 	/**
 	 * Releases a lockdown: restores what it changed and forgets it.
+	 *
+	 * @remarks
+	 *
+	 * The lockdown is only forgotten once everything is restored, so that it can be released again when Discord refuses
+	 * or does not answer.
 	 *
 	 * @param data - What the lockdown changed.
 	 * @param reason - The reason for the audit log.
 	 * @throws A `DiscordAPIError` when Discord refuses a change.
 	 */
 	public async release(data: LockdownData, reason?: string) {
-		this.remove(data);
-
 		switch (data.type) {
 			case LockdownType.Guild:
-				return this.#releaseGuild(data, reason);
+				await this.#releaseGuild(data, reason);
+				break;
 			case LockdownType.Channel:
-				return this.#releaseChannel(data, reason);
+				await this.#releaseChannel(data, reason);
+				break;
 			case LockdownType.Thread:
-				return this.#releaseThread(data, reason);
+				await this.#releaseThread(data, reason);
+				break;
 		}
+
+		await this.remove(data);
 	}
 
-	async #expire(key: string, data: LockdownData, attempt: number) {
-		// Released or replaced in the meantime:
-		if (this.#entries.get(key)?.data !== data) return;
-
-		try {
-			await this.release(data);
-		} catch (error) {
-			if (error instanceof DiscordAPIError) {
-				if (!IgnoredReleaseErrors.has(error.code as RESTJSONErrorCodes))
-					container.logger.error(`[Lockdown] Could not release ${key}:`, error);
-				return;
-			}
-
-			// Discord did not answer, keep the lockdown and try again later:
-			const unreachable = error instanceof HTTPError || (error instanceof Error && error.name === 'AbortError');
-			if (unreachable && attempt < MaximumReleaseAttempts) {
-				const timeout = setAccurateTimeout(() => void this.#expire(key, data, attempt + 1), ReleaseRetryDelay);
-				this.#entries.set(key, { data, timeout });
-				return;
-			}
-
-			container.logger.error(`[Lockdown] Could not release ${key}:`, error);
-		}
+	/**
+	 * The key of a lockdown, which is also the ID of its scheduled job (BullMQ does not allow a `:` in it).
+	 */
+	public static keyOf(target: LockdownTarget) {
+		return target.type === LockdownType.Guild
+			? `lockdown-guild-${target.guildId}-${target.roleId}`
+			: target.type === LockdownType.Channel
+				? `lockdown-channel-${target.channelId}-${target.roleId}`
+				: `lockdown-thread-${target.channelId}`;
 	}
 
 	async #releaseGuild(data: LockdownGuildData, reason?: string) {
@@ -326,14 +359,6 @@ export class LockdownManager {
 
 		await channel.setLocked(false, reason);
 	}
-
-	private static keyOf(target: LockdownTarget) {
-		return target.type === LockdownType.Guild
-			? `guild:${target.guildId}:${target.roleId}`
-			: target.type === LockdownType.Channel
-				? `channel:${target.channelId}:${target.roleId}`
-				: `thread:${target.channelId}`;
-	}
 }
 
 export type LockdownTarget =
@@ -345,3 +370,13 @@ export type LockdownTarget =
  * The lockdowns the bot started in this process.
  */
 export const lockdowns = new LockdownManager();
+
+const BigIntFields = ['permissionsApplied', 'permissionsOriginal', 'permissionsOriginalAllow', 'permissionsOriginalDeny'];
+
+function serialize(data: LockdownData) {
+	return JSON.stringify(data, (_, value: unknown) => (typeof value === 'bigint' ? value.toString() : value));
+}
+
+function deserialize(value: string): LockdownData {
+	return JSON.parse(value, (key, field: unknown) => (BigIntFields.includes(key) ? BigInt(field as string) : field)) as LockdownData;
+}

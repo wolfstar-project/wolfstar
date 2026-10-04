@@ -175,7 +175,7 @@ export class UserCommand extends Command {
 		const result = await toErrorCodeResult(role.setPermissions(role.permissions.bitField & ~LockdownGuildPermissions, reason));
 		if (result.isErr()) return this.guildError(t, role, result.unwrapErr(), 'guildLockFailed');
 
-		lockdowns.add(
+		await lockdowns.add(
 			{ type: LockdownType.Guild, guildId, userId, roleId, permissionsApplied: LockdownGuildPermissions, permissionsOriginal },
 			duration
 		);
@@ -190,7 +190,7 @@ export class UserCommand extends Command {
 		if ((role.permissions.bitField & LockdownGuildPermissions) === LockdownGuildPermissions) return t(`${Root}:guildUnlocked`, { role: mention });
 
 		// Without what the lockdown changed, give all of them back:
-		const data: LockdownData = lockdowns.get({ type: LockdownType.Guild, guildId, roleId }) ?? {
+		const data: LockdownData = (await lockdowns.get({ type: LockdownType.Guild, guildId, roleId })) ?? {
 			type: LockdownType.Guild,
 			guildId,
 			userId,
@@ -225,7 +225,7 @@ export class UserCommand extends Command {
 		const result = await toErrorCodeResult(Promise.resolve(channel.setLocked(true, reason)).then(() => undefined));
 		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadLockFailed');
 
-		lockdowns.add({ type: LockdownType.Thread, guildId: channel.guildId, userId, channelId: channel.id }, duration);
+		await lockdowns.add({ type: LockdownType.Thread, guildId: channel.guildId, userId, channelId: channel.id }, duration);
 		return t(`${Root}:successThread`, { channel: mention });
 	}
 
@@ -271,7 +271,7 @@ export class UserCommand extends Command {
 		const result = await toErrorCodeResult(channel.permissionOverwrites.edit(roleId, deny, { type: OverwriteType.Role, reason }));
 		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelLockFailed');
 
-		lockdowns.add(
+		await lockdowns.add(
 			{
 				type: LockdownType.Channel,
 				guildId: channel.guildId,
@@ -299,7 +299,7 @@ export class UserCommand extends Command {
 		}
 
 		// Without what the lockdown changed, reset the permissions that were applied to the default state:
-		const data: LockdownData = lockdowns.get({ type: LockdownType.Channel, channelId: channel.id, roleId }) ?? {
+		const data: LockdownData = (await lockdowns.get({ type: LockdownType.Channel, channelId: channel.id, roleId })) ?? {
 			type: LockdownType.Channel,
 			guildId: channel.guildId,
 			userId,
