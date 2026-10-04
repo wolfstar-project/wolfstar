@@ -33,7 +33,12 @@ export function getTranslationKey<const Type extends TypeVariation>(type: Type):
  * @param type - The type of the variation.
  * @returns The undo task name associated with the provided type, or `null` if not found.
  */
-export function getUndoTaskName(type: TypeVariation) {
+/**
+ * The names of the tasks that undo a temporary moderation action, see `ModerationTask`.
+ */
+export type UndoTaskName = (typeof UndoTaskNameMappings)[keyof typeof UndoTaskNameMappings];
+
+export function getUndoTaskName(type: TypeVariation): UndoTaskName | null {
 	return type in UndoTaskNameMappings ? UndoTaskNameMappings[type as keyof typeof UndoTaskNameMappings] : null;
 }
 

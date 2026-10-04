@@ -1,13 +1,14 @@
 import { readSettings } from '#lib/database/settings';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers/LoggerManager';
+import { getUndoTaskName } from '#lib/moderation/common/util';
 import { ModerationManagerEntry } from '#lib/moderation/managers/ModerationManagerEntry';
 import { toModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { SortedCollection } from '#lib/structures/data';
 import { Events } from '#lib/types';
 import { createReferPromise, desc, floatPromise, minutes, orMix, seconds, type BooleanFn, type ReferredPromise } from '#common';
-import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
+import { SchemaKeys, TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 import { AsyncQueue } from '@sapphire/async-queue';
-import { isNullish } from '@sapphire/utilities';
+import { isNullish, isNullishOrZero } from '@sapphire/utilities';
 import { UserError, container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -172,8 +173,7 @@ export class ModerationManager {
 		const entry = await this.#resolveEntry(entryOrId);
 
 		// Delete the task if it exists
-		const { task } = entry;
-		if (task) await task.delete();
+		await this.#deleteTask(entry);
 
 		// Delete the entry from the DB and the cache
 		await this.#table.where({ id: entry.id, guildId: this.#guildId }).deleteAndCount();
@@ -375,6 +375,7 @@ export class ModerationManager {
 		await this.#table.create(toModerationRow(entry.toJSON()));
 
 		container.client.emit(Events.ModerationEntryAdd, entry);
+		await this.#scheduleTask(entry);
 		return entry;
 	}
 
@@ -385,7 +386,67 @@ export class ModerationManager {
 		const clone = entry.clone();
 		entry.patch(data);
 		container.client.emit(Events.ModerationEntryEdit, clone, entry);
+
+		// The task follows the duration of the case, and goes away once the case is completed:
+		if (clone.duration !== entry.duration || clone.metadata !== entry.metadata) {
+			await this.#deleteTask(entry);
+			await this.#scheduleTask(entry);
+		}
+
 		return entry;
+	}
+
+	/**
+	 * The ID of the job that undoes a case when its time is up, which is how it is found again to remove it.
+	 */
+	#getTaskId(entry: ModerationManager.Entry) {
+		return `moderation-${this.#guildId}-${entry.id}`;
+	}
+
+	/**
+	 * Schedules the task that undoes a temporary case (`moderationEnd*`, see `ModerationTask`) for when it expires.
+	 */
+	async #scheduleTask(entry: ModerationManager.Entry) {
+		const name = getUndoTaskName(entry.type);
+		const { expiresTimestamp } = entry;
+		if (name === null || expiresTimestamp === null || isNullishOrZero(entry.duration)) return;
+		if (entry.isUndo() || entry.isCompleted() || entry.isArchived()) return;
+
+		// The scheduled tasks are a plugin of the client, there is none without it:
+		if (!('tasks' in container)) return;
+
+		try {
+			await container.tasks.create(
+				{
+					name,
+					payload: {
+						[SchemaKeys.Case]: entry.id,
+						[SchemaKeys.User]: entry.userId,
+						[SchemaKeys.Guild]: this.guild.id,
+						[SchemaKeys.Duration]: entry.duration,
+						[SchemaKeys.ExtraData]: entry.extraData
+					}
+				},
+				{
+					repeated: false,
+					delay: Math.max(0, expiresTimestamp - Date.now()),
+					customJobOptions: {
+						jobId: this.#getTaskId(entry),
+						attempts: 3,
+						backoff: { type: 'exponential', delay: 30_000 },
+						removeOnComplete: true,
+						removeOnFail: true
+					}
+				}
+			);
+		} catch (error) {
+			container.logger.fatal(error);
+		}
+	}
+
+	async #deleteTask(entry: ModerationManager.Entry) {
+		if (!('tasks' in container)) return;
+		await container.tasks.delete(this.#getTaskId(entry)).catch(() => null);
 	}
 
 	/**

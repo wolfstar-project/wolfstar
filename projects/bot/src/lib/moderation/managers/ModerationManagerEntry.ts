@@ -152,15 +152,6 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 	}
 
 	/**
-	 * The scheduled task for this moderation entry.
-	 */
-	public get task(): ModerationManagerEntry.ScheduledTask | null {
-		// The schedule manager is not part of the container yet, without it there are no tasks to find:
-		const schedules = Reflect.get(container.client, 'schedules') as { queue: ModerationManagerEntry.ScheduledTask[] } | undefined;
-		return schedules?.queue.find((task) => this.#isMatchingTask(task)) ?? null;
-	}
-
-	/**
 	 * The timestamp when the moderation entry expires, if any.
 	 *
 	 * @remarks
@@ -274,10 +265,6 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 		};
 	}
 
-	#isMatchingTask(task: ModerationManagerEntry.ScheduledTask) {
-		return task.data !== null && task.data.caseID === this.id && task.data.guildID === this.guild.id;
-	}
-
 	#setDuration(duration: bigint | number | null) {
 		if (typeof duration === 'bigint') duration = Number(duration);
 		if (isNullishOrZero(duration)) {
@@ -313,14 +300,6 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 }
 
 export namespace ModerationManagerEntry {
-	/**
-	 * The subset of a scheduled task that the entry needs to find and delete its undo task.
-	 */
-	export interface ScheduledTask {
-		data: { caseID?: number; guildID?: string } | null;
-		delete(): Promise<unknown>;
-	}
-
 	export interface Data<Type extends TypeVariation = TypeVariation> {
 		id: number;
 		createdAt: number;
