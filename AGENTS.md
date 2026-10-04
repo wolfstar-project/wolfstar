@@ -105,6 +105,7 @@ InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without Inf
 | Install deps             | `pnpm install`                    |
 | Generate Prisma client   | `pnpm prisma:generate`            |
 | Lint                     | `pnpm lint`                       |
+| Type-check               | `pnpm typecheck`                  |
 | Unit tests               | `pnpm test`                       |
 | Build                    | `pnpm build`                      |
 | Dev (watch + start)      | `pnpm dev`                        |
