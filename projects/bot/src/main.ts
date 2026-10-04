@@ -1,6 +1,7 @@
 // Must stay the first import: it loads and validates the environment before any module reads it.
 import 'varlock/auto-load';
-import { createClient, isWorker, loadAll } from '#lib/Client';
+import { createClient, loadAll } from '#lib/Client';
+import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseString } from '@wolfstar/env-utilities';
 import { container } from '@wolfstar/http-framework';
 import { createBanner } from '@wolfstar/start-banner';

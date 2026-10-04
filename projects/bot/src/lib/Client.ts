@@ -9,13 +9,8 @@ import { GatewayClient } from '@wolfstar/plugin-gateway';
 import { initializeSentry } from '@wolfstar/shared-http-pieces';
 import { GatewayIntentBits } from 'discord-api-types/v10';
 import '#lib/setup/redis';
+import { isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
-
-/**
- * Whether this process is a worker: it never connects to Discord, it replays the dispatches the gateway process
- * forwards onto the broker's stream (see `BROKER_ENABLED`) on a client sharing its Redis cache.
- */
-export const isWorker = () => envParseString('BOT_MODE', 'gateway') === 'worker';
 
 export function createClient() {
 	const worker = isWorker();
