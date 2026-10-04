@@ -38,7 +38,7 @@
 		"@sentry/node": "^10.76.0",
 		"@skyra/char": "^1.0.3",
 		"@wolfstar/decorators": "^0.1.0",
-		"@wolfstar/env-utilities": "^2.2.1",
+		"@wolfstar/env-utilities": "^2.3.0",
 		"@wolfstar/http-framework": "^6.1.1",
 		"@wolfstar/http-framework-utilities": "^0.1.0",
 		"@wolfstar/kit": "^0.1.1",
