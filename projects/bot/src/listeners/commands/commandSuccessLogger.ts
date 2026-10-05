@@ -1,41 +1,31 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandSuccessPayload, Events, Listener, ListenerOptions, LogLevel } from '@sapphire/framework';
-import type { Logger } from '@sapphire/plugin-logger';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { Listener, LogLevel, type ClientEventCommandContext } from '@wolfstar/http-framework';
 import { cyan } from 'colorette';
-import type { Guild, User } from 'discord.js';
+import { ApplicationCommandType, type APIUser } from 'discord-api-types/v10';
 
-@ApplyOptions<ListenerOptions>({ event: Events.CommandSuccess })
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: 'commandSuccess' })
 export class UserListener extends Listener {
-	public run({ message, command }: CommandSuccessPayload) {
-		const shard = this.shard(message.guild?.shardId ?? 0);
-		const commandName = this.command(command);
-		const author = this.author(message.author);
-		const sentAt = message.guild ? this.guild(message.guild) : this.direct();
+	public async run({ interaction }: ClientEventCommandContext) {
+		const shard = `[${cyan('0')}]`;
+		const commandName = cyan(interaction.data.type === ApplicationCommandType.ChatInput ? `/${interaction.data.name}` : interaction.data.name);
+		const author = this.author((interaction.member?.user ?? interaction.user)!);
+		const sentAt = interaction.guild_id
+			? `${await this.fetchGuildName(interaction.guild_id)}[${cyan(interaction.guild_id)}]`
+			: cyan('Direct Messages');
 		this.container.logger.debug(`${shard} - ${commandName} ${author} ${sentAt}`);
 	}
 
-	public onLoad() {
-		this.enabled = (this.container.logger as Logger).level <= LogLevel.Debug;
+	public override onLoad() {
+		this.enabled = this.container.logger.has(LogLevel.Debug);
 		return super.onLoad();
 	}
 
-	private shard(id: number) {
-		return `[${cyan(id.toString())}]`;
-	}
-
-	private command(command: Command) {
-		return cyan(command.name);
-	}
-
-	private author(author: User) {
+	private author(author: APIUser) {
 		return `${author.username}[${cyan(author.id)}]`;
 	}
 
-	private direct() {
-		return cyan('Direct Messages');
-	}
-
-	private guild(guild: Guild) {
-		return `${guild.name}[${cyan(guild.id)}]`;
+	private async fetchGuildName(guildId: string) {
+		const guild = await this.container.gatewayClient.guilds.cache.get(guildId);
+		return guild?.name ?? 'Unknown';
 	}
 }

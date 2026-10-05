@@ -1,9 +1,12 @@
-import type { TaskErrorPayload } from '#lib/types';
-import type { Events } from '#lib/types/Enums';
-import { Listener } from '@sapphire/framework';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { Listener } from '@wolfstar/http-framework';
+import { ScheduledTaskEvents } from '@wolfstar/plugin-scheduled-tasks';
+import type { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
 
-export class UserListener extends Listener<Events.TaskError> {
-	public run(error: Error, context: TaskErrorPayload) {
-		this.container.logger.fatal(`[TASK] ${context.piece.name}\n${error.stack || error.message}`);
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: ScheduledTaskEvents.ScheduledTaskError })
+export class UserListener extends Listener {
+	public run(error: unknown, task: ScheduledTask) {
+		const message = error instanceof Error ? error.stack || error.message : String(error);
+		this.container.logger.fatal(`[TASK] ${task.name}\n${message}`);
 	}
 }

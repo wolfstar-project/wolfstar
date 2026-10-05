@@ -1,13 +1,13 @@
-import type { TaskErrorPayload } from '#lib/types';
-import type { Events } from '#lib/types/Enums';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Listener } from '@sapphire/framework';
-import { captureException } from '@sentry/hub';
-import { envIsDefined } from '@wolfstar/env-utilities';
+import { captureException } from '@sentry/node';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { Listener } from '@wolfstar/http-framework';
+import { ScheduledTaskEvents } from '@wolfstar/plugin-scheduled-tasks';
+import type { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
+import { isSentryInitialized } from '@wolfstar/shared-http-pieces';
 
-@ApplyOptions({ enabled: envIsDefined('SENTRY_DSN') })
-export class UserListener extends Listener<Events.TaskError> {
-	public run(error: Error, context: TaskErrorPayload) {
-		captureException(error, { tags: { name: context.piece.name, entity: context.entity.id } });
+@ApplyOptions<Listener.Options>(() => ({ emitter: 'client', event: ScheduledTaskEvents.ScheduledTaskError, enabled: isSentryInitialized() }))
+export class UserListener extends Listener {
+	public run(error: unknown, task: ScheduledTask) {
+		captureException(error, { tags: { name: task.name } });
 	}
 }
