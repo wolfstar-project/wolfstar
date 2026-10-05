@@ -113,6 +113,9 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 			case 'Timeout':
 				await this.onTimeout(message, language, points, maximum, duration);
 				break;
+			case 'Mute':
+				await this.onMute(message, language, points, maximum, duration);
+				break;
 			case 'Softban':
 				await this.onSoftBan(message, language, points, maximum);
 				break;
@@ -145,6 +148,16 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		if (isNullishOrZero(duration)) return;
 		await this.createActionAndSend(message, async () =>
 			ModerationActions.timeout.apply(await this.fetchGuild(message), {
+				user: message.author,
+				reason: this.#getReason(t, points, maximum),
+				duration
+			})
+		);
+	}
+
+	protected async onMute(message: GuildMessage, t: TFunction<AnyNamespace>, points: number, maximum: number, duration: number | null) {
+		await this.createActionAndSend(message, async () =>
+			ModerationActions.mute.apply(await this.fetchGuild(message), {
 				user: message.author,
 				reason: this.#getReason(t, points, maximum),
 				duration

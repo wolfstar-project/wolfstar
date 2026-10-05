@@ -41,6 +41,7 @@ export abstract class AutoModerationEditCommand extends AutoModerationCommand {
 						.setChoices(
 							createLocalizedChoice('moderation:typeWarning', { value: 'Warning' }),
 							createLocalizedChoice('moderation:typeTimeout', { value: 'Timeout' }),
+							createLocalizedChoice('moderation:typeMute', { value: 'Mute' }),
 							createLocalizedChoice('moderation:typeKick', { value: 'Kick' }),
 							createLocalizedChoice('moderation:typeSoftban', { value: 'Softban' }),
 							createLocalizedChoice('moderation:typeBan', { value: 'Ban' }),

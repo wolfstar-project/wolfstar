@@ -277,7 +277,10 @@ namespace public {
     messageUpdate          BigInt?  @map("message_update")
     messageUpdateNsfw      BigInt?  @map("message_update_nsfw")
     prune                  BigInt?
-    reaction               BigInt?
+    reactionEmojiAdd       BigInt?  @map("reaction_emoji_add")
+    reactionEmojiRemove    BigInt?  @map("reaction_emoji_remove")
+    reactionEmojiIncludeTwemoji Boolean @default(false) @map("reaction_emoji_include_twemoji")
+    image                  BigInt?
     roleCreate             BigInt?  @map("role_create")
     roleUpdate             BigInt?  @map("role_update")
     roleDelete             BigInt?  @map("role_delete")
@@ -287,8 +290,6 @@ namespace public {
     emojiCreate            BigInt?  @map("emoji_create")
     emojiUpdate            BigInt?  @map("emoji_update")
     emojiDelete            BigInt?  @map("emoji_delete")
-    emojiAdd               BigInt?  @map("emoji_add")
-    emojiAddIncludeTwemoji Boolean  @default(false) @map("emoji_add_include_twemoji")
     serverUpdate           BigInt?  @map("server_update")
     command                BigInt?
     settings               BigInt?
@@ -380,6 +381,7 @@ namespace public {
     VoiceKick = "VoiceKick"
     Warning = "Warning"
     Timeout = "Timeout"
+    Mute = "Mute"
     Kick = "Kick"
     Softban = "Softban"
     Ban = "Ban"

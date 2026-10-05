@@ -139,7 +139,10 @@ export interface GuildData {
 	logsMessageUpdate: Snowflake | null;
 	logsMessageUpdateNsfw: Snowflake | null;
 	logsPrune: Snowflake | null;
-	logsReaction: Snowflake | null;
+	logsReactionEmojiAdd: Snowflake | null;
+	logsReactionEmojiRemove: Snowflake | null;
+	logsReactionEmojiIncludeTwemoji: boolean;
+	logsImage: Snowflake | null;
 	logsRoleCreate: Snowflake | null;
 	logsRoleUpdate: Snowflake | null;
 	logsRoleDelete: Snowflake | null;
@@ -149,8 +152,6 @@ export interface GuildData {
 	logsEmojiCreate: Snowflake | null;
 	logsEmojiUpdate: Snowflake | null;
 	logsEmojiDelete: Snowflake | null;
-	logsEmojiAdd: Snowflake | null;
-	logsEmojiAddIncludeTwemoji: boolean;
 	logsServerUpdate: Snowflake | null;
 	logsCommand: Snowflake | null;
 	logsSettings: Snowflake | null;

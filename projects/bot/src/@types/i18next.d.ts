@@ -2581,6 +2581,8 @@ declare module "i18next" {
         selfRoleHierarchy: "{{REDCROSS}} My role needs to be higher than all self-assignable roles, otherwise I can't grant them to people!";
         reactionDescription: "Reacted with {{emoji}} on {{message}}";
         reactionFooter: "First Reaction Added";
+        reactionRemoveDescription: "Removed the reaction {{emoji}} from {{message}}";
+        reactionRemoveFooter: "Reaction Removed";
       };
       "events/twitch": {
         embedDescription: "{{userName}} is now live!";
@@ -2969,7 +2971,7 @@ declare module "i18next" {
         channelsLogsEmojiCreate: "The channel for emoji creation logs, if set, I will send a message when an emoji has been created.";
         channelsLogsEmojiDelete: "The channel for emoji deletion logs, if set, I will send a message when an emoji is deleted.";
         channelsLogsEmojiUpdate: "The channel for emoji update logs, if set, I send a message when an emoji is updated in any way. This message will contain the changes made to the emoji.";
-        channelsLogsImage: "The channel I will use to re-upload all images I see.";
+        channelsLogsImage: "The channel for the image logs, if set, I will forward every message that has an image or a video to it.";
         channelsLogsMemberAdd: "The channel I will send a message to when a member joins.";
         channelsLogsMemberRemove: "The channel I will send a message to  when a member leaves, is kicked, or is banned.";
         channelsLogsMemberNickNameUpdate: "The channel I will send a message to when a member changes their nickname.";
@@ -2981,7 +2983,9 @@ declare module "i18next" {
         channelsLogsMessageUpdateNsfw: "The channel I will send a message to when a message from an NSFW channel has been updated.";
         channelsLogsModeration: "The channel for moderation logs, once enabled, I will post all my moderation cases there. If `events.ban-remove` and/or `events.ban-remove` are enabled, I will automatically post anonymous logs.";
         channelsLogsPrune: "The channel for prune logs, same requirement as normal message logs, but will only send prune messages.";
-        channelsLogsReaction: "The channel for the reaction logs, same requirement as normal message logs, but will only send message reactions. If you don't want twemojis to be logged you can toggle `events.twemoji-reactions`.";
+        channelsLogsReactionEmojiAdd: "The channel for the reaction logs, if set, I will send a message when the first reaction of an emoji is added to a message. Toggle `logs.reaction-emoji-include-twemoji` to include the default emojis.";
+        channelsLogsReactionEmojiRemove: "The channel for the removed reaction logs, if set, I will send a message when a reaction is removed from a message. Toggle `logs.reaction-emoji-include-twemoji` to include the default emojis.";
+        channelsLogsReactionEmojiIncludeTwemoji: "Whether the reaction logs should include the default (Twemoji) emojis.";
         channelsLogsRoleCreate: "The channel for role creation logs, if set, I send a message when a new role is craeted.";
         channelsLogsRoleDelete: "The channel for role deletion logs, if set, I send a message when a role is deleted.";
         channelsLogsRoleUpdate: "The channel for role update logs, if set, I send a message when a role is updated in any way. This message will contain the changes made to the role.";
@@ -3083,8 +3087,6 @@ declare module "i18next" {
         selfmodMentionsIgnoredChannels: "The channels where the mentions filter is not applied.";
         selfmodMentionsIgnoredRoles: "The roles that are not affected by the mentions filter.";
         channelsLogsCommand: "The channel for command execution logs, if set, I send a message whenever a bot command is used.";
-        channelsLogsEmojiAdd: "The channel where I will log the reactions added to messages.";
-        channelsLogsEmojiAddIncludeTwemoji: "Whether the reaction logs should include the default (Twemoji) emojis.";
         channelsLogsSettings: "The channel for settings change logs, if set, I send a message whenever settings are updated, added, removed, or access is denied.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";

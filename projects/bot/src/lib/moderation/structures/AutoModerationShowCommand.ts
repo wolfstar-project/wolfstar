@@ -119,6 +119,8 @@ export abstract class AutoModerationShowCommand extends AutoModerationCommand {
 				return { key: 'moderation:typeKick', emoji: Emojis.Kick };
 			case 'Timeout':
 				return { key: 'moderation:typeTimeout', emoji: Emojis.Timeout };
+			case 'Mute':
+				return { key: 'moderation:typeMute', emoji: Emojis.Timeout };
 			case 'VoiceKick':
 				return { key: 'moderation:typeVoiceKick', emoji: Emojis.Kick };
 			case 'Softban':

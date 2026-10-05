@@ -29,6 +29,9 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 			case 'Timeout':
 				await this.onTimeout(guild, userId);
 				break;
+			case 'Mute':
+				await this.onMute(guild, userId);
+				break;
 			case 'Softban':
 				await this.onSoftBan(guild, userId);
 				break;
@@ -64,6 +67,13 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 				reason: '[Auto-Moderation] Threshold Reached.',
 				duration: Math.min(Number(duration), days(28))
 			})
+		);
+	}
+
+	protected async onMute(guild: Guild, userId: string) {
+		const duration = await this.#getPunishmentActionDuration(guild);
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.mute.apply(guild, { user: userId, reason: '[Auto-Moderation] Threshold Reached.', duration })
 		);
 	}
 

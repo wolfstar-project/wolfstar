@@ -42,10 +42,10 @@ export class UserListener extends Listener {
 		if (!(await this.#canFetchMessages(channel))) return;
 
 		const settings = await readSettings(data.guildId);
-		const targetChannelId = settings.logsReaction;
+		const targetChannelId = settings.logsReactionEmojiAdd;
 
 		this.container.client.emit(Events.ReactionBlocked, data, emoji);
-		if (isNullish(targetChannelId) || (!settings.logsEmojiAddIncludeTwemoji && data.emoji.id === null)) return;
+		if (isNullish(targetChannelId) || (!settings.logsReactionEmojiIncludeTwemoji && data.emoji.id === null)) return;
 
 		if (settings.logsIgnoreReactions.some((id) => id === channel.id || channel.parentId === id)) return;
 		if (settings.logsIgnoreAll.some((id) => id === channel.id || channel.parentId === id)) return;
@@ -59,7 +59,7 @@ export class UserListener extends Listener {
 		const t = await fetchGuildT({ id: data.guildId });
 		const logger = await getLogger(data.guildId);
 		await logger.send({
-			key: 'logsReaction',
+			key: 'logsReactionEmojiAdd',
 			channelId: targetChannelId,
 			makeMessage: () =>
 				new EmbedBuilder()

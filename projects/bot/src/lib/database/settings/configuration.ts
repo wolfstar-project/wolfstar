@@ -185,7 +185,14 @@ export function getConfiguration() {
 		logsMessageUpdate: logChannel('message-update', 'settings:channelsLogsMessageUpdate'),
 		logsMessageUpdateNsfw: logChannel('message-update-nsfw', 'settings:channelsLogsMessageUpdateNsfw'),
 		logsPrune: logChannel('prune', 'settings:channelsLogsPrune'),
-		logsReaction: logChannel('reaction', 'settings:channelsLogsReaction'),
+		logsReactionEmojiAdd: logChannel('reaction-emoji-add', 'settings:channelsLogsReactionEmojiAdd'),
+		logsReactionEmojiRemove: logChannel('reaction-emoji-remove', 'settings:channelsLogsReactionEmojiRemove'),
+		logsReactionEmojiIncludeTwemoji: {
+			type: 'boolean',
+			name: 'logs.reaction-emoji-include-twemoji',
+			description: 'settings:channelsLogsReactionEmojiIncludeTwemoji'
+		},
+		logsImage: logChannel('image', 'settings:channelsLogsImage'),
 		logsRoleCreate: logChannel('role-create', 'settings:channelsLogsRoleCreate'),
 		logsRoleUpdate: logChannel('role-update', 'settings:channelsLogsRoleUpdate'),
 		logsRoleDelete: logChannel('role-delete', 'settings:channelsLogsRoleDelete'),
@@ -195,12 +202,6 @@ export function getConfiguration() {
 		logsEmojiCreate: logChannel('emoji-create', 'settings:channelsLogsEmojiCreate'),
 		logsEmojiUpdate: logChannel('emoji-update', 'settings:channelsLogsEmojiUpdate'),
 		logsEmojiDelete: logChannel('emoji-delete', 'settings:channelsLogsEmojiDelete'),
-		logsEmojiAdd: logChannel('emoji-add', 'settings:channelsLogsEmojiAdd'),
-		logsEmojiAddIncludeTwemoji: {
-			type: 'boolean',
-			name: 'logs.emoji-add-include-twemoji',
-			description: 'settings:channelsLogsEmojiAddIncludeTwemoji'
-		},
 		logsServerUpdate: logChannel('server-update', 'settings:channelsLogsServerUpdate'),
 		logsCommand: logChannel('command', 'settings:channelsLogsCommand'),
 		logsSettings: logChannel('settings', 'settings:channelsLogsSettings'),
