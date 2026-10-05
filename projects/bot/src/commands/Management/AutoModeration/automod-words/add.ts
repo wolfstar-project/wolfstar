@@ -1,4 +1,5 @@
-import { readSettingsWordFilterRegExp, writeSettingsTransaction, type ReadonlyGuildData } from '#lib/database';
+import { readSettingsWordFilterRegExp, writeSettingsTransaction } from '#lib/database';
+import { type ReadonlyGuildData } from 'wolfstar-database';
 import { AutoModerationRules } from '#lib/moderation/structures/AutoModerationRules';
 import { IncomingType, OutgoingType } from '#lib/moderation/workers';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';

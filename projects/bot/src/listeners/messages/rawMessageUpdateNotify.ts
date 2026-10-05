@@ -1,4 +1,4 @@
-import { readSettings, type GuildDataKey, type ReadonlyGuildData } from '#lib/database';
+import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
 import { escapeMarkdown } from '#utils/External/escapeMarkdown';
@@ -10,6 +10,7 @@ import { isNsfwChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Message, User } from '@wolfstar/plugin-gateway';
 import { diffWordsWithSpace } from 'diff';
+import type { GuildDataKey, ReadonlyGuildData } from 'wolfstar-database';
 
 @RegisterAsGatewayListener('messageUpdate')
 export class UserListener extends EventGatewayListener<'messageUpdate'> {

@@ -1,4 +1,4 @@
-import type { SerializedEmoji } from '#utils/functions/emojis';
+import type { SerializedEmoji } from 'wolfstar-database';
 
 export const animatedSkyraGlasses = 'a:SkyraGlasses:735070572416991235';
 export const serializedAnimatedSkyraGlasses = 'a735070572416991235' as SerializedEmoji;

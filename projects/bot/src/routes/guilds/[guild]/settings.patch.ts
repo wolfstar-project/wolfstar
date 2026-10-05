@@ -1,19 +1,11 @@
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import {
-	getConfigurableKeys,
-	isSchemaKey,
-	serializeSettings,
-	writeSettingsTransaction,
-	type GuildDataValue,
-	type ReadonlyGuildData,
-	type SchemaDataKey,
-	type Serializer
-} from '#lib/database';
+import { getConfigurableKeys, isSchemaKey, serializeSettings, writeSettingsTransaction, type SchemaDataKey, type Serializer } from '#lib/database';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { seconds } from '#common';
 import { cast } from '#utils/util';
 import { HttpCodes, Route, type MimeType } from '@wolfstar/plugin-api';
+import type { GuildDataValue, ReadonlyGuildData } from 'wolfstar-database';
 
 export class UserRoute extends Route {
 	@authenticated()

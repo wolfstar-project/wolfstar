@@ -1,11 +1,12 @@
 import { toErrorCodeResult } from '#common';
-import { readSettings, writeSettings, type GuildSettingsOfType } from '#lib/database';
+import { readSettings, writeSettings } from '#lib/database';
 import { Events } from '#lib/types';
 import { getCodeStyle, getLogPrefix } from '#utils/functions';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { Listener } from '@wolfstar/http-framework';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import type { GuildSettingsOfType } from 'wolfstar-database';
 
 @ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.NotMutedMemberAdd })
 export class UserListener extends Listener {

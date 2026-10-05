@@ -1,7 +1,7 @@
 import { AdderManager } from '#lib/database/settings/structures/AdderManager';
 import { AuditLogManager } from '#lib/database/settings/structures/AuditLogManager';
 import { PermissionNodeManager } from '#lib/database/settings/structures/PermissionNodeManager';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import { create } from '#utils/Security/RegexCreator';
 import { RateLimitManager } from '@sapphire/ratelimits';
 import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';

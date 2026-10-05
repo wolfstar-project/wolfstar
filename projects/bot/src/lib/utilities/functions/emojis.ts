@@ -1,6 +1,7 @@
 import { formatEmoji } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';
 import { isNullish } from '@sapphire/utilities';
+import type { SerializedEmoji } from 'wolfstar-database';
 
 /**
  * Matches a formatted custom emoji, exposing the `animated`, `name` and `id` groups, same as `FormattedCustomEmojiWithGroups`
@@ -49,8 +50,6 @@ interface EmojiObjectPartial {
 export interface EmojiObject extends EmojiObjectPartial {
 	animated?: boolean;
 }
-
-export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 
 const customEmojiRegExp = /^[as]\d{17,19}$/;
 const allowedTwemojiRanges: ReadonlyArray<[number, number]> = [

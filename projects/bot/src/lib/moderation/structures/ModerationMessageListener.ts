@@ -1,11 +1,4 @@
-import {
-	readSettings,
-	readSettingsAdder,
-	type AdderKey,
-	type AutoModerationHardAction,
-	type GuildSettingsOfType,
-	type ReadonlyGuildData
-} from '#lib/database';
+import { readSettings, readSettingsAdder, type AdderKey } from '#lib/database';
 import type { AdderError } from '#lib/database/utils/Adder';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -21,6 +14,7 @@ import { Listener } from '@wolfstar/http-framework';
 import { canSendMessages, isTextBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import type { GuildMember, Message } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
+import type { AutoModerationHardAction, GuildSettingsOfType, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
  * The base of the listeners that run an auto-moderation rule on the messages the members send

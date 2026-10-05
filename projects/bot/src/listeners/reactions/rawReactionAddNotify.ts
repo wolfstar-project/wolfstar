@@ -13,11 +13,11 @@ import {
 	getEncodedTwemoji,
 	getLogPrefix,
 	getLogger,
-	getTwemojiUrl,
-	type SerializedEmoji
+	getTwemojiUrl
 } from '#utils/functions';
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
+import type { SerializedEmoji } from 'wolfstar-database';
 import { Collection } from '@discordjs/collection';
 import { inlineCode, messageLink } from '@discordjs/formatters';
 import { isNullish } from '@sapphire/utilities';

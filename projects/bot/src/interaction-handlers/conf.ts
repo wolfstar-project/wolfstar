@@ -1,14 +1,7 @@
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import {
-	getConfigurableGroups,
-	getConfigurableKeys,
-	reset,
-	writeSettings,
-	type ReadonlyGuildData,
-	type SchemaDataKey,
-	type Serializer
-} from '#lib/database';
+import { getConfigurableGroups, getConfigurableKeys, reset, writeSettings, type SchemaDataKey, type Serializer } from '#lib/database';
+import { type ReadonlyGuildData } from 'wolfstar-database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import {

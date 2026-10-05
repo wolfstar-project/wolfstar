@@ -1,8 +1,10 @@
-import type { SerializedEmoji } from '#utils/functions';
 import type { DeepReadonly, PickByValue } from '@sapphire/utilities';
 import type { APIGuildMember } from 'discord-api-types/v10';
 import type { Snowflake } from 'discord-api-types/v10';
-import type { Models } from 'wolfstar-database';
+import type { Models } from '../index.js';
+
+/** A Twemoji or a custom emoji, serialized the way the settings store it. */
+export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 
 /**
  * The hard action an auto-moderation rule takes, as the `GuildAutoModerationHardAction` enum stores it.
@@ -12,7 +14,7 @@ export type AutoModerationHardAction = Models.public_GuildAutoModerationLinks['h
 /**
  * The settings of a guild, flattened from the normalized Prisma 8 tables (`Guild`, `Modules`, `GuildRoles`, …).
  *
- * Every key is prefixed by the table it is stored in, see `#lib/database/settings/storage` for the mapping.
+ * Every key is prefixed by the table it is stored in, see `./storage.ts` for the mapping.
  * Snowflakes are kept as strings; they are converted from and to `bigint` at the storage boundary.
  */
 export interface GuildData {
@@ -261,4 +263,12 @@ export interface MentionsOverride {
 	roles: readonly Snowflake[];
 	users: readonly Snowflake[];
 	points: number;
+}
+
+declare global {
+	namespace PrismaJson {
+		type PermissionNodeEntries = PermissionsNode[];
+		type UniqueRoleSetEntries = UniqueRoleSet[];
+		type AuditEventChanges = import('./types.js').AuditEventChanges;
+	}
 }

@@ -1,8 +1,9 @@
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import { readSettings, serializeSettings, type ReadonlyGuildData } from '#lib/database';
+import { readSettings, serializeSettings } from '#lib/database';
 import { seconds } from '#common';
 import { HttpCodes, Route, type MimeType } from '@wolfstar/plugin-api';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 
 export class UserRoute extends Route {
 	@authenticated()

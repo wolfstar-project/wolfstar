@@ -1,4 +1,4 @@
-import { readSettings, type AutoModerationHardAction, type GuildSettingsOfType } from '#lib/database';
+import { readSettings } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import type { HardPunishment, ModerationMessageListener } from '#lib/moderation/structures/ModerationMessageListener';
@@ -7,6 +7,7 @@ import { getModeration } from '#utils/functions';
 import { isNullishOrZero, type Awaitable } from '@sapphire/utilities';
 import { Listener } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
+import type { AutoModerationHardAction, GuildSettingsOfType } from 'wolfstar-database';
 
 export abstract class ModerationListener<V extends unknown[], T = unknown> extends Listener {
 	public abstract override run(...params: V): unknown;

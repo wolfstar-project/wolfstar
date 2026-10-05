@@ -1,4 +1,4 @@
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from './types.js';
 
 let cachedDefaultGuildSettings: DefaultGuildData | null = null;
 

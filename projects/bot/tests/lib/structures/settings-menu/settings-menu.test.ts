@@ -1,5 +1,5 @@
-import { getConfigurableGroups, getConfigurableKeys, SerializerStore, type ReadonlyGuildData, type SchemaKey, type Serializer } from '#lib/database';
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
+import { getConfigurableGroups, getConfigurableKeys, SerializerStore, type SchemaKey, type Serializer } from '#lib/database';
+import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 import {
 	decodeSettingsMenuId,
 	displaySettingValue,

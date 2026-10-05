@@ -1,6 +1,5 @@
 import { AuditLogManager, readSettingsAuditLog } from '#lib/database';
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 
 function createSettings(id: string): ReadonlyGuildData {
 	return Object.assign(Object.create(null), getDefaultGuildSettings(), { id }) as ReadonlyGuildData;

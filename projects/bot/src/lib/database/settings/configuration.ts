@@ -1,6 +1,6 @@
 import { SchemaGroup, type NonEmptyArray } from '#lib/database/settings/schema/SchemaGroup';
 import { SchemaKey, type ConfigurableKeyValueOptions } from '#lib/database/settings/schema/SchemaKey';
-import type { GuildDataKey } from '#lib/database/settings/types';
+import type { GuildDataKey } from 'wolfstar-database';
 import type { TypedT } from '#lib/types';
 import { objectEntries } from '@sapphire/utilities';
 import { Collection } from '@discordjs/collection';

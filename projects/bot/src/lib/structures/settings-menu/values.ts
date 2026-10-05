@@ -1,6 +1,7 @@
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import { getConfigurableGroups, isSchemaGroup, type ReadonlyGuildData, type Serializer } from '#lib/database';
+import { getConfigurableGroups, isSchemaGroup, type Serializer } from '#lib/database';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';

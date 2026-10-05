@@ -2,7 +2,7 @@ import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import { getConfigurableGroups } from '#lib/database/settings/configuration';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import type { GuildData, ReadonlyGuildData } from '#lib/database/settings/types';
+import type { GuildData, ReadonlyGuildData } from 'wolfstar-database';
 import type { Translator } from '#lib/structures/commands/utils';
 import { UserError } from '@wolfstar/http-framework';
 

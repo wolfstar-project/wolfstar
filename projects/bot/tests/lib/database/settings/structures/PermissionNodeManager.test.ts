@@ -1,6 +1,5 @@
-import { PermissionNodeAction, PermissionNodeManager, type PermissionsNode } from '#lib/database';
-import type { GuildData } from '#lib/database/settings';
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
+import { PermissionNodeAction, PermissionNodeManager } from '#lib/database';
+import { getDefaultGuildSettings, type GuildData, type PermissionsNode } from 'wolfstar-database';
 import { UserError } from '@wolfstar/http-framework';
 import type { Guild, GuildMember, Role, User } from '@wolfstar/plugin-gateway';
 

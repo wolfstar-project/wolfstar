@@ -1,8 +1,7 @@
-import { getDefaultGuildSettings } from '#lib/database/settings/constants';
-import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData, StickyRole } from '#lib/database/settings/types';
-import { container } from '@wolfstar/http-framework';
+import type { Database } from '../index.js';
+import { getDefaultGuildSettings } from './constants.js';
+import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData, StickyRole } from './types.js';
 import type { Snowflake } from 'discord-api-types/v10';
-import type { Database } from 'wolfstar-database';
 
 /**
  * The tables a guild's settings are spread across, in foreign-key order: every table references the one it follows
@@ -220,7 +219,7 @@ function toColumn(kind: ColumnKind, value: unknown): unknown {
 
 /**
  * Reads the settings of a guild.
- * @param orm The ORM surface to read through, `container.prisma.orm` or a transaction's `tx.orm`.
+ * @param orm The ORM surface to read through, `db.orm` or a transaction's `tx.orm`.
  * @param id The guild's ID.
  * @returns The settings, or `null` when the guild has no `Guild` row yet.
  */
@@ -262,10 +261,11 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
 /**
  * Writes changed settings into their tables, in one transaction. The rows a change needs are created with the rest of
  * {@link settings} when they do not exist yet, together with the rows they reference.
+ * @param db The database to write through.
  * @param settings The settings the changes apply to, with the changes already merged in.
  * @param changes The changed keys and their new values.
  */
-export async function writeGuildData(settings: ReadonlyGuildData, changes: Partial<ReadonlyGuildData>): Promise<void> {
+export async function writeGuildData(db: Database, settings: ReadonlyGuildData, changes: Partial<ReadonlyGuildData>): Promise<void> {
 	const id = BigInt(settings.id);
 	const changedKeys = Object.keys(changes) as GuildDataKey[];
 
@@ -284,7 +284,7 @@ export async function writeGuildData(settings: ReadonlyGuildData, changes: Parti
 	if (touched.size > 1) touched.add('Modules');
 	if ([...touched].some((name) => name.startsWith('GuildAutoModeration'))) touched.add('GuildAutoModeration');
 
-	await container.prisma.transaction(async (tx) => {
+	await db.transaction(async (tx) => {
 		for (const name of Tables) {
 			if (!touched.has(name)) continue;
 

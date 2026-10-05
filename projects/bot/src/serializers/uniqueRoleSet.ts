@@ -1,4 +1,5 @@
-import { Serializer, type UniqueRoleSet } from '#lib/database';
+import { Serializer } from '#lib/database';
+import { type UniqueRoleSet } from 'wolfstar-database';
 import { isObject } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<UniqueRoleSet> {

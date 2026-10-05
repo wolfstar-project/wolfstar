@@ -1,12 +1,12 @@
 import { auditDiff } from '#lib/api/auditDiff';
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import type { AuditEventChanges, AuditOutcome, DashboardAuditAction, DashboardAuditChanges, DashboardAuditEntry } from '#lib/database';
 import { DASHBOARD_AUDIT_ACTIONS } from '#lib/database/settings/auditActions';
 import { seconds } from '#common';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { APIGuildMember, GuildMemberFlags } from 'discord-api-types/v10';
+import type { AuditEventChanges, AuditOutcome, DashboardAuditAction, DashboardAuditChanges, DashboardAuditEntry } from 'wolfstar-database';
 
 function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
 	const parts = path.split('/').filter(Boolean);

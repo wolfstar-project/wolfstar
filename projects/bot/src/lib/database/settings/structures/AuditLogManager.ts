@@ -1,5 +1,4 @@
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
-import type { AuditOutcome, ReadonlyGuildData } from '#lib/database/settings/types';
 import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
 import { getDisplayAvatar, getEmbedAuthor } from '#utils/util';
@@ -9,7 +8,7 @@ import type { User } from '@wolfstar/plugin-gateway';
 import { fetchT, type AnyNamespace, type TFunction as BaseTFunction } from '@wolfstar/plugin-i18next';
 import type { APIUser } from 'discord-api-types/v10';
 import { randomUUID } from 'node:crypto';
-import type { Models } from 'wolfstar-database';
+import type { AuditOutcome, Models, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
  * The translation function of a guild, which resolves the keys of every namespace at runtime.

@@ -1,7 +1,7 @@
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { AliasedCollection } from '#lib/database/settings/structures/collections/AliasedCollection';
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { Translator } from '#lib/structures/commands/utils';
 import { codeBlock, isNullish, toTitleCase } from '@sapphire/utilities';
 

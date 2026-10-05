@@ -1,4 +1,5 @@
-import { readSettings, type ReadonlyGuildData } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { type ReadonlyGuildData } from 'wolfstar-database';
 import { OWNERS } from '#root/config';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits } from 'discord-api-types/v10';

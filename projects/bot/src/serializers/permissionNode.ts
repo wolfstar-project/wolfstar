@@ -1,4 +1,5 @@
-import { CommandMatcher, Serializer, type PermissionsNode } from '#lib/database';
+import { CommandMatcher, Serializer } from '#lib/database';
+import { type PermissionsNode } from 'wolfstar-database';
 import { isObject } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<PermissionsNode> {

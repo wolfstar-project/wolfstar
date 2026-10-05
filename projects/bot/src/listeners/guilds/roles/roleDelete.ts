@@ -1,7 +1,8 @@
-import { readSettingsPermissionNodes, writeSettingsTransaction, type StickyRole, type UniqueRoleSet } from '#lib/database';
+import { readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
+import type { StickyRole, UniqueRoleSet } from 'wolfstar-database';
 
 @RegisterAsGatewayListener('guildRoleDelete')
 export class UserListener extends EventGatewayListener<'guildRoleDelete'> {

@@ -1,0 +1,27 @@
+diff --git a/dist/typed-codecs-DFjST939.mjs b/dist/typed-codecs-DFjST939.mjs
+index d54fb58d2c315066323183019608a6a9750e2a30..d29a5144c4a2f7bc4c1789e53b7b734ccb22f29a 100644
+--- a/dist/typed-codecs-DFjST939.mjs
++++ b/dist/typed-codecs-DFjST939.mjs
+@@ -1,5 +1,6 @@
+ import { CodecImpl, column } from "@prisma/orm-framework/components/codec";
+ import { PostgresCodecDescriptor, definePostgresCodecs } from "@prisma/orm-target-postgres/target/codec-descriptor";
++import { pgJsonb, pgText } from "@prisma/orm-target-postgres/target/data-types";
+ import { runtimeError } from "@prisma/orm-framework/components/runtime";
+ //#region src/core/ts-type.ts
+ /**
+@@ -114,6 +115,7 @@ var TypedJsonDescriptor = class extends PostgresCodecDescriptor {
+ 		return expression;
+ 	}
+ 	codecId = TYPED_JSON_CODEC_ID;
++	dataType = pgJsonb.id;
+ 	traits = ["equality"];
+ 	targetTypes = [JSONB];
+ 	paramsSchema = typedParamsSchema;
+@@ -132,6 +134,7 @@ var TypedTextDescriptor = class extends PostgresCodecDescriptor {
+ 		return expression;
+ 	}
+ 	codecId = TYPED_TEXT_CODEC_ID;
++	dataType = pgText.id;
+ 	traits = [
+ 		"equality",
+ 		"order",

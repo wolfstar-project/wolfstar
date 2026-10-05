@@ -1,4 +1,5 @@
-import { readSettings, readSettingsAdder, type AutoModerationHardAction, type ReadonlyGuildData } from '#lib/database';
+import { readSettings, readSettingsAdder } from '#lib/database';
+import { type AutoModerationHardAction, type ReadonlyGuildData } from 'wolfstar-database';
 import type { Adder } from '#lib/database/utils/Adder';
 import { AutoModerationCommand, registerAutoModerationSubcommand } from '#lib/moderation/structures/AutoModerationCommand';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';

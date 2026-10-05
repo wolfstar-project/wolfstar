@@ -1,4 +1,4 @@
-import type { ReadonlyGuildData } from '#lib/database';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import { AutoModerationRules } from '#lib/moderation/structures/AutoModerationRules';
 import { AutoModerationShowCommand } from '#lib/moderation/structures/AutoModerationShowCommand';
 import { translateKey } from '#lib/structures/commands/utils';

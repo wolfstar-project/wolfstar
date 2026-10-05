@@ -1,7 +1,7 @@
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { Serializer } from '#lib/database/settings/structures/Serializer';
-import type { GuildDataKey, ReadonlyGuildData } from '#lib/database/settings/types';
+import type { GuildDataKey, ReadonlyGuildData } from 'wolfstar-database';
 import type { Translator } from '#lib/structures/commands/utils';
 import type { TypedT } from '#lib/types';
 import { resolveGuild } from '#common';

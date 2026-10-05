@@ -1,4 +1,4 @@
-import type { ReadonlyGuildData } from '#lib/database/settings/types';
+import type { ReadonlyGuildData } from 'wolfstar-database';
 import { Adder } from '#lib/database/utils/Adder';
 import { isNullishOrZero, type Nullish } from '@sapphire/utilities';
 

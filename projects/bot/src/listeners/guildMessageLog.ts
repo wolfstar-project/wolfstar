@@ -1,4 +1,4 @@
-import { writeSettings, type GuildSettingsOfType } from '#lib/database';
+import { writeSettings } from '#lib/database';
 import { toErrorCodeResult } from '#common';
 import { EmbedBuilder } from '@discordjs/builders';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
@@ -7,6 +7,7 @@ import { Listener } from '@wolfstar/http-framework';
 import { canSendEmbeds, isDMChannel, isTextBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import type { Guild, MessageCreateOptions } from '@wolfstar/plugin-gateway';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
+import type { GuildSettingsOfType } from 'wolfstar-database';
 
 export class UserListener extends Listener {
 	public async run(

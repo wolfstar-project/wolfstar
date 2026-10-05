@@ -1,4 +1,4 @@
-import type { ModerationData } from '#lib/database';
+import type { ModerationData } from 'wolfstar-database';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 
 /**
