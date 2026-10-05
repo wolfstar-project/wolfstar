@@ -1,3 +1,5 @@
+import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
+import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup, type ReadonlyGuildData } from '#lib/database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';

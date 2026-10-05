@@ -1,3 +1,5 @@
+import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
+import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import {
 	getConfigurableGroups,
 	getConfigurableKeys,
