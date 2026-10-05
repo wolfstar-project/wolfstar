@@ -1,5 +1,6 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
+import { broadcastShardMessage, onShardMessage } from '#lib/sharder';
 import { fetchGuildData, getDefaultGuildSettings, writeGuildData, type GuildData, type ReadonlyGuildData } from 'wolfstar-database';
 import { AsyncQueue } from '@sapphire/async-queue';
 import type { Awaitable } from '@sapphire/utilities';
@@ -22,6 +23,13 @@ export function deleteSettingsCached(guild: GuildResolvable) {
 	cache.delete(id);
 	deleteSettingsContext(id);
 }
+
+// The settings are cached by every shard process, so a write in one of them makes the copies of the others stale. The
+// lock is kept: a transaction of this process may be holding it.
+onShardMessage('settingsUpdate', ({ guildId }) => {
+	cache.delete(guildId);
+	deleteSettingsContext(guildId);
+});
 
 export function readSettings(guild: GuildResolvable): Awaitable<ReadonlyGuildData> {
 	const id = resolveGuildId(guild);
@@ -137,6 +145,7 @@ export class Transaction {
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;
 			updateSettingsContext(this.settings, this.#changes);
+			broadcastShardMessage({ type: 'settingsUpdate', guildId: this.settings.id });
 		} finally {
 			this.#changes = Object.create(null);
 

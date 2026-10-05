@@ -198,6 +198,21 @@ export type CoercedEnvSchema = {
   BROKER_CONSUMER: string;
   
   /**
+   * **SHARDER_ENABLED**  
+   * Spreads the gateway shards across several processes: the process that is started becomes the manager, which spawns  
+   * the shards as cluster workers sharing the HTTP ports. Off, a single process connects every gateway shard.  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M23%2023a7%207%200%201%201%207-7a7.01%207.01%200%200%201-7%207m0-12a5%205%200%201%200%205%205a5.006%205.006%200%200%200-5-5%22%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%2216%22%20r%3D%227%22%20fill%3D%22%23808080%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  SHARDER_ENABLED: boolean;
+  
+  /**
+   * **SHARDER_CLUSTERS**  
+   * Number of shard processes. Defaults to the number of CPUs when unset.  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M26%2012h-4v2h4v2h-3v2h3v2h-4v2h4a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-7%2010h-6v-4a2%202%200%200%201%202-2h2v-2h-4v-2h4a2%202%200%200%201%202%202v2a2%202%200%200%201-2%202h-2v2h4ZM8%2020v-8H6v1H4v2h2v5H4v2h6v-2z%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  SHARDER_CLUSTERS?: number;
+  
+  /**
    * **WORKER_COUNT**  
    * Number of threads that run the message filters. Defaults to the number of CPUs when unset.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M26%2012h-4v2h4v2h-3v2h3v2h-4v2h4a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-7%2010h-6v-4a2%202%200%200%201%202-2h2v-2h-4v-2h4a2%202%200%200%201%202%202v2a2%202%200%200%201-2%202h-2v2h4ZM8%2020v-8H6v1H4v2h2v5H4v2h6v-2z%22%2F%3E%3C%2Fsvg%3E)   
@@ -315,11 +330,11 @@ export type CoercedEnvSchema = {
   
 };
 
-type _CoercedEnvSchema_dfcd3d42 = CoercedEnvSchema;
+type _CoercedEnvSchema_5052011b = CoercedEnvSchema;
 
 declare module 'varlock/env' {
-  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_dfcd3d42> {}
-  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_dfcd3d42, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'OAUTH_COOKIE' | 'OAUTH_REDIRECT_URI' | 'OAUTH_SCOPE' | 'OAUTH_DOMAIN_OVERWRITE' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'WORKER_COUNT' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_PROXY_URL' | 'INFLUX_ORG' | 'INFLUX_ORG_ANALYTICS_BUCKET' | 'NODE_ENV'>> {}
+  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_5052011b> {}
+  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_5052011b, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'OAUTH_COOKIE' | 'OAUTH_REDIRECT_URI' | 'OAUTH_SCOPE' | 'OAUTH_DOMAIN_OVERWRITE' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'SHARDER_ENABLED' | 'SHARDER_CLUSTERS' | 'WORKER_COUNT' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_PROXY_URL' | 'INFLUX_ORG' | 'INFLUX_ORG_ANALYTICS_BUCKET' | 'NODE_ENV'>> {}
 }
 
 
@@ -329,17 +344,17 @@ export type EnvSchemaAsStrings = {
       : (NonNullable<CoercedEnvSchema[Property]> extends boolean ? ('true' | 'false') : string)
 };
 
-type _EnvSchemaAsStrings_dfcd3d42 = EnvSchemaAsStrings;
+type _EnvSchemaAsStrings_5052011b = EnvSchemaAsStrings;
 declare global {
 
   // add types for global import.meta.env
-  interface ImportMetaEnv extends _EnvSchemaAsStrings_dfcd3d42 {}
+  interface ImportMetaEnv extends _EnvSchemaAsStrings_5052011b {}
   interface ImportMeta {
     readonly env: ImportMetaEnv;
   }
 
   // add types for global process.env
   namespace NodeJS {
-    interface ProcessEnv extends _EnvSchemaAsStrings_dfcd3d42 {}
+    interface ProcessEnv extends _EnvSchemaAsStrings_5052011b {}
   }
 }

@@ -10,12 +10,15 @@ import { scheduledTasks } from '@wolfstar/plugin-scheduled-tasks';
 import { GatewayIntentBits } from 'discord-api-types/v10';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
+import { bindShardClient, createShardClient } from '#lib/sharder';
 import { AnalyticsData } from '#lib/structures/AnalyticsData';
 import { isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
 
 export function createClient() {
 	const worker = isWorker();
+	// Set when a shard manager spawned this process (`SHARDER_ENABLED`), it then only connects its own gateway shards:
+	const shard = createShardClient();
 
 	// The threads that run the word filter, started by `loadAll()`:
 	container.workers = new WorkerManager();
@@ -36,6 +39,9 @@ export function createClient() {
 			GatewayIntentBits.GuildVoiceStates |
 			GatewayIntentBits.Guilds |
 			GatewayIntentBits.MessageContent,
+		...shard?.gatewayOptions,
+		// The manager paces the identifies of every shard process:
+		gateway: shard ? { buildIdentifyThrottler: () => shard.identifyThrottler } : undefined,
 		cache: createRedisCache({ redis: container.redis, prefix: 'wolfstar:cache' }),
 		// Keeps the shards' sessions in Redis, so a restart resumes them instead of identifying again:
 		sessionStore: createRedisSessionStore({ redis: container.redis, prefix: 'wolfstar:sessions' }),
@@ -69,6 +75,7 @@ export function createClient() {
 			: undefined
 	});
 
+	if (shard) bindShardClient(shard, container.gatewayClient);
 	if (worker) replayGatewayDispatches(container.broker, container.gatewayClient);
 
 	// Publishes every gateway dispatch onto a Redis stream, for workers that replay them (see `@wolfstar/plugin-broker`):
