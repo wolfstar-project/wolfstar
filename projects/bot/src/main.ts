@@ -2,7 +2,7 @@
 import 'varlock/auto-load';
 import { createClient, loadAll } from '#lib/Client';
 import { initializeApp } from '#lib/setup/all';
-import { isShardManager, startShardManager } from '#lib/sharder';
+import { isShardManager, startShardManager } from '#lib/sharder/manager';
 import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseString } from '@wolfstar/env-utilities';
 import { container } from '@wolfstar/http-framework';

@@ -10,7 +10,7 @@ import { scheduledTasks } from '@wolfstar/plugin-scheduled-tasks';
 import { GatewayIntentBits } from 'discord-api-types/v10';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
-import { bindShardClient, createShardClient } from '#lib/sharder';
+import { bindShardClient, createShardClient } from '#lib/sharder/client';
 import { AnalyticsData } from '#lib/structures/AnalyticsData';
 import { isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';

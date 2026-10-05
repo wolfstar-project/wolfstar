@@ -1,6 +1,6 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
-import { broadcastShardMessage, onShardMessage } from '#lib/sharder';
+import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { fetchGuildData, getDefaultGuildSettings, writeGuildData, type GuildData, type ReadonlyGuildData } from 'wolfstar-database';
 import { AsyncQueue } from '@sapphire/async-queue';
 import type { Awaitable } from '@sapphire/utilities';
