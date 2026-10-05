@@ -1,58 +1,59 @@
-import { GuildSettings, readSettings } from '#lib/database';
+import { fetchUserReportEnabled, readSettings, readSettingsWordFilterRegExp } from '#lib/database';
 import { ModerationMessageListener } from '#lib/moderation';
 import { IncomingType, OutgoingType } from '#lib/moderation/workers';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise } from '#common';
 import { Colors } from '#utils/constants';
-import { createLogMessage, deleteMessage, sendTemporaryMessage } from '#utils/functions';
+import { createLogMessage, deleteMessage } from '#utils/functions';
 import { getContent } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
 import { codeBlock, cutText } from '@sapphire/utilities';
-import type { TextChannel } from 'discord.js';
-import type { TFunction } from 'i18next';
+import { ApplyOptions } from '@wolfstar/decorators';
+import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 
 @ApplyOptions<ModerationMessageListener.Options>({
+	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:words',
 	reasonLanguageKeyWithMaximum: 'events/moderation:wordsWithMaximum',
-	keyEnabled: GuildSettings.Selfmod.Filter.Enabled,
-	ignoredChannelsPath: GuildSettings.Selfmod.Filter.IgnoredChannels,
-	ignoredRolesPath: GuildSettings.Selfmod.Filter.IgnoredRoles,
-	softPunishmentPath: GuildSettings.Selfmod.Filter.SoftAction,
+	keyEnabled: 'selfmodWordsEnabled',
+	ignoredChannelsPath: 'selfmodWordsIgnoredChannels',
+	ignoredRolesPath: 'selfmodWordsIgnoredRoles',
+	softPunishmentPath: 'selfmodWordsSoftAction',
 	hardPunishmentPath: {
-		action: GuildSettings.Selfmod.Filter.HardAction,
-		actionDuration: GuildSettings.Selfmod.Filter.HardActionDuration,
+		action: 'selfmodWordsHardAction',
+		actionDuration: 'selfmodWordsHardActionDuration',
 		adder: 'words'
 	}
 })
-export class UserModerationMessageListener extends ModerationMessageListener {
+export class UserModerationMessageListener extends ModerationMessageListener<FilterResults> {
 	protected async preProcess(message: GuildMessage): Promise<FilterResults | null> {
 		const content = getContent(message);
 		if (content === null) return null;
 
-		const regExp = await readSettings(message.guild, (settings) => settings.wordFilterRegExp);
+		const settings = await readSettings(message.guildId);
+		const regExp = readSettingsWordFilterRegExp(settings);
 		if (regExp === null) return null;
 
 		const result = await this.container.workers.send({ type: IncomingType.RunRegExp, regExp, content }, 500);
 		return result.type === OutgoingType.RegExpMatch ? result : null;
 	}
 
-	protected async onDelete(message: GuildMessage, t: TFunction, value: FilterResults) {
+	protected async onDelete(message: GuildMessage, t: TFunction<AnyNamespace>, value: FilterResults) {
 		floatPromise(deleteMessage(message));
-		if (message.content.length > 25 && (await this.container.db.fetchModerationDirectMessageEnabled(message.author.id))) {
+		if (message.content.length > 25 && (await fetchUserReportEnabled(message.author.id))) {
 			await message.author.send(t('events/moderation:wordFilterDm', { filtered: codeBlock('md', cutText(value.filtered, 1900)) }));
 		}
 	}
 
-	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t('events/moderation:wordFilter', { user: message.author.toString() }));
+	protected onAlert(message: GuildMessage, t: TFunction<AnyNamespace>) {
+		return this.sendAlert(message, t, 'events/moderation:wordFilter');
 	}
 
-	protected onLogMessage(message: GuildMessage, t: TFunction, results: FilterResults) {
+	protected async onLogMessage(message: GuildMessage, t: TFunction<AnyNamespace>, results: FilterResults) {
 		return createLogMessage({
 			color: Colors.Red,
-			author: message.author,
-			content: results.highlighted,
-			footer: `#${(message.channel as TextChannel).name} | ${t('events/moderation:wordFilterFooter')}`
+			author: message.author.toJSON(),
+			content: cutText(results.highlighted, 4000),
+			footer: `#${await this.fetchChannelName(message)} | ${t('events/moderation:wordFilterFooter')}`
 		});
 	}
 }

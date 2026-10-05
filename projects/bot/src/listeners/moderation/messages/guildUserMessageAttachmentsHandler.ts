@@ -1,22 +1,23 @@
-import { GuildSettings } from '#lib/database';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
-import { deleteMessage, sendTemporaryMessage } from '#utils/functions';
-import { ApplyOptions } from '@sapphire/decorators';
-import { MessageEmbed, TextChannel } from 'discord.js';
-import type { TFunction } from 'i18next';
+import { deleteMessage } from '#utils/functions';
+import { getFullEmbedAuthor } from '#utils/util';
+import { EmbedBuilder } from '@discordjs/builders';
+import { ApplyOptions } from '@wolfstar/decorators';
+import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 
 @ApplyOptions<ModerationMessageListener.Options>({
+	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:attachments',
 	reasonLanguageKeyWithMaximum: 'events/moderation:attachmentsWithMaximum',
-	keyEnabled: GuildSettings.Selfmod.Attachments.Enabled,
-	ignoredChannelsPath: GuildSettings.Selfmod.Attachments.IgnoredChannels,
-	ignoredRolesPath: GuildSettings.Selfmod.Attachments.IgnoredRoles,
-	softPunishmentPath: GuildSettings.Selfmod.Attachments.SoftAction,
+	keyEnabled: 'selfmodAttachmentsEnabled',
+	ignoredChannelsPath: 'selfmodAttachmentsIgnoredChannels',
+	ignoredRolesPath: 'selfmodAttachmentsIgnoredRoles',
+	softPunishmentPath: 'selfmodAttachmentsSoftAction',
 	hardPunishmentPath: {
-		action: GuildSettings.Selfmod.Attachments.HardAction,
-		actionDuration: GuildSettings.Selfmod.Attachments.HardActionDuration,
+		action: 'selfmodAttachmentsHardAction',
+		actionDuration: 'selfmodAttachmentsHardActionDuration',
 		adder: 'attachments'
 	}
 })
@@ -30,19 +31,16 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 		return deleteMessage(message);
 	}
 
-	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t('events/moderation:attachmentFilter', { user: message.author.toString() }));
+	protected onAlert(message: GuildMessage, t: TFunction<AnyNamespace>) {
+		return this.sendAlert(message, t, 'events/moderation:attachmentFilter');
 	}
 
-	protected onLogMessage(message: GuildMessage, t: TFunction) {
-		return new MessageEmbed()
+	protected async onLogMessage(message: GuildMessage, t: TFunction<AnyNamespace>) {
+		return new EmbedBuilder()
 			.setDescription(message.content)
 			.setColor(Colors.Red)
-			.setAuthor({
-				name: `${message.author.tag} (${message.author.id})`,
-				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
-			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:attachmentFilter')}` })
+			.setAuthor(getFullEmbedAuthor(message.author, message.url))
+			.setFooter({ text: `#${await this.fetchChannelName(message)} | ${t('events/moderation:attachmentFilterFooter')}` })
 			.setTimestamp();
 	}
 }

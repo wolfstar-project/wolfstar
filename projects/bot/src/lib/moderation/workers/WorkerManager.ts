@@ -40,3 +40,12 @@ export class WorkerManager {
 		return this.workers.reduce((best, worker) => (best.remaining > worker.remaining ? worker : best));
 	}
 }
+
+declare module '@sapphire/pieces' {
+	interface Container {
+		/**
+		 * The pool of workers that run the regular expressions of the word filter off the main thread.
+		 */
+		workers: WorkerManager;
+	}
+}

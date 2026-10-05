@@ -1,31 +1,33 @@
-import { GuildSettings, readSettings } from '#lib/database';
+import { readSettings } from '#lib/database';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
-import { deleteMessage, sendTemporaryMessage } from '#utils/functions';
-import { getContent } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import { MessageEmbed, TextChannel } from 'discord.js';
-import type { TFunction } from 'i18next';
+import { deleteMessage } from '#utils/functions';
+import { getContent, getFullEmbedAuthor } from '#utils/util';
+import { EmbedBuilder } from '@discordjs/builders';
+import { ApplyOptions } from '@wolfstar/decorators';
+import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 
 const NEW_LINE = '\n';
 
 @ApplyOptions<ModerationMessageListener.Options>({
+	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:newlines',
 	reasonLanguageKeyWithMaximum: 'events/moderation:newlinesWithMaximum',
-	keyEnabled: GuildSettings.Selfmod.NewLines.Enabled,
-	ignoredChannelsPath: GuildSettings.Selfmod.NewLines.IgnoredChannels,
-	ignoredRolesPath: GuildSettings.Selfmod.NewLines.IgnoredRoles,
-	softPunishmentPath: GuildSettings.Selfmod.NewLines.SoftAction,
+	keyEnabled: 'selfmodNewlinesEnabled',
+	ignoredChannelsPath: 'selfmodNewlinesIgnoredChannels',
+	ignoredRolesPath: 'selfmodNewlinesIgnoredRoles',
+	softPunishmentPath: 'selfmodNewlinesSoftAction',
 	hardPunishmentPath: {
-		action: GuildSettings.Selfmod.NewLines.HardAction,
-		actionDuration: GuildSettings.Selfmod.NewLines.HardActionDuration,
+		action: 'selfmodNewlinesHardAction',
+		actionDuration: 'selfmodNewlinesHardActionDuration',
 		adder: 'newlines'
 	}
 })
 export class UserModerationMessageListener extends ModerationMessageListener {
 	protected async preProcess(message: GuildMessage): Promise<1 | null> {
-		const threshold = await readSettings(message.guild, GuildSettings.Selfmod.NewLines.Maximum);
+		const settings = await readSettings(message.guildId);
+		const threshold = settings.selfmodNewlinesMaximum;
 		if (threshold === 0) return null;
 
 		const content = getContent(message);
@@ -41,19 +43,16 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 		return deleteMessage(message);
 	}
 
-	protected onAlert(message: GuildMessage, t: TFunction) {
-		return sendTemporaryMessage(message, t('events/moderation:newlineFilter', { user: message.author.toString() }));
+	protected onAlert(message: GuildMessage, t: TFunction<AnyNamespace>) {
+		return this.sendAlert(message, t, 'events/moderation:newlineFilter');
 	}
 
-	protected onLogMessage(message: GuildMessage, t: TFunction) {
-		return new MessageEmbed()
+	protected async onLogMessage(message: GuildMessage, t: TFunction<AnyNamespace>) {
+		return new EmbedBuilder()
 			.setDescription(message.content)
 			.setColor(Colors.Red)
-			.setAuthor({
-				name: `${message.author.tag} (${message.author.id})`,
-				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
-			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:newlineFilterFooter')}` })
+			.setAuthor(getFullEmbedAuthor(message.author, message.url))
+			.setFooter({ text: `#${await this.fetchChannelName(message)} | ${t('events/moderation:newlineFilterFooter')}` })
 			.setTimestamp();
 	}
 }

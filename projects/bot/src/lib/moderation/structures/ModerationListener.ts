@@ -1,102 +1,91 @@
-import { GuildEntity, readSettings } from '#lib/database';
-import { getModeration, getSecurity } from '#utils/functions';
-import { Listener } from '@sapphire/framework';
-import type { PickByValue } from '@sapphire/utilities';
-import type { Guild, MessageEmbed } from 'discord.js';
-import type { HardPunishment } from './ModerationMessageListener';
-import { SelfModeratorBitField, SelfModeratorHardActionFlags } from './SelfModeratorBitField';
+import { readSettings, type AutoModerationHardAction, type GuildSettingsOfType } from '#lib/database';
+import { ModerationActions } from '#lib/moderation/actions/index';
+import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
+import type { HardPunishment, ModerationMessageListener } from '#lib/moderation/structures/ModerationMessageListener';
+import { days, seconds } from '#common';
+import { getModeration } from '#utils/functions';
+import { isNullishOrZero, type Awaitable } from '@sapphire/utilities';
+import { Listener } from '@wolfstar/http-framework';
+import type { Guild } from '@wolfstar/plugin-gateway';
 
 export abstract class ModerationListener<V extends unknown[], T = unknown> extends Listener {
-	public abstract run(...params: V): unknown;
+	public abstract override run(...params: V): unknown;
 
-	protected processSoftPunishment(args: Readonly<V>, preProcessed: T, bitField: SelfModeratorBitField) {
-		if (bitField.has(SelfModeratorBitField.FLAGS.DELETE)) this.onDelete(args, preProcessed);
-		if (bitField.has(SelfModeratorBitField.FLAGS.ALERT)) this.onAlert(args, preProcessed);
-		if (bitField.has(SelfModeratorBitField.FLAGS.LOG)) this.onLog(args, preProcessed);
+	protected processSoftPunishment(args: Readonly<V>, preProcessed: T, bitfield: number) {
+		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Delete)) this.onDelete(args, preProcessed);
+		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Alert)) this.onAlert(args, preProcessed);
+		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Log)) this.onLog(args, preProcessed);
 	}
 
-	protected async processHardPunishment(guild: Guild, userId: string, action: SelfModeratorHardActionFlags) {
+	protected async processHardPunishment(guild: Guild, userId: string, action: AutoModerationHardAction) {
 		switch (action) {
-			case SelfModeratorHardActionFlags.Warning:
+			case 'Warning':
 				await this.onWarning(guild, userId);
 				break;
-			case SelfModeratorHardActionFlags.Kick:
+			case 'Kick':
 				await this.onKick(guild, userId);
 				break;
-			case SelfModeratorHardActionFlags.Mute:
-				await this.onMute(guild, userId);
+			case 'Timeout':
+				await this.onTimeout(guild, userId);
 				break;
-			case SelfModeratorHardActionFlags.SoftBan:
+			case 'Softban':
 				await this.onSoftBan(guild, userId);
 				break;
-			case SelfModeratorHardActionFlags.Ban:
+			case 'Ban':
 				await this.onBan(guild, userId);
 				break;
-			case SelfModeratorHardActionFlags.None:
+			case 'VoiceKick':
+				await this.onVoiceKick(guild, userId);
 				break;
 		}
 	}
 
 	protected async onWarning(guild: Guild, userId: string) {
-		const duration = await readSettings(guild, this.hardPunishmentPath.actionDuration);
-		await this.createActionAndSend(guild, async () =>
-			(await getSecurity(guild)).actions.warning({
-				userId,
-				moderatorId: process.env.CLIENT_ID,
-				reason: '[Auto-Moderation] Threshold Reached.',
-				duration
-			})
+		const duration = await this.#getPunishmentActionDuration(guild);
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.warning.apply(guild, { user: userId, reason: '[Auto-Moderation] Threshold Reached.', duration })
 		);
 	}
 
 	protected async onKick(guild: Guild, userId: string) {
-		await this.createActionAndSend(guild, async () =>
-			(await getSecurity(guild)).actions.kick({
-				userId,
-				moderatorId: process.env.CLIENT_ID,
-				reason: '[Auto-Moderation] Threshold Reached.'
-			})
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.kick.apply(guild, { user: userId, reason: '[Auto-Moderation] Threshold Reached.' })
 		);
 	}
 
-	protected async onMute(guild: Guild, userId: string) {
-		const duration = await readSettings(guild, this.hardPunishmentPath.actionDuration);
-		await this.createActionAndSend(guild, async () =>
-			(await getSecurity(guild)).actions.mute({
-				userId,
-				moderatorId: process.env.CLIENT_ID,
+	protected async onTimeout(guild: Guild, userId: string) {
+		const duration = await this.#getPunishmentActionDuration(guild);
+		if (isNullishOrZero(duration)) return;
+
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.timeout.apply(guild, {
+				user: userId,
 				reason: '[Auto-Moderation] Threshold Reached.',
-				duration
+				duration: Math.min(Number(duration), days(28))
 			})
 		);
 	}
 
 	protected async onSoftBan(guild: Guild, userId: string) {
-		await this.createActionAndSend(guild, async () =>
-			(await getSecurity(guild)).actions.softBan(
-				{
-					userId,
-					moderatorId: process.env.CLIENT_ID,
-					reason: '[Auto-Moderation] Threshold Reached.'
-				},
-				1
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.softban.apply(
+				guild,
+				{ user: userId, reason: '[Auto-Moderation] Threshold Reached.' },
+				{ context: seconds.fromMinutes(5) }
 			)
 		);
 	}
 
 	protected async onBan(guild: Guild, userId: string) {
-		const duration = await readSettings(guild, this.hardPunishmentPath.actionDuration);
+		const duration = await this.#getPunishmentActionDuration(guild);
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.ban.apply(guild, { user: userId, reason: '[Auto-Moderation] Threshold Reached.', duration })
+		);
+	}
 
-		await this.createActionAndSend(guild, async () =>
-			(await getSecurity(guild)).actions.ban(
-				{
-					userId,
-					moderatorId: process.env.CLIENT_ID,
-					reason: '[Auto-Moderation] Threshold Reached.',
-					duration
-				},
-				0
-			)
+	protected async onVoiceKick(guild: Guild, userId: string) {
+		await this.createActionAndSend(guild, () =>
+			ModerationActions.voiceKick.apply(guild, { user: userId, reason: '[Auto-Moderation] Threshold Reached.' })
 		);
 	}
 
@@ -106,12 +95,23 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 		unlock();
 	}
 
-	protected abstract keyEnabled: PickByValue<GuildEntity, boolean>;
-	protected abstract softPunishmentPath: PickByValue<GuildEntity, number>;
+	protected abstract keyEnabled: GuildSettingsOfType<boolean>;
+	protected abstract softPunishmentPath: GuildSettingsOfType<number>;
 	protected abstract hardPunishmentPath: HardPunishment;
-	protected abstract preProcess(args: Readonly<V>): Promise<T | null> | T | null;
+	protected abstract preProcess(args: Readonly<V>): Awaitable<T | null>;
 	protected abstract onLog(args: Readonly<V>, value: T): unknown;
 	protected abstract onDelete(args: Readonly<V>, value: T): unknown;
 	protected abstract onAlert(args: Readonly<V>, value: T): unknown;
-	protected abstract onLogMessage(args: Readonly<V>, value: T): Promise<MessageEmbed> | MessageEmbed;
+	protected abstract onLogMessage(args: Readonly<V>, value: T): Awaitable<ModerationMessageListener.LogMessage>;
+
+	async #getPunishmentActionDuration(guild: Guild) {
+		const settings = await readSettings(guild);
+		return settings[this.hardPunishmentPath.actionDuration];
+	}
+}
+
+export namespace ModerationListener {
+	export type Options = Listener.Options;
+	export type JSON = Listener.JSON;
+	export type LoaderContext = Listener.LoaderContext;
 }
