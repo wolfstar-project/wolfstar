@@ -14,6 +14,7 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Formatter/Linter:** oxlint + oxfmt, prettier
 - **Test runner:** vitest (globals enabled, setup in `tests/setup.ts`)
 - **Package manager:** pnpm (workspace)
+- **Auto imports:** the Stars CLI auto-imports every exported value of `src/lib/**` and of the framework (`.stars/imports.d.ts`). Import a class or enum that is only used as a type in its own `import type` statement (an inline `type X` in a mixed import is declared twice), and export a generic class apart from its declaration (`class X<K, V> {}` then `export { X }`): the scanner reads `, V` as a second export
 
 ## Plugins
 
@@ -124,3 +125,5 @@ Unit tests import `#lib/setup` via `tests/setup.ts`, which loads `src/lib/setup/
 ### REST API
 
 When the bot is logged in, the embedded API listens on `API_HOST`:`API_PORT` (default `127.0.0.1:8282`). `GET /` returns `{"message":"Hello World"}` (`src/routes/index.get.ts`).
+
+The routes are file-based (`src/routes/**`, `<path>.<method>.ts`). The OAuth2 routes (`src/routes/oauth/`) use `getAuth()` from `src/lib/api/utils.ts`, built from the `OAUTH_*` variables; they are disabled when `OAUTH_SECRET` is unset.
