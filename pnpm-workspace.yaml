@@ -19,6 +19,10 @@ overrides:
     discord-api-types: ^0.38.56
     minimist: ^1.2.8
     vite: ^8.3.2
+    # prisma-orm-extension-typed-json is only published for rc.5: run it on the rc.13 packs the contract needs.
+    prisma-orm-extension-typed-json>@prisma/orm-family-sql: 8.0.0-rc.13
+    prisma-orm-extension-typed-json>@prisma/orm-framework: 8.0.0-rc.13
+    '@prisma/orm-target-postgres': 8.0.0-rc.13
 
 dedupePeers: true
 
@@ -30,3 +34,5 @@ minimumReleaseAge: 0
 # from .npmrc, everything else must live in this file in camelCase.
 shamefullyHoist: true
 ignoreWorkspaceRootCheck: true
+patchedDependencies:
+    prisma-orm-extension-typed-json: patches/prisma-orm-extension-typed-json.patch

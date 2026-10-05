@@ -28,6 +28,7 @@
 		"@sapphire/utilities": "^3.18.2",
 		"discord-api-types": "^0.38.56",
 		"pg": "^8.23.1",
+		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
 		"varlock": "^1.21.1"
 	},
 	"devDependencies": {

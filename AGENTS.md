@@ -48,6 +48,7 @@ Configuration is described by [Varlock](https://varlock.dev) schemas instead of 
 - **Migrations:** `prisma/migrations/` (PostgreSQL)
 - **Access:** `container.prisma` is the Prisma 8 `db` (type `Database` from `wolfstar-database`), set in `projects/bot/src/lib/setup/prisma.ts`. Query with `container.prisma.orm.public.<Model>` and `container.prisma.transaction(async (tx) => …)`
 - **Types:** `Models.public_<Model>` from `wolfstar-database`; `BigInt` columns decode to `bigint`, `Jsonb` to `JsonValue`, `TimestampString(3)` to a branded string
+- **Typed JSON:** `prisma-orm-extension-typed-json` (replaces `prisma-json-types-generator`). A `Jsonb` column gets its TypeScript type from a `types { X = typed.Json("PrismaJson.X") }` entry in `contract.prisma`, and `PrismaJson.X` is declared in `projects/database/src/settings/types.ts`. The extension is registered in `prisma.config.ts` and in `db` (`typedRuntimeDescriptor`). The emitter drops `import(...)` expressions, so only global names work. It is only published for Prisma `8.0.0-rc.5`: `pnpm-workspace.yaml` overrides its Prisma packs to rc.13 and `patches/` adds the `dataType` that rc.13 requires from every codec. Drop both once it ships a rc.13+ build
 
 ## Settings System
 

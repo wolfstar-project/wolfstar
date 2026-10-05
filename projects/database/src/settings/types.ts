@@ -264,3 +264,11 @@ export interface MentionsOverride {
 	users: readonly Snowflake[];
 	points: number;
 }
+
+declare global {
+	namespace PrismaJson {
+		type PermissionNodeEntries = PermissionsNode[];
+		type UniqueRoleSetEntries = UniqueRoleSet[];
+		type AuditEventChanges = import('./types.js').AuditEventChanges;
+	}
+}

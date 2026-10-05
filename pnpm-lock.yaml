@@ -169,6 +169,12 @@ overrides:
   discord-api-types: ^0.38.56
   minimist: ^1.2.8
   vite: ^8.3.2
+  prisma-orm-extension-typed-json>@prisma/orm-family-sql: 8.0.0-rc.13
+  prisma-orm-extension-typed-json>@prisma/orm-framework: 8.0.0-rc.13
+  '@prisma/orm-target-postgres': 8.0.0-rc.13
+
+patchedDependencies:
+  prisma-orm-extension-typed-json: 0d3a5a0b92c2c9f5ec59df4645d5355dd5751077a9322d29179f9e493a4c240a
 
 importers:
 
@@ -358,6 +364,9 @@ importers:
       pg:
         specifier: ^8.23.1
         version: 8.23.1
+      prisma-orm-extension-typed-json:
+        specifier: 8.0.0-rc.5
+        version: 8.0.0-rc.5(patch_hash=0d3a5a0b92c2c9f5ec59df4645d5355dd5751077a9322d29179f9e493a4c240a)(@prisma/cli-engine@0.6.1)(@prisma/orm-target-postgres@8.0.0-rc.13)(magicast@0.5.5)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.2)
       varlock:
         specifier: ^1.21.1
         version: 1.21.1
@@ -4344,6 +4353,16 @@ packages:
   pretty-ms@9.3.1:
     resolution: {integrity: sha512-HzMy3Geq23nVALD/M2LliU+F+M+gVNsvkQWWqeBZ8HDiCgzo6YPJ/Omrmtq24EFrIsk0a3EkQGEd7bDOo+IhGA==}
     engines: {node: '>=18'}
+
+  prisma-orm-extension-typed-json@8.0.0-rc.5:
+    resolution: {integrity: sha512-wfOfvVRgSHUZAMVW5I417kCg426LJrqdQcXkHh23lFZVKaRK7CNrKK/FQt8yvzMUo/AxO7wFXg+MQW5vljk7uA==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      '@prisma/orm-target-postgres': 8.0.0-rc.13
+      typescript: '>=5.9'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   prisma@8.0.0-rc.19:
     resolution: {integrity: sha512-IpietG8Q5vj0tlcyFqHIPxfMzjRXOnMu6Jhg5xXpAh6sWFU2SRyjAYNADV2om27aiCFSgu/8UVpJCOYWqMu+0Q==}
@@ -8875,6 +8894,20 @@ snapshots:
   pretty-ms@9.3.1:
     dependencies:
       parse-ms: 4.0.0
+
+  prisma-orm-extension-typed-json@8.0.0-rc.5(patch_hash=0d3a5a0b92c2c9f5ec59df4645d5355dd5751077a9322d29179f9e493a4c240a)(@prisma/cli-engine@0.6.1)(@prisma/orm-target-postgres@8.0.0-rc.13)(magicast@0.5.5)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.2):
+    dependencies:
+      '@prisma/orm-family-sql': 8.0.0-rc.13(@prisma/cli-engine@0.6.1)(magicast@0.5.5)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.2)
+      '@prisma/orm-framework': 8.0.0-rc.13(typescript@7.0.2)
+      '@prisma/orm-target-postgres': 8.0.0-rc.13(@prisma/cli-engine@0.6.1)(magicast@0.5.5)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.2)
+      '@standard-schema/spec': 1.1.0
+    optionalDependencies:
+      typescript: 7.0.2
+    transitivePeerDependencies:
+      - '@prisma/cli-engine'
+      - magicast
+      - typanion
+      - vite
 
   prisma@8.0.0-rc.19(@types/node@24.19.1)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.2)(vitest@5.0.3)(ws@8.22.0):
     dependencies:
