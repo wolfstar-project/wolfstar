@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 
-export class AliasedCollection<K, V> extends Collection<K, V> {
+class AliasedCollection<K, V> extends Collection<K, V> {
 	/**
 	 * The aliases for this collection:
 	 */
@@ -10,3 +10,6 @@ export class AliasedCollection<K, V> extends Collection<K, V> {
 		return super.get(key) ?? this.aliases.get(key);
 	}
 }
+
+// Exported apart from its declaration: the auto import scanner reads the `, V` of the type parameters as a second export.
+export { AliasedCollection };

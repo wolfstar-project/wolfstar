@@ -4,7 +4,7 @@ import { isFunction } from '@sapphire/utilities';
 /**
  * Represents a collection of key-value pairs that are sorted by the key.
  */
-export class SortedCollection<K extends number | string | bigint, V> implements Map<K, V> {
+class SortedCollection<K extends number | string | bigint, V> implements Map<K, V> {
 	/**
 	 * The entries of this collection.
 	 */
@@ -240,3 +240,6 @@ export class SortedCollection<K extends number | string | bigint, V> implements 
 		return 'SortedCollection';
 	}
 }
+
+// Exported apart from its declaration: the auto import scanner reads the `, V` of the type parameters as a second export.
+export { SortedCollection };
