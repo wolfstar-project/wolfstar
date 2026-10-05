@@ -1,7 +1,6 @@
-import { type ClientOptions } from '@wolfstar/plugin-gateway';
+import { envParseString } from '@wolfstar/env-utilities';
 
-export const OWNERS: string[] = ['242043489611808769'];
-
-export const CLIENT_OPTIONS: ClientOptions = {
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
-};
+/**
+ * The IDs of the bot's owners, read from `CLIENT_OWNERS` (separated by spaces).
+ */
+export const OWNERS: readonly string[] = envParseString('CLIENT_OWNERS', '').split(' ').filter(Boolean);
