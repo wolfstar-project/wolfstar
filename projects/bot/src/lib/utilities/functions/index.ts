@@ -3,6 +3,7 @@ export * from './channels';
 export * from './embeds';
 export * from './emojis';
 export * from './guild';
+export * from './logs';
 export * from './messages';
 export * from './numbers';
 export * from './permissions';

@@ -1,8 +1,8 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { SkyraEmbed } from '#lib/discord';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { escapeMarkdown } from '#utils/External/escapeMarkdown';
+import { createLogMessage } from '#utils/functions';
 import { ApplyOptions } from '@sapphire/decorators';
 import { isNsfwChannel } from '@sapphire/discord.js-utilities';
 import { Listener, ListenerOptions } from '@sapphire/framework';
@@ -30,20 +30,14 @@ export class UserListener extends Listener {
 		if (ignoredAll.some((id) => id === message.channel.id || message.channel.parentId === id)) return;
 
 		this.container.gatewayClient.emit(Events.GuildMessageLog, message.guild, logChannelId, key, () =>
-			new SkyraEmbed()
-				.setColor(Colors.Amber)
-				.setAuthor({
-					name: `${message.author.tag} (${message.author.id})`,
-					iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true }),
-					url: message.url
-				})
-				.splitFields(
-					diffWordsWithSpace(escapeMarkdown(old.content), escapeMarkdown(message.content))
-						.map((result) => (result.added ? `**${result.value}**` : result.removed ? `~~${result.value}~~` : result.value))
-						.join(' ')
-				)
-				.setFooter({ text: t('events/messages:messageUpdate', { channel: `#${message.channel.name}` }) })
-				.setTimestamp()
+			createLogMessage({
+				color: Colors.Amber,
+				author: message.author,
+				content: diffWordsWithSpace(escapeMarkdown(old.content), escapeMarkdown(message.content))
+					.map((result) => (result.added ? `**${result.value}**` : result.removed ? `~~${result.value}~~` : result.value))
+					.join(' '),
+				footer: t('events/messages:messageUpdate', { channel: `#${message.channel.name}` })
+			})
 		);
 	}
 }

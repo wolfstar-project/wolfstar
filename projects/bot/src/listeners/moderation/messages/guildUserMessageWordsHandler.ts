@@ -1,11 +1,10 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { SkyraEmbed } from '#lib/discord';
 import { ModerationMessageListener } from '#lib/moderation';
 import { IncomingType, OutgoingType } from '#lib/moderation/workers';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise } from '#common';
 import { Colors } from '#utils/constants';
-import { deleteMessage, sendTemporaryMessage } from '#utils/functions';
+import { createLogMessage, deleteMessage, sendTemporaryMessage } from '#utils/functions';
 import { getContent } from '#utils/util';
 import { ApplyOptions } from '@sapphire/decorators';
 import { codeBlock, cutText } from '@sapphire/utilities';
@@ -49,15 +48,12 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	}
 
 	protected onLogMessage(message: GuildMessage, t: TFunction, results: FilterResults) {
-		return new SkyraEmbed()
-			.splitFields(cutText(results.highlighted, 4000))
-			.setColor(Colors.Red)
-			.setAuthor({
-				name: `${message.author.tag} (${message.author.id})`,
-				iconURL: message.author.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
-			})
-			.setFooter({ text: `#${(message.channel as TextChannel).name} | ${t('events/moderation:wordFilterFooter')}` })
-			.setTimestamp();
+		return createLogMessage({
+			color: Colors.Red,
+			author: message.author,
+			content: results.highlighted,
+			footer: `#${(message.channel as TextChannel).name} | ${t('events/moderation:wordFilterFooter')}`
+		});
 	}
 }
 
