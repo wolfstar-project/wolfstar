@@ -33,7 +33,7 @@ export class UserListener extends EventGatewayListener<'messageDeleteBulk'> {
 			key: 'logsPrune',
 			channelId: settings.logsPrune,
 			condition: () =>
-				!settings.logsIgnoreMessages.some((id) => id === channel.id && channel.parentId === id) ||
+				!settings.logsIgnoreMessages.some((id) => id === channel.id || channel.parentId === id) &&
 				!settings.logsIgnoreAll.some((id) => id === channel.id || channel.parentId === id),
 			makeMessage: async () => {
 				const t = await fetchGuildT(guild);

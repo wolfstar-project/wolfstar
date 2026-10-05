@@ -36,11 +36,14 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 	}
 
 	protected async onLogMessage(message: GuildMessage, t: TFunction<AnyNamespace>) {
-		return new EmbedBuilder()
-			.setDescription(message.content)
-			.setColor(Colors.Red)
-			.setAuthor(getFullEmbedAuthor(message.author, message.url))
-			.setFooter({ text: `#${await this.fetchChannelName(message)} | ${t('events/moderation:attachmentFilterFooter')}` })
-			.setTimestamp();
+		return (
+			new EmbedBuilder()
+				// A message that only holds attachments has no content, and an embed takes no empty description:
+				.setDescription(message.content || null)
+				.setColor(Colors.Red)
+				.setAuthor(getFullEmbedAuthor(message.author, message.url))
+				.setFooter({ text: `#${await this.fetchChannelName(message)} | ${t('events/moderation:attachmentFilterFooter')}` })
+				.setTimestamp()
+		);
 	}
 }

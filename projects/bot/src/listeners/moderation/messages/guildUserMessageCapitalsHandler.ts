@@ -45,9 +45,9 @@ export class UserModerationMessageListener extends ModerationMessageListener<num
 		return percentage >= settings.selfmodCapitalsMaximum ? 1 : null;
 	}
 
-	protected async onDelete(message: GuildMessage, t: TFunction<AnyNamespace>, value: number) {
+	protected async onDelete(message: GuildMessage, t: TFunction<AnyNamespace>) {
 		floatPromise(deleteMessage(message));
-		if (value > 25 && (await fetchUserReportEnabled(message.author.id))) {
+		if (message.content.length > 25 && (await fetchUserReportEnabled(message.author.id))) {
 			await message.author.send(t('events/moderation:capsFilterDm', { message: codeBlock('md', cutText(message.content, 1900)) }));
 		}
 	}

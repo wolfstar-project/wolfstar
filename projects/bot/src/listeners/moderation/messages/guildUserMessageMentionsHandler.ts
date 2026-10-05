@@ -38,7 +38,7 @@ export class UserListener extends Listener {
 			for (let i = 0; i < mentions; i++) rateLimit.consume();
 			// Reset time, don't let them relax
 			rateLimit.resetTime();
-			if (settings.noMentionSpamAlerts && rateLimit.remaining / rateLimit.remaining <= 0.2) {
+			if (settings.noMentionSpamAlerts && rateLimit.remaining / ctx.limit <= 0.2) {
 				this.container.client.emit(Events.MentionSpamWarning, message);
 			}
 		} catch {
