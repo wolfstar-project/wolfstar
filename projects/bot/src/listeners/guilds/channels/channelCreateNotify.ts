@@ -1,56 +1,65 @@
-import { GuildSettings, readSettings, writeSettings } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { toPermissionsArray } from '#utils/bits';
 import { seconds } from '#common';
 import { Colors, LongWidthSpace } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { isNsfwChannel } from '@sapphire/discord.js-utilities';
-import { Events, Listener, ListenerOptions } from '@sapphire/framework';
-import { isNullish } from '@sapphire/utilities';
-import { CategoryChannel, GuildChannel, MessageEmbed, NewsChannel, PermissionOverwrites, StoreChannel, TextChannel, VoiceChannel } from 'discord.js';
-import type { TFunction } from 'i18next';
+import { getLogger } from '#utils/functions';
+import { EmbedBuilder } from '@discordjs/builders';
+import { isGuildBasedChannel, isNsfwChannel, isThreadChannel } from '@wolfstar/http-framework-utilities/gateway';
+import { fetchT } from '@wolfstar/plugin-i18next';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type {
+	AnnouncementChannel,
+	AnyChannel,
+	NonThreadGuildBasedChannel,
+	PermissionOverwrites,
+	StageChannel,
+	TextChannel,
+	VoiceChannel
+} from '@wolfstar/plugin-gateway';
+import { ChannelType, OverwriteType } from 'discord-api-types/v10';
 
-type GuildBasedChannel = TextChannel | VoiceChannel | CategoryChannel | NewsChannel | StoreChannel;
+@RegisterAsGatewayListener('channelCreate')
+export class UserListener extends EventGatewayListener<'channelCreate'> {
+	public async run(created: AnyChannel) {
+		// The event is also emitted for the channels that are not of a guild, the threads have their own event:
+		if (!isGuildBasedChannel(created) || isThreadChannel(created)) return;
 
-@ApplyOptions<ListenerOptions>({ event: Events.ChannelCreate })
-export class UserListener extends Listener<typeof Events.ChannelCreate> {
-	public async run(next: GuildBasedChannel) {
-		const [channelId, t] = await readSettings(next.guild, (settings) => [
-			settings[GuildSettings.Channels.Logs.ChannelCreate],
-			settings.getLanguage()
-		]);
-		if (isNullish(channelId)) return;
-
-		const channel = next.guild.channels.cache.get(channelId) as TextChannel | undefined;
-		if (channel === undefined) {
-			await writeSettings(next.guild, [[GuildSettings.Channels.Logs.ChannelCreate, null]]);
-			return;
-		}
-
-		const changes: string[] = [...this.getChannelInformation(t, next)];
-		const embed = new MessageEmbed()
-			.setColor(Colors.Green)
-			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
-			.setDescription(changes.join('\n'))
-			.setFooter({ text: t('events/guilds-logs:channelCreate') })
-			.setTimestamp();
-		await channel.send({ embeds: [embed] });
+		const channel = created as NonThreadGuildBasedChannel;
+		const settings = await readSettings(channel.guildId);
+		const logger = await getLogger(channel.guildId);
+		await logger.send({
+			key: 'logsChannelCreate',
+			channelId: settings.logsChannelCreate,
+			makeMessage: async () => {
+				const t = createTranslator(await fetchT(logger.guild));
+				const changes: string[] = [...this.getChannelInformation(t, channel)];
+				return new EmbedBuilder()
+					.setColor(Colors.Green)
+					.setAuthor({
+						name: `${channel.name} (${channel.id})`,
+						iconURL: logger.guild.iconURL({ size: 64, extension: 'png' }) ?? undefined
+					})
+					.setDescription(changes.join('\n'))
+					.setFooter({ text: t('events/guilds-logs:channelCreate') })
+					.setTimestamp();
+			}
+		});
 	}
 
-	private *getChannelInformation(t: TFunction, channel: GuildBasedChannel) {
+	private *getChannelInformation(t: Translator, channel: NonThreadGuildBasedChannel) {
 		yield* this.getGuildChannelInformation(t, channel);
 
 		switch (channel.type) {
-			case 'GUILD_TEXT':
-				yield* this.getTextChannelInformation(t, channel);
+			case ChannelType.GuildText:
+				yield* this.getTextChannelInformation(t, channel as TextChannel);
 				break;
-			case 'GUILD_VOICE':
-				yield* this.getVoiceChannelInformation(t, channel);
+			case ChannelType.GuildStageVoice:
+			case ChannelType.GuildVoice:
+				yield* this.getVoiceChannelInformation(t, channel as StageChannel | VoiceChannel);
 				break;
-			case 'GUILD_NEWS':
-				yield* this.getNewsChannelInformation(t, channel);
-				break;
-			case 'GUILD_STORE':
-				yield* this.getStoreChannelInformation(t, channel);
+			case ChannelType.GuildAnnouncement:
+				yield* this.getNewsChannelInformation(t, channel as AnnouncementChannel);
 				break;
 			default:
 			// No Op
@@ -59,74 +68,70 @@ export class UserListener extends Listener<typeof Events.ChannelCreate> {
 		yield* this.getChannelPermissionOverwrites(t, channel);
 	}
 
-	private *getGuildChannelInformation(t: TFunction, channel: GuildBasedChannel) {
-		if (channel.parentId) yield t('events/guilds-logs:channelCreateParent', { value: `<#${channel.parentId}>` });
+	private *getGuildChannelInformation(t: Translator, channel: NonThreadGuildBasedChannel) {
+		if ('parentId' in channel && channel.parentId) yield t('events/guilds-logs:channelCreateParent', { value: `<#${channel.parentId}>` });
 		yield t('events/guilds-logs:channelCreatePosition', { value: channel.position });
 	}
 
-	private *getChannelPermissionOverwrites(t: TFunction, channel: GuildChannel) {
-		for (const overwrite of channel.permissionOverwrites.cache.values()) {
-			const allow = overwrite.allow.bitfield;
-			const deny = overwrite.deny.bitfield;
+	private *getChannelPermissionOverwrites(t: Translator, channel: NonThreadGuildBasedChannel) {
+		for (const overwrite of channel.permissionOverwrites.cache) {
+			const allow = overwrite.allow.bitField;
+			const deny = overwrite.deny.bitField;
 			if (allow === 0n && deny === 0n) continue;
 
-			const mention = this.displayMention(overwrite);
+			const mention = this.displayMention(overwrite, channel.guildId);
 			yield t('events/guilds-logs:channelCreatePermissionsTitle', { value: mention });
 			if (allow !== 0n) {
-				const values = toPermissionsArray(allow).map((value) => t(`permissions:${value}`));
+				const values = toPermissionsArray(allow).map((value) => t(`permissions:${value}` as TranslationKey));
 				yield LongWidthSpace + t('events/guilds-logs:channelCreatePermissionsAllow', { values, count: values.length });
 			}
 
 			if (deny !== 0n) {
-				const values = toPermissionsArray(deny).map((value) => t(`permissions:${value}`));
+				const values = toPermissionsArray(deny).map((value) => t(`permissions:${value}` as TranslationKey));
 				yield LongWidthSpace + t('events/guilds-logs:channelCreatePermissionsDeny', { values, count: values.length });
 			}
 		}
 	}
 
-	private *getTextChannelInformation(t: TFunction, channel: TextChannel) {
+	private *getTextChannelInformation(t: Translator, channel: TextChannel) {
 		if (isNsfwChannel(channel)) yield this.displayNsfw(t);
 		if (channel.topic) yield this.displayTopic(t, channel.topic);
 		if (channel.rateLimitPerUser) yield this.displayRateLimitPerUser(t, channel.rateLimitPerUser);
 	}
 
-	private *getVoiceChannelInformation(t: TFunction, channel: VoiceChannel) {
+	private *getVoiceChannelInformation(t: Translator, channel: StageChannel | VoiceChannel) {
 		yield this.displayBitrate(t, channel.bitrate);
 		if (channel.userLimit !== 0) yield this.displayUserLimit(t, channel.userLimit);
 	}
 
-	private *getNewsChannelInformation(t: TFunction, channel: NewsChannel) {
+	private *getNewsChannelInformation(t: Translator, channel: AnnouncementChannel) {
 		if (isNsfwChannel(channel)) yield this.displayNsfw(t);
 		if (channel.topic) yield this.displayTopic(t, channel.topic);
 	}
 
-	private *getStoreChannelInformation(t: TFunction, channel: StoreChannel) {
-		if (isNsfwChannel(channel)) yield this.displayNsfw(t);
-	}
-
-	private displayNsfw(t: TFunction) {
+	private displayNsfw(t: Translator) {
 		return t('events/guilds-logs:channelCreateNsfw');
 	}
 
-	private displayTopic(t: TFunction, value: string) {
+	private displayTopic(t: Translator, value: string) {
 		return t('events/guilds-logs:channelCreateTopic', { value });
 	}
 
-	private displayRateLimitPerUser(t: TFunction, value: number) {
+	private displayRateLimitPerUser(t: Translator, value: number) {
 		return t('events/guilds-logs:channelCreateRateLimit', { value: seconds(value) });
 	}
 
-	private displayBitrate(t: TFunction, value: number) {
+	private displayBitrate(t: Translator, value: number) {
 		return t('events/guilds-logs:channelCreateBitrate', { value: value / 1000 });
 	}
 
-	private displayUserLimit(t: TFunction, value: number) {
+	private displayUserLimit(t: Translator, value: number) {
 		return t('events/guilds-logs:channelCreateUserLimit', { value });
 	}
 
-	private displayMention(permissions: PermissionOverwrites) {
-		if (permissions.type === 'member') return `<@${permissions.id}>`;
-		if (permissions.id === permissions.channel.guild.id) return '@everyone';
+	private displayMention(permissions: PermissionOverwrites, guildId: string) {
+		if (permissions.type === OverwriteType.Member) return `<@${permissions.id}>`;
+		if (permissions.id === guildId) return '@everyone';
 		return `<@&${permissions.id}>`;
 	}
 }

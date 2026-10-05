@@ -1,24 +1,28 @@
-import { GuildSettings, readSettings } from '#lib/database';
-import { Events } from '#lib/types/Enums';
+import { seconds } from '#common';
+import { readSettings } from '#lib/database';
+import { fetchGuildT } from '#lib/moderation/common';
+import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
-import { getModeration } from '#utils/functions';
-import { TypeCodes } from '#utils/moderationConstants';
-import { getDisplayAvatar } from '#utils/util';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, ListenerOptions } from '@sapphire/framework';
+import { getLogger, getModeration, getUserMentionWithFlagsString } from '#utils/functions';
+import { TypeVariation } from '#utils/moderationConstants';
+import { getFullEmbedAuthor } from '#utils/util';
+import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
 import { isNullish } from '@sapphire/utilities';
-import type { GatewayGuildMemberRemoveDispatch } from 'discord-api-types/v9';
-import { Guild, GuildMember, MessageEmbed } from 'discord.js';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { Listener } from '@wolfstar/http-framework';
+import type { Guild, GuildMember } from '@wolfstar/plugin-gateway';
+import type { GatewayGuildMemberRemoveDispatchData } from 'discord-api-types/v10';
 
-@ApplyOptions<ListenerOptions>({ event: Events.RawMemberRemove })
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.RawMemberRemove })
 export class UserListener extends Listener {
-	public async run(guild: Guild, member: GuildMember | null, { user }: GatewayGuildMemberRemoveDispatch['d']) {
-		const key = GuildSettings.Channels.Logs.MemberRemove;
-		const [logChannelId, t] = await readSettings(guild, (settings) => [settings[key], settings.getLanguage()]);
-		if (isNullish(logChannelId)) return;
+	public async run(guild: Guild, member: GuildMember | null, { user }: GatewayGuildMemberRemoveDispatchData) {
+		const settings = await readSettings(guild);
+		const targetChannelId = settings.logsMemberRemove;
+		if (isNullish(targetChannelId)) return;
 
 		const isModerationAction = await this.isModerationAction(guild, user);
 
+		const t = await fetchGuildT(guild);
 		const footer = isModerationAction.kicked
 			? t('events/guilds-members:guildMemberKicked')
 			: isModerationAction.banned
@@ -27,32 +31,36 @@ export class UserListener extends Listener {
 					? t('events/guilds-members:guildMemberSoftBanned')
 					: t('events/guilds-members:guildMemberRemove');
 
-		const time = this.processJoinedTimestamp(member);
-		this.container.gatewayClient.emit(Events.GuildMessageLog, guild, logChannelId, key, () =>
-			new MessageEmbed()
-				.setColor(Colors.Red)
-				.setAuthor({ name: `${user.username}#${user.discriminator} (${user.id})`, iconURL: getDisplayAvatar(user.id, user) })
-				.setDescription(
-					t(
-						time === -1
-							? 'events/guilds-members:guildMemberRemoveDescription'
-							: 'events/guilds-members:guildMemberRemoveDescriptionWithJoinedAt',
-						{
-							mention: `<@${user.id}>`,
-							time
-						}
-					)
-				)
-				.setFooter({ text: footer })
-				.setTimestamp()
-		);
+		const joinedTimestamp = this.processJoinedTimestamp(member);
+		const logger = await getLogger(guild);
+		await logger.send({
+			key: 'logsMemberRemove',
+			channelId: targetChannelId,
+			makeMessage: () => {
+				const key =
+					joinedTimestamp === -1
+						? 'events/guilds-members:guildMemberRemoveDescription'
+						: 'events/guilds-members:guildMemberRemoveDescriptionWithJoinedAt';
+				const description = t(key, {
+					user: getUserMentionWithFlagsString(user.flags ?? 0, user.id),
+					relativeTime: time(seconds.fromMilliseconds(joinedTimestamp), TimestampStyles.RelativeTime)
+				});
+
+				return new EmbedBuilder()
+					.setColor(Colors.Red)
+					.setAuthor(getFullEmbedAuthor(user))
+					.setDescription(description)
+					.setFooter({ text: footer })
+					.setTimestamp();
+			}
+		});
 	}
 
-	private async isModerationAction(guild: Guild, user: GatewayGuildMemberRemoveDispatch['d']['user']): Promise<IsModerationAction> {
+	private async isModerationAction(guild: Guild, user: GatewayGuildMemberRemoveDispatchData['user']): Promise<IsModerationAction> {
 		const moderation = await getModeration(guild);
 		await moderation.waitLock();
 
-		const latestLogForUser = moderation.getLatestLogForUser(user.id);
+		const latestLogForUser = moderation.getLatestRecentCachedEntryForUser(user.id);
 
 		if (latestLogForUser === null) {
 			return {
@@ -63,16 +71,16 @@ export class UserListener extends Listener {
 		}
 
 		return {
-			kicked: latestLogForUser.isType(TypeCodes.Kick),
-			banned: latestLogForUser.isType(TypeCodes.Ban),
-			softbanned: latestLogForUser.isType(TypeCodes.SoftBan)
+			kicked: latestLogForUser.type === TypeVariation.Kick,
+			banned: latestLogForUser.type === TypeVariation.Ban,
+			softbanned: latestLogForUser.type === TypeVariation.Softban
 		};
 	}
 
 	private processJoinedTimestamp(member: GuildMember | null) {
 		if (member === null) return -1;
 		if (member.joinedTimestamp === null) return -1;
-		return Date.now() - member.joinedTimestamp;
+		return member.joinedTimestamp;
 	}
 }
 

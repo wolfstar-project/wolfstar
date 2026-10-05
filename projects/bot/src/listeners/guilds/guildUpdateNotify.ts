@@ -1,57 +1,52 @@
-import { GuildSettings, readSettings, writeSettings } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { toChannelsArray } from '#utils/bits';
-import { seconds } from '#common';
-import { differenceArray, differenceBitField } from '#common/comparators';
+import { differenceArray, differenceBitField, seconds } from '#common';
 import { Colors } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, ListenerOptions } from '@sapphire/framework';
-import { isNullish } from '@sapphire/utilities';
-import {
-	DefaultMessageNotificationLevel,
-	ExplicitContentFilterLevel,
-	Guild,
-	GuildFeatures,
-	MessageEmbed,
-	MFALevel,
-	PremiumTier,
-	SystemChannelFlags,
-	TextChannel,
-	VerificationLevel
-} from 'discord.js';
-import type { TFunction } from 'i18next';
+import { getLogger } from '#utils/functions';
+import { EmbedBuilder } from '@discordjs/builders';
+import { fetchT } from '@wolfstar/plugin-i18next';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { Guild, SystemChannelFlagsBitField } from '@wolfstar/plugin-gateway';
+import { GuildMFALevel } from 'discord-api-types/v10';
+import type {
+	GuildDefaultMessageNotifications,
+	GuildExplicitContentFilter,
+	GuildFeature,
+	GuildPremiumTier,
+	GuildVerificationLevel
+} from 'discord-api-types/v10';
 
-type MessageNotifications = DefaultMessageNotificationLevel | number;
-type ChannelFlags = Readonly<SystemChannelFlags>;
-type Features = readonly GuildFeatures[];
+type ChannelFlags = Readonly<SystemChannelFlagsBitField>;
+type Features = readonly `${GuildFeature}`[];
 
-@ApplyOptions<ListenerOptions>({ event: Events.GuildUpdate })
-export class UserListener extends Listener<typeof Events.GuildUpdate> {
-	public async run(previous: Guild, next: Guild) {
-		const [channelId, t] = await readSettings(next, (settings) => [
-			settings[GuildSettings.Channels.Logs.ServerUpdate], //
-			settings.getLanguage()
-		]);
-		if (isNullish(channelId)) return;
+@RegisterAsGatewayListener('guildUpdate')
+export class UserListener extends EventGatewayListener<'guildUpdate'> {
+	public async run(previous: Guild | null, next: Guild) {
+		// The guild was not cached, there is nothing to compare it with:
+		if (previous === null) return;
 
-		const channel = next.channels.cache.get(channelId) as TextChannel | undefined;
-		if (channel === undefined) {
-			await writeSettings(next, [[GuildSettings.Channels.Logs.ServerUpdate, null]]);
-			return;
-		}
+		const settings = await readSettings(next);
+		const logger = await getLogger(next);
+		await logger.send({
+			key: 'logsServerUpdate',
+			channelId: settings.logsServerUpdate,
+			makeMessage: async () => {
+				const t = createTranslator(await fetchT(next));
+				const changes: string[] = [...this.differenceGuild(t, previous, next)];
+				if (changes.length === 0) return null;
 
-		const changes: string[] = [...this.differenceGuild(t, previous, next)];
-		if (changes.length === 0) return;
-
-		const embed = new MessageEmbed()
-			.setColor(Colors.Yellow)
-			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
-			.setDescription(changes.join('\n'))
-			.setFooter({ text: t('events/guilds-logs:serverUpdate') })
-			.setTimestamp();
-		await channel.send({ embeds: [embed] });
+				return new EmbedBuilder()
+					.setColor(Colors.Yellow)
+					.setAuthor({ name: `${next.name} (${next.id})`, iconURL: next.iconURL({ size: 64, extension: 'png' }) ?? undefined })
+					.setDescription(changes.join('\n'))
+					.setFooter({ text: t('events/guilds-logs:serverUpdate') })
+					.setTimestamp();
+			}
+		});
 	}
 
-	private *differenceGuild(t: TFunction, previous: Guild, next: Guild) {
+	private *differenceGuild(t: Translator, previous: Guild, next: Guild) {
 		if (previous.afkChannelId !== next.afkChannelId) {
 			yield this.displayAfkChannel(t, previous.afkChannelId, next.afkChannelId);
 		}
@@ -153,43 +148,47 @@ export class UserListener extends Listener<typeof Events.GuildUpdate> {
 		}
 	}
 
-	private displayAfkChannel(t: TFunction, previous: string | null, next: string | null): string {
+	private displayAfkChannel(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateAfkChannelAdded', { value: `<#${next!}>` });
 		if (next === null) return t('events/guilds-logs:serverUpdateAfkChannelRemoved', { value: `<#${previous}>` });
 		return t('events/guilds-logs:serverUpdateAfkChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
-	private displayAfkTimeout(t: TFunction, previous: number, next: number): string {
+	private displayAfkTimeout(t: Translator, previous: number, next: number): string {
 		return t('events/guilds-logs:serverUpdateAfkTimeout', { previous: seconds(previous), next: seconds(next) });
 	}
 
-	private displayBanner(t: TFunction, previous: string | null, next: string | null): string {
+	private displayBanner(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateBannerAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateBannerRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateBanner', { previous, next });
 	}
 
-	private displayDefaultMessageNotifications(t: TFunction, previous: MessageNotifications, next: MessageNotifications): string {
+	private displayDefaultMessageNotifications(
+		t: Translator,
+		previous: GuildDefaultMessageNotifications,
+		next: GuildDefaultMessageNotifications
+	): string {
 		return t('events/guilds-logs:serverUpdateDefaultMessageNotifications', { previous, next });
 	}
 
-	private displayDescription(t: TFunction, previous: string | null, next: string | null): string {
+	private displayDescription(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateDescriptionAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateDescriptionRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateDescription', { previous, next });
 	}
 
-	private displayDiscoverySplash(t: TFunction, previous: string | null, next: string | null): string {
+	private displayDiscoverySplash(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateDiscoverySplashAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateDiscoverySplashRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateDiscoverySplash', { previous, next });
 	}
 
-	private displayExplicitContentFilter(t: TFunction, previous: ExplicitContentFilterLevel, next: ExplicitContentFilterLevel): string {
+	private displayExplicitContentFilter(t: Translator, previous: GuildExplicitContentFilter, next: GuildExplicitContentFilter): string {
 		return t('events/guilds-logs:serverUpdateExplicitContentFilter', { previous, next });
 	}
 
-	private *displayFeatures(t: TFunction, previous: Features, next: Features): IterableIterator<string> {
+	private *displayFeatures(t: Translator, previous: Features, next: Features): IterableIterator<string> {
 		const difference = differenceArray(previous, next);
 		if (difference.added.length) {
 			const values = difference.added;
@@ -202,101 +201,101 @@ export class UserListener extends Listener<typeof Events.GuildUpdate> {
 		}
 	}
 
-	private displayIcon(t: TFunction, previous: string | null, next: string | null): string {
+	private displayIcon(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateIconAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateIconRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateIcon', { previous, next });
 	}
 
-	private displayMaximumMembers(t: TFunction, previous: number | null, next: number | null): string {
+	private displayMaximumMembers(t: Translator, previous: number | null, next: number | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateMaximumMembersAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateMaximumMembersRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateMaximumMembers', { previous, next });
 	}
 
-	private displayMfaLevel(t: TFunction, next: MFALevel): string {
-		return t(next === 'ELEVATED' ? 'events/guilds-logs:serverUpdateMfaAdded' : 'events/guilds-logs:serverUpdateMfaRemoved');
+	private displayMfaLevel(t: Translator, next: GuildMFALevel): string {
+		return t(next === GuildMFALevel.Elevated ? 'events/guilds-logs:serverUpdateMfaAdded' : 'events/guilds-logs:serverUpdateMfaRemoved');
 	}
 
-	private displayName(t: TFunction, previous: string, next: string): string {
+	private displayName(t: Translator, previous: string, next: string): string {
 		return t('events/guilds-logs:serverUpdateName', { previous, next });
 	}
 
-	private displayOwner(t: TFunction, previous: string, next: string): string {
+	private displayOwner(t: Translator, previous: string, next: string): string {
 		return t('events/guilds-logs:serverUpdateOwner', { previous: `<@${previous}>`, next: `<@${next}>` });
 	}
 
-	private displayPreferredLocale(t: TFunction, previous: string | null, next: string | null): string {
+	private displayPreferredLocale(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdatePreferredLocaleAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdatePreferredLocaleRemoved', { value: previous! });
 		return t('events/guilds-logs:serverUpdatePreferredLocale', { previous, next });
 	}
 
-	private displayPremiumSubscriptionCount(t: TFunction, previous: number | null, next: number | null): string {
+	private displayPremiumSubscriptionCount(t: Translator, previous: number | null, next: number | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdatePremiumSubscriptionCountAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdatePremiumSubscriptionCountRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdatePremiumSubscriptionCount', { previous, next });
 	}
 
-	private displayPremiumTier(t: TFunction, previous: PremiumTier, next: PremiumTier): string {
+	private displayPremiumTier(t: Translator, previous: GuildPremiumTier, next: GuildPremiumTier): string {
 		return t('events/guilds-logs:serverUpdatePremiumTier', { previous, next });
 	}
 
-	private displayPublicUpdatesChannel(t: TFunction, previous: string | null, next: string | null): string {
+	private displayPublicUpdatesChannel(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdatePublicUpdatesChannelAdded', { value: `<#${next!}>` });
 		if (next === null) return t('events/guilds-logs:serverUpdatePublicUpdatesChannelRemoved', { value: `<#${previous}>` });
 		return t('events/guilds-logs:serverUpdatePublicUpdatesChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
-	private displayRulesChannel(t: TFunction, previous: string | null, next: string | null): string {
+	private displayRulesChannel(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateRulesChannelAdded', { value: `<#${next!}>` });
 		if (next === null) return t('events/guilds-logs:serverUpdateRulesChannelRemoved', { value: `<#${previous}>` });
 		return t('events/guilds-logs:serverUpdateRulesChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
-	private displaySplash(t: TFunction, previous: string | null, next: string | null): string {
+	private displaySplash(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateSplashAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateSplashRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateSplash', { previous, next });
 	}
 
-	private *displaySystemChannelFlags(t: TFunction, previous: ChannelFlags, next: ChannelFlags): IterableIterator<string> {
+	private *displaySystemChannelFlags(t: Translator, previous: ChannelFlags, next: ChannelFlags): IterableIterator<string> {
 		// NOTE: The order is swapped because fields being set mean they're disabled, opposite to other fields:
-		const modified = differenceBitField(next.bitfield, previous.bitfield);
-		if (modified.added !== 0) {
-			const values = toChannelsArray(modified.added).map((value) => t(`guilds:${value}`));
+		const modified = differenceBitField(next.bitField, previous.bitField);
+		if (modified.added !== 0n) {
+			const values = toChannelsArray(Number(modified.added)).map((value) => t(`guilds:${value}`));
 			yield t('events/guilds-logs:serverUpdateSystemChannelFlagsAdded', { values, count: values.length });
 		}
 
-		if (modified.removed !== 0) {
-			const values = toChannelsArray(modified.removed).map((value) => t(`guilds:${value}`));
+		if (modified.removed !== 0n) {
+			const values = toChannelsArray(Number(modified.removed)).map((value) => t(`guilds:${value}`));
 			yield t('events/guilds-logs:serverUpdateSystemChannelFlagsRemoved', { values, count: values.length });
 		}
 	}
 
-	private displaySystemChannel(t: TFunction, previous: string | null, next: string | null): string {
+	private displaySystemChannel(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateSystemChannelAdded', { value: `<#${next!}>` });
 		if (next === null) return t('events/guilds-logs:serverUpdateSystemChannelRemoved', { value: `<#${previous}>` });
 		return t('events/guilds-logs:serverUpdateSystemChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
-	private displayVanityURLCode(t: TFunction, previous: string | null, next: string | null): string {
+	private displayVanityURLCode(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateVanityUrlAdded', { value: next! });
 		if (next === null) return t('events/guilds-logs:serverUpdateVanityUrlRemoved', { value: previous });
 		return t('events/guilds-logs:serverUpdateVanityUrl', { previous, next });
 	}
 
-	private displayVerificationLevel(t: TFunction, previous: VerificationLevel, next: VerificationLevel): string {
+	private displayVerificationLevel(t: Translator, previous: GuildVerificationLevel, next: GuildVerificationLevel): string {
 		return t('events/guilds-logs:serverUpdateVerificationLevel', { previous, next });
 	}
 
-	private displayWidgetChannel(t: TFunction, previous: string | null, next: string | null): string {
+	private displayWidgetChannel(t: Translator, previous: string | null, next: string | null): string {
 		if (previous === null) return t('events/guilds-logs:serverUpdateWidgetChannelAdded', { value: `<#${next!}>` });
 		if (next === null) return t('events/guilds-logs:serverUpdateWidgetChannelRemoved', { value: `<#${previous}>` });
 		return t('events/guilds-logs:serverUpdateWidgetChannel', { previous: `<#${previous}>`, next: `<#${next}>` });
 	}
 
-	private displayWidgetEnabled(t: TFunction, previous: boolean | null, next: boolean | null): string {
+	private displayWidgetEnabled(t: Translator, previous: boolean | null, next: boolean | null): string {
 		return t((next ?? !previous) ? 'events/guilds-logs:serverUpdateWidgetEnabled' : 'events/guilds-logs:serverUpdateWidgetDisabled');
 	}
 }

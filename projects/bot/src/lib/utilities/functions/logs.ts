@@ -2,6 +2,7 @@ import type { APIUser } from 'discord-api-types/v10';
 import {
 	ComponentType,
 	MessageFlags,
+	type AllowedMentionsTypes,
 	type APIContainerComponent,
 	type APIMessageTopLevelComponent,
 	type APITextDisplayComponent
@@ -90,7 +91,7 @@ export function createLogMessage(options: LogMessageOptions) {
 
 	const components: APIMessageTopLevelComponent[] = [container];
 	// The log mentions users and roles it only quotes, nobody is pinged:
-	return { components, flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } } as const;
+	return { components, flags: MessageFlags.IsComponentsV2 as const, allowed_mentions: { parse: [] as AllowedMentionsTypes[] } };
 }
 
 /**

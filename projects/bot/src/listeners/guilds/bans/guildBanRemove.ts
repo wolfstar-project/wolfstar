@@ -1,21 +1,21 @@
-import { GuildSettings, readSettings } from '#lib/database';
+import { readSettings } from '#lib/database';
 import { getModeration } from '#utils/functions';
-import { TypeCodes } from '#utils/moderationConstants';
-import { Listener } from '@sapphire/framework';
-import type { GuildBan } from 'discord.js';
+import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { GuildBan } from '@wolfstar/plugin-gateway';
 
-export class UserListener extends Listener {
+@RegisterAsGatewayListener('guildBanRemove')
+export class UserListener extends EventGatewayListener<'guildBanRemove'> {
 	public async run({ guild, user }: GuildBan) {
-		if (!guild.available || !(await readSettings(guild, GuildSettings.Events.BanRemove))) return;
+		if (!guild?.available) return;
+
+		const settings = await readSettings(guild);
+		if (!guild.available || !settings.moderationTrackBans) return;
 
 		const moderation = await getModeration(guild);
 		await moderation.waitLock();
-		await moderation
-			.create({
-				userId: user.id,
-				moderatorId: process.env.CLIENT_ID,
-				type: TypeCodes.UnBan
-			})
-			.create();
+
+		if (moderation.checkSimilarEntryHasBeenCreated(TypeVariation.Ban, user.id)) return;
+		await moderation.insert(moderation.create({ user, type: TypeVariation.Ban, metadata: TypeMetadata.Undo }));
 	}
 }

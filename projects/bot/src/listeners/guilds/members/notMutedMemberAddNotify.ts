@@ -1,33 +1,38 @@
-import { GuildSettings, readSettings } from '#lib/database';
-import { Events } from '#lib/types/Enums';
+import { seconds } from '#common';
+import { readSettings } from '#lib/database';
+import { fetchGuildT } from '#lib/moderation/common';
+import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, ListenerOptions } from '@sapphire/framework';
-import { isNullish } from '@sapphire/utilities';
-import { GuildMember, MessageEmbed } from 'discord.js';
+import { getLogger, getUserMentionWithFlagsString } from '#utils/functions';
+import { getFullEmbedAuthor } from '#utils/util';
+import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { Listener } from '@wolfstar/http-framework';
+import type { GuildMember } from '@wolfstar/plugin-gateway';
 
-@ApplyOptions<ListenerOptions>({ event: Events.NotMutedMemberAdd })
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.NotMutedMemberAdd })
 export class UserListener extends Listener {
 	public async run(member: GuildMember) {
-		const key = GuildSettings.Channels.Logs.MemberAdd;
-		const [logChannelId, t] = await readSettings(member, (settings) => [settings[key], settings.getLanguage()]);
-		if (isNullish(logChannelId)) return;
-
-		this.container.gatewayClient.emit(Events.GuildMessageLog, member.guild, logChannelId, key, () =>
-			new MessageEmbed()
-				.setColor(Colors.Green)
-				.setAuthor({
-					name: `${member.user.tag} (${member.user.id})`,
-					iconURL: member.user.displayAvatarURL({ size: 128, format: 'png', dynamic: true })
-				})
-				.setDescription(
-					t('events/guilds-members:guildMemberAddDescription', {
-						mention: member.toString(),
-						time: Date.now() - member.user.createdTimestamp
-					})
-				)
-				.setFooter({ text: t('events/guilds-members:guildMemberAdd') })
-				.setTimestamp()
-		);
+		const settings = await readSettings(member);
+		const logChannelId = settings.logsMemberAdd;
+		const logger = await getLogger(member);
+		await logger.send({
+			key: 'logsMemberAdd',
+			channelId: logChannelId,
+			makeMessage: async () => {
+				const t = await fetchGuildT({ id: member.guildId });
+				const user = member.user ?? (await member.fetchUser());
+				const description = t('events/guilds-members:guildMemberAddDescription', {
+					user: getUserMentionWithFlagsString(Number(user.flags.bitField), user.id),
+					relativeTime: time(seconds.fromMilliseconds(user.createdTimestamp), TimestampStyles.RelativeTime)
+				});
+				return new EmbedBuilder()
+					.setColor(Colors.Green)
+					.setAuthor(getFullEmbedAuthor(user))
+					.setDescription(description)
+					.setFooter({ text: t('events/guilds-members:guildMemberAdd') })
+					.setTimestamp();
+			}
+		});
 	}
 }

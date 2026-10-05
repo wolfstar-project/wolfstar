@@ -1,15 +1,15 @@
-import { Events } from '#lib/types/Enums';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, ListenerOptions } from '@sapphire/framework';
-import { GatewayDispatchEvents, GatewayGuildMemberRemoveDispatch } from 'discord-api-types/v9';
+import { Events } from '#lib/types';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { GuildMember } from '@wolfstar/plugin-gateway';
+import type { GatewayGuildMemberRemoveDispatchData } from 'discord-api-types/v10';
 
-@ApplyOptions<ListenerOptions>({ event: GatewayDispatchEvents.GuildMemberRemove, emitter: 'ws' })
-export class UserListener extends Listener {
-	public run(data: GatewayGuildMemberRemoveDispatch['d']) {
-		const guild = this.container.gatewayClient.guilds.cache.get(data.guild_id);
+@RegisterAsGatewayListener('guildMemberRemove')
+export class UserListener extends EventGatewayListener<'guildMemberRemove'> {
+	public async run(member: GuildMember | null, data: GatewayGuildMemberRemoveDispatchData) {
+		const { guilds } = this.container.gatewayClient;
+		const guild = await guilds.cache.get(guilds.resolveKey(data.guild_id));
 		if (!guild || !guild.available) return;
 
-		const member = guild.members.cache.get(data.user.id) ?? null;
-		this.container.gatewayClient.emit(Events.RawMemberRemove, guild, member, data);
+		this.container.client.emit(Events.RawMemberRemove, guild, member, data);
 	}
 }

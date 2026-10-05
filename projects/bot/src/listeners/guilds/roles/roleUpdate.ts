@@ -1,12 +1,23 @@
-import { writeSettings } from '#lib/database';
-import { Listener } from '@sapphire/framework';
-import type { Role } from 'discord.js';
+import { readSettingsCached, readSettingsPermissionNodes, writeSettings } from '#lib/database';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { Role } from '@wolfstar/plugin-gateway';
 
-export class UserListener extends Listener {
-	public run(previous: Role, next: Role) {
-		if (!next.guild.available) return;
+@RegisterAsGatewayListener('guildRoleUpdate')
+export class UserListener extends EventGatewayListener<'guildRoleUpdate'> {
+	public async run(previous: Role | null, next: Role) {
+		// The role was not cached, whether or not its position changed is unknown:
+		if (previous === null) return;
 		if (previous.position === next.position) return;
-		if (!this.container.settings.guilds.get(next.guild.id)?.permissionNodes.has(next.id)) return;
-		return writeSettings(next, (settings) => settings.adders.refresh());
+
+		const guild = await this.container.gatewayClient.guilds.resolve(next.guildId);
+		if (!guild?.available) return;
+
+		const settings = readSettingsCached(next);
+		if (!settings) return;
+
+		const nodes = readSettingsPermissionNodes(settings);
+		if (!nodes.has(next.id)) return;
+
+		await writeSettings(next, { permissionsRoles: await nodes.refresh(settings) }, this.container.gatewayClient.user!.id);
 	}
 }

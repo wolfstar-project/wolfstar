@@ -1,41 +1,38 @@
-import { GuildSettings, readSettings, writeSettings } from '#lib/database';
-import { differenceMap } from '#common/comparators';
+import { readSettings } from '#lib/database';
+import { createTranslator, type Translator } from '#lib/structures/commands/utils';
+import { differenceArray } from '#common/comparators';
 import { Colors } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, ListenerOptions } from '@sapphire/framework';
-import { isNullish } from '@sapphire/utilities';
-import { GuildEmoji, MessageEmbed, TextChannel } from 'discord.js';
-import type { TFunction } from 'i18next';
+import { getLogger } from '#utils/functions';
+import { EmbedBuilder } from '@discordjs/builders';
+import { fetchT } from '@wolfstar/plugin-i18next';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { GuildEmoji } from '@wolfstar/plugin-gateway';
 
-@ApplyOptions<ListenerOptions>({ event: Events.GuildEmojiUpdate })
-export class UserListener extends Listener<typeof Events.GuildEmojiUpdate> {
+@RegisterAsGatewayListener('emojiUpdate')
+export class UserListener extends EventGatewayListener<'emojiUpdate'> {
 	public async run(previous: GuildEmoji, next: GuildEmoji) {
-		const [channelId, t] = await readSettings(next.guild, (settings) => [
-			settings[GuildSettings.Channels.Logs.EmojiUpdate],
-			settings.getLanguage()
-		]);
-		if (isNullish(channelId)) return;
+		const settings = await readSettings(next);
+		const logger = await getLogger(next);
+		await logger.send({
+			key: 'logsEmojiUpdate',
+			channelId: settings.logsEmojiUpdate,
+			makeMessage: async () => {
+				const t = createTranslator(await fetchT(logger.guild));
+				const changes: string[] = [...this.differenceEmoji(t, previous, next)];
+				if (changes.length === 0) return null;
 
-		const channel = next.guild.channels.cache.get(channelId) as TextChannel | undefined;
-		if (channel === undefined) {
-			await writeSettings(next.guild, [[GuildSettings.Channels.Logs.EmojiUpdate, null]]);
-			return;
-		}
-
-		const changes: string[] = [...this.differenceEmoji(t, previous, next)];
-		if (changes.length === 0) return;
-
-		const embed = new MessageEmbed()
-			.setColor(Colors.Yellow)
-			.setThumbnail(next.url)
-			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
-			.setDescription(changes.join('\n'))
-			.setFooter({ text: t('events/guilds-logs:emojiUpdate') })
-			.setTimestamp();
-		await channel.send({ embeds: [embed] });
+				return new EmbedBuilder()
+					.setColor(Colors.Yellow)
+					.setThumbnail(next.imageURL({ size: 256 }))
+					.setAuthor({ name: `${next.name} (${next.id})`, iconURL: logger.guild.iconURL({ size: 64, extension: 'png' }) ?? undefined })
+					.setDescription(changes.join('\n'))
+					.setFooter({ text: t('events/guilds-logs:emojiUpdate') })
+					.setTimestamp();
+			}
+		});
 	}
 
-	private *differenceEmoji(t: TFunction, previous: GuildEmoji, next: GuildEmoji) {
+	private *differenceEmoji(t: Translator, previous: GuildEmoji, next: GuildEmoji) {
 		const [no, yes] = [t('globals:no'), t('globals:yes')];
 
 		if (previous.animated !== next.animated) {
@@ -73,14 +70,15 @@ export class UserListener extends Listener<typeof Events.GuildEmojiUpdate> {
 			});
 		}
 
-		const modified = differenceMap(previous.roles.cache, next.roles.cache);
-		if (modified.added.size !== 0) {
-			const values = [...modified.added.keys()].map((id) => `<@&${id}>`);
+		// The emoji holds the IDs of its roles, which is all the original read from the cache of roles:
+		const modified = differenceArray(previous.roleIds, next.roleIds);
+		if (modified.added.length !== 0) {
+			const values = modified.added.map((id) => `<@&${id}>`);
 			yield t('events/guilds-logs:emojiUpdateRolesAdded', { values, count: values.length });
 		}
 
-		if (modified.removed.size !== 0) {
-			const values = [...modified.removed.keys()].map((id) => `<@&${id}>`);
+		if (modified.removed.length !== 0) {
+			const values = modified.removed.map((id) => `<@&${id}>`);
 			yield t('events/guilds-logs:emojiUpdateRolesRemoved', { values, count: values.length });
 		}
 	}

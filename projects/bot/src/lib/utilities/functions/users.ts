@@ -1,6 +1,6 @@
 import { Emojis } from '#utils/constants';
 import { userMention } from '@discordjs/builders';
-import { BitField } from '#utils/bits';
+import { BitField } from '@sapphire/bitfield';
 import { UserFlags, type Snowflake } from 'discord-api-types/v10';
 
 const ExtendedUserFlagBits = new BitField({

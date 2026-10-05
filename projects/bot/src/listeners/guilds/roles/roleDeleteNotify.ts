@@ -1,27 +1,31 @@
-import { GuildSettings, readSettings, writeSettings } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { createTranslator } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, ListenerOptions } from '@sapphire/framework';
-import { isNullish } from '@sapphire/utilities';
-import { MessageEmbed, Role, TextChannel } from 'discord.js';
+import { getLogger } from '#utils/functions';
+import { EmbedBuilder } from '@discordjs/builders';
+import { fetchT } from '@wolfstar/plugin-i18next';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { Role } from '@wolfstar/plugin-gateway';
 
-@ApplyOptions<ListenerOptions>({ event: Events.GuildRoleDelete })
-export class UserListener extends Listener<typeof Events.GuildRoleDelete> {
-	public async run(role: Role) {
-		const [channelId, t] = await readSettings(role, (settings) => [settings[GuildSettings.Channels.Logs.RoleDelete], settings.getLanguage()]);
-		if (isNullish(channelId)) return;
+@RegisterAsGatewayListener('guildRoleDelete')
+export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
+	public async run(role: Role | null) {
+		// The role was not cached, its name is unknown:
+		if (role === null) return;
 
-		const channel = role.guild.channels.cache.get(channelId) as TextChannel | undefined;
-		if (channel === undefined) {
-			await writeSettings(role, [[GuildSettings.Channels.Logs.RoleDelete, null]]);
-			return;
-		}
-
-		const embed = new MessageEmbed()
-			.setColor(Colors.Red)
-			.setAuthor({ name: `${role.name} (${role.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
-			.setFooter({ text: t('events/guilds-logs:roleDelete') })
-			.setTimestamp();
-		await channel.send({ embeds: [embed] });
+		const settings = await readSettings(role);
+		const logger = await getLogger(role);
+		await logger.send({
+			key: 'logsRoleDelete',
+			channelId: settings.logsRoleDelete,
+			makeMessage: async () => {
+				const t = createTranslator(await fetchT(logger.guild));
+				return new EmbedBuilder()
+					.setColor(Colors.Red)
+					.setAuthor({ name: `${role.name} (${role.id})`, iconURL: logger.guild.iconURL({ size: 64, extension: 'png' }) ?? undefined })
+					.setFooter({ text: t('events/guilds-logs:roleDelete') })
+					.setTimestamp();
+			}
+		});
 	}
 }

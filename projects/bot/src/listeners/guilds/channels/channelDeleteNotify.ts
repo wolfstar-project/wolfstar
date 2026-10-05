@@ -1,39 +1,42 @@
-import { GuildSettings, readSettings, writeSettings } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, ListenerOptions } from '@sapphire/framework';
-import { isNullish } from '@sapphire/utilities';
-import { CategoryChannel, MessageEmbed, NewsChannel, StoreChannel, TextChannel, VoiceChannel } from 'discord.js';
-import type { TFunction } from 'i18next';
+import { getLogger } from '#utils/functions';
+import { EmbedBuilder } from '@discordjs/builders';
+import { isGuildBasedChannel, isThreadChannel } from '@wolfstar/http-framework-utilities/gateway';
+import { fetchT } from '@wolfstar/plugin-i18next';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { AnyChannel, NonThreadGuildBasedChannel } from '@wolfstar/plugin-gateway';
 
-type GuildBasedChannel = TextChannel | VoiceChannel | CategoryChannel | NewsChannel | StoreChannel;
+@RegisterAsGatewayListener('channelDelete')
+export class UserListener extends EventGatewayListener<'channelDelete'> {
+	public async run(deleted: AnyChannel) {
+		// The event is also emitted for the channels that are not of a guild, the threads have their own event:
+		if (!isGuildBasedChannel(deleted) || isThreadChannel(deleted)) return;
 
-@ApplyOptions<ListenerOptions>({ event: Events.ChannelDelete })
-export class UserListener extends Listener<typeof Events.ChannelDelete> {
-	public async run(next: GuildBasedChannel) {
-		const [channelId, t] = await readSettings(next.guild, (settings) => [
-			settings[GuildSettings.Channels.Logs.ChannelDelete],
-			settings.getLanguage()
-		]);
-		if (isNullish(channelId)) return;
-
-		const channel = next.guild.channels.cache.get(channelId) as TextChannel | undefined;
-		if (channel === undefined) {
-			await writeSettings(next.guild, [[GuildSettings.Channels.Logs.ChannelDelete, null]]);
-			return;
-		}
-
-		const changes = [...this.getChannelInformation(t, next)];
-		const embed = new MessageEmbed()
-			.setColor(Colors.Red)
-			.setAuthor({ name: `${next.name} (${next.id})`, iconURL: channel.guild.iconURL({ size: 64, format: 'png', dynamic: true }) ?? undefined })
-			.setDescription(changes.join('\n'))
-			.setFooter({ text: t('events/guilds-logs:channelDelete') })
-			.setTimestamp();
-		await channel.send({ embeds: [embed] });
+		const channel = deleted as NonThreadGuildBasedChannel;
+		const settings = await readSettings(channel.guildId);
+		const logger = await getLogger(channel.guildId);
+		await logger.send({
+			key: 'logsChannelDelete',
+			channelId: settings.logsChannelDelete,
+			makeMessage: async () => {
+				const t = createTranslator(await fetchT(logger.guild));
+				const changes = [...this.getChannelInformation(t, channel)];
+				return new EmbedBuilder()
+					.setColor(Colors.Red)
+					.setAuthor({
+						name: `${channel.name} (${channel.id})`,
+						iconURL: logger.guild.iconURL({ size: 64, extension: 'png' }) ?? undefined
+					})
+					.setDescription(changes.join('\n'))
+					.setFooter({ text: t('events/guilds-logs:channelDelete') })
+					.setTimestamp();
+			}
+		});
 	}
 
-	private *getChannelInformation(t: TFunction, channel: GuildBasedChannel) {
-		if (channel.parentId) yield t('events/guilds-logs:channelCreateParent', { value: `<#${channel.parentId}>` });
+	private *getChannelInformation(t: Translator, channel: NonThreadGuildBasedChannel) {
+		if ('parentId' in channel && channel.parentId) yield t('events/guilds-logs:channelCreateParent', { value: `<#${channel.parentId}>` });
 	}
 }
