@@ -1,11 +1,12 @@
-import { Events } from '#lib/types/Enums';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, ListenerOptions } from '@sapphire/framework';
-import type { Message } from 'discord.js';
+import { isGuildMessage } from '#common';
+import { Events } from '#lib/types';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { Listener } from '@wolfstar/http-framework';
+import type { Message } from '@wolfstar/plugin-gateway';
 
-@ApplyOptions<ListenerOptions>({ event: Events.UserMessage })
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.UserMessage })
 export class UserListener extends Listener {
 	public run(message: Message) {
-		if (message.guild) this.container.gatewayClient.emit(Events.GuildUserMessage, message);
+		if (isGuildMessage(message)) this.container.client.emit(Events.GuildUserMessage, message);
 	}
 }

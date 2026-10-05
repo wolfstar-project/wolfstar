@@ -1,8 +1,9 @@
-import { Events } from '#lib/types/Enums';
-import { Listener } from '@sapphire/framework';
-import type { Message } from 'discord.js';
+import { Events } from '#lib/types';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { Message } from '@wolfstar/plugin-gateway';
 
-export class UserListener extends Listener {
+@RegisterAsGatewayListener('messageCreate')
+export class UserListener extends EventGatewayListener<'messageCreate'> {
 	public run(message: Message) {
 		// If the message was sent by a webhook, return:
 		if (message.webhookId !== null) return;
@@ -14,6 +15,6 @@ export class UserListener extends Listener {
 		if (message.author.bot) return;
 
 		// Emit UserMessage
-		this.container.gatewayClient.emit(Events.UserMessage, message);
+		this.container.client.emit(Events.UserMessage, message);
 	}
 }

@@ -1,10 +1,13 @@
-import { Events } from '#lib/types/Enums';
-import { Listener } from '@sapphire/framework';
-import type { Message } from 'discord.js';
+import { isGuildMessage } from '#common';
+import { Events } from '#lib/types';
+import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { Message } from '@wolfstar/plugin-gateway';
 
-export class UserListener extends Listener {
-	public run(message: Message) {
-		if (message.partial || !message.inGuild() || message.author.bot) return;
-		this.container.gatewayClient.emit(Events.GuildMessageDelete, message);
+@RegisterAsGatewayListener('messageDelete')
+export class UserListener extends EventGatewayListener<'messageDelete'> {
+	public run(message: Message | null) {
+		// The message is `null` when it was not cached, which is what a partial message was:
+		if (message === null || message.partial || !isGuildMessage(message) || message.author.bot) return;
+		this.container.client.emit(Events.GuildMessageDelete, message);
 	}
 }

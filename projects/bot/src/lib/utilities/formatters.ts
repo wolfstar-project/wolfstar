@@ -55,25 +55,6 @@ export function formatAttachment(attachment: Attachment): string {
 }
 
 async function formatEmbed(guild: Guild, embed: Embed): Promise<string> {
-	switch (embed.type) {
-		case 'video':
-			return formatEmbedVideo(embed);
-		case 'image':
-			return formatEmbedImage(embed);
-		default:
-			return formatEmbedRich(guild, embed);
-	}
-}
-
-function formatEmbedVideo(embed: Embed): string {
-	return `📹 [${embed.url}]${embed.provider ? ` (${embed.provider.name}).` : ''}`;
-}
-
-function formatEmbedImage(embed: Embed): string {
-	return `🖼️ [${embed.url}]${embed.provider ? ` (${embed.provider.name}).` : ''}`;
-}
-
-async function formatEmbedRich(guild: Guild, embed: Embed): Promise<string> {
 	if (embed.provider === null) {
 		const output: string[] = [];
 		if (embed.title) output.push(formatEmbedRichTitle(embed.title));

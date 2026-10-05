@@ -1,42 +1,40 @@
-import { Events } from '#lib/types/Enums';
+import { Events } from '#lib/types';
 import { getEmojiString } from '#utils/functions';
-import type { LLRCData } from '#utils/LongLivingReactionCollector';
-import { ApplyOptions } from '@sapphire/decorators';
-import { canReadMessages, isGuildBasedChannel } from '@sapphire/discord.js-utilities';
-import { Listener, ListenerOptions } from '@sapphire/framework';
-import { GatewayDispatchEvents, GatewayMessageReactionAddDispatch } from 'discord-api-types/v9';
-import type { TextChannel } from 'discord.js';
+import { LongLivingReactionCollector, type LLRCData } from '#utils/LongLivingReactionCollector';
+import { canReadMessages, isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
+import { EventGatewayListener, GuildEmoji, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import type { MessageReaction, MessageReactionEventDetails, User } from '@wolfstar/plugin-gateway';
 
-@ApplyOptions<ListenerOptions>({ event: GatewayDispatchEvents.MessageReactionAdd, emitter: 'ws' })
-export class UserListener extends Listener {
-	public run(raw: GatewayMessageReactionAddDispatch['d']) {
-		const channel = this.container.gatewayClient.channels.cache.get(raw.channel_id) as TextChannel | undefined;
-		if (!channel || !isGuildBasedChannel(channel) || !canReadMessages(channel)) return;
+@RegisterAsGatewayListener('messageReactionAdd')
+export class UserListener extends EventGatewayListener<'messageReactionAdd'> {
+	public async run(reaction: MessageReaction, _user: User | null, details: MessageReactionEventDetails) {
+		const channel = await this.container.gatewayClient.channels.resolve(reaction.channelId);
+		if (!channel || !isGuildBasedChannel(channel) || !('guildId' in channel) || !channel.guildId || !(await canReadMessages(channel))) return;
 
+		// The emoji of the guild is only known when it is cached, the reaction itself carries its id, name and animated:
+		const { emoji } = reaction;
+		const guildEmoji = emoji instanceof GuildEmoji ? emoji : null;
 		const data: LLRCData = {
-			channel,
+			channelId: channel.id,
 			emoji: {
-				animated: raw.emoji.animated ?? false,
-				id: raw.emoji.id,
-				managed: raw.emoji.managed ?? null,
-				name: raw.emoji.name,
-				requireColons: raw.emoji.require_colons ?? null,
-				roles: raw.emoji.roles || null,
-				// eslint-disable-next-line @typescript-eslint/dot-notation
-				user: (raw.emoji.user && this.container.gatewayClient.users['_add'](raw.emoji.user)) ?? { id: raw.user_id }
+				animated: emoji.animated ?? false,
+				id: emoji.id,
+				managed: guildEmoji?.managed ?? null,
+				name: emoji.name,
+				requireColons: guildEmoji?.requiresColons ?? null,
+				roles: guildEmoji ? [...guildEmoji.roleIds] : null,
+				user: { id: details.userId }
 			},
-			guild: channel.guild,
-			messageId: raw.message_id,
-			userId: raw.user_id
+			guildId: channel.guildId,
+			messageId: reaction.messageId,
+			userId: details.userId
 		};
 
-		for (const llrc of this.container.gatewayClient.llrCollectors) {
-			llrc.send(data);
-		}
+		LongLivingReactionCollector.feed(data);
 
-		const emoji = getEmojiString(data.emoji);
-		if (emoji === null) return;
+		const serialized = getEmojiString(data.emoji);
+		if (serialized === null) return;
 
-		this.container.gatewayClient.emit(Events.RawReactionAdd, data, emoji);
+		this.container.client.emit(Events.RawReactionAdd, data, serialized);
 	}
 }
