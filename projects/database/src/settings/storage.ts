@@ -1,182 +1,11 @@
 import type { Database } from '../index.js';
+import { Columns, Tables, type Column, type ColumnKind, type StoredKey, type TableName } from './columns.js';
 import { getDefaultGuildSettings } from './constants.js';
 import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData, StickyRole } from './types.js';
 import type { Snowflake } from 'discord-api-types/v10';
 
-/**
- * The tables a guild's settings are spread across, in foreign-key order: every table references the one it follows
- * (`Modules` → `Guild`, `GuildAutoModeration` → `Modules`, `GuildAutoModerationLinks` → `GuildAutoModeration`, …),
- * so creating them in this order always satisfies the constraints.
- */
-const Tables = [
-	'Guild',
-	'Modules',
-	'GuildAutoModeration',
-	'GuildAutoModerationAttachments',
-	'GuildAutoModerationCapitals',
-	'GuildAutoModerationInvites',
-	'GuildAutoModerationLinks',
-	'GuildAutoModerationMentions',
-	'GuildAutoModerationNewlines',
-	'GuildAutoModerationNoMentionSpam',
-	'GuildAutoModerationWords',
-	'GuildCommands',
-	'GuildLogs',
-	'GuildModeration',
-	'GuildPermissions',
-	'GuildRoles'
-] as const;
-
-type TableName = (typeof Tables)[number];
-
-/**
- * How a value is converted between {@link GuildData} and its column:
- * - `value`: stored as-is (strings, numbers, booleans, enums, JSON);
- * - `snowflake`: a nullable `BigInt` column, a `string | null` setting;
- * - `snowflakes`: a `BigInt[]` column, a `string[]` setting;
- * - `boolean`: a nullable `Boolean` column (`enabled`) read as `false` when unset.
- */
-type ColumnKind = 'value' | 'snowflake' | 'snowflakes' | 'boolean';
-
-interface Column {
-	table: TableName;
-	column: string;
-	kind: ColumnKind;
-}
-
-type StoredKey = Exclude<GuildDataKey, 'id' | 'selfmodMentionsOverrides' | 'stickyRoles'>;
-
-function autoModerationRule(table: TableName, prefix: string, extra: Record<string, Column> = {}): Record<string, Column> {
-	return {
-		[`${prefix}Enabled`]: { table, column: 'enabled', kind: 'boolean' },
-		[`${prefix}SoftAction`]: { table, column: 'softAction', kind: 'value' },
-		[`${prefix}HardAction`]: { table, column: 'hardAction', kind: 'value' },
-		[`${prefix}HardActionDuration`]: { table, column: 'hardActionDuration', kind: 'value' },
-		[`${prefix}ThresholdMaximum`]: { table, column: 'thresholdMaximum', kind: 'value' },
-		[`${prefix}ThresholdDuration`]: { table, column: 'thresholdDuration', kind: 'value' },
-		[`${prefix}IgnoredRoles`]: { table, column: 'ignoredRoles', kind: 'snowflakes' },
-		[`${prefix}IgnoredChannels`]: { table, column: 'ignoredChannels', kind: 'snowflakes' },
-		...extra
-	};
-}
-
-function columns(table: TableName, entries: Record<string, [column: string, kind: ColumnKind]>): Record<string, Column> {
-	return Object.fromEntries(Object.entries(entries).map(([key, [column, kind]]) => [key, { table, column, kind }]));
-}
-
-const Columns = {
-	...columns('Guild', { language: ['language', 'value'] }),
-	...columns('Modules', {
-		modulesAutomod: ['automod', 'value'],
-		modulesModeration: ['moderation', 'value'],
-		modulesLogs: ['logs', 'value'],
-		modulesCommands: ['commands', 'value'],
-		modulesRoles: ['roles', 'value']
-	}),
-	...columns('GuildAutoModeration', {
-		automodChannel: ['channelId', 'snowflake'],
-		automodTrackNative: ['trackNative', 'value']
-	}),
-	...autoModerationRule('GuildAutoModerationAttachments', 'selfmodAttachments'),
-	...autoModerationRule(
-		'GuildAutoModerationCapitals',
-		'selfmodCapitals',
-		columns('GuildAutoModerationCapitals', {
-			selfmodCapitalsMinimum: ['minimum', 'value'],
-			selfmodCapitalsMaximum: ['maximum', 'value']
-		})
-	),
-	...autoModerationRule(
-		'GuildAutoModerationInvites',
-		'selfmodInvites',
-		columns('GuildAutoModerationInvites', {
-			selfmodInvitesAllowedCodes: ['allowedCodes', 'value'],
-			selfmodInvitesAllowedGuilds: ['allowedGuilds', 'snowflakes']
-		})
-	),
-	...autoModerationRule(
-		'GuildAutoModerationLinks',
-		'selfmodLinks',
-		columns('GuildAutoModerationLinks', { selfmodLinksAllowed: ['allowed', 'value'] })
-	),
-	...autoModerationRule('GuildAutoModerationMentions', 'selfmodMentions'),
-	...autoModerationRule(
-		'GuildAutoModerationNewlines',
-		'selfmodNewlines',
-		columns('GuildAutoModerationNewlines', { selfmodNewlinesMaximum: ['maximum', 'value'] })
-	),
-	...autoModerationRule(
-		'GuildAutoModerationNoMentionSpam',
-		'noMentionSpam',
-		columns('GuildAutoModerationNoMentionSpam', {
-			noMentionSpamAlerts: ['alerts', 'value'],
-			noMentionSpamMentionsAllowed: ['mentionsAllowed', 'value'],
-			noMentionSpamTimePeriod: ['timePeriod', 'value']
-		})
-	),
-	...autoModerationRule('GuildAutoModerationWords', 'selfmodWords', columns('GuildAutoModerationWords', { selfmodWordsList: ['words', 'value'] })),
-	...columns('GuildCommands', {
-		commandsDisabled: ['disabled', 'value'],
-		commandsDisabledChannels: ['disabledChannels', 'snowflakes']
-	}),
-	...columns('GuildLogs', {
-		logsMemberAdd: ['memberAdd', 'snowflake'],
-		logsMemberRemove: ['memberRemove', 'snowflake'],
-		logsMemberNicknameUpdate: ['memberNicknameUpdate', 'snowflake'],
-		logsMemberUsernameUpdate: ['memberUsernameUpdate', 'snowflake'],
-		logsMessageDelete: ['messageDelete', 'snowflake'],
-		logsMessageDeleteNsfw: ['messageDeleteNsfw', 'snowflake'],
-		logsMessageUpdate: ['messageUpdate', 'snowflake'],
-		logsMessageUpdateNsfw: ['messageUpdateNsfw', 'snowflake'],
-		logsPrune: ['prune', 'snowflake'],
-		logsReactionEmojiAdd: ['reactionEmojiAdd', 'snowflake'],
-		logsReactionEmojiRemove: ['reactionEmojiRemove', 'snowflake'],
-		logsReactionEmojiIncludeTwemoji: ['reactionEmojiIncludeTwemoji', 'value'],
-		logsImage: ['image', 'snowflake'],
-		logsRoleCreate: ['roleCreate', 'snowflake'],
-		logsRoleUpdate: ['roleUpdate', 'snowflake'],
-		logsRoleDelete: ['roleDelete', 'snowflake'],
-		logsChannelCreate: ['channelCreate', 'snowflake'],
-		logsChannelUpdate: ['channelUpdate', 'snowflake'],
-		logsChannelDelete: ['channelDelete', 'snowflake'],
-		logsEmojiCreate: ['emojiCreate', 'snowflake'],
-		logsEmojiUpdate: ['emojiUpdate', 'snowflake'],
-		logsEmojiDelete: ['emojiDelete', 'snowflake'],
-		logsServerUpdate: ['serverUpdate', 'snowflake'],
-		logsCommand: ['command', 'snowflake'],
-		logsSettings: ['settings', 'snowflake'],
-		logsIgnoreAll: ['ignoreAll', 'snowflakes'],
-		logsIgnoreMessages: ['ignoreMessages', 'snowflakes'],
-		logsIgnoreReactions: ['ignoreReactions', 'snowflakes']
-	}),
-	...columns('GuildModeration', {
-		moderationChannel: ['channelId', 'snowflake'],
-		moderationTrackBans: ['trackBans', 'value'],
-		moderationTrackTimeouts: ['trackTimeouts', 'value']
-	}),
-	...columns('GuildPermissions', {
-		permissionsUsers: ['users', 'value'],
-		permissionsRoles: ['roles', 'value']
-	}),
-	...columns('GuildRoles', {
-		rolesInitial: ['initial', 'snowflakes'],
-		rolesInitialHumans: ['initialHumans', 'snowflakes'],
-		rolesInitialRobots: ['initialRobots', 'snowflakes'],
-		rolesAdmin: ['admin', 'snowflakes'],
-		rolesModerator: ['moderator', 'snowflakes'],
-		rolesMuted: ['muted', 'snowflake'],
-		rolesPublic: ['public', 'snowflakes'],
-		rolesRemoveInitial: ['removeInitial', 'value'],
-		rolesUniqueRoleSets: ['uniqueRoleSets', 'value'],
-		rolesRestrictedReaction: ['restrictedReaction', 'snowflake'],
-		rolesRestrictedEmbed: ['restrictedEmbed', 'snowflake'],
-		rolesRestrictedEmoji: ['restrictedEmoji', 'snowflake'],
-		rolesRestrictedAttachment: ['restrictedAttachment', 'snowflake'],
-		rolesRestrictedVoice: ['restrictedVoice', 'snowflake']
-	})
-} as Record<StoredKey, Column>;
-
 const StoredKeys = Object.keys(Columns) as StoredKey[];
+const ColumnsByKey: Record<StoredKey, Column> = Columns;
 
 /**
  * The ORM surface of a table as the storage layer uses it. The tables are addressed by name, so the typed per-model
@@ -238,7 +67,7 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
 	const data = Object.assign(Object.create(null), getDefaultGuildSettings(), { id }) as GuildData;
 	const byTable = new Map<TableName, Record<string, unknown> | null>(Tables.map((name, index) => [name, rows[index]]));
 	for (const settingKey of StoredKeys) {
-		const { table: tableName, column, kind } = Columns[settingKey];
+		const { table: tableName, column, kind } = ColumnsByKey[settingKey];
 		const row = byTable.get(tableName);
 		// A missing row keeps the default values for every key the table stores:
 		if (!row) continue;
@@ -275,7 +104,7 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 		if (key === 'id') continue;
 		if (key === 'stickyRoles') touched.add('Guild');
 		else if (key === 'selfmodMentionsOverrides') touched.add('GuildAutoModerationMentions');
-		else touched.add(Columns[key].table);
+		else touched.add(ColumnsByKey[key].table);
 	}
 
 	if (touched.size === 0) return;
@@ -292,7 +121,7 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 			const create: Record<string, unknown> = { id };
 			const update: Record<string, unknown> = {};
 			for (const key of StoredKeys) {
-				const { table: tableName, column, kind } = Columns[key];
+				const { table: tableName, column, kind } = ColumnsByKey[key];
 				if (tableName !== name) continue;
 
 				const value = toColumn(kind, settings[key]);
