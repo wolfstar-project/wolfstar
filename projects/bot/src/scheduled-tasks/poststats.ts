@@ -1,3 +1,4 @@
+import { fetchApproximateUserCount } from '#lib/structures/AnalyticsData';
 import { Events } from '#lib/types';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
 import { blueBright, green, red } from 'colorette';
@@ -35,7 +36,7 @@ export class UserTask extends ScheduledTask<'poststats'> {
 		if (!gatewayClient.isClientReady()) throw new Error('The gateway client is not ready yet.');
 
 		const rawGuilds = await gatewayClient.guilds.cache.getSize();
-		const rawUsers = await this.fetchMemberCount();
+		const rawUsers = await fetchApproximateUserCount();
 
 		this.processAnalytics(rawGuilds, rawUsers);
 		if (process.env.NODE_ENV !== 'production') return null;
@@ -81,23 +82,6 @@ export class UserTask extends ScheduledTask<'poststats'> {
 
 		if (results.length) logger.trace(`${header} [ ${guilds} [G] ] [ ${users} [U] ] | ${results.join(' | ')}`);
 		return null;
-	}
-
-	/**
-	 * Sums the approximate member counts of every guild the bot is in, 200 guilds at a time.
-	 */
-	private async fetchMemberCount() {
-		const { api } = this.container.gatewayClient;
-
-		let total = 0;
-		let after: string | undefined;
-		while (true) {
-			const guilds = await api.users.getGuilds({ limit: 200, with_counts: true, after });
-			for (const guild of guilds) total += guild.approximate_member_count ?? 0;
-
-			if (guilds.length < 200) return total;
-			after = guilds.at(-1)!.id;
-		}
 	}
 
 	private processAnalytics(guilds: number, users: number) {

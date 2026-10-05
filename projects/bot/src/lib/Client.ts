@@ -10,6 +10,7 @@ import { scheduledTasks } from '@wolfstar/plugin-scheduled-tasks';
 import { GatewayIntentBits } from 'discord-api-types/v10';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
+import { AnalyticsData } from '#lib/structures/AnalyticsData';
 import { isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
 
@@ -18,6 +19,7 @@ export function createClient() {
 
 	// The threads that run the word filter, started by `loadAll()`:
 	container.workers = new WorkerManager();
+	container.analytics = envParseBoolean('INFLUX_ENABLED', false) ? new AnalyticsData() : null;
 
 	// The client registers itself as `container.gatewayClient`:
 	// oxlint-disable-next-line no-new

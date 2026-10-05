@@ -246,6 +246,9 @@ importers:
       '@discordjs/rest':
         specifier: ^2.6.3
         version: 2.6.3
+      '@influxdata/influxdb-client':
+        specifier: ^1.35.0
+        version: 1.35.0
       '@sapphire/async-queue':
         specifier: ^1.5.5
         version: 1.5.5
@@ -1220,6 +1223,9 @@ packages:
     engines: {node: '>=20.9.0'}
     cpu: [x64]
     os: [win32]
+
+  '@influxdata/influxdb-client@1.35.0':
+    resolution: {integrity: sha512-woWMi8PDpPQpvTsRaUw4Ig+nOGS/CWwAwS66Fa1Vr/EkW+NEwxI8YfPBsdBMn33jK2Y86/qMiiuX/ROHIkJLTw==}
 
   '@inquirer/external-editor@1.0.3':
     resolution: {integrity: sha512-RWbSrDiYmO4LbejWY7ttpxczuwQyZLBUyygsA9Nsv95hpzUWwnNTVQmAq3xuh7vNwCp07UTmE5i11XAEExx4RA==}
@@ -5989,6 +5995,8 @@ snapshots:
 
   '@img/sharp-win32-x64@0.35.5':
     optional: true
+
+  '@influxdata/influxdb-client@1.35.0': {}
 
   '@inquirer/external-editor@1.0.3(@types/node@24.19.1)':
     dependencies:
