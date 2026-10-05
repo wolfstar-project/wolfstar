@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { api } from '#lib/discord/Api';
 import { floatPromise } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, ListenerOptions } from '@sapphire/framework';
@@ -57,9 +56,7 @@ export class UserListener extends Listener {
 			limit: 10,
 			action_type: AuditLogEvent.MemberRoleUpdate
 		};
-		const auditLogs = await api().guilds(guild.id)['audit-logs'].get<RESTGetAPIAuditLogResult>({
-			query
-		});
+		const auditLogs = await this.container.gatewayClient.api.guilds.getAuditLogs(guild.id, query);
 
 		const updatedRoleId = this.getChange(auditLogs, data.user!.id);
 		if (updatedRoleId === null) return;
@@ -69,10 +66,12 @@ export class UserListener extends Listener {
 			if (set.roles.includes(updatedRoleId)) memberRoles = memberRoles.filter((id) => !set.roles.includes(id) || id === updatedRoleId);
 		}
 
-		await api()
-			.guilds(guild.id)
-			.members(data.user!.id)
-			.patch({ data: { roles: memberRoles }, reason: 'Automatic Role Group Modification' });
+		await this.container.gatewayClient.api.guilds.editMember(
+			guild.id,
+			data.user!.id,
+			{ roles: memberRoles },
+			{ reason: 'Automatic Role Group Modification' }
+		);
 	}
 
 	private getChange(results: RESTGetAPIAuditLogResult, userId: string): string | null {

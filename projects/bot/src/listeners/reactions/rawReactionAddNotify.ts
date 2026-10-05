@@ -1,5 +1,4 @@
 import { GuildSettings, readSettings } from '#lib/database';
-import { api } from '#lib/discord/Api';
 import { Events } from '#lib/types/Enums';
 import { Colors } from '#utils/constants';
 import { getEmojiId, getEmojiReactionFormat, SerializedEmoji } from '#utils/functions';
@@ -9,7 +8,6 @@ import { Collection } from '@discordjs/collection';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, ListenerOptions } from '@sapphire/framework';
 import { isNullish } from '@sapphire/utilities';
-import type { APIUser } from 'discord-api-types/v9';
 import { MessageEmbed } from 'discord.js';
 
 @ApplyOptions<ListenerOptions>({ event: Events.RawReactionAdd })
@@ -96,7 +94,11 @@ export class UserListener extends Listener {
 	}
 
 	private async fetchCount(data: LLRCData, emoji: SerializedEmoji, id: string) {
-		const users = (await api().channels(data.channel.id).messages(data.messageId).reactions(getEmojiReactionFormat(emoji)).get()) as APIUser[];
+		const users = await this.container.gatewayClient.api.channels.getMessageReactions(
+			data.channel.id,
+			data.messageId,
+			getEmojiReactionFormat(emoji)
+		);
 		const count: InternalCacheEntry = { count: users.length, sweepAt: Date.now() + 120000 };
 		this.kCountCache.set(id, count);
 		this.kSyncCache.delete(id);

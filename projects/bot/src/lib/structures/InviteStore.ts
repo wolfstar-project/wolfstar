@@ -1,7 +1,7 @@
-import { api } from '#lib/discord/Api';
 import { minutes, resolveOnErrorCodes } from '#common';
 import { Collection } from '@discordjs/collection';
-import { RESTGetAPIInviteResult, RESTJSONErrorCodes } from 'discord-api-types/v9';
+import { container } from '@wolfstar/http-framework';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 export class InviteStore extends Collection<string, InviteCodeEntry> {
 	private readonly interval = setInterval(() => {
@@ -17,7 +17,7 @@ export class InviteStore extends Collection<string, InviteCodeEntry> {
 		const previous = this.get(code);
 		if (typeof previous !== 'undefined') return previous;
 
-		const data = (await resolveOnErrorCodes(api().invites(code).get(), RESTJSONErrorCodes.UnknownInvite)) as RESTGetAPIInviteResult | null;
+		const data = await resolveOnErrorCodes(container.gatewayClient.api.invites.get(code), RESTJSONErrorCodes.UnknownInvite);
 		if (data === null) {
 			const resolved: InviteCodeEntry = { valid: false, fetchedAt: Date.now() };
 			this.set(code, resolved);
@@ -27,7 +27,7 @@ export class InviteStore extends Collection<string, InviteCodeEntry> {
 		const resolved: InviteCodeEntry = {
 			valid: true,
 			code,
-			guildId: Reflect.get(data, 'guild')?.id ?? null,
+			guildId: data.guild?.id ?? null,
 			fetchedAt: Date.now()
 		};
 		this.set(code, resolved);

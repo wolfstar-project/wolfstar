@@ -1,6 +1,5 @@
 import { flattenGuild } from '#lib/api/ApiTransformers';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import { api } from '#lib/discord/Api';
 import { seconds } from '#common';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApiRequest, ApiResponse, HttpCodes, methods, Route, RouteOptions } from '@wolfstar/plugin-api';
@@ -20,7 +19,7 @@ export class UserRoute extends Route {
 
 		if (!(await canManage(guild, member))) return response.error(HttpCodes.Forbidden);
 
-		const emojis = await api().guilds(guildId).emojis.get();
+		const emojis = await this.container.gatewayClient.api.guilds.getEmojis(guildId);
 		return response.json({ ...flattenGuild(guild), emojis });
 	}
 }

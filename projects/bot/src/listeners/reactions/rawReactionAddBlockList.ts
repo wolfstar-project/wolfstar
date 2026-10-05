@@ -1,5 +1,4 @@
 import { GuildEntity, GuildSettings, readSettings } from '#lib/database';
-import { api } from '#lib/discord/Api';
 import { HardPunishment, ModerationListener, SelfModeratorBitField } from '#lib/moderation';
 import { Events } from '#lib/types/Enums';
 import { floatPromise, seconds } from '#common';
@@ -65,12 +64,14 @@ export class UserModerationEvent extends ModerationListener<ArgumentType, unknow
 	}
 
 	protected onDelete([data, emoji]: Readonly<ArgumentType>) {
+		// Removing a reaction does not leave an audit log entry, so there is no reason to give:
 		floatPromise(
-			api()
-				.channels(data.channel.id)
-				.messages(data.messageId)
-				.reactions(getEmojiReactionFormat(emoji), data.userId)
-				.delete({ reason: '[MODERATION] Automatic Removal of Blocked Emoji.' })
+			this.container.gatewayClient.api.channels.deleteUserMessageReaction(
+				data.channel.id,
+				data.messageId,
+				getEmojiReactionFormat(emoji),
+				data.userId
+			)
 		);
 	}
 
