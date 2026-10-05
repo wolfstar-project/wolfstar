@@ -1,4 +1,4 @@
-import { getEmojiObject, type EmojiObject } from '#utils/functions';
+import { getEmojiObject, type EmojiObject } from '#utils/functions/emojis';
 import {
 	animatedSkyraGlasses,
 	bunnyTwemoji,

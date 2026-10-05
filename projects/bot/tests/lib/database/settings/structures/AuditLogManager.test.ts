@@ -1,9 +1,9 @@
 import { AuditLogManager } from '#lib/database';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import type { ReadonlyGuildData } from '#lib/database/settings/types';
-import { container } from '@sapphire/framework';
 import { Events } from '#lib/types';
 import { EmbedBuilder } from '@discordjs/builders';
+import { container } from '@wolfstar/http-framework';
 import { createUser } from '../../../../mocks/MockInstances.js';
 
 const ADVISORY_LOCK_NS = 1096107084;
@@ -205,11 +205,11 @@ describe('AuditLogManager', () => {
 			// read logsCommand / logsSettings from the stored settings.
 			manager = new AuditLogManager(settingsStub);
 
-			vi.spyOn(container.gatewayClient.guilds.cache as any, 'get').mockReturnValue(guildStub);
+			vi.spyOn(container.gatewayClient.guilds, 'fetch').mockResolvedValue(guildStub as never);
 			emitSpy = vi.spyOn(container.gatewayClient as any, 'emit').mockReturnValue(true);
 
-			// Mock container.i18n so the real fetchT (from @sapphire/plugin-i18next,
-			// already loaded by the setup file) resolves via the shared container.
+			// Mock container.i18n so the real fetchT (from @wolfstar/plugin-i18next)
+			// resolves via the shared container.
 			Reflect.set(container, 'i18n', {
 				fetchLanguage: vi.fn().mockResolvedValue('en-US'),
 				getT: vi.fn().mockReturnValue(tStub)
@@ -265,8 +265,8 @@ describe('AuditLogManager', () => {
 			expect(emitSpy).not.toHaveBeenCalled();
 		});
 
-		test('GIVEN guild not in cache THEN DB write succeeds and no emit is fired', async () => {
-			vi.spyOn(container.gatewayClient.guilds.cache as any, 'get').mockReturnValue(undefined);
+		test('GIVEN guild cannot be fetched THEN DB write succeeds and no emit is fired', async () => {
+			vi.spyOn(container.gatewayClient.guilds, 'fetch').mockRejectedValue(new Error('Unknown Guild'));
 			await manager.command(ACTOR_ID, { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
 			await new Promise((r) => setImmediate(r));
 			expect(eventCreateSpy).toHaveBeenCalledOnce();

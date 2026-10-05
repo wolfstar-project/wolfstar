@@ -1,4 +1,4 @@
-import { getEmojiReactionFormat } from '#utils/functions';
+import { getEmojiReactionFormat } from '#utils/functions/emojis';
 import { bunnyTwemoji, encodedBunnyTwemoji, serializedAnimatedSkyraGlasses, serializedStaticSkyra } from '../../../../mocks/constants.js';
 
 describe('getEmojiReactionFormat', () => {

@@ -1,5 +1,5 @@
 import { normalizeCommandError, writeCommandLog, type CommandLogPayload } from '#root/listeners/commands/_command-log-shared';
-import { container } from '@sapphire/framework';
+import { container } from '@wolfstar/http-framework';
 
 const basePayload: CommandLogPayload = {
 	guildId: '1234567890',
@@ -65,15 +65,15 @@ describe('writeCommandLog', () => {
 
 	beforeEach(() => {
 		mockCreate = vi.fn().mockResolvedValue({});
-		Reflect.set(container, 'prisma', { commandLog: { create: mockCreate } });
+		Reflect.set(container, 'prisma', { orm: { public: { CommandLog: { create: mockCreate } } } });
 	});
 
-	it('skips the Prisma write when guildId is null', () => {
+	it('skips the database write when guildId is null', () => {
 		writeCommandLog({ ...basePayload, guildId: null });
 		expect(mockCreate).not.toHaveBeenCalled();
 	});
 
-	it('calls commandLog.create with correct data when guildId is provided', () => {
+	it('calls CommandLog.create with correct data when guildId is provided', () => {
 		vi.useFakeTimers();
 		const now = new Date('2026-01-01T00:00:00.000Z');
 		vi.setSystemTime(now);
@@ -82,33 +82,39 @@ describe('writeCommandLog', () => {
 
 		expect(mockCreate).toHaveBeenCalledOnce();
 		expect(mockCreate).toHaveBeenCalledWith({
-			data: {
-				guildId: basePayload.guildId,
-				userId: basePayload.userId,
-
-				commandName: basePayload.commandName,
-				commandType: basePayload.commandType,
-				commandId: basePayload.commandId,
-				subcommand: basePayload.subcommand,
-				channelId: basePayload.channelId,
-				success: basePayload.success,
-				errorReason: basePayload.errorReason,
-				executedAt: now,
-				latencyMs: basePayload.latencyMs,
-				metadata: null
-			}
+			id: expect.any(String),
+			guildId: BigInt(basePayload.guildId!),
+			userId: BigInt(basePayload.userId),
+			commandName: basePayload.commandName,
+			commandType: basePayload.commandType,
+			commandId: BigInt(basePayload.commandId!),
+			subcommand: basePayload.subcommand,
+			channelId: BigInt(basePayload.channelId!),
+			success: basePayload.success,
+			errorReason: basePayload.errorReason,
+			executedAt: now.toISOString(),
+			latencyMs: basePayload.latencyMs,
+			metadata: null
 		});
 
 		vi.useRealTimers();
 	});
 
-	it('passes executedAt as a Date instance', () => {
+	it('gives every row its own id', () => {
 		writeCommandLog(basePayload);
-		const callArg = mockCreate.mock.calls[0][0] as { data: { executedAt: unknown } };
-		expect(callArg.data.executedAt).toBeInstanceOf(Date);
+		writeCommandLog(basePayload);
+		const [first, second] = mockCreate.mock.calls.map((call) => (call[0] as { id: string }).id);
+		expect(first).not.toBe(second);
 	});
 
-	it('swallows Prisma errors silently', async () => {
+	it('writes the optional columns as null when they are not given', () => {
+		writeCommandLog({ guildId: basePayload.guildId, userId: basePayload.userId, commandName: 'ping', commandType: 'CONTEXT_MENU' });
+		expect(mockCreate).toHaveBeenCalledWith(
+			expect.objectContaining({ commandId: null, subcommand: null, channelId: null, success: true, errorReason: null, latencyMs: null })
+		);
+	});
+
+	it('swallows database errors silently', async () => {
 		mockCreate.mockRejectedValueOnce(new Error('DB down'));
 		expect(() => writeCommandLog(basePayload)).not.toThrow();
 		// Allow the rejected promise chain to settle so vitest can detect unhandled rejections
@@ -118,11 +124,7 @@ describe('writeCommandLog', () => {
 
 	it('sets metadata to null always', () => {
 		writeCommandLog(basePayload);
-		expect(mockCreate).toHaveBeenCalledWith(
-			expect.objectContaining({
-				data: expect.objectContaining({ metadata: null })
-			})
-		);
+		expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({ metadata: null }));
 	});
 
 	it('passes success: false and errorReason correctly', () => {
@@ -132,13 +134,6 @@ describe('writeCommandLog', () => {
 			errorReason: 'User not found'
 		};
 		writeCommandLog(payload);
-		expect(mockCreate).toHaveBeenCalledWith(
-			expect.objectContaining({
-				data: expect.objectContaining({
-					success: false,
-					errorReason: 'User not found'
-				})
-			})
-		);
+		expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({ success: false, errorReason: 'User not found' }));
 	});
 });

@@ -1,4 +1,4 @@
-import { getEmojiId } from '#utils/functions';
+import { getEmojiId } from '#utils/functions/emojis';
 import { encodedBunnyTwemoji, serializedAnimatedSkyraGlasses, serializedStaticSkyra } from '../../../../mocks/constants.js';
 
 describe('getEmojiId', () => {

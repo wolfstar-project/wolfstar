@@ -1,6 +1,6 @@
 import { toChannelsArray, toPermissionsArray } from '#utils/bits';
 import { enumToObject } from '@sapphire/bitfield';
-import { GuildSystemChannelFlags, PermissionFlagsBits } from 'discord.js';
+import { GuildSystemChannelFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
 describe('Bits', () => {
 	describe('Permissions', () => {
@@ -59,6 +59,7 @@ describe('Bits', () => {
 				'CreateEvents',
 				'UseExternalSounds',
 				'SendVoiceMessages',
+				'SetVoiceChannelStatus',
 				'SendPolls',
 				'UseExternalApps',
 				'PinMessages',

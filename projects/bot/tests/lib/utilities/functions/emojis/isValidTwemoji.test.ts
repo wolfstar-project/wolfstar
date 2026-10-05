@@ -1,4 +1,4 @@
-import { isValidTwemoji } from '#utils/functions';
+import { isValidTwemoji } from '#utils/functions/emojis';
 import {
 	animatedSkyraGlasses,
 	bunnyTwemoji,

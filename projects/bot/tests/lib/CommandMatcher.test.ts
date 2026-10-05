@@ -1,10 +1,12 @@
 import { CommandMatcher } from '#lib/database';
-import type { WolfCommand } from '#lib/structures';
-import { commands } from '../mocks/MockInstances.js';
+import type { Command } from '@wolfstar/http-framework';
+import { createCommand } from '../mocks/MockInstances.js';
 
 describe('CommandMatcher', () => {
-	const command = commands.get('ping') as WolfCommand;
-	const commandWithSubCategory = commands.get('define') as WolfCommand;
+	// The category and the sub-category of a command are the directories of its file:
+	const command: Command = createCommand('ping', 'General');
+	const commandWithSubCategory: Command = createCommand('define', 'Tools', 'Dictionary');
+	createCommand('balance', 'Currency');
 
 	describe('match', () => {
 		test('GIVEN match-all THEN always passes test', () => {
@@ -13,10 +15,6 @@ describe('CommandMatcher', () => {
 
 		test('GIVEN non-namespaced match with correct command name THEN passes test', () => {
 			expect(CommandMatcher.match('ping', command)).toBe(true);
-		});
-
-		test('GIVEN non-namespaced match with correct command alias THEN passes test', () => {
-			expect(CommandMatcher.match('pong', command)).toBe(true);
 		});
 
 		test('GIVEN namespaced match with correct category THEN passes test', () => {
@@ -51,10 +49,6 @@ describe('CommandMatcher', () => {
 			expect(CommandMatcher.match('Tools.Dictionary.define', commandWithSubCategory)).toBe(true);
 		});
 
-		test('GIVEN namespaced match with correct category, correct sub-category, and correct command alias THEN passes test', () => {
-			expect(CommandMatcher.match('Tools.Dictionary.def', commandWithSubCategory)).toBe(true);
-		});
-
 		test('GIVEN namespaced match with correct category, and incorrect command name THEN fails test', () => {
 			expect(CommandMatcher.match('General.eval', command)).toBe(false);
 		});
@@ -75,14 +69,6 @@ describe('CommandMatcher', () => {
 
 		test('GIVEN correct command name in upper cases THEN returns command name', () => {
 			expect(CommandMatcher.resolve('PING')).toBe('ping');
-		});
-
-		test('GIVEN correct command alias THEN returns command name', () => {
-			expect(CommandMatcher.resolve('pong')).toBe('ping');
-		});
-
-		test('GIVEN correct command alias in upper cases THEN returns command name', () => {
-			expect(CommandMatcher.resolve('PONG')).toBe('ping');
 		});
 
 		test('GIVEN incorrect command name THEN returns null', () => {
@@ -117,18 +103,6 @@ describe('CommandMatcher', () => {
 			expect(CommandMatcher.resolve('CURRENCY.BALANCE')).toBe('balance');
 		});
 
-		test('GIVEN correct category and command alias THEN returns command name', () => {
-			expect(CommandMatcher.resolve('Currency.bal')).toBe('balance');
-		});
-
-		test('GIVEN correct category and command alias in lower cases THEN returns command name', () => {
-			expect(CommandMatcher.resolve('currency.bal')).toBe('balance');
-		});
-
-		test('GIVEN correct category and command alias in upper cases THEN returns command name', () => {
-			expect(CommandMatcher.resolve('CURRENCY.BAL')).toBe('balance');
-		});
-
 		test('GIVEN correct category and correct sub-category THEN returns category and sub-category', () => {
 			expect(CommandMatcher.resolve('Tools.Dictionary.*')).toBe('Tools.Dictionary.*');
 		});
@@ -155,18 +129,6 @@ describe('CommandMatcher', () => {
 
 		test('GIVEN correct category, correct sub-category, and correct command name in upper cases THEN returns command name', () => {
 			expect(CommandMatcher.resolve('TOOLS.DICTIONARY.DEFINE')).toBe('define');
-		});
-
-		test('GIVEN correct category, correct sub-category, and correct command alias THEN returns command name', () => {
-			expect(CommandMatcher.resolve('Tools.Dictionary.def')).toBe('define');
-		});
-
-		test('GIVEN correct category, correct sub-category, and correct command alias in lower cases THEN returns command name', () => {
-			expect(CommandMatcher.resolve('tools.dictionary.def')).toBe('define');
-		});
-
-		test('GIVEN correct category, correct sub-category, and correct command alias in upper cases THEN returns command name', () => {
-			expect(CommandMatcher.resolve('TOOLS.DICTIONARY.DEF')).toBe('define');
 		});
 
 		test('GIVEN correct category, correct sub-category, and incorrect command name THEN returns null', () => {

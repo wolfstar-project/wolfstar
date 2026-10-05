@@ -1,10 +1,10 @@
 import { PermissionNodeAction, PermissionNodeManager, type PermissionsNode } from '#lib/database';
-import { GuildData } from '#lib/database/settings';
+import type { GuildData } from '#lib/database/settings';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
-import { UserError } from '@sapphire/framework';
-import type { Guild, GuildMember, Role, User } from 'discord.js';
+import { UserError } from '@wolfstar/http-framework';
+import type { Guild, GuildMember, Role, User } from '@wolfstar/plugin-gateway';
 
-import { createGuild, createGuildMember, createRole, createUser, roleData } from '../../../../mocks/MockInstances.js';
+import { client, createGuild, getCache, createGuildMember, createRole, createUser, roleData } from '../../../../mocks/MockInstances.js';
 
 describe('PermissionNodeManager', () => {
 	let guild: Guild;
@@ -12,9 +12,18 @@ describe('PermissionNodeManager', () => {
 	let ctx: PermissionNodeManager | null;
 
 	beforeEach(() => {
+		// The manager sorts the role nodes by the roles of the guild, which it fetches from the API, highest first:
+		vi.spyOn(client.roles, 'fetchAll').mockImplementation((guildId) =>
+			Promise.resolve([...getCache(client.roles).values()].filter((role) => role.guildId === guildId).sort((a, b) => b.position - a.position))
+		);
+
 		guild = createGuild();
 		entity = Object.assign(Object.create(null), getDefaultGuildSettings(), { id: guild.id });
 		ctx = null;
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
 	});
 
 	function readSettingsPermissionNodes() {
@@ -23,7 +32,6 @@ describe('PermissionNodeManager', () => {
 
 	function getSorted() {
 		const ctx = readSettingsPermissionNodes();
-		// eslint-disable-next-line @typescript-eslint/dot-notation
 		return ctx['sorted'];
 	}
 
@@ -34,32 +42,32 @@ describe('PermissionNodeManager', () => {
 		});
 	});
 
-	function apply(target: User | GuildMember | Role, nodes: readonly PermissionsNode[]) {
+	async function apply(target: User | GuildMember | Role, nodes: readonly PermissionsNode[]) {
 		const ctx = readSettingsPermissionNodes();
 		Object.assign(entity, { [ctx.settingsPropertyFor(target)]: nodes });
-		ctx.refresh(entity);
+		await ctx.refresh(entity);
 	}
 
 	describe('add', () => {
-		function add(target: User | GuildMember | Role, command: string, action: PermissionNodeAction) {
+		async function add(target: User | GuildMember | Role, command: string, action: PermissionNodeAction) {
 			const ctx = readSettingsPermissionNodes();
 			const nodes = ctx.add(target, command, action);
-			apply(target, nodes);
+			await apply(target, nodes);
 		}
 
 		describe('user', () => {
 			const user = createUser();
 
-			test('GIVEN an User with no node THEN creates new one', () => {
-				add(user, 'ping', PermissionNodeAction.Allow);
+			test('GIVEN an User with no node THEN creates new one', async () => {
+				await add(user, 'ping', PermissionNodeAction.Allow);
 
 				expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([]);
 				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([{ id: user.id, allow: ['ping'], deny: [] }]);
 			});
 
-			test('GIVEN an User with a node THEN modifies existing one', () => {
-				add(user, 'ping', PermissionNodeAction.Allow);
-				add(user, 'balance', PermissionNodeAction.Allow);
+			test('GIVEN an User with a node THEN modifies existing one', async () => {
+				await add(user, 'ping', PermissionNodeAction.Allow);
+				await add(user, 'balance', PermissionNodeAction.Allow);
 
 				expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([]);
 				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([{ id: user.id, allow: ['ping', 'balance'], deny: [] }]);
@@ -69,35 +77,35 @@ describe('PermissionNodeManager', () => {
 		describe('member', () => {
 			const member = createGuildMember({}, guild);
 
-			test('GIVEN a GuildMember with no node THEN creates new one', () => {
-				add(member, 'ping', PermissionNodeAction.Deny);
+			test('GIVEN a GuildMember with no node THEN creates new one', async () => {
+				await add(member, 'ping', PermissionNodeAction.Deny);
 
 				expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([]);
-				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([{ id: member.id, allow: [], deny: ['ping'] }]);
+				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([{ id: member.id!, allow: [], deny: ['ping'] }]);
 			});
 
-			test('GIVEN a GuildMember with a node THEN modifies existing one', () => {
-				add(member, 'ping', PermissionNodeAction.Deny);
-				add(member, 'balance', PermissionNodeAction.Deny);
+			test('GIVEN a GuildMember with a node THEN modifies existing one', async () => {
+				await add(member, 'ping', PermissionNodeAction.Deny);
+				await add(member, 'balance', PermissionNodeAction.Deny);
 
 				expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([]);
-				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([{ id: member.id, allow: [], deny: ['ping', 'balance'] }]);
+				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([{ id: member.id!, allow: [], deny: ['ping', 'balance'] }]);
 			});
 		});
 
 		describe('role', () => {
-			test('GIVEN a Role with no node THEN creates new one', () => {
-				const role = guild.roles.cache.get(roleData.id)!;
-				add(role, 'ping', PermissionNodeAction.Allow);
+			test('GIVEN a Role with no node THEN creates new one', async () => {
+				const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
+				await add(role, 'ping', PermissionNodeAction.Allow);
 
 				expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([{ id: role.id, allow: ['ping'], deny: [] }]);
 				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([]);
 			});
 
-			test('GIVEN a Role with a node THEN modifies existing one', () => {
-				const role = guild.roles.cache.get(roleData.id)!;
-				add(role, 'ping', PermissionNodeAction.Allow);
-				add(role, 'balance', PermissionNodeAction.Deny);
+			test('GIVEN a Role with a node THEN modifies existing one', async () => {
+				const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
+				await add(role, 'ping', PermissionNodeAction.Allow);
+				await add(role, 'balance', PermissionNodeAction.Deny);
 
 				expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([{ id: role.id, allow: ['ping'], deny: ['balance'] }]);
 				expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([]);
@@ -106,19 +114,19 @@ describe('PermissionNodeManager', () => {
 	});
 
 	describe('reset', () => {
-		function reset(target: User | GuildMember | Role) {
+		async function reset(target: User | GuildMember | Role) {
 			const ctx = readSettingsPermissionNodes();
 			const nodes = ctx.reset(target);
-			apply(target, nodes);
+			await apply(target, nodes);
 		}
 
 		describe('user', () => {
 			const user = createUser();
 
-			test('GIVEN an empty node THEN throws error', () => {
+			test('GIVEN an empty node THEN throws error', async () => {
 				let caughtError: unknown;
 				try {
-					reset(user);
+					await reset(user);
 				} catch (e) {
 					caughtError = e;
 				}
@@ -132,12 +140,12 @@ describe('PermissionNodeManager', () => {
 		});
 
 		describe('member', () => {
-			test('GIVEN an empty node THEN throws error', () => {
+			test('GIVEN an empty node THEN throws error', async () => {
 				const member = createGuildMember({}, guild);
 
 				let caughtError: unknown;
 				try {
-					reset(member);
+					await reset(member);
 				} catch (e) {
 					caughtError = e;
 				}
@@ -151,12 +159,12 @@ describe('PermissionNodeManager', () => {
 		});
 
 		describe('role', () => {
-			test('GIVEN an empty node THEN throws error', () => {
+			test('GIVEN an empty node THEN throws error', async () => {
 				const role = createGuildMember({}, guild);
 
 				let caughtError: unknown;
 				try {
-					reset(role);
+					await reset(role);
 				} catch (e) {
 					caughtError = e;
 				}
@@ -171,14 +179,14 @@ describe('PermissionNodeManager', () => {
 	});
 
 	describe('refresh', () => {
-		test('GIVEN no roles THEN returns early', () => {
+		test('GIVEN no roles THEN returns early', async () => {
 			const ctx = readSettingsPermissionNodes();
-			ctx.refresh(entity);
+			await ctx.refresh(entity);
 
 			expect(getSorted().size).toBe(0);
 		});
 
-		test('GIVEN valid roles THEN the sorted permission nodes are in correct order', () => {
+		test('GIVEN valid roles THEN the sorted permission nodes are in correct order', async () => {
 			const roleDeveloper = createRole({ id: '541739191776575502', name: 'Developer', position: 27 }, guild);
 			const roleModerator = createRole({ id: '637592502756704256', name: 'Moderator', position: 26 }, guild);
 			const roleContributor = createRole({ id: '635547552229490708', name: 'Contributor', position: 18 }, guild);
@@ -192,7 +200,7 @@ describe('PermissionNodeManager', () => {
 			];
 
 			const ctx = readSettingsPermissionNodes();
-			entity.permissionsRoles = ctx.refresh(entity) as PermissionsNode[];
+			entity.permissionsRoles = (await ctx.refresh(entity)) as PermissionsNode[];
 
 			const sorted = [...getSorted().entries()];
 			expect(sorted.length).toBe(4);

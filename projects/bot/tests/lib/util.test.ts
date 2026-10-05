@@ -1,7 +1,7 @@
 import * as utils from '#utils/util';
-import type { DeepPartial } from '@sapphire/utilities';
-import { Attachment, Collection, Embed, Message, type APIAttachment } from 'discord.js';
-import { createEmbed, createUser } from '../mocks/MockInstances.js';
+import { Collection } from '@discordjs/collection';
+import type { Attachment, Embed, Message } from '@wolfstar/plugin-gateway';
+import { createAttachment, createEmbed, createUser } from '../mocks/MockInstances.js';
 
 describe('Utils', () => {
 	describe('IMAGE_EXTENSION', () => {
@@ -174,15 +174,11 @@ describe('Utils', () => {
 	});
 
 	describe('getImage', () => {
-		const _Query = new URLSearchParams({
+		const Query = new URLSearchParams({
 			ex: '651c15b6',
 			is: '651ac436',
 			hm: 'b0227f7dce067d2f83880cd01f59a5856885af9204940f8c666dd81f257796c6'
 		}).toString();
-
-		function createAttachment(data: APIAttachment): Attachment {
-			return Reflect.construct(Attachment, [data]);
-		}
 
 		function createAttachments(attachment?: Attachment | undefined) {
 			const collection = new Collection<string, Attachment>();
@@ -193,17 +189,17 @@ describe('Utils', () => {
 		function makeEmbed(name: 'image' | 'thumbnail'): Embed {
 			return createEmbed({
 				[name]: {
-					url: `https://cdn.discordapp.com/attachments/222222222222222222/222222222222222222/image.png?${_Query}&`,
-					proxy_url: `https://media.discordapp.net/attachments/222222222222222222/222222222222222222/image.png?${_Query}&`,
+					url: `https://cdn.discordapp.com/attachments/222222222222222222/222222222222222222/image.png?${Query}&`,
+					proxy_url: `https://media.discordapp.net/attachments/222222222222222222/222222222222222222/image.png?${Query}&`,
 					width: 32,
 					height: 32
 				}
 			});
 		}
 
-		function getImage(message: DeepPartial<Message>) {
-			// @ts-expect-error We're only passing partial data to not mock an entire message
-			return utils.getImage(message);
+		function getImage(message: Pick<Message, 'attachments' | 'embeds' | 'stickers'>) {
+			// We're only passing partial data to not mock an entire message
+			return utils.getImage(message as unknown as Message);
 		}
 
 		describe.each`
@@ -216,8 +212,8 @@ describe('Utils', () => {
 				id: '1111111111111111111',
 				filename: 'image.png',
 				content_type: 'image/png',
-				url: `https://cdn.discordapp.com/attachments/111111111111111111/111111111111111111/image.png?${_Query}&`,
-				proxy_url: `https://media.discordapp.net/attachments/111111111111111111/111111111111111111/image.png?${_Query}&`,
+				url: `https://cdn.discordapp.com/attachments/111111111111111111/111111111111111111/image.png?${Query}&`,
+				proxy_url: `https://media.discordapp.net/attachments/111111111111111111/111111111111111111/image.png?${Query}&`,
 				size: 2463,
 				width: 32,
 				height: 32
@@ -226,8 +222,8 @@ describe('Utils', () => {
 				id: '1111111111111111111',
 				filename: 'text.txt',
 				content_type: 'text/plain; charset=utf-8',
-				url: `https://cdn.discordapp.com/attachments/111111111111111111/111111111111111111/text.txt?${_Query}&`,
-				proxy_url: `https://media.discordapp.net/attachments/111111111111111111/111111111111111111/text.txt?${_Query}&`,
+				url: `https://cdn.discordapp.com/attachments/111111111111111111/111111111111111111/text.txt?${Query}&`,
+				proxy_url: `https://media.discordapp.net/attachments/111111111111111111/111111111111111111/text.txt?${Query}&`,
 				size: 4
 			} as const);
 
@@ -240,9 +236,7 @@ describe('Utils', () => {
 				${AttachmentText}  | ${ExpectedReturn}   | ${ExpectedEmbedImageURL}    | ${'non-image attachment'}
 				${AttachmentImage} | ${'attachment URL'} | ${AttachmentImage.proxyURL} | ${'image attachment'}
 			`(`AND $description THEN returns $returns`, ({ attachment, expected }) => {
-				const message: DeepPartial<Message> = { attachments: createAttachments(attachment), embeds, stickers: new Collection() };
-
-				expect(getImage(message)).toEqual(expected);
+				expect(getImage({ attachments: createAttachments(attachment), embeds, stickers: new Collection() })).toEqual(expected);
 			});
 		});
 	});

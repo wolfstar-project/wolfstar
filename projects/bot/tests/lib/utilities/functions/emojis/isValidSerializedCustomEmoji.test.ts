@@ -1,4 +1,4 @@
-import { isValidSerializedCustomEmoji } from '#utils/functions';
+import { isValidSerializedCustomEmoji } from '#utils/functions/emojis';
 import { encodedBunnyTwemoji, serializedAnimatedSkyraGlasses, serializedStaticSkyra } from '../../../../mocks/constants.js';
 
 describe('isValidSerializedCustomEmoji', () => {

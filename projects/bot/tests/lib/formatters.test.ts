@@ -1,55 +1,30 @@
 import type { GuildMessage } from '#lib/types';
 import { formatMessage } from '#utils/formatters';
-import { container } from '@sapphire/framework';
-import { EmbedType, Message, MessageFlags, type APIMessage } from 'discord.js';
-import { client } from '../mocks/MockInstances.js';
+import { container } from '@wolfstar/http-framework';
+import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
+import { EmbedType, type APIMessage } from 'discord-api-types/v10';
+import { createMessage as createGuildMessage } from '../mocks/MockInstances.js';
 
 describe('formatters', () => {
 	describe('formatMessage', () => {
 		beforeAll(() => container.i18n.init());
 
 		function createMessage(data: Partial<APIMessage> = {}): GuildMessage {
-			const messageData: APIMessage = {
-				id: '825134485813067796',
-				type: 0,
-				content: '',
-				channel_id: '331027040306331648',
-				author: {
-					id: '266624760782258186',
-					username: 'Skyra',
-					avatar: '51227d2976cc66b9c1add6b911eda5e9',
-					discriminator: '7023',
-					public_flags: 65536,
-					bot: true,
-					global_name: null
-				},
-				attachments: [],
-				embeds: [],
-				mentions: [],
-				mention_roles: [],
-				pinned: false,
-				mention_everyone: false,
-				tts: false,
-				timestamp: '2021-03-26T22:29:51.675000+00:00',
-				edited_timestamp: '2021-03-26T22:29:56.581000+00:00',
-				flags: MessageFlags.Ephemeral
-			};
-
-			return Reflect.construct(Message, [client, { ...messageData, ...data }]) as GuildMessage;
+			return createGuildMessage(data) as GuildMessage;
 		}
 
 		function t() {
-			return container.i18n.getT('en-US');
+			return container.i18n.getT('en-US') as TFunction<AnyNamespace>;
 		}
 
 		function join(...parts: string[]) {
 			return parts.join('\n');
 		}
 
-		test('GIVEN empty message THEN returns header only', () => {
+		test('GIVEN empty message THEN returns header only', async () => {
 			const message = createMessage();
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					''
@@ -57,10 +32,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN content only THEN returns content only', () => {
+		test('GIVEN content only THEN returns content only', async () => {
 			const message = createMessage({ content: 'Hello World' });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> Hello World'
@@ -68,10 +43,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN content only with block quotes THEN returns content only with nested block quotes', () => {
+		test('GIVEN content only with block quotes THEN returns content only with nested block quotes', async () => {
 			const message = createMessage({ content: '> Block Quotes!' });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> > Block Quotes!'
@@ -79,10 +54,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed title only THEN returns embed title only', () => {
+		test('GIVEN embed title only THEN returns embed title only', async () => {
 			const message = createMessage({ embeds: [{ title: 'Your Title Goes Here' }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'># Your Title Goes Here'
@@ -90,12 +65,12 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed author only THEN returns embed author only', () => {
+		test('GIVEN embed author only THEN returns embed author only', async () => {
 			const message = createMessage({
 				embeds: [{ author: { name: 'Skyra', icon_url: 'https://skyra.pw/avatars/skyra.png', url: 'https://skyra.pw' } }]
 			});
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> 👤 [https://skyra.pw/avatars/skyra.png] Skyra <https://skyra.pw>'
@@ -103,10 +78,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed author with name only THEN returns embed author with name only', () => {
+		test('GIVEN embed author with name only THEN returns embed author with name only', async () => {
 			const message = createMessage({ embeds: [{ author: { name: 'Skyra' } }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> 👤 Skyra'
@@ -114,10 +89,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed author with iconURL only THEN returns embed author with iconURL only', () => {
+		test('GIVEN embed author with iconURL only THEN returns embed author with iconURL only', async () => {
 			const message = createMessage({ embeds: [{ author: { name: '', icon_url: 'https://skyra.pw/avatars/skyra.png' } }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> 👤 [https://skyra.pw/avatars/skyra.png] -'
@@ -125,10 +100,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed description only THEN returns embed description only', () => {
+		test('GIVEN embed description only THEN returns embed description only', async () => {
 			const message = createMessage({ embeds: [{ description: 'Hello!' }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> > Hello!'
@@ -136,10 +111,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed with one field only THEN returns embed with one field only', () => {
+		test('GIVEN embed with one field only THEN returns embed with one field only', async () => {
 			const message = createMessage({ embeds: [{ fields: [{ name: 'Hello', value: 'World!' }] }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> #> Hello',
@@ -148,7 +123,7 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed with two fields THEN returns embed with two fields', () => {
+		test('GIVEN embed with two fields THEN returns embed with two fields', async () => {
 			const message = createMessage({
 				embeds: [
 					{
@@ -160,7 +135,7 @@ describe('formatters', () => {
 				]
 			});
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> #> Hello',
@@ -171,7 +146,7 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed with description and two fields THEN returns embed with description and two fields', () => {
+		test('GIVEN embed with description and two fields THEN returns embed with description and two fields', async () => {
 			const message = createMessage({
 				embeds: [
 					{
@@ -184,7 +159,7 @@ describe('formatters', () => {
 				]
 			});
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> > This is a description!',
@@ -196,10 +171,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed with image only THEN returns embed with image only', () => {
+		test('GIVEN embed with image only THEN returns embed with image only', async () => {
 			const message = createMessage({ embeds: [{ image: { url: 'https://skyra.pw/avatars/skyra.png' } }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'>🖼️ [https://skyra.pw/avatars/skyra.png]'
@@ -207,10 +182,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed footer with text only THEN returns embed footer with text only', () => {
+		test('GIVEN embed footer with text only THEN returns embed footer with text only', async () => {
 			const message = createMessage({ embeds: [{ footer: { text: 'Your Footer!' } }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'>_ Your Footer!'
@@ -218,10 +193,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed footer with icon only THEN returns embed footer with icon only', () => {
+		test('GIVEN embed footer with icon only THEN returns embed footer with icon only', async () => {
 			const message = createMessage({ embeds: [{ footer: { icon_url: 'https://skyra.pw/avatars/skyra.png', text: '' } }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'>_ [https://skyra.pw/avatars/skyra.png]'
@@ -229,10 +204,10 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN embed footer with icon and text THEN returns embed footer with icon and text', () => {
+		test('GIVEN embed footer with icon and text THEN returns embed footer with icon and text', async () => {
 			const message = createMessage({ embeds: [{ footer: { icon_url: 'https://skyra.pw/avatars/skyra.png', text: 'Yes, that is me!' } }] });
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'>_ [https://skyra.pw/avatars/skyra.png] - Yes, that is me!'
@@ -240,7 +215,7 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN image embed THEN returns image embed', () => {
+		test('GIVEN image embed THEN returns image embed', async () => {
 			const message = createMessage({
 				embeds: [
 					{
@@ -257,7 +232,7 @@ describe('formatters', () => {
 				]
 			});
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'> 📎 https://media.discordapp.net/attachments/758186338217492503/825157377090912296/birdflip2.gif'
@@ -265,7 +240,7 @@ describe('formatters', () => {
 			);
 		});
 
-		test('GIVEN video embed THEN returns video embed', () => {
+		test('GIVEN video embed THEN returns video embed', async () => {
 			const message = createMessage({
 				embeds: [
 					{
@@ -299,7 +274,7 @@ describe('formatters', () => {
 				]
 			});
 
-			expect(formatMessage(t(), message)).toBe(
+			expect(await formatMessage(t(), message)).toBe(
 				join(
 					'[3/26/21, 10:29:51 PM] Skyra#7023 [BOT]', //
 					'🔖 [https://www.youtube.com/watch?v=5dqixBi8TPU] (YouTube).'

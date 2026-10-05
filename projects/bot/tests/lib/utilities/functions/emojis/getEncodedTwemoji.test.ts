@@ -1,4 +1,4 @@
-import { getEncodedTwemoji } from '#utils/functions';
+import { getEncodedTwemoji } from '#utils/functions/emojis';
 
 describe('getEncodedTwemoji', () => {
 	test('GIVEN twemoji icon THEN returns identifier for the CDN', () => {

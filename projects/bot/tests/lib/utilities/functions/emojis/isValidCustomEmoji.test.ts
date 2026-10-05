@@ -1,4 +1,4 @@
-import { isValidCustomEmoji } from '#utils/functions';
+import { isValidCustomEmoji } from '#utils/functions/emojis';
 import {
 	animatedSkyraGlasses,
 	encodedBunnyTwemoji,

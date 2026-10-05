@@ -1,4 +1,4 @@
-import { getTwemojiUrl } from '#utils/functions';
+import { getTwemojiUrl } from '#utils/functions/emojis';
 
 describe('getTwemojiUrl', () => {
 	test('GIVEN twemoji icon THEN returns identifier for the CDN', () => {

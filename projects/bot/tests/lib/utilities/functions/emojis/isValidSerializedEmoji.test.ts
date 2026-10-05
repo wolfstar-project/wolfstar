@@ -1,4 +1,4 @@
-import { isValidSerializedEmoji } from '#utils/functions';
+import { isValidSerializedEmoji } from '#utils/functions/emojis';
 import {
 	animatedSkyraGlasses,
 	encodedBunnyTwemoji,

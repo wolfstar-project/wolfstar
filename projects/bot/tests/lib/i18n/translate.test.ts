@@ -1,51 +1,28 @@
 import { translate } from '#lib/i18n/translate';
-import { Identifiers } from '@sapphire/framework';
+import { Identifiers } from '@wolfstar/http-framework';
 
 describe('translate', () => {
 	test('GIVEN argument identifier THEN returns arguments:{identifier}', () => {
 		expect(translate(Identifiers.ArgumentBooleanError)).toBe(`arguments:${Identifiers.ArgumentBooleanError}`);
 		expect(translate(Identifiers.ArgumentChannelError)).toBe(`arguments:${Identifiers.ArgumentChannelError}`);
-		expect(translate(Identifiers.ArgumentDateError)).toBe(`arguments:${Identifiers.ArgumentDateError}`);
-		expect(translate(Identifiers.ArgumentDateTooEarly)).toBe(`arguments:${Identifiers.ArgumentDateTooEarly}`);
-		expect(translate(Identifiers.ArgumentDateTooFar)).toBe(`arguments:${Identifiers.ArgumentDateTooFar}`);
-		expect(translate(Identifiers.ArgumentDMChannelError)).toBe(`arguments:${Identifiers.ArgumentDMChannelError}`);
-		expect(translate(Identifiers.ArgumentFloatError)).toBe(`arguments:${Identifiers.ArgumentFloatError}`);
-		expect(translate(Identifiers.ArgumentFloatTooLarge)).toBe(`arguments:${Identifiers.ArgumentFloatTooLarge}`);
-		expect(translate(Identifiers.ArgumentFloatTooSmall)).toBe(`arguments:${Identifiers.ArgumentFloatTooSmall}`);
-		expect(translate(Identifiers.ArgumentGuildCategoryChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildCategoryChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildChannelMissingGuildError)).toBe(`arguments:${Identifiers.ArgumentGuildChannelMissingGuildError}`);
-		expect(translate(Identifiers.ArgumentGuildNewsChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildNewsChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildNewsThreadChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildNewsThreadChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildPrivateThreadChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildPrivateThreadChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildPublicThreadChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildPublicThreadChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildStageVoiceChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildStageVoiceChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildTextChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildTextChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildThreadChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildThreadChannelError}`);
-		expect(translate(Identifiers.ArgumentGuildVoiceChannelError)).toBe(`arguments:${Identifiers.ArgumentGuildVoiceChannelError}`);
-		expect(translate(Identifiers.ArgumentHyperlinkError)).toBe(`arguments:${Identifiers.ArgumentHyperlinkError}`);
+		expect(translate(Identifiers.ArgumentEnumEmptyError)).toBe(`arguments:${Identifiers.ArgumentEnumEmptyError}`);
+		expect(translate(Identifiers.ArgumentEnumError)).toBe(`arguments:${Identifiers.ArgumentEnumError}`);
 		expect(translate(Identifiers.ArgumentIntegerError)).toBe(`arguments:${Identifiers.ArgumentIntegerError}`);
 		expect(translate(Identifiers.ArgumentIntegerTooLarge)).toBe(`arguments:${Identifiers.ArgumentIntegerTooLarge}`);
 		expect(translate(Identifiers.ArgumentIntegerTooSmall)).toBe(`arguments:${Identifiers.ArgumentIntegerTooSmall}`);
 		expect(translate(Identifiers.ArgumentMemberError)).toBe(`arguments:${Identifiers.ArgumentMemberError}`);
-		expect(translate(Identifiers.ArgumentMemberMissingGuild)).toBe(`arguments:${Identifiers.ArgumentMemberMissingGuild}`);
 		expect(translate(Identifiers.ArgumentMessageError)).toBe(`arguments:${Identifiers.ArgumentMessageError}`);
 		expect(translate(Identifiers.ArgumentNumberError)).toBe(`arguments:${Identifiers.ArgumentNumberError}`);
 		expect(translate(Identifiers.ArgumentNumberTooLarge)).toBe(`arguments:${Identifiers.ArgumentNumberTooLarge}`);
 		expect(translate(Identifiers.ArgumentNumberTooSmall)).toBe(`arguments:${Identifiers.ArgumentNumberTooSmall}`);
 		expect(translate(Identifiers.ArgumentRoleError)).toBe(`arguments:${Identifiers.ArgumentRoleError}`);
-		expect(translate(Identifiers.ArgumentRoleMissingGuild)).toBe(`arguments:${Identifiers.ArgumentRoleMissingGuild}`);
 		expect(translate(Identifiers.ArgumentStringTooLong)).toBe(`arguments:${Identifiers.ArgumentStringTooLong}`);
 		expect(translate(Identifiers.ArgumentStringTooShort)).toBe(`arguments:${Identifiers.ArgumentStringTooShort}`);
 		expect(translate(Identifiers.ArgumentUserError)).toBe(`arguments:${Identifiers.ArgumentUserError}`);
 	});
 
-	test('GIVEN ArgsUnavailable THEN returns arguments:unavailable', () => {
-		expect(translate(Identifiers.ArgsUnavailable)).toBe('arguments:unavailable');
-	});
-
-	test('GIVEN ArgsMissing THEN returns arguments:missing', () => {
-		expect(translate(Identifiers.ArgsMissing)).toBe('arguments:missing');
+	test('GIVEN ArgumentUnavailable THEN returns arguments:unavailable', () => {
+		expect(translate(Identifiers.ArgumentUnavailable)).toBe('arguments:unavailable');
 	});
 
 	test('GIVEN CommandDisabled THEN returns preconditions:disabledGlobal', () => {
@@ -56,34 +33,6 @@ describe('translate', () => {
 		expect(translate(Identifiers.PreconditionCooldown)).toBe('preconditions:cooldown');
 	});
 
-	test('GIVEN PreconditionDMOnly THEN returns preconditions:dmOnly', () => {
-		expect(translate(Identifiers.PreconditionDMOnly)).toBe('preconditions:dmOnly');
-	});
-
-	test('GIVEN PreconditionGuildNewsOnly THEN returns preconditions:guildNewsOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildNewsOnly)).toBe('preconditions:guildNewsOnly');
-	});
-
-	test('GIVEN PreconditionGuildNewsThreadOnly THEN returns preconditions:guildNewsThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildNewsThreadOnly)).toBe('preconditions:guildNewsThreadOnly');
-	});
-
-	test('GIVEN PreconditionGuildOnly THEN returns preconditions:guildOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildOnly)).toBe('preconditions:guildOnly');
-	});
-
-	test('GIVEN PreconditionGuildPrivateThreadOnly THEN returns preconditions:guildPrivateThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildPrivateThreadOnly)).toBe('preconditions:guildPrivateThreadOnly');
-	});
-
-	test('GIVEN PreconditionGuildPublicThreadOnly THEN returns preconditions:guildPublicThreadOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildPublicThreadOnly)).toBe('preconditions:guildPublicThreadOnly');
-	});
-
-	test('GIVEN PreconditionGuildTextOnly THEN returns preconditions:guildTextOnly', () => {
-		expect(translate(Identifiers.PreconditionGuildTextOnly)).toBe('preconditions:guildTextOnly');
-	});
-
 	test('GIVEN PreconditionNSFW THEN returns preconditions:nsfw', () => {
 		expect(translate(Identifiers.PreconditionNSFW)).toBe('preconditions:nsfw');
 	});
@@ -92,12 +41,29 @@ describe('translate', () => {
 		expect(translate(Identifiers.PreconditionClientPermissions)).toBe('preconditions:clientPermissions');
 	});
 
+	test('GIVEN PreconditionClientPermissionsNoPermissions THEN returns preconditions:clientPermissionsNoPermissions', () => {
+		expect(translate(Identifiers.PreconditionClientPermissionsNoPermissions)).toBe('preconditions:clientPermissionsNoPermissions');
+	});
+
+	test('GIVEN PreconditionRunIn THEN returns preconditions:runIn', () => {
+		expect(translate(Identifiers.PreconditionRunIn)).toBe('preconditions:runIn');
+	});
+
 	test('GIVEN PreconditionUserPermissions THEN returns preconditions:userPermissions', () => {
 		expect(translate(Identifiers.PreconditionUserPermissions)).toBe('preconditions:userPermissions');
 	});
 
-	test('GIVEN PreconditionThreadOnly THEN returns preconditions:threadOnly', () => {
-		expect(translate(Identifiers.PreconditionThreadOnly)).toBe('preconditions:threadOnly');
+	test('GIVEN PreconditionUserPermissionsNoPermissions THEN returns preconditions:userPermissionsNoPermissions', () => {
+		expect(translate(Identifiers.PreconditionUserPermissionsNoPermissions)).toBe('preconditions:userPermissionsNoPermissions');
+	});
+
+	test('GIVEN PreconditionUnavailable THEN returns preconditions:unavailable', () => {
+		expect(translate(Identifiers.PreconditionUnavailable)).toBe('preconditions:unavailable');
+	});
+
+	test('GIVEN unmapped framework identifier THEN returns identifier', () => {
+		expect(translate(Identifiers.ArgumentMissing)).toBe(Identifiers.ArgumentMissing);
+		expect(translate(Identifiers.PreconditionGuildIds)).toBe(Identifiers.PreconditionGuildIds);
 	});
 
 	test('GIVEN unknown identifier THEN returns identifier', () => {
