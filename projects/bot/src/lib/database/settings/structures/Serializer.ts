@@ -158,10 +158,10 @@ export abstract class Serializer<T> extends AliasPiece<Serializer.Options, 'seri
 	}
 }
 
-export namespace Serializer {
-	export type Options = AliasPiece.Options;
-	export type LoaderContext = AliasPiece.LoaderContext<'serializers'>;
-	export type UpdateContext = SerializerUpdateContext;
+export declare namespace Serializer {
+	type Options = AliasPiece.Options;
+	type LoaderContext = AliasPiece.LoaderContext<'serializers'>;
+	type UpdateContext = SerializerUpdateContext;
 }
 
 export interface SerializerUpdateContext {

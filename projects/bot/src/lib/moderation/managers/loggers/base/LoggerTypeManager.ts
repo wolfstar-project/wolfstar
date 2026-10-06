@@ -192,9 +192,9 @@ export abstract class LoggerTypeManager {
 	}
 }
 
-export namespace LoggerTypeManager {
-	export type Manager = LoggerManager;
-	export type AuditLogEntry = APIAuditLogEntry;
+export declare namespace LoggerTypeManager {
+	type Manager = LoggerManager;
+	type AuditLogEntry = APIAuditLogEntry;
 }
 
 export interface LoggerTypeContext {

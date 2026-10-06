@@ -1,4 +1,4 @@
-import { TranslationMappings, UndoTaskNameMappings, getColor } from '#lib/moderation/common/constants';
+import { TranslationMappings, UndoTaskNameMappings, getTypeColor } from '#lib/moderation/common/constants';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { seconds } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -59,7 +59,7 @@ export function getTitle(t: TFunction<AnyNamespace>, entry: ModerationManager.En
 export async function getEmbed(t: TFunction<AnyNamespace>, entry: ModerationManager.Entry) {
 	const [description, moderator] = await Promise.all([getEmbedDescription(t, entry), entry.fetchModerator()]);
 	const embed = new EmbedBuilder()
-		.setColor(getColor(entry))
+		.setColor(getTypeColor(entry))
 		.setAuthor(getFullEmbedAuthor(moderator))
 		.setDescription(description)
 		.setFooter({

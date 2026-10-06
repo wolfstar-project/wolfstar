@@ -13,8 +13,8 @@ export class Handler {
 	}
 }
 
-export namespace Handler {
-	export interface Options {
+export declare namespace Handler {
+	interface Options {
 		name: string;
 		duration: DurationFormatAssetsTime;
 	}

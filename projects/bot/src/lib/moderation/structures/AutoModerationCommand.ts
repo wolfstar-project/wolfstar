@@ -97,15 +97,15 @@ export function getAutoModerationLimits(key: GuildSettingsOfType<bigint | number
 	return { minimum: minimum!, maximum: maximum! };
 }
 
-export namespace AutoModerationCommand {
-	export type LoaderContext = Command.LoaderContext;
-	export type Interaction = GuildChatInputInteraction;
-	export type Constructor = new (...args: any[]) => Command;
+export declare namespace AutoModerationCommand {
+	type LoaderContext = Command.LoaderContext;
+	type Interaction = GuildChatInputInteraction;
+	type Constructor = new (...args: any[]) => Command;
 
 	/**
 	 * The options of an auto-moderation subcommand, the configuration of a rule.
 	 */
-	export interface Options extends Command.Options {
+	interface Options extends Command.Options {
 		/**
 		 * The root key of the name and the description of the parent command, e.g. `commands/auto-moderation:attachments`.
 		 */
@@ -126,14 +126,14 @@ export namespace AutoModerationCommand {
 	/**
 	 * The configuration of a rule, with the name of its parent command.
 	 */
-	export interface Rule extends Options {
+	interface Rule extends Options {
 		/**
 		 * The name of the parent command, e.g. `automod-attachments`.
 		 */
 		commandName: string;
 	}
 
-	export interface OptionsResetKey {
+	interface OptionsResetKey {
 		key: TranslationKey;
 		value: string;
 	}
@@ -141,7 +141,7 @@ export namespace AutoModerationCommand {
 	/**
 	 * The options of the `edit` subcommand.
 	 */
-	export interface EditArguments {
+	interface EditArguments {
 		enabled?: boolean;
 		alert?: boolean;
 		log?: boolean;
@@ -155,7 +155,7 @@ export namespace AutoModerationCommand {
 	/**
 	 * The options of the `reset` subcommand.
 	 */
-	export interface ResetArguments {
+	interface ResetArguments {
 		key: string;
 	}
 }

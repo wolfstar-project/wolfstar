@@ -95,7 +95,7 @@ export function isValidType(type: TypeVariation, metadata?: TypeMetadata): boole
 	return Metadata.has(combineTypeData(type, metadata));
 }
 
-export function getColor(entry: ModerationManager.Entry): number {
+export function getTypeColor(entry: ModerationManager.Entry): number {
 	return Metadata.get(combineTypeData(entry.type, entry.metadata))!;
 }
 

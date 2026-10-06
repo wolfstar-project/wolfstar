@@ -21,7 +21,7 @@ type ResetKey = 'enabled' | 'alert' | 'log' | 'delete' | 'punishment' | 'punishm
  * const rule = AutoModerationRules.links;
  *
  * \@AutoModerationResetCommand.register(rule)
- * export class UserCommand extends AutoModerationResetCommand {}
+ * class UserCommand extends AutoModerationResetCommand {}
  * ```
  */
 export abstract class AutoModerationResetCommand extends AutoModerationCommand {

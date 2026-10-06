@@ -81,13 +81,13 @@ export abstract class ChannelConfigurationCommand extends Command<ChannelConfigu
 	}
 }
 
-export namespace ChannelConfigurationCommand {
-	export type LoaderContext = Command.LoaderContext;
+export declare namespace ChannelConfigurationCommand {
+	type LoaderContext = Command.LoaderContext;
 
 	/**
 	 * The ChannelConfigurationCommand Options
 	 */
-	export interface Options extends Command.Options {
+	interface Options extends Command.Options {
 		/**
 		 * The key of the message sent after the channel was set, it receives the `channel` mention.
 		 */
@@ -102,7 +102,7 @@ export namespace ChannelConfigurationCommand {
 	/**
 	 * The options of the slash command.
 	 */
-	export interface Arguments {
+	interface Arguments {
 		channel?: TransformedArguments.Channel;
 	}
 }

@@ -21,7 +21,7 @@ const Root = 'commands/auto-moderation';
  * const rule = AutoModerationRules.links;
  *
  * \@AutoModerationShowCommand.register(rule)
- * export class UserCommand extends AutoModerationShowCommand {}
+ * class UserCommand extends AutoModerationShowCommand {}
  * ```
  */
 export abstract class AutoModerationShowCommand extends AutoModerationCommand {

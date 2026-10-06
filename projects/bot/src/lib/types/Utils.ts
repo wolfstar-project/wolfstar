@@ -1,11 +1,4 @@
-import type { AnyNamespace } from '@wolfstar/plugin-i18next';
-import type { ParseKeys } from 'i18next';
-
-/**
- * Every translation key, written `<namespace>:<key>`, known through the typed resources that
- * `pnpm --filter wolfstar-bot i18n:generate` emits into `src/@types/i18next.d.ts`.
- */
-export type TranslationKey = ParseKeys<AnyNamespace>;
+import type { TranslationKey } from '#lib/structures/commands/utils';
 
 /**
  * A translation key. The generic parameter is only kept so ported code keeps compiling: the type a key

@@ -583,33 +583,33 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }
 
-export namespace ModerationCommand {
+export declare namespace ModerationCommand {
 	/**
 	 * The ModerationCommand Options
 	 */
-	export interface Options<Type extends TypeVariation> extends Command.Options {
+	interface Options<Type extends TypeVariation> extends Command.Options {
 		type: Type;
 		isUndoAction?: boolean;
 		actionStatusKey?: TranslationKey;
 		requiredMember?: boolean;
 	}
 
-	export type LoaderContext = Command.LoaderContext;
+	type LoaderContext = Command.LoaderContext;
 
 	/**
 	 * A key of the generated translation typings.
 	 */
-	export type TranslationKey = Key;
+	type TranslationKey = Key;
 
 	/**
 	 * The interaction of the command, which is always sent from a guild.
 	 */
-	export type Interaction = GuildChatInputInteraction;
+	type Interaction = GuildChatInputInteraction;
 
 	/**
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
 	 */
-	export interface Arguments {
+	interface Arguments {
 		user: TransformedArguments.User;
 		duration?: string;
 		reason?: string;
@@ -621,14 +621,14 @@ export namespace ModerationCommand {
 	/**
 	 * The settings that control how the moderation commands respond, see {@linkcode ModerationCommand.readMessageSettings}.
 	 */
-	export interface MessageSettings {
+	interface MessageSettings {
 		moderationDm: boolean;
 		reasonDisplay: boolean;
 		messageDisplay: boolean;
 		moderatorNameDisplay: boolean;
 	}
 
-	export interface Parameters {
+	interface Parameters {
 		/**
 		 * The function to translate with, in the language of the author of the interaction.
 		 */
@@ -670,9 +670,9 @@ export namespace ModerationCommand {
 		imageURL: string | null;
 	}
 
-	export interface HandlerParameters<ValueType> extends Parameters {
+	interface HandlerParameters<ValueType> extends Parameters {
 		preHandled: ValueType;
 	}
 
-	export type PostHandleParameters<ValueType> = HandlerParameters<ValueType>;
+	type PostHandleParameters<ValueType> = HandlerParameters<ValueType>;
 }

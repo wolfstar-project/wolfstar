@@ -13,7 +13,7 @@ export class LongLivingReactionCollector {
 	public listener: LongLivingReactionCollectorListener | null;
 	public endListener: (() => void) | null;
 
-	private _timer: NodeJS.Timeout | null = null;
+	private timer: NodeJS.Timeout | null = null;
 
 	public constructor(listener: LongLivingReactionCollectorListener | null = null, endListener: (() => void) | null = null) {
 		this.listener = listener;
@@ -40,18 +40,18 @@ export class LongLivingReactionCollector {
 	}
 
 	public setTime(time: number) {
-		if (this._timer) clearTimeout(this._timer);
-		if (time === -1) this._timer = null;
-		else this._timer = setTimeout(() => this.end(), time);
+		if (this.timer) clearTimeout(this.timer);
+		if (time === -1) this.timer = null;
+		else this.timer = setTimeout(() => this.end(), time);
 		return this;
 	}
 
 	public end() {
 		if (!llrCollectors.delete(this)) return this;
 
-		if (this._timer) {
-			clearTimeout(this._timer);
-			this._timer = null;
+		if (this.timer) {
+			clearTimeout(this.timer);
+			this.timer = null;
 		}
 		if (this.endListener) {
 			process.nextTick(this.endListener.bind(null));

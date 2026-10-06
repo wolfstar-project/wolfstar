@@ -121,8 +121,8 @@ export abstract class ModerationListener<V extends unknown[], T = unknown> exten
 	}
 }
 
-export namespace ModerationListener {
-	export type Options = Listener.Options;
-	export type JSON = Listener.JSON;
-	export type LoaderContext = Listener.LoaderContext;
+export declare namespace ModerationListener {
+	type Options = Listener.Options;
+	type JSON = Listener.JSON;
+	type LoaderContext = Listener.LoaderContext;
 }

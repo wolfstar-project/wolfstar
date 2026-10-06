@@ -11,7 +11,7 @@ export abstract class SharderListener extends Listener {
 	}
 }
 
-export namespace SharderListener {
-	export type LoaderContext = Listener.LoaderContext;
-	export type Options = Omit<Listener.Options, 'emitter' | 'enabled'>;
+export declare namespace SharderListener {
+	type LoaderContext = Listener.LoaderContext;
+	type Options = Omit<Listener.Options, 'emitter' | 'enabled'>;
 }

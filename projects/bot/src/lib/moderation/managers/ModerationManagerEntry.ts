@@ -312,13 +312,13 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 	}
 }
 
-export namespace ModerationManagerEntry {
+export declare namespace ModerationManagerEntry {
 	/**
 	 * The job that undoes a moderation entry when its time is up.
 	 */
-	export type ScheduledTask = NonNullable<Awaited<ReturnType<typeof container.tasks.get<UndoTaskName>>>>;
+	type ScheduledTask = NonNullable<Awaited<ReturnType<typeof container.tasks.get<UndoTaskName>>>>;
 
-	export interface Data<Type extends TypeVariation = TypeVariation> {
+	interface Data<Type extends TypeVariation = TypeVariation> {
 		id: number;
 		createdAt: number;
 		duration: bigint | number | null;
@@ -332,15 +332,15 @@ export namespace ModerationManagerEntry {
 		metadata: TypeMetadata;
 	}
 
-	export type CreateData<Type extends TypeVariation = TypeVariation> = MakeOptional<
+	type CreateData<Type extends TypeVariation = TypeVariation> = MakeOptional<
 		Omit<Data<Type>, 'id' | 'guild' | 'createdAt'>,
 		'duration' | 'imageURL' | 'extraData' | 'metadata' | 'moderator' | 'reason'
 	>;
-	export type UpdateData<Type extends TypeVariation = TypeVariation> = Partial<
+	type UpdateData<Type extends TypeVariation = TypeVariation> = Partial<
 		Omit<Data<Type>, 'id' | 'createdAt' | 'extraData' | 'moderator' | 'user' | 'type' | 'guild'>
 	>;
 
-	export type ExtraData<Type extends TypeVariation = TypeVariation> = ExtraDataTypes[Type];
+	type ExtraData<Type extends TypeVariation = TypeVariation> = ExtraDataTypes[Type];
 }
 
 type MakeOptional<Type, OptionalKeys extends keyof Type> = Omit<Type, OptionalKeys> & Partial<Pick<Type, OptionalKeys>>;

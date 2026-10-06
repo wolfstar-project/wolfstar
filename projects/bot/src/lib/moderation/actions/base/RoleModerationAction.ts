@@ -1,7 +1,7 @@
 import { readSettings, writeSettings, writeSettingsTransaction } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
-import type { TranslationKey } from '#types';
+import type { TranslationKey } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
 import { getCodeStyle, getStickyRoles } from '#utils/functions';
 import type { TypeVariation } from '#utils/moderationConstants';

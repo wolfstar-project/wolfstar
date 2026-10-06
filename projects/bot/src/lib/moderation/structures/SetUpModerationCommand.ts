@@ -46,14 +46,14 @@ export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, Val
 	}
 }
 
-export namespace SetUpModerationCommand {
-	export type Options<Type extends RoleTypeVariation> = ModerationCommand.Options<Type>;
+export declare namespace SetUpModerationCommand {
+	type Options<Type extends RoleTypeVariation> = ModerationCommand.Options<Type>;
 
-	export type LoaderContext = ModerationCommand.LoaderContext;
-	export type Interaction = ModerationCommand.Interaction;
-	export type Arguments = ModerationCommand.Arguments;
+	type LoaderContext = ModerationCommand.LoaderContext;
+	type Interaction = ModerationCommand.Interaction;
+	type Arguments = ModerationCommand.Arguments;
 
-	export type Parameters = ModerationCommand.Parameters;
-	export type HandlerParameters<ValueType = null> = ModerationCommand.HandlerParameters<ValueType>;
-	export type PostHandleParameters<ValueType = null> = ModerationCommand.PostHandleParameters<ValueType>;
+	type Parameters = ModerationCommand.Parameters;
+	type HandlerParameters<ValueType = null> = ModerationCommand.HandlerParameters<ValueType>;
+	type PostHandleParameters<ValueType = null> = ModerationCommand.PostHandleParameters<ValueType>;
 }

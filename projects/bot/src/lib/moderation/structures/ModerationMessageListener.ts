@@ -305,24 +305,24 @@ export interface HardPunishment {
 	adder: AdderKey;
 }
 
-export namespace ModerationMessageListener {
+export declare namespace ModerationMessageListener {
 	/**
 	 * The keys of the reasons of the cases the rules create, each has a `WithMaximum` variant for the rules that have
 	 * a threshold.
 	 */
-	export type ReasonKey = `events/moderation:${'attachments' | 'capitals' | 'invites' | 'links' | 'newlines' | 'words'}`;
+	type ReasonKey = `events/moderation:${'attachments' | 'capitals' | 'invites' | 'links' | 'newlines' | 'words'}`;
 
 	/**
 	 * The keys of the alerts the rules send to the channel when a message infringes them.
 	 */
-	export type AlertKey = `events/moderation:${'attachmentFilter' | 'capsFilter' | 'inviteFilterAlert' | 'nolink' | 'newlineFilter' | 'wordFilter'}`;
+	type AlertKey = `events/moderation:${'attachmentFilter' | 'capsFilter' | 'inviteFilterAlert' | 'nolink' | 'newlineFilter' | 'wordFilter'}`;
 
 	/**
 	 * What a rule logs: an embed, or a message made of components (see {@linkcode createLogMessage}).
 	 */
-	export type LogMessage = EmbedBuilder | ReturnType<typeof createLogMessage>;
+	type LogMessage = EmbedBuilder | ReturnType<typeof createLogMessage>;
 
-	export interface Options extends Listener.Options {
+	interface Options extends Listener.Options {
 		keyEnabled: GuildSettingsOfType<boolean>;
 		ignoredRolesPath: GuildSettingsOfType<readonly string[]>;
 		ignoredChannelsPath: GuildSettingsOfType<readonly string[]>;
@@ -331,6 +331,6 @@ export namespace ModerationMessageListener {
 		reasonLanguageKey: ReasonKey;
 		reasonLanguageKeyWithMaximum: `${ReasonKey}WithMaximum`;
 	}
-	export type JSON = Listener.JSON;
-	export type LoaderContext = Listener.LoaderContext;
+	type JSON = Listener.JSON;
+	type LoaderContext = Listener.LoaderContext;
 }

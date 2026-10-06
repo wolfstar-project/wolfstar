@@ -44,7 +44,7 @@ export abstract class AnalyticsListener extends Listener {
 	}
 }
 
-export namespace AnalyticsListener {
-	export type LoaderContext = Listener.LoaderContext;
-	export type Options = Partial<Omit<Listener.Options, 'enabled'>>;
+export declare namespace AnalyticsListener {
+	type LoaderContext = Listener.LoaderContext;
+	type Options = Partial<Omit<Listener.Options, 'enabled'>>;
 }

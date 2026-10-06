@@ -396,8 +396,8 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	}
 }
 
-export namespace ModerationAction {
-	export interface ConstructorOptions<Type extends TypeVariation = TypeVariation> {
+export declare namespace ModerationAction {
+	interface ConstructorOptions<Type extends TypeVariation = TypeVariation> {
 		type: Type;
 		logPrefix: string;
 		isUndoActionAvailable: boolean;
@@ -407,18 +407,18 @@ export namespace ModerationAction {
 		durationExternal?: boolean;
 	}
 
-	export type Options<Type extends TypeVariation = TypeVariation> = ModerationManager.CreateData<Type>;
-	export type PartialOptions<Type extends TypeVariation = TypeVariation> = Omit<Options<Type>, 'type' | 'metadata'>;
+	type Options<Type extends TypeVariation = TypeVariation> = ModerationManager.CreateData<Type>;
+	type PartialOptions<Type extends TypeVariation = TypeVariation> = Omit<Options<Type>, 'type' | 'metadata'>;
 
-	export type Entry<Type extends TypeVariation = TypeVariation> = ModerationManager.Entry<Type>;
+	type Entry<Type extends TypeVariation = TypeVariation> = ModerationManager.Entry<Type>;
 
-	export interface Data<ContextType = never> {
+	interface Data<ContextType = never> {
 		context?: ContextType;
 		sendDirectMessage?: boolean;
 		moderator?: User | null;
 	}
 
-	export interface ModerationEntryFetchOptions<Type extends TypeVariation = TypeVariation> {
+	interface ModerationEntryFetchOptions<Type extends TypeVariation = TypeVariation> {
 		guild: Guild;
 		userId: Snowflake;
 		type?: Type;

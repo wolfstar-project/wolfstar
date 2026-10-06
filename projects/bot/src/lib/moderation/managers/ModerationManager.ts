@@ -410,17 +410,17 @@ export class ModerationManager {
 	}
 }
 
-export namespace ModerationManager {
-	export interface FetchOptions {
+export declare namespace ModerationManager {
+	interface FetchOptions {
 		userId?: Snowflake;
 		moderatorId?: Snowflake;
 	}
 
-	export type Entry<Type extends TypeVariation = TypeVariation> = Readonly<ModerationManagerEntry<Type>>;
-	export type EntryResolvable<Type extends TypeVariation = TypeVariation> = Entry<Type> | number;
+	type Entry<Type extends TypeVariation = TypeVariation> = Readonly<ModerationManagerEntry<Type>>;
+	type EntryResolvable<Type extends TypeVariation = TypeVariation> = Entry<Type> | number;
 
-	export type CreateData<Type extends TypeVariation = TypeVariation> = ModerationManagerEntry.CreateData<Type>;
-	export type UpdateData<Type extends TypeVariation = TypeVariation> = ModerationManagerEntry.UpdateData<Type>;
+	type CreateData<Type extends TypeVariation = TypeVariation> = ModerationManagerEntry.CreateData<Type>;
+	type UpdateData<Type extends TypeVariation = TypeVariation> = ModerationManagerEntry.UpdateData<Type>;
 
-	export type ExtraData<Type extends TypeVariation = TypeVariation> = ModerationManagerEntry.ExtraData<Type>;
+	type ExtraData<Type extends TypeVariation = TypeVariation> = ModerationManagerEntry.ExtraData<Type>;
 }

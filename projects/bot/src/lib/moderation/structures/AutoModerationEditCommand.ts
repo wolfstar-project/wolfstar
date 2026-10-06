@@ -19,7 +19,7 @@ const Root = 'commands/auto-moderation';
  * const rule = AutoModerationRules.links;
  *
  * \@AutoModerationEditCommand.register(rule)
- * export class UserCommand extends AutoModerationEditCommand {}
+ * class UserCommand extends AutoModerationEditCommand {}
  * ```
  */
 export abstract class AutoModerationEditCommand extends AutoModerationCommand {
