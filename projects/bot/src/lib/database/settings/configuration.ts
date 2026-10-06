@@ -123,26 +123,26 @@ export function getConfiguration() {
 			maximum: 100,
 			default: 20
 		},
-		...autoModerationRule('noMentionSpam', 'no-mention-spam', {
+		...autoModerationRule('noMentionSpam', 'selfmod.no-mention-spam', {
 			enabled: 'settings:noMentionSpamEnabled',
 			ignoredRoles: 'settings:noMentionSpamIgnoredRoles',
 			ignoredChannels: 'settings:noMentionSpamIgnoredChannels'
 		}),
 		noMentionSpamAlerts: {
 			type: 'boolean',
-			name: 'no-mention-spam.alerts',
+			name: 'selfmod.no-mention-spam.alerts',
 			description: 'settings:noMentionSpamAlerts'
 		},
 		noMentionSpamMentionsAllowed: {
 			type: 'integer',
-			name: 'no-mention-spam.mentions-allowed',
+			name: 'selfmod.no-mention-spam.mentions-allowed',
 			description: 'settings:noMentionSpamMentionsAllowed',
 			minimum: 0,
 			default: 20
 		},
 		noMentionSpamTimePeriod: {
 			type: 'integer',
-			name: 'no-mention-spam.time-period',
+			name: 'selfmod.no-mention-spam.time-period',
 			description: 'settings:noMentionSpamTimePeriod',
 			minimum: 0,
 			default: 8
