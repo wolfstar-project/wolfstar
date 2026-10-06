@@ -310,7 +310,7 @@ export abstract class PruneCommand extends Command {
 
 		for (let i = 0; i < ids.length; i += 100) {
 			try {
-				deleted += (await manager.bulkDelete(channelId, ids.slice(i, i + 100), true)).length;
+				deleted += (await manager.bulkDelete(channelId, ids.slice(i, i + 100), true)).size;
 			} catch (error) {
 				logger.prune.unset(channelId);
 				if (!(error instanceof DiscordAPIError) || error.code !== RESTJSONErrorCodes.UnknownMessage) throw error;

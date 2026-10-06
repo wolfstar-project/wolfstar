@@ -2,7 +2,7 @@ import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { Client, container } from '@wolfstar/http-framework';
-import { ClusterStrategy, ShardClient, ShardManager } from '@wolfstar/plugin-sharder';
+import { ShardClient, ShardManager } from '@wolfstar/plugin-sharder';
 import { fileURLToPath } from 'node:url';
 
 /**
@@ -24,9 +24,7 @@ export async function startShardManager() {
 	const clusters = envParseInteger('SHARDER_CLUSTERS', 0);
 	const totalShards = envParseInteger('SHARDER_TOTAL_SHARDS', 0);
 	const manager = new ShardManager({
-		// The options are given in full: left out, the strategy hands `execArgv: undefined` to `cluster.setupPrimary`, which
-		// throws, and the manager spawns the shard again forever without reporting it (plugin-sharder 0.1.1).
-		strategy: new ClusterStrategy({ path: process.argv[1], args: process.argv.slice(2), execArgv: process.execArgv }),
+		strategy: 'cluster',
 		token: envParseString('DISCORD_TOKEN'),
 		totalShards: totalShards > 0 ? totalShards : 'auto',
 		shards: 'auto',

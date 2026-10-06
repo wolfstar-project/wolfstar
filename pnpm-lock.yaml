@@ -284,37 +284,37 @@ importers:
         version: 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       '@wolfstar/http-framework-utilities':
         specifier: ^0.1.0
-        version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.9.1)(discord-api-types@0.38.56)
+        version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.11.0)(discord-api-types@0.38.56)
       '@wolfstar/kit':
         specifier: ^0.1.1
         version: 0.1.1(magicast@0.5.5)
       '@wolfstar/plugin-api':
-        specifier: ^2.0.1
-        version: 2.0.1(@wolfstar/http-framework@6.1.1)
+        specifier: ^2.1.0
+        version: 2.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)
       '@wolfstar/plugin-broker':
-        specifier: ^0.4.1
-        version: 0.4.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)
+        specifier: ^0.5.0
+        version: 0.5.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-cache':
-        specifier: ^0.5.1
-        version: 0.5.1(msgpackr@2.1.0)
+        specifier: ^0.6.0
+        version: 0.6.0(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-gateway':
-        specifier: ^0.9.1
-        version: 0.9.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)
+        specifier: ^0.11.0
+        version: 0.11.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-i18next':
-        specifier: ^2.1.2
-        version: 2.1.2(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.5)(typescript@7.0.2)
+        specifier: ^2.2.0
+        version: 2.2.0(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.5)(@wolfstar/kit@0.1.1)(typescript@7.0.2)
       '@wolfstar/plugin-logger':
-        specifier: ^0.2.2
-        version: 0.2.2(@sentry/node@10.76.0)(@wolfstar/http-framework@6.1.1)(consola@3.4.2)
+        specifier: ^0.3.0
+        version: 0.3.0(@sentry/node@10.76.0)(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(consola@3.4.2)
       '@wolfstar/plugin-scheduled-tasks':
         specifier: ^0.1.0
         version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(ioredis@6.0.0)(pg@8.23.1)
       '@wolfstar/plugin-sharder':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.2.1
+        version: 0.2.1(@wolfstar/kit@0.1.1)
       '@wolfstar/plugin-subcommands-advanced':
-        specifier: ^2.0.6
-        version: 2.0.6(@wolfstar/http-framework@6.1.1)
+        specifier: ^2.1.0
+        version: 2.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)
       '@wolfstar/shared-http-pieces':
         specifier: ^2.0.9
         version: 2.0.9(@opentelemetry/core@2.11.0)(@wolfstar/i18next-type-generator@3.1.5)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(supports-color@7.2.0)(tsdown@0.23.0)(typescript@7.0.2)(varlock@1.21.1)(vite@8.3.2)
@@ -2644,32 +2644,47 @@ packages:
       vite:
         optional: true
 
-  '@wolfstar/plugin-api@2.0.1':
-    resolution: {integrity: sha512-ORHK7hSqlt2gVK5UBtt8B++n6a4NGbVT2YNlVFpUL9avUhm/5zngfIJTXdFflHtoGbLSSlnq76lhg7FCN6DA1g==}
+  '@wolfstar/plugin-api@2.1.0':
+    resolution: {integrity: sha512-fyVA2g2l6NiY9/jxoSPDRgsarG1K/iXSNYXtk6FPi4rjFIg3mxFpK/c9SX+FjL2CFeDSBXY7bLv+P7jryq2LmA==}
     engines: {node: '>=20.18.1'}
     peerDependencies:
       '@wolfstar/http-framework': ^3.6.0 || ^5.0.0 || ^6.0.0
+      '@wolfstar/kit': ^0.1.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
 
-  '@wolfstar/plugin-broker@0.4.1':
-    resolution: {integrity: sha512-RumqWmXVJzfCSB1lJGKGW+z1OvUk9xrd1KHVw2XmCCJyTDRSYSNVj5ihNN2wb9YEK8tHUR/79Mdl4GKLqaw7hQ==}
+  '@wolfstar/plugin-broker@0.5.0':
+    resolution: {integrity: sha512-jmEAdDvGZzlaisoJ9xNdgOj6E5cBq0KONazTk8mopKvFWZDrn8itcktgGuMRzfG2KEElUO1xPvbzVT9dIoDA+w==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
+      '@wolfstar/kit': ^0.1.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
 
-  '@wolfstar/plugin-cache@0.5.1':
-    resolution: {integrity: sha512-gwvliWPVL2jUcbiCIHiQrmGINokm9LLyU6e/RFcO6BNADRshs7hjF58JItbWkLr5vTyC7trmcafOH1vFrEyDIQ==}
+  '@wolfstar/plugin-cache@0.6.0':
+    resolution: {integrity: sha512-kR0E6xXUHcrJU72/jshY4PS1Zg7fh3oIdd6BvXdQ1R8d8hcW5C7Zvl68QaTKcL2vEk1CEjSsyrhm6l6R3GhkOA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
+      '@wolfstar/kit': ^0.1.0
       msgpackr: ^2.0.0
     peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
       msgpackr:
         optional: true
 
-  '@wolfstar/plugin-gateway@0.9.1':
-    resolution: {integrity: sha512-Ao+MvLktcThfZGkL+mECDzEtf3xyXZ62T0AuMf/EvPQi/dFosNmCIiZAuZ2wywpEtANPPqvJj2Z59p65IUyQhg==}
+  '@wolfstar/plugin-gateway@0.11.0':
+    resolution: {integrity: sha512-eQhgpBlmObosqOinusCaI8uiPmgT21kZNFlBj7t3UvaO+mYMAboLRv0A5EzxYjrkPaTXmzdKo5WuqSNWiGWIIA==}
     engines: {node: '>=24.17.0'}
     peerDependencies:
       '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
+      '@wolfstar/kit': ^0.1.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
 
   '@wolfstar/plugin-i18next@2.1.2':
     resolution: {integrity: sha512-6FNXLhUpTMxSzuRreuM9JNEiM90K8gjerYcZSfhPRb6mYC6LsduKGNxO1NZs7orrkJhcs8VaVD0l/TnqLjSkmA==}
@@ -2681,17 +2696,33 @@ packages:
       '@wolfstar/i18next-type-generator':
         optional: true
 
-  '@wolfstar/plugin-logger@0.2.2':
-    resolution: {integrity: sha512-xt5QGYY8IpbfJFwyVLBANlYU9YjOzCa8ueGdPNRTYcDIOowwk6TNEvjsjs+qYOfwZCrFVnBzmOpzcfS7vDGVkA==}
+  '@wolfstar/plugin-i18next@2.2.0':
+    resolution: {integrity: sha512-SuO4stB+5xwszTjiDCvpPEp9xJOkn1gNNo0mG3crotJmsELhgZDRW3d/xrbgj1+USV3reeaD9xPb2tjzN2inDQ==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/http-framework': ^3.1.0 || ^5.0.0 || ^6.0.0
+      '@wolfstar/i18next-type-generator': ^3.0.0
+      '@wolfstar/kit': ^0.1.0
+    peerDependenciesMeta:
+      '@wolfstar/i18next-type-generator':
+        optional: true
+      '@wolfstar/kit':
+        optional: true
+
+  '@wolfstar/plugin-logger@0.3.0':
+    resolution: {integrity: sha512-RXxGFPMOUG+s+/kRx/6SA0cl4R+GhOFGE1ITKSGF+2SLsl3MpaF/u9Kp3Faa12HjISPqGmy0vRRK3hGjvKhtDw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@sentry/node': ^8.0.0 || ^9.0.0 || ^10.0.0
       '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
+      '@wolfstar/kit': ^0.1.0
       consola: ^3.0.0
       evlog: ^2.0.0
       winston: ^3.0.0
     peerDependenciesMeta:
       '@sentry/node':
+        optional: true
+      '@wolfstar/kit':
         optional: true
       consola:
         optional: true
@@ -2707,15 +2738,24 @@ packages:
       '@wolfstar/http-framework': ^6.1.0
       '@wolfstar/kit': ^0.1.0
 
-  '@wolfstar/plugin-sharder@0.1.1':
-    resolution: {integrity: sha512-X/ZbVzA52wfncvas3Wubkv+I2gyPUayGoLh33zmHwahZMx7AR53KEF0D0FfJmQY+SekL/OQ+4pQ1WLPYr2LfCg==}
+  '@wolfstar/plugin-sharder@0.2.1':
+    resolution: {integrity: sha512-anUk3fRgmXGlTsgNJUwvC5w0AIusKZN990vjZdMafkyMycPP4DhyXVOv4q+Z3QVBVK1vi3yRUfamf7PNFXvONA==}
     engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/kit': ^0.1.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
 
-  '@wolfstar/plugin-subcommands-advanced@2.0.6':
-    resolution: {integrity: sha512-fL0Sh/hcLc9fI4P35VIoHczoZrE7xnAx7LrRTDa3B4g7XYglaHWki9UliPg1S+y2IcPlAmCI2ZeBHaWTIETUsw==}
+  '@wolfstar/plugin-subcommands-advanced@2.1.0':
+    resolution: {integrity: sha512-bZBiwO8T2g/nCW+OliZZJN5l++c/iuCzvQz9RRavZu67d6KCGYeDI97v1Z+yscVuZBPdpXkK6Yvvruxdws22GA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@wolfstar/http-framework': ^3.1.0 || ^5.0.0 || ^6.0.0
+      '@wolfstar/kit': ^0.1.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
 
   '@wolfstar/schema@0.6.0':
     resolution: {integrity: sha512-vK0RcEjT+M+hi0yFsgbBQ06XYQNUOWcgbWNgDSezMhjl3wjWIa5Vrt+u4m8hvIcezco3z4Y66sVdChXz95Qo4w==}
@@ -7210,13 +7250,13 @@ snapshots:
       dotenv-expand: 13.0.0
       varlock: 1.21.1
 
-  '@wolfstar/http-framework-utilities@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.9.1)(discord-api-types@0.38.56)':
+  '@wolfstar/http-framework-utilities@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.11.0)(discord-api-types@0.38.56)':
     dependencies:
       '@wolfstar/discord-utilities': 0.1.0(discord-api-types@0.38.56)
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       discord-api-types: 0.38.56
     optionalDependencies:
-      '@wolfstar/plugin-gateway': 0.9.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)
+      '@wolfstar/plugin-gateway': 0.11.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
 
   '@wolfstar/http-framework@6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
     dependencies:
@@ -7290,7 +7330,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@wolfstar/plugin-api@2.0.1(@wolfstar/http-framework@6.1.1)':
+  '@wolfstar/plugin-api@2.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)':
     dependencies:
       '@sapphire/iana-mime-types': 1.32.0
       '@sapphire/pieces': 4.4.1
@@ -7299,21 +7339,26 @@ snapshots:
       cookie-es: 3.1.1
       tldts: 7.4.16
       undici: 7.30.0
+    optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
 
-  '@wolfstar/plugin-broker@0.4.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)':
+  '@wolfstar/plugin-broker@0.5.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)':
     dependencies:
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/plugin-cache': 0.5.1(msgpackr@2.1.0)
+      '@wolfstar/plugin-cache': 0.6.0(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
+    optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
     transitivePeerDependencies:
       - msgpackr
 
-  '@wolfstar/plugin-cache@0.5.1(msgpackr@2.1.0)':
+  '@wolfstar/plugin-cache@0.6.0(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)':
     dependencies:
       discord-api-types: 0.38.56
     optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
       msgpackr: 2.1.0
 
-  '@wolfstar/plugin-gateway@0.9.1(@wolfstar/http-framework@6.1.1)(msgpackr@2.1.0)':
+  '@wolfstar/plugin-gateway@0.11.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)':
     dependencies:
       '@discordjs/collection': 2.1.1
       '@discordjs/core': 2.6.0
@@ -7322,8 +7367,10 @@ snapshots:
       '@discordjs/ws': 2.0.4
       '@sapphire/pieces': 4.4.1
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/plugin-cache': 0.5.1(msgpackr@2.1.0)
+      '@wolfstar/plugin-cache': 0.6.0(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       discord-api-types: 0.38.56
+    optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
     transitivePeerDependencies:
       - bufferutil
       - msgpackr
@@ -7345,11 +7392,29 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@wolfstar/plugin-logger@0.2.2(@sentry/node@10.76.0)(@wolfstar/http-framework@6.1.1)(consola@3.4.2)':
+  '@wolfstar/plugin-i18next@2.2.0(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.5)(@wolfstar/kit@0.1.1)(typescript@7.0.2)':
+    dependencies:
+      '@discordjs/collection': 2.1.1
+      '@sapphire/pieces': 4.4.1
+      '@sapphire/result': 2.8.0
+      '@sapphire/utilities': 3.18.2
+      '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
+      '@wolfstar/i18next-backend': 2.0.12
+      chokidar: 5.0.0
+      discord-api-types: 0.38.56
+      i18next: 26.4.2(typescript@7.0.2)
+    optionalDependencies:
+      '@wolfstar/i18next-type-generator': 3.1.5
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
+    transitivePeerDependencies:
+      - typescript
+
+  '@wolfstar/plugin-logger@0.3.0(@sentry/node@10.76.0)(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(consola@3.4.2)':
     dependencies:
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
     optionalDependencies:
       '@sentry/node': 10.76.0(@opentelemetry/core@2.11.0)(supports-color@7.2.0)
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
       consola: 3.4.2
 
   '@wolfstar/plugin-scheduled-tasks@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(ioredis@6.0.0)(pg@8.23.1)':
@@ -7364,16 +7429,20 @@ snapshots:
       - pg
       - redis
 
-  '@wolfstar/plugin-sharder@0.1.1':
+  '@wolfstar/plugin-sharder@0.2.1(@wolfstar/kit@0.1.1)':
     dependencies:
       '@sapphire/result': 2.8.0
+    optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
 
-  '@wolfstar/plugin-subcommands-advanced@2.0.6(@wolfstar/http-framework@6.1.1)':
+  '@wolfstar/plugin-subcommands-advanced@2.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)':
     dependencies:
       '@discordjs/builders': 1.14.1
       '@discordjs/collection': 2.1.1
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       discord-api-types: 0.38.56
+    optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
 
   '@wolfstar/schema@0.6.0(magicast@0.5.5)':
     dependencies:
