@@ -61,6 +61,9 @@ jobs:
             - name: Generate prisma types
               run: pnpm --filter wolfstar-database prisma:generate
 
+            - name: Find unused files and dependencies
+              run: pnpm knip
+
             - name: Build project
               run: pnpm build
 

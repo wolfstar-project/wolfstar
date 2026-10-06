@@ -16,6 +16,7 @@
 		"lint:fix": "oxlint --fix && oxfmt",
 		"lint": "oxlint && oxfmt --check",
 		"typecheck": "golar typecheck",
+		"knip": "knip",
 		"scripts:tlds": "node scripts/tlds.mjs",
 		"prepare": "node .husky/install.mjs",
 		"tolgee:pull": "varlock run -- tolgee pull && node --experimental-strip-types scripts/tolgee-pull-remap.ts",
@@ -25,6 +26,7 @@
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.3",
 		"@commitlint/config-conventional": "^21.2.3",
+		"@sapphire/fetch": "^3.0.5",
 		"@sapphire/ts-config": "^5.0.3",
 		"@tolgee/cli": "^2.20.0",
 		"@types/node": "^24.19.1",
@@ -32,6 +34,7 @@
 		"cz-conventional-changelog": "^3.3.0",
 		"golar": "^0.1.10",
 		"husky": "^9.1.7",
+		"knip": "^6.39.0",
 		"nano-staged": "^1.0.2",
 		"oxfmt": "^0.67.0",
 		"oxlint": "^1.86.0",

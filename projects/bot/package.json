@@ -29,12 +29,15 @@
 	"dependencies": {
 		"@discordjs/builders": "^1.14.1",
 		"@discordjs/collection": "^2.1.1",
+		"@discordjs/formatters": "^0.6.2",
 		"@discordjs/rest": "^2.6.3",
 		"@influxdata/influxdb-client": "^1.35.0",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/bitfield": "^1.2.4",
+		"@sapphire/pieces": "^4.4.1",
 		"@sapphire/ratelimits": "^2.4.11",
 		"@sapphire/result": "^2.8.0",
+		"@sapphire/snowflake": "^3.5.5",
 		"@sapphire/time-utilities": "^1.7.14",
 		"@sapphire/utilities": "^3.18.2",
 		"@sentry/node": "^10.76.0",
@@ -60,6 +63,7 @@
 		"diff": "^9.0.0",
 		"discord-api-types": "^0.38.56",
 		"gradient-string": "^3.0.0",
+		"i18next": "^26.4.2",
 		"ioredis": "^6.0.0",
 		"varlock": "^1.21.1",
 		"wolfstar-database": "workspace:^"

@@ -14,6 +14,7 @@ Discord bot built on **Sapphire Framework** (discord.js). TypeScript, PostgreSQL
 - **Formatter/Linter:** oxlint + oxfmt, prettier
 - **Test runner:** vitest (globals enabled, setup in `tests/setup.ts`)
 - **Package manager:** pnpm (workspace)
+- **Unused code:** `pnpm knip` (`knip.config.ts`) fails on unused files, unused or unlisted dependencies and unresolved imports, and runs in CI. The unused exports are only warnings: the exports of `src/lib` are auto-imported, which knip cannot see. The pieces are entry files; a new directory of pieces must be added to the `entry` of the bot
 - **Auto imports:** the Stars CLI auto-imports every exported value of `src/lib/**` and of the framework (`.stars/imports.d.ts`). Import a class or enum that is only used as a type in its own `import type` statement (an inline `type X` in a mixed import is declared twice), and export a generic class apart from its declaration (`class X<K, V> {}` then `export { X }`): the scanner reads `, V` as a second export
 
 ## Plugins
@@ -116,6 +117,7 @@ InfluxDB and Redis in `compose.dev.yaml` are optional. For local dev without Inf
 | Generate Prisma client   | `pnpm prisma:generate`            |
 | Lint                     | `pnpm lint`                       |
 | Type-check               | `pnpm typecheck`                  |
+| Unused code              | `pnpm knip`                       |
 | Unit tests               | `pnpm test`                       |
 | Build                    | `pnpm build`                      |
 | Dev (watch + start)      | `pnpm dev`                        |
