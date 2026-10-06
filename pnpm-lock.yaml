@@ -299,7 +299,7 @@ importers:
         version: 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       '@wolfstar/http-framework-utilities':
         specifier: ^0.1.0
-        version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.11.0)(discord-api-types@0.38.56)
+        version: 0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.12.0-next-20261006164817)(discord-api-types@0.38.56)
       '@wolfstar/kit':
         specifier: ^0.1.1
         version: 0.1.1(magicast@0.5.5)
@@ -310,11 +310,11 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-cache':
-        specifier: ^0.6.0
-        version: 0.6.0(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
+        specifier: ^0.7.0-next-20261006164817
+        version: 0.7.0-next-20261006164817(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-gateway':
-        specifier: ^0.11.0
-        version: 0.11.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
+        specifier: ^0.12.0-next-20261006164817
+        version: 0.12.0-next-20261006164817(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       '@wolfstar/plugin-i18next':
         specifier: ^2.2.0
         version: 2.2.0(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.1.1)(typescript@7.0.2)
@@ -2854,21 +2854,6 @@ packages:
     peerDependencies:
       discord-api-types: ^0.38.56
 
-  '@wolfstar/env-utilities@2.3.0':
-    resolution: {integrity: sha512-gaqBTkg5T7kZrT98/Wf/bfxcEfxQzHUKB/0hRj2jQPpdCssiyD2T3ZjyVrmEuSkhDQabHZ++a2CDN69q/8S7qg==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      dotenv: ^18.0.4
-      dotenv-expand: ^13.0.0
-      varlock: ^1.19.0
-    peerDependenciesMeta:
-      dotenv:
-        optional: true
-      dotenv-expand:
-        optional: true
-      varlock:
-        optional: true
-
   '@wolfstar/env-utilities@2.3.1':
     resolution: {integrity: sha512-lziTbElXEQZMJ05XCN+kLszlkvidEVEalIQ1AP6w+Tt+WcHopnKu/BwvtnLLWU46MQ4bGbENpWfU1CSGHmqwdQ==}
     engines: {node: '>=20'}
@@ -2957,8 +2942,20 @@ packages:
       msgpackr:
         optional: true
 
-  '@wolfstar/plugin-gateway@0.11.0':
-    resolution: {integrity: sha512-eQhgpBlmObosqOinusCaI8uiPmgT21kZNFlBj7t3UvaO+mYMAboLRv0A5EzxYjrkPaTXmzdKo5WuqSNWiGWIIA==}
+  '@wolfstar/plugin-cache@0.7.0-next-20261006164817':
+    resolution: {integrity: sha512-Op7nN8/pR9MZwReqdFR1OORXTvREGvkrfq6TKtrrlreXB11PbhBhhCrYpz7ur5yBLp3+CWeB2zhmSee9WGSWKw==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@wolfstar/kit': ^0.1.0
+      msgpackr: ^2.0.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
+      msgpackr:
+        optional: true
+
+  '@wolfstar/plugin-gateway@0.12.0-next-20261006164817':
+    resolution: {integrity: sha512-GOl53p+njIJrL3Pv7OY0c/5f9zmWYXdWAF1MHfoWgK5YObzYM1eIMw7THZjqtj05yLslkB9yd4/LjxtNweQtyQ==}
     engines: {node: '>=24.17.0'}
     peerDependencies:
       '@wolfstar/http-framework': ^3.4.0 || ^5.0.0 || ^6.0.0
@@ -7710,13 +7707,6 @@ snapshots:
     dependencies:
       discord-api-types: 0.38.56
 
-  '@wolfstar/env-utilities@2.3.0(dotenv-expand@13.0.0)(varlock@1.21.1)':
-    dependencies:
-      '@sapphire/pieces': 4.4.1
-    optionalDependencies:
-      dotenv-expand: 13.0.0
-      varlock: 1.21.1
-
   '@wolfstar/env-utilities@2.3.1(dotenv-expand@13.0.0)(varlock@1.21.1)':
     dependencies:
       '@sapphire/pieces': 4.4.1
@@ -7724,13 +7714,13 @@ snapshots:
       dotenv-expand: 13.0.0
       varlock: 1.21.1
 
-  '@wolfstar/http-framework-utilities@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.11.0)(discord-api-types@0.38.56)':
+  '@wolfstar/http-framework-utilities@0.1.0(@wolfstar/http-framework@6.1.1)(@wolfstar/plugin-gateway@0.12.0-next-20261006164817)(discord-api-types@0.38.56)':
     dependencies:
       '@wolfstar/discord-utilities': 0.1.0(discord-api-types@0.38.56)
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       discord-api-types: 0.38.56
     optionalDependencies:
-      '@wolfstar/plugin-gateway': 0.11.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
+      '@wolfstar/plugin-gateway': 0.12.0-next-20261006164817(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
 
   '@wolfstar/http-framework@6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)':
     dependencies:
@@ -7832,7 +7822,14 @@ snapshots:
       '@wolfstar/kit': 0.1.1(magicast@0.5.5)
       msgpackr: 2.1.0
 
-  '@wolfstar/plugin-gateway@0.11.0(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)':
+  '@wolfstar/plugin-cache@0.7.0-next-20261006164817(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)':
+    dependencies:
+      discord-api-types: 0.38.56
+    optionalDependencies:
+      '@wolfstar/kit': 0.1.1(magicast@0.5.5)
+      msgpackr: 2.1.0
+
+  '@wolfstar/plugin-gateway@0.12.0-next-20261006164817(@wolfstar/http-framework@6.1.1)(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)':
     dependencies:
       '@discordjs/collection': 2.1.1
       '@discordjs/core': 2.6.0
@@ -7841,7 +7838,7 @@ snapshots:
       '@discordjs/ws': 2.0.4
       '@sapphire/pieces': 4.4.1
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
-      '@wolfstar/plugin-cache': 0.6.0(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
+      '@wolfstar/plugin-cache': 0.7.0-next-20261006164817(@wolfstar/kit@0.1.1)(msgpackr@2.1.0)
       discord-api-types: 0.38.56
     optionalDependencies:
       '@wolfstar/kit': 0.1.1(magicast@0.5.5)
@@ -7915,7 +7912,7 @@ snapshots:
       '@discordjs/collection': 2.1.1
       '@sapphire/pieces': 4.4.1
       '@sentry/node': 10.76.0(@opentelemetry/core@2.11.0)(supports-color@7.2.0)
-      '@wolfstar/env-utilities': 2.3.0(dotenv-expand@13.0.0)(varlock@1.21.1)
+      '@wolfstar/env-utilities': 2.3.1(dotenv-expand@13.0.0)(varlock@1.21.1)
       '@wolfstar/http-framework': 6.1.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(vite@8.3.2)
       '@wolfstar/plugin-i18next': 2.2.0(@wolfstar/http-framework@6.1.1)(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.1.1)(typescript@7.0.2)
       discord-api-types: 0.38.56
