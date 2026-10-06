@@ -255,6 +255,9 @@ importers:
       '@discordjs/rest':
         specifier: ^2.6.3
         version: 2.6.3
+      '@discordjs/ws':
+        specifier: ^2.0.4
+        version: 2.0.4
       '@influxdata/influxdb-client':
         specifier: ^1.35.0
         version: 1.35.0
