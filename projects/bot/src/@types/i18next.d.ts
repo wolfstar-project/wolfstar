@@ -135,6 +135,8 @@ declare module "i18next" {
         spamDescription: "Manage the auto-moderator for spam";
         newlinesName: "automod-newlines";
         newlinesDescription: "Manage the auto-moderator for lines";
+        zalgoName: "automod-zalgo";
+        zalgoDescription: "Manage the auto-moderator for zalgo text";
         reactionsName: "automod-reactions";
         reactionsDescription: "Manage the auto-moderator for reactions";
         showDisabled: "Auto-moderator inactive";
@@ -2561,6 +2563,10 @@ declare module "i18next" {
         newlineFilterFooter: "Too Many Lines";
         newlines: "[Auto-Moderation] Triggered newline filter, no threshold.";
         newlinesWithMaximum: "[Auto-Moderation] Triggered newline filter, reached {{amount}} out of {{maximum}} infractions.";
+        zalgoFilter: "{{REDCROSS}} Hey {{user}}, your message is unreadable, please write without stacking marks on the letters!";
+        zalgoFilterFooter: "Zalgo Text";
+        zalgo: "[Auto-Moderation] Triggered zalgo text filter, no threshold.";
+        zalgoWithMaximum: "[Auto-Moderation] Triggered zalgo text filter, reached {{amount}} out of {{maximum}} infractions.";
         nolink: "{{REDCROSS}} Hey {{user}}, you are not allowed to post links here!";
         wordFilter: "{{REDCROSS}} Pardon, dear {{user}}, you said something that is not allowed in this server.";
         wordFilterDm: "Shush! You said some words that are not allowed in the server! But since you took a moment to write the message, I will post it here:\n{{filtered}}";
@@ -3050,6 +3056,10 @@ declare module "i18next" {
         automodNewlinesIgnoredChannels: "The channels that will be ignored by the new lines sub-system";
         automodNewlinesIgnoredRoles: "The roles that will be ignored by the new lines sub-system";
         automodNewlinesMaximum: "The maximum amount of new lines before WolfStar will start applying penalties";
+        automodZalgoEnabled: "Whether the zalgo text filter auto-moderation sub-system is enabled or not.";
+        automodZalgoIgnoredChannels: "The channels that will be ignored by the zalgo text sub-system";
+        automodZalgoIgnoredRoles: "The roles that will be ignored by the zalgo text sub-system";
+        automodZalgoMaximum: "The maximum amount of combining marks a single character may carry before WolfStar will start applying penalties. Languages that stack accents, such as Thai or Vietnamese, use up to three.";
         automodReactionsBlocked: "The reactions that are blocked";
         automodReactionsEnabled: "Whether the reactions filter auto-moderation sub-system is enabled or not.";
         automodReactionsIgnoredChannels: "The channels that will be ignored by the reactions sub-system";

@@ -27,6 +27,7 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		trx.write({ automodLinksIgnoredRoles: trx.settings.automodLinksIgnoredRoles.filter((rm) => rm !== roleId) });
 		trx.write({ automodMentionsIgnoredRoles: trx.settings.automodMentionsIgnoredRoles.filter((rm) => rm !== roleId) });
 		trx.write({ automodNewlinesIgnoredRoles: trx.settings.automodNewlinesIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodZalgoIgnoredRoles: trx.settings.automodZalgoIgnoredRoles.filter((rm) => rm !== roleId) });
 		trx.write({ automodInvitesIgnoredRoles: trx.settings.automodInvitesIgnoredRoles.filter((rm) => rm !== roleId) });
 		trx.write({ automodWordsIgnoredRoles: trx.settings.automodWordsIgnoredRoles.filter((rm) => rm !== roleId) });
 		trx.write({ automodNoMentionSpamIgnoredRoles: trx.settings.automodNoMentionSpamIgnoredRoles.filter((rm) => rm !== roleId) });
