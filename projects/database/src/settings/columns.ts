@@ -18,6 +18,7 @@ export const Tables = [
 	'GuildAutoModerationNewlines',
 	'GuildAutoModerationNoMentionSpam',
 	'GuildAutoModerationWords',
+	'GuildAutoModerationZalgo',
 	'GuildCommands',
 	'GuildLogs',
 	'GuildModeration',
@@ -178,6 +179,11 @@ export const Columns = {
 		})
 	),
 	...autoModerationRule('GuildAutoModerationWords', 'automodWords', columns('GuildAutoModerationWords', { automodWordsList: ['words', 'value'] })),
+	...autoModerationRule(
+		'GuildAutoModerationZalgo',
+		'automodZalgo',
+		columns('GuildAutoModerationZalgo', { automodZalgoMaximum: ['maximum', 'value'] })
+	),
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
 		commandsDisabledChannels: ['disabledChannels', 'snowflakes']
