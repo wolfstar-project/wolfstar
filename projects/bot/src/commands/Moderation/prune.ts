@@ -10,8 +10,8 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  *
  * @remarks
  *
- * Every subcommand deletes the latest messages of the channel it is run in, and accepts the options of the other ones to
- * combine the filters. Every subcommand requires the moderator permission level.
+ * Every subcommand deletes the latest messages of the channel it is run in. `any` accepts the options of the other ones, to
+ * combine the filters (`/prune any bots:true links:true`). Every subcommand requires the moderator permission level.
  */
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/moderation:prune')

@@ -152,8 +152,10 @@ const TextKeys = {
  *
  * @remarks
  *
- * Every subcommand has the same options so that the filters can be combined, but the one it is named after: the toggle of
- * the same name is left out, and the text option of the same name is required instead of optional. Discord requires the
+ * Every subcommand has the options that say which messages to look at (`amount`, `before`, `after`, `user`, `silent`),
+ * and the text option of the same name when it has one, which is required. Only `any` has the options of the other
+ * subcommands as well, to combine the filters: a command cannot be larger than 8000 characters, names and descriptions
+ * of every option of every subcommand added up, and giving them to all 17 subcommands took 19000. Discord requires the
  * required options to come first, hence the order.
  *
  * @param builder - The builder to apply the data to.
@@ -180,14 +182,14 @@ export function applyPruneSubcommandBuilder(builder: SlashCommandSubcommandBuild
 		)
 		.addUserOption((option) => applyLocalizedBuilder(option, 'commands/moderation:pruneOptionsUser').setRequired(false));
 
-	for (const text of PruneTexts) {
-		if (text === requiredText) continue;
-		result = result.addStringOption((option) => applyLocalizedBuilder(option, TextKeys[text]).setRequired(false));
-	}
+	if (subcommand === 'any') {
+		for (const text of PruneTexts) {
+			result = result.addStringOption((option) => applyLocalizedBuilder(option, TextKeys[text]).setRequired(false));
+		}
 
-	for (const toggle of PruneToggles) {
-		if (toggle === subcommand) continue;
-		result = result.addBooleanOption((option) => applyLocalizedBuilder(option, ToggleKeys[toggle]).setRequired(false));
+		for (const toggle of PruneToggles) {
+			result = result.addBooleanOption((option) => applyLocalizedBuilder(option, ToggleKeys[toggle]).setRequired(false));
+		}
 	}
 
 	return result.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/moderation:pruneOptionsSilent').setRequired(false));

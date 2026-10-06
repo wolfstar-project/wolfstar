@@ -1775,7 +1775,7 @@ declare module "i18next" {
         setNicknameOptionsNicknameName: "nickname";
         setNicknameOptionsNicknameDescription: "The new nickname, leave empty to remove it.";
         pruneAnyName: "any";
-        pruneAnyDescription: "Delete the latest messages, up to 1000.";
+        pruneAnyDescription: "Delete the latest messages, up to 1000, or the ones that match several filters.";
         pruneAttachmentsName: "attachments";
         pruneAttachmentsDescription: "Delete the messages that have attachments.";
         pruneImagesName: "images";
