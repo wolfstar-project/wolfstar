@@ -61,7 +61,7 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 	 */
 	protected async hasPermissions(guild: Guild, permissions: bigint) {
 		const me = await this.container.gatewayClient.members.fetchMe(guild.id);
-		const granted = (await me.fetchPermissions()).bitField;
+		const granted = (await me.permissions).bitField;
 		return (granted & PermissionFlagsBits.Administrator) !== 0n || (granted & permissions) === permissions;
 	}
 

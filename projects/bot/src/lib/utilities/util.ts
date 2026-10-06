@@ -397,7 +397,7 @@ export function sendLoadingMessage<T extends LoadingMessageTarget>(interaction: 
  * @param source The entity holding the member, such as a message.
  */
 export async function getColor(source: { member?: GuildMember | Nullish }): Promise<number> {
-	const role = await source.member?.roles.fetchColor();
+	const role = await source.member?.roles.color;
 	return role && role.color !== 0 ? role.color : BrandingColors.Primary;
 }
 

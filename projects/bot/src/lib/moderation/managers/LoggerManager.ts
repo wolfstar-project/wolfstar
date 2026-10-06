@@ -40,7 +40,7 @@ export class LoggerManager {
 	 */
 	public async canViewAuditLogs() {
 		const me = await container.gatewayClient.members.fetchMe(this.guild.id);
-		const permissions = await me.fetchPermissions();
+		const permissions = await me.permissions;
 		return permissions.has(PermissionFlagsBits.ViewAuditLog);
 	}
 

@@ -23,7 +23,7 @@ export class UserModerationCommand extends ModerationCommand<Type, ValueType> {
 		context: ModerationCommand.HandlerParameters<ValueType>
 	) {
 		const member = await super.checkTargetCanBeModerated(interaction, context);
-		if (member && !(await member.fetchModeratable())) throw context.t('commands/moderation:timeoutNotModeratable');
+		if (member && !(await member.moderatable)) throw context.t('commands/moderation:timeoutNotModeratable');
 		return member;
 	}
 }

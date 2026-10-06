@@ -20,7 +20,7 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 
 	async #handleStickyRoles(member: GuildMember) {
 		const me = await this.container.gatewayClient.members.fetchMe(member.guildId);
-		if (!(await me.fetchPermissions()).has(PermissionFlagsBits.ManageRoles)) return false;
+		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) return false;
 
 		const user = member.user ?? (await member.fetchUser());
 		const stickyRoles = await (await getStickyRoles(member)).fetch(user.id);

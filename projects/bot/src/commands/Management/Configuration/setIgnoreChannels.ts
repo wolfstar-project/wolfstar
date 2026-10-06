@@ -25,7 +25,7 @@ export class UserCommand extends Command {
 		const t = getSupportedUserLanguageT(interaction);
 
 		// The channel the command was used in is the default of the option:
-		const channelId = options.channel?.id ?? interaction.channelId;
+		const channelId = options.channel?.id ?? interaction.channel.id;
 
 		using trx = await writeSettingsTransaction(interaction.guildId);
 

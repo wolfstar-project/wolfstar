@@ -32,12 +32,12 @@ export function isOwner(member: GuildMember) {
 
 async function checkModerator(member: GuildMember, settings: ReadonlyGuildData) {
 	const roles = settings.rolesModerator;
-	return roles.length === 0 ? (await member.fetchPermissions()).has(PermissionFlagsBits.BanMembers) : hasAtLeastOneRole(member, roles);
+	return roles.length === 0 ? (await member.permissions).has(PermissionFlagsBits.BanMembers) : hasAtLeastOneRole(member, roles);
 }
 
 async function checkAdministrator(member: GuildMember, settings: ReadonlyGuildData) {
 	const roles = settings.rolesAdmin;
-	return roles.length === 0 ? (await member.fetchPermissions()).has(PermissionFlagsBits.ManageGuild) : hasAtLeastOneRole(member, roles);
+	return roles.length === 0 ? (await member.permissions).has(PermissionFlagsBits.ManageGuild) : hasAtLeastOneRole(member, roles);
 }
 
 function hasAtLeastOneRole(member: GuildMember, roles: readonly string[]) {

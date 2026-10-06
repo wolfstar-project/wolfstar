@@ -55,7 +55,7 @@ export class UserListener extends Listener {
 		const me = await this.container.gatewayClient.members.me(member.guildId);
 		if (!me) return false;
 
-		const permissions = await me.fetchPermissions();
+		const permissions = await me.permissions;
 		return permissions.has(PermissionFlagsBits.ManageRoles);
 	}
 }

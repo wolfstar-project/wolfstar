@@ -80,7 +80,7 @@ export class UserCommand extends Command {
 		};
 
 		const embed = new EmbedBuilder()
-			.setColor((await member.fetchDisplayColor()) || Colors.White)
+			.setColor((await member.displayColor) || Colors.White)
 			.setThumbnail(member.displayAvatarURL({ size: 256, extension: 'png' }) ?? user.displayAvatarURL({ size: 256, extension: 'png' }))
 			.setDescription(this.getUserInformation(user, this.getBoostIcon(member.premiumSinceTimestamp)))
 			.addFields(
@@ -123,7 +123,7 @@ export class UserCommand extends Command {
 
 	private async applyMemberKeyPermissions(t: TFunction, member: GuildMember, embed: EmbedBuilder) {
 		const name = translateKey(t, `${Root}:whoisMemberPermissions`);
-		const bits = BigInt((await member.fetchPermissions()).bitField);
+		const bits = BigInt((await member.permissions).bitField);
 		if (PermissionsBits.has(bits, PermissionFlagsBits.Administrator)) {
 			embed.addFields({ name, value: translateKey(t, `${Root}:whoisMemberPermissionsAll`) });
 			return;

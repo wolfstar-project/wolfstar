@@ -50,7 +50,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 		context: ModerationCommand.HandlerParameters<ValueType>
 	) {
 		const member = await super.checkTargetCanBeModerated(interaction, context);
-		if (member && !(await member.fetchBannable())) throw context.t('commands/moderation:banNotBannable');
+		if (member && !(await member.bannable)) throw context.t('commands/moderation:banNotBannable');
 		return member;
 	}
 }

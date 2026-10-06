@@ -66,7 +66,7 @@ export async function claimPublicRole(interaction: GuildChatInputInteraction, ro
 
 	const guildId = interaction.guildId;
 	const me = await container.gatewayClient.members.fetchMe(guildId);
-	const highest = await me.roles.fetchHighest();
+	const highest = await me.roles.highest;
 	if ((highest?.position ?? 0) <= role.position) {
 		return deferred.update({ content: translateKey(t, `${Root}:rolesNotManageable`, { roles: role.name }) });
 	}

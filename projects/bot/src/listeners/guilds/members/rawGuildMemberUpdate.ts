@@ -30,7 +30,7 @@ export class UserListener extends EventGatewayListener<'raw'> {
 
 		// If the bot doesn't have the required permissions, skip:
 		const me = await members.me(guild.id);
-		if (isNullish(me) || !(await me.fetchPermissions()).has(this.requiredPermissions)) return;
+		if (isNullish(me) || !(await me.permissions).has(this.requiredPermissions)) return;
 
 		floatPromise(this.handleRoleSets(guild.id, data));
 	}

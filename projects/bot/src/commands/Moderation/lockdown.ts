@@ -117,8 +117,7 @@ export class UserCommand extends Command {
 		}
 
 		const target = await this.resolveTarget(interaction, args);
-		if (target === null)
-			return fail(t(`${Root}:channelUnknownChannel`, { channel: channelMention(args.channel?.id ?? interaction.channelId ?? '') }));
+		if (target === null) return fail(t(`${Root}:channelUnknownChannel`, { channel: channelMention(args.channel?.id ?? interaction.channel.id) }));
 
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const user = interaction.user;
@@ -257,7 +256,7 @@ export class UserCommand extends Command {
 		const permissionsApplied = getChannelLockdownPermissions(channel.type);
 
 		// Locked means none of the permissions is left in the channel:
-		const effective = await channel.fetchPermissionsFor(roleId);
+		const effective = await channel.permissionsFor(roleId);
 		if ((effective.bitField & permissionsApplied) === 0n) return t(`${Root}:channelLocked`, { channel: mention, role });
 		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles))) {
 			return t(`${Root}:channelUnmanageable`, { channel: mention });
@@ -292,7 +291,7 @@ export class UserCommand extends Command {
 		const role = roleMention(roleId);
 		const permissionsApplied = getChannelLockdownPermissions(channel.type);
 
-		const effective = await channel.fetchPermissionsFor(roleId);
+		const effective = await channel.permissionsFor(roleId);
 		if ((effective.bitField & permissionsApplied) === permissionsApplied) return t(`${Root}:channelUnlocked`, { channel: mention, role });
 		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles))) {
 			return t(`${Root}:channelUnmanageable`, { channel: mention });
@@ -339,7 +338,7 @@ export class UserCommand extends Command {
 	 * @returns The target, or `null` when the channel is not one that can be locked down.
 	 */
 	private async resolveTarget(interaction: GuildChatInputInteraction, args: Arguments): Promise<LockdownTarget | null> {
-		const channelId = args.channel?.id ?? (args.global ? undefined : interaction.channelId);
+		const channelId = args.channel?.id ?? (args.global ? undefined : interaction.channel.id);
 		if (channelId === undefined) return { kind: 'guild' };
 
 		const channel = await container.gatewayClient.channels.fetch(channelId).catch(() => null);
@@ -362,7 +361,7 @@ export class UserCommand extends Command {
 		if (target === null) return true;
 
 		const me = await container.gatewayClient.members.fetchMe(guildId);
-		const effective = await target.fetchPermissionsFor(me);
+		const effective = await target.permissionsFor(me);
 		return (effective.bitField & permissions) === permissions;
 	}
 

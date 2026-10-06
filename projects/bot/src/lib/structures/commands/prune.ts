@@ -218,8 +218,7 @@ export abstract class PruneCommand extends Command {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 
-		const channelId = interaction.channelId;
-		if (channelId === undefined) return fail(t('preconditions:runIn'));
+		const channelId = interaction.channel.id;
 
 		// The permissions of the bot in the channel the command was run in, which is the one that is pruned:
 		const permissions = interaction.applicationPermissions ?? 0n;

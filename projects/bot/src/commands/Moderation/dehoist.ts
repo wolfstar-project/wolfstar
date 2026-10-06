@@ -41,7 +41,7 @@ export class UserCommand extends Command {
 
 		const hoistedMembers: GuildMember[] = [];
 		for (const member of members) {
-			if (this.shouldDeHoist(member) && (await member.fetchManageable())) hoistedMembers.push(member);
+			if (this.shouldDeHoist(member) && (await member.manageable)) hoistedMembers.push(member);
 		}
 
 		if (hoistedMembers.length > 0) {

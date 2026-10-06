@@ -83,7 +83,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		bitfield: number,
 		preProcessed: T
 	) {
-		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Delete) && (await message.fetchDeletable())) {
+		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Delete) && (await message.deletable)) {
 			floatPromise(this.onDelete(message, language, preProcessed));
 		}
 

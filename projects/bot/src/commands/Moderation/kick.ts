@@ -38,7 +38,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 		context: ModerationCommand.HandlerParameters<ValueType>
 	) {
 		const member = await super.checkTargetCanBeModerated(interaction, context);
-		if (member && !(await member.fetchKickable())) throw context.t('commands/moderation:kickNotKickable');
+		if (member && !(await member.kickable)) throw context.t('commands/moderation:kickNotKickable');
 		return member;
 	}
 }

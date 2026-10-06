@@ -40,7 +40,7 @@ import {
  * export class UserCommand extends ModerationCommand<TypeVariation.Kick, null> {
  * 	protected override async checkTargetCanBeModerated(interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<null>) {
  * 		const member = await super.checkTargetCanBeModerated(interaction, context);
- * 		if (!(await member?.fetchKickable())) throw context.t('commands/moderation:kickNotKickable');
+ * 		if (!(await member?.kickable)) throw context.t('commands/moderation:kickNotKickable');
  * 		return member;
  * 	}
  * }
@@ -456,7 +456,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
  * @param member - The member to get the highest role position of.
  */
 async function getHighestRolePosition(member: GuildMember) {
-	const role = await member.roles.fetchHighest();
+	const role = await member.roles.highest;
 	return role?.position ?? 0;
 }
 

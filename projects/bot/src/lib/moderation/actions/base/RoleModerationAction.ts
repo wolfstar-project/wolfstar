@@ -175,11 +175,11 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		const role = await this.#fetchRole(guild);
 
 		const me = await container.gatewayClient.members.fetchMe(guild.id);
-		if (!(await me.fetchPermissions()).has(PermissionFlagsBits.ManageRoles)) {
+		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) {
 			throw new UserError({ identifier: 'moderationActions:actionCannotManageRoles' });
 		}
 
-		const position = (await me.roles.fetchHighest())?.position ?? 0;
+		const position = (await me.roles.highest)?.position ?? 0;
 		if (role.position >= position) {
 			throw new UserError({ identifier: 'moderationActions:actionRoleHigherPosition' });
 		}
@@ -200,11 +200,11 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		const role = await this.#fetchRole(guild);
 
 		const me = await container.gatewayClient.members.fetchMe(guild.id);
-		if (!(await me.fetchPermissions()).has(PermissionFlagsBits.ManageRoles)) {
+		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) {
 			throw new UserError({ identifier: 'moderationActions:actionCannotManageRoles' });
 		}
 
-		const position = (await me.roles.fetchHighest())?.position ?? 0;
+		const position = (await me.roles.highest)?.position ?? 0;
 		if (role.position >= position) {
 			throw new UserError({ identifier: 'moderationActions:actionRoleHigherPosition' });
 		}
@@ -315,7 +315,7 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 			if (!isPermissionOverwritesChannel(channel)) continue;
 
 			// Skip if the bot can't manage the channel:
-			const permissions = await channel.fetchPermissionsFor(me);
+			const permissions = await channel.permissionsFor(me);
 			if (!permissions.has(required)) continue;
 
 			output.push(channel);

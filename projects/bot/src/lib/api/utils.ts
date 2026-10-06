@@ -48,7 +48,7 @@ export function getAuth(): Auth | null {
 }
 
 async function isAdmin(member: GuildMember, roles: readonly string[]): Promise<boolean> {
-	if (roles.length === 0) return (await member.fetchPermissions()).has(PermissionFlagsBits.ManageGuild);
+	if (roles.length === 0) return (await member.permissions).has(PermissionFlagsBits.ManageGuild);
 
 	// `roles.ids` leaves `@everyone` out, whose ID is the guild's:
 	const memberRoles = new Set([member.guildId, ...member.roles.ids]);
