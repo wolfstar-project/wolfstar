@@ -20,7 +20,7 @@ export class UserCommand extends AutoModerationShowCommand {
 	protected override showEnabled(t: TFunction, settings: ReadonlyGuildData) {
 		const embed = super.showEnabled(t, settings);
 
-		const words = settings.selfmodWordsList;
+		const words = settings.automodWordsList;
 		if (isNullishOrEmpty(words)) {
 			embed.addFields({
 				name: translateKey(t, `${Root}:wordShowListTitleEmpty`),

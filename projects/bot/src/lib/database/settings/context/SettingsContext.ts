@@ -17,8 +17,8 @@ export class SettingsContext {
 		this.#adders = new AdderManager(settings);
 		this.#permissionNodes = new PermissionNodeManager(settings);
 		this.#auditLog = new AuditLogManager(settings);
-		this.#wordFilterRegExp = isNullishOrEmpty(settings.selfmodWordsList) ? null : new RegExp(create(settings.selfmodWordsList), 'gi');
-		this.#noMentionSpam = new RateLimitManager(settings.noMentionSpamTimePeriod * 1000, settings.noMentionSpamMentionsAllowed);
+		this.#wordFilterRegExp = isNullishOrEmpty(settings.automodWordsList) ? null : new RegExp(create(settings.automodWordsList), 'gi');
+		this.#noMentionSpam = new RateLimitManager(settings.automodNoMentionSpamTimePeriod * 1000, settings.automodNoMentionSpamMentionsAllowed);
 	}
 
 	public get adders() {
@@ -49,12 +49,12 @@ export class SettingsContext {
 			this.#permissionNodes.refresh(settings);
 		}
 
-		if (!isNullish(data.noMentionSpamTimePeriod) || !isNullish(data.noMentionSpamMentionsAllowed)) {
-			this.#noMentionSpam = new RateLimitManager(settings.noMentionSpamTimePeriod * 1000, settings.noMentionSpamMentionsAllowed);
+		if (!isNullish(data.automodNoMentionSpamTimePeriod) || !isNullish(data.automodNoMentionSpamMentionsAllowed)) {
+			this.#noMentionSpam = new RateLimitManager(settings.automodNoMentionSpamTimePeriod * 1000, settings.automodNoMentionSpamMentionsAllowed);
 		}
 
-		if (!isNullish(data.selfmodWordsList)) {
-			this.#wordFilterRegExp = isNullishOrEmpty(settings.selfmodWordsList) ? null : new RegExp(create(settings.selfmodWordsList), 'gi');
+		if (!isNullish(data.automodWordsList)) {
+			this.#wordFilterRegExp = isNullishOrEmpty(settings.automodWordsList) ? null : new RegExp(create(settings.automodWordsList), 'gi');
 		}
 	}
 }

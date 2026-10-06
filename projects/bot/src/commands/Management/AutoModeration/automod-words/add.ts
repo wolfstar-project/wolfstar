@@ -29,7 +29,7 @@ export class UserCommand extends Command {
 			return interaction.reply({ content: translateKey(t, `${Root}:wordAddFiltered`, { word }), flags: MessageFlags.Ephemeral });
 		}
 
-		await trx.write({ selfmodWordsList: trx.settings.selfmodWordsList.concat(word) }).submitWithAudit(interaction.user.id);
+		await trx.write({ automodWordsList: trx.settings.automodWordsList.concat(word) }).submitWithAudit(interaction.user.id);
 		return interaction.reply({ content: translateKey(t, `${Root}:editSuccess`), flags: MessageFlags.Ephemeral });
 	}
 
@@ -38,7 +38,7 @@ export class UserCommand extends Command {
 	 * is compiled out of the list matches it.
 	 */
 	async #hasWord(settings: ReadonlyGuildData, word: string) {
-		const words = settings.selfmodWordsList;
+		const words = settings.automodWordsList;
 		if (words.includes(word)) return true;
 
 		const regExp = readSettingsWordFilterRegExp(settings);

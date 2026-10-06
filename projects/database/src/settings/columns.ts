@@ -140,44 +140,44 @@ export const Columns = {
 		automodChannel: ['channelId', 'snowflake'],
 		automodTrackNative: ['trackNative', 'value']
 	}),
-	...autoModerationRule('GuildAutoModerationAttachments', 'selfmodAttachments'),
+	...autoModerationRule('GuildAutoModerationAttachments', 'automodAttachments'),
 	...autoModerationRule(
 		'GuildAutoModerationCapitals',
-		'selfmodCapitals',
+		'automodCapitals',
 		columns('GuildAutoModerationCapitals', {
-			selfmodCapitalsMinimum: ['minimum', 'value'],
-			selfmodCapitalsMaximum: ['maximum', 'value']
+			automodCapitalsMinimum: ['minimum', 'value'],
+			automodCapitalsMaximum: ['maximum', 'value']
 		})
 	),
 	...autoModerationRule(
 		'GuildAutoModerationInvites',
-		'selfmodInvites',
+		'automodInvites',
 		columns('GuildAutoModerationInvites', {
-			selfmodInvitesAllowedCodes: ['allowedCodes', 'value'],
-			selfmodInvitesAllowedGuilds: ['allowedGuilds', 'snowflakes']
+			automodInvitesAllowedCodes: ['allowedCodes', 'value'],
+			automodInvitesAllowedGuilds: ['allowedGuilds', 'snowflakes']
 		})
 	),
 	...autoModerationRule(
 		'GuildAutoModerationLinks',
-		'selfmodLinks',
-		columns('GuildAutoModerationLinks', { selfmodLinksAllowed: ['allowed', 'value'] })
+		'automodLinks',
+		columns('GuildAutoModerationLinks', { automodLinksAllowed: ['allowed', 'value'] })
 	),
-	...autoModerationRule('GuildAutoModerationMentions', 'selfmodMentions'),
+	...autoModerationRule('GuildAutoModerationMentions', 'automodMentions'),
 	...autoModerationRule(
 		'GuildAutoModerationNewlines',
-		'selfmodNewlines',
-		columns('GuildAutoModerationNewlines', { selfmodNewlinesMaximum: ['maximum', 'value'] })
+		'automodNewlines',
+		columns('GuildAutoModerationNewlines', { automodNewlinesMaximum: ['maximum', 'value'] })
 	),
 	...autoModerationRule(
 		'GuildAutoModerationNoMentionSpam',
-		'noMentionSpam',
+		'automodNoMentionSpam',
 		columns('GuildAutoModerationNoMentionSpam', {
-			noMentionSpamAlerts: ['alerts', 'value'],
-			noMentionSpamMentionsAllowed: ['mentionsAllowed', 'value'],
-			noMentionSpamTimePeriod: ['timePeriod', 'value']
+			automodNoMentionSpamAlerts: ['alerts', 'value'],
+			automodNoMentionSpamMentionsAllowed: ['mentionsAllowed', 'value'],
+			automodNoMentionSpamTimePeriod: ['timePeriod', 'value']
 		})
 	),
-	...autoModerationRule('GuildAutoModerationWords', 'selfmodWords', columns('GuildAutoModerationWords', { selfmodWordsList: ['words', 'value'] })),
+	...autoModerationRule('GuildAutoModerationWords', 'automodWords', columns('GuildAutoModerationWords', { automodWordsList: ['words', 'value'] })),
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
 		commandsDisabledChannels: ['disabledChannels', 'snowflakes']

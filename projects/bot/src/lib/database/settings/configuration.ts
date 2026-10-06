@@ -44,117 +44,117 @@ export function getConfiguration() {
 		// Auto-moderation
 		automodChannel: { type: 'guildTextChannel', name: 'automod.channel', description: 'settings:automodChannel' },
 		automodTrackNative: { type: 'boolean', name: 'automod.track-native', description: 'settings:automodTrackNative' },
-		...autoModerationRule('selfmodAttachments', 'selfmod.attachments', {
-			enabled: 'settings:selfmodAttachmentsEnabled',
-			ignoredRoles: 'settings:selfmodAttachmentsIgnoredRoles',
-			ignoredChannels: 'settings:selfmodAttachmentsIgnoredChannels'
+		...autoModerationRule('automodAttachments', 'automod.attachments', {
+			enabled: 'settings:automodAttachmentsEnabled',
+			ignoredRoles: 'settings:automodAttachmentsIgnoredRoles',
+			ignoredChannels: 'settings:automodAttachmentsIgnoredChannels'
 		}),
-		...autoModerationRule('selfmodCapitals', 'selfmod.capitals', {
-			enabled: 'settings:selfmodCapitalsEnabled',
-			ignoredRoles: 'settings:selfmodCapitalsIgnoredRoles',
-			ignoredChannels: 'settings:selfmodCapitalsIgnoredChannels'
+		...autoModerationRule('automodCapitals', 'automod.capitals', {
+			enabled: 'settings:automodCapitalsEnabled',
+			ignoredRoles: 'settings:automodCapitalsIgnoredRoles',
+			ignoredChannels: 'settings:automodCapitalsIgnoredChannels'
 		}),
-		selfmodCapitalsMinimum: {
+		automodCapitalsMinimum: {
 			type: 'integer',
-			name: 'selfmod.capitals.minimum',
-			description: 'settings:selfmodCapitalsMinimum',
+			name: 'automod.capitals.minimum',
+			description: 'settings:automodCapitalsMinimum',
 			minimum: 5,
 			maximum: 2000,
 			default: 15
 		},
-		selfmodCapitalsMaximum: {
+		automodCapitalsMaximum: {
 			type: 'integer',
-			name: 'selfmod.capitals.maximum',
-			description: 'settings:selfmodCapitalsMaximum',
+			name: 'automod.capitals.maximum',
+			description: 'settings:automodCapitalsMaximum',
 			minimum: 10,
 			maximum: 100,
 			default: 50
 		},
-		...autoModerationRule('selfmodInvites', 'selfmod.invites', {
-			enabled: 'settings:selfmodInvitesEnabled',
-			ignoredRoles: 'settings:selfmodInvitesIgnoredRoles',
-			ignoredChannels: 'settings:selfmodInvitesIgnoredChannels'
+		...autoModerationRule('automodInvites', 'automod.invites', {
+			enabled: 'settings:automodInvitesEnabled',
+			ignoredRoles: 'settings:automodInvitesIgnoredRoles',
+			ignoredChannels: 'settings:automodInvitesIgnoredChannels'
 		}),
-		selfmodInvitesAllowedCodes: {
+		automodInvitesAllowedCodes: {
 			type: 'string',
-			name: 'selfmod.invites.allowed-codes',
-			description: 'settings:selfmodInvitesIgnoredCodes',
+			name: 'automod.invites.allowed-codes',
+			description: 'settings:automodInvitesIgnoredCodes',
 			array: true
 		},
-		selfmodInvitesAllowedGuilds: {
+		automodInvitesAllowedGuilds: {
 			type: 'snowflake',
-			name: 'selfmod.invites.allowed-guilds',
-			description: 'settings:selfmodInvitesIgnoredGuilds',
+			name: 'automod.invites.allowed-guilds',
+			description: 'settings:automodInvitesIgnoredGuilds',
 			array: true
 		},
-		...autoModerationRule('selfmodLinks', 'selfmod.links', {
-			enabled: 'settings:selfmodLinksEnabled',
-			ignoredRoles: 'settings:selfmodLinksIgnoredRoles',
-			ignoredChannels: 'settings:selfmodLinksIgnoredChannels'
+		...autoModerationRule('automodLinks', 'automod.links', {
+			enabled: 'settings:automodLinksEnabled',
+			ignoredRoles: 'settings:automodLinksIgnoredRoles',
+			ignoredChannels: 'settings:automodLinksIgnoredChannels'
 		}),
-		selfmodLinksAllowed: {
+		automodLinksAllowed: {
 			type: 'string',
-			name: 'selfmod.links.allowed',
-			description: 'settings:selfmodLinksAllowed',
+			name: 'automod.links.allowed',
+			description: 'settings:automodLinksAllowed',
 			array: true
 		},
-		...autoModerationRule('selfmodMentions', 'selfmod.mentions', {
-			enabled: 'settings:selfmodMentionsEnabled',
-			ignoredRoles: 'settings:selfmodMentionsIgnoredRoles',
-			ignoredChannels: 'settings:selfmodMentionsIgnoredChannels'
+		...autoModerationRule('automodMentions', 'automod.mentions', {
+			enabled: 'settings:automodMentionsEnabled',
+			ignoredRoles: 'settings:automodMentionsIgnoredRoles',
+			ignoredChannels: 'settings:automodMentionsIgnoredChannels'
 		}),
-		selfmodMentionsOverrides: {
+		automodMentionsOverrides: {
 			type: 'notAllowed',
-			name: 'selfmod.mentions.overrides',
+			name: 'automod.mentions.overrides',
 			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
 		},
-		...autoModerationRule('selfmodNewlines', 'selfmod.newlines', {
-			enabled: 'settings:selfmodNewlinesEnabled',
-			ignoredRoles: 'settings:selfmodNewlinesIgnoredRoles',
-			ignoredChannels: 'settings:selfmodNewlinesIgnoredChannels'
+		...autoModerationRule('automodNewlines', 'automod.newlines', {
+			enabled: 'settings:automodNewlinesEnabled',
+			ignoredRoles: 'settings:automodNewlinesIgnoredRoles',
+			ignoredChannels: 'settings:automodNewlinesIgnoredChannels'
 		}),
-		selfmodNewlinesMaximum: {
+		automodNewlinesMaximum: {
 			type: 'integer',
-			name: 'selfmod.newlines.maximum',
-			description: 'settings:selfmodNewlinesMaximum',
+			name: 'automod.newlines.maximum',
+			description: 'settings:automodNewlinesMaximum',
 			minimum: 10,
 			maximum: 100,
 			default: 20
 		},
-		...autoModerationRule('noMentionSpam', 'selfmod.no-mention-spam', {
-			enabled: 'settings:noMentionSpamEnabled',
-			ignoredRoles: 'settings:noMentionSpamIgnoredRoles',
-			ignoredChannels: 'settings:noMentionSpamIgnoredChannels'
+		...autoModerationRule('automodNoMentionSpam', 'automod.no-mention-spam', {
+			enabled: 'settings:automodNoMentionSpamEnabled',
+			ignoredRoles: 'settings:automodNoMentionSpamIgnoredRoles',
+			ignoredChannels: 'settings:automodNoMentionSpamIgnoredChannels'
 		}),
-		noMentionSpamAlerts: {
+		automodNoMentionSpamAlerts: {
 			type: 'boolean',
-			name: 'selfmod.no-mention-spam.alerts',
-			description: 'settings:noMentionSpamAlerts'
+			name: 'automod.no-mention-spam.alerts',
+			description: 'settings:automodNoMentionSpamAlerts'
 		},
-		noMentionSpamMentionsAllowed: {
+		automodNoMentionSpamMentionsAllowed: {
 			type: 'integer',
-			name: 'selfmod.no-mention-spam.mentions-allowed',
-			description: 'settings:noMentionSpamMentionsAllowed',
+			name: 'automod.no-mention-spam.mentions-allowed',
+			description: 'settings:automodNoMentionSpamMentionsAllowed',
 			minimum: 0,
 			default: 20
 		},
-		noMentionSpamTimePeriod: {
+		automodNoMentionSpamTimePeriod: {
 			type: 'integer',
-			name: 'selfmod.no-mention-spam.time-period',
-			description: 'settings:noMentionSpamTimePeriod',
+			name: 'automod.no-mention-spam.time-period',
+			description: 'settings:automodNoMentionSpamTimePeriod',
 			minimum: 0,
 			default: 8
 		},
-		...autoModerationRule('selfmodWords', 'selfmod.words', {
-			enabled: 'settings:selfmodFilterEnabled',
-			ignoredRoles: 'settings:selfmodFilterIgnoredRoles',
-			ignoredChannels: 'settings:selfmodFilterIgnoredChannels'
+		...autoModerationRule('automodWords', 'automod.words', {
+			enabled: 'settings:automodFilterEnabled',
+			ignoredRoles: 'settings:automodFilterIgnoredRoles',
+			ignoredChannels: 'settings:automodFilterIgnoredChannels'
 		}),
-		selfmodWordsList: {
+		automodWordsList: {
 			type: 'string',
-			name: 'selfmod.words.list',
+			name: 'automod.words.list',
 			description: 'settings:dashboardOnlyKey',
 			array: true,
 			dashboardOnly: true
@@ -299,14 +299,14 @@ export function getConfiguration() {
 }
 
 type AutoModerationRulePrefix =
-	| 'selfmodAttachments'
-	| 'selfmodCapitals'
-	| 'selfmodInvites'
-	| 'selfmodLinks'
-	| 'selfmodMentions'
-	| 'selfmodNewlines'
-	| 'selfmodWords'
-	| 'noMentionSpam';
+	| 'automodAttachments'
+	| 'automodCapitals'
+	| 'automodInvites'
+	| 'automodLinks'
+	| 'automodMentions'
+	| 'automodNewlines'
+	| 'automodWords'
+	| 'automodNoMentionSpam';
 
 type AutoModerationRuleSuffix =
 	| 'Enabled'

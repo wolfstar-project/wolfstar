@@ -22,14 +22,14 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		trx.write({ rolesAdmin: trx.settings.rolesAdmin.filter((rm) => rm !== roleId) });
 		trx.write({ rolesPublic: trx.settings.rolesPublic.filter((rm) => rm !== roleId) });
 
-		trx.write({ selfmodAttachmentsIgnoredRoles: trx.settings.selfmodAttachmentsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ selfmodCapitalsIgnoredRoles: trx.settings.selfmodCapitalsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ selfmodLinksIgnoredRoles: trx.settings.selfmodLinksIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ selfmodMentionsIgnoredRoles: trx.settings.selfmodMentionsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ selfmodNewlinesIgnoredRoles: trx.settings.selfmodNewlinesIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ selfmodInvitesIgnoredRoles: trx.settings.selfmodInvitesIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ selfmodWordsIgnoredRoles: trx.settings.selfmodWordsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ noMentionSpamIgnoredRoles: trx.settings.noMentionSpamIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodAttachmentsIgnoredRoles: trx.settings.automodAttachmentsIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodCapitalsIgnoredRoles: trx.settings.automodCapitalsIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodLinksIgnoredRoles: trx.settings.automodLinksIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodMentionsIgnoredRoles: trx.settings.automodMentionsIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodNewlinesIgnoredRoles: trx.settings.automodNewlinesIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodInvitesIgnoredRoles: trx.settings.automodInvitesIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodWordsIgnoredRoles: trx.settings.automodWordsIgnoredRoles.filter((rm) => rm !== roleId) });
+		trx.write({ automodNoMentionSpamIgnoredRoles: trx.settings.automodNoMentionSpamIgnoredRoles.filter((rm) => rm !== roleId) });
 
 		// The initial roles hold several roles, unlike the single role they held before:
 		trx.write({ rolesInitial: trx.settings.rolesInitial.filter((rm) => rm !== roleId) });

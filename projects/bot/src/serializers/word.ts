@@ -25,7 +25,7 @@ export class UserSerializer extends Serializer<string> {
 	 * list matches it.
 	 */
 	private hasWord(settings: ReadonlyGuildData, content: string) {
-		if (settings.selfmodWordsList.includes(content)) return true;
+		if (settings.automodWordsList.includes(content)) return true;
 
 		const regExp = readSettingsWordFilterRegExp(settings);
 		if (regExp === null) return false;

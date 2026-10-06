@@ -74,7 +74,7 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
 		Reflect.set(data, settingKey, toSetting(kind, row[column]));
 	}
 
-	data.selfmodMentionsOverrides = overrides.map(
+	data.automodMentionsOverrides = overrides.map(
 		(override) =>
 			({
 				roles: override.roles.map(String),
@@ -103,7 +103,7 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 	for (const key of changedKeys) {
 		if (key === 'id') continue;
 		if (key === 'stickyRoles') touched.add('Guild');
-		else if (key === 'selfmodMentionsOverrides') touched.add('GuildAutoModerationMentions');
+		else if (key === 'automodMentionsOverrides') touched.add('GuildAutoModerationMentions');
 		else touched.add(ColumnsByKey[key].table);
 	}
 
@@ -146,12 +146,12 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 			}
 		}
 
-		if ('selfmodMentionsOverrides' in changes) {
+		if ('automodMentionsOverrides' in changes) {
 			const overrides = tx.orm.public.GuildAutoModerationMentionsOverrides;
 			await overrides.where({ parentId: id }).deleteAndCount();
-			if (settings.selfmodMentionsOverrides.length > 0) {
+			if (settings.automodMentionsOverrides.length > 0) {
 				await overrides.createAndCount(
-					settings.selfmodMentionsOverrides.map((override) => ({
+					settings.automodMentionsOverrides.map((override) => ({
 						parentId: id,
 						roles: override.roles.map((role) => BigInt(role)),
 						users: override.users.map((user) => BigInt(user)),

@@ -18,13 +18,13 @@ const enum CodeType {
 	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:invites',
 	reasonLanguageKeyWithMaximum: 'events/moderation:invitesWithMaximum',
-	keyEnabled: 'selfmodInvitesEnabled',
-	ignoredChannelsPath: 'selfmodInvitesIgnoredChannels',
-	ignoredRolesPath: 'selfmodInvitesIgnoredRoles',
-	softPunishmentPath: 'selfmodInvitesSoftAction',
+	keyEnabled: 'automodInvitesEnabled',
+	ignoredChannelsPath: 'automodInvitesIgnoredChannels',
+	ignoredRolesPath: 'automodInvitesIgnoredRoles',
+	softPunishmentPath: 'automodInvitesSoftAction',
 	hardPunishmentPath: {
-		action: 'selfmodInvitesHardAction',
-		actionDuration: 'selfmodInvitesHardActionDuration',
+		action: 'automodInvitesHardAction',
+		actionDuration: 'automodInvitesHardActionDuration',
 		adder: 'invites'
 	}
 })
@@ -92,7 +92,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 		const settings = await readSettings(message.guildId);
 
 		// Ignored codes take short-circuit.
-		if (settings.selfmodInvitesAllowedCodes.includes(code)) return true;
+		if (settings.automodInvitesAllowedCodes.includes(code)) return true;
 
 		const data = await this.invites.fetch(code);
 
@@ -106,7 +106,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 		if (data.guildId === message.guildId) return true;
 
 		// Invites from white-listed guilds should be allowed.
-		if (settings.selfmodInvitesAllowedGuilds.includes(data.guildId)) return true;
+		if (settings.automodInvitesAllowedGuilds.includes(data.guildId)) return true;
 
 		// Any other invite should not be allowed.
 		return false;

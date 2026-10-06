@@ -23,7 +23,7 @@ export interface GuildData extends StoredGuildData {
 	id: Snowflake;
 
 	// GuildAutoModerationMentionsOverrides
-	selfmodMentionsOverrides: MentionsOverride[];
+	automodMentionsOverrides: MentionsOverride[];
 
 	// StickyRole
 	stickyRoles: StickyRole[];

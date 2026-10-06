@@ -15,13 +15,13 @@ import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:capitals',
 	reasonLanguageKeyWithMaximum: 'events/moderation:capitalsWithMaximum',
-	keyEnabled: 'selfmodCapitalsEnabled',
-	ignoredChannelsPath: 'selfmodCapitalsIgnoredChannels',
-	ignoredRolesPath: 'selfmodCapitalsIgnoredRoles',
-	softPunishmentPath: 'selfmodCapitalsSoftAction',
+	keyEnabled: 'automodCapitalsEnabled',
+	ignoredChannelsPath: 'automodCapitalsIgnoredChannels',
+	ignoredRolesPath: 'automodCapitalsIgnoredRoles',
+	softPunishmentPath: 'automodCapitalsSoftAction',
 	hardPunishmentPath: {
-		action: 'selfmodCapitalsHardAction',
-		actionDuration: 'selfmodCapitalsHardActionDuration',
+		action: 'automodCapitalsHardAction',
+		actionDuration: 'automodCapitalsHardActionDuration',
 		adder: 'capitals'
 	}
 })
@@ -30,7 +30,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<num
 		if (message.content.length === 0) return null;
 
 		const settings = await readSettings(message.guildId);
-		if (message.content.length < settings.selfmodCapitalsMinimum) return null;
+		if (message.content.length < settings.automodCapitalsMinimum) return null;
 
 		let length = 0;
 		let count = 0;
@@ -42,7 +42,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<num
 		}
 
 		const percentage = (count / length) * 100;
-		return percentage >= settings.selfmodCapitalsMaximum ? 1 : null;
+		return percentage >= settings.automodCapitalsMaximum ? 1 : null;
 	}
 
 	protected async onDelete(message: GuildMessage, t: TFunction<AnyNamespace>) {

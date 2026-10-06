@@ -14,13 +14,13 @@ import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:words',
 	reasonLanguageKeyWithMaximum: 'events/moderation:wordsWithMaximum',
-	keyEnabled: 'selfmodWordsEnabled',
-	ignoredChannelsPath: 'selfmodWordsIgnoredChannels',
-	ignoredRolesPath: 'selfmodWordsIgnoredRoles',
-	softPunishmentPath: 'selfmodWordsSoftAction',
+	keyEnabled: 'automodWordsEnabled',
+	ignoredChannelsPath: 'automodWordsIgnoredChannels',
+	ignoredRolesPath: 'automodWordsIgnoredRoles',
+	softPunishmentPath: 'automodWordsSoftAction',
 	hardPunishmentPath: {
-		action: 'selfmodWordsHardAction',
-		actionDuration: 'selfmodWordsHardActionDuration',
+		action: 'automodWordsHardAction',
+		actionDuration: 'automodWordsHardActionDuration',
 		adder: 'words'
 	}
 })

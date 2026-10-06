@@ -278,7 +278,7 @@
 			"sh/show",
 			""
 		],
-		"extendedHelp": "The capitalsMode command manages the behavior of the caps system.\nThe minimum amount of characters before filtering can be set with `Skyra, settings set selfmod.capitals.minimum <number>`.\nThe percentage of uppercase letters can be set with `Skyra, settings set selfmod.capitals.maximum <number>`.",
+		"extendedHelp": "The capitalsMode command manages the behavior of the caps system.\nThe minimum amount of characters before filtering can be set with `Skyra, settings set automod.capitals.minimum <number>`.\nThe percentage of uppercase letters can be set with `Skyra, settings set automod.capitals.maximum <number>`.",
 		"explainedUsage": [
 			["Enable", "$t(commands/management:commandModeEnable)"],
 			["Disable", "$t(commands/management:commandModeDisable)"],
@@ -469,7 +469,7 @@
 			"sh/show",
 			""
 		],
-		"extendedHelp": "The newLineMode command manages the behavior of the new line filter system.\nThe maximum amount of lines allowed can be set with `Skyra, settings set selfmod.newlines.maximum <number>`",
+		"extendedHelp": "The newLineMode command manages the behavior of the new line filter system.\nThe maximum amount of lines allowed can be set with `Skyra, settings set automod.newlines.maximum <number>`",
 		"explainedUsage": [
 			["Enable", "$t(commands/management:commandModeEnable)"],
 			["Disable", "$t(commands/management:commandModeDisable)"],

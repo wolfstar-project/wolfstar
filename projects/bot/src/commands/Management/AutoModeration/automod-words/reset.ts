@@ -10,7 +10,7 @@ import type { Awaitable } from '@sapphire/utilities';
 @AutoModerationResetCommand.register(AutoModerationRules.words)
 export class UserCommand extends AutoModerationResetCommand {
 	protected override resetGetKeyValuePairFallback(guildId: string, key: string): Awaitable<readonly [SchemaDataKey, GuildDataValue]> {
-		if (key === 'words') return ['selfmodWordsList', []];
+		if (key === 'words') return ['automodWordsList', []];
 		return super.resetGetKeyValuePairFallback(guildId, key);
 	}
 }

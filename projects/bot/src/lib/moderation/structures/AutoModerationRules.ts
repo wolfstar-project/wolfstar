@@ -12,67 +12,67 @@ export const AutoModerationRules = {
 		commandName: 'automod-attachments',
 		localizedNameKey: `${Root}:attachments`,
 		adderPropertyName: 'attachments',
-		keyEnabled: 'selfmodAttachmentsEnabled',
-		keyOnInfraction: 'selfmodAttachmentsSoftAction',
-		keyPunishment: 'selfmodAttachmentsHardAction',
-		keyPunishmentDuration: 'selfmodAttachmentsHardActionDuration',
-		keyPunishmentThreshold: 'selfmodAttachmentsThresholdMaximum',
-		keyPunishmentThresholdPeriod: 'selfmodAttachmentsThresholdDuration'
+		keyEnabled: 'automodAttachmentsEnabled',
+		keyOnInfraction: 'automodAttachmentsSoftAction',
+		keyPunishment: 'automodAttachmentsHardAction',
+		keyPunishmentDuration: 'automodAttachmentsHardActionDuration',
+		keyPunishmentThreshold: 'automodAttachmentsThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodAttachmentsThresholdDuration'
 	},
 	capitals: {
 		commandName: 'automod-capitals',
 		localizedNameKey: `${Root}:capitals`,
 		adderPropertyName: 'capitals',
-		keyEnabled: 'selfmodCapitalsEnabled',
-		keyOnInfraction: 'selfmodCapitalsSoftAction',
-		keyPunishment: 'selfmodCapitalsHardAction',
-		keyPunishmentDuration: 'selfmodCapitalsHardActionDuration',
-		keyPunishmentThreshold: 'selfmodCapitalsThresholdMaximum',
-		keyPunishmentThresholdPeriod: 'selfmodCapitalsThresholdDuration'
+		keyEnabled: 'automodCapitalsEnabled',
+		keyOnInfraction: 'automodCapitalsSoftAction',
+		keyPunishment: 'automodCapitalsHardAction',
+		keyPunishmentDuration: 'automodCapitalsHardActionDuration',
+		keyPunishmentThreshold: 'automodCapitalsThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodCapitalsThresholdDuration'
 	},
 	invites: {
 		commandName: 'automod-invites',
 		localizedNameKey: `${Root}:invites`,
 		adderPropertyName: 'invites',
-		keyEnabled: 'selfmodInvitesEnabled',
-		keyOnInfraction: 'selfmodInvitesSoftAction',
-		keyPunishment: 'selfmodInvitesHardAction',
-		keyPunishmentDuration: 'selfmodInvitesHardActionDuration',
-		keyPunishmentThreshold: 'selfmodInvitesThresholdMaximum',
-		keyPunishmentThresholdPeriod: 'selfmodInvitesThresholdDuration'
+		keyEnabled: 'automodInvitesEnabled',
+		keyOnInfraction: 'automodInvitesSoftAction',
+		keyPunishment: 'automodInvitesHardAction',
+		keyPunishmentDuration: 'automodInvitesHardActionDuration',
+		keyPunishmentThreshold: 'automodInvitesThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodInvitesThresholdDuration'
 	},
 	links: {
 		commandName: 'automod-links',
 		localizedNameKey: `${Root}:links`,
 		adderPropertyName: 'links',
-		keyEnabled: 'selfmodLinksEnabled',
-		keyOnInfraction: 'selfmodLinksSoftAction',
-		keyPunishment: 'selfmodLinksHardAction',
-		keyPunishmentDuration: 'selfmodLinksHardActionDuration',
-		keyPunishmentThreshold: 'selfmodLinksThresholdMaximum',
-		keyPunishmentThresholdPeriod: 'selfmodLinksThresholdDuration'
+		keyEnabled: 'automodLinksEnabled',
+		keyOnInfraction: 'automodLinksSoftAction',
+		keyPunishment: 'automodLinksHardAction',
+		keyPunishmentDuration: 'automodLinksHardActionDuration',
+		keyPunishmentThreshold: 'automodLinksThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodLinksThresholdDuration'
 	},
 	newlines: {
 		commandName: 'automod-newlines',
 		localizedNameKey: `${Root}:newlines`,
 		adderPropertyName: 'newlines',
-		keyEnabled: 'selfmodNewlinesEnabled',
-		keyOnInfraction: 'selfmodNewlinesSoftAction',
-		keyPunishment: 'selfmodNewlinesHardAction',
-		keyPunishmentDuration: 'selfmodNewlinesHardActionDuration',
-		keyPunishmentThreshold: 'selfmodNewlinesThresholdMaximum',
-		keyPunishmentThresholdPeriod: 'selfmodNewlinesThresholdDuration'
+		keyEnabled: 'automodNewlinesEnabled',
+		keyOnInfraction: 'automodNewlinesSoftAction',
+		keyPunishment: 'automodNewlinesHardAction',
+		keyPunishmentDuration: 'automodNewlinesHardActionDuration',
+		keyPunishmentThreshold: 'automodNewlinesThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodNewlinesThresholdDuration'
 	},
 	words: {
 		commandName: 'automod-words',
 		localizedNameKey: `${Root}:words`,
 		resetKeys: [{ key: `${Root}:optionsKeyWords`, value: 'words' }],
 		adderPropertyName: 'words',
-		keyEnabled: 'selfmodWordsEnabled',
-		keyOnInfraction: 'selfmodWordsSoftAction',
-		keyPunishment: 'selfmodWordsHardAction',
-		keyPunishmentDuration: 'selfmodWordsHardActionDuration',
-		keyPunishmentThreshold: 'selfmodWordsThresholdMaximum',
-		keyPunishmentThresholdPeriod: 'selfmodWordsThresholdDuration'
+		keyEnabled: 'automodWordsEnabled',
+		keyOnInfraction: 'automodWordsSoftAction',
+		keyPunishment: 'automodWordsHardAction',
+		keyPunishmentDuration: 'automodWordsHardActionDuration',
+		keyPunishmentThreshold: 'automodWordsThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodWordsThresholdDuration'
 	}
 } as const satisfies Record<string, AutoModerationCommand.Rule>;

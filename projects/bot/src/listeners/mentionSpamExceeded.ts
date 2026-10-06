@@ -24,7 +24,7 @@ export class UserListener extends Listener {
 			const ctx = readSettingsNoMentionSpam(settings);
 			ctx.delete(message.author.id);
 
-			const threshold = settings.noMentionSpamMentionsAllowed;
+			const threshold = settings.automodNoMentionSpamMentionsAllowed;
 			const reason = t('events/noMentionSpam:modlog', { threshold });
 			await moderation.insert(moderation.create({ user: message.author.id, type: TypeVariation.Ban, reason }));
 		} finally {

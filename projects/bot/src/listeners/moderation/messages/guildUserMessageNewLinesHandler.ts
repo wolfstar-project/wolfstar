@@ -14,20 +14,20 @@ const NEW_LINE = '\n';
 	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:newlines',
 	reasonLanguageKeyWithMaximum: 'events/moderation:newlinesWithMaximum',
-	keyEnabled: 'selfmodNewlinesEnabled',
-	ignoredChannelsPath: 'selfmodNewlinesIgnoredChannels',
-	ignoredRolesPath: 'selfmodNewlinesIgnoredRoles',
-	softPunishmentPath: 'selfmodNewlinesSoftAction',
+	keyEnabled: 'automodNewlinesEnabled',
+	ignoredChannelsPath: 'automodNewlinesIgnoredChannels',
+	ignoredRolesPath: 'automodNewlinesIgnoredRoles',
+	softPunishmentPath: 'automodNewlinesSoftAction',
 	hardPunishmentPath: {
-		action: 'selfmodNewlinesHardAction',
-		actionDuration: 'selfmodNewlinesHardActionDuration',
+		action: 'automodNewlinesHardAction',
+		actionDuration: 'automodNewlinesHardActionDuration',
 		adder: 'newlines'
 	}
 })
 export class UserModerationMessageListener extends ModerationMessageListener {
 	protected async preProcess(message: GuildMessage): Promise<1 | null> {
 		const settings = await readSettings(message.guildId);
-		const threshold = settings.selfmodNewlinesMaximum;
+		const threshold = settings.automodNewlinesMaximum;
 		if (threshold === 0) return null;
 
 		const content = getContent(message);

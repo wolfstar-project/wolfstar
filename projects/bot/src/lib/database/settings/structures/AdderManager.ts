@@ -14,27 +14,27 @@ export class AdderManager {
 	public words: Adder<string> | null;
 
 	public constructor(settings: ReadonlyGuildData) {
-		this.attachments = this.makeAdder(settings.selfmodAttachmentsThresholdMaximum, settings.selfmodAttachmentsThresholdDuration);
-		this.capitals = this.makeAdder(settings.selfmodCapitalsThresholdMaximum, settings.selfmodCapitalsThresholdDuration);
-		this.invites = this.makeAdder(settings.selfmodInvitesThresholdMaximum, settings.selfmodInvitesThresholdDuration);
-		this.links = this.makeAdder(settings.selfmodLinksThresholdMaximum, settings.selfmodLinksThresholdDuration);
-		this.mentions = this.makeAdder(settings.selfmodMentionsThresholdMaximum, settings.selfmodMentionsThresholdDuration);
-		this.newlines = this.makeAdder(settings.selfmodNewlinesThresholdMaximum, settings.selfmodNewlinesThresholdDuration);
-		this.words = this.makeAdder(settings.selfmodWordsThresholdMaximum, settings.selfmodWordsThresholdDuration);
+		this.attachments = this.makeAdder(settings.automodAttachmentsThresholdMaximum, settings.automodAttachmentsThresholdDuration);
+		this.capitals = this.makeAdder(settings.automodCapitalsThresholdMaximum, settings.automodCapitalsThresholdDuration);
+		this.invites = this.makeAdder(settings.automodInvitesThresholdMaximum, settings.automodInvitesThresholdDuration);
+		this.links = this.makeAdder(settings.automodLinksThresholdMaximum, settings.automodLinksThresholdDuration);
+		this.mentions = this.makeAdder(settings.automodMentionsThresholdMaximum, settings.automodMentionsThresholdDuration);
+		this.newlines = this.makeAdder(settings.automodNewlinesThresholdMaximum, settings.automodNewlinesThresholdDuration);
+		this.words = this.makeAdder(settings.automodWordsThresholdMaximum, settings.automodWordsThresholdDuration);
 	}
 
 	public onPatch(settings: ReadonlyGuildData): void {
 		this.attachments = this.updateAdder(
 			this.attachments,
-			settings.selfmodAttachmentsThresholdMaximum,
-			settings.selfmodAttachmentsThresholdDuration
+			settings.automodAttachmentsThresholdMaximum,
+			settings.automodAttachmentsThresholdDuration
 		);
-		this.capitals = this.updateAdder(this.capitals, settings.selfmodCapitalsThresholdMaximum, settings.selfmodCapitalsThresholdDuration);
-		this.invites = this.updateAdder(this.invites, settings.selfmodInvitesThresholdMaximum, settings.selfmodInvitesThresholdDuration);
-		this.links = this.updateAdder(this.links, settings.selfmodLinksThresholdMaximum, settings.selfmodLinksThresholdDuration);
-		this.mentions = this.updateAdder(this.mentions, settings.selfmodMentionsThresholdMaximum, settings.selfmodMentionsThresholdDuration);
-		this.newlines = this.updateAdder(this.newlines, settings.selfmodNewlinesThresholdMaximum, settings.selfmodNewlinesThresholdDuration);
-		this.words = this.updateAdder(this.words, settings.selfmodWordsThresholdMaximum, settings.selfmodWordsThresholdDuration);
+		this.capitals = this.updateAdder(this.capitals, settings.automodCapitalsThresholdMaximum, settings.automodCapitalsThresholdDuration);
+		this.invites = this.updateAdder(this.invites, settings.automodInvitesThresholdMaximum, settings.automodInvitesThresholdDuration);
+		this.links = this.updateAdder(this.links, settings.automodLinksThresholdMaximum, settings.automodLinksThresholdDuration);
+		this.mentions = this.updateAdder(this.mentions, settings.automodMentionsThresholdMaximum, settings.automodMentionsThresholdDuration);
+		this.newlines = this.updateAdder(this.newlines, settings.automodNewlinesThresholdMaximum, settings.automodNewlinesThresholdDuration);
+		this.words = this.updateAdder(this.words, settings.automodWordsThresholdMaximum, settings.automodWordsThresholdDuration);
 	}
 
 	private makeAdder(maximum: number | Nullish, duration: number | Nullish) {

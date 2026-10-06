@@ -13,13 +13,13 @@ import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:links',
 	reasonLanguageKeyWithMaximum: 'events/moderation:linksWithMaximum',
-	keyEnabled: 'selfmodLinksEnabled',
-	ignoredChannelsPath: 'selfmodLinksIgnoredChannels',
-	ignoredRolesPath: 'selfmodLinksIgnoredRoles',
-	softPunishmentPath: 'selfmodLinksSoftAction',
+	keyEnabled: 'automodLinksEnabled',
+	ignoredChannelsPath: 'automodLinksIgnoredChannels',
+	ignoredRolesPath: 'automodLinksIgnoredRoles',
+	softPunishmentPath: 'automodLinksSoftAction',
 	hardPunishmentPath: {
-		action: 'selfmodLinksHardAction',
-		actionDuration: 'selfmodLinksHardActionDuration',
+		action: 'automodLinksHardAction',
+		actionDuration: 'automodLinksHardActionDuration',
 		adder: 'links'
 	}
 })
@@ -33,7 +33,7 @@ export class UserModerationMessageListener extends ModerationMessageListener {
 		let match: RegExpExecArray | null = null;
 
 		const settings = await readSettings(message.guildId);
-		const allowed = settings.selfmodLinksAllowed;
+		const allowed = settings.automodLinksAllowed;
 		while ((match = this.kRegExp.exec(message.content)) !== null) {
 			const { hostname } = match.groups!;
 			if (this.kAllowedDomains.test(hostname)) continue;

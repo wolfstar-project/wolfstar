@@ -24,12 +24,12 @@ export class UserCommand extends Command {
 		const t = getSupportedUserLanguageT(interaction);
 		using trx = await writeSettingsTransaction(interaction.guildId);
 
-		const index = trx.settings.selfmodWordsList.indexOf(word);
+		const index = trx.settings.automodWordsList.indexOf(word);
 		if (index === -1) {
 			return interaction.reply({ content: translateKey(t, `${Root}:wordRemoveNotFiltered`, { word }), flags: MessageFlags.Ephemeral });
 		}
 
-		await trx.write({ selfmodWordsList: trx.settings.selfmodWordsList.toSpliced(index, 1) }).submitWithAudit(interaction.user.id);
+		await trx.write({ automodWordsList: trx.settings.automodWordsList.toSpliced(index, 1) }).submitWithAudit(interaction.user.id);
 		return interaction.reply({ content: translateKey(t, `${Root}:editSuccess`), flags: MessageFlags.Ephemeral });
 	}
 }

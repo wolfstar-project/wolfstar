@@ -18,11 +18,11 @@ export class UserListener extends Listener {
 		if (await isModerator(message.member)) return;
 
 		const settings = await readSettings(message.guildId);
-		if (!settings.noMentionSpamEnabled) return;
-		if (settings.noMentionSpamIgnoredChannels.includes(message.channelId)) return;
+		if (!settings.automodNoMentionSpamEnabled) return;
+		if (settings.automodNoMentionSpamIgnoredChannels.includes(message.channelId)) return;
 
 		const { roleIds } = message.member;
-		if (settings.noMentionSpamIgnoredRoles.some((id) => roleIds.includes(id))) return;
+		if (settings.automodNoMentionSpamIgnoredRoles.some((id) => roleIds.includes(id))) return;
 
 		const mentions =
 			message.mentions.users.reduce((acc, user) => (user.bot || user.id === message.author.id ? acc : acc + 1), 0) +
@@ -38,7 +38,7 @@ export class UserListener extends Listener {
 			for (let i = 0; i < mentions; i++) rateLimit.consume();
 			// Reset time, don't let them relax
 			rateLimit.resetTime();
-			if (settings.noMentionSpamAlerts && rateLimit.remaining / ctx.limit <= 0.2) {
+			if (settings.automodNoMentionSpamAlerts && rateLimit.remaining / ctx.limit <= 0.2) {
 				this.container.client.emit(Events.MentionSpamWarning, message);
 			}
 		} catch {

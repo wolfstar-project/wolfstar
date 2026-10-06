@@ -65,10 +65,10 @@ function getAllGroups(group = getConfigurableGroups()): ReturnType<typeof getCon
 describe('settings menu', () => {
 	describe('custom IDs', () => {
 		test('GIVEN an action THEN it survives the round trip the framework parser does', () => {
-			const action = { ownerId, verb: 'view', target: 'selfmod.attachments', page: 2 } as const;
+			const action = { ownerId, verb: 'view', target: 'automod.attachments', page: 2 } as const;
 			const id = encodeSettingsMenuId(action);
 
-			expect(id).toBe(`conf.${ownerId}.view:selfmod/attachments:2`);
+			expect(id).toBe(`conf.${ownerId}.view:automod/attachments:2`);
 			expect(decodeSettingsMenuId(id.split('.').slice(1))).toEqual(action);
 		});
 
@@ -97,9 +97,31 @@ describe('settings menu', () => {
 
 		test('GIVEN a path THEN it resolves the group, and nothing for a key', () => {
 			expect(resolveSettingGroup('')).toBe(getConfigurableGroups());
-			expect(resolveSettingGroup('selfmod.attachments')?.key).toBe('attachments');
+			expect(resolveSettingGroup('automod.attachments')?.key).toBe('attachments');
 			expect(resolveSettingGroup('roles.admin')).toBeNull();
 			expect(resolveSettingGroup('nope')).toBeNull();
+		});
+
+		test('GIVEN the automod group THEN it holds its own keys and one group per rule, No Mention Spam included', () => {
+			const root = getConfigurableGroups();
+			const automod = resolveSettingGroup('automod')!;
+
+			expect(getVisibleGroups(root).map((group) => group.key)).not.toContain('selfmod');
+			expect(getVisibleGroups(root).map((group) => group.key)).not.toContain('no-mention-spam');
+			expect(getVisibleKeys(automod).map((key) => key.name)).toEqual(['automod.channel', 'automod.track-native']);
+			expect(getVisibleGroups(automod).map((group) => group.key)).toEqual([
+				'attachments',
+				'capitals',
+				'invites',
+				'links',
+				'mentions',
+				'newlines',
+				'no-mention-spam',
+				'words'
+			]);
+			expect(getVisibleKeys(resolveSettingGroup('automod.no-mention-spam')!).map((key) => key.name)).toContain(
+				'automod.no-mention-spam.mentions-allowed'
+			);
 		});
 	});
 
@@ -143,8 +165,8 @@ describe('settings menu', () => {
 		});
 
 		test('GIVEN a key that is written THEN its modal holds the stored value', () => {
-			const context = createContext({ selfmodInvitesAllowedCodes: ['wolfstar', 'skyra'] });
-			const modal = renderSettingsModal(context, getConfigurableKeys().get('selfmodInvitesAllowedCodes')!, 0);
+			const context = createContext({ automodInvitesAllowedCodes: ['wolfstar', 'skyra'] });
+			const modal = renderSettingsModal(context, getConfigurableKeys().get('automodInvitesAllowedCodes')!, 0);
 			const input = (modal.components[0] as { components: { value?: string }[] }).components[0];
 
 			expect(input.value).toBe('wolfstar\nskyra');
@@ -184,7 +206,7 @@ describe('settings menu', () => {
 			};
 
 			test('GIVEN a number THEN it is checked against the range of the key', async () => {
-				const key = getConfigurableKeys().get('selfmodCapitalsMinimum')!;
+				const key = getConfigurableKeys().get('automodCapitalsMinimum')!;
 
 				expect(await parse(key, ' 20 ')).toEqual({ ok: true, value: 20 });
 				expect(await parse(key, '')).toEqual({ ok: true, value: key.default });
@@ -194,8 +216,8 @@ describe('settings menu', () => {
 			});
 
 			test('GIVEN a list THEN it takes one value per line, without duplicates', async () => {
-				const codes = getConfigurableKeys().get('selfmodInvitesAllowedCodes')!;
-				const guilds = getConfigurableKeys().get('selfmodInvitesAllowedGuilds')!;
+				const codes = getConfigurableKeys().get('automodInvitesAllowedCodes')!;
+				const guilds = getConfigurableKeys().get('automodInvitesAllowedGuilds')!;
 
 				expect(await parse(codes, 'a\n b \n\na')).toEqual({ ok: true, value: ['a', 'b'] });
 				expect(await parse(guilds, '254360814063058944')).toEqual({ ok: true, value: ['254360814063058944'] });

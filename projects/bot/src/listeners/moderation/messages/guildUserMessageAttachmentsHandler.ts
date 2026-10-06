@@ -11,13 +11,13 @@ import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 	emitter: 'client',
 	reasonLanguageKey: 'events/moderation:attachments',
 	reasonLanguageKeyWithMaximum: 'events/moderation:attachmentsWithMaximum',
-	keyEnabled: 'selfmodAttachmentsEnabled',
-	ignoredChannelsPath: 'selfmodAttachmentsIgnoredChannels',
-	ignoredRolesPath: 'selfmodAttachmentsIgnoredRoles',
-	softPunishmentPath: 'selfmodAttachmentsSoftAction',
+	keyEnabled: 'automodAttachmentsEnabled',
+	ignoredChannelsPath: 'automodAttachmentsIgnoredChannels',
+	ignoredRolesPath: 'automodAttachmentsIgnoredRoles',
+	softPunishmentPath: 'automodAttachmentsSoftAction',
 	hardPunishmentPath: {
-		action: 'selfmodAttachmentsHardAction',
-		actionDuration: 'selfmodAttachmentsHardActionDuration',
+		action: 'automodAttachmentsHardAction',
+		actionDuration: 'automodAttachmentsHardActionDuration',
 		adder: 'attachments'
 	}
 })
