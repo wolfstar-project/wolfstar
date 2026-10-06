@@ -37,8 +37,8 @@ export async function startShardManager() {
 
 	container.shardManager = manager;
 
-	// A client that never listens nor connects: it gives this process the logger and the listener store. Only the
-	// pieces of `src/sharder` are loaded, the listeners of the manager's events (`src/sharder/listeners`):
+	// A client that never listens nor connects: it gives this process the logger and the listener store. Of the pieces
+	// of the bot, only the listeners of the manager's events are loaded (`src/listeners/sharder`):
 	const client = new Client({
 		discordToken: envParseString('DISCORD_TOKEN'),
 		discordPublicKey: envParseString('DISCORD_PUBLIC_KEY'),
@@ -46,7 +46,7 @@ export async function startShardManager() {
 		// The plugins are registered for every client of the process, and the translations one needs its locales:
 		i18n: parseInternationalizationOptions()
 	});
-	container.stores.registerPath(fileURLToPath(new URL('../../sharder', import.meta.url)));
+	container.stores.get('listeners').registerPath(fileURLToPath(new URL('../../listeners/sharder', import.meta.url)));
 	await client.load({ baseUserDirectory: null });
 
 	for (const signal of ['SIGTERM', 'SIGINT'] as const) {

@@ -1,11 +1,11 @@
+import { SharderListener } from '#lib/structures/listeners/SharderListener';
 import { ApplyOptions } from '@wolfstar/decorators';
-import { Listener } from '@wolfstar/http-framework';
 import type { ShardChannel } from '@wolfstar/plugin-sharder';
 import { yellow } from 'colorette';
 import { getSharderHeader } from './_shared.js';
 
-@ApplyOptions<Listener.Options>({ emitter: 'shardManager', event: 'shardReconnecting' })
-export class UserSharderListener extends Listener {
+@ApplyOptions<SharderListener.Options>({ event: 'shardReconnecting' })
+export class UserSharderListener extends SharderListener {
 	protected readonly title = yellow('Reconnecting');
 
 	public run(channel: ShardChannel) {
