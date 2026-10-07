@@ -156,7 +156,8 @@ export function isAutoModerationRuleType(value: unknown): value is AutoModeratio
  * Reads the options of a rule from data that is not trusted (the stored JSON, the body of a request): what is missing or
  * of the wrong type takes its default, the numbers are brought within their limits, and the lists lose their
  * duplicates and what is not a string. The words and the hostnames are lowercased, as the messages are matched, and a
- * word that is too short or too long is dropped.
+ * word that is too short or too long is dropped. The lists are not cut at {@linkcode MaximumAutoModerationRuleListLength}:
+ * a rule that was migrated with more entries keeps them all, and the cap is enforced where entries are added.
  *
  * @param type - The type of the rule.
  * @param value - The data to read the options from.
@@ -183,7 +184,7 @@ export function normalizeAutoModerationRuleOptions<Type extends AutoModerationRu
 				.filter((entry): entry is string => typeof entry === 'string')
 				.map((entry) => (type === 'Invites' ? entry.trim() : entry.trim().toLowerCase()))
 				.filter((entry) => entry.length > 0 && (type !== 'Words' || isAutoModerationRuleWord(entry)));
-			options[key] = [...new Set(list)].slice(0, MaximumAutoModerationRuleListLength);
+			options[key] = [...new Set(list)];
 		}
 	}
 

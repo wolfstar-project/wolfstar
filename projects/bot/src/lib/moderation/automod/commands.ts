@@ -296,6 +296,23 @@ function renderPunishment(t: TFunction, rule: AutoModerationRule) {
 const MaximumListLength = 900;
 
 /**
+ * Joins mentions, as many as fit in a field of an embed, followed by how many were left out.
+ */
+function renderMentions(ids: readonly string[], mention: (id: string) => string): string {
+	const shown: string[] = [];
+	let length = 0;
+	for (const id of ids) {
+		const text = mention(id);
+		length += text.length + 1;
+		if (length > MaximumListLength) break;
+		shown.push(text);
+	}
+
+	const hidden = ids.length - shown.length;
+	return `${shown.join(' ')}${hidden > 0 ? ` (+${hidden})` : ''}`;
+}
+
+/**
  * Renders a rule: what it looks for, what it does, and what it leaves alone.
  */
 export function renderRule(t: TFunction, rule: AutoModerationRule): EmbedBuilder {
@@ -332,13 +349,10 @@ export function renderRule(t: TFunction, rule: AutoModerationRule): EmbedBuilder
 	}
 
 	if (rule.ignoredRoles.length > 0) {
-		embed.addFields({ name: translateKey(t, `${Root}:showIgnoredRoles`), value: rule.ignoredRoles.map((id) => roleMention(id)).join(' ') });
+		embed.addFields({ name: translateKey(t, `${Root}:showIgnoredRoles`), value: renderMentions(rule.ignoredRoles, roleMention) });
 	}
 	if (rule.ignoredChannels.length > 0) {
-		embed.addFields({
-			name: translateKey(t, `${Root}:showIgnoredChannels`),
-			value: rule.ignoredChannels.map((id) => channelMention(id)).join(' ')
-		});
+		embed.addFields({ name: translateKey(t, `${Root}:showIgnoredChannels`), value: renderMentions(rule.ignoredChannels, channelMention) });
 	}
 
 	return embed;

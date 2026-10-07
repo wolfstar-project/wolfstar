@@ -28,6 +28,11 @@ describe('auto-moderation rules', () => {
 			expect(normalizeAutoModerationRuleOptions('Invites', { allowedCodes: ['WolfStar'] }).allowedCodes).toEqual(['WolfStar']);
 		});
 
+		test('GIVEN a list longer than the cap THEN it is kept, since a migrated rule may have it', () => {
+			const words = Array.from({ length: 250 }, (_, index) => `word${index}`);
+			expect(normalizeAutoModerationRuleOptions('Words', { words }).words).toHaveLength(250);
+		});
+
 		test('GIVEN options of another type THEN they are dropped', () => {
 			expect(normalizeAutoModerationRuleOptions('Links', { allowed: ['example.com'], words: ['a'] })).toEqual({ allowed: ['example.com'] });
 		});
@@ -90,6 +95,15 @@ describe('auto-moderation rules', () => {
 		test('GIVEN words with look-alike characters THEN they are stored as the messages are matched', () => {
 			const { data } = parseAutoModerationRulePatch('Words', { options: { words: ['ＢａｄＷｏｒｄ', 'e'] } });
 			expect(data?.options).toEqual({ words: ['badword'] });
+		});
+
+		test('GIVEN a list over the cap THEN it cannot grow, but the rule that has it can be edited', () => {
+			const words = Array.from({ length: 250 }, (_, index) => `word${index}`);
+
+			expect(parseAutoModerationRulePatch('Words', { options: { words } }).errors).toEqual(['options.words: Expected at most 200 entries.']);
+			expect(parseAutoModerationRulePatch('Words', { options: { words } }, { words }).errors).toBeUndefined();
+			expect(parseAutoModerationRulePatch('Words', { options: { words: [...words, 'more'] } }, { words }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Words', { options: { words: words.slice(1) } }, { words }).errors).toBeUndefined();
 		});
 
 		test('GIVEN some options THEN the others keep the value the rule has', () => {

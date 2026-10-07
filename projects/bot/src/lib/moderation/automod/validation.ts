@@ -3,6 +3,7 @@ import { remove as removeConfusables } from 'confusables';
 import {
 	AutoModerationHardActions,
 	AutoModerationRuleLimits,
+	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
 	normalizeAutoModerationRuleOptions,
 	type AutoModerationHardAction,
@@ -108,7 +109,18 @@ export function parseAutoModerationRulePatch(
 			if (type === 'Words' && Array.isArray(options.words)) {
 				options.words = options.words.map((word) => (typeof word === 'string' ? normalizeAutoModerationRuleWord(word) : word));
 			}
-			data.options = normalizeAutoModerationRuleOptions(type, options);
+			const normalized = normalizeAutoModerationRuleOptions(type, options);
+			// A list longer than the cap that the rule already had is kept, but it cannot grow:
+			const current = currentOptions as Record<string, unknown>;
+			for (const [key, value] of Object.entries(normalized)) {
+				if (!Array.isArray(value) || value.length <= MaximumAutoModerationRuleListLength) continue;
+				const previous = Array.isArray(current[key]) ? current[key].length : 0;
+				if (value.length > previous) {
+					errors.push(`options.${key}: Expected at most ${MaximumAutoModerationRuleListLength} entries.`);
+				}
+			}
+
+			data.options = normalized;
 		} else {
 			errors.push('options: Expected an object.');
 		}

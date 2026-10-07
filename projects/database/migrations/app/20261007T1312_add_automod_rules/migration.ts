@@ -88,13 +88,14 @@ export default class M extends Migration<Start, End> {
 					onUpdate: 'cascade'
 				}
 			}),
-			// The rules a guild had are the rows the old tables hold. A configuration that was never enabled is not carried over,
-			// and the Mentions rule had no listener, so it has no rule. The old tables are dropped by the next migration, once
-			// the deploy is verified: until then a rollback of the bot still finds them.
+			// The rules a guild had are the rows the old tables hold. A configuration that is switched off but was customised (an
+			// action, exemptions or a list) becomes a disabled rule, and one that was never used is not carried over. The
+			// Mentions rule had no listener, so it has no rule. The old tables are dropped by the next migration, once the deploy
+			// is verified: until then a rollback of the bot still finds them.
 			rawSql({
 				id: 'data.GuildAutoModerationRule.copy',
-				label: 'Copy the enabled auto-moderation configurations into GuildAutoModerationRule',
-				summary: 'Creates one rule per enabled configuration of the old tables',
+				label: 'Copy the enabled or customised auto-moderation configurations into GuildAutoModerationRule',
+				summary: 'Creates one rule per enabled or customised configuration of the old tables',
 				operationClass: 'data',
 				target: { id: 'postgres', details: { schema: 'public', objectType: 'table', name: 'GuildAutoModerationRule' } },
 				precheck: [
@@ -106,33 +107,33 @@ export default class M extends Migration<Start, End> {
 				],
 				execute: [
 					{
-						description: 'copy the enabled configurations',
+						description: 'copy the enabled or customised configurations',
 						sql: `INSERT INTO "GuildAutoModerationRule" (guild_id, name, type, enabled, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, options)
-SELECT id, 'Attachments', 'Attachments'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, '{}'::jsonb
-FROM "GuildAutoModerationAttachments" WHERE enabled
+SELECT id, 'Attachments', 'Attachments'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, '{}'::jsonb
+FROM "GuildAutoModerationAttachments" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0
 UNION ALL
-SELECT id, 'Capitals', 'Capitals'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('minimum', minimum, 'maximum', maximum)
-FROM "GuildAutoModerationCapitals" WHERE enabled
+SELECT id, 'Capitals', 'Capitals'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('minimum', minimum, 'maximum', maximum)
+FROM "GuildAutoModerationCapitals" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0
 UNION ALL
-SELECT id, 'Invites', 'Invites'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels,
+SELECT id, 'Invites', 'Invites'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels,
   jsonb_build_object('allowedCodes', to_jsonb(allowed_codes), 'allowedGuilds', (SELECT coalesce(jsonb_agg(guild::text), '[]'::jsonb) FROM unnest(allowed_guilds) AS guild))
-FROM "GuildAutoModerationInvites" WHERE enabled
+FROM "GuildAutoModerationInvites" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR cardinality(allowed_codes) > 0 OR cardinality(allowed_guilds) > 0
 UNION ALL
-SELECT id, 'Links', 'Links'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('allowed', to_jsonb(allowed))
-FROM "GuildAutoModerationLinks" WHERE enabled
+SELECT id, 'Links', 'Links'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('allowed', to_jsonb(allowed))
+FROM "GuildAutoModerationLinks" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR cardinality(allowed) > 0
 UNION ALL
-SELECT id, 'New lines', 'Newlines'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('maximum', maximum)
-FROM "GuildAutoModerationNewlines" WHERE enabled
+SELECT id, 'New lines', 'Newlines'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('maximum', maximum)
+FROM "GuildAutoModerationNewlines" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0
 UNION ALL
-SELECT id, 'Mention spam', 'NoMentionSpam'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels,
+SELECT id, 'Mention spam', 'NoMentionSpam'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels,
   jsonb_build_object('alerts', alerts, 'mentionsAllowed', mentions_allowed, 'timePeriod', time_period)
-FROM "GuildAutoModerationNoMentionSpam" WHERE enabled
+FROM "GuildAutoModerationNoMentionSpam" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0
 UNION ALL
-SELECT id, 'Words', 'Words'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('words', to_jsonb(words))
-FROM "GuildAutoModerationWords" WHERE enabled
+SELECT id, 'Words', 'Words'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('words', to_jsonb(words))
+FROM "GuildAutoModerationWords" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR cardinality(words) > 0
 UNION ALL
-SELECT id, 'Zalgo text', 'Zalgo'::"GuildAutoModerationRuleType", true, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('maximum', maximum)
-FROM "GuildAutoModerationZalgo" WHERE enabled`,
+SELECT id, 'Zalgo text', 'Zalgo'::"GuildAutoModerationRuleType", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('maximum', maximum)
+FROM "GuildAutoModerationZalgo" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0`,
 						params: []
 					}
 				],

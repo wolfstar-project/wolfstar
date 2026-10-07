@@ -21,11 +21,17 @@ export class UserRoute extends Route {
 		const rule = rules.find((entry) => entry.id === request.params.rule);
 		if (!rule) return response.error(HttpCodes.NotFound);
 
-		const { data, errors } = parseAutoModerationRulePatch(rule.type, await request.readBodyJson(), rule.options);
+		// The body is read once, and checked against the rule as it is cached to answer a bad one with a 400:
+		const body = await request.readBodyJson();
+		const { errors } = parseAutoModerationRulePatch(rule.type, body, rule.options);
 		if (errors) return response.status(HttpCodes.BadRequest).json(errors);
 
 		try {
-			return response.json(await updateAutoModerationRule(guildId, rule.id, data));
+			// The options are merged on the rule the database has inside the queue, so two requests that change different
+			// options do not restore each other's old value:
+			return response.json(
+				await updateAutoModerationRule(guildId, rule.id, (current) => parseAutoModerationRulePatch(rule.type, body, current.options).data!)
+			);
 		} catch (error) {
 			return sendAutoModerationRuleError(response, error);
 		}
