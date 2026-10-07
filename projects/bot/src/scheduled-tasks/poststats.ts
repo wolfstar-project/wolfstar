@@ -2,8 +2,15 @@ import { fetchApproximateUserCount } from '#lib/structures/AnalyticsData';
 import { Events } from '#lib/types';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
 import { blueBright, green, red } from 'colorette';
+import { setTimeout as sleep } from 'node:timers/promises';
 
 const header = blueBright('[POST STATS   ]');
+
+/**
+ * How long a run waits for the gateway to be ready, and how often it looks.
+ */
+const ReadyTimeout = 30_000;
+const ReadyInterval = 500;
 
 enum Lists {
 	BotListSpace = 'botlist.space',
@@ -25,15 +32,18 @@ enum Lists {
  */
 export class UserTask extends ScheduledTask<'poststats'> {
 	public constructor(context: ScheduledTask.LoaderContext) {
-		// A run that asks to be delayed is tried again 30 seconds later:
-		super(context, { pattern: '*/10 * * * *', customJobOptions: { attempts: 2, backoff: { type: 'fixed', delay: 30_000 } } });
+		super(context, { pattern: '*/10 * * * *' });
 	}
 
 	public override async run() {
 		const { logger, gatewayClient } = this.container;
 
-		// If the websocket isn't ready, delay the execution by 30 seconds:
-		if (!gatewayClient.isClientReady()) throw new Error('The gateway client is not ready yet.');
+		// A run that was due while the bot was down starts with the process, before the gateway is ready. It waits for it,
+		// and is skipped when the gateway does not come up: the next run is ten minutes away, and nothing was lost.
+		if (!(await this.waitForReady())) {
+			logger.debug(`${header} Skipped, the gateway is not ready.`);
+			return null;
+		}
 
 		const rawGuilds = await gatewayClient.guilds.cache.getSize();
 		const rawUsers = await fetchApproximateUserCount();
@@ -82,6 +92,17 @@ export class UserTask extends ScheduledTask<'poststats'> {
 
 		if (results.length) logger.trace(`${header} [ ${guilds} [G] ] [ ${users} [U] ] | ${results.join(' | ')}`);
 		return null;
+	}
+
+	private async waitForReady() {
+		const { gatewayClient } = this.container;
+		const deadline = Date.now() + ReadyTimeout;
+		while (!gatewayClient.isClientReady()) {
+			if (Date.now() >= deadline) return false;
+			await sleep(ReadyInterval);
+		}
+
+		return true;
 	}
 
 	private processAnalytics(guilds: number, users: number) {
