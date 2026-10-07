@@ -16,7 +16,7 @@ import '@wolfstar/http-framework-utilities/register';
  *   alerts of the auto-moderation, `ReadMessageHistory` for the reaction notifications, `UseExternalEmojis` for the
  *   emojis of the replies, and `ManageMessages` to delete the messages the auto-moderation catches and for `/prune`.
  * - Moderation: `KickMembers`, `BanMembers` (also `/softban`), `ModerateMembers` (timeouts), `MuteMembers` and
- *   `MoveMembers` (voice mutes and kicks), `ManageNicknames` (`/setnickname`, `/dehoist`), and `ManageRoles` (the
+ *   `DeafenMembers` (voice mutes), `MoveMembers` (voice kicks), `ManageNicknames` (`/setnickname`, `/dehoist`), and `ManageRoles` (the
  *   restriction roles, the initial roles, `/role`, and the edits of the channel overwrites).
  * - Overwrites: a bot cannot allow or deny in a channel what it does not have there, and the restrictions and
  *   `/lockdown` deny `AddReactions`, `UseExternalEmojis`, `UseExternalStickers`, `UseApplicationCommands`,
@@ -47,6 +47,7 @@ const InvitePermissions =
 	PermissionFlagsBits.BanMembers |
 	PermissionFlagsBits.ModerateMembers |
 	PermissionFlagsBits.MuteMembers |
+	PermissionFlagsBits.DeafenMembers |
 	PermissionFlagsBits.MoveMembers |
 	PermissionFlagsBits.ViewAuditLog;
 
