@@ -1,4 +1,5 @@
 import { isObject } from '@sapphire/utilities';
+import { remove as removeConfusables } from 'confusables';
 import {
 	AutoModerationHardActions,
 	AutoModerationRuleLimits,
@@ -13,6 +14,13 @@ import {
  * The most roles or channels a rule leaves alone.
  */
 export const MaximumAutoModerationRuleIgnored = 100;
+
+/**
+ * A word as a `Words` rule stores it: lowercase and without look-alike characters, as the messages are matched.
+ */
+export function normalizeAutoModerationRuleWord(word: string) {
+	return removeConfusables(word.trim().toLowerCase());
+}
 
 /**
  * The bits a soft action is made of, see `AutoModerationOnInfraction`.
@@ -95,8 +103,15 @@ export function parseAutoModerationRulePatch(
 	}
 
 	if (body.options !== undefined) {
-		if (isObject(body.options)) data.options = normalizeAutoModerationRuleOptions(type, { ...currentOptions, ...body.options });
-		else errors.push('options: Expected an object.');
+		if (isObject(body.options)) {
+			const options = { ...currentOptions, ...body.options } as Record<string, unknown>;
+			if (type === 'Words' && Array.isArray(options.words)) {
+				options.words = options.words.map((word) => (typeof word === 'string' ? normalizeAutoModerationRuleWord(word) : word));
+			}
+			data.options = normalizeAutoModerationRuleOptions(type, options);
+		} else {
+			errors.push('options: Expected an object.');
+		}
 	}
 
 	return errors.length === 0 ? { data } : { errors };

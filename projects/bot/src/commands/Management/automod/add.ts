@@ -11,7 +11,7 @@ const Root = AutoModerationRoot;
  */
 @RegisterAsSubcommand('automod', (builder) =>
 	applyRuleOption(applyLocalizedBuilder(builder, `${Root}:add`)).addStringOption((option) =>
-		applyLocalizedBuilder(option, `${Root}:optionsValue`).setRequired(true).setMaxLength(100)
+		applyLocalizedBuilder(option, `${Root}:optionsValue`).setRequired(true).setMinLength(2).setMaxLength(100)
 	)
 )
 export class UserCommand extends Command {

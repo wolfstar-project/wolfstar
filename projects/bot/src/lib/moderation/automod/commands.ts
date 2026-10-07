@@ -2,9 +2,11 @@ import {
 	AutoModerationRuleError,
 	findAutoModerationRule,
 	getAutoModerationRuleAdder,
+	getAutoModerationRuleWordFilter,
 	readAutoModerationRules,
 	updateAutoModerationRule
 } from '#lib/moderation/automod/rules';
+import { normalizeAutoModerationRuleWord } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { Colors, Emojis } from '#utils/constants';
@@ -13,9 +15,10 @@ import { EmbedBuilder, strikethrough, type SlashCommandSubcommandBuilder } from 
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullishOrEmpty, isNullishOrZero } from '@sapphire/utilities';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
-import { remove as removeConfusables } from 'confusables';
 import { MessageFlags } from 'discord-api-types/v10';
 import {
+	AutoModerationRuleWordLength,
+	isAutoModerationRuleWord,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
 	MaximumAutoModerationRules,
@@ -123,7 +126,7 @@ export function resolveRuleListEntry(rule: AutoModerationRule, input: string): {
 	switch (rule.type) {
 		case 'Words': {
 			const { words } = (rule as AutoModerationRule<'Words'>).options;
-			return { key: 'words', list: words, value: removeConfusables(value.toLowerCase()) };
+			return { key: 'words', list: words, value: normalizeAutoModerationRuleWord(value) };
 		}
 		case 'Links': {
 			const { allowed } = (rule as AutoModerationRule<'Links'>).options;
@@ -147,34 +150,70 @@ export function resolveRuleListEntry(rule: AutoModerationRule, input: string): {
  */
 export async function editRuleList(interaction: GuildChatInputInteraction, options: { rule: string; value: string }, action: 'add' | 'remove') {
 	const t = getSupportedUserLanguageT(interaction);
-	const rule = await resolveCommandRule(interaction, t, options.rule);
-	if (rule === null) return;
+	const cached = await resolveCommandRule(interaction, t, options.rule);
+	if (cached === null) return;
 
-	const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
-
-	const entry = resolveRuleListEntry(rule, options.value);
-	if (entry === null || entry.value.length === 0) {
-		return reply(translateKey(t, `${Root}:errorNoList`, { name: rule.name, type: translateKey(t, AutoModerationRuleTypeKeys[rule.type]) }));
-	}
-
-	const context = { name: rule.name, value: entry.value };
-	const exists = entry.list.includes(entry.value);
-	if (action === 'add' && exists) return reply(translateKey(t, `${Root}:addExists`, context));
-	if (action === 'remove' && !exists) return reply(translateKey(t, `${Root}:removeMissing`, context));
-	if (action === 'add' && entry.list.length >= MaximumAutoModerationRuleListLength) {
-		return reply(translateKey(t, `${Root}:errorListFull`, { name: rule.name, maximum: MaximumAutoModerationRuleListLength }));
-	}
-
-	const list = action === 'add' ? [...entry.list, entry.value] : entry.list.filter((value) => value !== entry.value);
+	// The list is edited on the rule the database has, the cached one may be behind another change:
+	let content!: string;
 	try {
-		await updateAutoModerationRule(interaction.guildId, rule.id, {
-			options: { ...rule.options, [entry.key]: list } as AutoModerationRule['options']
+		await updateAutoModerationRule(interaction.guildId, cached.id, (rule) => {
+			const result = editRuleListEntry(t, rule, options.value, action);
+			content = result.content;
+			return result.list === null ? null : { options: { ...rule.options, [result.key]: result.list } as AutoModerationRule['options'] };
 		});
 	} catch (error) {
-		return reply(translateRuleError(t, error, options.rule));
+		content = translateRuleError(t, error, options.rule);
 	}
 
-	return reply(translateKey(t, action === 'add' ? `${Root}:addSuccess` : `${Root}:removeSuccess`, context));
+	return interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+}
+
+/**
+ * What adding an entry to the list of a rule, or removing it, changes.
+ *
+ * @returns What to answer, and the list after the change, `null` when it does not change.
+ */
+export function editRuleListEntry(
+	t: TFunction,
+	rule: AutoModerationRule,
+	input: string,
+	action: 'add' | 'remove'
+): { content: string; key: string; list: string[] | null } {
+	const entry = resolveRuleListEntry(rule, input);
+	if (entry === null || entry.value.length === 0) {
+		const type = translateKey(t, AutoModerationRuleTypeKeys[rule.type]);
+		return { content: translateKey(t, `${Root}:errorNoList`, { name: rule.name, type }), key: '', list: null };
+	}
+
+	const { key } = entry;
+	const context = { name: rule.name, value: entry.value };
+	const none = (content: string) => ({ content, key, list: null });
+
+	const exists = entry.list.includes(entry.value);
+	if (action === 'remove') {
+		if (!exists) return none(translateKey(t, `${Root}:removeMissing`, context));
+		return { content: translateKey(t, `${Root}:removeSuccess`, context), key, list: entry.list.filter((value) => value !== entry.value) };
+	}
+
+	if (exists) return none(translateKey(t, `${Root}:addExists`, context));
+	if (entry.list.length >= MaximumAutoModerationRuleListLength) {
+		return none(translateKey(t, `${Root}:errorListFull`, { name: rule.name, maximum: MaximumAutoModerationRuleListLength }));
+	}
+
+	if (rule.type === 'Words') {
+		if (!isAutoModerationRuleWord(entry.value)) return none(translateKey(t, `${Root}:errorWordLength`, AutoModerationRuleWordLength));
+
+		// A word another word of the list already matches would never be the one that is found:
+		const filter = getAutoModerationRuleWordFilter(rule as AutoModerationRule<'Words'>);
+		if (filter !== null) {
+			filter.lastIndex = 0;
+			const covered = filter.test(entry.value);
+			filter.lastIndex = 0;
+			if (covered) return none(translateKey(t, `${Root}:addCovered`, context));
+		}
+	}
+
+	return { content: translateKey(t, `${Root}:addSuccess`, context), key, list: [...entry.list, entry.value] };
 }
 
 function getRuleList(rule: AutoModerationRule): readonly string[] | null {

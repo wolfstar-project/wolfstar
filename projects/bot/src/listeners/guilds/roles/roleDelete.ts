@@ -44,7 +44,7 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		// The rules that exempted the role forget it:
 		for (const rule of await readAutoModerationRules(guild.id)) {
 			if (!rule.ignoredRoles.includes(roleId)) continue;
-			await updateAutoModerationRule(guild.id, rule.id, { ignoredRoles: rule.ignoredRoles.filter((id) => id !== roleId) });
+			await updateAutoModerationRule(guild.id, rule.id, (current) => ({ ignoredRoles: current.ignoredRoles.filter((id) => id !== roleId) }));
 		}
 	}
 

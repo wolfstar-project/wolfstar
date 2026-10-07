@@ -1,4 +1,4 @@
-import { resolveRuleListEntry, resolveSoftAction } from '#lib/moderation/automod/commands';
+import { editRuleListEntry, resolveRuleListEntry, resolveSoftAction } from '#lib/moderation/automod/commands';
 import { findAutoModerationRule } from '#lib/moderation/automod/rules';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { getDefaultAutoModerationRule, type AutoModerationRule, type AutoModerationRuleType } from 'wolfstar-database';
@@ -7,6 +7,9 @@ function createRule<Type extends AutoModerationRuleType>(type: Type, name: strin
 	const rule = { ...getDefaultAutoModerationRule(type), id, guildId: '254360814063058944', name };
 	return (options ? { ...rule, options } : rule) as AutoModerationRule;
 }
+
+// Echoes the key, the translations are not what is tested here:
+const t = ((key: string) => key) as never;
 
 describe('auto-moderation commands', () => {
 	describe('findAutoModerationRule', () => {
@@ -60,6 +63,39 @@ describe('auto-moderation commands', () => {
 
 		test('GIVEN a rule without a list THEN there is nothing to edit', () => {
 			expect(resolveRuleListEntry(createRule('Capitals', 'Caps'), 'x')).toBeNull();
+		});
+	});
+
+	describe('editRuleListEntry', () => {
+		const rule = createRule('Words', 'Words', '50', { words: ['bad'] });
+
+		test('GIVEN a new word THEN it is added', () => {
+			expect(editRuleListEntry(t, rule, 'Worse', 'add')).toEqual({
+				content: 'commands/auto-moderation:addSuccess',
+				key: 'words',
+				list: ['bad', 'worse']
+			});
+		});
+
+		test('GIVEN a word of one letter THEN it is refused', () => {
+			expect(editRuleListEntry(t, rule, 'e', 'add')).toMatchObject({ content: 'commands/auto-moderation:errorWordLength', list: null });
+		});
+
+		test('GIVEN a word that is in the list, or that another word catches THEN it is not added', () => {
+			expect(editRuleListEntry(t, rule, 'BAD', 'add')).toMatchObject({ content: 'commands/auto-moderation:addExists', list: null });
+			expect(editRuleListEntry(t, rule, 'baaad', 'add')).toMatchObject({ content: 'commands/auto-moderation:addCovered', list: null });
+		});
+
+		test('GIVEN a word to remove THEN only one that is in the list is', () => {
+			expect(editRuleListEntry(t, rule, 'bad', 'remove')).toMatchObject({ content: 'commands/auto-moderation:removeSuccess', list: [] });
+			expect(editRuleListEntry(t, rule, 'good', 'remove')).toMatchObject({ content: 'commands/auto-moderation:removeMissing', list: null });
+		});
+
+		test('GIVEN a rule without a list THEN there is nothing to edit', () => {
+			expect(editRuleListEntry(t, createRule('Zalgo', 'Zalgo'), 'x', 'add')).toMatchObject({
+				content: 'commands/auto-moderation:errorNoList',
+				list: null
+			});
 		});
 	});
 });

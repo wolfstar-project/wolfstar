@@ -30,25 +30,25 @@ export class UserCommand extends Command {
 		const rule = await resolveCommandRule(interaction, t, options.rule);
 		if (rule === null) return;
 
-		const lines: string[] = [];
-		const toggle = (list: readonly string[], id: string, target: string) => {
-			const ignored = list.includes(id);
-			lines.push(translateKey(t, ignored ? `${Root}:ignoreRemoved` : `${Root}:ignoreAdded`, { name: rule.name, target }));
-			return ignored ? list.filter((entry) => entry !== id) : [...list, id];
-		};
-
-		const ignoredRoles = options.role ? toggle(rule.ignoredRoles, options.role.id, roleMention(options.role.id)) : undefined;
-		const ignoredChannels = options.channel ? toggle(rule.ignoredChannels, options.channel.id, channelMention(options.channel.id)) : undefined;
-
 		let content: string;
-		if (lines.length === 0) {
+		if (!options.role && !options.channel) {
 			content = translateKey(t, `${Root}:ignoreNothing`);
 		} else {
+			const lines: string[] = [];
+			const toggle = (list: readonly string[], id: string, target: string) => {
+				const ignored = list.includes(id);
+				lines.push(translateKey(t, ignored ? `${Root}:ignoreRemoved` : `${Root}:ignoreAdded`, { name: rule.name, target }));
+				return ignored ? list.filter((entry) => entry !== id) : [...list, id];
+			};
+
 			try {
-				await updateAutoModerationRule(interaction.guildId, rule.id, {
-					...(ignoredRoles && { ignoredRoles }),
-					...(ignoredChannels && { ignoredChannels })
-				});
+				// Toggled on the rule the database has, the cached one may be behind another change:
+				await updateAutoModerationRule(interaction.guildId, rule.id, (current) => ({
+					...(options.role && { ignoredRoles: toggle(current.ignoredRoles, options.role.id, roleMention(options.role.id)) }),
+					...(options.channel && {
+						ignoredChannels: toggle(current.ignoredChannels, options.channel.id, channelMention(options.channel.id))
+					})
+				}));
 				content = lines.join('\n');
 			} catch (error) {
 				content = translateRuleError(t, error, options.rule);

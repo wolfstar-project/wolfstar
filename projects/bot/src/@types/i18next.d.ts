@@ -171,6 +171,8 @@ declare module "i18next" {
         errorNoList: "**{{name}}** is a {{type}} rule, which has no list to add to or remove from.";
         errorListFull: "The list of **{{name}}** already has {{maximum, number}} entries, which is the most it can have.";
         addSuccess: "Added `{{value}}` to **{{name}}**.";
+        addCovered: "Another word of **{{name}}** already catches `{{value}}`.";
+        errorWordLength: "A word is {{minimum, number}} to {{maximum, number}} characters long.";
         addExists: "`{{value}}` was already in the list of **{{name}}**.";
         removeSuccess: "Removed `{{value}}` from **{{name}}**.";
         removeMissing: "`{{value}}` was not in the list of **{{name}}**.";
@@ -2991,7 +2993,6 @@ declare module "i18next" {
         permissionNodeInvalidTarget: "No data could be found from the ID.";
         permissionNodeSecurityEveryoneAllows: "For security, the everyone role cannot have allows.";
         permissionNodeSecurityGuarded: "For security and for me to work properly, you cannot deny the usage for the command `{{command}}`.";
-        wordIncluded: "The key `{{name}}` already includes the word `{{word}}`.";
         permissionNodeSecurityOwner: "You cannot set permission overrides on the server owner.";
         reactionRoleInvalid: "Invalid reaction role data.";
         stickyRoleInvalid: "Invalid sticky role data.";

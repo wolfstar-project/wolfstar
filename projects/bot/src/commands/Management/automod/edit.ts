@@ -109,19 +109,25 @@ export class UserCommand extends Command {
 		const data: Partial<Omit<AutoModerationRuleData, 'type'>> = {};
 		if (!isNullish(options.rename)) data.name = options.rename;
 		if (!isNullish(options.enabled)) data.enabled = options.enabled;
-		if (!isNullish(options.alert ?? options.log ?? options.delete)) data.softAction = resolveSoftAction(options, rule.softAction);
+		const hasSoftAction = !isNullish(options.alert ?? options.log ?? options.delete);
 		if (!isNullish(options.punishment)) data.hardAction = options.punishment;
 		// A duration of zero makes the punishment permanent:
 		if (punishmentDuration !== null) data.hardActionDuration = punishmentDuration === 0 ? null : punishmentDuration;
 		if (!isNullish(options.threshold)) data.thresholdMaximum = options.threshold;
 		if (thresholdDuration !== null) data.thresholdDuration = thresholdDuration;
-		if (ruleOptions !== null) data.options = ruleOptions;
 
-		if (Object.keys(data).length === 0) return this.#reply(interaction, translateKey(t, `${Root}:editNothing`));
+		if (Object.keys(data).length === 0 && !hasSoftAction && ruleOptions === null)
+			return this.#reply(interaction, translateKey(t, `${Root}:editNothing`));
 
 		let content: string;
 		try {
-			const updated = await updateAutoModerationRule(interaction.guildId, rule.id, data);
+			// The actions and the options that were not given keep the value the database has, the cached rule may be
+			// behind another change:
+			const updated = await updateAutoModerationRule(interaction.guildId, rule.id, (current) => ({
+				...data,
+				...(hasSoftAction && { softAction: resolveSoftAction(options, current.softAction) }),
+				...(ruleOptions !== null && { options: { ...current.options, ...ruleOptions } as AutoModerationRule['options'] })
+			}));
 			content = translateKey(t, `${Root}:editSuccess`, { name: updated.name });
 		} catch (error) {
 			content = translateRuleError(t, error, options.rule);
@@ -131,11 +137,11 @@ export class UserCommand extends Command {
 	}
 
 	/**
-	 * The options of the rule after the options of the command that set them.
+	 * The options of the rule the options of the command set.
 	 *
 	 * @returns `null` when none was given, or the translated error when one does not fit the rule.
 	 */
-	#getRuleOptions(t: TFunction, rule: AutoModerationRule, options: Options): AutoModerationRule['options'] | string | null {
+	#getRuleOptions(t: TFunction, rule: AutoModerationRule, options: Options): Record<string, unknown> | string | null {
 		const current = rule.options as Record<string, unknown>;
 		const limits = (AutoModerationRuleOptionLimits as Record<string, Record<string, { minimum: number; maximum: number }> | undefined>)[
 			rule.type
@@ -163,7 +169,7 @@ export class UserCommand extends Command {
 			patch[key] = value;
 		}
 
-		return patch === null ? null : ({ ...current, ...patch } as AutoModerationRule['options']);
+		return patch;
 	}
 
 	#reply(interaction: GuildChatInputInteraction, content: string) {

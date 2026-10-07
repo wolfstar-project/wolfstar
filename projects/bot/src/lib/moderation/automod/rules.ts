@@ -2,6 +2,7 @@ import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { Adder } from '#lib/database/utils/Adder';
 import { create } from '#utils/Security/RegexCreator';
 import { Collection } from '@discordjs/collection';
+import { AsyncQueue } from '@sapphire/async-queue';
 import { RateLimitManager } from '@sapphire/ratelimits';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -41,16 +42,24 @@ export function readAutoModerationRules(guildId: Snowflake): readonly AutoModera
 	return cache.get(guildId) ?? fetchRules(guildId);
 }
 
+/**
+ * How many times the rules of each guild changed, so a query that started before a change does not cache what it read.
+ */
+const versions = new Collection<Snowflake, number>();
+
 function fetchRules(guildId: Snowflake) {
 	const previous = queue.get(guildId);
 	if (previous) return previous;
 
+	const version = versions.get(guildId) ?? 0;
 	const promise = fetchAutoModerationRules(container.prisma.orm, guildId)
 		.then((rules) => {
-			cache.set(guildId, rules);
+			if ((versions.get(guildId) ?? 0) === version) cache.set(guildId, rules);
 			return rules;
 		})
-		.finally(() => queue.delete(guildId));
+		.finally(() => {
+			if (queue.get(guildId) === promise) queue.delete(guildId);
+		});
 	queue.set(guildId, promise);
 	return promise;
 }
@@ -61,7 +70,10 @@ function fetchRules(guildId: Snowflake) {
  * @param guildId - The ID of the guild.
  */
 export function deleteAutoModerationRulesCached(guildId: Snowflake) {
+	versions.set(guildId, (versions.get(guildId) ?? 0) + 1);
 	cache.delete(guildId);
+	// A query that is still running read the rules before the change:
+	queue.delete(guildId);
 }
 
 // The rules are cached by every shard process, so a change in one of them makes the copies of the others stale.
@@ -95,6 +107,43 @@ function validateName(rules: readonly AutoModerationRule[], name: string, ignore
 	return trimmed;
 }
 
+const locks = new Collection<Snowflake, AsyncQueue>();
+
+/**
+ * Runs the writes of a guild one after the other, each on the rules the database has at that time and not on the cached
+ * ones, so two changes made at once do not undo each other.
+ */
+async function write<T>(guildId: Snowflake, callback: (rules: readonly AutoModerationRule[]) => Promise<T>): Promise<T> {
+	const lock = locks.ensure(guildId, () => new AsyncQueue());
+	await lock.wait();
+	try {
+		return await callback(await fetchAutoModerationRules(container.prisma.orm, guildId));
+	} finally {
+		lock.shift();
+		if (lock.remaining === 0) locks.delete(guildId);
+	}
+}
+
+/**
+ * Whether a text can be the ID of a rule, a positive `bigint`.
+ */
+function isRuleId(ruleId: string) {
+	return /^\d{1,18}$/.test(ruleId);
+}
+
+/**
+ * The name of the index that keeps the names of the rules of a guild unique, whatever the case. It catches what the
+ * check of {@linkcode validateName} cannot: two processes creating the same name at once.
+ */
+const UniqueNameIndex = 'GuildAutoModerationRule_guild_id_name_key';
+
+function isUniqueNameError(error: unknown) {
+	for (let current = error; current instanceof Error; current = current.cause) {
+		if (current.message.includes(UniqueNameIndex)) return true;
+	}
+	return false;
+}
+
 /**
  * Creates a rule for a guild.
  *
@@ -104,48 +153,62 @@ function validateName(rules: readonly AutoModerationRule[], name: string, ignore
  * @param data - What the rule does not take the default of.
  * @throws {@linkcode AutoModerationRuleError} When the guild has too many rules, or the name is invalid or taken.
  */
-export async function createAutoModerationRule(
+export function createAutoModerationRule(
 	guildId: Snowflake,
 	name: string,
 	type: AutoModerationRuleType,
 	data: Partial<Omit<AutoModerationRuleData, 'name' | 'type'>> = {}
 ): Promise<AutoModerationRule> {
-	const rules = await readAutoModerationRules(guildId);
-	if (rules.length >= MaximumAutoModerationRules) throw new AutoModerationRuleError('limit');
+	return write(guildId, async (rules) => {
+		if (rules.length >= MaximumAutoModerationRules) throw new AutoModerationRuleError('limit');
 
-	const rule = await insertAutoModerationRule(container.prisma, guildId, {
-		...getDefaultAutoModerationRule(type),
-		...data,
-		name: validateName(rules, name),
-		type
+		const rule = await insertAutoModerationRule(container.prisma, guildId, {
+			...getDefaultAutoModerationRule(type),
+			...data,
+			name: validateName(rules, name),
+			type
+		}).catch((error) => {
+			throw isUniqueNameError(error) ? new AutoModerationRuleError('nameTaken') : error;
+		});
+		changed(guildId);
+		return rule;
 	});
-	changed(guildId);
-	return rule;
 }
+
+export type AutoModerationRuleUpdate = Partial<Omit<AutoModerationRuleData, 'type'>>;
 
 /**
  * Edits a rule of a guild. The type of a rule cannot change, since its options depend on it.
  *
  * @param guildId - The ID of the guild.
  * @param ruleId - The ID of the rule.
- * @param data - What changes.
+ * @param data - What changes, or a function that reads it from the rule as the database has it. Use the function for
+ * a change that depends on the rule, such as adding to one of its lists: the cached rule may be behind. It returns
+ * `null` to change nothing.
  * @returns The rule after the change.
  * @throws {@linkcode AutoModerationRuleError} When the rule does not exist, or the new name is invalid or taken.
  */
-export async function updateAutoModerationRule(
+export function updateAutoModerationRule(
 	guildId: Snowflake,
 	ruleId: string,
-	data: Partial<Omit<AutoModerationRuleData, 'type'>>
+	data: AutoModerationRuleUpdate | ((rule: AutoModerationRule) => AutoModerationRuleUpdate | null)
 ): Promise<AutoModerationRule> {
-	const rules = await readAutoModerationRules(guildId);
-	const rule = rules.find((entry) => entry.id === ruleId);
-	if (!rule) throw new AutoModerationRuleError('unknown');
+	return write(guildId, async (rules) => {
+		const rule = rules.find((entry) => entry.id === ruleId);
+		if (!rule) throw new AutoModerationRuleError('unknown');
 
-	const patch = data.name === undefined ? data : { ...data, name: validateName(rules, data.name, ruleId) };
-	if (!(await patchAutoModerationRule(container.prisma, guildId, ruleId, patch))) throw new AutoModerationRuleError('unknown');
+		const update = typeof data === 'function' ? data(rule) : data;
+		if (update === null || Object.keys(update).length === 0) return rule;
 
-	changed(guildId);
-	return { ...rule, ...patch } as AutoModerationRule;
+		const patch = update.name === undefined ? update : { ...update, name: validateName(rules, update.name, ruleId) };
+		const found = await patchAutoModerationRule(container.prisma, guildId, ruleId, patch).catch((error) => {
+			throw isUniqueNameError(error) ? new AutoModerationRuleError('nameTaken') : error;
+		});
+		if (!found) throw new AutoModerationRuleError('unknown');
+
+		changed(guildId);
+		return { ...rule, ...patch } as AutoModerationRule;
+	});
 }
 
 /**
@@ -153,11 +216,14 @@ export async function updateAutoModerationRule(
  *
  * @throws {@linkcode AutoModerationRuleError} When the rule does not exist.
  */
-export async function deleteAutoModerationRule(guildId: Snowflake, ruleId: string): Promise<void> {
-	if (!(await removeAutoModerationRule(container.prisma, guildId, ruleId))) throw new AutoModerationRuleError('unknown');
+export function deleteAutoModerationRule(guildId: Snowflake, ruleId: string): Promise<void> {
+	return write(guildId, async () => {
+		// What is not an ID cannot be the ID of a rule, and the database would refuse to read it as one:
+		if (!isRuleId(ruleId) || !(await removeAutoModerationRule(container.prisma, guildId, ruleId))) throw new AutoModerationRuleError('unknown');
 
-	states.delete(ruleId);
-	changed(guildId);
+		states.delete(ruleId);
+		changed(guildId);
+	});
 }
 
 /**

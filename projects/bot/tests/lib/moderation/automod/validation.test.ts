@@ -15,8 +15,17 @@ describe('auto-moderation rules', () => {
 		});
 
 		test('GIVEN lists THEN they lose their duplicates and what is not text', () => {
-			expect(normalizeAutoModerationRuleOptions('Words', { words: ['a', 'b', 'a', 1, ''] })).toEqual({ words: ['a', 'b'] });
+			expect(normalizeAutoModerationRuleOptions('Words', { words: ['one', 'two', 'one', 1, ''] })).toEqual({ words: ['one', 'two'] });
 			expect(normalizeAutoModerationRuleOptions('Invites', { allowedCodes: 'nope' })).toEqual({ allowedCodes: [], allowedGuilds: [] });
+		});
+
+		test('GIVEN words THEN they are lowercased, and the ones of one letter or too long are dropped', () => {
+			expect(normalizeAutoModerationRuleOptions('Words', { words: [' BadWord ', 'e', 'x'.repeat(33)] })).toEqual({ words: ['badword'] });
+		});
+
+		test('GIVEN hostnames THEN they are lowercased, and the invite codes are not', () => {
+			expect(normalizeAutoModerationRuleOptions('Links', { allowed: ['Example.COM'] })).toEqual({ allowed: ['example.com'] });
+			expect(normalizeAutoModerationRuleOptions('Invites', { allowedCodes: ['WolfStar'] }).allowedCodes).toEqual(['WolfStar']);
 		});
 
 		test('GIVEN options of another type THEN they are dropped', () => {
@@ -76,6 +85,11 @@ describe('auto-moderation rules', () => {
 		test('GIVEN IDs THEN the duplicates are dropped', () => {
 			const id = '254360814063058944';
 			expect(parseAutoModerationRulePatch('Links', { ignoredRoles: [id, id] }).data).toEqual({ ignoredRoles: [id] });
+		});
+
+		test('GIVEN words with look-alike characters THEN they are stored as the messages are matched', () => {
+			const { data } = parseAutoModerationRulePatch('Words', { options: { words: ['ＢａｄＷｏｒｄ', 'e'] } });
+			expect(data?.options).toEqual({ words: ['badword'] });
 		});
 
 		test('GIVEN some options THEN the others keep the value the rule has', () => {

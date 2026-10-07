@@ -98,6 +98,11 @@ export const AutoModerationRuleOptionLimits = {
 } as const;
 
 /**
+ * The length of a word of a `Words` rule: a single letter would match almost every message.
+ */
+export const AutoModerationRuleWordLength = { minimum: 2, maximum: 32 } as const;
+
+/**
  * The options a rule of a type starts with.
  *
  * @param type - The type of the rule.
@@ -136,6 +141,13 @@ export function getDefaultAutoModerationRule<Type extends AutoModerationRuleType
 	};
 }
 
+/**
+ * Whether a text is long enough, and short enough, to be a word of a `Words` rule.
+ */
+export function isAutoModerationRuleWord(word: string) {
+	return word.length >= AutoModerationRuleWordLength.minimum && word.length <= AutoModerationRuleWordLength.maximum;
+}
+
 export function isAutoModerationRuleType(value: unknown): value is AutoModerationRuleType {
 	return AutoModerationRuleTypes.includes(value as AutoModerationRuleType);
 }
@@ -143,7 +155,8 @@ export function isAutoModerationRuleType(value: unknown): value is AutoModeratio
 /**
  * Reads the options of a rule from data that is not trusted (the stored JSON, the body of a request): what is missing or
  * of the wrong type takes its default, the numbers are brought within their limits, and the lists lose their
- * duplicates and what is not a string.
+ * duplicates and what is not a string. The words and the hostnames are lowercased, as the messages are matched, and a
+ * word that is too short or too long is dropped.
  *
  * @param type - The type of the rule.
  * @param value - The data to read the options from.
@@ -166,7 +179,10 @@ export function normalizeAutoModerationRuleOptions<Type extends AutoModerationRu
 		} else if (typeof fallback === 'boolean') {
 			options[key] = typeof given === 'boolean' ? given : fallback;
 		} else {
-			const list = Array.isArray(given) ? given.filter((entry): entry is string => typeof entry === 'string' && entry.length > 0) : [];
+			const list = (Array.isArray(given) ? given : [])
+				.filter((entry): entry is string => typeof entry === 'string')
+				.map((entry) => (type === 'Invites' ? entry.trim() : entry.trim().toLowerCase()))
+				.filter((entry) => entry.length > 0 && (type !== 'Words' || isAutoModerationRuleWord(entry)));
 			options[key] = [...new Set(list)].slice(0, MaximumAutoModerationRuleListLength);
 		}
 	}
