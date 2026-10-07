@@ -561,11 +561,9 @@ declare module "i18next" {
         rolesNotManageable: "The following roles cannot be given by me due to their hierarchy role position: `{{roles}}`";
         rolesNotPublic: "The following roles are not public: `{{roles}}`";
         rolesRemoved: "The following roles have been removed from your profile: `{{roles}}`";
-        guildInfoDescription: "Check the information of the server.";
         guildInfoExtended: {
           extendedHelp: "The serverinfo command displays information for the server the message got sent.\nIt shows the amount of channels, with the count for each category, the amount of members (given from the API), the owner with their user id, the amount of roles, region, creation date, verification level... between others.";
         };
-        roleInfoDescription: "Check the information for a role.";
         roleInfoExtended: {
           usages: ["Role", ""];
           extendedHelp: "The roleinfo command displays information for a role, such as its id, name, color, whether it's hoisted (displays separately) or not, it's role hierarchy position, whether it's mentionable or not, how many members have said role, and its permissions.\nIt sends an embedded message with the color of the role.";
@@ -909,8 +907,6 @@ declare module "i18next" {
         };
         permissionNodesName: "permission-nodes";
         manageReactionRolesName: "reaction-roles";
-        guildInfoName: "server-info";
-        roleInfoName: "role-info";
         stickyRolesName: "sticky-roles";
         rolesName: "roles";
         permissionNodesSubcommandAddName: "add";
@@ -950,8 +946,6 @@ declare module "i18next" {
         manageReactionRolesOptionsRemoveMessageName: "message";
         manageReactionRolesOptionsRemoveMessageDescription: "The ID of the message, or of the channel, the reaction role is bound to.";
         manageReactionRolesAddIncomplete: "{{REDCROSS}} The `channel` and `emoji` options must be given together, leave both empty to react to a message instead.";
-        roleInfoOptionsRoleName: "role";
-        roleInfoOptionsRoleDescription: "The role to check, defaults to your highest role.";
         rolesSubcommandListName: "list";
         rolesSubcommandListDescription: "List the public roles of this server.";
         rolesSubcommandClaimName: "claim";
@@ -1014,8 +1008,6 @@ declare module "i18next" {
         reasonNotExists: "The selected modlog  doesn't seem to exist.";
         reasonUpdated_one: "{{GREENTICK}} Updated {{count}} case\n └─ **Set its reason to:** {{newReason}}";
         reasonUpdated_other: "{{GREENTICK}} Updated {{count}} cases\n └─ **Set their reasons to:** {{newReason}}";
-        toggleModerationDmToggledEnabled: "{{GREENTICK}} Successfully enabled moderation DMs.";
-        toggleModerationDmToggledDisabled: "{{GREENTICK}} Successfully disabled moderation DMs";
         unbanMissingPermission: "I will need the **{{BAN_MEMBERS, permissions}}** permission to be able to unban.";
         unmuteMissingPermission: "I will need the **{{MANAGE_ROLES, permissions}}** permission to be able to unmute.";
         vmuteMissingPermission: "I will need the **{{MUTE_MEMBERS, permissions}}** permission to be able to voice unmute.";
@@ -1467,10 +1459,6 @@ declare module "i18next" {
             "@Pete 7 All messages sent in 7 are gone now, YEE HAH!",
           ];
         };
-        toggleModerationDmDescription: "Toggle moderation DMs.";
-        toggleModerationDmExtended: {
-          extendedHelp: "This command allows you to toggle moderation DMs. By default, they are on, meaning that any moderation action (automatic or manual) will DM you, but you can disable them with this command.";
-        };
         banRemoveDescription: "Unban somebody from this server.";
         unbanExtended: {
           usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
@@ -1719,7 +1707,6 @@ declare module "i18next" {
         setNicknameName: "setnickname";
         dehoistName: "dehoist";
         pruneName: "prune";
-        toggleModerationDmName: "togglemoderationdm";
         slowmodeName: "slowmode";
         banOptionsDeleteDaysName: "delete-days";
         banOptionsDeleteDaysDescription: "The amount of days of messages to delete, from 0 to 7.";

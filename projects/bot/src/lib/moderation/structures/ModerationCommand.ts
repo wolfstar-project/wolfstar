@@ -374,7 +374,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 	/**
 	 * Whether the target accepts the direct messages about the moderation actions taken on them, the `report` column of
-	 * the `User` model (see the `togglemoderationdm` command).
+	 * the `User` model (see `/settings user`).
 	 *
 	 * @param userId - The ID of the target.
 	 */
