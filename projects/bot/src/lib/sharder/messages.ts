@@ -13,6 +13,10 @@ export interface ShardMessages {
 	 * The settings of a guild were written by a shard, the others drop their cached copy.
 	 */
 	settingsUpdate: { guildId: string };
+	/**
+	 * The auto-moderation rules of a guild were changed by a shard, the others drop their cached copy.
+	 */
+	automodRulesUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

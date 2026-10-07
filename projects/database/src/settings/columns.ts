@@ -3,22 +3,13 @@ import type { Snowflake } from 'discord-api-types/v10';
 
 /**
  * The tables a guild's settings are spread across, in foreign-key order: every table references the one it follows
- * (`Modules` → `Guild`, `GuildAutoModeration` → `Modules`, `GuildAutoModerationLinks` → `GuildAutoModeration`, …),
+ * (`Modules` → `Guild`, `GuildAutoModeration` → `Modules`, …),
  * so creating them in this order always satisfies the constraints.
  */
 export const Tables = [
 	'Guild',
 	'Modules',
 	'GuildAutoModeration',
-	'GuildAutoModerationAttachments',
-	'GuildAutoModerationCapitals',
-	'GuildAutoModerationInvites',
-	'GuildAutoModerationLinks',
-	'GuildAutoModerationMentions',
-	'GuildAutoModerationNewlines',
-	'GuildAutoModerationNoMentionSpam',
-	'GuildAutoModerationWords',
-	'GuildAutoModerationZalgo',
 	'GuildCommands',
 	'GuildLogs',
 	'GuildModeration',
@@ -68,26 +59,6 @@ export type SettingValue<Value, Kind extends ColumnKind> = Kind extends 'snowfla
 				? Element[]
 				: Value;
 
-/**
- * The columns every auto-moderation rule table has, by the suffix of their settings.
- */
-const RuleColumns = {
-	Enabled: ['enabled', 'boolean'],
-	SoftAction: ['softAction', 'value'],
-	HardAction: ['hardAction', 'value'],
-	HardActionDuration: ['hardActionDuration', 'value'],
-	ThresholdMaximum: ['thresholdMaximum', 'value'],
-	ThresholdDuration: ['thresholdDuration', 'value'],
-	IgnoredRoles: ['ignoredRoles', 'snowflakes'],
-	IgnoredChannels: ['ignoredChannels', 'snowflakes']
-} as const;
-
-type RuleColumnName = (typeof RuleColumns)[keyof typeof RuleColumns][0];
-
-type RuleTableName = {
-	[Table in TableName]: TableRow<Table> extends Record<RuleColumnName, unknown> ? Table : never;
-}[TableName];
-
 type ColumnEntries<Table extends TableName> = Record<
 	string,
 	readonly [column: Exclude<keyof TableRow<Table>, symbol | number | 'id'>, kind: ColumnKind]
@@ -97,30 +68,12 @@ type ColumnsOf<Table extends TableName, Entries extends ColumnEntries<Table>> = 
 	[Key in keyof Entries]: Column<Table, Entries[Key][0], Entries[Key][1]>;
 };
 
-type RuleColumnsOf<Table extends RuleTableName, Prefix extends string> = {
-	[Suffix in keyof typeof RuleColumns as `${Prefix}${Suffix}`]: Column<Table, (typeof RuleColumns)[Suffix][0], (typeof RuleColumns)[Suffix][1]>;
-};
-
 /**
  * Maps settings to columns of a table. The columns are checked against the contract: a name the table does not have
  * does not compile.
  */
 function columns<const Table extends TableName, const Entries extends ColumnEntries<Table>>(table: Table, entries: Entries) {
 	return Object.fromEntries(Object.entries(entries).map(([key, [column, kind]]) => [key, { table, column, kind }])) as ColumnsOf<Table, Entries>;
-}
-
-function autoModerationRule<const Table extends RuleTableName, const Prefix extends string>(
-	table: Table,
-	prefix: Prefix
-): RuleColumnsOf<Table, Prefix>;
-function autoModerationRule<const Table extends RuleTableName, const Prefix extends string, Extra extends object>(
-	table: Table,
-	prefix: Prefix,
-	extra: Extra
-): RuleColumnsOf<Table, Prefix> & Extra;
-function autoModerationRule(table: RuleTableName, prefix: string, extra: object = {}) {
-	const rule = Object.fromEntries(Object.entries(RuleColumns).map(([suffix, [column, kind]]) => [`${prefix}${suffix}`, { table, column, kind }]));
-	return { ...rule, ...extra };
 }
 
 /**
@@ -141,49 +94,6 @@ export const Columns = {
 		automodChannel: ['channelId', 'snowflake'],
 		automodTrackNative: ['trackNative', 'value']
 	}),
-	...autoModerationRule('GuildAutoModerationAttachments', 'automodAttachments'),
-	...autoModerationRule(
-		'GuildAutoModerationCapitals',
-		'automodCapitals',
-		columns('GuildAutoModerationCapitals', {
-			automodCapitalsMinimum: ['minimum', 'value'],
-			automodCapitalsMaximum: ['maximum', 'value']
-		})
-	),
-	...autoModerationRule(
-		'GuildAutoModerationInvites',
-		'automodInvites',
-		columns('GuildAutoModerationInvites', {
-			automodInvitesAllowedCodes: ['allowedCodes', 'value'],
-			automodInvitesAllowedGuilds: ['allowedGuilds', 'snowflakes']
-		})
-	),
-	...autoModerationRule(
-		'GuildAutoModerationLinks',
-		'automodLinks',
-		columns('GuildAutoModerationLinks', { automodLinksAllowed: ['allowed', 'value'] })
-	),
-	...autoModerationRule('GuildAutoModerationMentions', 'automodMentions'),
-	...autoModerationRule(
-		'GuildAutoModerationNewlines',
-		'automodNewlines',
-		columns('GuildAutoModerationNewlines', { automodNewlinesMaximum: ['maximum', 'value'] })
-	),
-	...autoModerationRule(
-		'GuildAutoModerationNoMentionSpam',
-		'automodNoMentionSpam',
-		columns('GuildAutoModerationNoMentionSpam', {
-			automodNoMentionSpamAlerts: ['alerts', 'value'],
-			automodNoMentionSpamMentionsAllowed: ['mentionsAllowed', 'value'],
-			automodNoMentionSpamTimePeriod: ['timePeriod', 'value']
-		})
-	),
-	...autoModerationRule('GuildAutoModerationWords', 'automodWords', columns('GuildAutoModerationWords', { automodWordsList: ['words', 'value'] })),
-	...autoModerationRule(
-		'GuildAutoModerationZalgo',
-		'automodZalgo',
-		columns('GuildAutoModerationZalgo', { automodZalgoMaximum: ['maximum', 'value'] })
-	),
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
 		commandsDisabledChannels: ['disabledChannels', 'snowflakes']

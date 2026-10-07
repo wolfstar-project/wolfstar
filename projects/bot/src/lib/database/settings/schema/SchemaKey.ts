@@ -36,8 +36,7 @@ export type SchemaKeyType =
 	| 'timespan'
 	| 'uniqueRoleSet'
 	| 'url'
-	| 'user'
-	| 'word';
+	| 'user';
 
 export class SchemaKey<K extends GuildDataKey = GuildDataKey> implements ISchemaValue {
 	/**

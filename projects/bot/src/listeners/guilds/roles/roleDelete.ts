@@ -1,4 +1,5 @@
 import { readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
+import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
@@ -22,16 +23,6 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		trx.write({ rolesAdmin: trx.settings.rolesAdmin.filter((rm) => rm !== roleId) });
 		trx.write({ rolesPublic: trx.settings.rolesPublic.filter((rm) => rm !== roleId) });
 
-		trx.write({ automodAttachmentsIgnoredRoles: trx.settings.automodAttachmentsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodCapitalsIgnoredRoles: trx.settings.automodCapitalsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodLinksIgnoredRoles: trx.settings.automodLinksIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodMentionsIgnoredRoles: trx.settings.automodMentionsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodNewlinesIgnoredRoles: trx.settings.automodNewlinesIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodZalgoIgnoredRoles: trx.settings.automodZalgoIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodInvitesIgnoredRoles: trx.settings.automodInvitesIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodWordsIgnoredRoles: trx.settings.automodWordsIgnoredRoles.filter((rm) => rm !== roleId) });
-		trx.write({ automodNoMentionSpamIgnoredRoles: trx.settings.automodNoMentionSpamIgnoredRoles.filter((rm) => rm !== roleId) });
-
 		// The initial roles hold several roles, unlike the single role they held before:
 		trx.write({ rolesInitial: trx.settings.rolesInitial.filter((rm) => rm !== roleId) });
 		trx.write({ rolesInitialHumans: trx.settings.rolesInitialHumans.filter((rm) => rm !== roleId) });
@@ -49,6 +40,12 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		}
 
 		await trx.submitWithAudit(this.container.gatewayClient.user!.id);
+
+		// The rules that exempted the role forget it:
+		for (const rule of await readAutoModerationRules(guild.id)) {
+			if (!rule.ignoredRoles.includes(roleId)) continue;
+			await updateAutoModerationRule(guild.id, rule.id, (current) => ({ ignoredRoles: current.ignoredRoles.filter((id) => id !== roleId) }));
+		}
 	}
 
 	#filterStickyRoles(roles: readonly StickyRole[], roleId: Snowflake) {

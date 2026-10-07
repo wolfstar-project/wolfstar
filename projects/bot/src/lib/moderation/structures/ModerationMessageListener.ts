@@ -1,4 +1,5 @@
-import { readSettings, readSettingsAdder, type AdderKey } from '#lib/database';
+import { readSettings } from '#lib/database';
+import { getAutoModerationRuleAdder, readAutoModerationRules } from '#lib/moderation/automod/rules';
 import type { AdderError } from '#lib/database/utils/Adder';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -12,67 +13,66 @@ import type { EmbedBuilder } from '@discordjs/builders';
 import { isNullishOrZero, type Awaitable, type Nullish } from '@sapphire/utilities';
 import { Listener } from '@wolfstar/http-framework';
 import { canSendMessages, isTextBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import type { GuildMember, Message } from '@wolfstar/plugin-gateway';
+import type { Message } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
-import type { AutoModerationHardAction, GuildSettingsOfType, ReadonlyGuildData } from 'wolfstar-database';
+import type { AutoModerationRule, AutoModerationRuleType } from 'wolfstar-database';
 
 /**
- * The base of the listeners that run an auto-moderation rule on the messages the members send
+ * The base of the listeners that run the auto-moderation rules of a type on the messages the members send
  * (`src/listeners/moderation/messages`), which all listen to {@linkcode Events.GuildUserMessage}.
  *
  * @remarks
  *
- * A message that infringes the rule ({@linkcode ModerationMessageListener.preProcess} returns a value) gets the soft
- * actions of the rule (delete, alert, log), then the infraction is added to the threshold of the rule, and the hard
- * action is taken once the threshold is reached, or right away when the rule has no threshold.
+ * A guild has as many rules of a type as it wants. They are tried oldest first, and the first one the message
+ * infringes ({@linkcode ModerationMessageListener.preProcess} returns a value) is the only one applied: its soft
+ * actions (delete, alert, log), then the infraction is added to its threshold, and its hard action is taken once the
+ * threshold is reached, or right away when the rule has none.
  */
-export abstract class ModerationMessageListener<T = unknown> extends Listener {
-	private readonly keyEnabled: GuildSettingsOfType<boolean>;
-	private readonly ignoredRolesPath: GuildSettingsOfType<readonly string[]>;
-	private readonly ignoredChannelsPath: GuildSettingsOfType<readonly string[]>;
-	private readonly softPunishmentPath: GuildSettingsOfType<number>;
-	private readonly hardPunishmentPath: HardPunishment;
+export abstract class ModerationMessageListener<T = unknown, Type extends AutoModerationRuleType = AutoModerationRuleType> extends Listener {
+	private readonly type: Type;
 	private readonly reasonLanguageKey: ModerationMessageListener.ReasonKey;
 	private readonly reasonLanguageKeyWithMaximum: `${ModerationMessageListener.ReasonKey}WithMaximum`;
 
-	public constructor(context: ModerationMessageListener.LoaderContext, options: ModerationMessageListener.Options) {
+	public constructor(context: ModerationMessageListener.LoaderContext, options: ModerationMessageListener.Options<Type>) {
 		super(context, { ...options, event: Events.GuildUserMessage });
 
-		this.keyEnabled = options.keyEnabled;
-		this.ignoredRolesPath = options.ignoredRolesPath;
-		this.ignoredChannelsPath = options.ignoredChannelsPath;
-		this.softPunishmentPath = options.softPunishmentPath;
-		this.hardPunishmentPath = options.hardPunishmentPath;
+		this.type = options.type;
 		this.reasonLanguageKey = options.reasonLanguageKey;
 		this.reasonLanguageKeyWithMaximum = options.reasonLanguageKeyWithMaximum;
 	}
 
 	public async run(message: GuildMessage) {
-		const shouldRun = await this.checkPreRun(message);
-		if (!shouldRun) return;
+		const rules = (await readAutoModerationRules(message.guildId)).filter(
+			(rule): rule is AutoModerationRule<Type> => rule.type === this.type && rule.enabled && this.checkRule(rule, message)
+		);
+		if (rules.length === 0) return;
 
 		if (await isModerator(message.member)) return;
 
-		const preProcessed = await this.preProcess(message);
-		if (preProcessed === null) return;
+		for (const rule of rules) {
+			const preProcessed = await this.preProcess(message, rule);
+			if (preProcessed === null) continue;
 
+			// One rule per message: a second one of the same type would delete and punish for the same thing again.
+			return this.processInfraction(message, rule, preProcessed);
+		}
+	}
+
+	protected async processInfraction(message: GuildMessage, rule: AutoModerationRule<Type>, preProcessed: T) {
 		const settings = await readSettings(message.guildId);
 
 		const logChannelId = settings.moderationChannel;
-		const filter = settings[this.softPunishmentPath];
 		const t = await fetchGuildT({ id: message.guildId });
-		await this.processSoftPunishment(message, logChannelId, t, filter, preProcessed);
+		await this.processSoftPunishment(message, logChannelId, t, rule.softAction, preProcessed);
 
-		if (this.hardPunishmentPath === null) return;
-
-		const adder = readSettingsAdder(settings, this.hardPunishmentPath.adder);
-		if (!adder) return this.processHardPunishment(message, t, 0, 0);
+		const adder = getAutoModerationRuleAdder(rule);
+		if (!adder) return this.processHardPunishment(message, rule, t, 0, 0);
 
 		const points = typeof preProcessed === 'number' ? preProcessed : 1;
 		try {
 			adder.add(message.author.id, points);
 		} catch (error) {
-			await this.processHardPunishment(message, t, (error as AdderError).amount, adder.maximum);
+			await this.processHardPunishment(message, rule, t, (error as AdderError).amount, adder.maximum);
 		}
 	}
 
@@ -99,11 +99,15 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		}
 	}
 
-	protected async processHardPunishment(message: GuildMessage, language: TFunction<AnyNamespace>, points: number, maximum: number) {
-		const settings = await readSettings(message.guildId);
-		const action = settings[this.hardPunishmentPath.action];
-		const duration = settings[this.hardPunishmentPath.actionDuration];
-		switch (action) {
+	protected async processHardPunishment(
+		message: GuildMessage,
+		rule: AutoModerationRule<Type>,
+		language: TFunction<AnyNamespace>,
+		points: number,
+		maximum: number
+	) {
+		const duration = rule.hardActionDuration;
+		switch (rule.hardAction) {
 			case 'Warning':
 				await this.onWarning(message, language, points, maximum, duration);
 				break;
@@ -263,7 +267,7 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		return this.sendTemporaryMessage(message, content);
 	}
 
-	protected abstract preProcess(message: GuildMessage): Promise<T | null> | T | null;
+	protected abstract preProcess(message: GuildMessage, rule: AutoModerationRule<Type>): Promise<T | null> | T | null;
 	protected abstract onDelete(message: GuildMessage, language: TFunction<AnyNamespace>, value: T): Awaitable<unknown>;
 	protected abstract onAlert(message: GuildMessage, language: TFunction<AnyNamespace>, value: T): Awaitable<unknown>;
 	protected abstract onLogMessage(
@@ -272,37 +276,18 @@ export abstract class ModerationMessageListener<T = unknown> extends Listener {
 		value: T
 	): Awaitable<ModerationMessageListener.LogMessage>;
 
-	private async checkPreRun(message: GuildMessage) {
-		const settings = await readSettings(message.guildId);
-		return settings[this.keyEnabled] && this.checkMessageChannel(settings, message.channelId) && this.checkMemberRoles(settings, message.member);
-	}
+	private checkRule(rule: AutoModerationRule, message: GuildMessage) {
+		if (rule.ignoredChannels.includes(message.channelId)) return false;
+		if (message.member === null) return false;
+		if (rule.ignoredRoles.length === 0) return true;
 
-	private checkMessageChannel(settings: ReadonlyGuildData, channelId: string) {
-		const localIgnore = settings[this.ignoredChannelsPath] as readonly string[];
-		if (localIgnore.includes(channelId)) return false;
-
-		return true;
-	}
-
-	private checkMemberRoles(settings: ReadonlyGuildData, member: GuildMember | null) {
-		if (member === null) return false;
-
-		const ignoredRoles = settings[this.ignoredRolesPath];
-		if (ignoredRoles.length === 0) return true;
-
-		const { roleIds } = member;
-		return !ignoredRoles.some((id) => roleIds.includes(id));
+		const { roleIds } = message.member;
+		return !rule.ignoredRoles.some((id) => roleIds.includes(id));
 	}
 
 	#getReason(t: TFunction<AnyNamespace>, points: number, maximum: number) {
 		return maximum === 0 ? t(this.reasonLanguageKey) : t(this.reasonLanguageKeyWithMaximum, { amount: points, maximum });
 	}
-}
-
-export interface HardPunishment {
-	action: GuildSettingsOfType<AutoModerationHardAction>;
-	actionDuration: GuildSettingsOfType<number | null>;
-	adder: AdderKey;
 }
 
 export declare namespace ModerationMessageListener {
@@ -323,12 +308,11 @@ export declare namespace ModerationMessageListener {
 	 */
 	type LogMessage = EmbedBuilder | ReturnType<typeof createLogMessage>;
 
-	interface Options extends Listener.Options {
-		keyEnabled: GuildSettingsOfType<boolean>;
-		ignoredRolesPath: GuildSettingsOfType<readonly string[]>;
-		ignoredChannelsPath: GuildSettingsOfType<readonly string[]>;
-		softPunishmentPath: GuildSettingsOfType<number>;
-		hardPunishmentPath: HardPunishment;
+	interface Options<Type extends AutoModerationRuleType = AutoModerationRuleType> extends Listener.Options {
+		/**
+		 * The type of the rules the listener runs.
+		 */
+		type: Type;
 		reasonLanguageKey: ReasonKey;
 		reasonLanguageKeyWithMaximum: `${ReasonKey}WithMaximum`;
 	}
