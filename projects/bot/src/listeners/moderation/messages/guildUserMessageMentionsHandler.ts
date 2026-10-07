@@ -51,10 +51,10 @@ export class UserListener extends Listener {
 				rateLimit.resetTime();
 				if (!warned && rule.options.alerts && rateLimit.remaining / ctx.limit <= 0.2) {
 					warned = true;
-					this.container.client.emit(Events.ModerationMentionSpamWarning, message);
+					this.container.client.emit(Events.GuildUserMessageMentionSpamWarning, message);
 				}
 			} catch {
-				this.container.client.emit(Events.ModerationMentionSpamExceeded, message, rule);
+				this.container.client.emit(Events.GuildUserMessageMentionSpamExceeded, message, rule);
 				return;
 			}
 		}
