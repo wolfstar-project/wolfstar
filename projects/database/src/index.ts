@@ -19,6 +19,8 @@ export type Database = typeof db;
 
 export type { Contract, Models };
 
+export * from './automod/storage.js';
+export * from './automod/types.js';
 export * from './settings/columns.js';
 export * from './settings/constants.js';
 export * from './settings/storage.js';

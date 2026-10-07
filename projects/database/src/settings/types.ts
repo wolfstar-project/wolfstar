@@ -10,20 +10,17 @@ export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 /**
  * The hard action an auto-moderation rule takes, as the `GuildAutoModerationHardAction` enum stores it.
  */
-export type AutoModerationHardAction = Models.public_GuildAutoModerationLinks['hardAction'];
+export type AutoModerationHardAction = Models.public_GuildAutoModerationRule['hardAction'];
 
 /**
  * The settings of a guild, flattened from the normalized Prisma 8 tables (`Guild`, `Modules`, `GuildRoles`, …).
  *
  * Every key is prefixed by the table it is stored in. The keys stored in a column, and their types, are derived from
- * the `Columns` map of `./columns.ts` and from the models of the contract; the two declared here are stored in tables
- * of their own. Snowflakes are kept as strings; they are converted from and to `bigint` at the storage boundary.
+ * the `Columns` map of `./columns.ts` and from the models of the contract; the one declared here is stored in a table
+ * of its own. Snowflakes are kept as strings; they are converted from and to `bigint` at the storage boundary.
  */
 export interface GuildData extends StoredGuildData {
 	id: Snowflake;
-
-	// GuildAutoModerationMentionsOverrides
-	automodMentionsOverrides: MentionsOverride[];
 
 	// StickyRole
 	stickyRoles: StickyRole[];
@@ -101,16 +98,11 @@ export interface StickyRole {
 	user: Snowflake;
 }
 
-export interface MentionsOverride {
-	roles: readonly Snowflake[];
-	users: readonly Snowflake[];
-	points: number;
-}
-
 declare global {
 	namespace PrismaJson {
 		type PermissionNodeEntries = PermissionsNode[];
 		type UniqueRoleSetEntries = UniqueRoleSet[];
 		type AuditEventChanges = import('./types.js').AuditEventChanges;
+		type AutoModerationRuleOptions = import('../automod/types.js').AutoModerationRuleOptions;
 	}
 }

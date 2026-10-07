@@ -1,7 +1,7 @@
 import type { Database } from '../index.js';
 import { Columns, Tables, type Column, type ColumnKind, type StoredKey, type TableName } from './columns.js';
 import { getDefaultGuildSettings } from './constants.js';
-import type { GuildData, GuildDataKey, MentionsOverride, ReadonlyGuildData, StickyRole } from './types.js';
+import type { GuildData, GuildDataKey, ReadonlyGuildData, StickyRole } from './types.js';
 import type { Snowflake } from 'discord-api-types/v10';
 
 const StoredKeys = Object.keys(Columns) as StoredKey[];
@@ -55,9 +55,8 @@ function toColumn(kind: ColumnKind, value: unknown): unknown {
  */
 export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData | null> {
 	const key = BigInt(id);
-	const [rows, overrides, stickyRoles] = await Promise.all([
+	const [rows, stickyRoles] = await Promise.all([
 		Promise.all(Tables.map((name) => table(orm, name).first({ id: key }))),
-		orm.public.GuildAutoModerationMentionsOverrides.where({ parentId: key }).all(),
 		orm.public.StickyRole.where({ guildId: key }).all()
 	]);
 
@@ -73,15 +72,6 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
 		if (!row) continue;
 		Reflect.set(data, settingKey, toSetting(kind, row[column]));
 	}
-
-	data.automodMentionsOverrides = overrides.map(
-		(override) =>
-			({
-				roles: override.roles.map(String),
-				users: override.users.map(String),
-				points: override.points
-			}) satisfies MentionsOverride
-	);
 
 	data.stickyRoles = stickyRoles.map((entry) => ({ user: String(entry.userId), roles: entry.roleIds.map(String) }) satisfies StickyRole);
 
@@ -103,7 +93,6 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 	for (const key of changedKeys) {
 		if (key === 'id') continue;
 		if (key === 'stickyRoles') touched.add('Guild');
-		else if (key === 'automodMentionsOverrides') touched.add('GuildAutoModerationMentions');
 		else touched.add(ColumnsByKey[key].table);
 	}
 
@@ -141,21 +130,6 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 						guildId: id,
 						userId: BigInt(entry.user),
 						roleIds: entry.roles.map((role) => BigInt(role))
-					}))
-				);
-			}
-		}
-
-		if ('automodMentionsOverrides' in changes) {
-			const overrides = tx.orm.public.GuildAutoModerationMentionsOverrides;
-			await overrides.where({ parentId: id }).deleteAndCount();
-			if (settings.automodMentionsOverrides.length > 0) {
-				await overrides.createAndCount(
-					settings.automodMentionsOverrides.map((override) => ({
-						parentId: id,
-						roles: override.roles.map((role) => BigInt(role)),
-						users: override.users.map((user) => BigInt(user)),
-						points: override.points
 					}))
 				);
 			}
