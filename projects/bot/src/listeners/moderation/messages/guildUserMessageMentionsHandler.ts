@@ -17,7 +17,11 @@ export class UserListener extends Listener {
 	public async run(message: GuildMessage) {
 		if (!isNullishOrZero(message.editedTimestamp)) return;
 
-		const { roleIds } = message.member;
+		// Without the member the roles and the moderator level cannot be checked, so nobody is moderated by guess:
+		const { member } = message;
+		if (member === null) return;
+
+		const { roleIds } = member;
 		const rules = (await readAutoModerationRules(message.guildId)).filter(
 			(rule): rule is AutoModerationRule<'NoMentionSpam'> =>
 				rule.type === 'NoMentionSpam' &&
@@ -26,7 +30,7 @@ export class UserListener extends Listener {
 				!rule.ignoredRoles.some((id) => roleIds.includes(id))
 		);
 		if (rules.length === 0) return;
-		if (await isModerator(message.member)) return;
+		if (await isModerator(member)) return;
 
 		const mentions =
 			message.mentions.users.reduce((acc, user) => (user.bot || user.id === message.author.id ? acc : acc + 1), 0) +
@@ -47,10 +51,10 @@ export class UserListener extends Listener {
 				rateLimit.resetTime();
 				if (!warned && rule.options.alerts && rateLimit.remaining / ctx.limit <= 0.2) {
 					warned = true;
-					this.container.client.emit(Events.MentionSpamWarning, message);
+					this.container.client.emit(Events.ModerationMentionSpamWarning, message);
 				}
 			} catch {
-				this.container.client.emit(Events.MentionSpamExceeded, message, rule);
+				this.container.client.emit(Events.ModerationMentionSpamExceeded, message, rule);
 				return;
 			}
 		}

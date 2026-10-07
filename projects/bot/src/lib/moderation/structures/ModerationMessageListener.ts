@@ -47,7 +47,9 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		);
 		if (rules.length === 0) return;
 
-		if (await isModerator(message.member)) return;
+		// Without the member the roles and the moderator level cannot be checked, so nobody is moderated by guess:
+		const { member } = message;
+		if (member === null || (await isModerator(member))) return;
 
 		for (const rule of rules) {
 			const preProcessed = await this.preProcess(message, rule);
