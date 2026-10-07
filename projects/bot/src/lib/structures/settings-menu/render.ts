@@ -55,6 +55,7 @@ const ModuleEmojis: Record<string, string> = {
 	commands: '⌨️',
 	logs: '📜',
 	moderation: '🔨',
+	reports: '🚩',
 	roles: '🎭'
 };
 

@@ -1,5 +1,6 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
+import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
@@ -279,44 +280,13 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		interaction: ModerationCommand.Interaction,
 		context: ModerationCommand.HandlerParameters<ValueType>
 	): Promise<GuildMember | null> {
-		const { guild, target, t } = context;
-		if (target.id === interaction.user.id) {
-			throw t('moderation:actionTargetSelf');
-		}
-
-		if (target.id === guild.ownerId) {
-			throw t('moderation:actionTargetGuildOwner');
-		}
-
-		if (target.id === container.gatewayClient.user?.id) {
-			throw t('moderation:actionTargetWolf');
-		}
-
-		const { members } = container.gatewayClient;
-		const member = await members.fetch(guild.id, target.id).catch(() => {
-			if (this.requiredMember) throw t('errors:userNotInGuild');
-			return null;
+		return checkTargetCanBeModerated({
+			t: context.t,
+			guild: context.guild,
+			targetId: context.target.id,
+			moderatorId: interaction.user.id,
+			requiredMember: this.requiredMember
 		});
-
-		if (member) {
-			const targetHighestRolePosition = await getHighestRolePosition(member);
-
-			// Wolf cannot moderate members with higher role position than her:
-			const me = await members.fetchMe(guild.id);
-			if (targetHighestRolePosition >= (await getHighestRolePosition(me))) {
-				throw t('moderation:actionTargetHigherHierarchyWolf');
-			}
-
-			// A member who isn't a server owner is not allowed to moderate somebody with higher role than them:
-			if (interaction.user.id !== guild.ownerId) {
-				const author = await members.fetch(guild.id, interaction.user.id);
-				if (targetHighestRolePosition >= (await getHighestRolePosition(author))) {
-					throw t('moderation:actionTargetHigherHierarchyAuthor');
-				}
-			}
-		}
-
-		return member;
 	}
 
 	protected async getActionData(
@@ -448,16 +418,6 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		const users = [`- ${target.tag} → ${message}`];
 		return t('commands/moderation:moderationFailed', { users: users.join('\n'), count: users.length });
 	}
-}
-
-/**
- * Resolves the position of the highest role of a member, `0` (the position of `@everyone`) when they have none.
- *
- * @param member - The member to get the highest role position of.
- */
-async function getHighestRolePosition(member: GuildMember) {
-	const role = await member.roles.highest;
-	return role?.position ?? 0;
 }
 
 function getImageUrl(attachment: APIAttachment | undefined) {

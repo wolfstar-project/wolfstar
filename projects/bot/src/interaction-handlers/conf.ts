@@ -23,6 +23,7 @@ import {
 	resolveSettingGroup,
 	type SettingsMenuAction
 } from '#lib/structures/settings-menu';
+import { getModalValue } from '#utils/interactions';
 import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { MessagePrompter, getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -236,21 +237,4 @@ export class UserInteractionHandler extends InteractionHandler {
 function getSelectValues(interaction: ComponentInteraction): string[] {
 	const { data } = interaction;
 	return 'values' in data ? [...data.values] : [];
-}
-
-/**
- * Finds the value of a text input of a submitted modal, which Discord nests in rows or labels.
- */
-function getModalValue(components: readonly unknown[], customId: string): string | null {
-	for (const component of components) {
-		if (typeof component !== 'object' || component === null) continue;
-
-		const entry = component as { custom_id?: string; value?: string; components?: readonly unknown[]; component?: unknown };
-		if (entry.custom_id === customId && typeof entry.value === 'string') return entry.value;
-
-		const nested = getModalValue([...(entry.components ?? []), ...(entry.component === undefined ? [] : [entry.component])], customId);
-		if (nested !== null) return nested;
-	}
-
-	return null;
 }

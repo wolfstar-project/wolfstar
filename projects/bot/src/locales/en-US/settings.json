@@ -47,6 +47,8 @@
 	"rolesInitialHumans": "If configured, I will give this role to regular users upon joining. (not bots)",
 	"rolesInitialBots": "If configured, I will give this role to bot users upon joining.",
 	"rolesModerator": "The moderator roles. Moderators have access to almost all moderation commands. Defaults to anyone who can ban members.",
+	"reportsChannel": "The channel the reports of the members are sent to. Members report a message or a user from the Apps menu or with `/report`, and nothing can be reported while this is not set.",
+	"reportsRole": "The role I mention when a report arrives, if any.",
 	"rolesMuted": "The muted role, if configured, I will give new muted users this role. Otherwise I will prompt you the creation of one.",
 	"rolesPublic": "The public roles. These can be claimed by any user using the `roles` command.",
 	"rolesRemoveInitial": "Whether claiming a public role should remove the initial role at the same time.",

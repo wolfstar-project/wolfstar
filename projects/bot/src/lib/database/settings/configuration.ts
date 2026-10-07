@@ -137,6 +137,10 @@ export function getConfiguration() {
 			dashboardOnly: true
 		},
 
+		// Reports
+		reportsChannel: { type: 'guildTextChannel', name: 'reports.channel', description: 'settings:reportsChannel' },
+		reportsRole: { type: 'role', name: 'reports.role', description: 'settings:reportsRole' },
+
 		// Roles
 		rolesInitial: { type: 'role', name: 'roles.initial', description: 'settings:rolesInitial', array: true },
 		rolesInitialHumans: { type: 'role', name: 'roles.initial-humans', description: 'settings:rolesInitialHumans', array: true },
