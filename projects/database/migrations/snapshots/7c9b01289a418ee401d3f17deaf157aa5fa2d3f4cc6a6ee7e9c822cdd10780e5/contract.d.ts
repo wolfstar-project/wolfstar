@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'924bef5ebc429f5fbdccd88a71eb89cf56f3dd306680c642a9a7a602022d3097'>;
+export type StorageHash = StorageHashBase<'7c9b01289a418ee401d3f17deaf157aa5fa2d3f4cc6a6ee7e9c822cdd10780e5'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -350,8 +350,11 @@ export type FieldOutputTypes = {
 			readonly users: PrismaJson.PermissionNodeEntries;
 		};
 		readonly GuildReports: {
+			readonly anonymous: CodecTypes['pg/bool@1']['output'];
+			readonly blockedUsers: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly notify: CodecTypes['pg/bool@1']['output'];
 			readonly roleId: CodecTypes['pg/int8@1']['output'] | null;
 		};
 		readonly GuildRoles: {
@@ -401,6 +404,25 @@ export type FieldOutputTypes = {
 			readonly logs: CodecTypes['pg/bool@1']['output'];
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
+		};
+		readonly Report: {
+			readonly action: CodecTypes['pg/text@1']['output'] | null;
+			readonly anonymous: CodecTypes['pg/bool@1']['output'];
+			readonly attachments: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+			readonly caseId: CodecTypes['pg/int4@1']['output'] | null;
+			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly closedAt: TimestampString<3> | null;
+			readonly content: CodecTypes['pg/text@1']['output'] | null;
+			readonly createdAt: TimestampString<3>;
+			readonly guildId: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly messageId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly moderatorId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly reason: CodecTypes['pg/text@1']['output'];
+			readonly reporterId: CodecTypes['pg/int8@1']['output'];
+			readonly status: 'Open' | 'Actioned' | 'Dismissed';
+			readonly targetId: CodecTypes['pg/int8@1']['output'];
+			readonly targetTag: CodecTypes['pg/text@1']['output'];
 		};
 		readonly StickyRole: {
 			readonly guildId: CodecTypes['pg/int8@1']['output'];
@@ -525,8 +547,11 @@ export type FieldInputTypes = {
 			readonly users: CodecTypes['typed/json@1']['input'];
 		};
 		readonly GuildReports: {
+			readonly anonymous: CodecTypes['pg/bool@1']['input'];
+			readonly blockedUsers: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly notify: CodecTypes['pg/bool@1']['input'];
 			readonly roleId: CodecTypes['pg/int8@1']['input'] | null;
 		};
 		readonly GuildRoles: {
@@ -576,6 +601,25 @@ export type FieldInputTypes = {
 			readonly logs: CodecTypes['pg/bool@1']['input'];
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
+		};
+		readonly Report: {
+			readonly action: CodecTypes['pg/text@1']['input'] | null;
+			readonly anonymous: CodecTypes['pg/bool@1']['input'];
+			readonly attachments: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+			readonly caseId: CodecTypes['pg/int4@1']['input'] | null;
+			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly closedAt: CodecTypes['pg/timestamp-string@1']['input'] | null;
+			readonly content: CodecTypes['pg/text@1']['input'] | null;
+			readonly createdAt: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly guildId: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly messageId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly moderatorId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly reason: CodecTypes['pg/text@1']['input'];
+			readonly reporterId: CodecTypes['pg/int8@1']['input'];
+			readonly status: 'Open' | 'Actioned' | 'Dismissed';
+			readonly targetId: CodecTypes['pg/int8@1']['input'];
+			readonly targetTag: CodecTypes['pg/text@1']['input'];
 		};
 		readonly StickyRole: {
 			readonly guildId: CodecTypes['pg/int8@1']['input'];
@@ -700,8 +744,11 @@ export type StorageColumnTypes = {
 			readonly users: PrismaJson.PermissionNodeEntries;
 		};
 		readonly GuildReports: {
+			readonly anonymous: CodecTypes['pg/bool@1']['output'];
+			readonly blocked_users: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly notify: CodecTypes['pg/bool@1']['output'];
 			readonly role_id: CodecTypes['pg/int8@1']['output'] | null;
 		};
 		readonly GuildRoles: {
@@ -751,6 +798,25 @@ export type StorageColumnTypes = {
 			readonly logs: CodecTypes['pg/bool@1']['output'];
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
+		};
+		readonly Report: {
+			readonly action: CodecTypes['pg/text@1']['output'] | null;
+			readonly anonymous: CodecTypes['pg/bool@1']['output'];
+			readonly attachments: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+			readonly case_id: CodecTypes['pg/int4@1']['output'] | null;
+			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly closed_at: TimestampString<3> | null;
+			readonly content: CodecTypes['pg/text@1']['output'] | null;
+			readonly created_at: TimestampString<3>;
+			readonly guild_id: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly message_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly moderator_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly reason: CodecTypes['pg/text@1']['output'];
+			readonly reporter_id: CodecTypes['pg/int8@1']['output'];
+			readonly status: 'Open' | 'Actioned' | 'Dismissed';
+			readonly target_id: CodecTypes['pg/int8@1']['output'];
+			readonly target_tag: CodecTypes['pg/text@1']['output'];
 		};
 		readonly StickyRole: {
 			readonly guild_id: CodecTypes['pg/int8@1']['output'];
@@ -875,8 +941,11 @@ export type StorageColumnInputTypes = {
 			readonly users: CodecTypes['typed/json@1']['input'];
 		};
 		readonly GuildReports: {
+			readonly anonymous: CodecTypes['pg/bool@1']['input'];
+			readonly blocked_users: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly notify: CodecTypes['pg/bool@1']['input'];
 			readonly role_id: CodecTypes['pg/int8@1']['input'] | null;
 		};
 		readonly GuildRoles: {
@@ -926,6 +995,25 @@ export type StorageColumnInputTypes = {
 			readonly logs: CodecTypes['pg/bool@1']['input'];
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
+		};
+		readonly Report: {
+			readonly action: CodecTypes['pg/text@1']['input'] | null;
+			readonly anonymous: CodecTypes['pg/bool@1']['input'];
+			readonly attachments: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+			readonly case_id: CodecTypes['pg/int4@1']['input'] | null;
+			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly closed_at: CodecTypes['pg/timestamp-string@1']['input'] | null;
+			readonly content: CodecTypes['pg/text@1']['input'] | null;
+			readonly created_at: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly guild_id: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly message_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly moderator_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly reason: CodecTypes['pg/text@1']['input'];
+			readonly reporter_id: CodecTypes['pg/int8@1']['input'];
+			readonly status: 'Open' | 'Actioned' | 'Dismissed';
+			readonly target_id: CodecTypes['pg/int8@1']['input'];
+			readonly target_tag: CodecTypes['pg/text@1']['input'];
 		};
 		readonly StickyRole: {
 			readonly guild_id: CodecTypes['pg/int8@1']['input'];
@@ -1068,8 +1156,11 @@ export namespace Models {
 		readonly [RelationKeys]?: 'modules';
 	};
 	export type public_GuildReports = {
+		anonymous: CodecTypes['pg/bool@1']['output'];
+		blockedUsers: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
 		id: CodecTypes['pg/int8@1']['output'];
+		notify: CodecTypes['pg/bool@1']['output'];
 		roleId: CodecTypes['pg/int8@1']['output'] | null;
 		modules: public_Modules;
 		readonly [RelationKeys]?: 'modules';
@@ -1128,6 +1219,27 @@ export namespace Models {
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
 	};
+	export type public_Report = {
+		action: CodecTypes['pg/text@1']['output'] | null;
+		anonymous: CodecTypes['pg/bool@1']['output'];
+		attachments: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+		caseId: CodecTypes['pg/int4@1']['output'] | null;
+		channelId: CodecTypes['pg/int8@1']['output'] | null;
+		closedAt: TimestampString<3> | null;
+		content: CodecTypes['pg/text@1']['output'] | null;
+		createdAt: TimestampString<3>;
+		guildId: CodecTypes['pg/int8@1']['output'];
+		id: CodecTypes['pg/int8@1']['output'];
+		messageId: CodecTypes['pg/int8@1']['output'] | null;
+		moderatorId: CodecTypes['pg/int8@1']['output'] | null;
+		reason: CodecTypes['pg/text@1']['output'];
+		reporterId: CodecTypes['pg/int8@1']['output'];
+		status: 'Open' | 'Actioned' | 'Dismissed';
+		targetId: CodecTypes['pg/int8@1']['output'];
+		targetTag: CodecTypes['pg/text@1']['output'];
+		guild: public_Guild;
+		readonly [RelationKeys]?: 'guild';
+	};
 	export type public_StickyRole = {
 		guildId: CodecTypes['pg/int8@1']['output'];
 		roleIds: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
@@ -1158,6 +1270,7 @@ export declare const models: {
 		GuildRoles: Models.public_GuildRoles;
 		ModerationAction: Models.public_ModerationAction;
 		Modules: Models.public_Modules;
+		Report: Models.public_Report;
 		StickyRole: Models.public_StickyRole;
 		User: Models.public_User;
 	};
@@ -1946,6 +2059,24 @@ type ContractBase = Omit<
 						};
 						readonly GuildReports: {
 							columns: {
+								readonly anonymous: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+									};
+								};
+								readonly blocked_users: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int8@1', readonly []>;
+									};
+								};
 								readonly channel_id: {
 									readonly nativeType: 'int8';
 									readonly codecId: 'pg/int8@1';
@@ -1955,6 +2086,15 @@ type ContractBase = Omit<
 									readonly nativeType: 'int8';
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: false;
+								};
+								readonly notify: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
 								};
 								readonly role_id: {
 									readonly nativeType: 'int8';
@@ -2261,6 +2401,140 @@ type ContractBase = Omit<
 								}
 							];
 						};
+						readonly Report: {
+							columns: {
+								readonly action: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly anonymous: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+									};
+								};
+								readonly attachments: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
+									};
+								};
+								readonly case_id: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: true;
+								};
+								readonly channel_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly closed_at: {
+									readonly nativeType: 'timestamp';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly nullable: true;
+									readonly typeParams: { readonly precision: 3 };
+								};
+								readonly content: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly created_at: {
+									readonly nativeType: 'timestamp';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly nullable: false;
+									readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+									readonly typeParams: { readonly precision: 3 };
+								};
+								readonly guild_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'function';
+										readonly expression: 'autoincrement()';
+									};
+								};
+								readonly message_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly moderator_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly reason: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: false;
+								};
+								readonly reporter_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly status: {
+									readonly nativeType: 'ReportStatus';
+									readonly codecId: 'pg/enum@1';
+									readonly nullable: false;
+									readonly typeParams: { readonly typeName: 'ReportStatus' };
+								};
+								readonly target_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly target_tag: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: false;
+								};
+							};
+							primaryKey: { readonly columns: readonly ['id']; readonly name: 'Report_pkey' };
+							uniques: readonly [];
+							indexes: readonly [
+								{
+									readonly name: 'Report_guild_id_id_idx';
+									readonly columns: readonly ['guild_id', 'id'];
+									readonly unique: false;
+								},
+								{
+									readonly name: 'Report_guild_id_target_id_idx';
+									readonly columns: readonly ['guild_id', 'target_id'];
+									readonly unique: false;
+								}
+							];
+							foreignKeys: readonly [
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Report';
+										readonly columns: readonly ['guild_id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Guild';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'Report_guild_id_fkey';
+								}
+							];
+						};
 						readonly StickyRole: {
 							columns: {
 								readonly guild_id: {
@@ -2349,6 +2623,10 @@ type ContractBase = Omit<
 								'Unban'
 							];
 						};
+						readonly ReportStatus: {
+							readonly kind: 'valueSet';
+							readonly values: readonly ['Open', 'Actioned', 'Dismissed'];
+						};
 					};
 				};
 			};
@@ -2433,6 +2711,7 @@ type ContractBase = Omit<
 			readonly model: 'ModerationAction';
 		};
 		readonly Modules: { readonly namespace: 'public' & NamespaceId; readonly model: 'Modules' };
+		readonly Report: { readonly namespace: 'public' & NamespaceId; readonly model: 'Report' };
 		readonly StickyRole: {
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'StickyRole';
@@ -3130,6 +3409,15 @@ type ContractBase = Omit<
 					};
 					readonly GuildReports: {
 						readonly fields: {
+							readonly anonymous: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly blockedUsers: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+								readonly many: true;
+							};
 							readonly channelId: {
 								readonly nullable: true;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
@@ -3137,6 +3425,10 @@ type ContractBase = Omit<
 							readonly id: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly notify: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
 							readonly roleId: {
 								readonly nullable: true;
@@ -3161,8 +3453,11 @@ type ContractBase = Omit<
 							readonly table: 'GuildReports';
 							readonly namespaceId: 'public';
 							readonly fields: {
+								readonly anonymous: { readonly column: 'anonymous' };
+								readonly blockedUsers: { readonly column: 'blocked_users' };
 								readonly channelId: { readonly column: 'channel_id' };
 								readonly id: { readonly column: 'id' };
+								readonly notify: { readonly column: 'notify' };
 								readonly roleId: { readonly column: 'role_id' };
 							};
 						};
@@ -3405,6 +3700,128 @@ type ContractBase = Omit<
 								readonly logs: { readonly column: 'logs' };
 								readonly moderation: { readonly column: 'moderation' };
 								readonly roles: { readonly column: 'roles' };
+							};
+						};
+					};
+					readonly Report: {
+						readonly fields: {
+							readonly action: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly anonymous: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly attachments: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+								readonly many: true;
+							};
+							readonly caseId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly channelId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly closedAt: {
+								readonly nullable: true;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly typeParams: { readonly precision: 3 };
+								};
+							};
+							readonly content: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly createdAt: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly typeParams: { readonly precision: 3 };
+								};
+							};
+							readonly guildId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly id: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly messageId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly moderatorId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly reason: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly reporterId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly status: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/enum@1';
+									readonly typeParams: { readonly typeName: 'ReportStatus' };
+								};
+							};
+							readonly targetId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly targetTag: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+						};
+						readonly relations: {
+							readonly guild: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'Guild';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: false;
+								readonly on: {
+									readonly localFields: readonly ['guildId'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+						};
+						readonly storage: {
+							readonly table: 'Report';
+							readonly namespaceId: 'public';
+							readonly fields: {
+								readonly action: { readonly column: 'action' };
+								readonly anonymous: { readonly column: 'anonymous' };
+								readonly attachments: { readonly column: 'attachments' };
+								readonly caseId: { readonly column: 'case_id' };
+								readonly channelId: { readonly column: 'channel_id' };
+								readonly closedAt: { readonly column: 'closed_at' };
+								readonly content: { readonly column: 'content' };
+								readonly createdAt: { readonly column: 'created_at' };
+								readonly guildId: { readonly column: 'guild_id' };
+								readonly id: { readonly column: 'id' };
+								readonly messageId: { readonly column: 'message_id' };
+								readonly moderatorId: { readonly column: 'moderator_id' };
+								readonly reason: { readonly column: 'reason' };
+								readonly reporterId: { readonly column: 'reporter_id' };
+								readonly status: { readonly column: 'status' };
+								readonly targetId: { readonly column: 'target_id' };
+								readonly targetTag: { readonly column: 'target_tag' };
 							};
 						};
 					};

@@ -201,8 +201,35 @@ namespace public {
   model GuildReports {
     id        BigInt  @id(map: "GuildReports_pkey")
     channelId BigInt? @map("channel_id")
-    roleId    BigInt? @map("role_id")
-    modules   Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildReports_id_fkey")
+    roleId       BigInt?  @map("role_id")
+    anonymous    Boolean  @default(false)
+    notify       Boolean  @default(true)
+    blockedUsers BigInt[] @default([]) @noCheck(elementNotNull) @map("blocked_users")
+    modules      Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildReports_id_fkey")
+  }
+
+  model Report {
+    id          BigInt                @id(map: "Report_pkey") @default(autoincrement())
+    guildId     BigInt                @map("guild_id")
+    reporterId  BigInt                @map("reporter_id")
+    targetId    BigInt                @map("target_id")
+    targetTag   String                @map("target_tag")
+    channelId   BigInt?               @map("channel_id")
+    messageId   BigInt?               @map("message_id")
+    reason      String
+    content     String?
+    attachments String[]              @default([]) @noCheck(elementNotNull)
+    anonymous   Boolean               @default(false)
+    status      pg.enum(ReportStatus)
+    action      String?
+    caseId      Int?                  @map("case_id")
+    moderatorId BigInt?               @map("moderator_id")
+    createdAt   TimestampString(3)    @default(now()) @map("created_at")
+    closedAt    TimestampString(3)?   @map("closed_at")
+    guild       Guild                 @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "Report_guild_id_fkey", index: false)
+
+    @@index([guildId, id], map: "Report_guild_id_id_idx")
+    @@index([guildId, targetId], map: "Report_guild_id_target_id_idx")
   }
 
   model GuildRoles {
@@ -271,6 +298,12 @@ namespace public {
     NoMentionSpam = "NoMentionSpam"
     Words = "Words"
     Zalgo = "Zalgo"
+  }
+
+  native_enum ReportStatus {
+    Open = "Open"
+    Actioned = "Actioned"
+    Dismissed = "Dismissed"
   }
 
   native_enum GuildAutoModerationHardAction {

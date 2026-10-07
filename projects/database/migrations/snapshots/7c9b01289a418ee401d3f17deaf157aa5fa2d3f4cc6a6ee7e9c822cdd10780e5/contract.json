@@ -368,8 +368,11 @@
 					},
 					"GuildReports": {
 						"fields": {
+							"anonymous": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"blockedUsers": { "many": true, "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"notify": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"roleId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
 						},
 						"relations": {
@@ -381,7 +384,14 @@
 							}
 						},
 						"storage": {
-							"fields": { "channelId": { "column": "channel_id" }, "id": { "column": "id" }, "roleId": { "column": "role_id" } },
+							"fields": {
+								"anonymous": { "column": "anonymous" },
+								"blockedUsers": { "column": "blocked_users" },
+								"channelId": { "column": "channel_id" },
+								"id": { "column": "id" },
+								"notify": { "column": "notify" },
+								"roleId": { "column": "role_id" }
+							},
 							"namespaceId": "public",
 							"table": "GuildReports"
 						}
@@ -508,6 +518,67 @@
 							"table": "Modules"
 						}
 					},
+					"Report": {
+						"fields": {
+							"action": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"anonymous": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"attachments": { "many": true, "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"caseId": { "nullable": true, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"closedAt": {
+								"nullable": true,
+								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
+							},
+							"content": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"createdAt": {
+								"nullable": false,
+								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
+							},
+							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"messageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"moderatorId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"reason": { "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"reporterId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"status": {
+								"nullable": false,
+								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "ReportStatus" } }
+							},
+							"targetId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"targetTag": { "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } }
+						},
+						"relations": {
+							"guild": {
+								"cardinality": "N:1",
+								"nullable": false,
+								"on": { "localFields": ["guildId"], "targetFields": ["id"] },
+								"to": { "model": "Guild", "namespace": "public" }
+							}
+						},
+						"storage": {
+							"fields": {
+								"action": { "column": "action" },
+								"anonymous": { "column": "anonymous" },
+								"attachments": { "column": "attachments" },
+								"caseId": { "column": "case_id" },
+								"channelId": { "column": "channel_id" },
+								"closedAt": { "column": "closed_at" },
+								"content": { "column": "content" },
+								"createdAt": { "column": "created_at" },
+								"guildId": { "column": "guild_id" },
+								"id": { "column": "id" },
+								"messageId": { "column": "message_id" },
+								"moderatorId": { "column": "moderator_id" },
+								"reason": { "column": "reason" },
+								"reporterId": { "column": "reporter_id" },
+								"status": { "column": "status" },
+								"targetId": { "column": "target_id" },
+								"targetTag": { "column": "target_tag" }
+							},
+							"namespaceId": "public",
+							"table": "Report"
+						}
+					},
 					"StickyRole": {
 						"fields": {
 							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
@@ -579,6 +650,7 @@
 		"GuildRoles": { "model": "GuildRoles", "namespace": "public" },
 		"ModerationAction": { "model": "ModerationAction", "namespace": "public" },
 		"Modules": { "model": "Modules", "namespace": "public" },
+		"Report": { "model": "Report", "namespace": "public" },
 		"StickyRole": { "model": "StickyRole", "namespace": "public" },
 		"User": { "model": "User", "namespace": "public" }
 	},
@@ -614,7 +686,8 @@
 								"Unban"
 							],
 							"typeName": "ModerationActionType"
-						}
+						},
+						"ReportStatus": { "kind": "postgres-enum", "members": ["Open", "Actioned", "Dismissed"], "typeName": "ReportStatus" }
 					},
 					"table": {
 						"AuditChainHead": {
@@ -1016,8 +1089,28 @@
 						},
 						"GuildReports": {
 							"columns": {
+								"anonymous": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": false },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"blocked_users": {
+									"codecId": "pg/int8@1",
+									"default": { "kind": "literal", "value": [] },
+									"many": true,
+									"nativeType": "int8",
+									"noCheck": ["elementNotNull"],
+									"nullable": false
+								},
 								"channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
 								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"notify": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
 								"role_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true }
 							},
 							"foreignKeys": [
@@ -1204,6 +1297,81 @@
 							"primaryKey": { "columns": ["id"], "name": "Modules_pkey" },
 							"uniques": []
 						},
+						"Report": {
+							"columns": {
+								"action": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
+								"anonymous": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": false },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"attachments": {
+									"codecId": "pg/text@1",
+									"default": { "kind": "literal", "value": [] },
+									"many": true,
+									"nativeType": "text",
+									"noCheck": ["elementNotNull"],
+									"nullable": false
+								},
+								"case_id": { "codecId": "pg/int4@1", "nativeType": "int4", "nullable": true },
+								"channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"closed_at": {
+									"codecId": "pg/timestamp-string@1",
+									"nativeType": "timestamp",
+									"nullable": true,
+									"typeParams": { "precision": 3 }
+								},
+								"content": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
+								"created_at": {
+									"codecId": "pg/timestamp-string@1",
+									"default": { "expression": "now()", "kind": "function" },
+									"nativeType": "timestamp",
+									"nullable": false,
+									"typeParams": { "precision": 3 }
+								},
+								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"id": {
+									"codecId": "pg/int8@1",
+									"default": { "expression": "autoincrement()", "kind": "function" },
+									"nativeType": "int8",
+									"nullable": false
+								},
+								"message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"moderator_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"reason": { "codecId": "pg/text@1", "nativeType": "text", "nullable": false },
+								"reporter_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"status": {
+									"codecId": "pg/enum@1",
+									"nativeType": "ReportStatus",
+									"nullable": false,
+									"typeParams": { "typeName": "ReportStatus" },
+									"valueSet": {
+										"entityKind": "valueSet",
+										"entityName": "ReportStatus",
+										"namespaceId": "public",
+										"plane": "storage"
+									}
+								},
+								"target_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"target_tag": { "codecId": "pg/text@1", "nativeType": "text", "nullable": false }
+							},
+							"foreignKeys": [
+								{
+									"name": "Report_guild_id_fkey",
+									"onDelete": "cascade",
+									"onUpdate": "cascade",
+									"source": { "columns": ["guild_id"], "namespaceId": "public", "tableName": "Report" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Guild" }
+								}
+							],
+							"indexes": [
+								{ "columns": ["guild_id", "id"], "name": "Report_guild_id_id_idx", "unique": false },
+								{ "columns": ["guild_id", "target_id"], "name": "Report_guild_id_target_id_idx", "unique": false }
+							],
+							"primaryKey": { "columns": ["id"], "name": "Report_pkey" },
+							"uniques": []
+						},
 						"StickyRole": {
 							"columns": {
 								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
@@ -1265,14 +1433,15 @@
 								"Ban",
 								"Unban"
 							]
-						}
+						},
+						"ReportStatus": { "kind": "valueSet", "values": ["Open", "Actioned", "Dismissed"] }
 					}
 				},
 				"id": "public",
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "924bef5ebc429f5fbdccd88a71eb89cf56f3dd306680c642a9a7a602022d3097",
+		"storageHash": "7c9b01289a418ee401d3f17deaf157aa5fa2d3f4cc6a6ee7e9c822cdd10780e5",
 		"types": {
 			"AuditEventChanges": {
 				"codecId": "typed/json@1",

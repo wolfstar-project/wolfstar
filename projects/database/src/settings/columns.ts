@@ -140,7 +140,10 @@ export const Columns = {
 	}),
 	...columns('GuildReports', {
 		reportsChannel: ['channelId', 'snowflake'],
-		reportsRole: ['roleId', 'snowflake']
+		reportsRole: ['roleId', 'snowflake'],
+		reportsAnonymous: ['anonymous', 'value'],
+		reportsNotify: ['notify', 'value'],
+		reportsBlockedUsers: ['blockedUsers', 'snowflakes']
 	}),
 	...columns('GuildRoles', {
 		rolesInitial: ['initial', 'snowflakes'],
