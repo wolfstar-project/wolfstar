@@ -260,6 +260,34 @@ declare module "i18next" {
         archiveSuccess: "Successfully archived case {{caseId}}.";
         deleteSuccess: "Successfully deleted case {{caseId}}.";
       };
+      "commands/commands": {
+        name: "commands";
+        description: "Browse and search what I can do.";
+        optionsCommandName: "command";
+        optionsCommandDescription: "A command to show, or what to search for.";
+        menuTitle: "Commands";
+        menuSubtitle: "Select a category to view commands.";
+        menuCategoryPlaceholder: "Select a category";
+        menuAllCommands: "All Commands";
+        menuCount_one: "{{count, number}} command";
+        menuCount_other: "{{count, number}} commands";
+        menuEmpty: "There are no commands here.";
+        menuView: "View";
+        menuPage: "Page {{page}}/{{total}}";
+        menuSearch: "Search";
+        menuBack: "Back";
+        menuResults_one: "{{count, number}} command matches {{query}}.";
+        menuResults_other: "{{count, number}} commands match {{query}}.";
+        menuNoResults: "No command matches that. Try another word, or go back to browse them by category.";
+        menuWrongUser: "This menu is not for you, run the command to open your own.";
+        searchTitle: "Search Commands";
+        searchLabel: "Command name or keyword";
+        viewPermissions: "**Shown to members with:** {{permissions}}";
+        viewPermissionsNone: "everybody";
+        viewContextMenus: "**In the Apps menu:** {{names}}";
+        viewSubcommands_one: "{{count, number}} subcommand";
+        viewSubcommands_other: "{{count, number}} subcommands";
+      };
       "commands/conf": {
         menuName: "menu";
         menuDescription: "Open an interactive settings menu";
