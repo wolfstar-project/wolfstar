@@ -126,7 +126,8 @@ describe('settings menu', () => {
 				'mentions',
 				'newlines',
 				'no-mention-spam',
-				'words'
+				'words',
+				'zalgo'
 			]);
 			expect(getVisibleKeys(resolveSettingGroup('automod.no-mention-spam')!).map((key) => key.name)).toContain(
 				'automod.no-mention-spam.mentions-allowed'

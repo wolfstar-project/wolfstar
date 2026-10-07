@@ -2,7 +2,7 @@ import type { ReadonlyGuildData } from 'wolfstar-database';
 import { Adder } from '#lib/database/utils/Adder';
 import { isNullishOrZero, type Nullish } from '@sapphire/utilities';
 
-export type AdderKey = 'attachments' | 'capitals' | 'invites' | 'links' | 'mentions' | 'newlines' | 'words';
+export type AdderKey = 'attachments' | 'capitals' | 'invites' | 'links' | 'mentions' | 'newlines' | 'words' | 'zalgo';
 
 export class AdderManager {
 	public attachments: Adder<string> | null;
@@ -12,6 +12,7 @@ export class AdderManager {
 	public mentions: Adder<string> | null;
 	public newlines: Adder<string> | null;
 	public words: Adder<string> | null;
+	public zalgo: Adder<string> | null;
 
 	public constructor(settings: ReadonlyGuildData) {
 		this.attachments = this.makeAdder(settings.automodAttachmentsThresholdMaximum, settings.automodAttachmentsThresholdDuration);
@@ -21,6 +22,7 @@ export class AdderManager {
 		this.mentions = this.makeAdder(settings.automodMentionsThresholdMaximum, settings.automodMentionsThresholdDuration);
 		this.newlines = this.makeAdder(settings.automodNewlinesThresholdMaximum, settings.automodNewlinesThresholdDuration);
 		this.words = this.makeAdder(settings.automodWordsThresholdMaximum, settings.automodWordsThresholdDuration);
+		this.zalgo = this.makeAdder(settings.automodZalgoThresholdMaximum, settings.automodZalgoThresholdDuration);
 	}
 
 	public onPatch(settings: ReadonlyGuildData): void {
@@ -35,6 +37,7 @@ export class AdderManager {
 		this.mentions = this.updateAdder(this.mentions, settings.automodMentionsThresholdMaximum, settings.automodMentionsThresholdDuration);
 		this.newlines = this.updateAdder(this.newlines, settings.automodNewlinesThresholdMaximum, settings.automodNewlinesThresholdDuration);
 		this.words = this.updateAdder(this.words, settings.automodWordsThresholdMaximum, settings.automodWordsThresholdDuration);
+		this.zalgo = this.updateAdder(this.zalgo, settings.automodZalgoThresholdMaximum, settings.automodZalgoThresholdDuration);
 	}
 
 	private makeAdder(maximum: number | Nullish, duration: number | Nullish) {

@@ -50,6 +50,8 @@
 	"spamDescription": "Manage the auto-moderator for spam",
 	"newlinesName": "automod-newlines",
 	"newlinesDescription": "Manage the auto-moderator for lines",
+	"zalgoName": "automod-zalgo",
+	"zalgoDescription": "Manage the auto-moderator for zalgo text",
 	"reactionsName": "automod-reactions",
 	"reactionsDescription": "Manage the auto-moderator for reactions",
 	"showDisabled": "Auto-moderator inactive",

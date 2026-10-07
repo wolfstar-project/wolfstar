@@ -310,12 +310,13 @@ export declare namespace ModerationMessageListener {
 	 * The keys of the reasons of the cases the rules create, each has a `WithMaximum` variant for the rules that have
 	 * a threshold.
 	 */
-	type ReasonKey = `events/moderation:${'attachments' | 'capitals' | 'invites' | 'links' | 'newlines' | 'words'}`;
+	type ReasonKey = `events/moderation:${'attachments' | 'capitals' | 'invites' | 'links' | 'newlines' | 'words' | 'zalgo'}`;
 
 	/**
 	 * The keys of the alerts the rules send to the channel when a message infringes them.
 	 */
-	type AlertKey = `events/moderation:${'attachmentFilter' | 'capsFilter' | 'inviteFilterAlert' | 'nolink' | 'newlineFilter' | 'wordFilter'}`;
+	type AlertKey =
+		`events/moderation:${'attachmentFilter' | 'capsFilter' | 'inviteFilterAlert' | 'nolink' | 'newlineFilter' | 'wordFilter' | 'zalgoFilter'}`;
 
 	/**
 	 * What a rule logs: an embed, or a message made of components (see {@linkcode createLogMessage}).

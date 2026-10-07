@@ -74,5 +74,16 @@ export const AutoModerationRules = {
 		keyPunishmentDuration: 'automodWordsHardActionDuration',
 		keyPunishmentThreshold: 'automodWordsThresholdMaximum',
 		keyPunishmentThresholdPeriod: 'automodWordsThresholdDuration'
+	},
+	zalgo: {
+		commandName: 'automod-zalgo',
+		localizedNameKey: `${Root}:zalgo`,
+		adderPropertyName: 'zalgo',
+		keyEnabled: 'automodZalgoEnabled',
+		keyOnInfraction: 'automodZalgoSoftAction',
+		keyPunishment: 'automodZalgoHardAction',
+		keyPunishmentDuration: 'automodZalgoHardActionDuration',
+		keyPunishmentThreshold: 'automodZalgoThresholdMaximum',
+		keyPunishmentThresholdPeriod: 'automodZalgoThresholdDuration'
 	}
 } as const satisfies Record<string, AutoModerationCommand.Rule>;

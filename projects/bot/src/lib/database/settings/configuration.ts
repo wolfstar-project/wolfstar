@@ -159,6 +159,19 @@ export function getConfiguration() {
 			array: true,
 			dashboardOnly: true
 		},
+		...autoModerationRule('automodZalgo', 'automod.zalgo', {
+			enabled: 'settings:automodZalgoEnabled',
+			ignoredRoles: 'settings:automodZalgoIgnoredRoles',
+			ignoredChannels: 'settings:automodZalgoIgnoredChannels'
+		}),
+		automodZalgoMaximum: {
+			type: 'integer',
+			name: 'automod.zalgo.maximum',
+			description: 'settings:automodZalgoMaximum',
+			minimum: 1,
+			maximum: 20,
+			default: 4
+		},
 
 		// Commands
 		commandsDisabled: {
@@ -306,6 +319,7 @@ type AutoModerationRulePrefix =
 	| 'automodMentions'
 	| 'automodNewlines'
 	| 'automodWords'
+	| 'automodZalgo'
 	| 'automodNoMentionSpam';
 
 type AutoModerationRuleSuffix =
