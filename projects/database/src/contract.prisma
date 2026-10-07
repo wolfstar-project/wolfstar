@@ -132,8 +132,6 @@ namespace public {
     guild              Guild                                  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationRule_guild_id_fkey", index: false)
 
     @@index([guildId], map: "GuildAutoModerationRule_guild_id_idx")
-
-    @@control(external)
   }
 
   model GuildCommands {
