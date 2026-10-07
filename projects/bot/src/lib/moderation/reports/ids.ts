@@ -7,55 +7,62 @@ import type { Snowflake } from 'discord-api-types/v10';
 export const ReportHandlerName = 'report';
 
 /**
- * What the moderators can do with a report from its buttons.
+ * The moderation actions the moderators can take from a report: the first three have a button, the others are in its
+ * menu.
  */
-export const ReportModerationVerbs = ['warn', 'timeout', 'kick', 'ban'] as const;
+export const ReportModerationVerbs = ['warn', 'timeout', 'kick', 'mute', 'softban', 'ban'] as const;
 export type ReportModerationVerb = (typeof ReportModerationVerbs)[number];
+
+/**
+ * What the menu of a report offers besides its buttons, in the order it lists them.
+ */
+export const ReportMenuVerbs = ['mute', 'softban', 'ban', 'block'] as const;
+export type ReportMenuVerb = (typeof ReportMenuVerbs)[number];
 
 /**
  * What a component or a modal of a report does:
  *
  * - `new`: the modal a member writes the reason of their report in.
- * - `warn`, `timeout`, `kick`, `ban`: a button that opens the modal of a moderation action, and that modal.
+ * - `warn`, `timeout`, `kick`: a button that opens the modal of a moderation action, and that modal.
+ * - `menu`: the select menu of the other actions, the action is its selected value.
+ * - `mute`, `softban`, `ban`: the modal of a moderation action picked in the menu.
+ * - `block`: stops the member who made the report from making more of them.
  * - `delete`: deletes the reported message.
  * - `dismiss`: closes the report without an action.
  */
-export type ReportVerb = 'new' | ReportModerationVerb | 'delete' | 'dismiss';
+export type ReportVerb = 'new' | ReportModerationVerb | 'menu' | 'block' | 'delete' | 'dismiss';
 
 export interface ReportAction {
 	verb: ReportVerb;
 
 	/**
-	 * The user who was reported.
+	 * The ID of the report. For `new` the report does not exist yet, so it is the ID of the user who is reported.
 	 */
-	targetId: Snowflake;
+	id: string;
 
 	/**
-	 * The channel and the message that were reported, `null` when a user was reported and not one of their messages.
+	 * The message that is reported, only for `new` and when a message is reported.
 	 */
-	channelId: Snowflake | null;
 	messageId: Snowflake | null;
 
 	/**
-	 * Whether this is the modal of the verb, and not the button that opens it.
+	 * Whether this is the modal of the verb, and not the component that opens it.
 	 */
 	submit: boolean;
 }
 
 /**
- * Builds the custom ID of a component or a modal of a report, `report.<targetId>.<verb>:<channelId>:<messageId>:<submit>`.
+ * Builds the custom ID of a component or a modal of a report, `report.<id>.<verb>:<messageId>:<submit>`.
  *
- * @remarks Everything a click needs is in the ID, so a report keeps working after a restart and on any process.
+ * @remarks The report is read from the database by its ID, so its components keep working after a restart and on any
+ * process.
  */
 export function encodeReportId(action: ReportAction) {
-	return encodeCustomId(
-		ReportHandlerName,
-		action.targetId,
-		`${action.verb}:${action.channelId ?? 0}:${action.messageId ?? 0}:${action.submit ? 1 : 0}`
-	);
+	return encodeCustomId(ReportHandlerName, action.id, `${action.verb}:${action.messageId ?? 0}:${action.submit ? 1 : 0}`);
 }
 
-const Verbs = new Set<string>(['new', ...ReportModerationVerbs, 'delete', 'dismiss']);
+const Verbs = new Set<string>(['new', ...ReportModerationVerbs, 'menu', 'block', 'delete', 'dismiss']);
+const IdRegExp = /^\d{1,20}$/;
 const SnowflakeRegExp = /^\d{17,20}$/;
 
 /**
@@ -65,23 +72,19 @@ const SnowflakeRegExp = /^\d{17,20}$/;
  */
 export function decodeReportId(content: unknown): ReportAction | null {
 	const decoded = decodeCustomIdContent(content);
-	if (decoded === null || !SnowflakeRegExp.test(decoded.sessionId)) return null;
+	if (decoded === null || !IdRegExp.test(decoded.sessionId)) return null;
 
-	const [verb, channelId, messageId, submit] = decoded.action.split(':');
-	if (verb === undefined || !Verbs.has(verb) || channelId === undefined || messageId === undefined) return null;
+	const [verb, messageId, submit] = decoded.action.split(':');
+	if (verb === undefined || !Verbs.has(verb) || messageId === undefined) return null;
+	if (messageId !== '0' && !SnowflakeRegExp.test(messageId)) return null;
 
-	const hasMessage = SnowflakeRegExp.test(channelId) && SnowflakeRegExp.test(messageId);
-	if (!hasMessage && (channelId !== '0' || messageId !== '0')) return null;
-
-	return {
-		verb: verb as ReportVerb,
-		targetId: decoded.sessionId,
-		channelId: hasMessage ? channelId : null,
-		messageId: hasMessage ? messageId : null,
-		submit: submit === '1'
-	};
+	return { verb: verb as ReportVerb, id: decoded.sessionId, messageId: messageId === '0' ? null : messageId, submit: submit === '1' };
 }
 
-export function isReportModerationVerb(verb: ReportVerb): verb is ReportModerationVerb {
+export function isReportModerationVerb(verb: string): verb is ReportModerationVerb {
 	return ReportModerationVerbs.includes(verb as ReportModerationVerb);
+}
+
+export function isReportMenuVerb(verb: string): verb is ReportMenuVerb {
+	return ReportMenuVerbs.includes(verb as ReportMenuVerb);
 }

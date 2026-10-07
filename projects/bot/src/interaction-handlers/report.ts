@@ -1,16 +1,10 @@
-import { fetchUserReportEnabled, readSettings } from '#lib/database';
+import { fetchUserReportEnabled, readSettings, writeSettings } from '#lib/database';
 import { getAction } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
-import { decodeReportId, isReportModerationVerb, type ReportAction, type ReportModerationVerb } from '#lib/moderation/reports/ids';
+import { decodeReportId, isReportMenuVerb, isReportModerationVerb, type ReportAction, type ReportModerationVerb } from '#lib/moderation/reports/ids';
 import { takePendingReport } from '#lib/moderation/reports/pending';
-import {
-	closeReport,
-	markReportMessageDeleted,
-	renderReportActionModal,
-	ReportDurationInputId,
-	ReportReasonInputId
-} from '#lib/moderation/reports/render';
-import { fetchGuildTranslator, submitReport } from '#lib/moderation/reports/submit';
+import { addReportNote, closeReport, renderReportActionModal, ReportDurationInputId, ReportReasonInputId } from '#lib/moderation/reports/render';
+import { fetchGuildTranslator, notifyReporter, submitReport } from '#lib/moderation/reports/submit';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
@@ -19,10 +13,11 @@ import { TypeVariation } from '#utils/moderationConstants';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { userMention } from '@discordjs/formatters';
 import { isNullishOrEmpty } from '@sapphire/utilities';
-import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
+import { InteractionHandler, ModalSubmitInteraction, UserError, container } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { closeReport as closeStoredReport, fetchReport, reopenReport, setReportCase, type Report } from 'wolfstar-database';
 
 type ModalInteraction = InteractionHandler.ModalInteraction;
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInteraction>;
@@ -31,6 +26,8 @@ const ModerationTypes = {
 	warn: TypeVariation.Warning,
 	timeout: TypeVariation.Timeout,
 	kick: TypeVariation.Kick,
+	mute: TypeVariation.Mute,
+	softban: TypeVariation.Softban,
 	ban: TypeVariation.Ban
 } as const satisfies Record<ReportModerationVerb, TypeVariation>;
 
@@ -38,18 +35,26 @@ const StatusKeys = {
 	warn: 'commands/report:statusWarn',
 	timeout: 'commands/report:statusTimeout',
 	kick: 'commands/report:statusKick',
+	mute: 'commands/report:statusMute',
+	softban: 'commands/report:statusSoftban',
 	ban: 'commands/report:statusBan'
 } as const satisfies Record<ReportModerationVerb, TranslationKey>;
 
 /**
- * Handles the modal a member writes the reason of a report in, and the buttons and the modals the moderators act on a
- * report with, see `lib/moderation/reports`.
+ * The actions that do not need the reported user to still be a member of the guild.
+ */
+const ActionsWithoutMember: readonly ReportModerationVerb[] = ['softban', 'ban'];
+
+/**
+ * Handles the modal a member writes the reason of a report in, and the components and the modals the moderators act on
+ * a report with, see `lib/moderation/reports`.
  *
  * @remarks
  *
- * What a component does is read from its custom ID, so there is no state to keep between the clicks. Whoever acts on a
- * report needs the moderator level every time, and the moderation actions go through the same checks and the same
- * `ModerationAction` as the moderation commands, so they are logged as cases.
+ * A component only carries the ID of its report, which is read from the database, so there is no state to keep between
+ * the clicks. Whoever acts on a report needs the moderator level every time, and the moderation actions go through the
+ * same checks and the same `ModerationAction` as the moderation commands, so they are logged as cases. A report is
+ * closed in the database before its action is taken, so two moderators cannot act on it at once.
  */
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
@@ -73,22 +78,38 @@ export class UserInteractionHandler extends InteractionHandler {
 			return fail(t('preconditions:moderator', { command: { name: this.name } }));
 		}
 
-		if (isReportModerationVerb(action.verb)) {
-			const moderation = action as ReportAction & { verb: ReportModerationVerb };
-			if (isModal) return this.moderate(interaction as ModalInteraction, guildId, moderation, t);
-			return (interaction as ComponentInteraction).showModal(renderReportActionModal(t, moderation));
+		const report = await fetchReport(container.prisma.orm, guildId, action.id);
+		if (report === null) return fail(getDefaultExpiredReply());
+		if (report.status !== 'Open') return fail(t('commands/report:alreadyClosed'));
+
+		if (isModal) {
+			if (!isReportModerationVerb(action.verb)) return fail(getDefaultExpiredReply());
+			return this.moderate(interaction as ModalInteraction, report, action.verb, t);
 		}
 
-		if (isModal) return fail(getDefaultExpiredReply());
 		const component = interaction as ComponentInteraction;
-		return action.verb === 'delete' ? this.deleteMessage(component, guildId, action, t) : this.dismiss(component, guildId);
+		// The menu stands for the action that was picked in it:
+		const verb = action.verb === 'menu' ? getSelectValue(component) : action.verb;
+		if (verb === null || (action.verb === 'menu' && !isReportMenuVerb(verb))) return fail(getDefaultExpiredReply());
+
+		if (isReportModerationVerb(verb)) return component.showModal(renderReportActionModal(t, report.id, verb));
+		switch (verb) {
+			case 'block':
+				return this.block(component, report, t);
+			case 'delete':
+				return this.deleteMessage(component, report, t);
+			case 'dismiss':
+				return this.dismiss(component, report, t);
+			default:
+				return fail(getDefaultExpiredReply());
+		}
 	}
 
 	/**
 	 * Sends the report a member wrote the reason of.
 	 */
 	private async submit(interaction: ModalInteraction, guildId: Snowflake, action: ReportAction, t: Translator) {
-		const subject = await takePendingReport(guildId, interaction.user.id, action.targetId, action.messageId);
+		const subject = await takePendingReport(guildId, interaction.user.id, action.id, action.messageId);
 		if (subject === null) return interaction.reply({ content: t('commands/report:expired'), flags: MessageFlags.Ephemeral });
 
 		const reason = (getModalValue(interaction.data.components, ReportReasonInputId) ?? '').trim();
@@ -99,7 +120,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	/**
 	 * Takes the moderation action a moderator confirmed, then closes the report.
 	 */
-	private async moderate(interaction: ModalInteraction, guildId: Snowflake, action: ReportAction & { verb: ReportModerationVerb }, t: Translator) {
+	private async moderate(interaction: ModalInteraction, report: Report, verb: ReportModerationVerb, t: Translator) {
 		const { message } = interaction;
 		if (message === undefined) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
@@ -107,21 +128,35 @@ export class UserInteractionHandler extends InteractionHandler {
 		const deferred = await interaction.deferUpdate();
 		const followup = (content: string) => interaction.followup({ content, flags: MessageFlags.Ephemeral });
 
-		let entryId: number;
+		// The report is closed first, so another moderator who confirms an action meanwhile is told it is closed:
+		const { prisma } = container;
+		const closed = await closeStoredReport(prisma, report.guildId, report.id, {
+			status: 'Actioned',
+			action: verb,
+			caseId: null,
+			moderatorId: interaction.user.id
+		});
+		if (!closed) return followup(t('commands/report:alreadyClosed'));
+
+		let caseId: number;
 		try {
-			entryId = await this.applyAction(interaction, guildId, action, t);
+			caseId = await this.applyAction(interaction, report, verb, t);
 		} catch (error) {
-			// The checks and the actions throw the translated reason:
+			await reopenReport(prisma, report.guildId, report.id);
+			// The checks and the actions throw the translated reason, or an error that holds its key:
 			if (typeof error === 'string') return followup(error);
+			if (error instanceof UserError) return followup(t(error.identifier as TranslationKey, error.context as Record<string, unknown>));
 
 			this.container.logger.error('[Reports] Could not take a moderation action from a report:', error);
 			return followup(t('commands/report:actionFailed'));
 		}
 
-		const guildT = await fetchGuildTranslator(guildId);
-		const status = guildT(StatusKeys[action.verb], { moderator: userMention(interaction.user.id), case: entryId });
+		await setReportCase(prisma, report.guildId, report.id, caseId);
+		const guildT = await fetchGuildTranslator(report.guildId);
+		const status = guildT(StatusKeys[verb], { moderator: userMention(interaction.user.id), case: caseId });
 		await deferred.update({ components: closeReport(message.components ?? [], status), allowed_mentions: { parse: [] } });
-		return followup(t('commands/report:actionDone', { case: entryId }));
+		await notifyReporter(report, 'Actioned');
+		return followup(t('commands/report:actionDone', { case: caseId }));
 	}
 
 	/**
@@ -130,18 +165,13 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @returns The ID of the case that was created.
 	 * @throws The translated reason the action cannot be taken.
 	 */
-	private async applyAction(
-		interaction: ModalInteraction,
-		guildId: Snowflake,
-		action: ReportAction & { verb: ReportModerationVerb },
-		t: Translator
-	) {
+	private async applyAction(interaction: ModalInteraction, report: Report, verb: ReportModerationVerb, t: Translator) {
 		const { gatewayClient } = container;
-		const moderationAction = getAction(ModerationTypes[action.verb]);
+		const moderationAction = getAction(ModerationTypes[verb]);
 
 		let duration: number | null = null;
-		if (action.verb === 'timeout') {
-			const parameter = (getModalValue(interaction.data.components, ReportDurationInputId) ?? '').trim();
+		const parameter = (getModalValue(interaction.data.components, ReportDurationInputId) ?? '').trim();
+		if (parameter.length > 0 || moderationAction.durationRequired) {
 			const limits = { minimum: moderationAction.minimumDuration, maximum: moderationAction.maximumDuration };
 			duration = resolveTimeSpan(parameter, limits).match({
 				ok: (value) => value,
@@ -151,21 +181,20 @@ export class UserInteractionHandler extends InteractionHandler {
 			});
 		}
 
-		const guild = await gatewayClient.guilds.fetch(guildId);
+		const guild = await gatewayClient.guilds.fetch(report.guildId);
 		await checkTargetCanBeModerated({
 			t,
 			guild,
-			targetId: action.targetId,
+			targetId: report.targetId,
 			moderatorId: interaction.user.id,
-			// A user who left can still be banned, the other actions need the member:
-			requiredMember: action.verb !== 'ban'
+			requiredMember: !ActionsWithoutMember.includes(verb)
 		});
 
-		if (await moderationAction.isActive(guild, action.targetId, undefined as never)) throw t('moderation:actionIsActive');
+		if (await moderationAction.isActive(guild, report.targetId, undefined as never)) throw t('moderation:actionIsActive');
 
-		const [target, moderator] = await Promise.all([gatewayClient.users.fetch(action.targetId), gatewayClient.users.fetch(interaction.user.id)]);
+		const [target, moderator] = await Promise.all([gatewayClient.users.fetch(report.targetId), gatewayClient.users.fetch(interaction.user.id)]);
 		const reason = (getModalValue(interaction.data.components, ReportReasonInputId) ?? '').trim();
-		const settings: Partial<Record<string, unknown>> = await readSettings(guildId);
+		const settings: Partial<Record<string, unknown>> = await readSettings(report.guildId);
 		const entry = await moderationAction.apply(
 			guild,
 			{ user: target, moderator, reason: isNullishOrEmpty(reason) ? null : reason, duration },
@@ -178,16 +207,40 @@ export class UserInteractionHandler extends InteractionHandler {
 	}
 
 	/**
+	 * Stops the member who made the report from making more of them, and notes it on the report, which stays open.
+	 *
+	 * @remarks It is how the moderators stop who abuses of the reports when they are anonymous: the member is blocked
+	 * without being named.
+	 */
+	private async block(interaction: ComponentInteraction, report: Report, t: Translator) {
+		const settings = await readSettings(report.guildId);
+		if (settings.reportsBlockedUsers.includes(report.reporterId)) {
+			return interaction.reply({ content: t('commands/report:blockAlready'), flags: MessageFlags.Ephemeral });
+		}
+
+		await writeSettings(
+			report.guildId,
+			(current) => ({ reportsBlockedUsers: [...new Set([...current.reportsBlockedUsers, report.reporterId])] }),
+			interaction.user.id
+		);
+
+		const guildT = await fetchGuildTranslator(report.guildId);
+		const note = guildT('commands/report:statusBlocked', { moderator: userMention(interaction.user.id) });
+		await interaction.update({ components: addReportNote(interaction.message.components ?? [], note), allowed_mentions: { parse: [] } });
+		return interaction.followup({ content: t('commands/report:blockDone'), flags: MessageFlags.Ephemeral });
+	}
+
+	/**
 	 * Deletes the reported message and notes it on the report, which stays open.
 	 */
-	private async deleteMessage(interaction: ComponentInteraction, guildId: Snowflake, action: ReportAction, t: Translator) {
+	private async deleteMessage(interaction: ComponentInteraction, report: Report, t: Translator) {
 		const fail = () => interaction.reply({ content: t('commands/report:deleteFailed'), flags: MessageFlags.Ephemeral });
-		if (action.channelId === null || action.messageId === null) return fail();
+		if (report.channelId === null || report.messageId === null) return fail();
 
 		try {
 			// A message that is already gone is what the moderator wanted:
 			await resolveOnErrorCodes(
-				container.gatewayClient.api.channels.deleteMessage(action.channelId, action.messageId),
+				container.gatewayClient.api.channels.deleteMessage(report.channelId, report.messageId),
 				RESTJSONErrorCodes.UnknownMessage,
 				RESTJSONErrorCodes.UnknownChannel
 			);
@@ -195,10 +248,10 @@ export class UserInteractionHandler extends InteractionHandler {
 			return fail();
 		}
 
-		const guildT = await fetchGuildTranslator(guildId);
+		const guildT = await fetchGuildTranslator(report.guildId);
 		const note = guildT('commands/report:statusDeleted', { moderator: userMention(interaction.user.id) });
 		await interaction.update({
-			components: markReportMessageDeleted(interaction.message.components ?? [], note),
+			components: addReportNote(interaction.message.components ?? [], note, 'delete'),
 			allowed_mentions: { parse: [] }
 		});
 		return interaction.followup({ content: t('commands/report:deleteDone'), flags: MessageFlags.Ephemeral });
@@ -207,9 +260,23 @@ export class UserInteractionHandler extends InteractionHandler {
 	/**
 	 * Closes the report without an action.
 	 */
-	private async dismiss(interaction: ComponentInteraction, guildId: Snowflake) {
-		const guildT = await fetchGuildTranslator(guildId);
+	private async dismiss(interaction: ComponentInteraction, report: Report, t: Translator) {
+		const closed = await closeStoredReport(container.prisma, report.guildId, report.id, {
+			status: 'Dismissed',
+			action: null,
+			caseId: null,
+			moderatorId: interaction.user.id
+		});
+		if (!closed) return interaction.reply({ content: t('commands/report:alreadyClosed'), flags: MessageFlags.Ephemeral });
+
+		const guildT = await fetchGuildTranslator(report.guildId);
 		const status = guildT('commands/report:statusDismissed', { moderator: userMention(interaction.user.id) });
-		return interaction.update({ components: closeReport(interaction.message.components ?? [], status), allowed_mentions: { parse: [] } });
+		await interaction.update({ components: closeReport(interaction.message.components ?? [], status), allowed_mentions: { parse: [] } });
+		return notifyReporter(report, 'Dismissed');
 	}
+}
+
+function getSelectValue(interaction: ComponentInteraction): string | null {
+	const { data } = interaction;
+	return 'values' in data ? (data.values[0] ?? null) : null;
 }

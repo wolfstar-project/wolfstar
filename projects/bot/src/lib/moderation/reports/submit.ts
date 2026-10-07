@@ -1,10 +1,12 @@
 import { readSettings } from '#lib/database';
 import { claimReport, releaseReport, ReportCooldownSeconds, type ReportSubject } from '#lib/moderation/reports/pending';
-import { renderReport } from '#lib/moderation/reports/render';
+import { renderReport, ReportContentMaximumLength } from '#lib/moderation/reports/render';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { getLogger } from '#utils/functions';
+import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
+import { createReport, deleteReport, type Report, type ReportStatus } from 'wolfstar-database';
 
 /**
  * The function to translate with in the language of a guild, which what the moderators read is written in.
@@ -23,6 +25,7 @@ export async function fetchGuildTranslator(guildId: Snowflake): Promise<Translat
 export async function getReportDenial(t: Translator, guildId: Snowflake, reporterId: Snowflake, targetId: Snowflake): Promise<string | null> {
 	const settings = await readSettings(guildId);
 	if (settings.reportsChannel === null) return t('commands/report:notConfigured');
+	if (settings.reportsBlockedUsers.includes(reporterId)) return t('commands/report:blocked');
 	if (targetId === reporterId) return t('commands/report:targetSelf');
 	if (targetId === container.gatewayClient.user?.id) return t('commands/report:targetWolf');
 	return null;
@@ -50,28 +53,66 @@ export async function submitReport(
 	if (claim === 'cooldown') return t('commands/report:cooldown', { seconds: ReportCooldownSeconds });
 
 	const settings = await readSettings(guildId);
+	const { prisma } = container;
+	// The report is stored first: its components carry its ID, and the history keeps it whatever becomes of its message.
+	const report = await createReport(
+		prisma,
+		guildId,
+		{
+			reporterId,
+			targetId: subject.targetId,
+			targetTag: subject.targetTag,
+			channelId: subject.message?.channelId ?? null,
+			messageId,
+			reason,
+			content: subject.message === null ? null : cutText(subject.message.content, ReportContentMaximumLength),
+			attachments: subject.message?.attachments ?? [],
+			anonymous: settings.reportsAnonymous
+		},
+		settings.language
+	);
+
 	const guild = await container.gatewayClient.guilds.fetch(guildId);
 	const logger = await getLogger(guild);
 	const sent = await logger.send({
 		key: 'reportsChannel',
 		channelId: settings.reportsChannel,
-		makeMessage: async () =>
-			// The report is for the moderators, so it is written in the language of the guild:
-			renderReport(await fetchGuildTranslator(guildId), {
-				guildId,
-				reporterId,
-				reason,
-				subject,
-				createdAt: Date.now(),
-				roleId: settings.reportsRole
-			})
+		// The report is for the moderators, so it is written in the language of the guild:
+		makeMessage: async () => renderReport(await fetchGuildTranslator(guildId), report, settings.reportsRole)
 	});
 
 	if (!sent) {
 		// The member is not made to wait, nor the message kept from another report, for a report nobody received:
-		await releaseReport(guildId, reporterId, messageId);
+		await Promise.all([deleteReport(prisma, guildId, report.id), releaseReport(guildId, reporterId, messageId)]);
 		return t('commands/report:failed');
 	}
 
 	return t('commands/report:success');
+}
+
+/**
+ * Tells the member who made a report what became of it, in a direct message, when the guild wants them told.
+ *
+ * @remarks The member is told that the moderators acted or not, and not what they did: that stays between the
+ * moderators and the member who was reported. A member who cannot be written to is not told.
+ *
+ * @param report - The report that was closed.
+ * @param status - What became of it.
+ */
+export async function notifyReporter(report: Report, status: Exclude<ReportStatus, 'Open'>): Promise<void> {
+	try {
+		const settings = await readSettings(report.guildId);
+		if (!settings.reportsNotify) return;
+
+		const { gatewayClient } = container;
+		const [guild, reporter, t] = await Promise.all([
+			gatewayClient.guilds.fetch(report.guildId),
+			gatewayClient.users.fetch(report.reporterId),
+			fetchGuildTranslator(report.guildId)
+		]);
+		const key = status === 'Actioned' ? 'commands/report:notifyActioned' : 'commands/report:notifyDismissed';
+		await reporter.send({ content: t(key, { guild: guild.name, target: report.targetTag }), allowed_mentions: { parse: [] } });
+	} catch {
+		// The direct messages of the member are closed, or they left: the report is closed all the same.
+	}
 }

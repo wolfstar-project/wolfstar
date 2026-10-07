@@ -1,5 +1,5 @@
 import type { Translator } from '#lib/structures/commands/utils';
-import { encodeReportId, type ReportAction, type ReportModerationVerb, type ReportVerb } from '#lib/moderation/reports/ids';
+import { encodeReportId, ReportMenuVerbs, type ReportModerationVerb, type ReportVerb } from '#lib/moderation/reports/ids';
 import type { ReportSubject } from '#lib/moderation/reports/pending';
 import { channelMention, hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
@@ -10,12 +10,14 @@ import {
 	TextInputStyle,
 	type APIActionRowComponent,
 	type APIButtonComponentWithCustomId,
+	type APIStringSelectComponent,
 	type APIComponentInContainer,
 	type APIMessageTopLevelComponent,
 	type APIModalInteractionResponseCallbackData,
 	type RESTPostAPIChannelMessageJSONBody,
 	type Snowflake
 } from 'discord-api-types/v10';
+import type { Report } from 'wolfstar-database';
 
 const AccentColor = 0xed4245;
 const ClosedAccentColor = 0x4f545c;
@@ -26,9 +28,9 @@ const ClosedAccentColor = 0x4f545c;
 export const ReportReasonMaximumLength = 500;
 
 /**
- * How much of a reported message a report quotes.
+ * How much of a reported message a report keeps and quotes.
  */
-const ContentMaximumLength = 1000;
+export const ReportContentMaximumLength = 1000;
 
 /**
  * The custom IDs of the inputs of the modals of the reports.
@@ -36,90 +38,96 @@ const ContentMaximumLength = 1000;
 export const ReportReasonInputId = 'reason';
 export const ReportDurationInputId = 'duration';
 
-export interface ReportData {
-	guildId: Snowflake;
-	reporterId: Snowflake;
-	reason: string;
-	subject: ReportSubject;
-
-	/**
-	 * When the report was made, in milliseconds.
-	 */
-	createdAt: number;
-
-	/**
-	 * The role to mention with the report, if any.
-	 */
-	roleId: Snowflake | null;
-}
-
 /**
- * Renders the report the moderators get: what was reported, by whom and why, with the buttons to act on it.
+ * Renders the report the moderators get: what was reported, by whom and why, with the components to act on it.
+ *
+ * @remarks The three actions the moderators take the most have a button, as the report of a message reads best with
+ * few of them; the heavier ones, and blocking who made the report, are in the menu under them.
  *
  * @param t - The function to translate with, in the language of the guild.
- * @param data - The report.
+ * @param report - The report.
+ * @param roleId - The role to mention with the report, if any.
  */
-export function renderReport(t: Translator, data: ReportData): Pick<RESTPostAPIChannelMessageJSONBody, 'components' | 'flags' | 'allowed_mentions'> {
-	const { subject } = data;
-	const { message } = subject;
-	const id = (verb: ReportVerb) =>
-		encodeReportId({ verb, targetId: subject.targetId, channelId: message?.channelId ?? null, messageId: message?.id ?? null, submit: false });
+export function renderReport(
+	t: Translator,
+	report: Report,
+	roleId: Snowflake | null
+): Pick<RESTPostAPIChannelMessageJSONBody, 'components' | 'flags' | 'allowed_mentions'> {
+	const hasMessage = report.channelId !== null && report.messageId !== null;
+	const id = (verb: ReportVerb) => encodeReportId({ verb, id: report.id, messageId: null, submit: false });
 
-	const target = { mention: userMention(subject.targetId), tag: subject.targetTag, id: subject.targetId };
-	const lines = [`## ${t(message === null ? 'commands/report:titleUser' : 'commands/report:titleMessage')}`];
-	if (message === null) {
-		lines.push(t('commands/report:fieldUser', target));
+	const target = { mention: userMention(report.targetId), tag: report.targetTag, id: report.targetId };
+	const lines = [`## ${t(hasMessage ? 'commands/report:titleMessage' : 'commands/report:titleUser')}`];
+	if (hasMessage) {
+		const link = hyperlink(t('commands/report:fieldMessageLink'), messageLink(report.channelId!, report.messageId!, report.guildId));
+		lines.push(t('commands/report:fieldMessage', { link, channel: channelMention(report.channelId!) }), t('commands/report:fieldAuthor', target));
 	} else {
-		const link = hyperlink(t('commands/report:fieldMessageLink'), messageLink(message.channelId, message.id, data.guildId));
-		lines.push(t('commands/report:fieldMessage', { link, channel: channelMention(message.channelId) }), t('commands/report:fieldAuthor', target));
+		lines.push(t('commands/report:fieldUser', target));
 	}
 
 	lines.push(
-		t('commands/report:fieldReportedBy', { mention: userMention(data.reporterId) }),
-		t('commands/report:fieldReportedAt', { time: time(Math.floor(data.createdAt / 1000), TimestampStyles.LongDateTime) }),
-		t('commands/report:fieldReason', { reason: quote(cutText(data.reason, ReportReasonMaximumLength)) })
+		// The moderators are not told who made an anonymous report, the database is:
+		report.anonymous
+			? t('commands/report:fieldReportedByAnonymous')
+			: t('commands/report:fieldReportedBy', { mention: userMention(report.reporterId) }),
+		t('commands/report:fieldReportedAt', { time: time(Math.floor(report.createdAt / 1000), TimestampStyles.LongDateTime) }),
+		t('commands/report:fieldReason', { reason: quote(cutText(report.reason, ReportReasonMaximumLength)) })
 	);
 
-	if (message !== null) {
-		const content = message.content.trim();
+	if (hasMessage) {
+		const content = (report.content ?? '').trim();
 		lines.push(
 			t('commands/report:fieldContent', {
-				content: content.length === 0 ? t('commands/report:fieldContentEmpty') : quote(cutText(content, ContentMaximumLength))
+				content: content.length === 0 ? t('commands/report:fieldContentEmpty') : quote(cutText(content, ReportContentMaximumLength))
 			}),
 			t('commands/report:fieldMedia', {
 				media:
-					message.attachments.length === 0
+					report.attachments.length === 0
 						? t('commands/report:mediaNone')
-						: message.attachments.map((url, index) => hyperlink(String(index + 1), url)).join(' · ')
+						: report.attachments.map((url, index) => hyperlink(String(index + 1), url)).join(' · ')
 			})
 		);
 	}
 
-	const moderation = row([
-		button(id('warn'), t('commands/report:buttonWarn'), ButtonStyle.Secondary),
-		button(id('timeout'), t('commands/report:buttonTimeout'), ButtonStyle.Primary),
-		button(id('kick'), t('commands/report:buttonKick'), ButtonStyle.Danger),
-		button(id('ban'), t('commands/report:buttonBan'), ButtonStyle.Danger)
-	]);
-	const closing = row([
-		...(message === null ? [] : [button(id('delete'), t('commands/report:buttonDelete'), ButtonStyle.Secondary)]),
-		button(id('dismiss'), t('commands/report:buttonDismiss'), ButtonStyle.Secondary)
-	]);
+	lines.push(`-# ${t('commands/report:footer', { id: report.id })}`);
+
+	const menu: APIStringSelectComponent = {
+		type: ComponentType.StringSelect,
+		custom_id: id('menu'),
+		placeholder: cutText(t('commands/report:menuPlaceholder'), 150),
+		options: ReportMenuVerbs.map((verb) => ({
+			label: cutText(t(`commands/report:menu${capitalize(verb)}`), 100),
+			description: cutText(t(`commands/report:menu${capitalize(verb)}Description`), 100),
+			value: verb
+		}))
+	};
 
 	const components: APIMessageTopLevelComponent[] = [];
 	// The mention is outside of the container, so the report reads the same once it is closed:
-	if (data.roleId !== null) components.push({ type: ComponentType.TextDisplay, content: roleMention(data.roleId) });
+	if (roleId !== null) components.push({ type: ComponentType.TextDisplay, content: roleMention(roleId) });
 	components.push({
 		type: ComponentType.Container,
 		accent_color: AccentColor,
-		components: [{ type: ComponentType.TextDisplay, content: lines.join('\n') }, moderation, closing]
+		components: [
+			{ type: ComponentType.TextDisplay, content: lines.join('\n') },
+			row([
+				button(id('warn'), t('commands/report:buttonWarn'), ButtonStyle.Secondary),
+				button(id('timeout'), t('commands/report:buttonTimeout'), ButtonStyle.Primary),
+				button(id('kick'), t('commands/report:buttonKick'), ButtonStyle.Danger)
+			]),
+			{ type: ComponentType.ActionRow, components: [menu] },
+			row([
+				...(hasMessage ? [button(id('delete'), t('commands/report:buttonDelete'), ButtonStyle.Secondary)] : []),
+				button(id('dismiss'), t('commands/report:buttonDismiss'), ButtonStyle.Secondary)
+			])
+		]
 	});
 
 	return {
 		components,
 		flags: MessageFlags.IsComponentsV2,
 		// Only the role is notified: the users are mentioned to be clickable, and what was quoted mentions nobody.
-		allowed_mentions: { parse: [], roles: data.roleId === null ? [] : [data.roleId] }
+		allowed_mentions: { parse: [], roles: roleId === null ? [] : [roleId] }
 	};
 }
 
@@ -138,13 +146,14 @@ export function closeReport(components: readonly APIMessageTopLevelComponent[], 
 }
 
 /**
- * Notes on a report that its message was deleted, and disables the button that deletes it. The report stays open,
- * since the member who wrote the message may still need an action.
+ * Writes a note on a report that stays open, such as who deleted its message, and disables the buttons that are of no
+ * more use.
  *
  * @param components - The components of the message of the report.
- * @param note - Who deleted the message.
+ * @param note - What happened, and who did it.
+ * @param disable - The verb of the buttons to disable, if any.
  */
-export function markReportMessageDeleted(components: readonly APIMessageTopLevelComponent[], note: string): APIMessageTopLevelComponent[] {
+export function addReportNote(components: readonly APIMessageTopLevelComponent[], note: string, disable?: ReportVerb): APIMessageTopLevelComponent[] {
 	return mapContainer(components, (children) => {
 		const rows = children.filter((child) => child.type === ComponentType.ActionRow);
 		const rest = children.filter((child) => child.type !== ComponentType.ActionRow);
@@ -154,7 +163,7 @@ export function markReportMessageDeleted(components: readonly APIMessageTopLevel
 			...rows.map((entry) => ({
 				...entry,
 				components: entry.components.map((child) =>
-					child.type === ComponentType.Button && 'custom_id' in child && child.custom_id.includes('.delete:')
+					disable !== undefined && child.type === ComponentType.Button && 'custom_id' in child && child.custom_id.includes(`.${disable}:`)
 						? { ...child, disabled: true }
 						: child
 				)
@@ -172,13 +181,7 @@ export function markReportMessageDeleted(components: readonly APIMessageTopLevel
 export function renderReportModal(t: Translator, subject: ReportSubject): APIModalInteractionResponseCallbackData {
 	const { message } = subject;
 	return {
-		custom_id: encodeReportId({
-			verb: 'new',
-			targetId: subject.targetId,
-			channelId: message?.channelId ?? null,
-			messageId: message?.id ?? null,
-			submit: true
-		}),
+		custom_id: encodeReportId({ verb: 'new', id: subject.targetId, messageId: message?.id ?? null, submit: true }),
 		title: cutText(t(message === null ? 'commands/report:modalTitleUser' : 'commands/report:modalTitleMessage'), 45),
 		components: [
 			textInput(ReportReasonInputId, t('commands/report:modalReasonLabel'), {
@@ -193,15 +196,14 @@ export function renderReportModal(t: Translator, subject: ReportSubject): APIMod
 }
 
 /**
- * The modal a moderator confirms a moderation action in: its reason and, for a timeout, how long it lasts.
+ * The modal a moderator confirms a moderation action in: its reason and how long it lasts, which a timeout needs and a
+ * mute or a ban may have.
  *
  * @param t - The function to translate with, in the language of the moderator.
- * @param action - The button that was clicked.
+ * @param reportId - The ID of the report.
+ * @param verb - The action.
  */
-export function renderReportActionModal(
-	t: Translator,
-	action: ReportAction & { verb: ReportModerationVerb }
-): APIModalInteractionResponseCallbackData {
+export function renderReportActionModal(t: Translator, reportId: string, verb: ReportModerationVerb): APIModalInteractionResponseCallbackData {
 	const components = [
 		textInput(ReportReasonInputId, t('commands/report:actionReasonLabel'), {
 			style: TextInputStyle.Paragraph,
@@ -209,7 +211,7 @@ export function renderReportActionModal(
 			max_length: ReportReasonMaximumLength
 		})
 	];
-	if (action.verb === 'timeout') {
+	if (verb === 'timeout') {
 		components.unshift(
 			textInput(ReportDurationInputId, t('commands/report:actionDurationLabel'), {
 				style: TextInputStyle.Short,
@@ -218,11 +220,19 @@ export function renderReportActionModal(
 				max_length: 32
 			})
 		);
+	} else if (verb === 'mute' || verb === 'ban') {
+		components.unshift(
+			textInput(ReportDurationInputId, t('commands/report:actionDurationOptionalLabel'), {
+				style: TextInputStyle.Short,
+				required: false,
+				max_length: 32
+			})
+		);
 	}
 
 	return {
-		custom_id: encodeReportId({ ...action, submit: true }),
-		title: cutText(t(`commands/report:actionTitle${capitalize(action.verb)}`), 45),
+		custom_id: encodeReportId({ verb, id: reportId, messageId: null, submit: true }),
+		title: cutText(t(`commands/report:actionTitle${capitalize(verb)}`), 45),
 		components
 	};
 }

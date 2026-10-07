@@ -49,6 +49,8 @@
 	"rolesModerator": "The moderator roles. Moderators have access to almost all moderation commands. Defaults to anyone who can ban members.",
 	"reportsChannel": "The channel the reports of the members are sent to. Members report a message or a user from the Apps menu or with `/report`, and nothing can be reported while this is not set.",
 	"reportsRole": "The role I mention when a report arrives, if any.",
+	"reportsAnonymous": "Whether the reports hide who made them from the moderators. I still know, so a member can be blocked from reporting from the menu of one of their reports.",
+	"reportsNotify": "Whether I tell the member who made a report, in a direct message, when the moderators act on it or dismiss it.",
 	"rolesMuted": "The muted role, if configured, I will give new muted users this role. Otherwise I will prompt you the creation of one.",
 	"rolesPublic": "The public roles. These can be claimed by any user using the `roles` command.",
 	"rolesRemoveInitial": "Whether claiming a public role should remove the initial role at the same time.",

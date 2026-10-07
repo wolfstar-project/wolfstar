@@ -140,6 +140,15 @@ export function getConfiguration() {
 		// Reports
 		reportsChannel: { type: 'guildTextChannel', name: 'reports.channel', description: 'settings:reportsChannel' },
 		reportsRole: { type: 'role', name: 'reports.role', description: 'settings:reportsRole' },
+		reportsAnonymous: { type: 'boolean', name: 'reports.anonymous', description: 'settings:reportsAnonymous' },
+		reportsNotify: { type: 'boolean', name: 'reports.notify', description: 'settings:reportsNotify', default: true },
+		reportsBlockedUsers: {
+			type: 'user',
+			name: 'reports.blocked-users',
+			description: 'settings:dashboardOnlyKey',
+			array: true,
+			dashboardOnly: true
+		},
 
 		// Roles
 		rolesInitial: { type: 'role', name: 'roles.initial', description: 'settings:rolesInitial', array: true },
