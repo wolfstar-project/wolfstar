@@ -198,6 +198,13 @@ namespace public {
     @@control(external)
   }
 
+  model GuildReports {
+    id        BigInt  @id(map: "GuildReports_pkey")
+    channelId BigInt? @map("channel_id")
+    roleId    BigInt? @map("role_id")
+    modules   Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildReports_id_fkey")
+  }
+
   model GuildRoles {
     id                   BigInt   @id(map: "GuildRoles_pkey")
     initial              BigInt[] @default([]) @noCheck(elementNotNull)

@@ -14,6 +14,7 @@ export const Tables = [
 	'GuildLogs',
 	'GuildModeration',
 	'GuildPermissions',
+	'GuildReports',
 	'GuildRoles'
 ] as const;
 
@@ -136,6 +137,10 @@ export const Columns = {
 	...columns('GuildPermissions', {
 		permissionsUsers: ['users', 'value'],
 		permissionsRoles: ['roles', 'value']
+	}),
+	...columns('GuildReports', {
+		reportsChannel: ['channelId', 'snowflake'],
+		reportsRole: ['roleId', 'snowflake']
 	}),
 	...columns('GuildRoles', {
 		rolesInitial: ['initial', 'snowflakes'],
