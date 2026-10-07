@@ -4,9 +4,11 @@ import { Events, type GuildMessage } from '#lib/types';
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { getTag } from '#utils/util';
+import { ApplyOptions } from '@wolfstar/decorators';
 import { Listener } from '@wolfstar/http-framework';
 import type { AutoModerationRule } from 'wolfstar-database';
 
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.GuildUserMessageMentionSpamExceeded })
 export class UserListener extends Listener {
 	public async run(message: GuildMessage, rule: AutoModerationRule<'NoMentionSpam'>) {
 		const moderation = await getModeration(message.guildId);

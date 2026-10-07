@@ -1,9 +1,11 @@
 import { floatPromise, minutes } from '#common';
 import { fetchGuildT } from '#lib/moderation/common';
-import type { GuildMessage } from '#lib/types';
+import { Events, type GuildMessage } from '#lib/types';
 import { deleteMessage } from '#utils/functions';
+import { ApplyOptions } from '@wolfstar/decorators';
 import { Listener } from '@wolfstar/http-framework';
 
+@ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.GuildUserMessageMentionSpamWarning })
 export class UserListener extends Listener {
 	public async run(message: GuildMessage) {
 		const t = await fetchGuildT({ id: message.guildId });
