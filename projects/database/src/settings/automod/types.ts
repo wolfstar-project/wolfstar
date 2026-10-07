@@ -1,5 +1,5 @@
 import type { Snowflake } from 'discord-api-types/v10';
-import type { AutoModerationHardAction } from '../settings/types.js';
+import type { AutoModerationHardAction } from '../types.js';
 
 /**
  * What a rule looks for in a message, as the `GuildAutoModerationRuleType` enum stores it.

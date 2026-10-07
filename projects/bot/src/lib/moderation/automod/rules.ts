@@ -125,13 +125,6 @@ async function write<T>(guildId: Snowflake, callback: (rules: readonly AutoModer
 }
 
 /**
- * Whether a text can be the ID of a rule, a positive `bigint`.
- */
-function isRuleId(ruleId: string) {
-	return /^\d{1,18}$/.test(ruleId);
-}
-
-/**
  * The name of the index that keeps the names of the rules of a guild unique, whatever the case. It catches what the
  * check of {@linkcode validateName} cannot: two processes creating the same name at once.
  */
@@ -218,8 +211,7 @@ export function updateAutoModerationRule(
  */
 export function deleteAutoModerationRule(guildId: Snowflake, ruleId: string): Promise<void> {
 	return write(guildId, async () => {
-		// What is not an ID cannot be the ID of a rule, and the database would refuse to read it as one:
-		if (!isRuleId(ruleId) || !(await removeAutoModerationRule(container.prisma, guildId, ruleId))) throw new AutoModerationRuleError('unknown');
+		if (!(await removeAutoModerationRule(container.prisma, guildId, ruleId))) throw new AutoModerationRuleError('unknown');
 
 		states.delete(ruleId);
 		changed(guildId);

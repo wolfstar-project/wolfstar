@@ -1,5 +1,6 @@
-import type { Database, Models } from '../index.js';
+import type { Database, Models } from '../../index.js';
 import type { Snowflake } from 'discord-api-types/v10';
+import { isRowId } from '../ids.js';
 import type { Report, ReportCloseData, ReportCreateData } from './types.js';
 
 type Orm = Database['orm'];
@@ -29,13 +30,6 @@ function toReport(row: Row): Report {
 		createdAt: toMilliseconds(row.createdAt)!,
 		closedAt: toMilliseconds(row.closedAt)
 	};
-}
-
-/**
- * Whether a text can be the ID of a report, a positive `bigint`.
- */
-function isReportId(id: string) {
-	return /^\d{1,18}$/.test(id);
 }
 
 /**
@@ -73,7 +67,7 @@ export async function createReport(db: Database, guildId: Snowflake, data: Repor
  * @param reportId The report's ID.
  */
 export async function fetchReport(orm: Orm, guildId: Snowflake, reportId: string): Promise<Report | null> {
-	if (!isReportId(reportId)) return null;
+	if (!isRowId(reportId)) return null;
 
 	const row = await orm.public.Report.first({ id: BigInt(reportId), guildId: BigInt(guildId) });
 	return row === null ? null : toReport(row);
@@ -103,7 +97,7 @@ export async function fetchReports(orm: Orm, guildId: Snowflake, options: { targ
  * @returns Whether the report was open: `false` when it does not exist or another moderator closed it first.
  */
 export async function closeReport(db: Database, guildId: Snowflake, reportId: string, data: ReportCloseData): Promise<boolean> {
-	if (!isReportId(reportId)) return false;
+	if (!isRowId(reportId)) return false;
 
 	const count = await db.orm.public.Report.where({ id: BigInt(reportId), guildId: BigInt(guildId), status: 'Open' }).updateAndCount({
 		status: data.status,
@@ -120,7 +114,7 @@ export async function closeReport(db: Database, guildId: Snowflake, reportId: st
  * @returns Whether the report was closed.
  */
 export async function reopenReport(db: Database, guildId: Snowflake, reportId: string): Promise<boolean> {
-	if (!isReportId(reportId)) return false;
+	if (!isRowId(reportId)) return false;
 
 	const count = await db.orm.public.Report.where({ id: BigInt(reportId), guildId: BigInt(guildId) }).updateAndCount({
 		status: 'Open',
@@ -136,7 +130,7 @@ export async function reopenReport(db: Database, guildId: Snowflake, reportId: s
  * Sets the case a report was closed with, once the action that makes it was taken.
  */
 export async function setReportCase(db: Database, guildId: Snowflake, reportId: string, caseId: number): Promise<void> {
-	if (!isReportId(reportId)) return;
+	if (!isRowId(reportId)) return;
 
 	await db.orm.public.Report.where({ id: BigInt(reportId), guildId: BigInt(guildId) }).updateAndCount({ caseId });
 }
@@ -146,7 +140,7 @@ export async function setReportCase(db: Database, guildId: Snowflake, reportId: 
  * @returns Whether the report existed.
  */
 export async function deleteReport(db: Database, guildId: Snowflake, reportId: string): Promise<boolean> {
-	if (!isReportId(reportId)) return false;
+	if (!isRowId(reportId)) return false;
 
 	const count = await db.orm.public.Report.where({ id: BigInt(reportId), guildId: BigInt(guildId) }).deleteAndCount();
 	return Number(count) > 0;

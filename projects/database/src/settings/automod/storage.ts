@@ -1,5 +1,6 @@
-import type { Database, Models } from '../index.js';
+import type { Database, Models } from '../../index.js';
 import type { Snowflake } from 'discord-api-types/v10';
+import { isRowId } from '../ids.js';
 import { normalizeAutoModerationRuleOptions, type AutoModerationRule, type AutoModerationRuleData } from './types.js';
 
 type Orm = Database['orm'];
@@ -74,7 +75,7 @@ export async function createAutoModerationRule(
  * @param guildId The guild's ID, so a rule of another guild is never edited.
  * @param ruleId The rule's ID.
  * @param data What changes.
- * @returns Whether the rule existed.
+ * @returns Whether the rule existed: `false` as well for an ID that is not one.
  */
 export async function updateAutoModerationRule(
 	db: Database,
@@ -82,6 +83,8 @@ export async function updateAutoModerationRule(
 	ruleId: string,
 	data: Partial<AutoModerationRuleData>
 ): Promise<boolean> {
+	if (!isRowId(ruleId)) return false;
+
 	const count = await db.orm.public.GuildAutoModerationRule.where({ id: BigInt(ruleId), guildId: BigInt(guildId) }).updateAndCount(toColumns(data));
 	return Number(count) > 0;
 }
@@ -91,6 +94,8 @@ export async function updateAutoModerationRule(
  * @returns Whether the rule existed.
  */
 export async function deleteAutoModerationRule(db: Database, guildId: Snowflake, ruleId: string): Promise<boolean> {
+	if (!isRowId(ruleId)) return false;
+
 	const count = await db.orm.public.GuildAutoModerationRule.where({ id: BigInt(ruleId), guildId: BigInt(guildId) }).deleteAndCount();
 	return Number(count) > 0;
 }

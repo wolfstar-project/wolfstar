@@ -103,6 +103,6 @@ declare global {
 		type PermissionNodeEntries = PermissionsNode[];
 		type UniqueRoleSetEntries = UniqueRoleSet[];
 		type AuditEventChanges = import('./types.js').AuditEventChanges;
-		type AutoModerationRuleOptions = import('../automod/types.js').AutoModerationRuleOptions;
+		type AutoModerationRuleOptions = import('./automod/types.js').AutoModerationRuleOptions;
 	}
 }
