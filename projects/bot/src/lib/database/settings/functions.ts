@@ -1,5 +1,4 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
-import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { fetchGuildData, getDefaultGuildSettings, writeGuildData, type GuildData, type ReadonlyGuildData } from 'wolfstar-database';
 import { AsyncQueue } from '@sapphire/async-queue';
@@ -37,20 +36,8 @@ export function readSettings(guild: GuildResolvable): Awaitable<ReadonlyGuildDat
 	return cache.get(id) ?? processFetch(id);
 }
 
-export function readSettingsAdder(settings: ReadonlyGuildData, key: AdderKey) {
-	return getSettingsContext(settings).adders[key];
-}
-
 export function readSettingsPermissionNodes(settings: ReadonlyGuildData) {
 	return getSettingsContext(settings).permissionNodes;
-}
-
-export function readSettingsNoMentionSpam(settings: ReadonlyGuildData) {
-	return getSettingsContext(settings).noMentionSpam;
-}
-
-export function readSettingsWordFilterRegExp(settings: ReadonlyGuildData) {
-	return getSettingsContext(settings).wordFilterRegExp;
 }
 
 export function readSettingsCached(guild: GuildResolvable): ReadonlyGuildData | null {

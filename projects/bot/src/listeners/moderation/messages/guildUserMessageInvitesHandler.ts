@@ -1,4 +1,3 @@
-import { readSettings } from '#lib/database';
 import { ModerationMessageListener } from '#lib/moderation';
 import { InviteStore } from '#lib/structures/InviteStore';
 import type { GuildMessage } from '#lib/types';
@@ -8,27 +7,20 @@ import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
 import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
+import type { AutoModerationRule } from 'wolfstar-database';
 
 const enum CodeType {
 	DiscordGG,
 	ThirdPart
 }
 
-@ApplyOptions<ModerationMessageListener.Options>({
+@ApplyOptions<ModerationMessageListener.Options<'Invites'>>({
 	emitter: 'client',
+	type: 'Invites',
 	reasonLanguageKey: 'events/moderation:invites',
-	reasonLanguageKeyWithMaximum: 'events/moderation:invitesWithMaximum',
-	keyEnabled: 'automodInvitesEnabled',
-	ignoredChannelsPath: 'automodInvitesIgnoredChannels',
-	ignoredRolesPath: 'automodInvitesIgnoredRoles',
-	softPunishmentPath: 'automodInvitesSoftAction',
-	hardPunishmentPath: {
-		action: 'automodInvitesHardAction',
-		actionDuration: 'automodInvitesHardActionDuration',
-		adder: 'invites'
-	}
+	reasonLanguageKeyWithMaximum: 'events/moderation:invitesWithMaximum'
 })
-export class UserModerationMessageListener extends ModerationMessageListener<string[]> {
+export class UserModerationMessageListener extends ModerationMessageListener<string[], 'Invites'> {
 	private readonly kInviteRegExp =
 		/(?<source>discord\.(?:gg|io|me|plus|link)|invite\.(?:gg|ink)|discord(?:app)?\.com\/invite)\/(?<code>[\w-]{2,})/gi;
 
@@ -43,7 +35,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 		return super.onUnload();
 	}
 
-	protected async preProcess(message: GuildMessage): Promise<string[] | null> {
+	protected async preProcess(message: GuildMessage, rule: AutoModerationRule<'Invites'>): Promise<string[] | null> {
 		if (message.content.length === 0) return null;
 
 		let value: RegExpExecArray | null = null;
@@ -60,7 +52,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 			if (scanned.has(key)) continue;
 			scanned.add(key);
 
-			promises.push(identifier === CodeType.DiscordGG ? this.scanLink(message, key, code) : Promise.resolve(key));
+			promises.push(identifier === CodeType.DiscordGG ? this.scanLink(message, rule, key, code) : Promise.resolve(key));
 		}
 
 		const resolved = (await Promise.all(promises)).filter((invite) => invite !== null);
@@ -84,15 +76,13 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 			.setTimestamp();
 	}
 
-	private async scanLink(message: GuildMessage, url: string, code: string) {
-		return (await this.fetchIfAllowedInvite(message, code)) ? null : url;
+	private async scanLink(message: GuildMessage, rule: AutoModerationRule<'Invites'>, url: string, code: string) {
+		return (await this.fetchIfAllowedInvite(message, rule, code)) ? null : url;
 	}
 
-	private async fetchIfAllowedInvite(message: GuildMessage, code: string) {
-		const settings = await readSettings(message.guildId);
-
+	private async fetchIfAllowedInvite(message: GuildMessage, rule: AutoModerationRule<'Invites'>, code: string) {
 		// Ignored codes take short-circuit.
-		if (settings.automodInvitesAllowedCodes.includes(code)) return true;
+		if (rule.options.allowedCodes.includes(code)) return true;
 
 		const data = await this.invites.fetch(code);
 
@@ -106,7 +96,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 		if (data.guildId === message.guildId) return true;
 
 		// Invites from white-listed guilds should be allowed.
-		if (settings.automodInvitesAllowedGuilds.includes(data.guildId)) return true;
+		if (rule.options.allowedGuilds.includes(data.guildId)) return true;
 
 		// Any other invite should not be allowed.
 		return false;

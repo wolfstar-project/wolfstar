@@ -1,4 +1,4 @@
-import { getConfigurableGroups, getConfigurableKeys, SerializerStore, type SchemaKey, type Serializer } from '#lib/database';
+import { getConfigurableGroups, getConfigurableKeys, SchemaKey, SerializerStore, type Serializer } from '#lib/database';
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 import {
 	decodeSettingsMenuId,
@@ -65,10 +65,10 @@ function getAllGroups(group = getConfigurableGroups()): ReturnType<typeof getCon
 describe('settings menu', () => {
 	describe('custom IDs', () => {
 		test('GIVEN an action THEN it survives the round trip the framework parser does', () => {
-			const action = { ownerId, verb: 'view', target: 'automod.attachments', page: 2 } as const;
+			const action = { ownerId, verb: 'view', target: 'roles.unique-role-sets', page: 2 } as const;
 			const id = encodeSettingsMenuId(action);
 
-			expect(id).toBe(`conf.${ownerId}.view:automod/attachments:2`);
+			expect(id).toBe(`conf.${ownerId}.view:roles/unique-role-sets:2`);
 			expect(decodeSettingsMenuId(id.split('.').slice(1))).toEqual(action);
 		});
 
@@ -97,32 +97,19 @@ describe('settings menu', () => {
 
 		test('GIVEN a path THEN it resolves the group, and nothing for a key', () => {
 			expect(resolveSettingGroup('')).toBe(getConfigurableGroups());
-			expect(resolveSettingGroup('automod.attachments')?.key).toBe('attachments');
+			expect(resolveSettingGroup('automod')?.key).toBe('automod');
 			expect(resolveSettingGroup('roles.admin')).toBeNull();
 			expect(resolveSettingGroup('nope')).toBeNull();
 		});
 
-		test('GIVEN the automod group THEN it holds its own keys and one group per rule, No Mention Spam included', () => {
+		test('GIVEN the automod group THEN it only holds its own keys, the rules are not settings', () => {
 			const root = getConfigurableGroups();
 			const automod = resolveSettingGroup('automod')!;
 
 			expect(getVisibleGroups(root).map((group) => group.key)).not.toContain('selfmod');
 			expect(getVisibleGroups(root).map((group) => group.key)).not.toContain('no-mention-spam');
 			expect(getVisibleKeys(automod).map((key) => key.name)).toEqual(['automod.channel', 'automod.track-native']);
-			expect(getVisibleGroups(automod).map((group) => group.key)).toEqual([
-				'attachments',
-				'capitals',
-				'invites',
-				'links',
-				'mentions',
-				'newlines',
-				'no-mention-spam',
-				'words',
-				'zalgo'
-			]);
-			expect(getVisibleKeys(resolveSettingGroup('automod.no-mention-spam')!).map((key) => key.name)).toContain(
-				'automod.no-mention-spam.mentions-allowed'
-			);
+			expect(getVisibleGroups(automod)).toEqual([]);
 		});
 	});
 
@@ -166,11 +153,11 @@ describe('settings menu', () => {
 		});
 
 		test('GIVEN a key that is written THEN its modal holds the stored value', () => {
-			const context = createContext({ automodInvitesAllowedCodes: ['wolfstar', 'skyra'] });
-			const modal = renderSettingsModal(context, getConfigurableKeys().get('automodInvitesAllowedCodes')!, 0);
+			const context = createContext({ commandsDisabled: ['ping', 'conf'] });
+			const modal = renderSettingsModal(context, getConfigurableKeys().get('commandsDisabled')!, 0);
 			const input = (modal.components[0] as { components: { value?: string }[] }).components[0];
 
-			expect(input.value).toBe('wolfstar\nskyra');
+			expect(input.value).toBe('ping\nconf');
 			expect(modal.title.length).toBeLessThanOrEqual(45);
 		});
 	});
@@ -201,13 +188,28 @@ describe('settings menu', () => {
 				await container.stores.get('serializers').loadAll();
 			});
 
+			// No setting is a number or a list of text since the auto-moderation rules left the settings, so the keys
+			// are made here. They are only parsed, which does not read their property:
+			const createKey = (options: Pick<SchemaKey, 'type' | 'array' | 'default'> & { minimum?: number; maximum?: number }) =>
+				new SchemaKey({
+					minimum: null,
+					maximum: null,
+					...options,
+					key: 'test',
+					name: 'test',
+					property: 'language',
+					description: 'settings:language',
+					inclusive: true,
+					dashboardOnly: false
+				});
+
 			const parse = (key: SchemaKey, input: string) => {
 				const context = createContext();
 				return parseSettingInput({ entry: key, entity: context.settings, guild: context.guild, t } satisfies Serializer.UpdateContext, input);
 			};
 
 			test('GIVEN a number THEN it is checked against the range of the key', async () => {
-				const key = getConfigurableKeys().get('automodCapitalsMinimum')!;
+				const key = createKey({ type: 'integer', array: false, default: 15, minimum: 5, maximum: 2000 });
 
 				expect(await parse(key, ' 20 ')).toEqual({ ok: true, value: 20 });
 				expect(await parse(key, '')).toEqual({ ok: true, value: key.default });
@@ -217,8 +219,8 @@ describe('settings menu', () => {
 			});
 
 			test('GIVEN a list THEN it takes one value per line, without duplicates', async () => {
-				const codes = getConfigurableKeys().get('automodInvitesAllowedCodes')!;
-				const guilds = getConfigurableKeys().get('automodInvitesAllowedGuilds')!;
+				const codes = createKey({ type: 'string', array: true, default: [] });
+				const guilds = createKey({ type: 'snowflake', array: true, default: [] });
 
 				expect(await parse(codes, 'a\n b \n\na')).toEqual({ ok: true, value: ['a', 'b'] });
 				expect(await parse(guilds, '254360814063058944')).toEqual({ ok: true, value: ['254360814063058944'] });

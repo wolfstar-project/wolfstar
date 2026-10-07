@@ -1,4 +1,4 @@
-import { fetchUserReportEnabled, readSettings } from '#lib/database';
+import { fetchUserReportEnabled } from '#lib/database';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise } from '#common';
@@ -10,27 +10,18 @@ import { codeBlock, cutText } from '@sapphire/utilities';
 import { getCode, isUpper } from '@skyra/char';
 import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
+import type { AutoModerationRule } from 'wolfstar-database';
 
-@ApplyOptions<ModerationMessageListener.Options>({
+@ApplyOptions<ModerationMessageListener.Options<'Capitals'>>({
 	emitter: 'client',
+	type: 'Capitals',
 	reasonLanguageKey: 'events/moderation:capitals',
-	reasonLanguageKeyWithMaximum: 'events/moderation:capitalsWithMaximum',
-	keyEnabled: 'automodCapitalsEnabled',
-	ignoredChannelsPath: 'automodCapitalsIgnoredChannels',
-	ignoredRolesPath: 'automodCapitalsIgnoredRoles',
-	softPunishmentPath: 'automodCapitalsSoftAction',
-	hardPunishmentPath: {
-		action: 'automodCapitalsHardAction',
-		actionDuration: 'automodCapitalsHardActionDuration',
-		adder: 'capitals'
-	}
+	reasonLanguageKeyWithMaximum: 'events/moderation:capitalsWithMaximum'
 })
-export class UserModerationMessageListener extends ModerationMessageListener<number> {
-	protected async preProcess(message: GuildMessage): Promise<1 | null> {
+export class UserModerationMessageListener extends ModerationMessageListener<number, 'Capitals'> {
+	protected preProcess(message: GuildMessage, rule: AutoModerationRule<'Capitals'>): 1 | null {
 		if (message.content.length === 0) return null;
-
-		const settings = await readSettings(message.guildId);
-		if (message.content.length < settings.automodCapitalsMinimum) return null;
+		if (message.content.length < rule.options.minimum) return null;
 
 		let length = 0;
 		let count = 0;
@@ -42,7 +33,7 @@ export class UserModerationMessageListener extends ModerationMessageListener<num
 		}
 
 		const percentage = (count / length) * 100;
-		return percentage >= settings.automodCapitalsMaximum ? 1 : null;
+		return percentage >= rule.options.maximum ? 1 : null;
 	}
 
 	protected async onDelete(message: GuildMessage, t: TFunction<AnyNamespace>) {

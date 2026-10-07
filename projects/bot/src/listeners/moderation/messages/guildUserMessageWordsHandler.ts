@@ -1,4 +1,5 @@
-import { fetchUserReportEnabled, readSettings, readSettingsWordFilterRegExp } from '#lib/database';
+import { fetchUserReportEnabled } from '#lib/database';
+import { getAutoModerationRuleWordFilter } from '#lib/moderation/automod/rules';
 import { ModerationMessageListener } from '#lib/moderation';
 import { IncomingType, OutgoingType } from '#lib/moderation/workers';
 import type { GuildMessage } from '#lib/types';
@@ -9,28 +10,20 @@ import { getContent } from '#utils/util';
 import { codeBlock, cutText } from '@sapphire/utilities';
 import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
+import type { AutoModerationRule } from 'wolfstar-database';
 
-@ApplyOptions<ModerationMessageListener.Options>({
+@ApplyOptions<ModerationMessageListener.Options<'Words'>>({
 	emitter: 'client',
+	type: 'Words',
 	reasonLanguageKey: 'events/moderation:words',
-	reasonLanguageKeyWithMaximum: 'events/moderation:wordsWithMaximum',
-	keyEnabled: 'automodWordsEnabled',
-	ignoredChannelsPath: 'automodWordsIgnoredChannels',
-	ignoredRolesPath: 'automodWordsIgnoredRoles',
-	softPunishmentPath: 'automodWordsSoftAction',
-	hardPunishmentPath: {
-		action: 'automodWordsHardAction',
-		actionDuration: 'automodWordsHardActionDuration',
-		adder: 'words'
-	}
+	reasonLanguageKeyWithMaximum: 'events/moderation:wordsWithMaximum'
 })
-export class UserModerationMessageListener extends ModerationMessageListener<FilterResults> {
-	protected async preProcess(message: GuildMessage): Promise<FilterResults | null> {
+export class UserModerationMessageListener extends ModerationMessageListener<FilterResults, 'Words'> {
+	protected async preProcess(message: GuildMessage, rule: AutoModerationRule<'Words'>): Promise<FilterResults | null> {
 		const content = getContent(message);
 		if (content === null) return null;
 
-		const settings = await readSettings(message.guildId);
-		const regExp = readSettingsWordFilterRegExp(settings);
+		const regExp = getAutoModerationRuleWordFilter(rule);
 		if (regExp === null) return null;
 
 		const result = await this.container.workers.send({ type: IncomingType.RunRegExp, regExp, content }, 500);

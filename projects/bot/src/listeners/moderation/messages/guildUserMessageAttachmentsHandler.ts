@@ -7,21 +7,13 @@ import { EmbedBuilder } from '@discordjs/builders';
 import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 
-@ApplyOptions<ModerationMessageListener.Options>({
+@ApplyOptions<ModerationMessageListener.Options<'Attachments'>>({
 	emitter: 'client',
+	type: 'Attachments',
 	reasonLanguageKey: 'events/moderation:attachments',
-	reasonLanguageKeyWithMaximum: 'events/moderation:attachmentsWithMaximum',
-	keyEnabled: 'automodAttachmentsEnabled',
-	ignoredChannelsPath: 'automodAttachmentsIgnoredChannels',
-	ignoredRolesPath: 'automodAttachmentsIgnoredRoles',
-	softPunishmentPath: 'automodAttachmentsSoftAction',
-	hardPunishmentPath: {
-		action: 'automodAttachmentsHardAction',
-		actionDuration: 'automodAttachmentsHardActionDuration',
-		adder: 'attachments'
-	}
+	reasonLanguageKeyWithMaximum: 'events/moderation:attachmentsWithMaximum'
 })
-export class UserModerationMessageListener extends ModerationMessageListener {
+export class UserModerationMessageListener extends ModerationMessageListener<1, 'Attachments'> {
 	protected preProcess(message: GuildMessage): 1 | null {
 		const attachments = message.attachments.size;
 		return attachments > 0 ? 1 : null;

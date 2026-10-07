@@ -2,7 +2,8 @@ import { writeSettings } from '#lib/database';
 import { type GuildSettingsOfType } from 'wolfstar-database';
 import { PruneLoggerTypeManager, TimeoutLoggerTypeManager } from '#lib/moderation/managers/loggers';
 import { toErrorCodeResult } from '#common';
-import { getCodeStyle, getLogPrefix } from '#utils/functions';
+// Not the barrel: it loads `guild.ts`, which loads the managers, this file included.
+import { getCodeStyle, getLogPrefix } from '#utils/functions/pieces';
 import { EmbedBuilder } from '@discordjs/builders';
 import { isFunction, isNullish, isNullishOrEmpty, type Awaitable, type Nullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';

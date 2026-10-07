@@ -1,4 +1,3 @@
-import { readSettings } from '#lib/database';
 import { ModerationMessageListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
@@ -7,27 +6,19 @@ import { getContent, getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
 import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
+import type { AutoModerationRule } from 'wolfstar-database';
 
 const NEW_LINE = '\n';
 
-@ApplyOptions<ModerationMessageListener.Options>({
+@ApplyOptions<ModerationMessageListener.Options<'Newlines'>>({
 	emitter: 'client',
+	type: 'Newlines',
 	reasonLanguageKey: 'events/moderation:newlines',
-	reasonLanguageKeyWithMaximum: 'events/moderation:newlinesWithMaximum',
-	keyEnabled: 'automodNewlinesEnabled',
-	ignoredChannelsPath: 'automodNewlinesIgnoredChannels',
-	ignoredRolesPath: 'automodNewlinesIgnoredRoles',
-	softPunishmentPath: 'automodNewlinesSoftAction',
-	hardPunishmentPath: {
-		action: 'automodNewlinesHardAction',
-		actionDuration: 'automodNewlinesHardActionDuration',
-		adder: 'newlines'
-	}
+	reasonLanguageKeyWithMaximum: 'events/moderation:newlinesWithMaximum'
 })
-export class UserModerationMessageListener extends ModerationMessageListener {
-	protected async preProcess(message: GuildMessage): Promise<1 | null> {
-		const settings = await readSettings(message.guildId);
-		const threshold = settings.automodNewlinesMaximum;
+export class UserModerationMessageListener extends ModerationMessageListener<1, 'Newlines'> {
+	protected preProcess(message: GuildMessage, rule: AutoModerationRule<'Newlines'>): 1 | null {
+		const threshold = rule.options.maximum;
 		if (threshold === 0) return null;
 
 		const content = getContent(message);
