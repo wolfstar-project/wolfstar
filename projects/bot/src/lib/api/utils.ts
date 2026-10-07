@@ -101,7 +101,7 @@ export async function canManage(guild: Guild, member: GuildMember): Promise<bool
 
 	const settings = await readSettings(guild);
 	const nodes = readSettingsPermissionNodes(settings);
-	return (await isAdmin(member, settings.rolesAdmin)) && ((await nodes.run(member, container.stores.get('commands').get('conf')!)) ?? true);
+	return (await isAdmin(member, settings.rolesAdmin)) && ((await nodes.run(member, container.stores.get('commands').get('settings')!)) ?? true);
 }
 
 async function getManageable(id: string, oauthGuild: RESTAPIPartialCurrentUserGuild, guild: Guild | null): Promise<boolean> {

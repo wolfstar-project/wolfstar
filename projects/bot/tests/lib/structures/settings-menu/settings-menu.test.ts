@@ -11,6 +11,7 @@ import {
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	renderUserSettings,
 	resolveSettingGroup,
 	type SettingsMenuContext
 } from '#lib/structures/settings-menu';
@@ -79,6 +80,14 @@ describe('settings menu', () => {
 			}
 		});
 
+		test('GIVEN the toggle of a user setting THEN it survives the round trip', () => {
+			const action = { ownerId, verb: 'userToggle', target: 'report', page: 0 } as const;
+			const id = encodeSettingsMenuId(action);
+
+			expect(id).toBe(`conf.${ownerId}.userToggle:report:0`);
+			expect(decodeSettingsMenuId(id.split('.').slice(1))).toEqual(action);
+		});
+
 		test('GIVEN something else THEN it decodes to null', () => {
 			expect(decodeSettingsMenuId(null)).toBeNull();
 			expect(decodeSettingsMenuId([ownerId, 'view'])).toBeNull();
@@ -122,6 +131,26 @@ describe('settings menu', () => {
 			expect(getVisibleKeys(resolveSettingGroup('automod.no-mention-spam')!).map((key) => key.name)).toContain(
 				'automod.no-mention-spam.mentions-allowed'
 			);
+		});
+	});
+
+	describe('user settings', () => {
+		const find = (components: readonly unknown[], type: ComponentType): { custom_id?: string; label?: string }[] =>
+			(components as { type: number; components?: unknown[]; accessory?: unknown }[]).flatMap((component) => [
+				...(component.type === type ? [component as never] : []),
+				...find([...(component.components ?? []), ...(component.accessory ? [component.accessory] : [])], type)
+			]);
+
+		test('GIVEN a user THEN the menu is theirs, and its button flips the setting', () => {
+			const enabled = renderUserSettings({ t, ownerId, report: true });
+			const disabled = renderUserSettings({ t, ownerId, report: false });
+
+			expect(enabled.flags).toBe(MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral);
+			const [on] = find(enabled.components!, ComponentType.Button);
+			const [off] = find(disabled.components!, ComponentType.Button);
+			expect(on.custom_id).toBe(`conf.${ownerId}.userToggle:report:0`);
+			expect(on.label).toBe('commands/conf:menuUserDisable');
+			expect(off.label).toBe('commands/conf:menuUserEnable');
 		});
 	});
 

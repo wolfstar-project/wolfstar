@@ -219,8 +219,6 @@ declare module "i18next" {
         deleteSuccess: "Successfully deleted case {{caseId}}.";
       };
       "commands/conf": {
-        name: "conf";
-        description: "Open the settings menu of the server.";
         menuName: "menu";
         menuDescription: "Open an interactive settings menu";
         showName: "show";
@@ -309,6 +307,18 @@ declare module "i18next" {
         menuWrongUser: "This menu is not for you, run the command to open your own.";
         menuInvalidValue: "That is not a valid value for **{{name}}**.";
         menuTooManyValues: "**{{name}}** accepts at most {{max}} values.";
+        settingsName: "settings";
+        settingsDescription: "Open the settings menu of the server or your own.";
+        settingsServerName: "server";
+        settingsServerDescription: "Open the settings menu of the server.";
+        settingsUserName: "user";
+        settingsUserDescription: "Open your own settings.";
+        menuUserTitle: "Your settings";
+        menuUserSubtitle: "These settings are yours, they are the same in every server.";
+        menuUserReport: "Moderation direct messages";
+        menuUserReportDescription: "Whether I send you a direct message when a moderator takes an action on you, or the auto-moderation does.";
+        menuUserEnable: "Enable";
+        menuUserDisable: "Disable";
       };
       "commands/lockdown": {
         name: "lockdown";

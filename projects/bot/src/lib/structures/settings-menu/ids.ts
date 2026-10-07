@@ -19,8 +19,9 @@ export const SettingsMenuHandlerName = 'conf';
  * - `reset`: resets a key to its default.
  * - `resetAll`: resets every key of a group to its default, after a confirmation.
  * - `page`: the page indicator, which does nothing.
+ * - `userToggle`: flips a setting of the user, the menu of `/settings user`, the target is the setting.
  */
-export type SettingsMenuVerb = 'view' | 'refresh' | 'module' | 'toggle' | 'edit' | 'pick' | 'submit' | 'reset' | 'resetAll' | 'page';
+export type SettingsMenuVerb = 'view' | 'refresh' | 'module' | 'toggle' | 'edit' | 'pick' | 'submit' | 'reset' | 'resetAll' | 'page' | 'userToggle';
 
 export interface SettingsMenuAction {
 	/**

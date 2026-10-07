@@ -2,6 +2,7 @@ import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getConfigurableKeys, reset, writeSettings, type SchemaDataKey, type Serializer } from '#lib/database';
 import { type ReadonlyGuildData } from 'wolfstar-database';
+import { fetchUserReportEnabled, toggleUserReportEnabled } from '#lib/database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import {
@@ -18,6 +19,7 @@ import {
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	renderUserSettings,
 	resolveSettingGroup,
 	type SettingsMenuAction
 } from '#lib/structures/settings-menu';
@@ -30,24 +32,28 @@ type ModalInteraction = InteractionHandler.ModalInteraction;
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInteraction>;
 
 /**
- * Handles the components and the modal of the settings menu the `conf` command opens, see `lib/structures/settings-menu`.
+ * Handles the components and the modal of the settings menus `/settings server` and `/settings user` open, see
+ * `lib/structures/settings-menu`.
  *
  * @remarks
  *
  * What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the user who
  * opened the menu can use it, and they need the administrator level every time, since it may have been taken away from
- * them in the meantime.
+ * them in the meantime. The menu of the user only needs to be theirs.
  */
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeSettingsMenuId(content);
-		if (action === null || guildId === undefined) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (action === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
 
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/conf:menuWrongUser'));
+		if (action.verb === 'userToggle' && !(interaction instanceof ModalSubmitInteraction)) return this.toggleUser(interaction, action, t);
+
+		if (guildId === undefined) return fail(getDefaultExpiredReply());
 		if (
 			interaction.member === undefined ||
 			!(await hasCommandPermissionLevel({ guildId, member: interaction.member }, CommandPermissionLevel.Administrator))
@@ -89,6 +95,17 @@ export class UserInteractionHandler extends InteractionHandler {
 			default:
 				return fail(getDefaultExpiredReply());
 		}
+	}
+
+	/**
+	 * Flips a setting of the user, then shows their settings again.
+	 */
+	private async toggleUser(interaction: ComponentInteraction, action: SettingsMenuAction, t: Translator) {
+		if (action.target !== 'report') return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+
+		await toggleUserReportEnabled(interaction.user.id);
+		const report = await fetchUserReportEnabled(interaction.user.id);
+		return interaction.update(renderUserSettings({ t, ownerId: action.ownerId, report }));
 	}
 
 	/**
