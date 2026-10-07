@@ -409,15 +409,6 @@ declare module "i18next" {
         manageReactionRolesRemove: "{{GREENTICK}} Success! I will not longer give the role when people react with {{emoji}} at {{url}}!";
         manageReactionRolesResetEmpty: "There were no reaction roles set up.";
         manageReactionRolesReset: "{{GREENTICK}} Successfully removed all reaction roles.";
-        configurationEquals: "Successfully configured: no changes were made.";
-        setIgnoreChannelsSet: "Ignoring all command input from {{channel}} now.";
-        setIgnoreChannelsRemoved: "Listening all command input from {{channel}} now.";
-        setImageLogsSet: "Successfully set the image logs channel to {{channel}}.";
-        setMemberAddLogsSet: "Successfully set the member add logs channel to {{channel}}.";
-        setMemberRemoveLogsSet: "Successfully set the member remove logs channel to {{channel}}.";
-        setMessageUpdateLogsSet: "Successfully set the message update logs channel to {{channel}}.";
-        setMessageDeleteLogsSet: "Successfully set the message delete logs channel to {{channel}}.";
-        setModLogsSet: "Successfully set the mod logs channel to {{channel}}.";
         stickyRolesNotExists: "The user {{user}} does not have any sticky roles or does not have the specified one.";
         stickyRolesReset: "Successfully removed all sticky roles from {{user}}.";
         stickyRolesRemove: "Successfully removed the specified role from {{user}}.";
@@ -490,96 +481,6 @@ declare module "i18next" {
         rolesNotManageable: "The following roles cannot be given by me due to their hierarchy role position: `{{roles}}`";
         rolesNotPublic: "The following roles are not public: `{{roles}}`";
         rolesRemoved: "The following roles have been removed from your profile: `{{roles}}`";
-        setIgnoreChannelsDescription: "Set a channel to the ignore channel list.";
-        setIgnoreChannelsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: "This command helps you setting up ignored channels. An ignored channel is a channel where nobody but moderators can use WolfStar's commands.\nUnlike removing the **{{SEND_MESSAGES, permissions}}** permission, WolfStar is still able to send (and therefore execute commands) messages, which allows moderators to use moderation commands in the channel.\nUse this if you want to ban any command usage from the bot in a specific channel.";
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to select the channel the message was sent.',
-            ],
-          ];
-          reminder: "You cannot set the same channel twice, instead, WolfStar will remove it.";
-          examples: ["#general", "here"];
-        };
-        setImageLogsDescription: "Set the image logs channel.";
-        setImageLogsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: "This command helps you setting up the image log channel. Whenever a member sends an image attachment, it will send an embed message with the attachment re-uploaded.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to select the channel the message was sent.',
-            ],
-          ];
-          examples: ["#image-logs", "here"];
-        };
-        setMemberAddLogsDescription: "Set the member add logs channel.";
-        setMemberAddLogsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: 'This command helps you setting up the member add log channel, which will receive a message each time a user joins.\nIf a muted user joins, it will send a special "Muted Member Joined" event.';
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to select the channel the message was sent.',
-            ],
-          ];
-          examples: ["#member-logs", "here"];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
-        };
-        setMemberRemoveLogsDescription: "Set the member remove logs channel.";
-        setMemberRemoveLogsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: 'This command helps you setting up the member remove log channel, which will receive a message each time a user leaves, is kicked, or is banned.\nIn the case of the last two, it will send a special "User Kicked" or "User Banned" event.';
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to configure the channel this command was used in.',
-            ],
-          ];
-          examples: ["#member-logs", "here"];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
-        };
-        setMessageUpdateLogsDescription: "Set the message update logs channel.";
-        setMessageUpdateLogsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: "This command helps you setting up the message update log channel, which will receive a message each time a message is edited.";
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to configure the channel this command was used in.',
-            ],
-          ];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.";
-          examples: ["#message-logs", "here"];
-        };
-        setMessageDeleteLogsDescription: "Set the message delete logs channel.";
-        setMessageDeleteLogsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: "This command helps you setting up the message delete log channel, which will receive a message each time a message is deleted.";
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to configure the channel this command was used in.',
-            ],
-          ];
-          reminder: "All messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nDue to Discord limitations, WolfStar cannot know who deleted a message.";
-          examples: ["#message-logs", "here"];
-        };
-        setmodlogsDescription: "Set the mod logs channel.";
-        setmodlogsExtended: {
-          usages: ["here/TextChannel"];
-          extendedHelp: 'This command helps you setting up the mod log channel. A mod log channel only sends case reports indexed by a number case and with "claimable" reasons and moderators.\nThis channel is not a must and you can always retrieve specific modlogs with the `case` command.\nAll messages are in embeds so you will need to enable the permission **{{EMBED_LINKS, permissions}}** for WolfStar.\nFor auto-detection, you need to individually set the "events" you want to listen: `events.ban-add`, `events.ban-remove` via the `config` command.';
-          explainedUsage: [
-            [
-              "channel",
-              'A TextChannel. You can either put the name of the channel, tag it, or type in "here" to select the channel the message was sent.',
-            ],
-          ];
-          reminder: "Due to Discord limitations, the auto-detection does not detect kicks. You need to use the `kick` command if you want to document them as a formal moderation log case.";
-          examples: ["#mod-logs", "here"];
-        };
         guildInfoDescription: "Check the information of the server.";
         guildInfoExtended: {
           extendedHelp: "The serverinfo command displays information for the server the message got sent.\nIt shows the amount of channels, with the count for each category, the amount of members (given from the API), the owner with their user id, the amount of roles, region, creation date, verification level... between others.";
@@ -928,31 +829,10 @@ declare module "i18next" {
         };
         permissionNodesName: "permission-nodes";
         manageReactionRolesName: "reaction-roles";
-        setIgnoreChannelsName: "set-ignore-channels";
-        setImageLogsName: "set-image-logs";
-        setMemberAddLogsName: "set-member-add-logs";
-        setMemberRemoveLogsName: "set-member-remove-logs";
-        setMessageUpdateLogsName: "set-message-update-logs";
-        setMessageDeleteLogsName: "set-message-delete-logs";
-        setmodlogsName: "set-mod-logs";
         guildInfoName: "server-info";
         roleInfoName: "role-info";
         stickyRolesName: "sticky-roles";
         rolesName: "roles";
-        setImageLogsOptionsChannelName: "channel";
-        setImageLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
-        setMemberAddLogsOptionsChannelName: "channel";
-        setMemberAddLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
-        setMemberRemoveLogsOptionsChannelName: "channel";
-        setMemberRemoveLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
-        setMessageUpdateLogsOptionsChannelName: "channel";
-        setMessageUpdateLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
-        setMessageDeleteLogsOptionsChannelName: "channel";
-        setMessageDeleteLogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
-        setmodlogsOptionsChannelName: "channel";
-        setmodlogsOptionsChannelDescription: "The channel to send the logs to, leave empty to disable them.";
-        setIgnoreChannelsOptionsChannelName: "channel";
-        setIgnoreChannelsOptionsChannelDescription: "The channel to toggle in the ignore list, defaults to the current one.";
         permissionNodesSubcommandAddName: "add";
         permissionNodesSubcommandAddDescription: "Add a command to a permission node.";
         permissionNodesSubcommandRemoveName: "remove";
@@ -1003,7 +883,6 @@ declare module "i18next" {
         createMuteOptionsRoleName: "role";
         createMuteOptionsRoleDescription: "The role to use as the muted role, leave empty to create a new one.";
         permissionNodesCommandInvalid: "{{REDCROSS}} I could not match `{{command}}` to a command, use the autocomplete suggestions, or `*` to match every command.";
-        configurationChannelReset: "The channel was reset.";
       };
       "commands/moderation": {
         permissions: "Permissions for {{username}} ({{id}})";
