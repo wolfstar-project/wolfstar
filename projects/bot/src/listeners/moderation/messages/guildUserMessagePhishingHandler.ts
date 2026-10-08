@@ -1,5 +1,5 @@
 import { ModerationMessageListener } from '#lib/moderation';
-import { fetchPhishingHostnames, isListedHostname, normalizeHostname } from '#lib/moderation/automod/phishing';
+import { getPhishingHostnames, isListedHostname, normalizeHostname } from '#lib/moderation/automod/phishing';
 import type { GuildMessage } from '#lib/types';
 import { urlRegex } from '#utils/Links/UrlRegex';
 import { Colors } from '#utils/constants';
@@ -23,17 +23,13 @@ export class UserModerationMessageListener extends ModerationMessageListener<str
 	/**
 	 * @returns The hostname of the first link of the message that is in the list of known phishing links.
 	 */
-	protected async preProcess(message: GuildMessage, rule: AutoModerationRule<'Phishing'>): Promise<string | null> {
+	protected preProcess(message: GuildMessage, rule: AutoModerationRule<'Phishing'>): string | null {
 		if (message.content.length === 0) return null;
 
-		// The expression is shared and keeps where it stopped, and the list is awaited: the hostnames are read first.
-		const found = new Set<string>();
-		for (const match of message.content.matchAll(this.kRegExp)) found.add(normalizeHostname(match.groups!.hostname));
-		if (found.size === 0) return null;
-
-		const list = await fetchPhishingHostnames();
+		const list = getPhishingHostnames();
 		const { allowed } = rule.options;
-		for (const hostname of found) {
+		for (const match of message.content.matchAll(this.kRegExp)) {
+			const hostname = normalizeHostname(match.groups!.hostname);
 			if (allowed.includes(hostname)) continue;
 			if (isListedHostname(list, hostname)) return hostname;
 		}

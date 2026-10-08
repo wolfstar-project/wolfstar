@@ -137,7 +137,8 @@
 		"coverage/**",
 		"projects/**/dist/**",
 		"projects/**/src/languages/**/*.json",
-		"projects/bot/src/lib/util/Links/TLDs.ts"
+		"projects/bot/src/lib/util/Links/TLDs.ts",
+		"projects/bot/src/lib/utilities/Links/PhishingHostnames.ts"
 	],
 	"overrides": [
 		{

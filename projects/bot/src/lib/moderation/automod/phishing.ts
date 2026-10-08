@@ -1,7 +1,9 @@
+import { PhishingHostnames } from '#utils/Links/PhishingHostnames';
 import { container } from '@wolfstar/http-framework';
 
 /**
- * The list of the hostnames that are known to steal accounts, kept by the Discord-AntiScam community.
+ * The list of the hostnames that are known to steal accounts, kept by the Discord-AntiScam community. The bot starts
+ * with the copy `scripts/phishing.mjs` writes (`PhishingHostnames`), and reads this one for what was added since.
  */
 const PhishingListUrl = 'https://raw.githubusercontent.com/Discord-AntiScam/scam-links/main/list.json';
 
@@ -10,7 +12,7 @@ const RefreshInterval = 60 * 60 * 1000;
 const RetryInterval = 5 * 60 * 1000;
 const FetchTimeout = 15_000;
 
-let hostnames: ReadonlySet<string> = new Set();
+let hostnames: ReadonlySet<string> = new Set(PhishingHostnames);
 let nextRefresh = 0;
 let refreshing: Promise<void> | null = null;
 
@@ -47,13 +49,11 @@ export function parsePhishingList(data: unknown): Set<string> {
 }
 
 /**
- * The hostnames that are known to steal accounts. The list is read the first time it is asked for and once an hour
- * after, in the background: a message is never held back by the refresh of a list the process already has, and a
- * read that fails keeps the last one.
+ * The hostnames that are known to steal accounts. The list is read again the first time it is asked for and once an
+ * hour after, in the background: a message is never held back by it, and a read that fails keeps the last list.
  */
-export async function fetchPhishingHostnames(): Promise<ReadonlySet<string>> {
+export function getPhishingHostnames(): ReadonlySet<string> {
 	if (Date.now() >= nextRefresh) refreshing ??= refresh();
-	if (hostnames.size === 0 && refreshing !== null) await refreshing;
 	return hostnames;
 }
 
