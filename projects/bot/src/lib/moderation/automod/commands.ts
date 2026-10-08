@@ -9,10 +9,9 @@ import {
 import { normalizeAutoModerationRuleWord } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { Colors, Emojis } from '#utils/constants';
+import { Emojis } from '#utils/constants';
 import { resolveTimeSpan } from '#utils/resolvers';
-import { EmbedBuilder, strikethrough, type SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
+import { strikethrough, type SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { isNullishOrEmpty, isNullishOrZero } from '@sapphire/utilities';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -218,7 +217,7 @@ export function editRuleListEntry(
 	return { content: translateKey(t, `${Root}:addSuccess`, context), key, list: [...entry.list, entry.value] };
 }
 
-function getRuleList(rule: AutoModerationRule): readonly string[] | null {
+export function getRuleList(rule: AutoModerationRule): readonly string[] | null {
 	switch (rule.type) {
 		case 'Words':
 			return (rule as AutoModerationRule<'Words'>).options.words;
@@ -234,7 +233,7 @@ function getRuleList(rule: AutoModerationRule): readonly string[] | null {
 	}
 }
 
-function getPunishment(punishment: AutoModerationHardAction): { key: TranslationKey; emoji: string } {
+export function getPunishment(punishment: AutoModerationHardAction): { key: TranslationKey; emoji: string } {
 	switch (punishment) {
 		case 'Ban':
 			return { key: 'moderation:typeBan', emoji: Emojis.Ban };
@@ -253,21 +252,7 @@ function getPunishment(punishment: AutoModerationHardAction): { key: Translation
 	}
 }
 
-function renderSoftActions(t: TFunction, value: number) {
-	const { flags } = AutoModerationOnInfraction;
-	const line = (bit: number, name: 'Reply' | 'Log' | 'Delete', active: string, inactive: string) =>
-		AutoModerationOnInfraction.has(value, bit)
-			? translateKey(t, `${Root}:show${name}Active`, { emoji: active })
-			: translateKey(t, `${Root}:show${name}Inactive`, { emoji: inactive });
-
-	return [
-		line(flags.Alert, 'Reply', Emojis.Reply, Emojis.ReplyInactive),
-		line(flags.Log, 'Log', Emojis.Flag, Emojis.FlagInactive),
-		line(flags.Delete, 'Delete', Emojis.Delete, Emojis.DeleteInactive)
-	].join('\n');
-}
-
-function renderPunishment(t: TFunction, rule: AutoModerationRule) {
+export function renderPunishment(t: TFunction, rule: AutoModerationRule) {
 	const { key, emoji } = getPunishment(rule.hardAction);
 	const name = translateKey(t, key);
 
@@ -291,98 +276,4 @@ function renderPunishment(t: TFunction, rule: AutoModerationRule) {
 					emoji: Emojis.Bucket
 				});
 	return `${line}\n${threshold}`;
-}
-
-/**
- * The most characters of a list a rule shows, a field of an embed holds 1024.
- */
-const MaximumListLength = 900;
-
-/**
- * Joins mentions, as many as fit in a field of an embed, followed by how many were left out.
- */
-function renderMentions(ids: readonly string[], mention: (id: string) => string): string {
-	const shown: string[] = [];
-	let length = 0;
-	for (const id of ids) {
-		const text = mention(id);
-		length += text.length + 1;
-		if (length > MaximumListLength) break;
-		shown.push(text);
-	}
-
-	const hidden = ids.length - shown.length;
-	return `${shown.join(' ')}${hidden > 0 ? ` (+${hidden})` : ''}`;
-}
-
-/**
- * Renders a rule: what it looks for, what it does, and what it leaves alone.
- */
-export function renderRule(t: TFunction, rule: AutoModerationRule): EmbedBuilder {
-	const type = translateKey(t, AutoModerationRuleTypeKeys[rule.type]);
-	const embed = new EmbedBuilder()
-		.setColor(rule.enabled ? Colors.Green : Colors.Red)
-		.setTitle(translateKey(t, rule.enabled ? `${Root}:showTitleEnabled` : `${Root}:showTitleDisabled`, { name: rule.name, type }))
-		.setDescription(
-			`${translateKey(t, `${AutoModerationRuleTypeKeys[rule.type]}Description`, rule.options)}\n\n${renderSoftActions(t, rule.softAction)}`
-		);
-
-	// The mention spam rule bans by itself, it has no punishment to configure:
-	if (rule.type !== 'NoMentionSpam') {
-		embed.addFields({ name: translateKey(t, `${Root}:showPunishmentTitle`), value: renderPunishment(t, rule) });
-	}
-
-	const list = getRuleList(rule);
-	if (list !== null) {
-		const shown: string[] = [];
-		let length = 0;
-		for (const entry of list) {
-			length += entry.length + 4;
-			if (length > MaximumListLength) break;
-			shown.push(inlineCode(entry));
-		}
-		const hidden = list.length - shown.length;
-		embed.addFields({
-			name: translateKey(t, `${Root}:showListTitle`, { count: list.length }),
-			value:
-				list.length === 0
-					? translateKey(t, `${Root}:showListEmpty`, { command: inlineCode('/automod add') })
-					: `${shown.join(', ')}${hidden > 0 ? ` (+${hidden})` : ''}`
-		});
-	}
-
-	if (rule.ignoredRoles.length > 0) {
-		embed.addFields({ name: translateKey(t, `${Root}:showIgnoredRoles`), value: renderMentions(rule.ignoredRoles, roleMention) });
-	}
-	if (rule.ignoredChannels.length > 0) {
-		embed.addFields({ name: translateKey(t, `${Root}:showIgnoredChannels`), value: renderMentions(rule.ignoredChannels, channelMention) });
-	}
-
-	return embed;
-}
-
-/**
- * Renders the rules of a guild as a list, one line per rule.
- */
-export function renderRuleList(t: TFunction, rules: readonly AutoModerationRule[]): EmbedBuilder {
-	if (rules.length === 0) {
-		return new EmbedBuilder()
-			.setColor(Colors.Red)
-			.setDescription(translateKey(t, `${Root}:listEmpty`, { command: inlineCode('/automod create') }));
-	}
-
-	return new EmbedBuilder()
-		.setColor(Colors.Blue)
-		.setTitle(translateKey(t, `${Root}:listTitle`, { count: rules.length }))
-		.setDescription(
-			rules
-				.map((rule) =>
-					translateKey(t, rule.enabled ? `${Root}:listLineEnabled` : `${Root}:listLineDisabled`, {
-						emoji: rule.enabled ? Emojis.GreenTick : Emojis.RedCross,
-						name: rule.name,
-						type: translateKey(t, AutoModerationRuleTypeKeys[rule.type])
-					})
-				)
-				.join('\n')
-		);
 }

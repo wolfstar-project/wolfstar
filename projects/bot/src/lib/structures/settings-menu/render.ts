@@ -4,6 +4,7 @@ import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/databa
 import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';
+import { encodeAutoModerationMenuId } from '#lib/structures/automod-menu/ids';
 import {
 	displaySettingValue,
 	getAvailableLanguages,
@@ -127,6 +128,17 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	}
 
 	if (entries.length === 0) body.push(text(t('commands/conf:menuRenderNokeys')));
+
+	// The rules of the auto-moderation are rows of their own, not keys: their menu is opened from the page of the module.
+	if (path === 'automod') {
+		body.push(
+			{ type: ComponentType.Separator },
+			section(
+				`**🛡️ ${t('commands/conf:menuAutomodRules')}**\n${t('commands/conf:menuAutomodRulesDescription')}`,
+				button(encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'list' }), { emoji: '➡️' })
+			)
+		);
+	}
 
 	body.push(
 		{ type: ComponentType.Separator },

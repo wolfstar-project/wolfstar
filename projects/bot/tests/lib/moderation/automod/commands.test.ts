@@ -1,4 +1,4 @@
-import { editRuleListEntry, renderRule, resolveRuleListEntry, resolveSoftAction } from '#lib/moderation/automod/commands';
+import { editRuleListEntry, resolveRuleListEntry, resolveSoftAction } from '#lib/moderation/automod/commands';
 import { findAutoModerationRule } from '#lib/moderation/automod/rules';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { getDefaultAutoModerationRule, type AutoModerationRule, type AutoModerationRuleType } from 'wolfstar-database';
@@ -63,18 +63,6 @@ describe('auto-moderation commands', () => {
 
 		test('GIVEN a rule without a list THEN there is nothing to edit', () => {
 			expect(resolveRuleListEntry(createRule('Capitals', 'Caps'), 'x')).toBeNull();
-		});
-	});
-
-	describe('renderRule', () => {
-		test('GIVEN many exempt roles and channels THEN every field fits the limit of an embed', () => {
-			const ids = Array.from({ length: 100 }, (_, index) => `25436081406305${String(1000 + index).padStart(4, '0')}`);
-			const rule = { ...createRule('Links', 'Links'), ignoredRoles: ids, ignoredChannels: ids };
-
-			const { fields } = renderRule(t, rule).toJSON();
-			expect(fields!.length).toBeGreaterThanOrEqual(2);
-			for (const field of fields!) expect(field.value.length).toBeLessThanOrEqual(1024);
-			expect(fields!.at(-1)!.value).toMatch(/\(\+\d+\)$/);
 		});
 	});
 
