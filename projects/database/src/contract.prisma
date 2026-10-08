@@ -327,6 +327,17 @@ namespace public {
     // A native enum only takes new values at its end:
     Phishing = "Phishing"
     Stickers = "Stickers"
+    Duplicates = "Duplicates"
+    Characters = "Characters"
+    Emojis = "Emojis"
+    MessageSpam = "MessageSpam"
+    ImageSpam = "ImageSpam"
+    LinksCooldown = "LinksCooldown"
+    MassMentions = "MassMentions"
+    MentionsCooldown = "MentionsCooldown"
+    Spoilers = "Spoilers"
+    MaskedLinks = "MaskedLinks"
+    StickersCooldown = "StickersCooldown"
   }
 
   native_enum ReportStatus {

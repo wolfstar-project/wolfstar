@@ -7,12 +7,23 @@ import type { AutoModerationHardAction } from '../types.js';
 export const AutoModerationRuleTypes = [
 	'Attachments',
 	'Capitals',
+	'Characters',
+	'Duplicates',
+	'Emojis',
+	'ImageSpam',
 	'Invites',
 	'Links',
+	'LinksCooldown',
+	'MaskedLinks',
+	'MassMentions',
+	'MentionsCooldown',
+	'MessageSpam',
 	'Newlines',
 	'NoMentionSpam',
 	'Phishing',
+	'Spoilers',
 	'Stickers',
+	'StickersCooldown',
 	'Words',
 	'Zalgo'
 ] as const;
@@ -55,6 +66,28 @@ export interface AutoModerationRuleOptionsMap {
 	Words: { words: string[] };
 	/** Messages in which a character carries more than `maximum` combining marks. */
 	Zalgo: { maximum: number };
+	/** Messages that repeat a character more than `characters` times in a row, or a word more than `words` times. */
+	Duplicates: { characters: number; words: number };
+	/** Messages of more than `maximum` characters. */
+	Characters: { maximum: number };
+	/** Messages with more than `maximum` emojis. */
+	Emojis: { maximum: number };
+	/** More than `maximum` messages of a member in a channel within `timePeriod` seconds. */
+	MessageSpam: { maximum: number; timePeriod: number };
+	/** More than `maximum` images of a member within `timePeriod` seconds, in one message or several. */
+	ImageSpam: { maximum: number; timePeriod: number };
+	/** More than `maximum` links of a member within `timePeriod` seconds, across the channels. */
+	LinksCooldown: { maximum: number; timePeriod: number };
+	/** Messages that mention more than `maximum` different users. */
+	MassMentions: { maximum: number };
+	/** More than `maximum` mentions of a member within `timePeriod` seconds. */
+	MentionsCooldown: { maximum: number; timePeriod: number };
+	/** Messages with a spoiler, in their text or as an attachment. */
+	Spoilers: Record<string, never>;
+	/** Messages with a link that is shown as another text. */
+	MaskedLinks: Record<string, never>;
+	/** More than `maximum` stickers of a member within `timePeriod` seconds. */
+	StickersCooldown: { maximum: number; timePeriod: number };
 }
 
 export type AutoModerationRuleOptions = AutoModerationRuleOptionsMap[AutoModerationRuleType];
@@ -109,7 +142,16 @@ export const AutoModerationRuleOptionLimits = {
 	Capitals: { minimum: { minimum: 5, maximum: 2000 }, maximum: { minimum: 10, maximum: 100 } },
 	Newlines: { maximum: { minimum: 1, maximum: 100 } },
 	NoMentionSpam: { mentionsAllowed: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 3600 } },
-	Zalgo: { maximum: { minimum: 1, maximum: 20 } }
+	Zalgo: { maximum: { minimum: 1, maximum: 20 } },
+	Duplicates: { characters: { minimum: 3, maximum: 200 }, words: { minimum: 2, maximum: 100 } },
+	Characters: { maximum: { minimum: 50, maximum: 4000 } },
+	Emojis: { maximum: { minimum: 1, maximum: 200 } },
+	MessageSpam: { maximum: { minimum: 2, maximum: 100 }, timePeriod: { minimum: 1, maximum: 120 } },
+	ImageSpam: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 120 } },
+	LinksCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } },
+	MassMentions: { maximum: { minimum: 1, maximum: 100 } },
+	MentionsCooldown: { maximum: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 600 } },
+	StickersCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } }
 } as const;
 
 /**
@@ -133,7 +175,18 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Phishing: { allowed: [] },
 		Stickers: {},
 		Words: { words: [] },
-		Zalgo: { maximum: 4 }
+		Zalgo: { maximum: 4 },
+		Duplicates: { characters: 10, words: 5 },
+		Characters: { maximum: 1500 },
+		Emojis: { maximum: 10 },
+		MessageSpam: { maximum: 5, timePeriod: 5 },
+		ImageSpam: { maximum: 3, timePeriod: 10 },
+		LinksCooldown: { maximum: 3, timePeriod: 10 },
+		MassMentions: { maximum: 5 },
+		MentionsCooldown: { maximum: 5, timePeriod: 30 },
+		Spoilers: {},
+		MaskedLinks: {},
+		StickersCooldown: { maximum: 3, timePeriod: 60 }
 	};
 	return structuredClone(defaults[type]);
 }
