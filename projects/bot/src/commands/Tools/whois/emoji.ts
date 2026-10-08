@@ -5,9 +5,10 @@ import { getCustomEmojiUrl, getEncodedTwemoji, getTwemojiUrl, parseEmoji } from 
 import { EmbedBuilder, formatEmoji, inlineCode, roleMention, time, TimestampStyles, userMention } from '@discordjs/builders';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { container } from '@wolfstar/http-framework';
+import type { GuildEmoji } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags, RESTJSONErrorCodes, type APIEmoji } from 'discord-api-types/v10';
+import { MessageFlags, RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 const Root = 'commands/tools';
 
@@ -52,7 +53,8 @@ export class UserCommand extends Command {
 
 	private async getCustom(t: TFunction, guildId: string, parsed: { id: string; name: string | null; animated: boolean | null }) {
 		// What Discord says of an emoji of this server wins over what the user wrote, the name may have changed since:
-		const own = await resolveOnErrorCodes(container.gatewayClient.api.guilds.getEmoji(guildId, parsed.id), RESTJSONErrorCodes.UnknownEmoji);
+		const guild = await container.gatewayClient.guilds.fetch(guildId);
+		const own = await resolveOnErrorCodes(guild.emojis.fetch(parsed.id), RESTJSONErrorCodes.UnknownEmoji);
 		const name = own?.name ?? parsed.name;
 		const animated = own?.animated ?? parsed.animated;
 		// Discord gives no name nor kind for an emoji of another server, and nothing at all for an ID that is not one:
@@ -80,13 +82,14 @@ export class UserCommand extends Command {
 	/**
 	 * What is only known of the emoji of this server: who added it, which roles can use it, and whether it can be used.
 	 */
-	private getOwnLines(t: TFunction, emoji: APIEmoji) {
+	private getOwnLines(t: TFunction, emoji: GuildEmoji) {
 		const lines = [translateKey(t, `${Root}:whoisEmojiServer`)];
-		if (emoji.user) lines.push(translateKey(t, `${Root}:whoisEmojiAddedBy`, { user: userMention(emoji.user.id) }));
-		if (emoji.roles?.length)
-			lines.push(translateKey(t, `${Root}:whoisEmojiRoles`, { roles: emoji.roles.map((id) => roleMention(id)).join(' ') }));
+		if (emoji.author) lines.push(translateKey(t, `${Root}:whoisEmojiAddedBy`, { user: userMention(emoji.author.id) }));
+		if (emoji.roleIds.length > 0) {
+			lines.push(translateKey(t, `${Root}:whoisEmojiRoles`, { roles: emoji.roleIds.map((id) => roleMention(id)).join(' ') }));
+		}
 		if (emoji.managed) lines.push(translateKey(t, `${Root}:whoisEmojiManaged`));
-		if (emoji.available === false) lines.push(translateKey(t, `${Root}:whoisEmojiUnavailable`));
+		if (!emoji.available) lines.push(translateKey(t, `${Root}:whoisEmojiUnavailable`));
 		return lines;
 	}
 }
