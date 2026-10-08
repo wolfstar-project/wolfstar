@@ -115,6 +115,32 @@ namespace public {
     @@control(external)
   }
 
+  model GuildAutoDelete {
+    id        BigInt   @id(map: "GuildAutoDelete_pkey") @default(autoincrement())
+    guildId   BigInt   @map("guild_id")
+    channelId BigInt   @unique(map: "GuildAutoDelete_channel_id_key") @map("channel_id")
+    delay     Int      @default(0)
+    allow     String[] @default([]) @noCheck(elementNotNull)
+    bots      Boolean  @default(false)
+    guild     Guild    @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoDelete_guild_id_fkey", index: false)
+
+    @@index([guildId], map: "GuildAutoDelete_guild_id_idx")
+  }
+
+  model GuildAutoPurge {
+    id        BigInt             @id(map: "GuildAutoPurge_pkey") @default(autoincrement())
+    guildId   BigInt             @map("guild_id")
+    channelId BigInt             @unique(map: "GuildAutoPurge_channel_id_key") @map("channel_id")
+    interval  Int
+    filter    String             @default("any")
+    value     String?
+    nextRunAt TimestampString(3) @map("next_run_at")
+    guild     Guild              @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoPurge_guild_id_fkey", index: false)
+
+    @@index([guildId], map: "GuildAutoPurge_guild_id_idx")
+    @@index([nextRunAt], map: "GuildAutoPurge_next_run_at_idx")
+  }
+
   model GuildAutoModerationRule {
     id                 BigInt                                 @id(map: "GuildAutoModerationRule_pkey") @default(autoincrement())
     guildId            BigInt                                 @map("guild_id")

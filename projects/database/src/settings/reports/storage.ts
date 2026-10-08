@@ -1,13 +1,14 @@
 import type { Database, Models } from '../../index.js';
 import type { Snowflake } from 'discord-api-types/v10';
 import { isRowId } from '../ids.js';
+import { formatTimestamp, parseTimestamp } from '../time.js';
 import type { Report, ReportCloseData, ReportCreateData } from './types.js';
 
 type Orm = Database['orm'];
 type Row = Omit<Models.public_Report, 'guild'>;
 
 function toMilliseconds(value: string | null) {
-	return value === null ? null : new Date(value).getTime();
+	return value === null ? null : parseTimestamp(value);
 }
 
 function toReport(row: Row): Report {
@@ -104,7 +105,7 @@ export async function closeReport(db: Database, guildId: Snowflake, reportId: st
 		action: data.action,
 		caseId: data.caseId,
 		moderatorId: BigInt(data.moderatorId),
-		closedAt: new Date().toISOString() as Row['closedAt']
+		closedAt: formatTimestamp(Date.now()) as Row['closedAt']
 	});
 	return Number(count) > 0;
 }
