@@ -5,9 +5,10 @@ import { channelMention, EmbedBuilder, time, TimestampStyles } from '@discordjs/
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { cutText } from '@sapphire/utilities';
 import { container, type TransformedArguments } from '@wolfstar/http-framework';
+import type { AnyChannel } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { ChannelType, MessageFlags, PermissionFlagsBits, RESTJSONErrorCodes, type APIChannel } from 'discord-api-types/v10';
+import { ChannelType, MessageFlags, PermissionFlagsBits, RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 const Root = 'commands/tools';
 
@@ -48,16 +49,17 @@ export class UserCommand extends Command {
 			return fail(`${Root}:whoisChannelNoAccess`);
 		}
 
-		const data = await resolveOnErrorCodes(
-			container.gatewayClient.api.channels.get(channel?.id ?? interaction.channel.id),
+		// The channel comes from the gateway cache, which Discord keeps up to date, and not from a request of its own:
+		const fetched = await resolveOnErrorCodes(
+			container.gatewayClient.channels.fetch(channel?.id ?? interaction.channel.id),
 			RESTJSONErrorCodes.UnknownChannel
 		);
-		if (data === null || !('guild_id' in data) || data.guild_id !== interaction.guildId) return fail(`${Root}:whoisChannelUnknown`);
+		if (fetched === null || !('guildId' in fetched) || fetched.guildId !== interaction.guildId) return fail(`${Root}:whoisChannelUnknown`);
 
-		return interaction.reply({ embeds: [this.getEmbed(t, data).toJSON()], flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		return interaction.reply({ embeds: [this.getEmbed(t, fetched).toJSON()], flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
 	}
 
-	private getEmbed(t: TFunction, channel: APIChannel) {
+	private getEmbed(t: TFunction, channel: AnyChannel) {
 		const created = seconds.fromMilliseconds(Number(DiscordSnowflake.timestampFrom(channel.id)));
 		const lines = [
 			translateKey(t, `${Root}:whoisChannelType`, {
@@ -69,37 +71,33 @@ export class UserCommand extends Command {
 			})
 		];
 
-		if ('parent_id' in channel && channel.parent_id)
-			lines.push(translateKey(t, `${Root}:whoisChannelCategory`, { category: channelMention(channel.parent_id) }));
-		if ('position' in channel && channel.position !== undefined)
-			lines.push(translateKey(t, `${Root}:whoisChannelPosition`, { position: channel.position + 1 }));
+		if ('parentId' in channel && channel.parentId)
+			lines.push(translateKey(t, `${Root}:whoisChannelCategory`, { category: channelMention(channel.parentId) }));
+		if ('position' in channel) lines.push(translateKey(t, `${Root}:whoisChannelPosition`, { position: channel.position + 1 }));
 		if ('nsfw' in channel && channel.nsfw) lines.push(translateKey(t, `${Root}:whoisChannelNsfw`));
-		if ('rate_limit_per_user' in channel && channel.rate_limit_per_user) {
+		if ('rateLimitPerUser' in channel && channel.rateLimitPerUser) {
 			lines.push(
 				translateKey(t, `${Root}:whoisChannelSlowmode`, {
-					value: translateKey(t, 'globals:durationValue', { value: seconds(channel.rate_limit_per_user) })
+					value: translateKey(t, 'globals:durationValue', { value: seconds(channel.rateLimitPerUser) })
 				})
 			);
 		}
 
 		if ('bitrate' in channel && channel.bitrate)
 			lines.push(translateKey(t, `${Root}:whoisChannelBitrate`, { value: Math.round(channel.bitrate / 1000) }));
-		if ('user_limit' in channel && channel.user_limit)
-			lines.push(translateKey(t, `${Root}:whoisChannelUserLimit`, { value: channel.user_limit }));
+		if ('userLimit' in channel && channel.userLimit) lines.push(translateKey(t, `${Root}:whoisChannelUserLimit`, { value: channel.userLimit }));
+		if ('archived' in channel && channel.archived) lines.push(translateKey(t, `${Root}:whoisChannelArchived`));
+		if ('locked' in channel && channel.locked) lines.push(translateKey(t, `${Root}:whoisChannelLocked`));
 
-		if ('thread_metadata' in channel && channel.thread_metadata) {
-			const { archived, locked } = channel.thread_metadata;
-			if (archived) lines.push(translateKey(t, `${Root}:whoisChannelArchived`));
-			if (locked) lines.push(translateKey(t, `${Root}:whoisChannelLocked`));
+		if ('permissionOverwrites' in channel) {
+			const overwrites = channel.permissionOverwrites.cache.length;
+			if (overwrites > 0) lines.push(translateKey(t, `${Root}:whoisChannelOverwrites`, { count: overwrites }));
 		}
 
-		if ('permission_overwrites' in channel && channel.permission_overwrites?.length) {
-			lines.push(translateKey(t, `${Root}:whoisChannelOverwrites`, { count: channel.permission_overwrites.length }));
-		}
-
+		const name = 'name' in channel && channel.name ? channel.name : channel.id;
 		const embed = new EmbedBuilder()
 			.setColor(Colors.White)
-			.setTitle(cutText(`${channel.name ?? channel.id}`, 256))
+			.setTitle(cutText(name, 256))
 			.setDescription(`${channelMention(channel.id)}\n${lines.join('\n')}`)
 			.setFooter({ text: translateKey(t, `${Root}:whoisChannelFooter`, { id: channel.id }) });
 
