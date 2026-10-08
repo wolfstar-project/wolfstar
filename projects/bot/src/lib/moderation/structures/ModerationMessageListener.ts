@@ -298,13 +298,32 @@ export declare namespace ModerationMessageListener {
 	 * a threshold.
 	 */
 	type ReasonKey =
-		`events/moderation:${'attachments' | 'capitals' | 'invites' | 'links' | 'newlines' | 'phishing' | 'stickers' | 'words' | 'zalgo'}`;
+		| `events/moderation:${'attachments' | 'capitals' | 'invites' | 'links' | 'newlines' | 'phishing' | 'stickers' | 'words' | 'zalgo'}`
+		| `events/moderation:rule${NamedRuleType}`;
+
+	/**
+	 * The types of rule whose keys are named after them (`rule<Type>`, `rule<Type>Alert`, `rule<Type>Footer`), see
+	 * `AutoModerationRuleListener`.
+	 */
+	type NamedRuleType =
+		| 'Duplicates'
+		| 'Characters'
+		| 'Emojis'
+		| 'MessageSpam'
+		| 'ImageSpam'
+		| 'LinksCooldown'
+		| 'MassMentions'
+		| 'MentionsCooldown'
+		| 'Spoilers'
+		| 'MaskedLinks'
+		| 'StickersCooldown';
 
 	/**
 	 * The keys of the alerts the rules send to the channel when a message infringes them.
 	 */
 	type AlertKey =
-		`events/moderation:${'attachmentFilter' | 'capsFilter' | 'inviteFilterAlert' | 'nolink' | 'newlineFilter' | 'phishingFilter' | 'stickerFilter' | 'wordFilter' | 'zalgoFilter'}`;
+		| `events/moderation:${'attachmentFilter' | 'capsFilter' | 'inviteFilterAlert' | 'nolink' | 'newlineFilter' | 'phishingFilter' | 'stickerFilter' | 'wordFilter' | 'zalgoFilter'}`
+		| `events/moderation:rule${NamedRuleType}Alert`;
 
 	/**
 	 * What a rule logs: an embed, or a message made of components (see {@linkcode createLogMessage}).

@@ -1,5 +1,6 @@
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { Adder } from '#lib/database/utils/Adder';
+import { WindowCounter } from '#lib/moderation/automod/detectors';
 import { create } from '#utils/Security/RegexCreator';
 import { Collection } from '@discordjs/collection';
 import { AsyncQueue } from '@sapphire/async-queue';
@@ -229,6 +230,8 @@ interface RuleState {
 	wordFilter: RegExp | null;
 	/** The mentions of each member, for a `NoMentionSpam` rule. */
 	mentions: RateLimitManager | null;
+	/** What each member sent lately, for the rules that count within a period (`maximum` in `timePeriod` seconds). */
+	counter: WindowCounter | null;
 }
 
 const states = new Collection<string, RuleState>();
@@ -240,12 +243,14 @@ function getState(rule: AutoModerationRule): RuleState {
 
 	const words = rule.type === 'Words' ? (rule as AutoModerationRule<'Words'>).options.words : [];
 	const mentions = rule.type === 'NoMentionSpam' ? (rule as AutoModerationRule<'NoMentionSpam'>).options : null;
+	const { maximum, timePeriod } = rule.options as { maximum?: number; timePeriod?: number };
 	const state: RuleState = {
 		signature,
 		adder:
 			rule.thresholdMaximum > 0 && rule.thresholdDuration > 0 ? new Adder<string>(rule.thresholdMaximum, rule.thresholdDuration, true) : null,
 		wordFilter: words.length === 0 ? null : new RegExp(create(words), 'gi'),
-		mentions: mentions === null ? null : new RateLimitManager(mentions.timePeriod * 1000, mentions.mentionsAllowed)
+		mentions: mentions === null ? null : new RateLimitManager(mentions.timePeriod * 1000, mentions.mentionsAllowed),
+		counter: typeof maximum === 'number' && typeof timePeriod === 'number' ? new WindowCounter(timePeriod * 1000) : null
 	};
 	states.set(rule.id, state);
 	return state;
@@ -270,4 +275,24 @@ export function getAutoModerationRuleWordFilter(rule: AutoModerationRule<'Words'
  */
 export function getAutoModerationRuleMentions(rule: AutoModerationRule<'NoMentionSpam'>): RateLimitManager {
 	return getState(rule).mentions!;
+}
+
+/**
+ * Counts what a member sent for a rule that looks at a period, such as `MessageSpam` or `LinksCooldown`.
+ *
+ * @param rule - A rule whose options are a `maximum` within a `timePeriod`.
+ * @param key - Who sent it, and where when the rule counts by channel.
+ * @param amount - How many were sent.
+ * @returns Whether the member went over the maximum of the rule. Their count starts over when they did, so the next
+ * message is not an infraction by itself.
+ */
+export function addAutoModerationRuleHits(rule: AutoModerationRule, key: string, amount: number): boolean {
+	const { counter } = getState(rule);
+	if (counter === null || amount <= 0) return false;
+
+	const { maximum } = rule.options as { maximum: number };
+	if (counter.add(key, amount) <= maximum) return false;
+
+	counter.reset(key);
+	return true;
 }

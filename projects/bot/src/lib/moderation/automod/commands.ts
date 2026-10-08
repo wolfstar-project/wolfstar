@@ -33,12 +33,23 @@ const Root = AutoModerationRoot;
 export const AutoModerationRuleTypeKeys = {
 	Attachments: `${Root}:typeAttachments`,
 	Capitals: `${Root}:typeCapitals`,
+	Characters: `${Root}:typeCharacters`,
+	Duplicates: `${Root}:typeDuplicates`,
+	Emojis: `${Root}:typeEmojis`,
+	ImageSpam: `${Root}:typeImageSpam`,
 	Invites: `${Root}:typeInvites`,
 	Links: `${Root}:typeLinks`,
+	LinksCooldown: `${Root}:typeLinksCooldown`,
+	MaskedLinks: `${Root}:typeMaskedLinks`,
+	MassMentions: `${Root}:typeMassMentions`,
+	MentionsCooldown: `${Root}:typeMentionsCooldown`,
+	MessageSpam: `${Root}:typeMessageSpam`,
 	Newlines: `${Root}:typeNewlines`,
 	NoMentionSpam: `${Root}:typeNoMentionSpam`,
 	Phishing: `${Root}:typePhishing`,
+	Spoilers: `${Root}:typeSpoilers`,
 	Stickers: `${Root}:typeStickers`,
+	StickersCooldown: `${Root}:typeStickersCooldown`,
 	Words: `${Root}:typeWords`,
 	Zalgo: `${Root}:typeZalgo`
 } as const satisfies Record<AutoModerationRuleType, TranslationKey>;

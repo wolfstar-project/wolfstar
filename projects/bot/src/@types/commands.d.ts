@@ -30,7 +30,7 @@ declare module '@wolfstar/http-framework' {
     };
     'automod create': {
       name: string;
-      type: 'Attachments' | 'Capitals' | 'Invites' | 'Links' | 'Newlines' | 'NoMentionSpam' | 'Phishing' | 'Stickers' | 'Words' | 'Zalgo';
+      type: 'Attachments' | 'Capitals' | 'Characters' | 'Duplicates' | 'Emojis' | 'ImageSpam' | 'Invites' | 'Links' | 'LinksCooldown' | 'MaskedLinks' | 'MassMentions' | 'MentionsCooldown' | 'MessageSpam' | 'Newlines' | 'NoMentionSpam' | 'Phishing' | 'Spoilers' | 'Stickers' | 'StickersCooldown' | 'Words' | 'Zalgo';
     };
     'automod delete': {
       rule: string;
