@@ -4,7 +4,7 @@ import { Colors } from '#utils/constants';
 import { getCustomEmojiUrl, getEncodedTwemoji, getTwemojiUrl, parseEmoji } from '#utils/functions/emojis';
 import { EmbedBuilder, formatEmoji, inlineCode, roleMention, time, TimestampStyles, userMention } from '@discordjs/builders';
 import { DiscordSnowflake } from '@sapphire/snowflake';
-import { container, type CommandOptionsRegistry } from '@wolfstar/http-framework';
+import { container } from '@wolfstar/http-framework';
 import type { GuildEmoji } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -22,7 +22,7 @@ const Root = 'commands/tools';
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:whoisOptionsEmoji`).setRequired(true).setMaxLength(64))
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['whois emoji']) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'whois emoji'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const fail = (key: TranslationKey) => interaction.reply({ content: translateKey(t, key), flags: MessageFlags.Ephemeral });
 

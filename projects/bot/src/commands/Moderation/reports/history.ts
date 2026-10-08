@@ -5,7 +5,7 @@ import { getTag } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
 import { time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
-import { container, type CommandOptionsRegistry } from '@wolfstar/http-framework';
+import { container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -27,7 +27,7 @@ const HistoryLength = 10;
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, args: CommandOptionsRegistry['reports history']) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'reports history'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const reports = await fetchReports(container.prisma.orm, interaction.guildId, { targetId: args.user?.id ?? null, limit: HistoryLength });
 

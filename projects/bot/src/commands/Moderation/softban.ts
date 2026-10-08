@@ -3,7 +3,8 @@ import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/struc
 import { getModeration } from '#utils/functions';
 import { getSeconds } from '#utils/moderation-utilities';
 import { TypeVariation, type Unlock } from '#utils/moderationConstants';
-import { RegisterCommand, type Command } from '@wolfstar/http-framework';
+import type { Command } from '@wolfstar/http-framework';
+import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 

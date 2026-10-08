@@ -5,7 +5,6 @@ import { translateKey, type GuildChatInputInteraction } from '#lib/structures/co
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
-import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 const Root = AutoModerationRoot;
 
@@ -15,7 +14,7 @@ const Root = AutoModerationRoot;
 @RegisterAsSubcommand('automod', (builder) => applyRuleOption(applyLocalizedBuilder(builder, `${Root}:delete`)))
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['automod delete']) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod delete'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const rule = await resolveCommandRule(interaction, t, options.rule);
 		if (rule === null) return;

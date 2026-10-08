@@ -3,7 +3,7 @@ import { translateKey, type GuildChatInputInteraction, type TranslationKey } fro
 import { PermissionsBits } from '#utils/bits';
 import { BrandingColors } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
-import { container, type TransformedArguments, type CommandOptionsRegistry } from '@wolfstar/http-framework';
+import { container, type TransformedArguments } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
@@ -31,7 +31,7 @@ interface RoleData {
 	)
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['whois role']) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'whois role'>) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 

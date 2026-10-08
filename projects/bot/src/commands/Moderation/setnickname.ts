@@ -1,6 +1,7 @@
 import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { TypeVariation } from '#utils/moderationConstants';
-import { RegisterCommand, type Command } from '@wolfstar/http-framework';
+import type { Command } from '@wolfstar/http-framework';
+import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 

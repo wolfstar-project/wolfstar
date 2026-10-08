@@ -7,7 +7,6 @@ import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
 import { AutoModerationRuleTypes, MaximumAutoModerationRuleNameLength } from 'wolfstar-database';
-import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 const Root = AutoModerationRoot;
 
@@ -27,7 +26,7 @@ const Root = AutoModerationRoot;
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['automod create']) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod create'>) {
 		const t = getSupportedUserLanguageT(interaction);
 
 		let content: string;

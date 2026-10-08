@@ -1,7 +1,7 @@
 import { applyModerationSubcommandBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { TypeVariation } from '#utils/moderationConstants';
-import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
+import type { Command } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -25,7 +25,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 		super(context, { ...options, type: TypeVariation.RoleAdd, requiredMember: true, actionStatusKey: 'moderation:actionIsActiveRole' });
 	}
 
-	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: CommandOptionsRegistry['role add']) {
+	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: Command.OptionsOf<'role add'>) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
@@ -33,6 +33,6 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
-		return { id: (context.args as CommandOptionsRegistry['role add']).role.id };
+		return { id: (context.args as Command.OptionsOf<'role add'>).role.id };
 	}
 }

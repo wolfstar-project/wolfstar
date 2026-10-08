@@ -4,7 +4,7 @@ import { Colors } from '#utils/constants';
 import { channelMention, EmbedBuilder, time, TimestampStyles } from '@discordjs/builders';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { cutText } from '@sapphire/utilities';
-import { container, type CommandOptionsRegistry } from '@wolfstar/http-framework';
+import { container } from '@wolfstar/http-framework';
 import type { AnyChannel } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -40,7 +40,7 @@ const TypeNames: Partial<Record<ChannelType, string>> = {
 		.addChannelOption((option) => applyLocalizedBuilder(option, `${Root}:whoisOptionsChannel`).setRequired(false))
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['whois channel']) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'whois channel'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const fail = (key: TranslationKey) => interaction.reply({ content: translateKey(t, key), flags: MessageFlags.Ephemeral });
 

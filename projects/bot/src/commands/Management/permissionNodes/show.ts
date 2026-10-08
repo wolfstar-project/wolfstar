@@ -11,7 +11,7 @@ import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/str
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
 import { isNullish } from '@sapphire/utilities';
-import { UserError, type CommandOptionsRegistry } from '@wolfstar/http-framework';
+import { UserError } from '@wolfstar/http-framework';
 import { Role } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -30,7 +30,7 @@ const MaximumContentLength = 2000;
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['permission-nodes show']) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'permission-nodes show'>) {
 		return replyWithPermissionNodeResult(interaction, async (t) => {
 			const content = options.target //
 				? await this.#showOne(interaction, t, options.target)
@@ -42,7 +42,7 @@ export class UserCommand extends Command {
 	async #showOne(
 		interaction: GuildChatInputInteraction,
 		t: TFunction,
-		mentionable: NonNullable<CommandOptionsRegistry['permission-nodes show']['target']>
+		mentionable: NonNullable<Command.OptionsOf<'permission-nodes show'>['target']>
 	) {
 		const target = await resolveTarget(interaction, mentionable);
 		if (!(await checkPermissions(interaction, target))) throw new UserError({ identifier: `${PermissionNodesRoot}:permissionNodesHigher` });

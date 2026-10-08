@@ -9,7 +9,7 @@ import {
 } from '#lib/structures/commands/permissionNodes';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { UserError, type CommandOptionsRegistry } from '@wolfstar/http-framework';
+import { UserError } from '@wolfstar/http-framework';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 
 /**
@@ -18,7 +18,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
 @RegisterAsSubcommand('permission-nodes', (builder) => applyAddOrRemove(builder, 'Add'))
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['permission-nodes add']) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'permission-nodes add'>) {
 		return replyWithPermissionNodeResult(interaction, async (t) => {
 			const target = await resolveTarget(interaction, options.target);
 			const action = toPermissionNodeAction(options.type);
