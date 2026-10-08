@@ -1,4 +1,4 @@
-import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList, renderPunishment } from '#lib/moderation/automod/commands';
+import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList } from '#lib/moderation/automod/commands';
 import { MaximumAutoModerationRuleIgnored } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import {
@@ -18,7 +18,7 @@ import {
 import { translateKey, type TranslationKey } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId } from '#lib/structures/settings-menu/ids';
 import { channelMention, codeBlock, inlineCode, roleMention } from '@discordjs/formatters';
-import { cutText } from '@sapphire/utilities';
+import { cutText, isNullishOrZero } from '@sapphire/utilities';
 import type { TFunction } from '@wolfstar/plugin-i18next';
 import {
 	ButtonStyle,
@@ -418,7 +418,7 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 	}
 
 	body.push(
-		text(`**${translateKey(t, `${Root}:menuPunishment`)}**\n${renderPunishment(t, rule)}`),
+		text(`**${translateKey(t, `${Root}:menuPunishment`)}**`),
 		row([
 			{
 				type: ComponentType.StringSelect,
@@ -432,11 +432,38 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 			}
 		]),
 		block(
-			`**${translateKey(t, `${Root}:menuTiming`)}**\n-# ${translateKey(t, `${Root}:menuTimingDescription`)}`,
-			button(id('edit', 'timing'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '⏱️' })
+			`**${translateKey(t, `${Root}:menuDuration`)}**\n${renderDuration(t, rule)}`,
+			button(id('edit', 'duration'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '⏱️' })
+		),
+		block(
+			`**${translateKey(t, `${Root}:menuThreshold`)}**\n${renderThreshold(t, rule)}\n-# ${translateKey(t, `${Root}:menuThresholdDescription`)}`,
+			button(id('edit', 'threshold'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '🔢' })
 		)
 	);
 	return body;
+}
+
+/**
+ * How long the punishment of a rule lasts. A timeout cannot be permanent, so one without a duration says so.
+ */
+function renderDuration(t: TFunction, rule: AutoModerationRule): string {
+	if (isNullishOrZero(rule.hardActionDuration)) {
+		const permanent = translateKey(t, `${Root}:menuDurationPermanent`);
+		return rule.hardAction === 'Timeout' ? `${permanent}\n-# ⚠️ ${translateKey(t, `${Root}:menuDurationTimeout`)}` : permanent;
+	}
+
+	return translateKey(t, 'globals:durationValue', { value: rule.hardActionDuration });
+}
+
+/**
+ * After how many infractions, within how long, the punishment of a rule applies.
+ */
+function renderThreshold(t: TFunction, rule: AutoModerationRule): string {
+	// Without a threshold, or without a period to count in, the punishment applies at once, see `getState`:
+	if (rule.thresholdMaximum <= 0 || rule.thresholdDuration <= 0) return translateKey(t, `${Root}:menuThresholdNone`);
+
+	const period = translateKey(t, 'globals:durationValue', { value: rule.thresholdDuration });
+	return translateKey(t, `${Root}:menuThresholdValue`, { count: rule.thresholdMaximum, period });
 }
 
 /**
@@ -548,17 +575,22 @@ export function renderAutoModerationModal(
 				)
 			);
 		}
-		case 'timing':
+		case 'duration':
 			if (rule.type === 'NoMentionSpam') return null;
-			return modal(`${Root}:menuTiming`, [
+			return modal(`${Root}:menuDuration`, [
 				input(AutoModerationMenuTimingInputs.duration, translateKey(t, `${Root}:menuTimingDuration`), {
 					value: formatAutoModerationMenuDuration(rule.hardActionDuration),
 					placeholder: '1d 12h',
 					required: false,
 					max_length: 30
-				}),
+				})
+			]);
+		case 'threshold':
+			if (rule.type === 'NoMentionSpam') return null;
+			return modal(`${Root}:menuThreshold`, [
 				input(AutoModerationMenuTimingInputs.threshold, translateKey(t, `${Root}:menuTimingThreshold`), {
 					value: String(rule.thresholdMaximum),
+					placeholder: '10',
 					min_length: 1,
 					max_length: 3
 				}),

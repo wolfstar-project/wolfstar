@@ -1,7 +1,6 @@
 import {
 	AutoModerationRuleError,
 	findAutoModerationRule,
-	getAutoModerationRuleAdder,
 	getAutoModerationRuleWordFilter,
 	readAutoModerationRules
 } from '#lib/moderation/automod/rules';
@@ -10,8 +9,8 @@ import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModer
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { Emojis } from '#utils/constants';
 import { resolveTimeSpan } from '#utils/resolvers';
-import { strikethrough, type SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import { isNullishOrEmpty, isNullishOrZero } from '@sapphire/utilities';
+import type { SlashCommandSubcommandBuilder } from '@discordjs/builders';
+import { isNullishOrEmpty } from '@sapphire/utilities';
 import { applyLocalizedBuilder, type TFunction } from '@wolfstar/plugin-i18next';
 import { MessageFlags } from 'discord-api-types/v10';
 import {
@@ -226,30 +225,4 @@ export function getPunishment(punishment: AutoModerationHardAction): { key: Tran
 		case 'Warning':
 			return { key: 'moderation:typeWarning', emoji: Emojis.Flag };
 	}
-}
-
-export function renderPunishment(t: TFunction, rule: AutoModerationRule) {
-	const { key, emoji } = getPunishment(rule.hardAction);
-	const name = translateKey(t, key);
-
-	let line: string;
-	if (isNullishOrZero(rule.hardActionDuration)) {
-		line = translateKey(t, `${Root}:showPunishment`, { name, emoji });
-		// A timeout without a duration is never applied:
-		if (rule.hardAction === 'Timeout') line = strikethrough(line);
-	} else {
-		const duration = translateKey(t, 'globals:durationValue', { value: rule.hardActionDuration });
-		line = translateKey(t, `${Root}:showPunishmentTemporary`, { name, emoji, duration });
-	}
-
-	const adder = getAutoModerationRuleAdder(rule);
-	const threshold =
-		adder === null
-			? translateKey(t, `${Root}:showPunishmentNone`)
-			: translateKey(t, `${Root}:showPunishmentThreshold`, {
-					threshold: adder.maximum,
-					period: translateKey(t, 'globals:durationValue', { value: adder.duration }),
-					emoji: Emojis.Bucket
-				});
-	return `${line}\n${threshold}`;
 }

@@ -172,10 +172,21 @@ describe('auto-moderation menu', () => {
 			expect(flatten(modal.components).filter((entry) => typeof entry.label === 'string')).toHaveLength(2);
 		});
 
+		test('GIVEN the duration and the threshold THEN each has its modal, with its inputs only', () => {
+			const labels = (argument: string) =>
+				flatten(renderAutoModerationModal(context, createRule('Links'), action(argument))!.components)
+					.filter((entry) => typeof entry.label === 'string')
+					.map((entry) => entry.custom_id);
+
+			expect(labels('duration')).toEqual(['duration']);
+			expect(labels('threshold')).toEqual(['threshold', 'period']);
+		});
+
 		test('GIVEN a rule without what the modal edits THEN there is no modal', () => {
 			expect(renderAutoModerationModal(context, createRule('Attachments'), action('numbers'))).toBeNull();
 			expect(renderAutoModerationModal(context, createRule('Capitals'), action('add'))).toBeNull();
-			expect(renderAutoModerationModal(context, createRule('NoMentionSpam'), action('timing'))).toBeNull();
+			expect(renderAutoModerationModal(context, createRule('NoMentionSpam'), action('duration'))).toBeNull();
+			expect(renderAutoModerationModal(context, createRule('NoMentionSpam'), action('threshold'))).toBeNull();
 			expect(renderAutoModerationModal(context, createRule('Links'), action('nothing'))).toBeNull();
 		});
 	});
@@ -244,6 +255,14 @@ describe('auto-moderation menu', () => {
 			expect(parseAutoModerationMenuTiming(t, read({ duration: '', threshold: '0', period: '' }))).toEqual({
 				ok: true,
 				value: { hardActionDuration: null, thresholdMaximum: 0 }
+			});
+		});
+
+		test('GIVEN only the inputs of one modal THEN only what it edits changes', () => {
+			expect(parseAutoModerationMenuTiming(t, read({ duration: '1h' }))).toEqual({ ok: true, value: { hardActionDuration: 3_600_000 } });
+			expect(parseAutoModerationMenuTiming(t, read({ threshold: '3', period: '30s' }))).toEqual({
+				ok: true,
+				value: { thresholdMaximum: 3, thresholdDuration: 30_000 }
 			});
 		});
 

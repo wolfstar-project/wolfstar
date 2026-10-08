@@ -223,7 +223,8 @@ export class UserInteractionHandler extends InteractionHandler {
 					if (!parsed.ok) throw new InvalidInput(parsed.error);
 					return { update: parsed.value };
 				}
-				case 'timing': {
+				case 'duration':
+				case 'threshold': {
 					const parsed = rule.type === 'NoMentionSpam' ? null : parseAutoModerationMenuTiming(t, read);
 					if (parsed === null) return { update: null };
 					if (!parsed.ok) throw new InvalidInput(parsed.error);

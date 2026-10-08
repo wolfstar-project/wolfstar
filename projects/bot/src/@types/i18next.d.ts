@@ -181,10 +181,6 @@ declare module "i18next" {
         ignoreAdded: "**{{name}}** no longer applies to {{target}}.";
         ignoreRemoved: "**{{name}}** applies to {{target}} again.";
         listEmpty: "This server has no auto-moderation rule. Create one with {{command}}.";
-        showPunishmentNone: "Applies at the first infraction";
-        showPunishment: "{{emoji}} **Type:** {{name}}";
-        showPunishmentTemporary: "{{emoji}} **Type:** {{name}} for {{duration}}";
-        showPunishmentThreshold: "{{emoji}} **Applies after:** {{threshold, number}} infractions within {{period}}";
         menuTitle: "Auto-moderation rules [{{count, number}}/{{maximum, number}}]";
         menuSubtitle: "Pick a rule to configure it, or create one.";
         menuGuildTitle: "Auto-moderation settings";
@@ -261,8 +257,14 @@ declare module "i18next" {
         menuPunishment: "Punishment";
         menuPunishmentPlaceholder: "Select a punishment";
         menuPunishmentAutomatic: "This rule bans by itself, it has no punishment to set.";
-        menuTiming: "Duration and threshold";
-        menuTimingDescription: "How long the punishment lasts, and after how many infractions it applies.";
+        menuDuration: "Punishment duration";
+        menuDurationPermanent: "Permanent";
+        menuDurationTimeout: "A timeout needs a duration, it is not applied without one.";
+        menuThreshold: "Threshold";
+        menuThresholdValue_one: "{{count, number}} infraction within {{period}}";
+        menuThresholdValue_other: "{{count, number}} infractions within {{period}}";
+        menuThresholdNone: "Applies at the first infraction";
+        menuThresholdDescription: "How many infractions a member makes, and within how long, before the punishment applies.";
         menuTimingDuration: "Punishment duration, empty for permanent";
         menuTimingThreshold: "Infractions before the punishment, 0 for one";
         menuTimingPeriod: "Period the infractions are counted in";

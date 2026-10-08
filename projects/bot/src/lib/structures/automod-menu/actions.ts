@@ -13,7 +13,7 @@ import {
 const Root = AutoModerationRoot;
 
 /**
- * The custom IDs of the text inputs of the modal of the duration and the threshold of a punishment.
+ * The custom IDs of the text inputs of the modals of the duration of a punishment and of its threshold.
  */
 export const AutoModerationMenuTimingInputs = { duration: 'duration', threshold: 'threshold', period: 'period' } as const;
 
@@ -75,34 +75,39 @@ export function parseAutoModerationMenuNumbers(
 }
 
 /**
- * Reads how long the punishment of a rule lasts, and after how many infractions it applies, from what was written in
- * their modal. An empty duration, or one of zero, makes the punishment permanent.
+ * Reads how long the punishment of a rule lasts, or after how many infractions within how long it applies, from what
+ * was written in their modal: only the inputs the modal has are read. An empty duration, or one of zero, makes the
+ * punishment permanent, and an empty period keeps the one the rule has.
  */
 export function parseAutoModerationMenuTiming(t: TFunction, read: (key: string) => string | null): Result<AutoModerationRuleUpdate> {
 	const inputs = AutoModerationMenuTimingInputs;
-	const duration = resolveDurationOption(t, read(inputs.duration)?.trim(), AutoModerationRuleLimits.hardActionDuration);
-	if (typeof duration === 'object' && duration !== null) return { ok: false, error: duration.error };
+	const update: AutoModerationRuleUpdate = {};
+
+	const durationInput = read(inputs.duration);
+	if (durationInput !== null) {
+		const duration = resolveDurationOption(t, durationInput.trim(), AutoModerationRuleLimits.hardActionDuration);
+		if (typeof duration === 'object' && duration !== null) return { ok: false, error: duration.error };
+		update.hardActionDuration = isNullishOrZeroNumber(duration) ? null : duration;
+	}
+
+	const thresholdInput = read(inputs.threshold);
+	if (thresholdInput !== null) {
+		const limit = AutoModerationRuleLimits.thresholdMaximum;
+		const text = thresholdInput.trim();
+		const threshold = /^\d+$/.test(text) ? Number(text) : Number.NaN;
+		if (!Number.isSafeInteger(threshold) || threshold < limit.minimum || threshold > limit.maximum) {
+			const option = translateKey(t, `${Root}:menuTimingThreshold`);
+			return { ok: false, error: translateKey(t, `${Root}:menuNumberInvalid`, { ...limit, option }) };
+		}
+
+		update.thresholdMaximum = threshold;
+	}
 
 	const period = resolveDurationOption(t, read(inputs.period)?.trim(), AutoModerationRuleLimits.thresholdDuration);
 	if (typeof period === 'object' && period !== null) return { ok: false, error: period.error };
+	if (period !== null) update.thresholdDuration = period;
 
-	const limit = AutoModerationRuleLimits.thresholdMaximum;
-	const text = read(inputs.threshold)?.trim() ?? '';
-	const threshold = /^\d+$/.test(text) ? Number(text) : Number.NaN;
-	if (!Number.isSafeInteger(threshold) || threshold < limit.minimum || threshold > limit.maximum) {
-		const option = translateKey(t, `${Root}:menuTimingThreshold`);
-		return { ok: false, error: translateKey(t, `${Root}:menuNumberInvalid`, { ...limit, option }) };
-	}
-
-	return {
-		ok: true,
-		value: {
-			hardActionDuration: isNullishOrZeroNumber(duration) ? null : duration,
-			thresholdMaximum: threshold,
-			// Without a period the infractions are never counted, so an empty one keeps what the rule has:
-			...(period === null ? {} : { thresholdDuration: period })
-		}
-	};
+	return { ok: true, value: update };
 }
 
 function isNullishOrZeroNumber(value: number | null): value is null | 0 {
