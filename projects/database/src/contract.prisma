@@ -326,6 +326,7 @@ namespace public {
     Zalgo = "Zalgo"
     // A native enum only takes new values at its end:
     Phishing = "Phishing"
+    Stickers = "Stickers"
   }
 
   native_enum ReportStatus {

@@ -12,6 +12,7 @@ export const AutoModerationRuleTypes = [
 	'Newlines',
 	'NoMentionSpam',
 	'Phishing',
+	'Stickers',
 	'Words',
 	'Zalgo'
 ] as const;
@@ -48,6 +49,8 @@ export interface AutoModerationRuleOptionsMap {
 	NoMentionSpam: { alerts: boolean; mentionsAllowed: number; timePeriod: number };
 	/** Links to the hostnames of the list of known phishing links, but the `allowed` ones. */
 	Phishing: { allowed: string[] };
+	/** Every message with a sticker infringes the rule. */
+	Stickers: Record<string, never>;
 	/** Messages that hold one of the `words`. */
 	Words: { words: string[] };
 	/** Messages in which a character carries more than `maximum` combining marks. */
@@ -128,6 +131,7 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Newlines: { maximum: 20 },
 		NoMentionSpam: { alerts: false, mentionsAllowed: 20, timePeriod: 8 },
 		Phishing: { allowed: [] },
+		Stickers: {},
 		Words: { words: [] },
 		Zalgo: { maximum: 4 }
 	};
