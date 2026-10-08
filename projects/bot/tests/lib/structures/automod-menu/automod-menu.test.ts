@@ -127,10 +127,27 @@ describe('auto-moderation menu', () => {
 
 		test('GIVEN the rules of a server THEN each is an option of the select menu', () => {
 			const rules = [createRule('Links', { id: '1' }), createRule('Words', { id: '2', enabled: false })];
-			const select = flatten(renderAutoModerationRules(context, rules).components!).find((entry) => Array.isArray(entry.options));
+			const settings = { modulesAutomod: true, automodChannel: '254360814063058945', automodTrackNative: false };
+			const select = flatten(renderAutoModerationRules(context, rules, { settings }).components!).find((entry) => Array.isArray(entry.options));
 
 			expect((select!.options as { value: string }[]).map((option) => option.value)).toEqual(['1', '2']);
-			expect(flatten(renderAutoModerationRules(context, []).components!).some((entry) => Array.isArray(entry.options))).toBe(false);
+			expect(flatten(renderAutoModerationRules(context, [], { settings }).components!).some((entry) => Array.isArray(entry.options))).toBe(
+				false
+			);
+		});
+		test('GIVEN the settings of the auto-moderation THEN they are shown with the rules, and fit a message', () => {
+			const rules = Array.from({ length: 25 }, (_, index) => createRule('Links', { id: String(index + 1), name: 'n'.repeat(50) }));
+			const settings = { modulesAutomod: true, automodChannel: '254360814063058945', automodTrackNative: false };
+			const components = flatten(renderAutoModerationRules(context, rules, { settings, notice: 'Notice' }).components!);
+			const arguments_ = components.map((entry) => decode(String(entry.custom_id))).filter((action) => action?.verb === 'setting');
+			const channel = components.find((entry) => decode(String(entry.custom_id))?.argument === 'channel');
+
+			expect(arguments_.map((action) => action!.argument)).toEqual(['module', 'native', 'channel']);
+			expect(channel!.default_values).toEqual([{ id: settings.automodChannel, type: 'channel' }]);
+			expect(components.length).toBeLessThanOrEqual(40);
+			expect(
+				components.reduce((total, entry) => total + (typeof entry.content === 'string' ? entry.content.length : 0), 0)
+			).toBeLessThanOrEqual(4000);
 		});
 	});
 

@@ -1,3 +1,4 @@
+import { readSettings } from '#lib/database';
 import { AutoModerationRoot } from '#lib/moderation/automod/commands';
 import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import { renderAutoModerationRules } from '#lib/structures/automod-menu';
@@ -16,8 +17,9 @@ export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
 		const rules = await readAutoModerationRules(interaction.guildId);
+		const settings = await readSettings(interaction.guildId);
 		// The menu a rule is picked and configured in, see the `automod` interaction handler:
-		const message = renderAutoModerationRules({ t, ownerId: interaction.user.id }, rules);
+		const message = renderAutoModerationRules({ t, ownerId: interaction.user.id }, rules, { settings });
 		return interaction.reply({ ...message, flags: message.flags! | MessageFlags.Ephemeral });
 	}
 }

@@ -1,3 +1,4 @@
+import { readSettings, writeSettings } from '#lib/database';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
 	AutoModerationRuleError,
@@ -87,6 +88,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		switch (action.verb) {
 			case 'list':
 				return this.showRules(component, guildId, context);
+			case 'setting':
+				return this.setting(component, guildId, context, action.argument, value);
 			case 'pick':
 				return this.showRule(component, guildId, context, value ?? '', 'options');
 			case 'view':
@@ -128,7 +131,38 @@ export class UserInteractionHandler extends InteractionHandler {
 		notice?: string
 	) {
 		const rules = await readAutoModerationRules(guildId);
-		return interaction.update(renderAutoModerationRules(context, rules, notice));
+		const settings = await readSettings(guildId);
+		return interaction.update(renderAutoModerationRules(context, rules, { settings, notice }));
+	}
+
+	/**
+	 * Changes a setting of the auto-moderation of the server, then shows the rules again.
+	 *
+	 * @param channelId - The channel picked in the select menu of the log channel, `undefined` when it was emptied.
+	 */
+	private async setting(
+		interaction: ComponentInteraction,
+		guildId: Snowflake,
+		context: AutoModerationMenuContext,
+		argument: string,
+		channelId: Snowflake | undefined
+	) {
+		const actorId = interaction.user.id;
+		switch (argument) {
+			case 'module':
+				await writeSettings(guildId, (settings) => ({ modulesAutomod: !settings.modulesAutomod }), actorId);
+				break;
+			case 'native':
+				await writeSettings(guildId, (settings) => ({ automodTrackNative: !settings.automodTrackNative }), actorId);
+				break;
+			case 'channel':
+				await writeSettings(guildId, { automodChannel: channelId ?? null }, actorId);
+				break;
+			default:
+				return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		}
+
+		return this.showRules(interaction, guildId, context);
 	}
 
 	/**

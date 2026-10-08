@@ -22,6 +22,7 @@ import { cutText } from '@sapphire/utilities';
 import type { TFunction } from '@wolfstar/plugin-i18next';
 import {
 	ButtonStyle,
+	ChannelType,
 	ComponentType,
 	MessageFlags,
 	SelectMenuDefaultValueType,
@@ -42,7 +43,8 @@ import {
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
 	MaximumAutoModerationRules,
-	type AutoModerationRule
+	type AutoModerationRule,
+	type ReadonlyGuildData
 } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
@@ -78,16 +80,33 @@ export interface AutoModerationMenuContext {
 export type AutoModerationMenuMessage = Pick<APIInteractionResponseCallbackData, 'components' | 'flags' | 'allowed_mentions'>;
 
 /**
- * Renders the rules of a server, with the select menu that opens one.
+ * The settings of the auto-moderation of a server the menu shows next to its rules.
+ */
+export type AutoModerationMenuSettings = Pick<ReadonlyGuildData, 'modulesAutomod' | 'automodChannel' | 'automodTrackNative'>;
+
+export interface RenderAutoModerationRulesOptions {
+	/**
+	 * The settings of the auto-moderation of the server.
+	 */
+	settings: AutoModerationMenuSettings;
+
+	/**
+	 * What to tell the user above the rules, for example that the rule they were on is gone.
+	 */
+	notice?: string;
+}
+
+/**
+ * Renders the auto-moderation of a server: its rules with the select menu that opens one, and its settings (whether
+ * the module is on, the channel it logs to, whether it reports what the AutoMod of Discord does).
  *
  * @param context - The context of the menu.
  * @param rules - The rules of the server.
- * @param notice - What to tell the user above the rules, for example that the rule they were on is gone.
  */
 export function renderAutoModerationRules(
 	context: AutoModerationMenuContext,
 	rules: readonly AutoModerationRule[],
-	notice?: string
+	{ settings, notice }: RenderAutoModerationRulesOptions
 ): AutoModerationMenuMessage {
 	const { t, ownerId } = context;
 	const command = inlineCode('/automod create');
@@ -122,6 +141,41 @@ export function renderAutoModerationRules(
 			])
 		);
 	}
+
+	const setting = (argument: string) => encodeAutoModerationMenuId({ ownerId, verb: 'setting', argument });
+	const channel = settings.automodChannel;
+	body.push(
+		{ type: ComponentType.Separator },
+		text(`### ⚙️ ${translateKey(t, `${Root}:menuGuildTitle`)}`),
+		renderSwitch(
+			t,
+			translateKey(t, `${Root}:menuGuildModule`),
+			translateKey(t, 'settings:modulesAutomod'),
+			settings.modulesAutomod,
+			setting('module')
+		),
+		renderSwitch(
+			t,
+			translateKey(t, `${Root}:menuGuildNative`),
+			translateKey(t, 'settings:automodTrackNative'),
+			settings.automodTrackNative,
+			setting('native')
+		),
+		text(
+			`**${translateKey(t, `${Root}:menuGuildChannel`)}**\n${channel ? channelMention(channel) : translateKey(t, `${Root}:menuGuildChannelNone`)}\n-# ${translateKey(t, 'settings:automodChannel')}`
+		),
+		row([
+			{
+				type: ComponentType.ChannelSelect,
+				custom_id: setting('channel'),
+				placeholder: cutText(translateKey(t, `${Root}:menuGuildChannelPlaceholder`), 150),
+				channel_types: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+				min_values: 0,
+				max_values: 1,
+				default_values: channel ? [{ id: channel, type: SelectMenuDefaultValueType.Channel }] : []
+			}
+		])
+	);
 
 	body.push(
 		{ type: ComponentType.Separator },
@@ -293,7 +347,7 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 
 	if (rule.type === 'NoMentionSpam') {
 		const { alerts } = (rule as AutoModerationRule<'NoMentionSpam'>).options;
-		body.push(renderSwitch(t, `${Root}:menuOptionAlerts`, alerts, id('toggle', 'alerts')));
+		body.push(renderKeySwitch(t, `${Root}:menuOptionAlerts`, alerts, id('toggle', 'alerts')));
 	}
 
 	if (body.length === 0) body.push(text(translateKey(t, `${Root}:menuNoOptions`)));
@@ -324,9 +378,9 @@ function renderList(t: TFunction, list: readonly string[]): string {
 function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRule, id: IdFactory): APIComponentInContainer[] {
 	const has = (bit: number) => AutoModerationOnInfraction.has(rule.softAction, bit);
 	const body: APIComponentInContainer[] = [
-		renderSwitch(t, `${Root}:menuResponseDelete`, has(AutoModerationMenuSoftActions.delete), id('toggle', 'delete')),
-		renderSwitch(t, `${Root}:menuResponseAlert`, has(AutoModerationMenuSoftActions.alert), id('toggle', 'alert')),
-		renderSwitch(t, `${Root}:menuResponseLog`, has(AutoModerationMenuSoftActions.log), id('toggle', 'log')),
+		renderKeySwitch(t, `${Root}:menuResponseDelete`, has(AutoModerationMenuSoftActions.delete), id('toggle', 'delete')),
+		renderKeySwitch(t, `${Root}:menuResponseAlert`, has(AutoModerationMenuSoftActions.alert), id('toggle', 'alert')),
+		renderKeySwitch(t, `${Root}:menuResponseLog`, has(AutoModerationMenuSoftActions.log), id('toggle', 'log')),
 		{ type: ComponentType.Separator }
 	];
 
@@ -406,9 +460,9 @@ function renderExemptions({ t }: AutoModerationMenuContext, rule: AutoModeration
 /**
  * A switch: what it is, what it does, and the button that flips it.
  */
-function renderSwitch(t: TFunction, key: TranslationKey, active: boolean, customId: string): APISectionComponent {
+function renderSwitch(t: TFunction, title: string, description: string, active: boolean, customId: string): APISectionComponent {
 	return block(
-		`**${translateKey(t, key)}**\n-# ${translateKey(t, `${key}Description` as TranslationKey)}`,
+		`**${title}**\n-# ${description}`,
 		button(customId, {
 			label: translateKey(t, active ? `${Root}:menuOn` : `${Root}:menuOff`),
 			emoji: active ? '✅' : '⬜',
@@ -491,6 +545,13 @@ export function renderAutoModerationModal(
 		default:
 			return null;
 	}
+}
+
+/**
+ * A switch whose description is the `Description` key next to the one of its title.
+ */
+function renderKeySwitch(t: TFunction, key: TranslationKey, active: boolean, customId: string): APISectionComponent {
+	return renderSwitch(t, translateKey(t, key), translateKey(t, `${key}Description` as TranslationKey), active, customId);
 }
 
 function input(customId: string, label: string, options: Partial<APITextInputComponent>): APITextInputComponent {

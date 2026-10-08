@@ -20,6 +20,8 @@ export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[numb
  * What a component of the auto-moderation menu does:
  *
  * - `list`: shows the rules of the server.
+ * - `setting`: changes a setting of the auto-moderation of the server: flips `module` or `native`, or sets `channel`
+ *   to the selected value of its select menu.
  * - `pick`: the rule select menu, the rule is its selected value.
  * - `view`: shows a section of a rule.
  * - `section`: the section select menu, the section is its selected value.
@@ -33,6 +35,7 @@ export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[numb
  */
 export const AutoModerationMenuVerbs = [
 	'list',
+	'setting',
 	'pick',
 	'view',
 	'section',
