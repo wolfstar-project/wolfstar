@@ -1637,7 +1637,7 @@ declare module "i18next" {
           extendedHelp: "This command requires **{{MUTE_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be un-silenced by me.\nNo, the server's owner cannot be un-silenced.";
           examples: ["@Pete", "@Pete Appealed his times signing hear rape."];
         };
-        warnDescription: "File a warning to somebody.";
+        warnDescription: "File a warning to somebody, or remove one.";
         warnExtended: {
           usages: [
             "User",
@@ -1810,6 +1810,10 @@ declare module "i18next" {
         unrestrictReactionName: "reaction";
         restrictVoiceName: "voice";
         unrestrictVoiceName: "voice";
+        warnAddDescription: "File a warning to somebody.";
+        warnRemoveDescription: "Remove the last warning of somebody.";
+        warnAddName: "add";
+        warnRemoveName: "remove";
       };
       "commands/permissions": {
         name: "permissions";
@@ -2761,6 +2765,7 @@ declare module "i18next" {
         actionIsNotActiveRestrictionRole: "This user does not have the configured restriction role.";
         actionIsActiveNickname: "This user already has the selected nickname.";
         actionIsNotActiveNickname: "This user does not have the selected nickname.";
+        actionIsNotActiveWarning: "This user has no warning to remove.";
         actionTargetSelf: "You cannot perform this action on yourself. Why would you do that anyways?";
         actionTargetGuildOwner: "You cannot perform this action on the server owner.";
         actionTargetWolf: "I... I cannot do that to myself! You broke my heart. 💔";

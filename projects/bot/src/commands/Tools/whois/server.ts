@@ -3,6 +3,7 @@ import { seconds } from '#common';
 import { getColor, getTag } from '#utils/util';
 import { EmbedBuilder, roleMention, time, TimestampStyles } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';
+import { PaginatedMessage } from '@wolfstar/http-framework-utilities';
 import type { Guild, Role } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -16,7 +17,8 @@ const RoleLimit = 15;
 const ImageOptions = { size: 4096, extension: 'png' } as const;
 
 /**
- * `/whois server`, see the `whois` parent command. Displays the server: its owner, channels, members and images.
+ * `/whois server`, see the `whois` parent command. Displays the server: its owner, channels and members on the first page,
+ * and its icon, banner and splashes on the following ones, browsed with buttons by the user who ran it.
  */
 @RegisterAsSubcommand('whois', (builder) => applyLocalizedBuilder(builder, 'commands/tools:whoisSubcommandServer'))
 export class UserCommand extends Command {
@@ -30,17 +32,27 @@ export class UserCommand extends Command {
 		const color = await getColor({ member });
 		const roles = await this.getRoles(guild);
 
-		// The summary and the images are sent as embeds of the same message:
-		const embeds = [await this.getSummary(t, guild, roles, color)];
-		if (guild.icon) embeds.push(this.getImage(translateKey(t, 'commands/management:guildInfoIcon'), guild.iconURL(ImageOptions)!, color));
-		if (guild.banner) embeds.push(this.getImage(translateKey(t, 'commands/management:guildInfoBanner'), guild.bannerURL(ImageOptions)!, color));
-		if (guild.splash) embeds.push(this.getImage(translateKey(t, 'commands/management:guildInfoSplash'), guild.splashURL(ImageOptions)!, color));
+		// The summary and each image are a page of the same message, which is browsed with the buttons:
+		const message = new PaginatedMessage().addPageEmbed((await this.getSummary(t, guild, roles, color)).toJSON());
+		if (guild.icon)
+			message.addPageEmbed(this.getImage(translateKey(t, 'commands/management:guildInfoIcon'), guild.iconURL(ImageOptions)!, color).toJSON());
+		if (guild.banner) {
+			message.addPageEmbed(
+				this.getImage(translateKey(t, 'commands/management:guildInfoBanner'), guild.bannerURL(ImageOptions)!, color).toJSON()
+			);
+		}
+		if (guild.splash)
+			message.addPageEmbed(
+				this.getImage(translateKey(t, 'commands/management:guildInfoSplash'), guild.splashURL(ImageOptions)!, color).toJSON()
+			);
 		if (guild.discoverySplash) {
 			const description = translateKey(t, 'commands/management:guildInfoDiscoverySplash');
-			embeds.push(this.getImage(description, guild.discoverySplashURL(ImageOptions)!, color));
+			message.addPageEmbed(this.getImage(description, guild.discoverySplashURL(ImageOptions)!, color).toJSON());
 		}
 
-		return deferred.update({ embeds: embeds.map((embed) => embed.toJSON()) });
+		// The reply is deferred, so the first page is sent by editing it:
+		const { payload } = await message.start(interaction.user.id);
+		return deferred.update(payload);
 	}
 
 	private async getSummary(t: TFunction, guild: Guild, roles: readonly Role[], color: number) {

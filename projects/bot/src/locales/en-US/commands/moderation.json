@@ -473,7 +473,7 @@
 		"extendedHelp": "This command requires **{{MUTE_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be un-silenced by me.\nNo, the server's owner cannot be un-silenced.",
 		"examples": ["@Pete", "@Pete Appealed his times signing hear rape."]
 	},
-	"warnDescription": "File a warning to somebody.",
+	"warnDescription": "File a warning to somebody, or remove one.",
 	"warnExtended": {
 		"usages": ["User", "User1 User2 User3...User10", "User1 Duration", "User1 User2 Duration Reason"],
 		"explainedUsage": [
@@ -634,5 +634,9 @@
 	"restrictReactionName": "reaction",
 	"unrestrictReactionName": "reaction",
 	"restrictVoiceName": "voice",
-	"unrestrictVoiceName": "voice"
+	"unrestrictVoiceName": "voice",
+	"warnAddDescription": "File a warning to somebody.",
+	"warnRemoveDescription": "Remove the last warning of somebody.",
+	"warnAddName": "add",
+	"warnRemoveName": "remove"
 }

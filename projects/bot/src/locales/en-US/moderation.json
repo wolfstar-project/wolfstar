@@ -49,6 +49,7 @@
 	"actionIsNotActiveRestrictionRole": "This user does not have the configured restriction role.",
 	"actionIsActiveNickname": "This user already has the selected nickname.",
 	"actionIsNotActiveNickname": "This user does not have the selected nickname.",
+	"actionIsNotActiveWarning": "This user has no warning to remove.",
 	"actionTargetSelf": "You cannot perform this action on yourself. Why would you do that anyways?",
 	"actionTargetGuildOwner": "You cannot perform this action on the server owner.",
 	"actionTargetWolf": "I... I cannot do that to myself! You broke my heart. 💔",

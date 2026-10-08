@@ -1,19 +1,16 @@
-import { ModerationCommand } from '#lib/moderation';
-import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
-import { TypeVariation } from '#utils/moderationConstants';
-import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
+import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
+import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
-type Type = TypeVariation.Warning;
-type ValueType = null;
-
-@ApplyOptions<ModerationCommand.Options<Type>>({ requiredMember: true, type: TypeVariation.Warning })
+/**
+ * The parent of the `warn` subcommands (`add` and `remove`), which live in their own classes in the `warn` directory and are
+ * wired onto this command by `@wolfstar/plugin-subcommands-advanced`.
+ */
 @RegisterCommand((builder) =>
-	applyModerationBuilder(builder, {
-		root: 'commands/moderation:warn',
-		type: TypeVariation.Warning,
-		permissions: PermissionFlagsBits.ModerateMembers
-	})
+	applyLocalizedBuilder(builder, 'commands/moderation:warn')
+		.setContexts(InteractionContextType.Guild)
+		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+		.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 )
-export class UserModerationCommand extends ModerationCommand<Type, ValueType> {}
+export class UserCommand extends Subcommand {}
