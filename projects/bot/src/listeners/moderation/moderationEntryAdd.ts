@@ -6,7 +6,7 @@ import { getModeration } from '#utils/functions';
 import { isNullishOrZero } from '@sapphire/utilities';
 import { Listener } from '@wolfstar/http-framework';
 import { canSendEmbeds } from '@wolfstar/http-framework-utilities/gateway';
-import { MessageReferenceType, RESTJSONErrorCodes, Routes, type RESTPostAPIChannelMessageJSONBody } from 'discord-api-types/v10';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 export class UserListener extends Listener {
 	public run(entry: ModerationManager.Entry) {
@@ -19,40 +19,17 @@ export class UserListener extends Listener {
 		if (channel === null || !(await canSendEmbeds(channel))) return;
 
 		const t = await fetchGuildT(entry.guild);
-		const options = { embeds: [(await getEmbed(t, entry)).toJSON()] };
+		// The case replies to the copy of its message that was forwarded before the action, see `forwardCaseMessage`:
+		const forwardedId = entry.messageReference?.forwardedId;
+		const options = {
+			embeds: [(await getEmbed(t, entry)).toJSON()],
+			...(forwardedId && { message_reference: { message_id: forwardedId, fail_if_not_exists: false } })
+		};
 		try {
 			await resolveOnErrorCodes(channel.send(options), RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.MissingPermissions);
 		} catch {
 			await writeSettings(entry.guild, { moderationChannel: null }, this.container.gatewayClient.user!.id);
-			return;
 		}
-
-		await this.forwardMessage(entry, channel.id);
-	}
-
-	/**
-	 * Forwards the message a case is about to the moderation log, under the case: a forward keeps what the message
-	 * said, so it is still there after the message is deleted.
-	 *
-	 * @remarks The message may be gone already (a ban that deletes the messages of the user), or in a channel the bot
-	 * cannot read: the case links to it either way, so a forward that fails is only logged.
-	 */
-	private async forwardMessage(entry: ModerationManager.Entry, logChannelId: string) {
-		const reference = entry.messageReference;
-		if (reference === null) return;
-
-		const body: RESTPostAPIChannelMessageJSONBody = {
-			message_reference: {
-				type: MessageReferenceType.Forward,
-				guild_id: entry.guild.id,
-				channel_id: reference.channelId,
-				message_id: reference.messageId,
-				fail_if_not_exists: false
-			}
-		};
-		await this.container.rest
-			.post(Routes.channelMessages(logChannelId), { body })
-			.catch((error: unknown) => this.container.logger.debug(`[MODERATION] Could not forward the message of case ${entry.id}:`, error));
 	}
 
 	private async scheduleDuration(entry: ModerationManager.Entry) {

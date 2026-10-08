@@ -324,6 +324,12 @@ export declare namespace ModerationManagerEntry {
 	interface MessageReference {
 		channelId: Snowflake;
 		messageId: Snowflake;
+
+		/**
+		 * The copy of the message that was forwarded to the moderation log before the action was taken, which the case
+		 * replies to. It is not set when the message could not be forwarded.
+		 */
+		forwardedId?: Snowflake;
 	}
 
 	interface Data<Type extends TypeVariation = TypeVariation> {

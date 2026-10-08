@@ -1,6 +1,7 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
+import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
@@ -136,8 +137,19 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 			try {
 				await this.checkTargetCanBeModerated(interaction, handled);
-				const log = await this.handle(interaction, handled);
-				content = this.formatOutput(t, settings, target, log);
+
+				// The message is forwarded to the moderation log before the action, which may delete it (a ban, a softban):
+				const forwardedId = await forwardCaseMessage(guild, handled.messageReference);
+				if (forwardedId !== null) handled.messageReference = { ...handled.messageReference!, forwardedId };
+
+				try {
+					const log = await this.handle(interaction, handled);
+					content = this.formatOutput(t, settings, target, log);
+				} catch (error) {
+					// No case was made for the copy to stand under:
+					if (forwardedId !== null) await deleteForwardedCaseMessage(guild, forwardedId);
+					throw error;
+				}
 			} catch (error) {
 				content = this.formatFailure(t, target, error);
 			}

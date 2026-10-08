@@ -1,3 +1,4 @@
+import { readSettings } from '#lib/database';
 import { TranslationMappings, UndoTaskNameMappings, getTypeColor } from '#lib/moderation/common/constants';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { seconds } from '#common';
@@ -6,8 +7,15 @@ import { getFullEmbedAuthor, getTag } from '#utils/util';
 import { EmbedBuilder, TimestampStyles, chatInputApplicationCommandMention, messageLink, time } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';
 import { fetchT, type AnyNamespace, type GuildTarget, type TFunction } from '@wolfstar/plugin-i18next';
-import { isNullishOrZero } from '@sapphire/utilities';
-import type { Snowflake } from 'discord-api-types/v10';
+import { isNullish, isNullishOrZero } from '@sapphire/utilities';
+import type { Guild } from '@wolfstar/plugin-gateway';
+import {
+	MessageReferenceType,
+	Routes,
+	type RESTPostAPIChannelMessageJSONBody,
+	type RESTPostAPIChannelMessageResult,
+	type Snowflake
+} from 'discord-api-types/v10';
 
 /**
  * Fetches the translation function of a guild, typed for the keys of every namespace.
@@ -97,4 +105,48 @@ function getCaseEditMention() {
 	// The command has not been loaded (or registered) yet, fall back to its plain name:
 	if (caseCommandId === null) return '`/case edit`';
 	return chatInputApplicationCommandMention('case', 'edit', caseCommandId);
+}
+
+/**
+ * Forwards the message a case is about to the moderation log, before the action is taken: a ban or a softban deletes
+ * the messages of the user, and a forward keeps what the message said.
+ *
+ * @param guild - The guild the message is in.
+ * @param reference - The message to forward.
+ * @returns The ID of the forwarded copy, `null` when there is no moderation log or the message could not be forwarded
+ * (it is gone, or in a channel the bot cannot read). The case links to the message either way.
+ */
+export async function forwardCaseMessage(guild: Guild, reference: ModerationManager.Entry['messageReference']): Promise<Snowflake | null> {
+	if (reference === null) return null;
+
+	const { moderationChannel } = await readSettings(guild.id);
+	if (isNullish(moderationChannel)) return null;
+
+	const body: RESTPostAPIChannelMessageJSONBody = {
+		message_reference: {
+			type: MessageReferenceType.Forward,
+			guild_id: guild.id,
+			channel_id: reference.channelId,
+			message_id: reference.messageId,
+			fail_if_not_exists: false
+		}
+	};
+
+	try {
+		const message = (await container.rest.post(Routes.channelMessages(moderationChannel), { body })) as RESTPostAPIChannelMessageResult;
+		return message.id;
+	} catch (error) {
+		container.logger.debug(`[MODERATION] Could not forward the message ${reference.messageId} to the moderation log:`, error);
+		return null;
+	}
+}
+
+/**
+ * Deletes a forwarded copy {@linkcode forwardCaseMessage} made, when the action it was forwarded for was not taken.
+ */
+export async function deleteForwardedCaseMessage(guild: Guild, forwardedId: Snowflake) {
+	const { moderationChannel } = await readSettings(guild.id);
+	if (isNullish(moderationChannel)) return;
+
+	await container.rest.delete(Routes.channelMessage(moderationChannel, forwardedId)).catch(() => null);
 }
