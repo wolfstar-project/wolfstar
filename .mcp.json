@@ -3,6 +3,30 @@
 		"varlock-docs-mcp": {
 			"type": "http",
 			"url": "https://docs.mcp.varlock.dev/mcp"
+		},
+		"sentry": {
+			"type": "http",
+			"url": "https://mcp.sentry.dev/mcp"
+		},
+		"stars-docs": {
+			"type": "http",
+			"url": "https://stars-components.js.org/mcp"
+		},
+		"discord-docs": {
+			"type": "http",
+			"url": "https://docs.discord.com/mcp"
+		},
+		"prisma": {
+			"type": "http",
+			"url": "https://mcp.prisma.io/mcp"
+		},
+		"context7": {
+			"type": "http",
+			"url": "https://mcp.context7.com/mcp"
+		},
+		"railway": {
+			"type": "http",
+			"url": "https://mcp.railway.com"
 		}
 	}
 }
