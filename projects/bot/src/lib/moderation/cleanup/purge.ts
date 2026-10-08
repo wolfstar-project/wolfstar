@@ -37,7 +37,8 @@ export async function runAutoPurge(purge: AutoPurge): Promise<AutoPurgeResult> {
 	if (channel === null || !('guildId' in channel) || channel.guildId !== purge.guildId) return 'gone';
 
 	const me = await gatewayClient.members.fetchMe(purge.guildId);
-	if (!(await computePermissionsIn(channel, me)).has(RequiredPermissions)) return 'missing';
+	const permissions = await computePermissionsIn(channel, me);
+	if (!permissions.has(RequiredPermissions)) return 'missing';
 
 	const oldest = Date.now() - MaximumAge;
 	const messages = await fetchChannelMessages(purge.channelId, {

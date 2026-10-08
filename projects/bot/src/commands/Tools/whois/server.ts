@@ -33,7 +33,8 @@ export class UserCommand extends Command {
 		const roles = await this.getRoles(guild);
 
 		// The summary and each image are a page of the same message, which is browsed with the buttons:
-		const message = new PaginatedMessage().addPageEmbed((await this.getSummary(t, guild, roles, color)).toJSON());
+		const summary = await this.getSummary(t, guild, roles, color);
+		const message = new PaginatedMessage().addPageEmbed(summary.toJSON());
 		if (guild.icon)
 			message.addPageEmbed(this.getImage(translateKey(t, 'commands/management:guildInfoIcon'), guild.iconURL(ImageOptions)!, color).toJSON());
 		if (guild.banner) {

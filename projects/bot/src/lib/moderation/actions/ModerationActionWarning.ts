@@ -1,6 +1,8 @@
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import { getModeration } from '#utils/functions';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
+import type { Guild } from '@wolfstar/plugin-gateway';
+import type { Snowflake } from 'discord-api-types/v10';
 
 export class ModerationActionWarning extends ModerationAction<number, TypeVariation.Warning> {
 	public constructor() {
@@ -17,16 +19,20 @@ export class ModerationActionWarning extends ModerationAction<number, TypeVariat
 	 * @remarks It is not {@linkcode ModerationAction.isActive}, which `/warn add` reads: a user can be warned again while
 	 * they have a warning.
 	 */
-	public async hasOpenWarning(guild: Parameters<ModerationAction['isActive']>[0], userId: Parameters<ModerationAction['isActive']>[1]) {
-		return (await this.retrieveLastModerationEntryFromUser({ guild, userId, filter: isWarning })) !== null;
+	public async hasOpenWarning(guild: Guild, userId: Snowflake) {
+		const warning = await this.retrieveLastModerationEntryFromUser({ guild, userId, filter: isWarning });
+		return warning !== null;
 	}
 
 	/**
 	 * Marks the last warning of the user as ended, so the warning that is removed no longer counts in their history.
 	 */
-	protected override async handleUndoPre(guild: Parameters<ModerationAction['isActive']>[0], entry: ModerationAction.Entry) {
+	protected override async handleUndoPre(guild: Guild, entry: ModerationAction.Entry) {
 		const warning = await this.retrieveLastModerationEntryFromUser({ guild, userId: entry.userId, filter: isWarning });
-		if (warning !== null) await (await getModeration(guild)).complete(warning);
+		if (warning === null) return;
+
+		const moderation = await getModeration(guild);
+		await moderation.complete(warning);
 	}
 }
 
