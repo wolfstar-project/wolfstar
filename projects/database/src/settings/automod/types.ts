@@ -4,7 +4,17 @@ import type { AutoModerationHardAction } from '../types.js';
 /**
  * What a rule looks for in a message, as the `GuildAutoModerationRuleType` enum stores it.
  */
-export const AutoModerationRuleTypes = ['Attachments', 'Capitals', 'Invites', 'Links', 'Newlines', 'NoMentionSpam', 'Words', 'Zalgo'] as const;
+export const AutoModerationRuleTypes = [
+	'Attachments',
+	'Capitals',
+	'Invites',
+	'Links',
+	'Newlines',
+	'NoMentionSpam',
+	'Phishing',
+	'Words',
+	'Zalgo'
+] as const;
 export type AutoModerationRuleType = (typeof AutoModerationRuleTypes)[number];
 
 /**
@@ -36,6 +46,8 @@ export interface AutoModerationRuleOptionsMap {
 	Newlines: { maximum: number };
 	/** More than `mentionsAllowed` points of mentions in `timePeriod` seconds, which bans; `alerts` warns before. */
 	NoMentionSpam: { alerts: boolean; mentionsAllowed: number; timePeriod: number };
+	/** Links to the hostnames of the list of known phishing links, but the `allowed` ones. */
+	Phishing: { allowed: string[] };
 	/** Messages that hold one of the `words`. */
 	Words: { words: string[] };
 	/** Messages in which a character carries more than `maximum` combining marks. */
@@ -115,6 +127,7 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Links: { allowed: [] },
 		Newlines: { maximum: 20 },
 		NoMentionSpam: { alerts: false, mentionsAllowed: 20, timePeriod: 8 },
+		Phishing: { allowed: [] },
 		Words: { words: [] },
 		Zalgo: { maximum: 4 }
 	};
