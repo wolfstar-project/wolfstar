@@ -1,3 +1,4 @@
+import { parseTimestamp } from 'wolfstar-database';
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import { seconds } from '#common';
@@ -66,7 +67,7 @@ export class UserRoute extends Route {
 				channelId: row.channelId?.toString() ?? null,
 				success: row.success,
 				errorReason: row.errorReason,
-				executedAt: new Date(row.executedAt).toISOString(),
+				executedAt: new Date(parseTimestamp(row.executedAt)).toISOString(),
 				latencyMs: row.latencyMs,
 				metadata: row.metadata as Record<string, unknown> | null
 			})),

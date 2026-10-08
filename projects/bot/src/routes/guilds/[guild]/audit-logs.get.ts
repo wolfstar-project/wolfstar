@@ -6,6 +6,7 @@ import { seconds } from '#common';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { APIGuildMember, GuildMemberFlags } from 'discord-api-types/v10';
+import { parseTimestamp } from 'wolfstar-database';
 import type { AuditEventChanges, AuditOutcome, DashboardAuditAction, DashboardAuditChanges, DashboardAuditEntry } from 'wolfstar-database';
 
 function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
@@ -124,7 +125,7 @@ export class UserRoute extends Route {
 					member: memberMap.get(actorId) ?? fallbackMember(actorId),
 					changes: patchToChanges(row.changes as AuditEventChanges | null),
 					reason: row.reason ?? null,
-					timestamp: new Date(row.timestamp).toISOString()
+					timestamp: new Date(parseTimestamp(row.timestamp)).toISOString()
 				} satisfies DashboardAuditEntry;
 			}),
 			total

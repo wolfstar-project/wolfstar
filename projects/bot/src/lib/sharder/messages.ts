@@ -17,6 +17,11 @@ export interface ShardMessages {
 	 * The auto-moderation rules of a guild were changed by a shard, the others drop their cached copy.
 	 */
 	automodRulesUpdate: { guildId: string };
+
+	/**
+	 * The automatic deletions of a guild were changed by a shard, the others drop their cached copy.
+	 */
+	cleanupUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

@@ -1,18 +1,17 @@
 import { andMix, days, floatPromise, seconds, type BooleanFn } from '#common';
+import { bulkDeleteChannelMessages, fetchChannelMessages } from '#lib/moderation/cleanup/messages';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { urlRegex } from '#utils/Links/UrlRegex';
-import { deleteMessage, getLogger } from '#utils/functions';
+import { deleteMessage } from '#utils/functions';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { getImageUrl } from '#utils/util';
-import { DiscordAPIError } from '@discordjs/rest';
 import type { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { container, type TransformedArguments } from '@wolfstar/http-framework';
 import { MessageMentions, type Message, type PermissionsString } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags, PermissionFlagsBits, RESTJSONErrorCodes } from 'discord-api-types/v10';
-import { setTimeout as sleep } from 'node:timers/promises';
+import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 
 /**
  * The subcommands of `/prune`, which tell what kind of message is deleted:
@@ -254,11 +253,11 @@ export abstract class PruneCommand extends Command {
 		const deferred = await interaction.defer(silent ? { flags: MessageFlags.Ephemeral } : undefined);
 
 		const filters = this.getFilters(interaction, args, maximumAge, pattern);
-		const messages = await this.fetchMessages(channelId, { limit: args.amount, position, positionId, filter: filters });
+		const messages = await fetchChannelMessages(channelId, { limit: args.amount, position, positionId, filter: filters });
 		if (messages.length === 0) return deferred.update({ content: t('commands/moderation:pruneNoDeletes') });
 
 		// Perform a bulk delete, ignoring the messages that were deleted in the meantime, and log the deleted messages:
-		const deleted = await this.bulkDeleteMessages(interaction.guildId, channelId, messages);
+		const deleted = await bulkDeleteChannelMessages(interaction.guildId, channelId, messages);
 
 		if (silent) {
 			await deferred.delete();
@@ -269,56 +268,6 @@ export abstract class PruneCommand extends Command {
 		await deferred.update({ content });
 		floatPromise(deleteMessage(deferred, seconds(10)));
 		return null;
-	}
-
-	private async fetchMessages(
-		channelId: string,
-		options: { limit: number; position: 'before' | 'after'; positionId: string | undefined; filter: BooleanFn<[Message]> }
-	) {
-		const { limit, position, filter } = options;
-		const { messages: manager } = container.gatewayClient;
-
-		const collected = new Map<string, Message>();
-		let cursor = options.positionId;
-		let remaining = limit;
-
-		while (remaining > 0) {
-			const page = await manager.list(channelId, { limit: 100, [position]: cursor });
-			const filtered = page.filter((message) => filter(message)).sort((a, b) => b.createdTimestamp - a.createdTimestamp);
-
-			for (const message of filtered) {
-				if (remaining <= 0) break;
-				collected.set(message.id, message);
-				remaining--;
-			}
-
-			// Keep paging while the page had something to delete, Discord rate limits the history requests:
-			if (remaining <= 0 || filtered.length === 0) break;
-			cursor = position === 'before' ? filtered.at(-1)!.id : filtered[0].id;
-			await sleep(2000);
-		}
-
-		return [...collected.values()];
-	}
-
-	private async bulkDeleteMessages(guildId: string, channelId: string, messages: readonly Message[]) {
-		const logger = await getLogger(guildId);
-		logger.prune.set(channelId, { userId: container.gatewayClient.user!.id });
-
-		const { messages: manager } = container.gatewayClient;
-		const ids = messages.map((message) => message.id);
-		let deleted = 0;
-
-		for (let i = 0; i < ids.length; i += 100) {
-			try {
-				deleted += (await manager.bulkDelete(channelId, ids.slice(i, i + 100), true)).size;
-			} catch (error) {
-				logger.prune.unset(channelId);
-				if (!(error instanceof DiscordAPIError) || error.code !== RESTJSONErrorCodes.UnknownMessage) throw error;
-			}
-		}
-
-		return deleted;
 	}
 
 	private getFilters(

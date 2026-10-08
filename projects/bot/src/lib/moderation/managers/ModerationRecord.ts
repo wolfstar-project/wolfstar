@@ -1,4 +1,4 @@
-import type { ModerationData } from 'wolfstar-database';
+import { parseTimestamp, type ModerationData } from 'wolfstar-database';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 
 /**
@@ -153,7 +153,7 @@ export function fromModerationRow(row: ModerationRow): ModerationRecord {
 	const { type, metadata } = decodeModerationRecordMetadata(row.action, row.metadata);
 	return {
 		id: row.id,
-		createdAt: new Date(row.createdAt).getTime(),
+		createdAt: parseTimestamp(row.createdAt),
 		duration: decodeModerationRecordDuration(row.duration),
 		guildId: row.guildId.toString(),
 		moderatorId: row.moderatorId.toString(),
