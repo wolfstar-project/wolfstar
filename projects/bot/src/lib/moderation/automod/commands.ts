@@ -3,8 +3,7 @@ import {
 	findAutoModerationRule,
 	getAutoModerationRuleAdder,
 	getAutoModerationRuleWordFilter,
-	readAutoModerationRules,
-	updateAutoModerationRule
+	readAutoModerationRules
 } from '#lib/moderation/automod/rules';
 import { normalizeAutoModerationRuleWord } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -13,7 +12,7 @@ import { Emojis } from '#utils/constants';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { strikethrough, type SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { isNullishOrEmpty, isNullishOrZero } from '@sapphire/utilities';
-import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
+import { applyLocalizedBuilder, type TFunction } from '@wolfstar/plugin-i18next';
 import { MessageFlags } from 'discord-api-types/v10';
 import {
 	AutoModerationRuleWordLength,
@@ -144,29 +143,6 @@ export function resolveRuleListEntry(rule: AutoModerationRule, input: string): {
 		default:
 			return null;
 	}
-}
-
-/**
- * Runs `/automod add` and `/automod remove`: adds an entry to the list of a rule, or removes it.
- */
-export async function editRuleList(interaction: GuildChatInputInteraction, options: { rule: string; value: string }, action: 'add' | 'remove') {
-	const t = getSupportedUserLanguageT(interaction);
-	const cached = await resolveCommandRule(interaction, t, options.rule);
-	if (cached === null) return;
-
-	// The list is edited on the rule the database has, the cached one may be behind another change:
-	let content!: string;
-	try {
-		await updateAutoModerationRule(interaction.guildId, cached.id, (rule) => {
-			const result = editRuleListEntry(t, rule, options.value, action);
-			content = result.content;
-			return result.list === null ? null : { options: { ...rule.options, [result.key]: result.list } as AutoModerationRule['options'] };
-		});
-	} catch (error) {
-		content = translateRuleError(t, error, options.rule);
-	}
-
-	return interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
 }
 
 /**

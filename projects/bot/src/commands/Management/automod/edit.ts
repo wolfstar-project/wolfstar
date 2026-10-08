@@ -8,6 +8,7 @@ import {
 	translateRuleError
 } from '#lib/moderation/automod/commands';
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
+import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { isNullish } from '@sapphire/utilities';
@@ -100,21 +101,24 @@ export class UserCommand extends Command {
 		if (Object.keys(data).length === 0 && !hasSoftAction && ruleOptions === null)
 			return this.#reply(interaction, translateKey(t, `${Root}:editNothing`));
 
-		let content: string;
+		let updated: AutoModerationRule;
 		try {
 			// The actions and the options that were not given keep the value the database has, the cached rule may be
 			// behind another change:
-			const updated = await updateAutoModerationRule(interaction.guildId, rule.id, (current) => ({
+			updated = await updateAutoModerationRule(interaction.guildId, rule.id, (current) => ({
 				...data,
 				...(hasSoftAction && { softAction: resolveSoftAction(options, current.softAction) }),
 				...(ruleOptions !== null && { options: { ...current.options, ...ruleOptions } as AutoModerationRule['options'] })
 			}));
-			content = translateKey(t, `${Root}:editSuccess`, { name: updated.name });
 		} catch (error) {
-			content = translateRuleError(t, error, options.rule);
+			return this.#reply(interaction, translateRuleError(t, error, options.rule));
 		}
 
-		return this.#reply(interaction, content);
+		// The rule is opened on what was edited, see the `automod` interaction handler:
+		const changedResponse =
+			hasSoftAction || 'hardAction' in data || 'hardActionDuration' in data || 'thresholdMaximum' in data || 'thresholdDuration' in data;
+		const section = changedResponse && ruleOptions === null ? 'response' : 'options';
+		return replyWithAutoModerationRule(interaction, t, updated, section, translateKey(t, `${Root}:editSuccess`, { name: updated.name }));
 	}
 
 	/**

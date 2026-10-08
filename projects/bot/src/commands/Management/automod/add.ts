@@ -1,4 +1,5 @@
-import { AutoModerationRoot, applyRuleOption, editRuleList } from '#lib/moderation/automod/commands';
+import { AutoModerationRoot, applyRuleOption } from '#lib/moderation/automod/commands';
+import { editRuleList } from '#lib/structures/automod-menu';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';

@@ -3,5 +3,6 @@
  * components the `automod` interaction handler handles.
  */
 export * from '#lib/structures/automod-menu/actions';
+export * from '#lib/structures/automod-menu/commands';
 export * from '#lib/structures/automod-menu/ids';
 export * from '#lib/structures/automod-menu/render';
