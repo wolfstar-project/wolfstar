@@ -87,10 +87,10 @@ function printBanner() {
 					` WolfStar ${envParseString('CLIENT_VERSION')}`,
 					...container.stores.map((store) => `├─ Loaded ${store.size.toString().padEnd(3, ' ')} ${store.name}.`),
 					`├─ Loaded ${container.i18n.languages.size.toString().padEnd(3, ' ')} languages.`,
-					` ├ [${status(!isWorker())}] Gateway   : ${isWorker() ? 'worker, replaying the broker stream' : `${container.gatewayClient.gateway.options.shardCount ?? 'auto'} shards`}`,
-					` ├ [${status(envParseBoolean('INFLUX_ENABLED', false))}] Analytics`,
-					` ├ [${status(envParseBoolean('API_ENABLED', true))}] API`,
-					` └ [+] Redis     : ${container.redis.options.host}:${container.redis.options.port}`
+					`├─ [${status(!isWorker())}] Gateway   : ${isWorker() ? 'worker, replaying the broker stream' : `${container.gatewayClient.gateway.options.shardCount ?? 'auto'} shards`}`,
+					`├─ [${status(envParseBoolean('INFLUX_ENABLED', false))}] Analytics`,
+					`├─ [${status(envParseBoolean('API_ENABLED', true))}] API`,
+					`└─ [+] Redis     : ${container.redis.options.host}:${container.redis.options.port}`
 				]
 			})
 		)
