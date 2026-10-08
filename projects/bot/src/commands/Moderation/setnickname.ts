@@ -1,15 +1,11 @@
 import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { TypeVariation } from '#utils/moderationConstants';
-import { RegisterCommand } from '@wolfstar/http-framework';
+import { RegisterCommand, type Command } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
 type Type = TypeVariation.SetNickname;
 type ValueType = null;
-
-interface Arguments extends ModerationCommand.Arguments {
-	nickname?: string;
-}
 
 /**
  * Sets, or resets when the `nickname` option is left out, the nickname of a member. Leaving the nickname out resets it
@@ -32,10 +28,12 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
-		return (context.args as Arguments).nickname ?? null;
+		return (context.args as Command.OptionsOf<'setnickname'>).nickname ?? null;
 	}
 
 	protected override getActionStatusKey(context: ModerationCommand.HandlerParameters<ValueType>) {
-		return (context.args as Arguments).nickname === undefined ? 'moderation:actionIsNotActiveNickname' : 'moderation:actionIsActiveNickname';
+		return (context.args as Command.OptionsOf<'setnickname'>).nickname === undefined
+			? 'moderation:actionIsNotActiveNickname'
+			: 'moderation:actionIsActiveNickname';
 	}
 }

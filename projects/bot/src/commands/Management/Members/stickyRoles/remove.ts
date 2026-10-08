@@ -1,7 +1,7 @@
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -16,7 +16,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['sticky-roles remove']) {
 		const { user, role } = options;
 		const t = getSupportedUserLanguageT(interaction);
 
@@ -33,9 +33,4 @@ export class UserCommand extends Command {
 		const content = translateKey(t, 'commands/management:stickyRolesRemove', { user: user.user.username });
 		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
 	}
-}
-
-interface Options {
-	user: TransformedArguments.User;
-	role: TransformedArguments.Role;
 }

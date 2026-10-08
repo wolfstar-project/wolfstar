@@ -5,6 +5,7 @@ import { getSeconds } from '#utils/moderation-utilities';
 import { TypeVariation, type Unlock } from '#utils/moderationConstants';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 type Type = TypeVariation.Ban;
 type ValueType = Unlock | null;
@@ -37,7 +38,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
-		return getSeconds({ days: (context.args as ModerationCommand.Arguments & { 'delete-days'?: number })['delete-days'] });
+		return getSeconds({ days: (context.args as CommandOptionsRegistry['ban add'])['delete-days'] });
 	}
 
 	protected override postHandle(_interaction: ModerationCommand.Interaction, { preHandled }: ModerationCommand.PostHandleParameters<ValueType>) {

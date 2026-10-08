@@ -25,7 +25,10 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 )
 export class UserCommand extends Subcommand {
-	public override autocompleteRun(interaction: Command.AutocompleteInteraction, args: Command.AutocompleteArguments<{ command: string }>) {
+	public override autocompleteRun(
+		interaction: Command.AutocompleteInteraction,
+		args: Command.AutocompleteArguments<Pick<Command.OptionsOf<'permission-nodes add'>, 'command'>>
+	) {
 		if (args.focused !== 'command') return interaction.replyEmpty();
 
 		// The commands are matched by the name of their piece, see `CommandMatcher`:

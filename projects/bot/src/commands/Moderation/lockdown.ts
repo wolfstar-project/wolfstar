@@ -15,7 +15,7 @@ import { PermissionsBits } from '#utils/bits';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { getTag } from '#utils/util';
 import { channelMention, roleMention } from '@discordjs/formatters';
-import { Command, RegisterCommand, container, type TransformedArguments } from '@wolfstar/http-framework';
+import { Command, RegisterCommand, container } from '@wolfstar/http-framework';
 import type { AnyThreadChannel, Role } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import {
@@ -36,14 +36,6 @@ const Root = 'commands/lockdown';
  */
 const MinimumDuration = 30_000;
 const MaximumDuration = months(1);
-
-interface Arguments {
-	action: 'lock' | 'unlock';
-	role?: TransformedArguments.Role;
-	channel?: TransformedArguments.Channel;
-	duration?: string;
-	global?: boolean;
-}
 
 type LockdownTarget =
 	| { readonly kind: 'guild' }
@@ -99,7 +91,7 @@ type LockdownTarget =
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:global`).setRequired(false))
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Arguments) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'lockdown'>) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
@@ -337,7 +329,7 @@ export class UserCommand extends Command {
 	 *
 	 * @returns The target, or `null` when the channel is not one that can be locked down.
 	 */
-	private async resolveTarget(interaction: GuildChatInputInteraction, args: Arguments): Promise<LockdownTarget | null> {
+	private async resolveTarget(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'lockdown'>): Promise<LockdownTarget | null> {
 		const channelId = args.channel?.id ?? (args.global ? undefined : interaction.channel.id);
 		if (channelId === undefined) return { kind: 'guild' };
 

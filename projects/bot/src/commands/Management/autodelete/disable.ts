@@ -3,7 +3,7 @@ import { disableAutoDelete } from '#lib/moderation/cleanup/store';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -20,7 +20,7 @@ const Root = CleanupRoot;
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: { channel: TransformedArguments.Channel }) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['autodelete disable']) {
 		const t = getSupportedUserLanguageT(interaction);
 		const disabled = await disableAutoDelete(interaction.guildId, options.channel.id);
 		const key = disabled ? `${Root}:autodeleteDisabled` : `${Root}:autodeleteNotEnabled`;

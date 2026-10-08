@@ -1,14 +1,8 @@
 import { readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
-import {
-	PermissionNodesRoot,
-	checkPermissions,
-	replyWithPermissionNodeResult,
-	resolveTarget,
-	type PermissionNodeTargetOptions
-} from '#lib/structures/commands/permissionNodes';
+import { PermissionNodesRoot, checkPermissions, replyWithPermissionNodeResult, resolveTarget } from '#lib/structures/commands/permissionNodes';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { UserError } from '@wolfstar/http-framework';
+import { UserError, type CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 
@@ -21,7 +15,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: PermissionNodeTargetOptions) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['permission-nodes reset']) {
 		return replyWithPermissionNodeResult(interaction, async (t) => {
 			const target = await resolveTarget(interaction, options.target);
 

@@ -4,6 +4,7 @@ import { getModeration } from '#utils/functions';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 /**
  * `/case archive`, see the `case` parent command.
@@ -14,7 +15,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['case archive']) {
 		return handleCase(interaction, async (t) => {
 			const entry = await getCase(interaction, options.case);
 			await (await getModeration(interaction.guildId)).archive(entry);
@@ -22,8 +23,4 @@ export class UserCommand extends Command {
 			return interaction.reply({ content: t('commands/case:archiveSuccess', { caseId: entry.id }), flags: MessageFlags.Ephemeral });
 		});
 	}
-}
-
-interface Options {
-	case: number;
 }

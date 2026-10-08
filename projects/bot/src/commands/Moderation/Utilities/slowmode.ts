@@ -29,7 +29,7 @@ const MaximumDuration = hours(6);
 		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/moderation:slowmodeOptionsDuration').setMaxLength(50).setRequired(true))
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, args: { duration: string }) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'slowmode'>) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 

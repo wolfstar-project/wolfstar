@@ -36,7 +36,7 @@ const MaximumAttachments = 5;
 		)
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, args: { user: TransformedArguments.User; reason: string }) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'report'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const subject = this.#getSubject(args.user.user);
 		const content = await submitReport(t, interaction.guildId, interaction.user.id, subject, args.reason);

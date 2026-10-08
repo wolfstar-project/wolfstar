@@ -3,6 +3,7 @@ import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/str
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 const Root = AutoModerationRoot;
 
@@ -16,7 +17,7 @@ const Root = AutoModerationRoot;
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: { rule: string; value: string }) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['automod remove']) {
 		return editRuleList(interaction, options, 'remove');
 	}
 }

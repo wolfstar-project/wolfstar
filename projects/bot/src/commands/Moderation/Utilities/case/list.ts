@@ -3,7 +3,7 @@ import { getDisplayT, handleCase, listDetails, listOverview, sortEntries } from 
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish, isNullishOrZero } from '@sapphire/utilities';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, createLocalizedChoice } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -41,7 +41,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['case list']) {
 		return handleCase(interaction, async (t) => {
 			const show = options.show ?? false;
 			const user = options.user?.user ?? null;
@@ -64,13 +64,4 @@ export class UserCommand extends Command {
 			return deferred.update({ embeds: [embed.toJSON()] });
 		});
 	}
-}
-
-interface Options {
-	user?: TransformedArguments.User;
-	overview?: boolean;
-	show?: boolean;
-	type?: TypeVariation;
-	'pending-only'?: boolean;
-	page?: number;
 }

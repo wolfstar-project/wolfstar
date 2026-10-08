@@ -4,6 +4,7 @@ import { getCase, getDisplayT, handleCase } from '#lib/structures/commands/moder
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 /**
  * `/case view`, see the `case` parent command.
@@ -15,7 +16,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['case view']) {
 		return handleCase(interaction, async () => {
 			const entry = await getCase(interaction, options.case);
 			const show = options.show ?? false;
@@ -25,9 +26,4 @@ export class UserCommand extends Command {
 			return deferred.update({ embeds: [embed.toJSON()] });
 		});
 	}
-}
-
-interface Options {
-	case: number;
-	show?: boolean;
 }

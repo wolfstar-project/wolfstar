@@ -2,7 +2,7 @@ import { writeSettings } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { UserError, container } from '@wolfstar/http-framework';
+import { UserError, container, type CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -24,7 +24,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: UserCommand.Arguments) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['mute create']) {
 		const t = getSupportedUserLanguageT(interaction);
 		const { role } = options;
 		if (role) {

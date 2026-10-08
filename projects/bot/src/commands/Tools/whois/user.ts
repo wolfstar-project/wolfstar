@@ -6,7 +6,7 @@ import { addAutomaticFields } from '#utils/functions';
 import { PermissionsBits } from '#utils/bits';
 import { getTag } from '#utils/util';
 import { EmbedBuilder, time, TimestampStyles, userMention, roleMention } from '@discordjs/builders';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -35,7 +35,7 @@ const Root = 'commands/tools';
 		.addUserOption((option) => applyLocalizedBuilder(option, `${Root}:whoisOptionsUser`).setRequired(false))
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['whois user']) {
 		const deferred = await interaction.defer();
 
 		const t = getSupportedUserLanguageT(interaction);
@@ -153,8 +153,4 @@ export class UserCommand extends Command {
 		if (duration >= months(2)) return Emojis.BoostLevel2;
 		return Emojis.BoostLevel1;
 	}
-}
-
-interface Options {
-	user?: TransformedArguments.User;
 }

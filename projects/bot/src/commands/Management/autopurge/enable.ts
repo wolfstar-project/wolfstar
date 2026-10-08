@@ -11,20 +11,13 @@ import { CleanupLimitError, enableAutoPurge } from '#lib/moderation/cleanup/stor
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ChannelType, MessageFlags } from 'discord-api-types/v10';
-import { AutoPurgeIntervalLimits, CleanupFilterKinds, MaximumCleanupValueLength, type CleanupFilterKind } from 'wolfstar-database';
+import { AutoPurgeIntervalLimits, CleanupFilterKinds, MaximumCleanupValueLength } from 'wolfstar-database';
 
 const Root = CleanupRoot;
-
-interface Options {
-	channel: TransformedArguments.Channel;
-	interval: string;
-	filter?: CleanupFilterKind;
-	value?: string;
-}
 
 /**
  * `/autopurge enable`, see the `autopurge` parent command. Purges a channel every interval, of every message or of the
@@ -47,7 +40,7 @@ interface Options {
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['autopurge enable']) {
 		const t = getSupportedUserLanguageT(interaction);
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
 

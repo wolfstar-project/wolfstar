@@ -6,7 +6,8 @@ import { inlineCode } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
-import { AutoModerationRuleTypes, MaximumAutoModerationRuleNameLength, type AutoModerationRuleType } from 'wolfstar-database';
+import { AutoModerationRuleTypes, MaximumAutoModerationRuleNameLength } from 'wolfstar-database';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 const Root = AutoModerationRoot;
 
@@ -26,7 +27,7 @@ const Root = AutoModerationRoot;
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: { name: string; type: AutoModerationRuleType }) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['automod create']) {
 		const t = getSupportedUserLanguageT(interaction);
 
 		let content: string;

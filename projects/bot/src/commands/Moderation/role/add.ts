@@ -1,17 +1,13 @@
 import { applyModerationSubcommandBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { TypeVariation } from '#utils/moderationConstants';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
 
 type Type = TypeVariation.RoleAdd;
 type ValueType = null;
-
-interface Arguments extends ModerationCommand.Arguments {
-	role: TransformedArguments.Role;
-}
 
 /**
  * `/role add`, see the `role` parent command. Adds a role to a user. The command requires the administrator level.
@@ -29,7 +25,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 		super(context, { ...options, type: TypeVariation.RoleAdd, requiredMember: true, actionStatusKey: 'moderation:actionIsActiveRole' });
 	}
 
-	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: Arguments) {
+	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: CommandOptionsRegistry['role add']) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
@@ -37,6 +33,6 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
-		return { id: (context.args as Arguments).role.id };
+		return { id: (context.args as CommandOptionsRegistry['role add']).role.id };
 	}
 }

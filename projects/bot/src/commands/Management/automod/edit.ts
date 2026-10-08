@@ -14,34 +14,16 @@ import { isNullish } from '@sapphire/utilities';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import {
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
 	MaximumAutoModerationRuleNameLength,
-	type AutoModerationHardAction,
 	type AutoModerationRule,
 	type AutoModerationRuleData
 } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
-
-interface Options {
-	rule: string;
-	rename?: string;
-	enabled?: boolean;
-	alert?: boolean;
-	log?: boolean;
-	delete?: boolean;
-	punishment?: AutoModerationHardAction;
-	'punishment-duration'?: string;
-	threshold?: number;
-	'threshold-period'?: string;
-	minimum?: number;
-	maximum?: number;
-	mentions?: number;
-	period?: number;
-	warn?: boolean;
-}
 
 /**
  * The options of `/automod edit` that only some types of rule have, with the name of the option of the rule they set.
@@ -93,7 +75,7 @@ const TypeOptions = [
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['automod edit']) {
 		const t = getSupportedUserLanguageT(interaction);
 		const rule = await resolveCommandRule(interaction, t, options.rule);
 		if (rule === null) return;
@@ -141,7 +123,11 @@ export class UserCommand extends Command {
 	 *
 	 * @returns `null` when none was given, or the translated error when one does not fit the rule.
 	 */
-	#getRuleOptions(t: TFunction, rule: AutoModerationRule, options: Options): Record<string, unknown> | string | null {
+	#getRuleOptions(
+		t: TFunction,
+		rule: AutoModerationRule,
+		options: CommandOptionsRegistry['automod edit']
+	): Record<string, unknown> | string | null {
 		const current = rule.options as Record<string, unknown>;
 		const limits = (AutoModerationRuleOptionLimits as Record<string, Record<string, { minimum: number; maximum: number }> | undefined>)[
 			rule.type

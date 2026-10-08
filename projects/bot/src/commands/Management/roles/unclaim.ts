@@ -1,6 +1,6 @@
 import { claimPublicRole } from '#lib/structures/commands/publicRoles';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 
@@ -12,11 +12,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
 		.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsRole').setRequired(true))
 )
 export class UserCommand extends Command {
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['roles unclaim']) {
 		return claimPublicRole(interaction, options.role, false);
 	}
-}
-
-interface Options {
-	role: TransformedArguments.Role;
 }

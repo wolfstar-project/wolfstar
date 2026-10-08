@@ -24,7 +24,10 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 )
 export class UserCommand extends Subcommand {
-	public override async autocompleteRun(interaction: Command.AutocompleteInteraction, args: Command.AutocompleteArguments<{ rule: string }>) {
+	public override async autocompleteRun(
+		interaction: Command.AutocompleteInteraction,
+		args: Command.AutocompleteArguments<Pick<Command.OptionsOf<'automod show'>, 'rule'>>
+	) {
 		if (args.focused !== 'rule' || !interaction.guildId) return interaction.replyEmpty();
 
 		const query = (args.rule ?? '').toLowerCase();

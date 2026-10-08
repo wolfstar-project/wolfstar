@@ -16,6 +16,7 @@ import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 
 /**
  * `/case edit`, see the `case` parent command.
@@ -28,7 +29,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 )
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
-	public override chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['case edit']) {
 		return handleCase(interaction, async (t) => {
 			const entry = await getCase(interaction, options.case);
 			const duration = getDuration(t, entry, options.duration);
@@ -84,10 +85,4 @@ function getDuration(t: Translator, entry: ModerationManager.Entry, parameter: s
 	if (result.isOk()) return result.unwrap();
 
 	throw t(result.unwrapErr() as TranslationKey, { parameter, minimum: action.minimumDuration, maximum: action.maximumDuration });
-}
-
-interface Options {
-	case: number;
-	reason?: string;
-	duration?: string;
 }

@@ -3,7 +3,7 @@ import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/struc
 import { getModeration } from '#utils/functions';
 import { getSeconds } from '#utils/moderation-utilities';
 import { TypeVariation, type Unlock } from '#utils/moderationConstants';
-import { RegisterCommand } from '@wolfstar/http-framework';
+import { RegisterCommand, type Command } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
@@ -38,7 +38,7 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
-		return getSeconds({ days: (context.args as ModerationCommand.Arguments & { 'delete-days'?: number })['delete-days'] });
+		return getSeconds({ days: (context.args as Command.OptionsOf<'softban'>)['delete-days'] });
 	}
 
 	protected override postHandle(_interaction: ModerationCommand.Interaction, { preHandled }: ModerationCommand.PostHandleParameters<ValueType>) {

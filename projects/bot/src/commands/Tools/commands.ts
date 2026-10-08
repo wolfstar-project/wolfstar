@@ -26,7 +26,7 @@ import { ApplicationIntegrationType, InteractionContextType } from 'discord-api-
 		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/commands:optionsCommand').setMaxLength(32).setAutocomplete(true))
 )
 export class UserCommand extends Command {
-	public override async chatInputRun(interaction: Command.ChatInputInteraction, args: { command?: string }) {
+	public override async chatInputRun(interaction: Command.ChatInputInteraction, args: Command.OptionsOf<'commands'>) {
 		const context = await createCommandsMenuContext(interaction, interaction.user.id);
 		const query = normalizeCommandQuery((args.command ?? '').replace(/^\//, ''));
 		if (query.length === 0) return interaction.reply(renderCommandsList(context, '', 0));
@@ -35,7 +35,10 @@ export class UserCommand extends Command {
 		return interaction.reply(command ? renderCommand(context, command) : renderCommandsResults(context, query, 0));
 	}
 
-	public override async autocompleteRun(interaction: Command.AutocompleteInteraction, args: Command.AutocompleteArguments<{ command: string }>) {
+	public override async autocompleteRun(
+		interaction: Command.AutocompleteInteraction,
+		args: Command.AutocompleteArguments<Command.OptionsOf<'commands'>>
+	) {
 		if (args.focused !== 'command') return interaction.replyEmpty();
 
 		const query = (args.command ?? '').toLowerCase().replace(/^\//, '');

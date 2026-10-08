@@ -4,15 +4,13 @@ import { CleanupLimitError, enableAutoDelete } from '#lib/moderation/cleanup/sto
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
-import type { TransformedArguments } from '@wolfstar/http-framework';
+import type { CommandOptionsRegistry } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ChannelType, MessageFlags } from 'discord-api-types/v10';
-import { AutoDeleteAllowKinds, AutoDeleteDelayLimits, type AutoDeleteAllowKind } from 'wolfstar-database';
+import { AutoDeleteAllowKinds, AutoDeleteDelayLimits } from 'wolfstar-database';
 
 const Root = CleanupRoot;
-
-type Options = { channel: TransformedArguments.Channel; delay?: string; bots?: boolean } & Partial<Record<AutoDeleteAllowKind, boolean>>;
 
 /**
  * `/autodelete enable`, see the `autodelete` parent command. Deletes the messages sent in a channel, at once or a delay
@@ -36,7 +34,7 @@ type Options = { channel: TransformedArguments.Channel; delay?: string; bots?: b
 })
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
-	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Options) {
+	public override async chatInputRun(interaction: GuildChatInputInteraction, options: CommandOptionsRegistry['autodelete enable']) {
 		const t = getSupportedUserLanguageT(interaction);
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
 
