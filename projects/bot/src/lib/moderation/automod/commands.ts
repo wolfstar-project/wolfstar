@@ -40,6 +40,7 @@ export const AutoModerationRuleTypeKeys = {
 	Links: `${Root}:typeLinks`,
 	Newlines: `${Root}:typeNewlines`,
 	NoMentionSpam: `${Root}:typeNoMentionSpam`,
+	Phishing: `${Root}:typePhishing`,
 	Words: `${Root}:typeWords`,
 	Zalgo: `${Root}:typeZalgo`
 } as const satisfies Record<AutoModerationRuleType, TranslationKey>;
@@ -128,8 +129,9 @@ export function resolveRuleListEntry(rule: AutoModerationRule, input: string): {
 			const { words } = (rule as AutoModerationRule<'Words'>).options;
 			return { key: 'words', list: words, value: normalizeAutoModerationRuleWord(value) };
 		}
-		case 'Links': {
-			const { allowed } = (rule as AutoModerationRule<'Links'>).options;
+		case 'Links':
+		case 'Phishing': {
+			const { allowed } = (rule as AutoModerationRule<'Links' | 'Phishing'>).options;
 			// A full link stands for its hostname:
 			const hostname = URL.canParse(value) ? new URL(value).hostname : value;
 			return { key: 'allowed', list: allowed, value: hostname.toLowerCase() };
@@ -221,7 +223,8 @@ function getRuleList(rule: AutoModerationRule): readonly string[] | null {
 		case 'Words':
 			return (rule as AutoModerationRule<'Words'>).options.words;
 		case 'Links':
-			return (rule as AutoModerationRule<'Links'>).options.allowed;
+		case 'Phishing':
+			return (rule as AutoModerationRule<'Links' | 'Phishing'>).options.allowed;
 		case 'Invites': {
 			const { allowedCodes, allowedGuilds } = (rule as AutoModerationRule<'Invites'>).options;
 			return [...allowedCodes, ...allowedGuilds];

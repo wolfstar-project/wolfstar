@@ -148,6 +148,7 @@ declare module "i18next" {
         typeLinks: "Links";
         typeNewlines: "New lines";
         typeNoMentionSpam: "Mention spam";
+        typePhishing: "Known phishing links";
         typeWords: "Words";
         typeZalgo: "Zalgo text";
         typeAttachmentsDescription: "Detects the messages that have an attachment.";
@@ -156,6 +157,7 @@ declare module "i18next" {
         typeLinksDescription: "Detects the messages that contain a link.";
         typeNewlinesDescription: "Detects the messages of more than {{maximum, number}} lines.";
         typeNoMentionSpamDescription: "Bans the members who go over {{mentionsAllowed, number}} points of mentions within {{timePeriod, number}} seconds.";
+        typePhishingDescription: "Detects the links to the websites that are known to steal accounts.";
         typeWordsDescription: "Detects the messages that contain a filtered word.";
         typeZalgoDescription: "Detects the messages in which a character carries more than {{maximum, number}} combining marks.";
         createSuccess: "Created the rule **{{name}}** ({{type}}). It is enabled and only counts the infractions for now: set what it does with {{command}}.";
@@ -2756,6 +2758,10 @@ declare module "i18next" {
         zalgoFilterFooter: "Zalgo Text";
         zalgo: "[Auto-Moderation] Triggered zalgo text filter, no threshold.";
         zalgoWithMaximum: "[Auto-Moderation] Triggered zalgo text filter, reached {{amount}} out of {{maximum}} infractions.";
+        phishing: "[Auto-Moderation] Triggered phishing link filter, no threshold.";
+        phishingWithMaximum: "[Auto-Moderation] Triggered phishing link filter, reached {{amount}} out of {{maximum}} infractions.";
+        phishingFilter: "{{REDCROSS}} Hey {{user}}, that link is known to steal accounts, it is not allowed here!";
+        phishingFilterFooter: "Phishing Link";
         nolink: "{{REDCROSS}} Hey {{user}}, you are not allowed to post links here!";
         wordFilter: "{{REDCROSS}} Pardon, dear {{user}}, you said something that is not allowed in this server.";
         wordFilterDm: "Shush! You said some words that are not allowed in the server! But since you took a moment to write the message, I will post it here:\n{{filtered}}";
