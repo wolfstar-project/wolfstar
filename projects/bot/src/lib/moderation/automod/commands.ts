@@ -38,6 +38,7 @@ export const AutoModerationRuleTypeKeys = {
 	Newlines: `${Root}:typeNewlines`,
 	NoMentionSpam: `${Root}:typeNoMentionSpam`,
 	Phishing: `${Root}:typePhishing`,
+	Stickers: `${Root}:typeStickers`,
 	Words: `${Root}:typeWords`,
 	Zalgo: `${Root}:typeZalgo`
 } as const satisfies Record<AutoModerationRuleType, TranslationKey>;

@@ -149,6 +149,7 @@ declare module "i18next" {
         typeNewlines: "New lines";
         typeNoMentionSpam: "Mention spam";
         typePhishing: "Known phishing links";
+        typeStickers: "Stickers";
         typeWords: "Words";
         typeZalgo: "Zalgo text";
         typeAttachmentsDescription: "Detects the messages that have an attachment.";
@@ -158,6 +159,7 @@ declare module "i18next" {
         typeNewlinesDescription: "Detects the messages of more than {{maximum, number}} lines.";
         typeNoMentionSpamDescription: "Bans the members who go over {{mentionsAllowed, number}} points of mentions within {{timePeriod, number}} seconds.";
         typePhishingDescription: "Detects the links to the websites that are known to steal accounts.";
+        typeStickersDescription: "Detects the messages that have a sticker.";
         typeWordsDescription: "Detects the messages that contain a filtered word.";
         typeZalgoDescription: "Detects the messages in which a character carries more than {{maximum, number}} combining marks.";
         editSuccess: "Successfully edited the rule **{{name}}**.";
@@ -2837,6 +2839,10 @@ declare module "i18next" {
         phishingWithMaximum: "[Auto-Moderation] Triggered phishing link filter, reached {{amount}} out of {{maximum}} infractions.";
         phishingFilter: "{{REDCROSS}} Hey {{user}}, that link is known to steal accounts, it is not allowed here!";
         phishingFilterFooter: "Phishing Link";
+        stickers: "[Auto-Moderation] Triggered sticker filter, no threshold.";
+        stickersWithMaximum: "[Auto-Moderation] Triggered sticker filter, reached {{amount}} out of {{maximum}} infractions.";
+        stickerFilter: "{{REDCROSS}} Dear {{user}}, stickers aren't allowed here.";
+        stickerFilterFooter: "Sticker";
         nolink: "{{REDCROSS}} Hey {{user}}, you are not allowed to post links here!";
         wordFilter: "{{REDCROSS}} Pardon, dear {{user}}, you said something that is not allowed in this server.";
         wordFilterDm: "Shush! You said some words that are not allowed in the server! But since you took a moment to write the message, I will post it here:\n{{filtered}}";
