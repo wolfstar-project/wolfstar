@@ -1,4 +1,5 @@
 import { PhishingHostnames } from '#utils/Links/PhishingHostnames';
+import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { container } from '@wolfstar/http-framework';
 
 /**
@@ -59,10 +60,7 @@ export function getPhishingHostnames(): ReadonlySet<string> {
 
 async function refresh() {
 	try {
-		const response = await fetch(PhishingListUrl, { signal: AbortSignal.timeout(FetchTimeout) });
-		if (!response.ok) throw new Error(`The list of phishing links answered ${response.status}.`);
-
-		const data = await response.json();
+		const data = await fetch<unknown>(PhishingListUrl, { signal: AbortSignal.timeout(FetchTimeout) }, FetchResultTypes.JSON);
 		hostnames = parsePhishingList(data);
 		nextRefresh = Date.now() + RefreshInterval;
 	} catch (error) {

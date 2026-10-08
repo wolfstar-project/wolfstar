@@ -1,12 +1,10 @@
+import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { writeFile } from 'node:fs/promises';
 
 const sourceUrl = 'https://raw.githubusercontent.com/Discord-AntiScam/scam-links/main/list.json';
 
 // Download the list of Discord-AntiScam, an array of hostnames
-const response = await fetch(sourceUrl);
-if (!response.ok) throw new Error(`The list of phishing links answered ${response.status}.`);
-
-const source = await response.json();
+const source = await fetch(sourceUrl, FetchResultTypes.JSON);
 if (!Array.isArray(source)) throw new TypeError('The list of phishing links is not an array.');
 
 // Read the hostnames as the bot matches them (lowercase, without `www.`), and drop what could not be one: the entries
@@ -31,4 +29,4 @@ const content = sorted.map((hostname, index) => `\t'${hostname}'${index === sort
 
 const outputFile = new URL('../projects/bot/src/lib/utilities/Links/PhishingHostnames.ts', import.meta.url);
 
-await writeFile(outputFile, header + content + footer);
+void writeFile(outputFile, header + content + footer);
