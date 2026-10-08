@@ -1,12 +1,12 @@
 import { AutoModerationRoot, AutoModerationRuleTypeKeys, translateRuleError } from '#lib/moderation/automod/commands';
 import { createAutoModerationRule } from '#lib/moderation/automod/rules';
+import { renderAutoModerationRule } from '#lib/structures/automod-menu';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { inlineCode } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
-import { AutoModerationRuleTypes, MaximumAutoModerationRuleNameLength } from 'wolfstar-database';
+import { AutoModerationRuleTypes, MaximumAutoModerationRuleNameLength, type AutoModerationRule } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
 
@@ -29,18 +29,16 @@ export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod create'>) {
 		const t = getSupportedUserLanguageT(interaction);
 
-		let content: string;
+		let rule: AutoModerationRule;
 		try {
-			const rule = await createAutoModerationRule(interaction.guildId, options.name, options.type);
-			content = translateKey(t, `${Root}:createSuccess`, {
-				name: rule.name,
-				type: translateKey(t, AutoModerationRuleTypeKeys[rule.type]),
-				command: inlineCode('/automod edit')
-			});
+			rule = await createAutoModerationRule(interaction.guildId, options.name, options.type);
 		} catch (error) {
-			content = translateRuleError(t, error, options.name);
+			return interaction.reply({ content: translateRuleError(t, error, options.name), flags: MessageFlags.Ephemeral });
 		}
 
-		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		// The rule is opened in the menu it is configured in, see the `automod` interaction handler:
+		const notice = translateKey(t, `${Root}:menuCreated`);
+		const message = renderAutoModerationRule({ t, ownerId: interaction.user.id }, rule, 'options', { notice });
+		return interaction.reply({ ...message, flags: message.flags! | MessageFlags.Ephemeral });
 	}
 }

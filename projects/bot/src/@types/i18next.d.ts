@@ -160,7 +160,6 @@ declare module "i18next" {
         typePhishingDescription: "Detects the links to the websites that are known to steal accounts.";
         typeWordsDescription: "Detects the messages that contain a filtered word.";
         typeZalgoDescription: "Detects the messages in which a character carries more than {{maximum, number}} combining marks.";
-        createSuccess: "Created the rule **{{name}}** ({{type}}). It is enabled and only counts the infractions for now: set what it does with {{command}}.";
         editSuccess: "Successfully edited the rule **{{name}}**.";
         editNothing: "Nothing to change: give at least one option besides the rule.";
         deleteSuccess: "Deleted the rule **{{name}}**.";
@@ -187,13 +186,16 @@ declare module "i18next" {
         showPunishmentTemporary: "{{emoji}} **Type:** {{name}} for {{duration}}";
         showPunishmentThreshold: "{{emoji}} **Applies after:** {{threshold, number}} infractions within {{period}}";
         menuTitle: "Auto-moderation rules [{{count, number}}/{{maximum, number}}]";
-        menuSubtitle: "Pick a rule to configure it. Create one with {{command}}.";
+        menuSubtitle: "Pick a rule to configure it, or create one.";
         menuGuildTitle: "Auto-moderation settings";
         menuGuildModule: "Module";
         menuGuildNative: "Discord AutoMod";
         menuGuildChannel: "Log channel";
         menuGuildChannelNone: "None";
         menuGuildChannelPlaceholder: "Select the log channel";
+        menuCreatePlaceholder: "Create a rule";
+        menuCreateTitle: "Create a {{type}} rule";
+        menuCreated: "Created the rule. It only counts the infractions for now: set what it does in the moderation response.";
         menuRulePlaceholder: "Select a rule";
         menuSectionPlaceholder: "Configuration panel";
         menuSectionOptions: "Rule settings";

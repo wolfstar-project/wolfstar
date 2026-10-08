@@ -9,6 +9,7 @@ import {
 	parseAutoModerationMenuEntries,
 	parseAutoModerationMenuNumbers,
 	parseAutoModerationMenuTiming,
+	renderAutoModerationCreateModal,
 	renderAutoModerationModal,
 	renderAutoModerationRule,
 	renderAutoModerationRules,
@@ -128,13 +129,17 @@ describe('auto-moderation menu', () => {
 		test('GIVEN the rules of a server THEN each is an option of the select menu', () => {
 			const rules = [createRule('Links', { id: '1' }), createRule('Words', { id: '2', enabled: false })];
 			const settings = { modulesAutomod: true, automodChannel: '254360814063058945', automodTrackNative: false };
-			const select = flatten(renderAutoModerationRules(context, rules, { settings }).components!).find((entry) => Array.isArray(entry.options));
+			const selects = (list: AutoModerationRule[]) =>
+				flatten(renderAutoModerationRules(context, list, { settings }).components!).filter((entry) => Array.isArray(entry.options));
+			const verbs = (list: AutoModerationRule[]) => selects(list).map((entry) => decode(String(entry.custom_id))?.verb);
 
-			expect((select!.options as { value: string }[]).map((option) => option.value)).toEqual(['1', '2']);
-			expect(flatten(renderAutoModerationRules(context, [], { settings }).components!).some((entry) => Array.isArray(entry.options))).toBe(
-				false
-			);
+			expect((selects(rules)[0].options as { value: string }[]).map((option) => option.value)).toEqual(['1', '2']);
+			expect(verbs(rules)).toEqual(['pick', 'create']);
+			// Without rules only the select menu that creates one is left, and a server that has them all loses it:
+			expect(verbs([])).toEqual(['create']);
+			expect(verbs(Array.from({ length: 25 }, (_, index) => createRule('Links', { id: String(index) })))).toEqual(['pick']);
 		});
+
 		test('GIVEN the settings of the auto-moderation THEN they are shown with the rules, and fit a message', () => {
 			const rules = Array.from({ length: 25 }, (_, index) => createRule('Links', { id: String(index + 1), name: 'n'.repeat(50) }));
 			const settings = { modulesAutomod: true, automodChannel: '254360814063058945', automodTrackNative: false };
@@ -152,6 +157,12 @@ describe('auto-moderation menu', () => {
 	});
 
 	describe('modals', () => {
+		test('GIVEN the type of a rule to create THEN the modal carries it', () => {
+			const modal = renderAutoModerationCreateModal(context, 'Phishing');
+
+			expect(decode(modal.custom_id)).toMatchObject({ verb: 'submit', ruleId: 'Phishing', argument: 'create' });
+		});
+
 		const action = (argument: string): AutoModerationMenuAction => ({ ownerId, verb: 'edit', ruleId: '42', section: 'options', argument });
 
 		test('GIVEN a modal THEN it is submitted with the argument it was opened with', () => {

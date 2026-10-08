@@ -2,6 +2,7 @@ import { readSettings, writeSettings } from '#lib/database';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
 	AutoModerationRuleError,
+	createAutoModerationRule,
 	deleteAutoModerationRule,
 	readAutoModerationRules,
 	updateAutoModerationRule,
@@ -16,6 +17,7 @@ import {
 	parseAutoModerationMenuEntries,
 	parseAutoModerationMenuNumbers,
 	parseAutoModerationMenuTiming,
+	renderAutoModerationCreateModal,
 	renderAutoModerationModal,
 	renderAutoModerationRule,
 	renderAutoModerationRules,
@@ -32,7 +34,7 @@ import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-frame
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, type Snowflake } from 'discord-api-types/v10';
-import { AutoModerationHardActions, type AutoModerationHardAction, type AutoModerationRule } from 'wolfstar-database';
+import { AutoModerationHardActions, isAutoModerationRuleType, type AutoModerationHardAction, type AutoModerationRule } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
 
@@ -90,6 +92,9 @@ export class UserInteractionHandler extends InteractionHandler {
 				return this.showRules(component, guildId, context);
 			case 'setting':
 				return this.setting(component, guildId, context, action.argument, value);
+			case 'create':
+				if (!isAutoModerationRuleType(value)) return fail(getDefaultExpiredReply());
+				return component.showModal(renderAutoModerationCreateModal(context, value));
 			case 'pick':
 				return this.showRule(component, guildId, context, value ?? '', 'options');
 			case 'view':
@@ -200,6 +205,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const { t } = context;
 		const read = (key: string) => getModalValue(interaction.data.components, key);
 		const value = read(AutoModerationMenuInputId) ?? '';
+		if (action.argument === 'create') return this.create(interaction, guildId, context, action.ruleId, value);
 
 		return this.change(interaction, guildId, context, action, (rule) => {
 			switch (action.argument) {
@@ -259,6 +265,23 @@ export class UserInteractionHandler extends InteractionHandler {
 		}
 
 		return interaction.update(renderAutoModerationRule(context, rule, action.section, { notice }));
+	}
+
+	/**
+	 * Creates a rule of the type picked in the select menu, with the name written in the modal, and opens it.
+	 */
+	private async create(interaction: ModalInteraction, guildId: Snowflake, context: AutoModerationMenuContext, type: string, name: string) {
+		const { t } = context;
+		if (!isAutoModerationRuleType(type)) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+
+		let rule: AutoModerationRule;
+		try {
+			rule = await createAutoModerationRule(guildId, name, type);
+		} catch (error) {
+			return interaction.reply({ content: translateRuleError(t, error, name), flags: MessageFlags.Ephemeral });
+		}
+
+		return interaction.update(renderAutoModerationRule(context, rule, 'options', { notice: translateKey(t, `${Root}:menuCreated`) }));
 	}
 
 	private async delete(

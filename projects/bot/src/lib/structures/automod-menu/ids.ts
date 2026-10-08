@@ -23,6 +23,8 @@ export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[numb
  * - `setting`: changes a setting of the auto-moderation of the server: flips `module` or `native`, or sets `channel`
  *   to the selected value of its select menu.
  * - `pick`: the rule select menu, the rule is its selected value.
+ * - `create`: the type select menu, which opens the modal of the name of the rule to create. Its `submit` carries the
+ *   type where the others carry the ID of a rule, with the argument `create`.
  * - `view`: shows a section of a rule.
  * - `section`: the section select menu, the section is its selected value.
  * - `toggle`: flips what the argument names: `enabled`, a soft action (`delete`, `alert`, `log`) or `alerts`.
@@ -37,6 +39,7 @@ export const AutoModerationMenuVerbs = [
 	'list',
 	'setting',
 	'pick',
+	'create',
 	'view',
 	'section',
 	'toggle',
@@ -59,7 +62,8 @@ export interface AutoModerationMenuAction {
 	verb: AutoModerationMenuVerb;
 
 	/**
-	 * The ID of the rule, empty for the verbs that have none (`list`, `pick`).
+	 * The ID of the rule, empty for the verbs that have none (`list`, `pick`), and the type of the rule to create for
+	 * the `submit` of `create`.
 	 */
 	ruleId: string;
 

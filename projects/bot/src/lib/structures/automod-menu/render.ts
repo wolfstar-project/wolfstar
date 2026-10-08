@@ -40,10 +40,13 @@ import {
 } from 'discord-api-types/v10';
 import {
 	AutoModerationHardActions,
+	AutoModerationRuleTypes,
+	getDefaultAutoModerationRuleOptions,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
 	MaximumAutoModerationRules,
 	type AutoModerationRule,
+	type AutoModerationRuleType,
 	type ReadonlyGuildData
 } from 'wolfstar-database';
 
@@ -109,17 +112,16 @@ export function renderAutoModerationRules(
 	{ settings, notice }: RenderAutoModerationRulesOptions
 ): AutoModerationMenuMessage {
 	const { t, ownerId } = context;
-	const command = inlineCode('/automod create');
 	const body: APIComponentInContainer[] = [
 		text(
-			`## 🛡️ ${translateKey(t, `${Root}:menuTitle`, { count: rules.length, maximum: MaximumAutoModerationRules })}\n${translateKey(t, `${Root}:menuSubtitle`, { command })}`
+			`## 🛡️ ${translateKey(t, `${Root}:menuTitle`, { count: rules.length, maximum: MaximumAutoModerationRules })}\n${translateKey(t, `${Root}:menuSubtitle`)}`
 		)
 	];
 	if (notice !== undefined) body.push(text(`-# ${notice}`));
 	body.push({ type: ComponentType.Separator });
 
 	if (rules.length === 0) {
-		body.push(text(translateKey(t, `${Root}:listEmpty`, { command })));
+		body.push(text(translateKey(t, `${Root}:listEmpty`, { command: inlineCode('/automod create') })));
 	} else {
 		const lines = rules.map(
 			(rule) => `${rule.enabled ? '🟢' : '🔴'} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
@@ -136,6 +138,31 @@ export function renderAutoModerationRules(
 						description: cutText(translateKey(t, AutoModerationRuleTypeKeys[rule.type]), 100),
 						value: rule.id,
 						emoji: { name: rule.enabled ? '🟢' : '🔴' }
+					}))
+				}
+			])
+		);
+	}
+
+	// The type of the rule to create is picked here, and its name is asked for in a modal:
+	if (rules.length < MaximumAutoModerationRules) {
+		body.push(
+			row([
+				{
+					type: ComponentType.StringSelect,
+					custom_id: encodeAutoModerationMenuId({ ownerId, verb: 'create' }),
+					placeholder: cutText(`➕ ${translateKey(t, `${Root}:menuCreatePlaceholder`)}`, 150),
+					options: AutoModerationRuleTypes.map((type) => ({
+						label: cutText(translateKey(t, AutoModerationRuleTypeKeys[type]), 100),
+						description: cutText(
+							translateKey(
+								t,
+								`${AutoModerationRuleTypeKeys[type]}Description` as TranslationKey,
+								getDefaultAutoModerationRuleOptions(type)
+							),
+							100
+						),
+						value: type
 					}))
 				}
 			])
@@ -552,6 +579,34 @@ export function renderAutoModerationModal(
  */
 function renderKeySwitch(t: TFunction, key: TranslationKey, active: boolean, customId: string): APISectionComponent {
 	return renderSwitch(t, translateKey(t, key), translateKey(t, `${key}Description` as TranslationKey), active, customId);
+}
+
+/**
+ * The modal that asks for the name of the rule to create. Its custom ID carries the type where a rule has its ID.
+ *
+ * @param context - The context of the menu.
+ * @param type - The type picked in the select menu.
+ */
+export function renderAutoModerationCreateModal(
+	context: AutoModerationMenuContext,
+	type: AutoModerationRuleType
+): APIModalInteractionResponseCallbackData {
+	const { t } = context;
+	return {
+		custom_id: encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'submit', ruleId: type, argument: 'create' }),
+		title: cutText(translateKey(t, `${Root}:menuCreateTitle`, { type: translateKey(t, AutoModerationRuleTypeKeys[type]) }), 45),
+		components: [
+			{
+				type: ComponentType.ActionRow,
+				components: [
+					input(AutoModerationMenuInputId, translateKey(t, `${Root}:menuRenameLabel`), {
+						min_length: 1,
+						max_length: MaximumAutoModerationRuleNameLength
+					})
+				]
+			}
+		]
+	};
 }
 
 function input(customId: string, label: string, options: Partial<APITextInputComponent>): APITextInputComponent {
