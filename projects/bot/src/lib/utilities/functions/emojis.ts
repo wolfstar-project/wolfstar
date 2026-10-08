@@ -82,6 +82,30 @@ export function isValidTwemoji(emoji: string) {
 	return matchesTwemoji(emoji);
 }
 
+export type ParsedEmoji = { kind: 'custom'; id: string; name: string | null; animated: boolean | null } | { kind: 'unicode'; emoji: string };
+
+/**
+ * Reads the emoji a user wrote: a custom emoji as it is mentioned (`<:name:id>`, `<a:name:id>`) or as it is written
+ * without the angle brackets, its ID alone, or a unicode emoji.
+ *
+ * @remarks The ID alone has neither a name nor whether it is animated, which only Discord knows.
+ *
+ * @param input - What the user wrote.
+ * @returns The emoji, or `null` when it is none of them.
+ */
+export function parseEmoji(input: string): ParsedEmoji | null {
+	const text = input.trim();
+
+	const custom = /^<?(?<animated>a?):(?<name>[^:<>\s]+):(?<id>\d{17,20})>?$/.exec(text);
+	if (custom?.groups) return { kind: 'custom', id: custom.groups.id, name: custom.groups.name, animated: custom.groups.animated === 'a' };
+
+	if (/^\d{17,20}$/.test(text)) return { kind: 'custom', id: text, name: null, animated: null };
+
+	// A variation selector only asks for the picture of the emoji, the twemoji of the character is the same:
+	const unicode = text.replaceAll('\uFE0F', '');
+	return isValidTwemoji(unicode) ? { kind: 'unicode', emoji: text } : null;
+}
+
 export function isValidCustomEmoji(emoji: string) {
 	return FormattedCustomEmojiWithGroups.test(emoji);
 }
