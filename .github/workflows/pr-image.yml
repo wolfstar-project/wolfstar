@@ -41,9 +41,14 @@ jobs:
               run: |
                   set -euo pipefail
 
-                  pattern='^(src/|prisma/|Dockerfile$|package\.json$|pnpm-lock\.yaml$|\.github/workflows/pr-image\.yml$)'
+                  # Every path the Dockerfile COPYs, plus the Dockerfile and this workflow.
+                  pattern='^(src/|prisma/|Dockerfile$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.npmrc$|prisma\.config\.ts$|tsconfig\.base\.json$|tsdown\.config\.ts$|\.github/workflows/pr-image\.yml$)'
 
-                  if gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --jq '.[].filename' | grep -Eq "$pattern"; then
+                  # Fetch first: a failed request must fail the job, not read as "no relevant files".
+                  # Matching on the variable (not a pipe) avoids a SIGPIPE from the early exit of grep -q.
+                  files=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+
+                  if grep -Eq "$pattern" <<< "$files"; then
                       echo "build=true" >> "$GITHUB_OUTPUT"
                   else
                       echo "build=false" >> "$GITHUB_OUTPUT"
