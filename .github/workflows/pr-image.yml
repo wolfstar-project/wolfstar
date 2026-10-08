@@ -1,0 +1,95 @@
+name: PR image WolfStar
+
+on:
+    pull_request:
+        branches:
+            - main
+        types:
+            - opened
+            - synchronize
+            - reopened
+            - closed
+
+# One group per PR: closing the PR cancels a build still running,
+# so the cleanup never races with a late push.
+concurrency:
+    group: pr-image-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+    packages: write
+    pull-requests: read
+
+env:
+    HUSKY: 0
+
+jobs:
+    changes:
+        name: Detect image-relevant changes
+        runs-on: ubuntu-latest
+        # Fork PRs get a read-only GITHUB_TOKEN and no secrets: no image, no cleanup.
+        if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+        outputs:
+            build: ${{ steps.filter.outputs.build }}
+        steps:
+            - name: Check changed files
+              id: filter
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PR_NUMBER: ${{ github.event.pull_request.number }}
+              run: |
+                  set -euo pipefail
+
+                  # Every path the Dockerfile COPYs, plus the Dockerfile and this workflow.
+                  pattern='^(src/|prisma/|Dockerfile$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.npmrc$|prisma\.config\.ts$|tsconfig\.base\.json$|tsdown\.config\.ts$|\.github/workflows/pr-image\.yml$)'
+
+                  # Fetch first: a failed request must fail the job, not read as "no relevant files".
+                  # Matching on the variable (not a pipe) avoids a SIGPIPE from the early exit of grep -q.
+                  files=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+
+                  if grep -Eq "$pattern" <<< "$files"; then
+                      echo "build=true" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "build=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+    publish:
+        name: Publish WolfStar PR image to GHCR
+        needs: changes
+        if: needs.changes.outputs.build == 'true'
+        uses: wolfstar-project/.github/.github/workflows/reusable-publish-image.yml@main
+        secrets: inherit
+        with:
+            tag: pr-${{ github.event.pull_request.number }}
+
+    cleanup:
+        name: Delete WolfStar PR image from GHCR
+        runs-on: ubuntu-latest
+        if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            OWNER: ${{ github.repository_owner }}
+            PACKAGE: ${{ github.event.repository.name }}
+            TAG: pr-${{ github.event.pull_request.number }}
+        steps:
+            - name: Delete package versions tagged with the PR tag
+              shell: bash
+              run: |
+                  set -euo pipefail
+
+                  # Deleting a version removes every tag pointing at it (pr-N and the commit sha).
+                  versions=$(
+                      gh api --paginate "/orgs/${OWNER}/packages/container/${PACKAGE}/versions?per_page=100" \
+                          | jq -r --arg tag "$TAG" '.[] | select((.metadata.container.tags // []) | index($tag)) | .id'
+                  )
+
+                  if [ -z "$versions" ]; then
+                      echo "No image tagged ${TAG} found, nothing to delete."
+                      exit 0
+                  fi
+
+                  for id in $versions; do
+                      echo "Deleting ${PACKAGE} version ${id} (${TAG})"
+                      gh api --method DELETE "/orgs/${OWNER}/packages/container/${PACKAGE}/versions/${id}"
+                  done
