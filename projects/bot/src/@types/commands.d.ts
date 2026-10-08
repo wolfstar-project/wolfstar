@@ -80,14 +80,14 @@ declare module '@wolfstar/http-framework' {
       'delete-days'?: number;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'ban remove': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -122,7 +122,7 @@ declare module '@wolfstar/http-framework' {
     'kick': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -137,7 +137,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -147,7 +147,7 @@ declare module '@wolfstar/http-framework' {
     'mute remove': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -329,7 +329,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -337,7 +337,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -345,7 +345,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -353,7 +353,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -361,7 +361,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -369,7 +369,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       role: TransformedArguments.Role;
       user: TransformedArguments.User;
@@ -378,7 +378,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       role: TransformedArguments.Role;
       user: TransformedArguments.User;
@@ -394,7 +394,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       nickname?: string;
       reason?: string;
       user: TransformedArguments.User;
@@ -408,7 +408,7 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       'delete-days'?: number;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -430,49 +430,49 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'timeout remove': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'unrestrict attachment': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'unrestrict embed': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'unrestrict emoji': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'unrestrict reaction': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'unrestrict voice': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
@@ -480,35 +480,35 @@ declare module '@wolfstar/http-framework' {
       authored?: boolean;
       dm?: boolean;
       duration?: string;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'vmute remove': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'voicekick': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'warn add': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };
     'warn remove': {
       authored?: boolean;
       dm?: boolean;
-      image?: TransformedArguments.Attachment;
+      message?: string;
       reason?: string;
       user: TransformedArguments.User;
     };

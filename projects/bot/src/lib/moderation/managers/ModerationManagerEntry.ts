@@ -61,13 +61,13 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 	public reason: string | null;
 
 	/**
-	 * The image URL of the moderation entry.
+	 * The message the moderation entry is about, which the moderation log links to and forwards.
 	 *
 	 * @remarks
 	 *
-	 * The value can be updated to add or remove the image URL.
+	 * The value can be updated to add or remove the message.
 	 */
-	public imageURL: string | null;
+	public messageReference: ModerationManagerEntry.MessageReference | null;
 
 	/**
 	 * The type of the moderation entry.
@@ -104,7 +104,7 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 		this.extraData = data.extraData;
 		this.guild = data.guild;
 		this.reason = data.reason;
-		this.imageURL = data.imageURL;
+		this.messageReference = data.messageReference;
 		this.type = data.type;
 		this.metadata = data.metadata;
 
@@ -147,7 +147,7 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 	public patch(data: ModerationManagerEntry.UpdateData) {
 		if (data.duration !== undefined) this.#setDuration(data.duration);
 		if (data.reason !== undefined) this.reason = data.reason;
-		if (data.imageURL !== undefined) this.imageURL = data.imageURL;
+		if (data.messageReference !== undefined) this.messageReference = data.messageReference;
 		if (data.metadata !== undefined) this.metadata = data.metadata;
 
 		this.#cacheExpiresTimeout = Date.now() + minutes(15);
@@ -256,7 +256,7 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 			moderator: this.moderatorId,
 			user: this.userId,
 			reason: this.reason,
-			imageURL: this.imageURL,
+			messageReference: this.messageReference,
 			type: this.type,
 			metadata: this.metadata
 		};
@@ -272,7 +272,7 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 			moderatorId: this.moderatorId,
 			userId: this.userId,
 			reason: this.reason,
-			imageURL: this.imageURL,
+			messageReference: this.messageReference,
 			type: this.type,
 			metadata: this.metadata
 		};
@@ -299,13 +299,13 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 			id: record.id,
 			createdAt: record.createdAt,
 			duration: record.duration,
-			// The table does not store the extra data nor the image:
+			// The table does not store the extra data nor the message:
 			extraData: null as any,
 			guild,
 			moderator: record.moderatorId,
 			user: record.userId,
 			reason: record.reason,
-			imageURL: null,
+			messageReference: null,
 			type: record.type,
 			metadata: record.metadata
 		});
@@ -318,6 +318,14 @@ export declare namespace ModerationManagerEntry {
 	 */
 	type ScheduledTask = NonNullable<Awaited<ReturnType<typeof container.tasks.get<UndoTaskName>>>>;
 
+	/**
+	 * A message of the guild a moderation entry is about.
+	 */
+	interface MessageReference {
+		channelId: Snowflake;
+		messageId: Snowflake;
+	}
+
 	interface Data<Type extends TypeVariation = TypeVariation> {
 		id: number;
 		createdAt: number;
@@ -327,14 +335,14 @@ export declare namespace ModerationManagerEntry {
 		moderator: User | Snowflake;
 		user: User | Snowflake;
 		reason: string | null;
-		imageURL: string | null;
+		messageReference: MessageReference | null;
 		type: Type;
 		metadata: TypeMetadata;
 	}
 
 	type CreateData<Type extends TypeVariation = TypeVariation> = MakeOptional<
 		Omit<Data<Type>, 'id' | 'guild' | 'createdAt'>,
-		'duration' | 'imageURL' | 'extraData' | 'metadata' | 'moderator' | 'reason'
+		'duration' | 'messageReference' | 'extraData' | 'metadata' | 'moderator' | 'reason'
 	>;
 	type UpdateData<Type extends TypeVariation = TypeVariation> = Partial<
 		Omit<Data<Type>, 'id' | 'createdAt' | 'extraData' | 'moderator' | 'user' | 'type' | 'guild'>

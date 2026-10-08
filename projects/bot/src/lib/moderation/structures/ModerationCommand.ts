@@ -17,8 +17,8 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	PermissionFlagsBits,
-	type APIAttachment,
-	type Permissions
+	type Permissions,
+	type Snowflake
 } from 'discord-api-types/v10';
 
 /**
@@ -129,7 +129,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 		let content: string;
 		try {
-			const parameters = this.resolveParameters(t, guild, moderator, target, args);
+			const parameters = this.resolveParameters(t, guild, moderator, target, args, interaction.channel.id);
 			await this.inhibit(interaction, parameters);
 			const preHandled = await this.preHandle(interaction, parameters);
 			const handled = { ...parameters, preHandled };
@@ -318,7 +318,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			user: context.target,
 			moderator: context.moderator,
 			reason: context.reason,
-			imageURL: context.imageURL,
+			messageReference: context.messageReference,
 			duration: context.duration
 		} as ModerationAction.PartialOptions<Type>;
 	}
@@ -331,14 +331,16 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 * @param moderator - The author of the interaction.
 	 * @param target - The user to moderate.
 	 * @param args - The options of the slash command.
-	 * @throws The translated error when the `duration` option is not valid.
+	 * @param channelId - The channel the command was run in, where a message given by its ID is.
+	 * @throws The translated error when the `duration` or the `message` option is not valid.
 	 */
 	protected resolveParameters(
 		t: Translator,
 		guild: Guild,
 		moderator: User,
 		target: User,
-		args: ModerationCommand.Arguments
+		args: ModerationCommand.Arguments,
+		channelId: Snowflake
 	): ModerationCommand.Parameters {
 		return {
 			t,
@@ -348,7 +350,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			args,
 			duration: this.resolveParametersDuration(t, args),
 			reason: args.reason ?? null,
-			imageURL: getImageUrl(args.image)
+			messageReference: resolveMessageReference(t, guild.id, channelId, args.message)
 		};
 	}
 
@@ -420,9 +422,36 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	}
 }
 
-function getImageUrl(attachment: APIAttachment | undefined) {
-	if (attachment === undefined || !('url' in attachment)) return null;
-	return attachment.content_type?.startsWith('image/') ? attachment.url : null;
+const MessageLinkRegExp =
+	/^https?:\/\/(?:\w+\.)?discord(?:app)?\.com\/channels\/(?<guildId>\d{17,20})\/(?<channelId>\d{17,20})\/(?<messageId>\d{17,20})\/?$/;
+const MessageIdRegExp = /^(?:(?<channelId>\d{17,20})-)?(?<messageId>\d{17,20})$/;
+
+/**
+ * Reads the `message` option of a moderation command: the link of a message of the guild, or its ID (which Discord
+ * copies as `<channelId>-<messageId>` with shift held), in which case it is one of the channel the command was run in.
+ *
+ * @param guildId - The guild the command was run in, the only one a link can point to.
+ * @param channelId - The channel the command was run in.
+ * @param input - The option, as it was written.
+ * @returns The message, `null` when the option was not given.
+ * @throws The translated error when the option is neither a link nor an ID.
+ */
+export function resolveMessageReference(
+	t: Translator,
+	guildId: Snowflake,
+	channelId: Snowflake,
+	input: string | undefined
+): ModerationManager.Entry['messageReference'] {
+	const parameter = input?.trim();
+	if (parameter === undefined || parameter.length === 0) return null;
+
+	const link = MessageLinkRegExp.exec(parameter)?.groups;
+	if (link !== undefined && link.guildId === guildId) return { channelId: link.channelId, messageId: link.messageId };
+
+	const id = link === undefined ? MessageIdRegExp.exec(parameter)?.groups : undefined;
+	if (id !== undefined) return { channelId: id.channelId ?? channelId, messageId: id.messageId };
+
+	throw t('commands/shared:messageReferenceInvalid', { parameter });
 }
 
 /**
@@ -488,7 +517,7 @@ export type ModerationBuilder = SlashCommandOptionsOnlyBuilder | SlashCommandSub
  * | `authored` | boolean    | always                                                      |
  *
  * Their names and descriptions are the `commands/shared:optionsUser`, `optionsDuration`, `optionsReason`,
- * `optionsImage`, `optionsDm` and `optionsAuthored` keys (`…Name` and `…Description`).
+ * `optionsMessage`, `optionsDm` and `optionsAuthored` keys (`…Name` and `…Description`).
  *
  * @param builder - The builder to apply the data to.
  * @param options - The data to apply.
@@ -538,7 +567,7 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 	if (options.optionalOptions) result = options.optionalOptions(result);
 
 	return result
-		.addAttachmentOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsImage').setRequired(false))
+		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsMessage').setMaxLength(150).setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDm').setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }
@@ -573,7 +602,7 @@ export declare namespace ModerationCommand {
 		user: TransformedArguments.User;
 		duration?: string;
 		reason?: string;
-		image?: TransformedArguments.Attachment;
+		message?: string;
 		dm?: boolean;
 		authored?: boolean;
 	}
@@ -625,9 +654,9 @@ export declare namespace ModerationCommand {
 		reason: string | null;
 
 		/**
-		 * The URL of the `image` option, if it is an image.
+		 * The message of the `message` option, which the moderation log links to and forwards.
 		 */
-		imageURL: string | null;
+		messageReference: ModerationManager.Entry['messageReference'];
 	}
 
 	interface HandlerParameters<ValueType> extends Parameters {

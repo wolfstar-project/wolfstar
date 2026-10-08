@@ -39,6 +39,7 @@
 	"embedUser": "{{tag}} ({{id}})",
 	"embedDescription": "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Reason:** {{reason}}",
 	"embedDescriptionTemporary": "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Expires {{time}}**\n❯ **Reason:** {{reason}}",
+	"embedMessage": "❯ **Message:** {{url}}",
 	"embedReasonNotSet": "*Please use {{command}} to set a reason.*",
 	"embedFooter": "Case {{caseId}}",
 	"actionIsActive": "This moderation action is still active for this user.",

@@ -106,7 +106,7 @@ export class ModerationManager {
 			guild: this.guild,
 			moderator: data.moderator ?? process.env.CLIENT_ID,
 			reason: data.reason ?? null,
-			imageURL: data.imageURL ?? null,
+			messageReference: data.messageReference ?? null,
 			metadata: data.metadata ?? TypeMetadata.None
 		});
 	}

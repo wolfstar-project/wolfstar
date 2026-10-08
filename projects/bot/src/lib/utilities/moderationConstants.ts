@@ -35,7 +35,6 @@ export const enum SchemaKeys {
 	Guild = 'guildID',
 	Moderator = 'moderatorID',
 	Reason = 'reason',
-	ImageURL = 'imageURL',
 	Type = 'type',
 	User = 'userID'
 }

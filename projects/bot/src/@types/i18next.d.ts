@@ -2106,8 +2106,9 @@ declare module "i18next" {
         optionsReasonDescription: "The reason, recorded in the moderation log.";
         optionsDurationName: "duration";
         optionsDurationDescription: "How long the action lasts, for example 30m, 2h or 7d.";
-        optionsImageName: "image";
-        optionsImageDescription: "An image to attach to the moderation case.";
+        optionsMessageName: "message";
+        optionsMessageDescription: "The message the case is about, as its link or its ID. It is linked and forwarded in the log.";
+        messageReferenceInvalid: "`{{parameter}}` is not the link or the ID of a message of this server.";
         optionsDmName: "dm";
         optionsDmDescription: "Whether to send the user a direct message about the action.";
         optionsAuthoredName: "authored";
@@ -2970,6 +2971,7 @@ declare module "i18next" {
         embedUser: "{{tag}} ({{id}})";
         embedDescription: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Reason:** {{reason}}";
         embedDescriptionTemporary: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Expires {{time}}**\n❯ **Reason:** {{reason}}";
+        embedMessage: "❯ **Message:** {{url}}";
         embedReasonNotSet: "*Please use {{command}} to set a reason.*";
         embedFooter: "Case {{caseId}}";
         actionIsActive: "This moderation action is still active for this user.";

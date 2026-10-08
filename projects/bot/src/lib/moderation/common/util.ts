@@ -3,7 +3,7 @@ import type { ModerationManager } from '#lib/moderation/managers/ModerationManag
 import { seconds } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
 import { getFullEmbedAuthor, getTag } from '#utils/util';
-import { EmbedBuilder, TimestampStyles, chatInputApplicationCommandMention, time } from '@discordjs/builders';
+import { EmbedBuilder, TimestampStyles, chatInputApplicationCommandMention, messageLink, time } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';
 import { fetchT, type AnyNamespace, type GuildTarget, type TFunction } from '@wolfstar/plugin-i18next';
 import { isNullishOrZero } from '@sapphire/utilities';
@@ -68,7 +68,6 @@ export async function getEmbed(t: TFunction<AnyNamespace>, entry: ModerationMana
 		})
 		.setTimestamp(entry.createdAt);
 
-	if (entry.imageURL) embed.setImage(entry.imageURL);
 	return embed;
 }
 
@@ -77,9 +76,15 @@ async function getEmbedDescription(t: TFunction<AnyNamespace>, entry: Moderation
 
 	const type = getTitle(t, entry);
 	const user = t('moderation:embedUser', { tag: getTag(await entry.fetchUser()), id: entry.userId });
-	return isNullishOrZero(entry.duration)
+	const description = isNullishOrZero(entry.duration)
 		? t('moderation:embedDescription', { type, user, reason })
 		: t('moderation:embedDescriptionTemporary', { type, user, time: getEmbedDescriptionTime(entry.expiresTimestamp!), reason });
+
+	const reference = entry.messageReference;
+	if (reference === null) return description;
+
+	const url = messageLink(reference.channelId, reference.messageId, entry.guild.id);
+	return `${description}\n${t('moderation:embedMessage', { url })}`;
 }
 
 function getEmbedDescriptionTime(timestamp: number) {
