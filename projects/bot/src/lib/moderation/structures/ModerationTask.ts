@@ -58,7 +58,7 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 	}
 
 	/**
-	 * Whether the bot has guild-wide permissions, the tasks do nothing without the ones their action needs.
+	 * Whether the bot has guild-wide permissions, see {@linkcode ModerationTask.requirePermissions}.
 	 *
 	 * @param guild - The guild the case belongs to.
 	 * @param permissions - The permissions to check, see {@linkcode PermissionFlagsBits}.
@@ -67,6 +67,18 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		const me = await this.container.gatewayClient.members.fetchMe(guild.id);
 		const granted = (await me.permissions).bitField;
 		return (granted & PermissionFlagsBits.Administrator) !== 0n || (granted & permissions) === permissions;
+	}
+
+	/**
+	 * Fails the job when the bot lacks the permissions its undo needs, so the case is not completed for an undo that
+	 * was not made: the job is tried again while it has attempts left, should the permissions come back.
+	 *
+	 * @param guild - The guild the case belongs to.
+	 * @param permissions - The permissions the undo needs, see {@linkcode PermissionFlagsBits}.
+	 */
+	protected async requirePermissions(guild: Guild, permissions: bigint) {
+		if (await this.hasPermissions(guild, permissions)) return;
+		throw new Error(`Missing the permissions (${permissions}) to undo a case of the guild ${guild.id}.`);
 	}
 
 	/**

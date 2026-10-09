@@ -4,7 +4,7 @@ import { PermissionFlagsBits } from 'discord-api-types/v10';
 
 export class UserModerationTask extends ModerationTask<{ oldName: string | null }> {
 	protected async handle(guild: Guild, data: ModerationData<{ oldName: string | null }>) {
-		if (!(await this.hasPermissions(guild, PermissionFlagsBits.ManageNicknames))) return null;
+		await this.requirePermissions(guild, PermissionFlagsBits.ManageNicknames);
 
 		const reason = await this.getReason(guild, 'Nickname reverted', data.duration);
 		await ModerationActions.setNickname.undo(

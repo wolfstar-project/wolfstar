@@ -4,7 +4,7 @@ import { PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
 
 export class UserModerationTask extends ModerationTask<{ role: Snowflake }> {
 	protected async handle(guild: Guild, data: ModerationData<{ role: Snowflake }>) {
-		if (!(await this.hasPermissions(guild, PermissionFlagsBits.ManageRoles))) return null;
+		await this.requirePermissions(guild, PermissionFlagsBits.ManageRoles);
 
 		const reason = await this.getReason(guild, 'Role re-added', data.duration);
 		await ModerationActions.roleRemove.undo(
