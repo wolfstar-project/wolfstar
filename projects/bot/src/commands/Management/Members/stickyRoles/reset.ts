@@ -1,4 +1,3 @@
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -14,7 +13,6 @@ import { MessageFlags } from 'discord-api-types/v10';
 	)
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'sticky-roles reset'>) {
 		const { user } = options;
 		const t = getSupportedUserLanguageT(interaction);

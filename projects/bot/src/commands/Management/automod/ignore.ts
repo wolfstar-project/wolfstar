@@ -1,7 +1,6 @@
 import { AutoModerationRoot, applyRuleOption, resolveCommandRule, translateRuleError } from '#lib/moderation/automod/commands';
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention, roleMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -22,7 +21,6 @@ const Root = AutoModerationRoot;
 		.addChannelOption((option) => applyLocalizedBuilder(option, `${Root}:optionsChannel`))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod ignore'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const rule = await resolveCommandRule(interaction, t, options.rule);

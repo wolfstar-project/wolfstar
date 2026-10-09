@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -8,6 +9,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  * reports that were made and decide who can make them. They are wired onto this command by
  * `@wolfstar/plugin-subcommands-advanced`. The members report with the `report` command.
  */
+@ApplyOptions<Subcommand.Options>({ preconditions: ['moderator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/report:reports')
 		.setContexts(InteractionContextType.Guild)

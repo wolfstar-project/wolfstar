@@ -1,12 +1,6 @@
 import { getAction } from '#lib/moderation';
 import { getTranslationKey } from '#lib/moderation/common';
-import {
-	CommandPermissionLevel,
-	RequiresCommandPermissionLevel,
-	type GuildChatInputInteraction,
-	type TranslationKey,
-	type Translator
-} from '#lib/structures/commands';
+import { type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
 import { getCase, handleCase } from '#lib/structures/commands/moderationCase';
 import { seconds } from '#common';
 import { getModeration } from '#utils/functions';
@@ -27,7 +21,6 @@ import { MessageFlags } from 'discord-api-types/v10';
 		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/case:optionsDuration').setMaxLength(50))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
 	public override chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'case edit'>) {
 		return handleCase(interaction, async (t) => {
 			const entry = await getCase(interaction, options.case);

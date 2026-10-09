@@ -8,7 +8,6 @@ import {
 } from '#lib/moderation/cleanup/commands';
 import { MaximumAutoPurgeMessages } from '#lib/moderation/cleanup/purge';
 import { CleanupLimitError, enableAutoPurge } from '#lib/moderation/cleanup/store';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -38,7 +37,6 @@ const Root = CleanupRoot;
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsValue`).setMaxLength(MaximumCleanupValueLength))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'autopurge enable'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });

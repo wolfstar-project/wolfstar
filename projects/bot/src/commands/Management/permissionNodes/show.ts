@@ -7,7 +7,6 @@ import {
 	resolveTarget,
 	type PermissionNodeTarget
 } from '#lib/structures/commands/permissionNodes';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
 import { isNullish } from '@sapphire/utilities';
@@ -29,7 +28,6 @@ const MaximumContentLength = 2000;
 		.addMentionableOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsTarget').setRequired(false))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'permission-nodes show'>) {
 		return replyWithPermissionNodeResult(interaction, async (t) => {
 			const content = options.target //

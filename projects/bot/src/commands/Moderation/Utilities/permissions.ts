@@ -1,11 +1,5 @@
-import {
-	CommandPermissionLevel,
-	createTranslator,
-	getCommandPermissionDenial,
-	type GuildChatInputInteraction,
-	type TranslationKey,
-	type Translator
-} from '#lib/structures/commands';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { createTranslator, type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
 import { PermissionsBits, PermissionsBitsList } from '#utils/bits';
 import { ModeratorPermissionsBits, ModeratorPermissionsList } from '#utils/constants';
 import { getColor, getTag } from '#utils/util';
@@ -26,6 +20,7 @@ import {
  * The `permissions` command, which lists the permissions of a member, available as a slash command and as the
  * `Inspect Permissions` user context menu command.
  */
+@ApplyOptions<Command.Options>({ preconditions: ['administrator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/permissions:name', 'commands/permissions:description')
 		.setContexts(InteractionContextType.Guild)
@@ -41,9 +36,6 @@ export class UserCommand extends Command {
 		interaction: GuildChatInputInteraction,
 		args: { user?: TransformedArguments.User; 'list-all'?: boolean; 'list-missing'?: boolean; show?: boolean }
 	) {
-		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		const show = args.show ?? false;
 		const target = args.user
 			? { user: args.user.user, permissions: args.user.member?.permissions }
@@ -60,10 +52,6 @@ export class UserCommand extends Command {
 			.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 	)
 	public async contextMenuRun(interaction: InGuild<Command.UserInteraction>, args: TransformedArguments.User) {
-		// The check only reads the member, the guild and the name of the command, which every guild interaction has:
-		const denial = await getCommandPermissionDenial(interaction as unknown as GuildChatInputInteraction, CommandPermissionLevel.Administrator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		return this.#sharedRun(interaction, args.user, args.member?.permissions, false, false, false);
 	}
 

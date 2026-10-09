@@ -1,5 +1,5 @@
 import { getEmbed } from '#lib/moderation/common';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel, type GuildChatInputInteraction } from '#lib/structures/commands';
+import type { GuildChatInputInteraction } from '#lib/structures/commands';
 import { getCase, getDisplayT, handleCase } from '#lib/structures/commands/moderationCase';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -14,7 +14,6 @@ import { MessageFlags } from 'discord-api-types/v10';
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/case:optionsShow'))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
 	public override chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'case view'>) {
 		return handleCase(interaction, async () => {
 			const entry = await getCase(interaction, options.case);

@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import type { Command } from '@wolfstar/http-framework';
 import { RegisterCommand, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
@@ -18,6 +19,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  * - The autocomplete stays on the parent: the plugin routes `chatInputRun` to the children, but autocomplete
  *   interactions are dispatched by the name of the top-level command and never reach them.
  */
+@ApplyOptions<Subcommand.Options>({ preconditions: ['administrator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/management:permissionNodes')
 		.setContexts(InteractionContextType.Guild)

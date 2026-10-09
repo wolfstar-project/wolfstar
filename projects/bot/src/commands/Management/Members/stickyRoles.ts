@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -7,6 +8,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  * The parent of the `sticky-roles` subcommands (`add`, `remove`, `reset` and
  * `show`), which are wired onto this command by `@wolfstar/plugin-subcommands-advanced`.
  */
+@ApplyOptions<Subcommand.Options>({ preconditions: ['administrator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/management:stickyRoles')
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

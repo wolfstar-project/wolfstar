@@ -22,7 +22,7 @@ const EntriesPerPage = 5;
  *
  * @remarks
  *
- * The permission level is checked by the `RequiresCommandPermissionLevel` decorator of the subcommand. The handler must
+ * The permission level is checked by the `moderator` precondition of the `case` command. The handler must
  * throw the translated message (or a `UserError`) **before** it defers the interaction, as the errors are sent as an
  * ephemeral reply.
  */
