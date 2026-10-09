@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.27
+
 # ================ #
 #   Base Stage     #
 # ================ #
@@ -5,7 +7,13 @@
 # This is the image the Continuous Delivery workflow publishes to GHCR; it builds
 # wolfstar-bot. Keep it in sync with projects/bot/Dockerfile.
 
-FROM --platform=$BUILDPLATFORM node:24-alpine AS base
+# Do NOT pin to $BUILDPLATFORM: the `runner` stage inherits from `base`, so pinning
+# the base image to the builder's architecture bakes build-host binaries (dumb-init,
+# node, …) into the runtime image. Under a QEMU-emulated multi-arch build the arm64
+# manifest entry then contains amd64 binaries (and vice versa), so the container
+# crashes on start with `/usr/bin/dumb-init: Exec format error`. Omitting --platform
+# lets Docker build natively for $TARGETPLATFORM so every binary matches the run arch.
+FROM node:24-alpine AS base
 
 WORKDIR /usr/src/app
 
@@ -15,7 +23,8 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk add --no-cache dumb-init g++ make python3
-RUN corepack enable && corepack prepare pnpm@12.4.1 --activate
+# Uses the pnpm version pinned in package.json `packageManager`.
+RUN corepack enable
 
 # pnpm validates the whole workspace on install, so every workspace manifest has
 # to be present even when only one project is built.
@@ -31,10 +40,15 @@ COPY --chown=node:node .husky/ .husky/
 COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
 
+# Populate the pnpm store from the lockfile only, so this layer stays cached
+# until dependencies change and later installs can resolve from it.
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm fetch
+
 ENTRYPOINT ["dumb-init", "--"]
 
 # ================ #
-#   Builder Stage   #
+#   Builder Stage  #
 # ================ #
 
 FROM base AS builder
@@ -49,9 +63,10 @@ COPY --chown=node:node scripts/ scripts/
 COPY --chown=node:node projects/database/ projects/database/
 COPY --chown=node:node projects/bot/ projects/bot/
 
-RUN pnpm install --frozen-lockfile
-RUN pnpm --filter wolfstar-database prisma:generate
-RUN pnpm --filter wolfstar-database --filter wolfstar-bot run build
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --frozen-lockfile \
+    && pnpm --filter wolfstar-database prisma:generate \
+    && pnpm --filter wolfstar-database --filter wolfstar-bot run build
 
 # ================ #
 #   Runner Stage   #
@@ -69,13 +84,13 @@ COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 
-# Not --offline: the runner is a fresh layer off `base` with an empty pnpm
-# store, so an offline install fails with ERR_PNPM_NO_OFFLINE_TARBALL.
-RUN pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --prod --frozen-lockfile
 RUN chown node:node /usr/src/app/
 
 USER node
 
 WORKDIR /usr/src/app/projects/bot
 
-CMD [ "pnpm", "run", "start" ]
+# Run the built application directly; pnpm 12 may auto-install at startup.
+CMD [ "node", "dist/main.mjs" ]
