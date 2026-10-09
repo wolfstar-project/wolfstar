@@ -1,24 +1,10 @@
 import { PhishingHostnames } from '#utils/Links/PhishingHostnames';
-import { fetch, FetchResultTypes } from '@sapphire/fetch';
-import { container } from '@wolfstar/http-framework';
 
 /**
- * The list of the hostnames that are known to steal accounts, kept by the Discord-AntiScam community. The bot starts
- * with the copy `scripts/phishing.mjs` writes (`PhishingHostnames`), and reads this one for what was added since.
+ * The hostnames that are known to steal accounts, the list kept by the Discord-AntiScam community. It is the copy
+ * `scripts/phishing.mjs` writes (`PhishingHostnames`), as `TLDs` is: the bot never downloads it.
  */
-const PhishingListUrl = 'https://raw.githubusercontent.com/Discord-AntiScam/scam-links/main/list.json';
-
-/** How long a list is used before it is read again, and how long a failed read waits before the next one. */
-const RefreshInterval = 60 * 60 * 1000;
-const RetryInterval = 5 * 60 * 1000;
-const FetchTimeout = 15_000;
-
-/** The smallest share of the hostnames the bot has that a list read again must have to take their place. */
-const MinimumRefreshRatio = 0.5;
-
-let hostnames: ReadonlySet<string> = new Set(PhishingHostnames);
-let nextRefresh = 0;
-let refreshing: Promise<void> | null = null;
+const hostnames: ReadonlySet<string> = new Set(PhishingHostnames);
 
 /**
  * Reads a hostname as the list writes it: lowercase, without the `www.` and without the dot of a full name.
@@ -45,34 +31,8 @@ export function isListedHostname(list: ReadonlySet<string>, hostname: string) {
 }
 
 /**
- * Reads the hostnames of a list from data that is not trusted, the body of the response.
- */
-export function parsePhishingList(data: unknown): Set<string> {
-	if (!Array.isArray(data)) throw new TypeError('The list of phishing links is not an array.');
-	return new Set(data.filter((entry): entry is string => typeof entry === 'string' && entry.length > 0).map((entry) => normalizeHostname(entry)));
-}
-
-/**
- * The hostnames that are known to steal accounts. The list is read again the first time it is asked for and once an
- * hour after, in the background: a message is never held back by it, and a read that fails keeps the last list.
+ * The hostnames that are known to steal accounts.
  */
 export function getPhishingHostnames(): ReadonlySet<string> {
-	if (Date.now() >= nextRefresh) refreshing ??= refresh();
 	return hostnames;
-}
-
-async function refresh() {
-	try {
-		const data = await fetch<unknown>(PhishingListUrl, { signal: AbortSignal.timeout(FetchTimeout) }, FetchResultTypes.JSON);
-		const list = parsePhishingList(data);
-		// A list that lost most of its hostnames is a broken answer, not an update: the last one is kept.
-		if (list.size < hostnames.size * MinimumRefreshRatio) throw new Error(`The list of phishing links only has ${list.size} hostnames.`);
-		hostnames = list;
-		nextRefresh = Date.now() + RefreshInterval;
-	} catch (error) {
-		nextRefresh = Date.now() + RetryInterval;
-		container.logger.error('[AUTOMOD] Could not read the list of phishing links:', error);
-	} finally {
-		refreshing = null;
-	}
 }
