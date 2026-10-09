@@ -1,5 +1,5 @@
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
-import { fetchCachedMemberRoleIds } from '#lib/moderation/common/roles';
+import { fetchCaseMemberRoleIds } from '#lib/moderation/common/roles';
 import { resolveOnErrorCodes } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish } from '@sapphire/utilities';
@@ -21,10 +21,9 @@ export class ModerationActionBan extends ModerationAction<number, TypeVariation.
 		return !isNullish(ban);
 	}
 
-	protected override async resolveOptionsExtraData(guild: Guild, options: ModerationAction.PartialOptions) {
+	protected override resolveOptionsExtraData(guild: Guild, options: ModerationAction.PartialOptions) {
 		// The member is gone once the action is taken, so the roles are read now for the case to show them:
-		const roles = await fetchCachedMemberRoleIds(guild, typeof options.user === 'string' ? options.user : options.user.id);
-		return roles.length === 0 ? null : roles;
+		return fetchCaseMemberRoleIds(guild, options.user);
 	}
 
 	protected override async handleApplyPost(guild: Guild, entry: ModerationAction.Entry, data: ModerationAction.Data<number>) {

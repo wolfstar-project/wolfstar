@@ -13,7 +13,7 @@ export const MaximumRolesLength = 1000;
 /**
  * The room left for the count of the roles that did not fit, `and 12 more`.
  */
-const OmittedRolesReserve = 30;
+export const OmittedRolesReserve = 30;
 
 /**
  * The types of case that show the roles the member had, since the member is gone once they are taken.
@@ -42,7 +42,7 @@ export async function fetchMemberRoleIds(member: GuildMember | null | undefined)
 			.sort((a, b) => b.position - a.position)
 			.map((role) => role.id);
 	} catch (error) {
-		container.logger.debug(`[MODERATION] Could not read the roles of the member ${member.id} of ${member.guildId}:`, error);
+		container.logger.debug(`[MODERATION] Could not read the roles of a member of ${member.guildId}:`, error);
 		return [];
 	}
 }
@@ -56,6 +56,20 @@ export async function fetchMemberRoleIds(member: GuildMember | null | undefined)
 export async function fetchCachedMemberRoleIds(guild: Guild, userId: Snowflake): Promise<Snowflake[]> {
 	const { members } = container.gatewayClient;
 	return fetchMemberRoleIds(await members.cache.get(members.resolveKey(guild.id, userId)));
+}
+
+/**
+ * Reads the roles a case keeps of the member it is about to take out of the guild, see {@linkcode fetchCachedMemberRoleIds}.
+ *
+ * @remarks It has to be called before the action is taken, the member is gone after it.
+ *
+ * @param guild - The guild of the member.
+ * @param user - The user, or its ID.
+ * @returns The IDs of the roles, `null` when there are none to keep.
+ */
+export async function fetchCaseMemberRoleIds(guild: Guild, user: Snowflake | { readonly id: Snowflake }): Promise<Snowflake[] | null> {
+	const roles = await fetchCachedMemberRoleIds(guild, typeof user === 'string' ? user : user.id);
+	return roles.length === 0 ? null : roles;
 }
 
 /**
@@ -96,4 +110,21 @@ export function formatRoleMentions(t: TFunction<AnyNamespace>, roleIds: readonly
 	const { mentions, omitted } = cutRoleMentions(roleIds);
 	const text = mentions.join(' ');
 	return omitted === 0 ? text : `${text} ${t('moderation:rolesOmitted', { count: omitted })}`.trim();
+}
+
+/**
+ * Formats the roles a case kept of its member, see {@linkcode RolesCaseTypes}.
+ *
+ * @remarks The case that undoes an action shows none: the member did not leave with it.
+ *
+ * @param t - The translation function of the guild.
+ * @param entry - The case.
+ * @returns The text, `null` when the case shows no roles.
+ */
+export function formatCaseRoleMentions(
+	t: TFunction<AnyNamespace>,
+	entry: { readonly type: TypeVariation; readonly extraData: unknown; isUndo(): boolean }
+) {
+	if (!RolesCaseTypes.has(entry.type) || entry.isUndo() || !Array.isArray(entry.extraData)) return null;
+	return formatRoleMentions(t, entry.extraData as Snowflake[]);
 }

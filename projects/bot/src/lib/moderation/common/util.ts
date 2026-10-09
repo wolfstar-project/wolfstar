@@ -1,6 +1,6 @@
 import { readSettings } from '#lib/database';
 import { TranslationMappings, UndoTaskNameMappings, getTypeColor } from '#lib/moderation/common/constants';
-import { RolesCaseTypes, formatRoleMentions } from '#lib/moderation/common/roles';
+import { formatCaseRoleMentions } from '#lib/moderation/common/roles';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { seconds } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -98,10 +98,8 @@ async function getEmbedDescription(t: TFunction<AnyNamespace>, entry: Moderation
 	}
 
 	// The roles the member had are shown when they leave with the member, not when the action is undone:
-	if (RolesCaseTypes.has(entry.type) && !entry.isUndo() && Array.isArray(entry.extraData)) {
-		const roles = formatRoleMentions(t, entry.extraData);
-		if (roles !== null) lines.push(t('moderation:embedRoles', { roles }));
-	}
+	const roles = formatCaseRoleMentions(t, entry);
+	if (roles !== null) lines.push(t('moderation:embedRoles', { roles }));
 
 	return lines.join('\n');
 }
