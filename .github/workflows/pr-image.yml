@@ -106,9 +106,10 @@ jobs:
             tag: pr-${{ needs.resolve.outputs.number }}
             commitHash: ${{ needs.resolve.outputs.sha }}
             # The reusable workflow checks out the dispatched ref, not the PR: build the
-            # PR head through a git context instead (GitHub keeps refs/pull/<n>/head for
-            # closed and merged PRs too).
-            context: https://github.com/${{ github.repository }}.git#refs/pull/${{ needs.resolve.outputs.number }}/head
+            # PR head through a git context instead. Pinned to the sha resolved above, so
+            # a push to the PR in between cannot make the tag and the content disagree
+            # (GitHub serves the head commit of closed and merged PRs too).
+            context: https://github.com/${{ github.repository }}.git#${{ needs.resolve.outputs.sha }}
 
     cleanup:
         name: Delete WolfStar PR image from GHCR
