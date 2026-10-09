@@ -5,6 +5,7 @@ import {
 	listCatalogEntries,
 	normalizeCommandQuery,
 	renderCommand,
+	renderCommandEditModal,
 	renderCommandsList,
 	renderCommandsPageModal,
 	renderCommandsResults,
@@ -52,12 +53,17 @@ interface AnyComponent {
 	options?: { value: string; default?: boolean }[];
 	components?: AnyComponent[];
 	accessory?: AnyComponent;
+	component?: AnyComponent;
 }
 
 function flatten(components: readonly unknown[]): AnyComponent[] {
 	return (components as AnyComponent[]).flatMap((component) => [
 		component,
-		...flatten([...(component.components ?? []), ...(component.accessory ? [component.accessory] : [])])
+		...flatten([
+			...(component.components ?? []),
+			...(component.accessory ? [component.accessory] : []),
+			...(component.component ? [component.component] : [])
+		])
 	]);
 }
 
@@ -226,18 +232,18 @@ describe('commands menu', () => {
 			expect(text).toContain('"page":5,"total":5,"count":21');
 		});
 
-		test('GIVEN the commands THEN each subcommand is listed by itself, numbered, with the button that shows its command', () => {
+		test('GIVEN the commands THEN each subcommand is listed by itself, numbered, with the button that edits its command', () => {
 			const message = renderCommandsList(createContext(), '', 0);
 			const text = getText(message.components!);
-			const views = getCustomIds(message.components!).filter((id) => id.includes('.view:'));
+			const edits = getCustomIds(message.components!).filter((id) => id.includes('.edit:'));
 
 			expect(text).toContain('**1. `/automod create`**');
 			expect(text).toContain('Create an auto-moderation rule');
 			expect(text).toContain('**2. `/automod delete`**');
 			expect(text).toContain('**3. `/ban`**');
-			expect(views).toHaveLength(5);
-			expect(views[0]).toBe(`commands.${ownerId}.view:/automod create:0`);
-			expect(views[1]).toBe(`commands.${ownerId}.view:/automod delete:0`);
+			expect(edits).toHaveLength(5);
+			expect(edits[0]).toBe(`commands.${ownerId}.edit:automod create:0`);
+			expect(edits[1]).toBe(`commands.${ownerId}.edit:automod delete:0`);
 		});
 
 		test('GIVEN a page THEN the footer counts the pages and the commands that can be run', () => {
@@ -250,7 +256,7 @@ describe('commands menu', () => {
 				(component) => component.type === ComponentType.Button && component.custom_id?.startsWith(`commands.${ownerId}.`)
 			);
 			const actions = buttons.map((button) => decodeCommandsMenuId(button.custom_id!.split('.').slice(1))).filter((action) => action !== null);
-			const navigation = actions.filter((action) => action.verb !== 'view' && action.verb !== 'search');
+			const navigation = actions.filter((action) => action.verb !== 'edit' && action.verb !== 'search');
 
 			expect(navigation.map((action) => [action.verb, action.page])).toEqual([
 				['list', 0],
@@ -281,13 +287,29 @@ describe('commands menu', () => {
 			expect(input).toMatchObject({ custom_id: 'page', required: true });
 		});
 
-		test('GIVEN a command seen from a page THEN its view goes back to that page', () => {
-			const message = renderCommand(createContext(), commands[3], { category: 'Tools', page: 2 });
-			const back = getCustomIds(message.components!)
-				.map((id) => decodeCommandsMenuId(id.split('.').slice(1)))
-				.find((action) => action?.verb === 'list');
+		test('GIVEN a command THEN its modal shows what it is and asks whether it is enabled', () => {
+			const modal = renderCommandEditModal(createContext(), commands[0], null);
+			const text = getText(modal.components);
+			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
 
-			expect(back).toMatchObject({ target: 'Tools', page: 2 });
+			expect(modal.title).toContain('commands/commands:editTitle');
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'save', target: 'automod', page: 0 });
+			expect(text).toContain('`/automod`');
+			expect(text).toContain('commands/commands:editStatusEnabled');
+			expect(text).toContain('"count":2');
+			expect(radio.custom_id).toBe('status');
+			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
+				['enabled', true],
+				['disabled', false]
+			]);
+		});
+
+		test('GIVEN a command a server disabled THEN its modal says by what and selects Disabled', () => {
+			const modal = renderCommandEditModal(createContext(), commands[1], 'Moderation.*');
+			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
+
+			expect(getText(modal.components)).toContain('commands/commands:editStatusDisabled {"rule":"Moderation.*"}');
+			expect(radio.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['disabled']);
 		});
 
 		test('GIVEN the results of a search THEN they can be paged and left', () => {

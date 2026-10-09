@@ -1,16 +1,21 @@
+import { readSettings, writeSettings } from '#lib/database';
 import {
 	AllCategoriesValue,
+	CommandDisabledValue,
+	CommandStatusInputId,
 	CommandsPageInputId,
 	CommandsSearchInputId,
 	createCommandsMenuContext,
 	decodeCommandsMenuId,
 	normalizeCommandQuery,
-	renderCommand,
+	renderCommandEditModal,
 	renderCommandsList,
 	renderCommandsPageModal,
 	renderCommandsResults,
 	renderCommandsSearchModal
 } from '#lib/structures/commands-menu';
+import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
+import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
 import { getModalValue } from '#utils/interactions';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
@@ -59,6 +64,8 @@ export class UserInteractionHandler extends InteractionHandler {
 				);
 			}
 
+			if (action.verb === 'save') return this.save(modal, action.target, t);
+
 			return fail(getDefaultExpiredReply());
 		}
 
@@ -68,10 +75,11 @@ export class UserInteractionHandler extends InteractionHandler {
 				return component.showModal(renderCommandsSearchModal(t, action.ownerId));
 			case 'jump':
 				return component.showModal(renderCommandsPageModal(t, action.ownerId, action.target));
+			case 'edit':
+				return this.edit(component, action.ownerId, action.target, t);
 			case 'list':
 			case 'category':
 			case 'results':
-			case 'view':
 				break;
 			default:
 				return fail(getDefaultExpiredReply());
@@ -85,17 +93,79 @@ export class UserInteractionHandler extends InteractionHandler {
 				return component.update(renderCommandsList(context, this.getCategory(component), 0));
 			case 'results':
 				return component.update(renderCommandsResults(context, normalizeCommandQuery(action.target), action.page));
-			case 'view': {
-				// The target is the category the list was in and the path of the entry, `Tools/whois user`, of which the command is the first word:
-				const [category, ...rest] = action.target.split('/');
-				const [name] = rest.join('/').split(' ');
-				const command = context.commands.find((entry) => entry.name === name);
-				// A command that was removed since the menu was opened:
-				return component.update(
-					command ? renderCommand(context, command, { category, page: action.page }) : renderCommandsList(context, '', 0)
-				);
-			}
 		}
+	}
+
+	/**
+	 * Opens the modal that edits a command, to the administrators of the server.
+	 *
+	 * @param interaction - The click on the button of the command.
+	 * @param ownerId - The user who opened the menu.
+	 * @param path - The path of the entry the button is of, `whois user`, of which the command is the first word.
+	 * @param t - The function to translate with.
+	 */
+	private async edit(interaction: ComponentInteraction, ownerId: string, path: string, t: ReturnType<typeof createTranslator>) {
+		const denial = await this.getDenial(interaction, t);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+
+		const context = await createCommandsMenuContext(interaction, ownerId);
+		const [name] = path.split(' ');
+		const command = context.commands.find((entry) => entry.name === name);
+		const piece = command === undefined ? null : findCommandPiece(command.name);
+		// A command that was removed since the menu was opened:
+		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+
+		const settings = await readSettings(interaction.guildId!);
+		return interaction.showModal(renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece)));
+	}
+
+	/**
+	 * Enables or disables a command in the server: it adds the command to `commands.disabled`, or takes it out.
+	 *
+	 * @param interaction - The submission of the modal of the command.
+	 * @param name - The name of the command.
+	 * @param t - The function to translate with.
+	 */
+	private async save(interaction: ModalInteraction, name: string, t: ReturnType<typeof createTranslator>) {
+		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const denial = await this.getDenial(interaction, t);
+		if (denial !== null) return reply(denial);
+
+		const piece = findCommandPiece(name);
+		if (piece === null) return reply(getDefaultExpiredReply());
+
+		const disable = getModalValue(interaction.data.components, CommandStatusInputId) === CommandDisabledValue;
+		if (disable && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtected', { name }));
+
+		const guildId = interaction.guildId!;
+		await writeSettings(
+			guildId,
+			(settings) => {
+				const others = settings.commandsDisabled.filter((entry: string) => entry !== piece.name);
+				return { commandsDisabled: disable ? [...others, piece.name] : others };
+			},
+			interaction.user.id
+		);
+
+		if (disable) return reply(t('commands/commands:editDisabledDone', { name }));
+
+		// The command can still be disabled by its category or by `*`, which this does not take out:
+		const settings = await readSettings(guildId);
+		const rule = findDisabledBy(settings.commandsDisabled, piece);
+		return reply(rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule }));
+	}
+
+	/**
+	 * Reads whether the author of an interaction is not allowed to edit the commands of the server.
+	 *
+	 * @returns The reason, `null` when they are an administrator.
+	 */
+	private async getDenial(interaction: InteractionHandler.Interaction, t: ReturnType<typeof createTranslator>) {
+		const { guildId, member } = interaction;
+		if (guildId === undefined || member === undefined) return getDefaultExpiredReply();
+		if (await hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator)) return null;
+
+		return t('preconditions:administrator', { command: { name: 'commands' } });
 	}
 
 	/**

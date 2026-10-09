@@ -37,14 +37,15 @@ export const CommandsMenuHandlerName = 'commands';
  *
  * - `list`: shows a page of a category, the target is the category, empty for every command.
  * - `category`: the category select menu, the category is its selected value.
- * - `view`: shows a command, the target is the category the list was in and the path of the entry, `Tools/whois user`.
+ * - `edit`: opens the modal that edits a command, the target is the path of its entry, `whois user`.
+ * - `save`: the modal of a command, the target is its name.
  * - `search`: opens the modal of the search.
  * - `query`: the modal of the search.
  * - `results`: shows a page of the results of a search, the target is the query.
  * - `jump`: opens the modal that asks for a page, the target is the list it is in, `list/Tools` or `results/ban`.
  * - `goto`: the modal of the page, with the same target as `jump`.
  */
-export type CommandsMenuVerb = 'list' | 'category' | 'view' | 'search' | 'query' | 'results' | 'jump' | 'goto';
+export type CommandsMenuVerb = 'list' | 'category' | 'edit' | 'save' | 'search' | 'query' | 'results' | 'jump' | 'goto';
 
 export interface CommandsMenuAction {
 	/**
@@ -65,7 +66,7 @@ export function encodeCommandsMenuId(action: CommandsMenuAction) {
 	return encodeCustomId(CommandsMenuHandlerName, action.ownerId, `${action.verb}:${action.target}:${action.page}`);
 }
 
-const Verbs = new Set<string>(['list', 'category', 'view', 'search', 'query', 'results', 'jump', 'goto']);
+const Verbs = new Set<string>(['list', 'category', 'edit', 'save', 'search', 'query', 'results', 'jump', 'goto']);
 
 /**
  * Reads what {@linkcode encodeCommandsMenuId} wrote from the content the framework parsed out of a custom ID.
@@ -232,7 +233,6 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 	const pages = Math.max(1, Math.ceil(options.entries.length / CommandsPerPage));
 	const current = Math.min(options.page, pages - 1);
 	const id = (verb: CommandsMenuVerb, target: string, page = current) => encodeCommandsMenuId({ ownerId, verb, target, page });
-	const category = options.verb === 'list' ? options.target : '';
 
 	const header: APIComponentInContainer[] = [
 		{
@@ -254,7 +254,7 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 					content: `**${first + index + 1}. ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}**\n${cutText(entry.description, 150)}`
 				}
 			],
-			accessory: button(id('view', `${category}/${entry.path}`), { emoji: '✏️' })
+			accessory: button(id('edit', entry.path), { emoji: '✏️' })
 		});
 	}
 
@@ -290,13 +290,8 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
  *
  * @param context - The context of the menu.
  * @param command - The command to render.
- * @param back - The category and the page of the list the command was shown from, which the button that goes back returns to.
  */
-export function renderCommand(
-	context: CommandsMenuContext,
-	command: CatalogCommand,
-	back: { category: string; page: number } = { category: command.category, page: 0 }
-): CommandsMenuMessage {
+export function renderCommand(context: CommandsMenuContext, command: CatalogCommand): CommandsMenuMessage {
 	const { t, ownerId } = context;
 	const lines = [
 		`## ${mentionCommand(context, command)} · ${command.category}`,
@@ -327,7 +322,7 @@ export function renderCommand(
 	body.push(
 		{ type: ComponentType.Separator },
 		row([
-			button(encodeCommandsMenuId({ ownerId, verb: 'list', target: back.category, page: back.page }), {
+			button(encodeCommandsMenuId({ ownerId, verb: 'list', target: command.category, page: 0 }), {
 				label: t('commands/commands:menuBack'),
 				emoji: '◀️'
 			}),
@@ -365,6 +360,69 @@ export function renderCommandsSearchModal(t: Translator, ownerId: Snowflake): AP
 						max_length: CommandQueryMaximumLength
 					}
 				]
+			}
+		]
+	};
+}
+
+/**
+ * The value of the option of the status radio group that enables a command.
+ */
+export const CommandEnabledValue = 'enabled';
+
+/**
+ * The value of the option of the status radio group that disables a command.
+ */
+export const CommandDisabledValue = 'disabled';
+
+/**
+ * The custom ID of the radio group of {@linkcode renderCommandEditModal}.
+ */
+export const CommandStatusInputId = 'status';
+
+/**
+ * The modal that edits a command of the server: for now, whether it can be run.
+ *
+ * @param context - The context of the menu.
+ * @param command - The command to edit.
+ * @param disabledBy - The name in `commands.disabled` that disables it, `null` when it is enabled.
+ */
+export function renderCommandEditModal(
+	context: CommandsMenuContext,
+	command: CatalogCommand,
+	disabledBy: string | null
+): APIModalInteractionResponseCallbackData {
+	const { t } = context;
+	const disabled = disabledBy !== null;
+	const lines = [
+		`### ⌘ ${inlineCode(`/${command.name}`)} · ${command.category}`,
+		command.description,
+		'',
+		t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy }),
+		t('commands/commands:viewPermissions', {
+			permissions: command.permissions === null ? t('commands/commands:viewPermissionsNone') : formatPermissions(t, command.permissions)
+		})
+	];
+	if (command.subcommands.length > 0) lines.push(t('commands/commands:editSubcommands', { count: command.subcommands.length }));
+
+	return {
+		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: 0 }),
+		title: cutText(t('commands/commands:editTitle', { name: command.name }), 45),
+		components: [
+			{ type: ComponentType.TextDisplay, content: cutText(lines.join('\n'), 3500) },
+			{
+				type: ComponentType.Label,
+				label: cutText(t('commands/commands:editStatusLabel'), 45),
+				description: cutText(t('commands/commands:editStatusDescription'), 100),
+				component: {
+					type: ComponentType.RadioGroup,
+					custom_id: CommandStatusInputId,
+					required: true,
+					options: [
+						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !disabled },
+						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: disabled }
+					]
+				}
 			}
 		]
 	};
