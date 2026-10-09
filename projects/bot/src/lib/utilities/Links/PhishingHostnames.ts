@@ -36374,7 +36374,6 @@ export const PhishingHostnames = [
 	'www-steamcommunlty.com',
 	'www-web-roblox.org',
 	'www-xroblox.com',
-	'www.discord-nitro.ru.com',
 	'wwwl-roblox.com',
 	'wwwroblox.cam',
 	'wwwroblox.ru',
