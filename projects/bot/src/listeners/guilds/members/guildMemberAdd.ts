@@ -20,8 +20,9 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 
 	async #handleStickyRoles(member: GuildMember) {
 		const me = await this.container.gatewayClient.members.fetchMe(member.guildId);
-		// Fetched, not read from the cache: the role that grants the permission may not be cached.
-		if (!(await me.fetchPermissions()).has(PermissionFlagsBits.ManageRoles)) return false;
+		// The roles are fetched before the cache is read: the one that grants the permission may not be cached.
+		await me.roles.fetch();
+		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) return false;
 
 		const user = member.user ?? (await member.fetchUser());
 		const stickyRoles = await (await getStickyRoles(member)).fetch(user.id);
