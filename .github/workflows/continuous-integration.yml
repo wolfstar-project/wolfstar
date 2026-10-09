@@ -61,6 +61,10 @@ jobs:
             - name: Generate prisma types
               run: pnpm --filter wolfstar-database prisma:generate
 
+            # The tsconfig and the auto-imports the bot extends are generated, `stars build` writes them too:
+            - name: Prepare the Stars project
+              run: pnpm --filter wolfstar-bot exec stars prepare
+
             - name: Find unused files and dependencies
               run: pnpm knip
 

@@ -1,9 +1,4 @@
 {
-	"extends": "./.stars/tsconfig.json",
-	"compilerOptions": {
-		"outDir": "../dist",
-		"rootDir": ".",
-		"composite": true
-	},
-	"include": ["."]
+	"files": [],
+	"references": [{ "path": "./.stars/tsconfig.app.json" }, { "path": "./.stars/tsconfig.node.json" }]
 }

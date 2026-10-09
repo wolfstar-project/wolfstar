@@ -1,5 +1,5 @@
 {
-	"extends": "../.stars/tsconfig.json",
+	"extends": "../.stars/tsconfig.app.json",
 	"compilerOptions": {
 		"noEmit": true,
 		"incremental": false,
