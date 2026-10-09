@@ -13,8 +13,12 @@ const hostnames = new Set();
 for (const entry of source) {
 	if (typeof entry !== 'string') continue;
 
-	const lowered = entry.trim().toLowerCase().replace(/\.$/, '');
-	const hostname = lowered.startsWith('www.') ? lowered.slice(4) : lowered;
+	// The list has entries that repeat the `www.`, which the bot would never match
+	const hostname = entry
+		.trim()
+		.toLowerCase()
+		.replace(/\.$/, '')
+		.replace(/^(?:www\.)+/, '');
 	if (/^[a-z0-9¡-￿._-]+$/.test(hostname)) hostnames.add(hostname);
 }
 

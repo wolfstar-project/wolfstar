@@ -1,4 +1,4 @@
-import { isListedHostname, normalizeHostname, parsePhishingList } from '#lib/moderation/automod/phishing';
+import { getPhishingHostnames, isListedHostname, normalizeHostname } from '#lib/moderation/automod/phishing';
 
 describe('phishing', () => {
 	describe('normalizeHostname', () => {
@@ -8,13 +8,12 @@ describe('phishing', () => {
 		});
 	});
 
-	describe('parsePhishingList', () => {
-		test('GIVEN a list THEN it keeps the strings, normalized', () => {
-			expect([...parsePhishingList(['dIscord-app.com', '', 1, null, 'www.steam-gift.ru'])]).toEqual(['discord-app.com', 'steam-gift.ru']);
-		});
+	describe('getPhishingHostnames', () => {
+		test('GIVEN the generated list THEN its hostnames are the ones the bot matches', () => {
+			const list = getPhishingHostnames();
 
-		test('GIVEN something that is not a list THEN it throws', () => {
-			expect(() => parsePhishingList({ domains: [] })).toThrow(TypeError);
+			expect(list.size).toBeGreaterThan(1000);
+			for (const hostname of list) expect(normalizeHostname(hostname)).toBe(hostname);
 		});
 	});
 
