@@ -21,6 +21,8 @@ export type { Contract, Models };
 
 export * from './settings/automod/storage.js';
 export * from './settings/automod/types.js';
+export * from './settings/cases/storage.js';
+export * from './settings/cases/types.js';
 export * from './settings/cleanup/storage.js';
 export * from './settings/cleanup/types.js';
 export * from './settings/columns.js';

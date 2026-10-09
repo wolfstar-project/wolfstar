@@ -300,6 +300,18 @@ namespace public {
     @@control(external)
   }
 
+  // What a case holds that the externally owned `ModerationAction` has no column for.
+  model ModerationCaseData {
+    caseId    Int     @map("case_id")
+    guildId   BigInt  @map("guild_id")
+    extraData Jsonb?  @map("extra_data")
+    channelId BigInt? @map("channel_id")
+    messageId BigInt? @map("message_id")
+    guild     Guild   @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "ModerationCaseData_guild_id_fkey", index: false)
+
+    @@id([caseId, guildId], map: "ModerationCaseData_pkey")
+  }
+
   model StickyRole {
     userId  BigInt   @map("user_id")
     guildId BigInt   @map("guild_id")
