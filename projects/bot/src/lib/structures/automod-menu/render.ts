@@ -4,8 +4,10 @@ import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModer
 import {
 	AutoModerationMenuInputId,
 	AutoModerationMenuSoftActions,
+	AutoModerationMenuEscalationInputs,
 	AutoModerationMenuTimingInputs,
 	formatAutoModerationMenuDuration,
+	formatAutoModerationMenuEscalation,
 	getAutoModerationMenuNumberFields
 } from '#lib/structures/automod-menu/actions';
 import {
@@ -438,6 +440,10 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 		block(
 			`**${translateKey(t, `${Root}:menuThreshold`)}**\n${renderThreshold(t, rule)}\n-# ${translateKey(t, `${Root}:menuThresholdDescription`)}`,
 			button(id('edit', 'threshold'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '🔢' })
+		),
+		block(
+			`**${translateKey(t, `${Root}:menuEscalation`)}**\n${renderEscalation(t, rule)}\n-# ${translateKey(t, `${Root}:menuEscalationDescription`)}`,
+			button(id('edit', 'escalation'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '📈' })
 		)
 	);
 	return body;
@@ -453,6 +459,24 @@ function renderDuration(t: TFunction, rule: AutoModerationRule): string {
 	}
 
 	return translateKey(t, 'globals:durationValue', { value: rule.hardActionDuration });
+}
+
+/**
+ * The steps of the escalation of a rule, numbered by the time a member reaches the threshold: the hard action of the
+ * rule is the first, so the steps start at the second, and the last one is repeated.
+ */
+function renderEscalation(t: TFunction, rule: AutoModerationRule): string {
+	if (rule.escalation.length === 0) return translateKey(t, `${Root}:menuEscalationNone`);
+
+	const lines = rule.escalation.map((step, index) => {
+		const position = `${index + 2}${index === rule.escalation.length - 1 ? '+' : ''}.`;
+		const name = translateKey(t, getPunishment(step.action).key);
+		const duration = isNullishOrZero(step.duration) ? '' : ` · ${translateKey(t, 'globals:durationValue', { value: step.duration })}`;
+		return `${inlineCode(position)} ${name}${duration}`;
+	});
+
+	const period = translateKey(t, 'globals:durationValue', { value: rule.escalationDuration });
+	return `${lines.join('\n')}\n${translateKey(t, `${Root}:menuEscalationForget`, { period })}`;
 }
 
 /**
@@ -581,6 +605,23 @@ export function renderAutoModerationModal(
 				input(AutoModerationMenuTimingInputs.duration, translateKey(t, `${Root}:menuTimingDuration`), {
 					value: formatAutoModerationMenuDuration(rule.hardActionDuration),
 					placeholder: '1d 12h',
+					required: false,
+					max_length: 30
+				})
+			]);
+		case 'escalation':
+			if (rule.type === 'NoMentionSpam') return null;
+			return modal(`${Root}:menuEscalation`, [
+				input(AutoModerationMenuEscalationInputs.steps, translateKey(t, `${Root}:menuEscalationSteps`), {
+					style: TextInputStyle.Paragraph,
+					value: formatAutoModerationMenuEscalation(rule.escalation),
+					placeholder: 'timeout 1h\ntimeout 1d\nkick\nban',
+					required: false,
+					max_length: 500
+				}),
+				input(AutoModerationMenuEscalationInputs.period, translateKey(t, `${Root}:menuEscalationPeriod`), {
+					value: formatAutoModerationMenuDuration(rule.escalationDuration),
+					placeholder: '1d',
 					required: false,
 					max_length: 30
 				})

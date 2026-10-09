@@ -6,8 +6,12 @@ import type { TFunction } from '@wolfstar/plugin-i18next';
 import {
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
+	AutoModerationHardActions,
+	MaximumAutoModerationRuleEscalationSteps,
 	MaximumAutoModerationRuleListLength,
-	type AutoModerationRule
+	type AutoModerationHardAction,
+	type AutoModerationRule,
+	type AutoModerationRuleEscalationStep
 } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
@@ -108,6 +112,64 @@ export function parseAutoModerationMenuTiming(t: TFunction, read: (key: string) 
 	if (period !== null) update.thresholdDuration = period;
 
 	return { ok: true, value: update };
+}
+
+/**
+ * The custom IDs of the text inputs of the modal of the escalation of a rule.
+ */
+export const AutoModerationMenuEscalationInputs = { steps: 'steps', period: 'period' } as const;
+
+const EscalationActions = new Map<string, AutoModerationHardAction>([
+	...AutoModerationHardActions.map((action) => [action.toLowerCase(), action] as const),
+	['warn', 'Warning']
+]);
+
+/**
+ * Writes the steps of an escalation the way their modal reads them back, one per line (`Timeout 1h`).
+ */
+export function formatAutoModerationMenuEscalation(steps: readonly AutoModerationRuleEscalationStep[]): string {
+	return steps.map((step) => `${step.action} ${formatAutoModerationMenuDuration(step.duration)}`.trim()).join('\n');
+}
+
+/**
+ * Reads the escalation of a rule from what was written in its modal: a step per line, the name of a hard action then
+ * how long it lasts when it is temporary (`timeout 1h`, `kick`, `ban 7d`), and how long a punishment is remembered.
+ * No step turns the escalation off.
+ */
+export function parseAutoModerationMenuEscalation(t: TFunction, read: (key: string) => string | null): Result<AutoModerationRuleUpdate> {
+	const inputs = AutoModerationMenuEscalationInputs;
+	const lines = (read(inputs.steps) ?? '')
+		.split(/[\n;]/)
+		.map((line) => line.trim())
+		.filter((line) => line.length > 0);
+	if (lines.length > MaximumAutoModerationRuleEscalationSteps) {
+		return { ok: false, error: translateKey(t, `${Root}:menuEscalationTooMany`, { maximum: MaximumAutoModerationRuleEscalationSteps }) };
+	}
+
+	const escalation: AutoModerationRuleEscalationStep[] = [];
+	for (const line of lines) {
+		const [name, ...rest] = line.split(/\s+/);
+		const action = EscalationActions.get(name.toLowerCase());
+		if (action === undefined) {
+			return { ok: false, error: translateKey(t, `${Root}:menuEscalationInvalid`, { line, actions: AutoModerationHardActions.join(', ') }) };
+		}
+
+		const duration = resolveDurationOption(t, rest.join(' '), AutoModerationRuleLimits.hardActionDuration);
+		if (typeof duration === 'object' && duration !== null) return { ok: false, error: duration.error };
+		// A timeout cannot be permanent, Discord takes none without an end:
+		if (action === 'Timeout' && isNullishOrZeroNumber(duration)) {
+			return { ok: false, error: translateKey(t, `${Root}:menuDurationTimeout`) };
+		}
+
+		escalation.push({ action, duration: isNullishOrZeroNumber(duration) ? null : duration });
+	}
+
+	const period = resolveDurationOption(t, read(inputs.period)?.trim(), AutoModerationRuleLimits.escalationDuration);
+	if (typeof period === 'object' && period !== null) return { ok: false, error: period.error };
+	// The steps need a period, the rule keeps the one it has when they are removed:
+	if (period === null && escalation.length > 0) return { ok: false, error: translateKey(t, `${Root}:menuEscalationPeriodRequired`) };
+
+	return { ok: true, value: { escalation, ...(period === null ? {} : { escalationDuration: period }) } };
 }
 
 function isNullishOrZeroNumber(value: number | null): value is null | 0 {

@@ -15,6 +15,7 @@ import {
 	editAutoModerationMenuList,
 	isAutoModerationMenuSection,
 	parseAutoModerationMenuEntries,
+	parseAutoModerationMenuEscalation,
 	parseAutoModerationMenuNumbers,
 	parseAutoModerationMenuTiming,
 	renderAutoModerationCreateModal,
@@ -220,6 +221,12 @@ export class UserInteractionHandler extends InteractionHandler {
 				}
 				case 'numbers': {
 					const parsed = parseAutoModerationMenuNumbers(t, rule, read);
+					if (!parsed.ok) throw new InvalidInput(parsed.error);
+					return { update: parsed.value };
+				}
+				case 'escalation': {
+					const parsed = rule.type === 'NoMentionSpam' ? null : parseAutoModerationMenuEscalation(t, read);
+					if (parsed === null) return { update: null };
 					if (!parsed.ok) throw new InvalidInput(parsed.error);
 					return { update: parsed.value };
 				}

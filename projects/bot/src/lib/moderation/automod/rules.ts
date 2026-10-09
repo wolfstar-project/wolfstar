@@ -296,3 +296,26 @@ export function addAutoModerationRuleHits(rule: AutoModerationRule, key: string,
 	counter.reset(key);
 	return true;
 }
+
+/**
+ * Counts a hard action a rule takes on a member, for its escalation. The count is kept in Redis for the
+ * `escalationDuration` of the rule after the last one, so it outlives a restart and is the same on every shard.
+ *
+ * @param rule - The rule the member reached the threshold of.
+ * @param userId - The member.
+ * @returns How many hard actions the rule took on the member lately, before this one. A rule without an escalation
+ * counts nothing, and neither does a count that cannot be read: the member gets the hard action of the rule.
+ */
+export async function addAutoModerationRuleStrike(rule: AutoModerationRule, userId: Snowflake): Promise<number> {
+	if (rule.escalation.length === 0) return 0;
+
+	const key = `wolfstar:automod:strikes:${rule.id}:${userId}`;
+	try {
+		const strikes = await container.redis.incr(key);
+		await container.redis.pexpire(key, rule.escalationDuration);
+		return strikes - 1;
+	} catch (error) {
+		container.logger.error('[AUTOMOD] Could not count the hard action of a rule:', error);
+		return 0;
+	}
+}

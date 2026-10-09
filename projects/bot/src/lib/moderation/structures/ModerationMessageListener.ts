@@ -1,5 +1,5 @@
 import { readSettings } from '#lib/database';
-import { getAutoModerationRuleAdder, readAutoModerationRules } from '#lib/moderation/automod/rules';
+import { addAutoModerationRuleStrike, getAutoModerationRuleAdder, readAutoModerationRules } from '#lib/moderation/automod/rules';
 import type { AdderError } from '#lib/database/utils/Adder';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -15,7 +15,7 @@ import { Listener } from '@wolfstar/http-framework';
 import { canSendMessages, isTextBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
-import type { AutoModerationRule, AutoModerationRuleType } from 'wolfstar-database';
+import { resolveAutoModerationRulePunishment, type AutoModerationRule, type AutoModerationRuleType } from 'wolfstar-database';
 
 /**
  * The base of the listeners that run the auto-moderation rules of a type on the messages the members send
@@ -108,8 +108,10 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		points: number,
 		maximum: number
 	) {
-		const duration = rule.hardActionDuration;
-		switch (rule.hardAction) {
+		// A member who keeps reaching the threshold moves up the escalation of the rule:
+		const strikes = await addAutoModerationRuleStrike(rule, message.author.id);
+		const { action, duration } = resolveAutoModerationRulePunishment(rule, strikes);
+		switch (action) {
 			case 'Warning':
 				await this.onWarning(message, language, points, maximum, duration);
 				break;

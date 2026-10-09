@@ -3,8 +3,10 @@ import { remove as removeConfusables } from 'confusables';
 import {
 	AutoModerationHardActions,
 	AutoModerationRuleLimits,
+	MaximumAutoModerationRuleEscalationSteps,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
+	normalizeAutoModerationRuleEscalation,
 	normalizeAutoModerationRuleOptions,
 	type AutoModerationHardAction,
 	type AutoModerationRuleData,
@@ -101,6 +103,20 @@ export function parseAutoModerationRulePatch(
 
 		if (Array.isArray(value) && value.length <= MaximumAutoModerationRuleIgnored && value.every(isSnowflake)) data[key] = [...new Set(value)];
 		else errors.push(`${key}: Expected an array of at most ${MaximumAutoModerationRuleIgnored} IDs.`);
+	}
+
+	if (body.escalation !== undefined) {
+		const steps = normalizeAutoModerationRuleEscalation(body.escalation);
+		// A step that was dropped, or cut, is one the request got wrong:
+		if (Array.isArray(body.escalation) && steps.length === body.escalation.length) data.escalation = steps;
+		else
+			errors.push(`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action and a duration.`);
+	}
+
+	if (body.escalationDuration !== undefined) {
+		const { minimum, maximum } = AutoModerationRuleLimits.escalationDuration;
+		if (isInteger(body.escalationDuration, minimum, maximum)) data.escalationDuration = body.escalationDuration;
+		else errors.push(`escalationDuration: Expected an integer between ${minimum} and ${maximum}.`);
 	}
 
 	if (body.options !== undefined) {
