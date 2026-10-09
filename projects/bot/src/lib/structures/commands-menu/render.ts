@@ -251,7 +251,7 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 			components: [
 				{
 					type: ComponentType.TextDisplay,
-					content: `**${first + index + 1}. ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}**\n${cutText(entry.description, 150)}`
+					content: `**${first + index + 1}. ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}**\n-# ${cutText(entry.description, 150)}`
 				}
 			],
 			accessory: button(id('edit', entry.path), { emoji: '✏️' })

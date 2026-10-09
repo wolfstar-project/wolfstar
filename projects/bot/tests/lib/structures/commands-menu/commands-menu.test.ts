@@ -238,7 +238,8 @@ describe('commands menu', () => {
 			const edits = getCustomIds(message.components!).filter((id) => id.includes('.edit:'));
 
 			expect(text).toContain('**1. `/automod create`**');
-			expect(text).toContain('Create an auto-moderation rule');
+			// The description is small text under the command:
+			expect(text).toContain('`/automod create`**\n-# Create an auto-moderation rule');
 			expect(text).toContain('**2. `/automod delete`**');
 			expect(text).toContain('**3. `/ban`**');
 			expect(edits).toHaveLength(5);
