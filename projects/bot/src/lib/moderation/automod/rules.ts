@@ -321,3 +321,18 @@ export async function addAutoModerationRuleStrike(rule: AutoModerationRule, user
 		return 0;
 	}
 }
+
+/**
+ * Takes back the hard action {@linkcode addAutoModerationRuleStrike} counted, when it was not taken after all: Discord
+ * refused it, or it was a timeout without a duration. The member is counted first and uncounted on failure, rather than
+ * counted on success, so two infractions at once do not both get the same step.
+ */
+export async function removeAutoModerationRuleStrike(rule: AutoModerationRule, userId: Snowflake): Promise<void> {
+	if (rule.escalation.length === 0) return;
+
+	try {
+		await container.redis.decr(`wolfstar:automod:strikes:${rule.id}:${userId}`);
+	} catch (error) {
+		container.logger.error('[AUTOMOD] Could not take back the hard action of a rule:', error);
+	}
+}

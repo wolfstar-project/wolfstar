@@ -106,11 +106,19 @@ export function parseAutoModerationRulePatch(
 	}
 
 	if (body.escalation !== undefined) {
-		const steps = normalizeAutoModerationRuleEscalation(body.escalation);
-		// A step that was dropped, or cut, is one the request got wrong:
-		if (Array.isArray(body.escalation) && steps.length === body.escalation.length) data.escalation = steps;
-		else
-			errors.push(`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action and a duration.`);
+		// The steps are checked before they are normalized, which would make a wrong duration a permanent punishment:
+		if (
+			Array.isArray(body.escalation) &&
+			body.escalation.length <= MaximumAutoModerationRuleEscalationSteps &&
+			body.escalation.every((step) => isEscalationStep(step))
+		) {
+			data.escalation = normalizeAutoModerationRuleEscalation(body.escalation);
+		} else {
+			const { maximum } = AutoModerationRuleLimits.hardActionDuration;
+			errors.push(
+				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationHardActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}, which a Timeout requires.`
+			);
+		}
 	}
 
 	if (body.escalationDuration !== undefined) {
@@ -143,6 +151,19 @@ export function parseAutoModerationRulePatch(
 	}
 
 	return errors.length === 0 ? { data } : { errors };
+}
+
+/**
+ * Whether a value is a step of an escalation as a request must write it: a hard action, and a duration that is `null`
+ * (or left out) for a permanent one or a positive integer within the limits. A timeout cannot be permanent.
+ */
+function isEscalationStep(value: unknown): boolean {
+	if (!isObject(value)) return false;
+
+	const { action, duration } = value as { action?: unknown; duration?: unknown };
+	if (!AutoModerationHardActions.includes(action as AutoModerationHardAction)) return false;
+	if (duration === null || duration === undefined) return action !== 'Timeout';
+	return isInteger(duration, 1, AutoModerationRuleLimits.hardActionDuration.maximum);
 }
 
 function isInteger(value: unknown, minimum: number, maximum: number): value is number {

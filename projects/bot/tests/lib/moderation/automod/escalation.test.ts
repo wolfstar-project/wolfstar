@@ -141,6 +141,14 @@ describe('auto-moderation escalation', () => {
 				escalationDuration: 3_600_000
 			});
 			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Explode' }] }).errors).toHaveLength(1);
+			// A duration that is not one is refused, not made permanent, and a timeout needs one:
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Ban', duration: '1h' }] }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Ban', duration: -5 }] }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Timeout' }] }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Timeout', duration: 0 }] }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Kick' }] }).data).toEqual({
+				escalation: [{ action: 'Kick', duration: null }]
+			});
 			expect(parseAutoModerationRulePatch('Links', { escalationDuration: 5 }).errors).toHaveLength(1);
 		});
 	});

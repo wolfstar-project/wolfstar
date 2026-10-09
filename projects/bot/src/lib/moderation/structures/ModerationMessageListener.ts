@@ -1,5 +1,10 @@
 import { readSettings } from '#lib/database';
-import { addAutoModerationRuleStrike, getAutoModerationRuleAdder, readAutoModerationRules } from '#lib/moderation/automod/rules';
+import {
+	addAutoModerationRuleStrike,
+	getAutoModerationRuleAdder,
+	readAutoModerationRules,
+	removeAutoModerationRuleStrike
+} from '#lib/moderation/automod/rules';
 import type { AdderError } from '#lib/database/utils/Adder';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -111,28 +116,41 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		// A member who keeps reaching the threshold moves up the escalation of the rule:
 		const strikes = await addAutoModerationRuleStrike(rule, message.author.id);
 		const { action, duration } = resolveAutoModerationRulePunishment(rule, strikes);
-		switch (action) {
-			case 'Warning':
-				await this.onWarning(message, language, points, maximum, duration);
-				break;
-			case 'Kick':
-				await this.onKick(message, language, points, maximum);
-				break;
-			case 'Timeout':
-				await this.onTimeout(message, language, points, maximum, duration);
-				break;
-			case 'Mute':
-				await this.onMute(message, language, points, maximum, duration);
-				break;
-			case 'Softban':
-				await this.onSoftBan(message, language, points, maximum);
-				break;
-			case 'Ban':
-				await this.onBan(message, language, points, maximum, duration);
-				break;
-			case 'VoiceKick':
-				await this.onVoiceKick(message, language, points, maximum);
-				break;
+
+		// A timeout needs a duration, Discord takes none without an end: nothing is done, so nothing is counted.
+		if (action === 'Timeout' && isNullishOrZero(duration)) {
+			await removeAutoModerationRuleStrike(rule, message.author.id);
+			return;
+		}
+
+		try {
+			switch (action) {
+				case 'Warning':
+					await this.onWarning(message, language, points, maximum, duration);
+					break;
+				case 'Kick':
+					await this.onKick(message, language, points, maximum);
+					break;
+				case 'Timeout':
+					await this.onTimeout(message, language, points, maximum, duration);
+					break;
+				case 'Mute':
+					await this.onMute(message, language, points, maximum, duration);
+					break;
+				case 'Softban':
+					await this.onSoftBan(message, language, points, maximum);
+					break;
+				case 'Ban':
+					await this.onBan(message, language, points, maximum, duration);
+					break;
+				case 'VoiceKick':
+					await this.onVoiceKick(message, language, points, maximum);
+					break;
+			}
+		} catch (error) {
+			// The hard action was not taken, so the member does not move up the escalation for it:
+			await removeAutoModerationRuleStrike(rule, message.author.id);
+			throw error;
 		}
 	}
 
@@ -204,8 +222,12 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 
 	protected async createActionAndSend(message: GuildMessage, performAction: () => unknown): Promise<void> {
 		const unlock = (await getModeration(message.guildId)).createLock();
-		await performAction();
-		unlock();
+		try {
+			await performAction();
+		} finally {
+			// Released whatever becomes of the action, a lock that is kept would hold every log of the guild back:
+			unlock();
+		}
 	}
 
 	protected async onLog(message: GuildMessage, logChannelId: string | Nullish, language: TFunction<AnyNamespace>, value: T): Promise<void> {
