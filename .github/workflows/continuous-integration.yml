@@ -183,6 +183,16 @@ jobs:
             - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
+            # The test setup loads the bot, which needs what the other test job builds:
+            - name: 🔼 Generate Prisma contract
+              run: pnpm --filter wolfstar-database prisma:generate
+
+            - name: 🏗️ Build the database package
+              run: pnpm --filter wolfstar-database build
+
+            - name: ✨ Prepare the Stars project
+              run: pnpm --filter wolfstar-bot exec stars prepare
+
             - name: 🌐 Check the locale files
               run: pnpm exec vitest run --config vitest.config.ts tests/languages
 
