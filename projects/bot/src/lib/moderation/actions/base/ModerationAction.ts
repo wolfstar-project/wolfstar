@@ -51,6 +51,12 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	public readonly durationExternal: boolean;
 
 	/**
+	 * Whether or not the user can be told about the action with a direct message. When it is `false`, no direct message is
+	 * sent whatever the settings of the guild, of the user and of the command say.
+	 */
+	public readonly isDirectMessageAvailable: boolean;
+
+	/**
 	 * The prefix used for logging moderation actions.
 	 */
 	protected readonly logPrefix: string;
@@ -69,6 +75,7 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 		this.minimumDuration = options.minimumDuration ?? (this.durationRequired ? seconds(5) : 0);
 		this.maximumDuration = options.maximumDuration ?? years(1);
 		this.isUndoActionAvailable = options.isUndoActionAvailable;
+		this.isDirectMessageAvailable = options.isDirectMessageAvailable ?? true;
 	}
 
 	/**
@@ -327,7 +334,7 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	 * @param data - The data for the action.
 	 */
 	protected async sendDirectMessage(guild: Guild, entry: ModerationManager.Entry, data: ModerationAction.Data<ContextType>) {
-		if (!data.sendDirectMessage) return;
+		if (!this.isDirectMessageAvailable || !data.sendDirectMessage) return;
 
 		try {
 			const target = await entry.fetchUser();
@@ -401,6 +408,7 @@ export declare namespace ModerationAction {
 		type: Type;
 		logPrefix: string;
 		isUndoActionAvailable: boolean;
+		isDirectMessageAvailable?: boolean;
 		minimumDuration?: number;
 		maximumDuration?: number;
 		durationRequired?: boolean;

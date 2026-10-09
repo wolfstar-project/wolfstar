@@ -14,7 +14,8 @@ export const enum TypeVariation {
 	RoleAdd,
 	RoleRemove,
 	RestrictedEmoji,
-	Timeout
+	Timeout,
+	Note
 }
 
 export const enum TypeMetadata {

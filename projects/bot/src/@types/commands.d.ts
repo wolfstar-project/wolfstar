@@ -151,6 +151,11 @@ declare module '@wolfstar/http-framework' {
       reason?: string;
       user: TransformedArguments.User;
     };
+    'note': {
+      message?: string;
+      reason?: string;
+      user: TransformedArguments.User;
+    };
     'permission-nodes add': {
       command: string;
       target: TransformedArguments.Mentionable;

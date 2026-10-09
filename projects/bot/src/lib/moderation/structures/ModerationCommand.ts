@@ -525,8 +525,8 @@ export type ModerationBuilder = SlashCommandOptionsOnlyBuilder | SlashCommandSub
  * | `duration` | string     | the action can be scheduled, required if it needs one       |
  * | `reason`   | string     | always                                                      |
  * | `image`    | attachment | always                                                      |
- * | `dm`       | boolean    | always                                                      |
- * | `authored` | boolean    | always                                                      |
+ * | `dm`       | boolean    | the user can be told about the action                       |
+ * | `authored` | boolean    | the user can be told about the action                       |
  *
  * Their names and descriptions are the `commands/shared:optionsUser`, `optionsDuration`, `optionsReason`,
  * `optionsMessage`, `optionsDm` and `optionsAuthored` keys (`…Name` and `…Description`).
@@ -578,8 +578,12 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 
 	if (options.optionalOptions) result = options.optionalOptions(result);
 
+	result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsMessage').setMaxLength(150).setRequired(false));
+
+	// `dm` and `authored` only shape the direct message, which an action that never sends one has no use for:
+	if (!action.isDirectMessageAvailable) return result;
+
 	return result
-		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsMessage').setMaxLength(150).setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDm').setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }

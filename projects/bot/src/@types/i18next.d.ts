@@ -1326,6 +1326,20 @@ declare module "i18next" {
           ];
           examples: ["@Sarah", "@Sarah Spamming general chat."];
         };
+        noteDescription: "Add a note to a member, which they are never told about.";
+        noteExtended: {
+          usages: ["User", "User Reason", "User Reason Message"];
+          explainedUsage: [
+            ["User", "The member to add the note to."],
+            [
+              "Reason",
+              "The note itself, which is shown in the history of the member and in the moderation log.",
+            ],
+            ["Message", "The link or the ID of a message to attach to the note."],
+          ];
+          extendedHelp: "This command requires **{{ModerateMembers, permissions}}**.\nA note is a case that is not a punishment: the member is never told about it, whatever the settings of the moderation direct messages say, and it does not count as a warning.\nIt has no duration and there is nothing to undo, but it can be edited and archived like any other case.";
+          examples: ["@Sarah", "@Sarah Was told to keep the voice chat clean."];
+        };
         muteDescription: "Mute or unmute a user, or prepare the mute system.";
         muteAddDescription: "Mute a user in all text and voice channels.";
         muteExtended: {
@@ -1899,6 +1913,7 @@ declare module "i18next" {
         muteAddName: "add";
         muteRemoveName: "remove";
         muteCreateName: "create";
+        noteName: "note";
         timeoutName: "timeout";
         timeoutAddName: "add";
         timeoutRemoveName: "remove";
@@ -3050,6 +3065,7 @@ declare module "i18next" {
         typeBan: "Ban";
         typeKick: "Kick";
         typeMute: "Mute";
+        typeNote: "Note";
         typeRestrictedAttachment: "Attachment Restriction";
         typeRestrictedEmbed: "Embed Restriction";
         typeRestrictedEmoji: "Emoji Restriction";
