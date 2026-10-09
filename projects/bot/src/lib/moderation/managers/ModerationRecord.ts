@@ -28,7 +28,7 @@ export type ModerationRow = Omit<ModerationData, 'guild'>;
  *   ({@linkcode TypeEncodedMarker}) that tells that the type is encoded.
  * - `duration` is stored in seconds, `0` when the case is not temporary.
  *
- * `messageReference` and `extraData` are not stored, they are only kept by the cache of
+ * `messageReference` and `extraData` are stored apart, in `ModerationCaseData`, by
  * the {@linkcode ModerationManager}.
  */
 export interface ModerationRecord {

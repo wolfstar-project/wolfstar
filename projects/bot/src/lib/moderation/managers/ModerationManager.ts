@@ -11,6 +11,7 @@ import { isNullish } from '@sapphire/utilities';
 import { UserError, container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
+import { deleteModerationCaseData, fetchModerationCaseData, fetchModerationCasesData, setModerationCaseData } from 'wolfstar-database';
 
 enum CacheActions {
 	None,
@@ -177,6 +178,7 @@ export class ModerationManager {
 
 		// Delete the entry from the DB and the cache
 		await this.#table.where({ id: entry.id, guildId: this.#guildId }).deleteAndCount();
+		await deleteModerationCaseData(container.prisma, this.guild.id, entry.id);
 		this.#cache.delete(entry.id);
 
 		return entry;
@@ -345,7 +347,9 @@ export class ModerationManager {
 
 	async #fetchSingle(id: number): Promise<ModerationManagerEntry | null> {
 		const row = await this.#table.where({ id, guildId: this.#guildId }).first();
-		return row && ModerationManagerEntry.from(this.guild, row);
+		if (!row) return null;
+
+		return ModerationManagerEntry.from(this.guild, row, await fetchModerationCaseData(container.prisma.orm, this.guild.id, id));
 	}
 
 	#getMany(options: ModerationManager.FetchOptions): SortedCollection<number, ModerationManagerEntry> {
@@ -363,16 +367,19 @@ export class ModerationManager {
 		if (options.userId) collection = collection.where({ targetId: BigInt(options.userId) });
 
 		const rows = await collection.all();
-		return rows.map((row) => ModerationManagerEntry.from(this.guild, row));
+		const stored = await fetchModerationCasesData(container.prisma.orm, this.guild.id);
+		return rows.map((row) => ModerationManagerEntry.from(this.guild, row, stored.get(row.id)));
 	}
 
 	async #fetchAll(): Promise<ModerationManagerEntry[]> {
 		const rows = await this.#table.where({ guildId: this.#guildId }).all();
-		return rows.map((row) => ModerationManagerEntry.from(this.guild, row));
+		const stored = await fetchModerationCasesData(container.prisma.orm, this.guild.id);
+		return rows.map((row) => ModerationManagerEntry.from(this.guild, row, stored.get(row.id)));
 	}
 
 	async #performInsert(entry: ModerationManager.Entry) {
 		await this.#table.create(toModerationRow(entry.toJSON()));
+		await this.#storeCaseData(entry);
 
 		container.client.emit(Events.ModerationEntryAdd, entry);
 		return entry;
@@ -384,9 +391,36 @@ export class ModerationManager {
 
 		const clone = entry.clone();
 		entry.patch(data);
+		if (data.messageReference !== undefined) await this.#storeCaseData(entry);
 		container.client.emit(Events.ModerationEntryEdit, clone, entry);
 
 		return entry;
+	}
+
+	/**
+	 * Stores what the table of the cases has no column for, the extra data of the entry and the message it is about, so
+	 * a case read after a restart still restores the roles a mute took away and links to its message.
+	 *
+	 * @remarks A case is not lost for it: a failure is logged, and the entry keeps what it holds while it is cached.
+	 */
+	async #storeCaseData(entry: ModerationManager.Entry) {
+		const reference = entry.messageReference;
+		const extraData = (entry.extraData ?? null) as unknown;
+		const hasExtraData = Array.isArray(extraData) ? extraData.length > 0 : extraData !== null;
+
+		try {
+			if (!hasExtraData && reference === null) {
+				await deleteModerationCaseData(container.prisma, this.guild.id, entry.id);
+				return;
+			}
+
+			await setModerationCaseData(container.prisma, this.guild.id, entry.id, {
+				extraData: hasExtraData ? extraData : null,
+				message: reference === null ? null : { channelId: reference.channelId, messageId: reference.messageId }
+			});
+		} catch (error) {
+			container.logger.error(`[MODERATION] Could not store the data of case ${entry.id} of ${this.guild.id}:`, error);
+		}
 	}
 
 	/**

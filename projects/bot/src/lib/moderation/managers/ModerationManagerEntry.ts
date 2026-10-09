@@ -7,6 +7,7 @@ import { isNullishOrZero } from '@sapphire/utilities';
 import { UserError, container } from '@wolfstar/http-framework';
 import type { Guild, User } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
+import type { ModerationCaseData } from 'wolfstar-database';
 
 /**
  * Represents a moderation manager entry.
@@ -289,7 +290,12 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 		}
 	}
 
-	public static from(guild: Guild, entity: ModerationRow | ModerationRecord) {
+	/**
+	 * Builds an entry from a row of the table.
+	 *
+	 * @param stored - What the case holds besides its row (`ModerationCaseData`), when it holds something.
+	 */
+	public static from(guild: Guild, entity: ModerationRow | ModerationRecord, stored?: Pick<ModerationCaseData, 'extraData' | 'message'> | null) {
 		const record = 'action' in entity ? fromModerationRow(entity) : entity;
 		if (guild.id !== record.guildId) {
 			throw new UserError({ identifier: 'arguments:caseNotInThisGuild', context: { parameter: record.id } });
@@ -299,13 +305,13 @@ export class ModerationManagerEntry<Type extends TypeVariation = TypeVariation> 
 			id: record.id,
 			createdAt: record.createdAt,
 			duration: record.duration,
-			// The table does not store the extra data nor the message:
-			extraData: null as any,
+			// The table stores neither the extra data nor the message, `ModerationCaseData` does:
+			extraData: (stored?.extraData ?? null) as any,
 			guild,
 			moderator: record.moderatorId,
 			user: record.userId,
 			reason: record.reason,
-			messageReference: null,
+			messageReference: stored?.message ?? null,
 			type: record.type,
 			metadata: record.metadata
 		});
