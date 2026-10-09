@@ -2,6 +2,7 @@ import { AutoModerationRoot, editRuleListEntry, resolveDurationOption } from '#l
 import type { AutoModerationRuleUpdate } from '#lib/moderation/automod/rules';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { translateKey, type TranslationKey } from '#lib/structures/commands/utils';
+import { isNullishOrZero } from '@sapphire/utilities';
 import type { TFunction } from '@wolfstar/plugin-i18next';
 import {
 	AutoModerationRuleLimits,
@@ -91,7 +92,7 @@ export function parseAutoModerationMenuTiming(t: TFunction, read: (key: string) 
 	if (durationInput !== null) {
 		const duration = resolveDurationOption(t, durationInput.trim(), AutoModerationRuleLimits.hardActionDuration);
 		if (typeof duration === 'object' && duration !== null) return { ok: false, error: duration.error };
-		update.hardActionDuration = isNullishOrZeroNumber(duration) ? null : duration;
+		update.hardActionDuration = isNullishOrZero(duration) ? null : duration;
 	}
 
 	const thresholdInput = read(inputs.threshold);
@@ -157,11 +158,11 @@ export function parseAutoModerationMenuEscalation(t: TFunction, read: (key: stri
 		const duration = resolveDurationOption(t, rest.join(' '), AutoModerationRuleLimits.hardActionDuration);
 		if (typeof duration === 'object' && duration !== null) return { ok: false, error: duration.error };
 		// A timeout cannot be permanent, Discord takes none without an end:
-		if (action === 'Timeout' && isNullishOrZeroNumber(duration)) {
+		if (action === 'Timeout' && isNullishOrZero(duration)) {
 			return { ok: false, error: translateKey(t, `${Root}:menuDurationTimeout`) };
 		}
 
-		escalation.push({ action, duration: isNullishOrZeroNumber(duration) ? null : duration });
+		escalation.push({ action, duration: isNullishOrZero(duration) ? null : duration });
 	}
 
 	const period = resolveDurationOption(t, read(inputs.period)?.trim(), AutoModerationRuleLimits.escalationDuration);
@@ -170,10 +171,6 @@ export function parseAutoModerationMenuEscalation(t: TFunction, read: (key: stri
 	if (period === null && escalation.length > 0) return { ok: false, error: translateKey(t, `${Root}:menuEscalationPeriodRequired`) };
 
 	return { ok: true, value: { escalation, ...(period === null ? {} : { escalationDuration: period }) } };
-}
-
-function isNullishOrZeroNumber(value: number | null): value is null | 0 {
-	return value === null || value === 0;
 }
 
 /**
