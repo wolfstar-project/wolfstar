@@ -264,6 +264,9 @@ importers:
       '@sapphire/bitfield':
         specifier: ^1.2.4
         version: 1.2.4
+      '@sapphire/fetch':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@sapphire/pieces':
         specifier: ^4.4.1
         version: 4.4.1
