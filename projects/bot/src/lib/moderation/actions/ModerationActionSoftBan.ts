@@ -1,3 +1,4 @@
+import { fetchCachedMemberRoleIds } from '#lib/moderation/common/roles';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -13,6 +14,12 @@ export class ModerationActionSoftban extends ModerationAction<number, TypeVariat
 			isUndoActionAvailable: false,
 			logPrefix: 'Moderation => Softban'
 		});
+	}
+
+	protected override async resolveOptionsExtraData(guild: Guild, options: ModerationAction.PartialOptions) {
+		// The member is gone once the action is taken, so the roles are read now for the case to show them:
+		const roles = await fetchCachedMemberRoleIds(guild, typeof options.user === 'string' ? options.user : options.user.id);
+		return roles.length === 0 ? null : roles;
 	}
 
 	protected override async handleApplyPost(guild: Guild, entry: ModerationAction.Entry, data: ModerationAction.Data<number>) {
