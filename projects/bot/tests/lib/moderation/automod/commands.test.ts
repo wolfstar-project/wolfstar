@@ -43,6 +43,13 @@ describe('auto-moderation commands', () => {
 			expect(resolveRuleListEntry(createRule('Words', 'Words'), ' BadWord ')).toMatchObject({ key: 'words', value: 'badword' });
 		});
 
+		test('GIVEN a phishing rule THEN a hostname is stored the way the rule compares it, without its `www.`', () => {
+			const rule = createRule('Phishing', 'Phishing', '1', { allowed: [] });
+
+			expect(resolveRuleListEntry(rule, 'https://WWW.Example.com/login')?.value).toBe('example.com');
+			expect(resolveRuleListEntry(rule, 'www.example.com')?.value).toBe('example.com');
+		});
+
 		test('GIVEN a links rule THEN a link stands for its hostname', () => {
 			const rule = createRule('Links', 'Links', '1', { allowed: ['example.com'] });
 

@@ -17,10 +17,15 @@ export interface FetchChannelMessagesOptions {
 }
 
 /**
+ * The most pages of a hundred messages a scan reads, so a filter that finds nothing does not read a whole channel.
+ */
+const MaximumPages = 10;
+
+/**
  * Collects the messages of a channel that pass a filter, reading its history a page at a time.
  *
- * @remarks It stops at the first page that has nothing to collect, and waits between the pages, since Discord rate
- * limits the history requests.
+ * @remarks It reads until it collected enough, the history ended or {@linkcode MaximumPages} pages were read, and waits
+ * between the pages, since Discord rate limits the history requests.
  */
 export async function fetchChannelMessages(channelId: string, options: FetchChannelMessagesOptions): Promise<Message[]> {
 	const { limit, position, filter } = options;
@@ -30,20 +35,24 @@ export async function fetchChannelMessages(channelId: string, options: FetchChan
 	let cursor = options.positionId;
 	let remaining = limit;
 
-	while (remaining > 0) {
+	for (let pages = 0; remaining > 0 && pages < MaximumPages; pages++) {
 		const page = await manager.list(channelId, { limit: 100, [position]: cursor });
-		const filtered = page.filter((message) => filter(message)).sort((a, b) => b.createdTimestamp - a.createdTimestamp);
+		if (page.length === 0) break;
 
-		for (const message of filtered) {
+		const sorted = [...page].sort((a, b) => b.createdTimestamp - a.createdTimestamp);
+		for (const message of sorted) {
 			if (remaining <= 0) break;
+			if (!filter(message)) continue;
+
 			collected.set(message.id, message);
 			remaining--;
 		}
 
-		// Keep paging while the page had something to delete, Discord rate limits the history requests:
-		if (remaining <= 0 || filtered.length === 0) break;
-		cursor = position === 'before' ? filtered.at(-1)!.id : filtered[0].id;
-		await sleep(2000);
+		// The next page starts where this one ended, whatever it had to collect: the messages a filter looks for may
+		// be further away, and a cursor on a collected message would read the ones between them again.
+		cursor = position === 'before' ? sorted.at(-1)!.id : sorted[0].id;
+		if (remaining > 0 && page.length === 100) await sleep(2000);
+		else break;
 	}
 
 	return [...collected.values()];

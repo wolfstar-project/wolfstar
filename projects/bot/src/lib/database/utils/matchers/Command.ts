@@ -39,8 +39,15 @@ function getNameSpaceDetails(name: string): readonly [string | null, string] {
 	return [name.substring(0, index), name.substring(index + 1)];
 }
 
+/**
+ * The commands that were renamed, by the name the permission nodes of a guild may still hold: a node that denies the
+ * old command denies the one that took its place.
+ */
+const RenamedCommands: Record<string, string> = { conf: 'settings' };
+
 function matchName(name: string, command: Command): boolean {
-	return command.name.toLowerCase() === name.toLowerCase();
+	const lowered = name.toLowerCase();
+	return command.name.toLowerCase() === (RenamedCommands[lowered] ?? lowered);
 }
 
 function matchNameAndCategory(name: string, category: string, command: Command): boolean {

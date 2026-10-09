@@ -29,9 +29,15 @@ export class UserRoute extends Route {
 		try {
 			// The options are merged on the rule the database has inside the queue, so two requests that change different
 			// options do not restore each other's old value:
-			return response.json(
-				await updateAutoModerationRule(guildId, rule.id, (current) => parseAutoModerationRulePatch(rule.type, body, current.options).data!)
-			);
+			// The rule the database has may be ahead of the cached one, and refuse a body the cached one accepted:
+			let queuedErrors: string[] | undefined;
+			const updated = await updateAutoModerationRule(guildId, rule.id, (current) => {
+				const parsed = parseAutoModerationRulePatch(rule.type, body, current.options);
+				queuedErrors = parsed.errors;
+				return parsed.data ?? null;
+			});
+			if (queuedErrors) return response.status(HttpCodes.BadRequest).json(queuedErrors);
+			return response.json(updated);
 		} catch (error) {
 			return sendAutoModerationRuleError(response, error);
 		}

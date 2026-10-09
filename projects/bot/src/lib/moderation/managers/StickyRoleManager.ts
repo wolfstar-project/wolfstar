@@ -47,13 +47,16 @@ export class StickyRoleManager {
 		}
 
 		// 3.0.b. Write the fixed roles array:
+		const removed = new Set(entry.filter((role) => !roles.includes(role)));
 		let result: readonly string[] = [];
 		await writeSettings(this.#guild, (settings) => {
 			// The entry may have been removed while cleaning the roles:
-			if (!settings.stickyRoles.some((sticky) => sticky.user === userId)) return {};
+			const current = settings.stickyRoles.find((sticky) => sticky.user === userId);
+			if (!current) return {};
 
-			result = roles;
-			return { stickyRoles: this.#patch(settings.stickyRoles, userId, roles) };
+			// Or a role added to it, so the roles that are gone are taken out of the entry as it is now:
+			result = current.roles.filter((role) => !removed.has(role));
+			return { stickyRoles: this.#patch(settings.stickyRoles, userId, result) };
 		});
 
 		// 4.0. Return the updated roles:

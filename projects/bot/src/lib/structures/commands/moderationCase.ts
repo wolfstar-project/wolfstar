@@ -135,7 +135,8 @@ export function listOverview(t: TFunction<AnyNamespace>, entries: ModerationMana
 				++kicks;
 				break;
 			case TypeVariation.Warning:
-				++warnings;
+				// A warning that was removed, or that expired, no longer counts:
+				if (!entry.isCompleted()) ++warnings;
 				break;
 			default:
 				break;

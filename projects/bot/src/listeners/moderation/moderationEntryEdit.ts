@@ -35,6 +35,8 @@ export class UserListener extends Listener {
 		} else {
 			// If the new duration is not null, reschedule the previous task:
 			await task.changeDelay(Math.max(0, entry.expiresTimestamp! - Date.now()));
+			// The undo writes the duration of the case in its reason, which is the one it has now:
+			await task.updateData({ ...task.data, duration: entry.duration });
 		}
 	}
 
@@ -94,7 +96,8 @@ export class UserListener extends Listener {
 			message.attachments.size === 0 &&
 			message.embeds.length === 1 &&
 			this.#validateModerationLogMessageEmbed(message.embeds[0]) &&
-			message.embeds[0].footer!.text.includes(caseId.toString())
+			// The whole ID: `Case 1` is not the log of case 12.
+			new RegExp(`(?<!\\d)${caseId}(?!\\d)`).test(message.embeds[0].footer!.text)
 		);
 	}
 

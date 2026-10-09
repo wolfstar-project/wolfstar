@@ -25,6 +25,14 @@ describe('CommandMatcher', () => {
 			expect(CommandMatcher.match('Tools.Dictionary.*', commandWithSubCategory)).toBe(true);
 		});
 
+		test('GIVEN the old name of a renamed command THEN it matches the command that took its place', () => {
+			const settings = createCommand('settings', 'Management');
+
+			expect(CommandMatcher.match('conf', settings)).toBe(true);
+			expect(CommandMatcher.match('Management.conf', settings)).toBe(true);
+			expect(CommandMatcher.match('conf', command)).toBe(false);
+		});
+
 		test('GIVEN non-namespaced match with incorrect command name THEN fails test', () => {
 			expect(CommandMatcher.match('eval', command)).toBe(false);
 		});

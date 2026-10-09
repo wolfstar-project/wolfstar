@@ -4,6 +4,7 @@ import type { UndoTaskName } from '#lib/moderation/common';
 import { translateKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
 import type { SchemaKeys } from '#utils/moderationConstants';
+import { DiscordAPIError } from '@discordjs/rest';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import { fetchT } from '@wolfstar/plugin-i18next';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
@@ -41,8 +42,11 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		// Run the abstract handle function.
 		try {
 			await this.handle(guild, data);
-		} catch {
-			/* noop */
+		} catch (error) {
+			// What Discord refuses for good (the ban is gone, the role was deleted, a permission is missing) is not
+			// tried again, and the case is completed. Anything else fails the job, which is tried again later.
+			if (!isPermanentError(error)) throw error;
+			this.container.logger.debug(`[MODERATION] The undo of case ${data.caseID} of ${guild.id} was refused:`, error);
 		}
 
 		// Mark the moderation entry as complete.
@@ -111,4 +115,12 @@ export interface ModerationData<T = unknown> {
 
 declare module '@wolfstar/plugin-scheduled-tasks' {
 	interface ScheduledTasks extends Record<UndoTaskName, ModerationData> {}
+}
+
+/**
+ * Whether an error is an answer of Discord that the same request would get again: a client error that is not a rate
+ * limit. A network failure or a server error is not.
+ */
+function isPermanentError(error: unknown): boolean {
+	return error instanceof DiscordAPIError && error.status >= 400 && error.status < 500 && error.status !== 429;
 }

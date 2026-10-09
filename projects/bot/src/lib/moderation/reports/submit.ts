@@ -72,14 +72,20 @@ export async function submitReport(
 		settings.language
 	);
 
-	const guild = await container.gatewayClient.guilds.fetch(guildId);
-	const logger = await getLogger(guild);
-	const sent = await logger.send({
-		key: 'reportsChannel',
-		channelId: settings.reportsChannel,
-		// The report is for the moderators, so it is written in the language of the guild:
-		makeMessage: async () => renderReport(await fetchGuildTranslator(guildId), report, settings.reportsRole)
-	});
+	// Whatever goes wrong while the report is sent, it was not received:
+	let sent = false;
+	try {
+		const guild = await container.gatewayClient.guilds.fetch(guildId);
+		const logger = await getLogger(guild);
+		sent = await logger.send({
+			key: 'reportsChannel',
+			channelId: settings.reportsChannel,
+			// The report is for the moderators, so it is written in the language of the guild:
+			makeMessage: async () => renderReport(await fetchGuildTranslator(guildId), report, settings.reportsRole)
+		});
+	} catch (error) {
+		container.logger.error(`[REPORTS] Could not send the report ${report.id}:`, error);
+	}
 
 	if (!sent) {
 		// The member is not made to wait, nor the message kept from another report, for a report nobody received:

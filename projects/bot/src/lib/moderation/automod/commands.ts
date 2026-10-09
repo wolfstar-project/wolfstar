@@ -4,6 +4,7 @@ import {
 	getAutoModerationRuleWordFilter,
 	readAutoModerationRules
 } from '#lib/moderation/automod/rules';
+import { normalizeHostname } from '#lib/moderation/automod/phishing';
 import { normalizeAutoModerationRuleWord } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
@@ -143,7 +144,8 @@ export function resolveRuleListEntry(rule: AutoModerationRule, input: string): {
 			const { allowed } = (rule as AutoModerationRule<'Links' | 'Phishing'>).options;
 			// A full link stands for its hostname:
 			const hostname = URL.canParse(value) ? new URL(value).hostname : value;
-			return { key: 'allowed', list: allowed, value: hostname.toLowerCase() };
+			// The phishing rule compares the hostnames without their `www.`, so an allowed one is stored the same way:
+			return { key: 'allowed', list: allowed, value: rule.type === 'Phishing' ? normalizeHostname(hostname) : hostname.toLowerCase() };
 		}
 		case 'Invites': {
 			const { allowedCodes, allowedGuilds } = (rule as AutoModerationRule<'Invites'>).options;

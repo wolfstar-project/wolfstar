@@ -68,7 +68,9 @@ export class UserRoute extends Route {
 		if (!Array.isArray(value)) throw new Error('Expected an array.');
 
 		const { serializer } = ctx.entry;
-		return Promise.all(value.map((value) => serializer.isValid(value, ctx)));
+		// Every value has to be valid, an array of results is always truthy:
+		const results = await Promise.all(value.map((value) => serializer.isValid(value, ctx)));
+		return results.every(Boolean);
 	}
 
 	private async validateAll(entity: ReadonlyGuildData, pairs: readonly [SchemaDataKey, GuildDataValue][]) {

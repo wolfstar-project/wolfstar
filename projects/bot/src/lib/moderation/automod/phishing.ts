@@ -13,6 +13,9 @@ const RefreshInterval = 60 * 60 * 1000;
 const RetryInterval = 5 * 60 * 1000;
 const FetchTimeout = 15_000;
 
+/** The smallest share of the hostnames the bot has that a list read again must have to take their place. */
+const MinimumRefreshRatio = 0.5;
+
 let hostnames: ReadonlySet<string> = new Set(PhishingHostnames);
 let nextRefresh = 0;
 let refreshing: Promise<void> | null = null;
@@ -61,7 +64,10 @@ export function getPhishingHostnames(): ReadonlySet<string> {
 async function refresh() {
 	try {
 		const data = await fetch<unknown>(PhishingListUrl, { signal: AbortSignal.timeout(FetchTimeout) }, FetchResultTypes.JSON);
-		hostnames = parsePhishingList(data);
+		const list = parsePhishingList(data);
+		// A list that lost most of its hostnames is a broken answer, not an update: the last one is kept.
+		if (list.size < hostnames.size * MinimumRefreshRatio) throw new Error(`The list of phishing links only has ${list.size} hostnames.`);
+		hostnames = list;
 		nextRefresh = Date.now() + RefreshInterval;
 	} catch (error) {
 		nextRefresh = Date.now() + RetryInterval;

@@ -23,6 +23,8 @@ COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node pnpm-workspace.yaml .
 COPY --chown=node:node package.json .
 COPY --chown=node:node .npmrc .
+# The patches `pnpm-workspace.yaml` lists are applied on install:
+COPY --chown=node:node patches/ patches/
 # pnpm runs the root `prepare` script on install; .husky/install.mjs is what
 # reads CI=true to opt out, so it has to exist.
 COPY --chown=node:node .husky/ .husky/

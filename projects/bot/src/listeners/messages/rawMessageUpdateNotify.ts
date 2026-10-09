@@ -75,8 +75,11 @@ export class UserListener extends EventGatewayListener<'messageUpdate'> {
 		// If it went from not empty to empty, return the old strikethrough
 		if (!oldEmpty && currentEmpty) return strikethrough(old);
 		// If both are not empty, return the difference
-		return diffWordsWithSpace(escapeMarkdown(old), escapeMarkdown(current))
-			.map((result) => (result.added ? bold(result.value) : result.removed ? strikethrough(result.value) : result.value))
-			.join(' ');
+		return (
+			diffWordsWithSpace(escapeMarkdown(old), escapeMarkdown(current))
+				.map((result) => (result.added ? bold(result.value) : result.removed ? strikethrough(result.value) : result.value))
+				// The fragments hold the spaces of the text, joining them with another one would double each:
+				.join('')
+		);
 	}
 }
