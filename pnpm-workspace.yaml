@@ -17,7 +17,17 @@ overrides:
 
 dedupePeers: true
 
+# Moved from .npmrc: pnpm >= 11 only reads auth/registry settings there.
+shamefullyHoist: true
+hoistPattern:
+    - '*prisma*'
+ignoreWorkspaceRootCheck: true
+
 shellEmulator: true
+
+# Never auto-install from `pnpm run`/`pnpm start`: the production image has no writable store,
+# so a start command like Railway's `pnpm start` would crash with EACCES on /var/cache/pnpm.
+verifyDepsBeforeRun: false
 
 # Delay installs of very new releases by 24 hours (1440 minutes) as a supply-chain safety buffer.
 minimumReleaseAge: 1440
