@@ -32,7 +32,7 @@ export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[numb
  * - `edit`: opens a modal: `name`, `add` and `remove` (the list), `numbers`, `duration`, `threshold` or `escalation`.
  * - `submit`: the modal `edit` opened, with the same argument.
  * - `clear`: empties the list of the rule.
- * - `roles` and `channels`: the select menus of the exemptions.
+ * - `roles` and `channels`: the select menus of the exemptions, the argument is the mark of the list they showed.
  * - `delete`: asks whether to delete the rule, and `confirm` deletes it.
  */
 export const AutoModerationMenuVerbs = [

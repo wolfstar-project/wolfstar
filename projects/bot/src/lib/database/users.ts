@@ -1,3 +1,4 @@
+import { withSharedLock } from '#utils/locks';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 
@@ -19,7 +20,10 @@ export async function fetchUserReportEnabled(userId: Snowflake): Promise<boolean
  * @returns The new value.
  */
 export async function toggleUserReportEnabled(userId: Snowflake): Promise<boolean> {
-	const report = !(await fetchUserReportEnabled(userId));
-	await container.prisma.orm.public.User.upsert({ create: { id: BigInt(userId), report }, update: { report } });
-	return report;
+	// Read and written as one step, so two toggles at once flip the preference twice:
+	return withSharedLock(`user:${userId}`, async () => {
+		const report = !(await fetchUserReportEnabled(userId));
+		await container.prisma.orm.public.User.upsert({ create: { id: BigInt(userId), report }, update: { report } });
+		return report;
+	});
 }

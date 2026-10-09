@@ -1,5 +1,6 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
+import { acquireSharedLock } from '#utils/locks';
 import { fetchGuildData, getDefaultGuildSettings, writeGuildData, type GuildData, type ReadonlyGuildData } from 'wolfstar-database';
 import { AsyncQueue } from '@sapphire/async-queue';
 import type { Awaitable } from '@sapphire/utilities';
@@ -19,16 +20,12 @@ export function serializeSettings(data: ReadonlyGuildData, space?: string | numb
 export function deleteSettingsCached(guild: GuildResolvable) {
 	const id = resolveGuildId(guild);
 	locks.delete(id);
-	cache.delete(id);
-	deleteSettingsContext(id);
+	invalidate(id);
 }
 
 // The settings are cached by every shard process, so a write in one of them makes the copies of the others stale. The
 // lock is kept: a transaction of this process may be holding it.
-onShardMessage('settingsUpdate', ({ guildId }) => {
-	cache.delete(guildId);
-	deleteSettingsContext(guildId);
-});
+onShardMessage('settingsUpdate', ({ guildId }) => invalidate(guildId));
 
 export function readSettings(guild: GuildResolvable): Awaitable<ReadonlyGuildData> {
 	const id = resolveGuildId(guild);
@@ -73,10 +70,22 @@ export async function writeSettingsTransaction(guild: GuildResolvable) {
 	// Acquire a write lock:
 	await queue.wait();
 
-	// Fetch the entry:
-	const settings = cache.get(id) ?? (await unlockOnThrow(processFetch(id), queue));
+	// The lock of the queue is of this process, the shared one is of every process that writes the settings:
+	const release = await acquireSharedLock(`settings:${id}`);
+	const unlock = () => {
+		queue.shift();
+		void release();
+	};
 
-	return new Transaction(settings, queue);
+	try {
+		// Another process may have written since this one cached the settings, and its notification may not be here
+		// yet: under the shared lock the settings are read again, so the write is made on what the database has.
+		const settings = container.redis?.status === 'ready' ? await processFetch(id, true) : (cache.get(id) ?? (await processFetch(id)));
+		return new Transaction(settings, unlock);
+	} catch (error) {
+		unlock();
+		throw error;
+	}
 }
 
 export class Transaction {
@@ -87,7 +96,7 @@ export class Transaction {
 
 	public constructor(
 		public readonly settings: ReadonlyGuildData,
-		private readonly queue: AsyncQueue
+		private readonly unlock: () => void
 	) {}
 
 	public get hasChanges() {
@@ -137,7 +146,7 @@ export class Transaction {
 			this.#changes = Object.create(null);
 
 			if (this.#locking) {
-				this.queue.shift();
+				this.unlock();
 				this.#locking = false;
 			}
 		}
@@ -145,14 +154,14 @@ export class Transaction {
 
 	public abort() {
 		if (this.#locking) {
-			this.queue.shift();
+			this.unlock();
 			this.#locking = false;
 		}
 	}
 
 	public dispose() {
 		if (this.#locking) {
-			this.queue.shift();
+			this.unlock();
 			this.#locking = false;
 		}
 	}
@@ -162,35 +171,44 @@ export class Transaction {
 	}
 }
 
-async function unlockOnThrow(promise: Promise<ReadonlyGuildData>, lock: AsyncQueue) {
-	try {
-		return await promise;
-	} catch (error) {
-		lock.shift();
-		throw error;
-	}
-}
-
-async function processFetch(id: string): Promise<ReadonlyGuildData> {
+/**
+ * Reads the settings of a guild from the database, once for the callers that ask at the same time.
+ *
+ * @param fresh - Whether a read that is already running is not enough: it may have started before a write.
+ */
+async function processFetch(id: string, fresh = false): Promise<ReadonlyGuildData> {
 	const previous = queue.get(id);
-	if (previous) return previous;
+	if (previous && !fresh) return previous;
 
+	const promise = fetch(id);
+	queue.set(id, promise);
 	try {
-		const promise = fetch(id);
-		queue.set(id, promise);
 		const value = await promise;
 		getSettingsContext(value);
 		return value;
 	} finally {
-		queue.delete(id);
+		if (queue.get(id) === promise) queue.delete(id);
 	}
 }
 
+/**
+ * How many times the settings of a guild were invalidated. A read that started before an invalidation holds what the
+ * database had then, so it does not go in the cache.
+ */
+const generations = new Collection<string, number>();
+
+function invalidate(id: string) {
+	generations.set(id, (generations.get(id) ?? 0) + 1);
+	cache.delete(id);
+	deleteSettingsContext(id);
+}
+
 async function fetch(id: string): Promise<GuildData> {
+	const generation = generations.get(id) ?? 0;
 	// A guild without rows reads as the defaults; its rows are created by the first write:
 	const data =
 		(await fetchGuildData(container.prisma.orm, id)) ?? (Object.assign(Object.create(null), getDefaultGuildSettings(), { id }) as GuildData);
-	cache.set(id, data);
+	if ((generations.get(id) ?? 0) === generation) cache.set(id, data);
 	return data;
 }
 

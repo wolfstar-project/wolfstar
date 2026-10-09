@@ -8,6 +8,7 @@ import {
 	AutoModerationMenuTimingInputs,
 	formatAutoModerationMenuDuration,
 	formatAutoModerationMenuEscalation,
+	getAutoModerationMenuRevision,
 	getAutoModerationMenuNumberFields
 } from '#lib/structures/automod-menu/actions';
 import {
@@ -516,7 +517,7 @@ function renderExemptions({ t }: AutoModerationMenuContext, rule: AutoModeration
 	return [
 		...render('Roles', rule.ignoredRoles, roleMention, {
 			type: ComponentType.RoleSelect,
-			custom_id: id('roles'),
+			custom_id: id('roles', getAutoModerationMenuRevision(rule.ignoredRoles)),
 			placeholder: cutText(translateKey(t, `${Root}:menuExemptRolesPlaceholder`), 150),
 			min_values: 0,
 			max_values: MaximumSelectValues,
@@ -524,7 +525,7 @@ function renderExemptions({ t }: AutoModerationMenuContext, rule: AutoModeration
 		}),
 		...render('Channels', rule.ignoredChannels, channelMention, {
 			type: ComponentType.ChannelSelect,
-			custom_id: id('channels'),
+			custom_id: id('channels', getAutoModerationMenuRevision(rule.ignoredChannels)),
 			placeholder: cutText(translateKey(t, `${Root}:menuExemptChannelsPlaceholder`), 150),
 			min_values: 0,
 			max_values: MaximumSelectValues,

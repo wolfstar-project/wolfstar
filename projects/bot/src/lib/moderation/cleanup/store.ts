@@ -1,5 +1,6 @@
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { Collection } from '@discordjs/collection';
+import { withSharedLock } from '#utils/locks';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 import {
@@ -78,12 +79,15 @@ function changed(guildId: Snowflake) {
  */
 export async function enableAutoDelete(guildId: Snowflake, data: AutoDeleteData): Promise<AutoDelete> {
 	const { prisma } = container;
-	const existing = await fetchAutoDeletes(prisma.orm, guildId);
-	if (existing.length >= MaximumAutoDeleteChannels && !existing.some((config) => config.channelId === data.channelId)) {
-		throw new CleanupLimitError(MaximumAutoDeleteChannels);
-	}
+	// The count and the write are one step for every process, so two channels enabled at once do not both take the last slot:
+	const config = await withSharedLock(`cleanup:${guildId}`, async () => {
+		const existing = await fetchAutoDeletes(prisma.orm, guildId);
+		if (existing.length >= MaximumAutoDeleteChannels && !existing.some((config) => config.channelId === data.channelId)) {
+			throw new CleanupLimitError(MaximumAutoDeleteChannels);
+		}
 
-	const config = await setAutoDelete(prisma, guildId, data);
+		return setAutoDelete(prisma, guildId, data);
+	});
 	changed(guildId);
 	return config;
 }
@@ -115,12 +119,14 @@ export function readAutoPurges(guildId: Snowflake): Promise<AutoPurge[]> {
  */
 export async function enableAutoPurge(guildId: Snowflake, data: AutoPurgeData): Promise<AutoPurge> {
 	const { prisma } = container;
-	const existing = await fetchAutoPurges(prisma.orm, guildId);
-	if (existing.length >= MaximumAutoPurgeChannels && !existing.some((purge) => purge.channelId === data.channelId)) {
-		throw new CleanupLimitError(MaximumAutoPurgeChannels);
-	}
+	return withSharedLock(`cleanup:${guildId}`, async () => {
+		const existing = await fetchAutoPurges(prisma.orm, guildId);
+		if (existing.length >= MaximumAutoPurgeChannels && !existing.some((purge) => purge.channelId === data.channelId)) {
+			throw new CleanupLimitError(MaximumAutoPurgeChannels);
+		}
 
-	return setAutoPurge(prisma, guildId, data, Date.now() + data.interval);
+		return setAutoPurge(prisma, guildId, data, Date.now() + data.interval);
+	});
 }
 
 /**

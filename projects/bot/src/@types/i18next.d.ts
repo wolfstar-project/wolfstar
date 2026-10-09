@@ -322,6 +322,7 @@ declare module "i18next" {
         menuExemptChannels: "Channels whitelist";
         menuExemptChannelsDescription: "Messages in these channels are ignored by the rule.";
         menuExemptChannelsPlaceholder: "Select the channels";
+        menuExemptStale: "This list was changed by somebody else in the meantime. Here it is as it is now, pick again.";
         menuExemptTooMany: "This list has more than {{maximum, number}} entries, edit it with {{command}}.";
       };
       "commands/case": {

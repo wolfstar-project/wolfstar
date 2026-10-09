@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { AutoModerationRoot, editRuleListEntry, resolveDurationOption } from '#lib/moderation/automod/commands';
 import type { AutoModerationRuleUpdate } from '#lib/moderation/automod/rules';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -281,4 +282,30 @@ export function toggleAutoModerationMenuSwitch(rule: AutoModerationRule, argumen
 	}
 
 	return null;
+}
+
+/**
+ * A short mark of a list of IDs, which the select menus of the exemptions carry in their custom ID: a menu sets the
+ * whole list, so one that was rendered before somebody else changed the list must not write over that change.
+ */
+export function getAutoModerationMenuRevision(ids: readonly string[]): string {
+	return createHash('sha1').update(ids.join(',')).digest('hex').slice(0, 8);
+}
+
+/**
+ * What picking in the select menu of the exemptions changes.
+ *
+ * @param key - The list the menu sets.
+ * @param revision - The mark of the list the menu was rendered with.
+ * @param values - What was picked.
+ * @returns `null` when the list is no longer the one the menu showed.
+ */
+export function setAutoModerationMenuExemptions(
+	rule: AutoModerationRule,
+	key: 'ignoredRoles' | 'ignoredChannels',
+	revision: string,
+	values: readonly string[]
+): AutoModerationRuleUpdate | null {
+	if (getAutoModerationMenuRevision(rule[key]) !== revision) return null;
+	return { [key]: [...values] };
 }

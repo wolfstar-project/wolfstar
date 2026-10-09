@@ -6,6 +6,7 @@ import {
 	encodeAutoModerationMenuId,
 	formatAutoModerationMenuDuration,
 	getAutoModerationMenuNumberFields,
+	getAutoModerationMenuRevision,
 	parseAutoModerationMenuEntries,
 	parseAutoModerationMenuNumbers,
 	parseAutoModerationMenuTiming,
@@ -13,6 +14,7 @@ import {
 	renderAutoModerationModal,
 	renderAutoModerationRule,
 	renderAutoModerationRules,
+	setAutoModerationMenuExemptions,
 	toggleAutoModerationMenuSwitch,
 	type AutoModerationMenuAction,
 	type AutoModerationMenuContext
@@ -280,6 +282,23 @@ describe('auto-moderation menu', () => {
 
 			const parsed = parseAutoModerationMenuTiming(t, read({ duration: formatAutoModerationMenuDuration(93_784_000), threshold: '1' }));
 			expect(parsed).toMatchObject({ ok: true, value: { hardActionDuration: 93_784_000 } });
+		});
+	});
+
+	describe('exemptions', () => {
+		test('GIVEN the list the menu showed THEN what was picked takes its place', () => {
+			const rule = createRule('Links', { ignoredRoles: ['1', '2'] });
+			const revision = getAutoModerationMenuRevision(rule.ignoredRoles);
+
+			expect(setAutoModerationMenuExemptions(rule, 'ignoredRoles', revision, ['2', '3'])).toEqual({ ignoredRoles: ['2', '3'] });
+		});
+
+		test('GIVEN a list that changed since the menu was rendered THEN nothing is written', () => {
+			const revision = getAutoModerationMenuRevision(['1', '2']);
+			const rule = createRule('Links', { ignoredRoles: ['1', '2', '9'] });
+
+			expect(setAutoModerationMenuExemptions(rule, 'ignoredRoles', revision, ['1'])).toBeNull();
+			expect(setAutoModerationMenuExemptions(rule, 'ignoredChannels', revision, ['1'])).toBeNull();
 		});
 	});
 

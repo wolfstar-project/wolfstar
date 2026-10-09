@@ -1,6 +1,7 @@
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { Adder } from '#lib/database/utils/Adder';
 import { WindowCounter } from '#lib/moderation/automod/detectors';
+import { withSharedLock } from '#utils/locks';
 import { create } from '#utils/Security/RegexCreator';
 import { Collection } from '@discordjs/collection';
 import { AsyncQueue } from '@sapphire/async-queue';
@@ -118,7 +119,8 @@ async function write<T>(guildId: Snowflake, callback: (rules: readonly AutoModer
 	const lock = locks.ensure(guildId, () => new AsyncQueue());
 	await lock.wait();
 	try {
-		return await callback(await fetchAutoModerationRules(container.prisma.orm, guildId));
+		// The queue is of this process, the shared lock keeps the other shards and the API from writing meanwhile:
+		return await withSharedLock(`automod:${guildId}`, async () => callback(await fetchAutoModerationRules(container.prisma.orm, guildId)));
 	} finally {
 		lock.shift();
 		if (lock.remaining === 0) locks.delete(guildId);

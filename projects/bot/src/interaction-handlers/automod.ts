@@ -22,6 +22,7 @@ import {
 	renderAutoModerationModal,
 	renderAutoModerationRule,
 	renderAutoModerationRules,
+	setAutoModerationMenuExemptions,
 	toggleAutoModerationMenuSwitch,
 	type AutoModerationMenuAction,
 	type AutoModerationMenuContext,
@@ -122,9 +123,9 @@ export class UserInteractionHandler extends InteractionHandler {
 							: null
 				}));
 			case 'roles':
-				return this.change(component, guildId, context, action, () => ({ update: { ignoredRoles: getSelectValues(component) } }));
+				return this.exempt(component, guildId, context, action, 'ignoredRoles');
 			case 'channels':
-				return this.change(component, guildId, context, action, () => ({ update: { ignoredChannels: getSelectValues(component) } }));
+				return this.exempt(component, guildId, context, action, 'ignoredChannels');
 			default:
 				return fail(getDefaultExpiredReply());
 		}
@@ -240,6 +241,24 @@ export class UserInteractionHandler extends InteractionHandler {
 				default:
 					return { update: null };
 			}
+		});
+	}
+
+	/**
+	 * Sets the roles or the channels a rule leaves alone to what was picked, unless the list changed since the menu
+	 * was rendered: the menu holds the whole list, and would undo what somebody else just did.
+	 */
+	private exempt(
+		interaction: ComponentInteraction,
+		guildId: Snowflake,
+		context: AutoModerationMenuContext,
+		action: AutoModerationMenuAction,
+		key: 'ignoredRoles' | 'ignoredChannels'
+	) {
+		const values = getSelectValues(interaction);
+		return this.change(interaction, guildId, context, action, (rule) => {
+			const update = setAutoModerationMenuExemptions(rule, key, action.argument, values);
+			return update === null ? { update: null, notice: translateKey(context.t, `${Root}:menuExemptStale`) } : { update };
 		});
 	}
 
