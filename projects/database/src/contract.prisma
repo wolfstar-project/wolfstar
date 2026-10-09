@@ -27,6 +27,7 @@ types {
   UniqueRoleSetEntries  = typed.Json("PrismaJson.UniqueRoleSetEntries")
   AuditEventChanges     = typed.Json("PrismaJson.AuditEventChanges")
   AutoModerationRuleOptions = typed.Json("PrismaJson.AutoModerationRuleOptions")
+  AutoModerationRuleEscalation = typed.Json("PrismaJson.AutoModerationRuleEscalation")
 }
 
 namespace public {
@@ -155,6 +156,8 @@ namespace public {
     ignoredRoles       BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_roles")
     ignoredChannels    BigInt[]                               @default([]) @noCheck(elementNotNull) @map("ignored_channels")
     options            AutoModerationRuleOptions              @default(sql`'{}'::jsonb`)
+    escalation         AutoModerationRuleEscalation           @default(sql`'[]'::jsonb`)
+    escalationDuration Int                                    @default(86400000) @map("escalation_duration")
     guild              Guild                                  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationRule_guild_id_fkey", index: false)
 
     @@index([guildId], map: "GuildAutoModerationRule_guild_id_idx")

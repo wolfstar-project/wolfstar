@@ -1,7 +1,12 @@
 import type { Database, Models } from '../../index.js';
 import type { Snowflake } from 'discord-api-types/v10';
 import { isRowId } from '../ids.js';
-import { normalizeAutoModerationRuleOptions, type AutoModerationRule, type AutoModerationRuleData } from './types.js';
+import {
+	normalizeAutoModerationRuleEscalation,
+	normalizeAutoModerationRuleOptions,
+	type AutoModerationRule,
+	type AutoModerationRuleData
+} from './types.js';
 
 type Orm = Database['orm'];
 type Row = Models.public_GuildAutoModerationRule;
@@ -20,7 +25,9 @@ function toRule(row: Pick<Row, keyof AutoModerationRuleData | 'id' | 'guildId'>)
 		thresholdDuration: row.thresholdDuration,
 		ignoredRoles: row.ignoredRoles.map(String),
 		ignoredChannels: row.ignoredChannels.map(String),
-		options: normalizeAutoModerationRuleOptions(row.type, row.options)
+		options: normalizeAutoModerationRuleOptions(row.type, row.options),
+		escalation: normalizeAutoModerationRuleEscalation(row.escalation),
+		escalationDuration: row.escalationDuration
 	} satisfies AutoModerationRule;
 }
 

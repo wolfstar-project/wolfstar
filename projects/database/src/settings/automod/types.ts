@@ -113,6 +113,22 @@ export interface AutoModerationRule<Type extends AutoModerationRuleType = AutoMo
 	ignoredRoles: Snowflake[];
 	ignoredChannels: Snowflake[];
 	options: AutoModerationRuleOptionsMap[Type];
+	/**
+	 * What takes the place of the hard action for the members who keep reaching the threshold: the first step the second
+	 * time, the next one the third time, and the last one from then on. Empty when the hard action never changes.
+	 */
+	escalation: AutoModerationRuleEscalationStep[];
+	/** How long a hard action counts towards the escalation, in milliseconds. */
+	escalationDuration: number;
+}
+
+/**
+ * A step of the escalation of a rule: the hard action to take, and for how long.
+ */
+export interface AutoModerationRuleEscalationStep {
+	action: AutoModerationHardAction;
+	/** How long the hard action lasts, in milliseconds; `null` for a permanent one. */
+	duration: number | null;
 }
 
 /**
@@ -132,8 +148,12 @@ const MaximumDuration = 2 ** 31 - 1;
 export const AutoModerationRuleLimits = {
 	hardActionDuration: { minimum: 0, maximum: MaximumDuration },
 	thresholdMaximum: { minimum: 0, maximum: 100 },
-	thresholdDuration: { minimum: 0, maximum: MaximumDuration }
+	thresholdDuration: { minimum: 0, maximum: MaximumDuration },
+	escalationDuration: { minimum: 60_000, maximum: MaximumDuration }
 } as const;
+
+/** The most steps the escalation of a rule has. */
+export const MaximumAutoModerationRuleEscalationSteps = 10;
 
 /**
  * The limits of the numbers of the options, by type and name.
@@ -207,8 +227,48 @@ export function getDefaultAutoModerationRule<Type extends AutoModerationRuleType
 		thresholdDuration: 60_000,
 		ignoredRoles: [],
 		ignoredChannels: [],
-		options: getDefaultAutoModerationRuleOptions(type)
+		options: getDefaultAutoModerationRuleOptions(type),
+		escalation: [],
+		escalationDuration: 86_400_000
 	};
+}
+
+/**
+ * Reads the escalation of a rule from data that is not trusted (the stored JSON, the body of a request): what is not
+ * a step is dropped, a duration that is not a positive number makes the step permanent, and the steps past
+ * {@linkcode MaximumAutoModerationRuleEscalationSteps} are cut.
+ */
+export function normalizeAutoModerationRuleEscalation(value: unknown): AutoModerationRuleEscalationStep[] {
+	if (!Array.isArray(value)) return [];
+
+	const steps: AutoModerationRuleEscalationStep[] = [];
+	for (const entry of value) {
+		if (typeof entry !== 'object' || entry === null) continue;
+
+		const { action, duration } = entry as { action?: unknown; duration?: unknown };
+		if (!AutoModerationHardActions.includes(action as AutoModerationHardAction)) continue;
+
+		const { maximum } = AutoModerationRuleLimits.hardActionDuration;
+		const valid = typeof duration === 'number' && Number.isFinite(duration) && duration > 0;
+		steps.push({ action: action as AutoModerationHardAction, duration: valid ? Math.min(maximum, Math.trunc(duration)) : null });
+	}
+
+	return steps.slice(0, MaximumAutoModerationRuleEscalationSteps);
+}
+
+/**
+ * The hard action a rule takes on a member, given how many it took on them lately: its own the first time, then the
+ * steps of its escalation, the last of which is repeated.
+ *
+ * @param rule - The rule the member reached the threshold of.
+ * @param strikes - How many hard actions the rule took on the member within its `escalationDuration`, before this one.
+ */
+export function resolveAutoModerationRulePunishment(
+	rule: Pick<AutoModerationRule, 'hardAction' | 'hardActionDuration' | 'escalation'>,
+	strikes: number
+): AutoModerationRuleEscalationStep {
+	if (strikes <= 0 || rule.escalation.length === 0) return { action: rule.hardAction, duration: rule.hardActionDuration };
+	return rule.escalation[Math.min(strikes, rule.escalation.length) - 1];
 }
 
 /**

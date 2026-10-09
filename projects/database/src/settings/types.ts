@@ -104,5 +104,6 @@ declare global {
 		type UniqueRoleSetEntries = UniqueRoleSet[];
 		type AuditEventChanges = import('./types.js').AuditEventChanges;
 		type AutoModerationRuleOptions = import('./automod/types.js').AutoModerationRuleOptions;
+		type AutoModerationRuleEscalation = import('./automod/types.js').AutoModerationRuleEscalationStep[];
 	}
 }
