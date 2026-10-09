@@ -2,7 +2,7 @@ import { ModerationActions, getAction } from '#lib/moderation/actions';
 import { getTypeColor, isValidType } from '#lib/moderation/common/constants';
 import { ModerationManagerEntry } from '#lib/moderation/managers/ModerationManagerEntry';
 import { fromModerationRow, toModerationRow, type ModerationRecord } from '#lib/moderation/managers/ModerationRecord';
-import { applyModerationBuilder } from '#lib/moderation/structures/ModerationCommand';
+import { applyModerationBuilder, isModerationReplyPublic } from '#lib/moderation/structures/ModerationCommand';
 import { listOverview } from '#lib/structures/commands/moderationCase';
 import { Colors } from '#utils/constants';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
@@ -97,6 +97,20 @@ describe('note', () => {
 			const builder = applyModerationBuilder(new SlashCommandBuilder(), { root: 'commands/moderation:kick', type: TypeVariation.Kick });
 
 			expect((builder.toJSON().options ?? []).map((option) => option.name)).toEqual(['user', 'reason', 'message', 'dm', 'authored']);
+		});
+	});
+
+	describe('reply', () => {
+		test('GIVEN a guild that displays the moderation messages WHEN a note is added THEN the reply is private', () => {
+			expect(isModerationReplyPublic({ messageDisplay: true }, ModerationActions.note)).toBe(false);
+		});
+
+		test('GIVEN a guild that displays the moderation messages WHEN a member is warned THEN the reply is public', () => {
+			expect(isModerationReplyPublic({ messageDisplay: true }, ModerationActions.warning)).toBe(true);
+		});
+
+		test('GIVEN a guild that hides the moderation messages THEN the reply is private', () => {
+			expect(isModerationReplyPublic({ messageDisplay: false }, ModerationActions.warning)).toBe(false);
 		});
 	});
 
