@@ -1,11 +1,13 @@
 import {
 	AllCategoriesValue,
+	CommandsPageInputId,
 	CommandsSearchInputId,
 	createCommandsMenuContext,
 	decodeCommandsMenuId,
 	normalizeCommandQuery,
 	renderCommand,
 	renderCommandsList,
+	renderCommandsPageModal,
 	renderCommandsResults,
 	renderCommandsSearchModal
 } from '#lib/structures/commands-menu';
@@ -35,22 +37,37 @@ export class UserInteractionHandler extends InteractionHandler {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/commands:menuWrongUser'));
 
-		// The modal of the search is the only thing that is submitted, everything else is a click:
+		// Only the modals are submitted, everything else is a click:
 		if (interaction instanceof ModalSubmitInteraction) {
-			if (action.verb !== 'query') return fail(getDefaultExpiredReply());
-
 			const modal = interaction as ModalInteraction;
-			const query = normalizeCommandQuery(getModalValue(modal.data.components, CommandsSearchInputId) ?? '');
 			const context = await createCommandsMenuContext(modal, action.ownerId);
-			return modal.update(renderCommandsResults(context, query, 0));
+
+			if (action.verb === 'query') {
+				const query = normalizeCommandQuery(getModalValue(modal.data.components, CommandsSearchInputId) ?? '');
+				return modal.update(renderCommandsResults(context, query, 0));
+			}
+
+			if (action.verb === 'goto') {
+				const page = Number.parseInt(getModalValue(modal.data.components, CommandsPageInputId) ?? '', 10);
+				if (!Number.isSafeInteger(page) || page < 1) return fail(t('commands/commands:gotoInvalid'));
+
+				// A page past the last one is the last one, the pages are numbered from 1 for the user:
+				const [kind, ...rest] = action.target.split('/');
+				const target = rest.join('/');
+				return modal.update(
+					kind === 'results' ? renderCommandsResults(context, target, page - 1) : renderCommandsList(context, target, page - 1)
+				);
+			}
+
+			return fail(getDefaultExpiredReply());
 		}
 
 		const component = interaction as ComponentInteraction;
 		switch (action.verb) {
 			case 'search':
 				return component.showModal(renderCommandsSearchModal(t, action.ownerId));
-			case 'page':
-				return component.deferUpdate();
+			case 'jump':
+				return component.showModal(renderCommandsPageModal(t, action.ownerId, action.target));
 			case 'list':
 			case 'category':
 			case 'results':
@@ -69,9 +86,14 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'results':
 				return component.update(renderCommandsResults(context, normalizeCommandQuery(action.target), action.page));
 			case 'view': {
-				const command = context.commands.find((entry) => entry.name === action.target);
+				// The target is the category the list was in and the path of the entry, `Tools/whois user`, of which the command is the first word:
+				const [category, ...rest] = action.target.split('/');
+				const [name] = rest.join('/').split(' ');
+				const command = context.commands.find((entry) => entry.name === name);
 				// A command that was removed since the menu was opened:
-				return component.update(command ? renderCommand(context, command) : renderCommandsList(context, '', 0));
+				return component.update(
+					command ? renderCommand(context, command, { category, page: action.page }) : renderCommandsList(context, '', 0)
+				);
 			}
 		}
 	}
