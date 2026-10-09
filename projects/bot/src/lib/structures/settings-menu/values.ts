@@ -1,8 +1,8 @@
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, isSchemaGroup, type Serializer } from '#lib/database';
-import type { ReadonlyGuildData } from 'wolfstar-database';
-import type { Translator } from '#lib/structures/commands/utils';
+import { MessageUpdateStyles, type ReadonlyGuildData } from 'wolfstar-database';
+import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -12,11 +12,11 @@ import { ChannelType } from 'discord-api-types/v10';
  * How a key is displayed and edited:
  *
  * - `boolean`: toggled with its button.
- * - `role`, `channel` and `language`: picked from a select menu.
+ * - `role`, `channel`, `language` and `choice`: picked from a select menu.
  * - `number` and `text`: written in a modal, one value per line for the keys that hold a list.
  * - `readonly`: displayed only, the menu has no editor for its type.
  */
-export type SettingKind = 'boolean' | 'role' | 'channel' | 'language' | 'number' | 'text' | 'readonly';
+export type SettingKind = 'boolean' | 'role' | 'channel' | 'language' | 'choice' | 'number' | 'text' | 'readonly';
 
 export function getSettingKind(key: SchemaKey): SettingKind {
 	switch (key.type) {
@@ -31,6 +31,8 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 			return 'channel';
 		case 'language':
 			return 'language';
+		case 'messageUpdateStyle':
+			return 'choice';
 		case 'integer':
 		case 'number':
 		case 'float':
@@ -59,6 +61,30 @@ export function getSettingChannelTypes(key: SchemaKey): ChannelType[] {
 			return [ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildCategory];
 		default:
 			return [ChannelType.GuildText, ChannelType.GuildAnnouncement];
+	}
+}
+
+/**
+ * The values a `choice` key accepts, in the order its select menu lists them.
+ */
+export function getSettingChoices(key: SchemaKey): readonly string[] {
+	switch (key.type) {
+		case 'messageUpdateStyle':
+			return MessageUpdateStyles;
+		default:
+			return [];
+	}
+}
+
+/**
+ * The name of one of the values of a `choice` key, translated.
+ */
+export function getSettingChoiceLabel(t: Translator, key: SchemaKey, value: unknown): string {
+	switch (key.type) {
+		case 'messageUpdateStyle':
+			return t(`serializers:messageUpdateStyle${String(value)}` as TranslationKey);
+		default:
+			return String(value);
 	}
 }
 
@@ -167,6 +193,8 @@ function displaySingleValue(t: Translator, key: SchemaKey, value: unknown): stri
 			return channelMention(String(value));
 		case 'language':
 			return `${getLanguageName(String(value))} (${inlineCode(String(value))})`;
+		case 'choice':
+			return getSettingChoiceLabel(t, key, value);
 		case 'number':
 			return String(value);
 		default:

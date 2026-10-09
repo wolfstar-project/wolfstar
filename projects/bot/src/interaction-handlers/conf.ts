@@ -132,6 +132,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'role':
 			case 'channel':
 			case 'language':
+			case 'choice':
 				return interaction.update(renderSettingsEditor(context, key, action.page));
 			case 'number':
 			case 'text':
