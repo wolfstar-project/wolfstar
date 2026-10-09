@@ -91,7 +91,11 @@ export async function getCommandPermissionDenial(interaction: GuildChatInputInte
  * given level, see {@linkcode hasCommandPermissionLevel}. Otherwise, the author gets an ephemeral reply with the
  * localized reason and the method is skipped.
  *
- * @remarks The decorated method must receive the interaction as its first argument, and, as with every decorator
+ * @remarks Prefer the `moderator` and `administrator` preconditions (`src/preconditions`), named in the `preconditions`
+ * option of the command: a subcommand is run through its parent, so the option goes there. This decorator is for the
+ * subcommands of a parent whose subcommands have different levels (`/settings server`, `/mute create`).
+ *
+ * The decorated method must receive the interaction as its first argument, and, as with every decorator
  * created by `createFunctionPrecondition`, it always returns a `Promise`.
  * @param level - The level the command requires.
  * @returns A method decorator.

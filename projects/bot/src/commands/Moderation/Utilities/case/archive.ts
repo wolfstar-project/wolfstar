@@ -1,4 +1,4 @@
-import { CommandPermissionLevel, RequiresCommandPermissionLevel, type GuildChatInputInteraction } from '#lib/structures/commands';
+import type { GuildChatInputInteraction } from '#lib/structures/commands';
 import { getCase, handleCase } from '#lib/structures/commands/moderationCase';
 import { getModeration } from '#utils/functions';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
@@ -13,7 +13,6 @@ import { MessageFlags } from 'discord-api-types/v10';
 		.addIntegerOption((option) => applyLocalizedBuilder(option, 'commands/case:optionsCase').setMinValue(1).setRequired(true))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
 	public override chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'case archive'>) {
 		return handleCase(interaction, async (t) => {
 			const entry = await getCase(interaction, options.case);

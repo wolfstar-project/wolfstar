@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { readSettings, writeSettings } from '#lib/database';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
@@ -28,7 +29,6 @@ import {
 	type AutoModerationMenuContext,
 	type AutoModerationMenuSection
 } from '#lib/structures/automod-menu';
-import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey } from '#lib/structures/commands/utils';
 import { getModalValue } from '#utils/interactions';
 import { inlineCode } from '@discordjs/formatters';
@@ -57,9 +57,10 @@ interface Change {
  * @remarks
  *
  * What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the user who
- * opened the menu can use it, and they need the administrator level every time, as the `/automod` subcommands do. Every
+ * opened the menu can use it, and the `administrator` precondition requires the administrator level every time, as it does for the `/automod` subcommands. Every
  * change is made on the rule the database has, the one the menu shows may be behind another change.
  */
+@ApplyOptions<InteractionHandler.Options>({ preconditions: ['administrator'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
@@ -70,13 +71,6 @@ export class UserInteractionHandler extends InteractionHandler {
 		const t = getSupportedUserLanguageT(interaction);
 		if (interaction.user.id !== action.ownerId) {
 			return fail(translateKey(t, `${Root}:menuWrongUser`, { command: inlineCode('/automod list') }));
-		}
-
-		if (
-			interaction.member === undefined ||
-			!(await hasCommandPermissionLevel({ guildId, member: interaction.member }, CommandPermissionLevel.Administrator))
-		) {
-			return fail(translateKey(t, 'preconditions:administrator', { command: { name: this.name } }));
 		}
 
 		const context: AutoModerationMenuContext = { t, ownerId: action.ownerId };

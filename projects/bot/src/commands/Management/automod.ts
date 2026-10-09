@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import type { Command } from '@wolfstar/http-framework';
 import { RegisterCommand } from '@wolfstar/http-framework';
@@ -17,6 +18,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  * - The autocomplete stays on the parent: the plugin routes `chatInputRun` to the children, but autocomplete
  *   interactions are dispatched by the name of the top-level command and never reach them.
  */
+@ApplyOptions<Subcommand.Options>({ preconditions: ['administrator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/auto-moderation:automod')
 		.setContexts(InteractionContextType.Guild)

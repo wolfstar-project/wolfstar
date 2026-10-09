@@ -9,7 +9,6 @@ import {
 } from '#lib/moderation/automod/commands';
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { isNullish } from '@sapphire/utilities';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
@@ -74,7 +73,6 @@ const TypeOptions = [
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWarn`))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod edit'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const rule = await resolveCommandRule(interaction, t, options.rule);

@@ -1,5 +1,5 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { months, toErrorCodeResult } from '#common';
-import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
 import {
 	LockdownGuildPermissions,
@@ -57,6 +57,7 @@ type LockdownTarget =
  * What a lockdown changed is kept by the `LockdownManager`, see there for what happens to the temporary
  * ones when the process restarts.
  */
+@ApplyOptions<Command.Options>({ preconditions: ['moderator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, `${Root}:name`, `${Root}:description`)
 		.setContexts(InteractionContextType.Guild)
@@ -92,9 +93,6 @@ type LockdownTarget =
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'lockdown'>) {
-		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 

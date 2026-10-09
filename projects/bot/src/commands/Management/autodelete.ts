@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -8,6 +9,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  * `@wolfstar/plugin-subcommands-advanced`. They delete the messages of a channel as they are sent, or a delay
  * after, see `lib/moderation/cleanup`.
  */
+@ApplyOptions<Subcommand.Options>({ preconditions: ['administrator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/cleanup:autodelete')
 		.setContexts(InteractionContextType.Guild)

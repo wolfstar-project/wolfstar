@@ -1,6 +1,5 @@
 import { CleanupRoot } from '#lib/moderation/cleanup/commands';
 import { disableAutoPurge } from '#lib/moderation/cleanup/store';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -18,7 +17,6 @@ const Root = CleanupRoot;
 	)
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'autopurge disable'>) {
 		const t = getSupportedUserLanguageT(interaction);
 		const disabled = await disableAutoPurge(interaction.guildId, options.channel.id);

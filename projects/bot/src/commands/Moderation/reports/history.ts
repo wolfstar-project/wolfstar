@@ -1,4 +1,3 @@
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
 import { getTag } from '#utils/util';
@@ -26,7 +25,6 @@ const HistoryLength = 10;
 	)
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'reports history'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const reports = await fetchReports(container.prisma.orm, interaction.guildId, { targetId: args.user?.id ?? null, limit: HistoryLength });
