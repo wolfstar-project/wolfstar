@@ -98,6 +98,20 @@ export async function submitReport(
 }
 
 /**
+ * Gets the key of what the member who made a report is told when it is closed.
+ *
+ * @remarks A note is not an action the member would see, so they are told it was recorded and not that action
+ * was taken.
+ *
+ * @param status - What became of the report.
+ * @param action - The action that closed it, if any.
+ */
+export function getReporterNotificationKey(status: Exclude<ReportStatus, 'Open'>, action?: ReportModerationVerb) {
+	if (status === 'Dismissed') return 'commands/report:notifyDismissed';
+	return action === 'note' ? 'commands/report:notifyNoted' : 'commands/report:notifyActioned';
+}
+
+/**
  * Tells the member who made a report what became of it, in a direct message, when the guild wants them told.
  *
  * @remarks The member is told that the moderators acted or not, and not what they did: that stays between the
@@ -117,13 +131,7 @@ export async function notifyReporter(report: Report, status: Exclude<ReportStatu
 			gatewayClient.users.fetch(report.reporterId),
 			fetchGuildTranslator(report.guildId)
 		]);
-		// A note is not an action the member would see, so they are told it was recorded and not that action was taken:
-		const key =
-			status === 'Dismissed'
-				? 'commands/report:notifyDismissed'
-				: action === 'note'
-					? 'commands/report:notifyNoted'
-					: 'commands/report:notifyActioned';
+		const key = getReporterNotificationKey(status, action);
 		await reporter.send({ content: t(key, { guild: guild.name, target: report.targetTag }), allowed_mentions: { parse: [] } });
 	} catch {
 		// The direct messages of the member are closed, or they left: the report is closed all the same.
