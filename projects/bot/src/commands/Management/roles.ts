@@ -4,8 +4,9 @@ import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationIntegrationType, InteractionContextType } from 'discord-api-types/v10';
 
 /**
- * The parent of the `roles` subcommands (`list`, `claim` and `unclaim`), which are wired onto this command by
- * `@wolfstar/plugin-subcommands-advanced`, to list, claim and unclaim the public roles of the server.
+ * The parent of the `roles` subcommands (`list`, `claim`, `unclaim` and `browse`), which are wired onto this command by
+ * `@wolfstar/plugin-subcommands-advanced`, to list, claim and unclaim the public roles of the server, and to browse
+ * all of its roles in a menu.
  *
  * @remarks
  *

@@ -383,6 +383,7 @@ declare module '@wolfstar/http-framework' {
       role: TransformedArguments.Role;
       user: TransformedArguments.User;
     };
+    'roles browse': {};
     'roles claim': {
       role: TransformedArguments.Role;
     };
