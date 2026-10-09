@@ -35,6 +35,7 @@
 		"@influxdata/influxdb-client": "^1.35.0",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/bitfield": "^1.2.4",
+		"@sapphire/fetch": "^3.0.5",
 		"@sapphire/pieces": "^4.4.1",
 		"@sapphire/ratelimits": "^2.4.11",
 		"@sapphire/result": "^2.8.0",

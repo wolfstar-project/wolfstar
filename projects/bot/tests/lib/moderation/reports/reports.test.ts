@@ -1,6 +1,7 @@
 import { decodeReportId, encodeReportId, type ReportAction } from '#lib/moderation/reports/ids';
 import type { ReportSubject } from '#lib/moderation/reports/pending';
 import { addReportNote, closeReport, renderReport, renderReportActionModal, renderReportModal } from '#lib/moderation/reports/render';
+import { getReporterNotificationKey } from '#lib/moderation/reports/submit';
 import { ButtonStyle, ComponentType, MessageFlags, type APIMessageTopLevelComponent } from 'discord-api-types/v10';
 import type { Report } from 'wolfstar-database';
 
@@ -204,6 +205,28 @@ describe('reports', () => {
 
 			expect(getButtons(marked).some((button) => button.disabled)).toBe(false);
 			expect(getText(marked)).toContain('blocked note');
+		});
+	});
+
+	describe('reporter notification', () => {
+		test('GIVEN a report closed by a note THEN the reporter is told it was noted', () => {
+			expect(getReporterNotificationKey('Actioned', 'note')).toBe('commands/report:notifyNoted');
+		});
+
+		test.each(['warn', 'timeout', 'kick', 'mute', 'softban', 'ban'] as const)(
+			'GIVEN a report closed by %s THEN the reporter is told action was taken',
+			(verb) => {
+				expect(getReporterNotificationKey('Actioned', verb)).toBe('commands/report:notifyActioned');
+			}
+		);
+
+		test('GIVEN a report closed by an action that is not named THEN the reporter is told action was taken', () => {
+			expect(getReporterNotificationKey('Actioned')).toBe('commands/report:notifyActioned');
+		});
+
+		test('GIVEN a dismissed report THEN the reporter is told no action was taken', () => {
+			expect(getReporterNotificationKey('Dismissed')).toBe('commands/report:notifyDismissed');
+			expect(getReporterNotificationKey('Dismissed', 'note')).toBe('commands/report:notifyDismissed');
 		});
 	});
 

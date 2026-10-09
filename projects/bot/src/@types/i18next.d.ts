@@ -2099,6 +2099,7 @@ declare module "i18next" {
         actionReasonLabel: "Reason";
         actionNoteLabel: "Note";
         actionTitleNote: "Add a note to the reported member";
+        noteRequired: "The note is empty. Write what the moderators should remember, the report is still open.";
         actionDurationLabel: "Duration, for example 10m, 1h or 1d";
         actionDone: "Done, it is case #{{case, number}}. The report is closed.";
         actionFailed: "Something went wrong and the action was not taken. The report is still open.";
