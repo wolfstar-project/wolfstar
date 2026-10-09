@@ -97,8 +97,26 @@ export function createClient() {
 	container.stores.registerPath(fileURLToPath(srcFolderURL));
 }
 
+/**
+ * Creates the consumer group of the workers before the gateway publishes its first dispatch. A group is created at
+ * the end of the stream, so one the first worker creates when it starts would never see what was published before.
+ */
+async function ensureBrokerGroup() {
+	if (isWorker() || !envParseBoolean('BROKER_ENABLED', false)) return;
+
+	const stream = envParseString('BROKER_STREAM', 'wolfstar:events');
+	const group = envParseString('BROKER_GROUP', 'workers');
+	try {
+		await container.redis.xgroup('CREATE', stream, group, '$', 'MKSTREAM');
+	} catch (error) {
+		// The group is already there, from a worker or from a previous start:
+		if (!(error instanceof Error) || !error.message.includes('BUSYGROUP')) throw error;
+	}
+}
+
 export async function loadAll() {
 	await container.redis.connect();
+	await ensureBrokerGroup();
 	await container.workers.start();
 
 	if (isWorker()) {

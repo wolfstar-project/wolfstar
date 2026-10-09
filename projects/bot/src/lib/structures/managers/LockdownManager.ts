@@ -250,7 +250,9 @@ export class LockdownManager {
 
 		// A job with the same ID is left alone by BullMQ, so the one of a previous lockdown has to go first:
 		await container.tasks.delete(key).catch(() => null);
-		if (duration) {
+		if (!duration) return;
+
+		try {
 			await container.tasks.create(
 				{ name: 'moderationEndLockdown', payload: { key } },
 				{
@@ -265,6 +267,10 @@ export class LockdownManager {
 					}
 				}
 			);
+		} catch (error) {
+			// A temporary lockdown that would never be released is not remembered as one that will:
+			await container.redis.hdel(LockdownsHash, key).catch(() => null);
+			throw error;
 		}
 	}
 

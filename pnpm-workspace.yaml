@@ -28,7 +28,11 @@ dedupePeers: true
 
 shellEmulator: true
 
-minimumReleaseAge: 0
+# A release waits a day before an install picks it, so a compromised one has the time to be noticed. The packages of
+# the organization are released and taken the same day.
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+    - '@wolfstar/*'
 
 # Moved here from .npmrc: since pnpm 11 only auth and registry settings are read
 # from .npmrc, everything else must live in this file in camelCase.

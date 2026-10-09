@@ -154,8 +154,10 @@ export const UndoTaskRetryDelay = 20_000;
  * {@linkcode UndoTaskRetryDelay} later, and the job leaves the queue once it is done.
  */
 export const UndoTaskJobOptions = {
-	attempts: 5,
+	// Two hours of attempts, which a restart or an outage of Discord fits in:
+	attempts: 360,
 	backoff: { type: 'fixed', delay: UndoTaskRetryDelay },
 	removeOnComplete: true,
-	removeOnFail: true
+	// A job that ran out of attempts stays in the queue as failed, where it can be found and tried again:
+	removeOnFail: false
 } as const;

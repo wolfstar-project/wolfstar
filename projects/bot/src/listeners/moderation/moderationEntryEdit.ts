@@ -12,6 +12,11 @@ import { canSendEmbeds } from '@wolfstar/http-framework-utilities/gateway';
 import type { Embed, Message } from '@wolfstar/plugin-gateway';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
+/**
+ * How many pages of a hundred messages of the moderation log are read to find the log of a case that was edited.
+ */
+const MaximumLogPages = 5;
+
 export class UserListener extends Listener {
 	public run(old: ModerationManager.Entry, entry: ModerationManager.Entry) {
 		return Promise.all([this.scheduleDuration(old, entry), this.sendMessage(old, entry)]);
@@ -26,7 +31,13 @@ export class UserListener extends Listener {
 
 		if (old.duration === entry.duration) return;
 
-		const task = await entry.fetchTask();
+		let task = await entry.fetchTask();
+		// A job that ran out of attempts stays in the queue as failed, and cannot be delayed again: it makes room.
+		if (!isNullish(task) && (await task.isFailed())) {
+			await task.remove();
+			task = null;
+		}
+
 		if (isNullish(task)) {
 			if (entry.duration !== null) await this.#createNewTask(entry);
 		} else if (entry.duration === null) {
@@ -62,9 +73,16 @@ export class UserListener extends Listener {
 	}
 
 	private async fetchModerationLogMessage(entry: ModerationManager.Entry, channel: GuildTextBasedChannel) {
-		const messages = await this.fetchChannelMessages(channel);
-		for (const message of messages) {
-			if (this.#validateModerationLogMessage(message, entry.id)) return message;
+		// The log of a case is looked for from the latest message back, a page at a time: an older case is further away.
+		let before: string | undefined;
+		for (let page = 0; page < MaximumLogPages; page++) {
+			const messages = await this.fetchChannelMessages(channel, before);
+			for (const message of messages) {
+				if (this.#validateModerationLogMessage(message, entry.id)) return message;
+			}
+
+			if (messages.length < 100) break;
+			before = messages.reduce((oldest, message) => (BigInt(message.id) < BigInt(oldest.id) ? message : oldest)).id;
 		}
 
 		return null;
@@ -72,13 +90,15 @@ export class UserListener extends Listener {
 
 	/**
 	 * Fetch 100 messages from the modlogs channel
+	 *
+	 * @param before - The message to read the ones before of, the latest ones without it.
 	 */
-	private async fetchChannelMessages(channel: GuildTextBasedChannel, remainingRetries = 5): Promise<Message[]> {
+	private async fetchChannelMessages(channel: GuildTextBasedChannel, before?: string, remainingRetries = 5): Promise<Message[]> {
 		try {
-			return await this.container.gatewayClient.messages.list(channel.id, { limit: 100 });
+			return await this.container.gatewayClient.messages.list(channel.id, { limit: 100, ...(before === undefined ? {} : { before }) });
 		} catch (error) {
 			if (error instanceof DiscordAPIError || remainingRetries <= 0) throw error;
-			return this.fetchChannelMessages(channel, --remainingRetries);
+			return this.fetchChannelMessages(channel, before, --remainingRetries);
 		}
 	}
 

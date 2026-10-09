@@ -105,7 +105,8 @@ export async function checkPermissions(interaction: GuildChatInputInteraction, t
 
 	// Check hierarchy role positions, allow when greater, block otherwise
 	const author = await gatewayClient.members.fetch(interaction.guildId, authorId);
-	const targetPosition = target instanceof Role ? target.position : ((await target.roles.highest)?.position ?? 0);
-	const authorPosition = (await author.roles.highest)?.position ?? 0;
+	// Fetched, not read from the cache: a role the cache does not hold would count as the lowest one.
+	const targetPosition = target instanceof Role ? target.position : ((await target.roles.fetchHighest())?.position ?? 0);
+	const authorPosition = (await author.roles.fetchHighest())?.position ?? 0;
 	return authorPosition > targetPosition;
 }

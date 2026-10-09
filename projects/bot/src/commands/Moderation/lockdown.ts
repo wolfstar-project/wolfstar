@@ -163,13 +163,24 @@ export class UserCommand extends Command {
 		const permissionsOriginal = role.permissions.bitField & LockdownGuildPermissions;
 		if (permissionsOriginal === 0n) return t(`${Root}:guildLocked`, { role: mention });
 
-		const result = await toErrorCodeResult(role.setPermissions(role.permissions.bitField & ~LockdownGuildPermissions, reason));
-		if (result.isErr()) return this.guildError(t, role, result.unwrapErr(), 'guildLockFailed');
+		// What the lockdown changes is remembered, and its release scheduled, before anything is changed: if either
+		// fails, nobody is locked out without a way back.
+		const data: LockdownData = {
+			type: LockdownType.Guild,
+			guildId,
+			userId,
+			roleId,
+			permissionsApplied: LockdownGuildPermissions,
+			permissionsOriginal
+		};
+		await lockdowns.add(data, duration);
 
-		await lockdowns.add(
-			{ type: LockdownType.Guild, guildId, userId, roleId, permissionsApplied: LockdownGuildPermissions, permissionsOriginal },
-			duration
-		);
+		const result = await toErrorCodeResult(role.setPermissions(role.permissions.bitField & ~LockdownGuildPermissions, reason));
+		if (result.isErr()) {
+			await lockdowns.remove(data);
+			return this.guildError(t, role, result.unwrapErr(), 'guildLockFailed');
+		}
+
 		return t(`${Root}:successGuild`, { role: mention });
 	}
 
@@ -213,10 +224,16 @@ export class UserCommand extends Command {
 		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageThreads)))
 			return t(`${Root}:threadUnmanageable`, { channel: mention });
 
-		const result = await toErrorCodeResult(Promise.resolve(channel.setLocked(true, reason)).then(() => undefined));
-		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadLockFailed');
+		// Remembered before the thread is locked, see `lockGuild`:
+		const data: LockdownData = { type: LockdownType.Thread, guildId: channel.guildId, userId, channelId: channel.id };
+		await lockdowns.add(data, duration);
 
-		await lockdowns.add({ type: LockdownType.Thread, guildId: channel.guildId, userId, channelId: channel.id }, duration);
+		const result = await toErrorCodeResult(Promise.resolve(channel.setLocked(true, reason)).then(() => undefined));
+		if (result.isErr()) {
+			await lockdowns.remove(data);
+			return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadLockFailed');
+		}
+
 		return t(`${Root}:successThread`, { channel: mention });
 	}
 
@@ -258,23 +275,26 @@ export class UserCommand extends Command {
 		const permissionsOriginalAllow = (existing?.allow.bitField ?? 0n) & permissionsApplied;
 		const permissionsOriginalDeny = (existing?.deny.bitField ?? 0n) & permissionsApplied;
 
+		// Remembered before the channel is locked, see `lockGuild`:
+		const data: LockdownData = {
+			type: LockdownType.Channel,
+			guildId: channel.guildId,
+			userId,
+			channelId: channel.id,
+			roleId,
+			permissionsApplied,
+			permissionsOriginalAllow,
+			permissionsOriginalDeny
+		};
+		await lockdowns.add(data, duration);
+
 		const deny = Object.fromEntries(PermissionsBits.toArray(permissionsApplied).map((name) => [name, false]));
 		const result = await toErrorCodeResult(channel.permissionOverwrites.edit(roleId, deny, { type: OverwriteType.Role, reason }));
-		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelLockFailed');
+		if (result.isErr()) {
+			await lockdowns.remove(data);
+			return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelLockFailed');
+		}
 
-		await lockdowns.add(
-			{
-				type: LockdownType.Channel,
-				guildId: channel.guildId,
-				userId,
-				channelId: channel.id,
-				roleId,
-				permissionsApplied,
-				permissionsOriginalAllow,
-				permissionsOriginalDeny
-			},
-			duration
-		);
 		return t(`${Root}:successChannel`, { channel: mention, role });
 	}
 
