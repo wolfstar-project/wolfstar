@@ -167,6 +167,13 @@ jobs:
         name: 🌐 i18n validation
         runs-on: ubuntu-24.04-arm
 
+        # The command options are read by starting the built bot, which connects to Redis before it loads its commands:
+        services:
+            redis:
+                image: redis:7-alpine
+                ports:
+                    - 6379:6379
+
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
@@ -183,7 +190,6 @@ jobs:
             - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
-            # The test setup loads the bot, which needs what the other test job builds:
             - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
@@ -196,11 +202,19 @@ jobs:
             - name: 🌐 Check the locale files
               run: pnpm exec vitest run --config vitest.config.ts tests/languages
 
-            # The typed keys are generated from the en-US files, and committed:
-            - name: 🌐 Check the i18n types are up to date
-              run: |
-                  pnpm --filter wolfstar-bot exec stars codegen --config stars.i18n.config.ts
-                  git diff --exit-code projects/bot/src/@types/i18next.d.ts
+            - name: 🏗️ Build the bot
+              run: pnpm --filter wolfstar-bot exec stars build
+
+            # The generated files are committed: the typed i18n keys and the options of every command. The values are
+            # throw-away ones, the bot only has to reach `client.load()`. The Redis of the job has no password, which the
+            # client ignores.
+            - name: 🌐 Check the generated types are up to date
+              run: pnpm --filter wolfstar-bot exec stars codegen --check
+              env:
+                  NODE_ENV: test
+                  DISCORD_TOKEN: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                  DISCORD_PUBLIC_KEY: '0000000000000000000000000000000000000000000000000000000000000000'
+                  REDIS_PASSWORD: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
     build:
         name: 🏗️ Build project
