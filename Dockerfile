@@ -21,17 +21,16 @@ ENV HUSKY=0
 ENV CI="true"
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+# pnpm 12 keeps its managed runtime under PNPM_HOME, so keep the BuildKit-cached store
+# in its own directory (as recommended by https://pnpm.io/docker) instead of /pnpm/store.
+ENV pnpm_config_store_dir="/var/cache/pnpm"
 
 RUN apk add --no-cache dumb-init g++ make python3
-# Uses the pnpm version pinned in package.json `packageManager`.
-RUN corepack enable
-
 # pnpm validates the whole workspace on install, so every workspace manifest has
 # to be present even when only one project is built.
 COPY --chown=node:node pnpm-lock.yaml .
 COPY --chown=node:node pnpm-workspace.yaml .
 COPY --chown=node:node package.json .
-COPY --chown=node:node .npmrc .
 # The patches `pnpm-workspace.yaml` lists are applied on install:
 COPY --chown=node:node patches/ patches/
 # pnpm runs the root `prepare` script on install; .husky/install.mjs is what
@@ -40,9 +39,16 @@ COPY --chown=node:node .husky/ .husky/
 COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
 
+# Install the pnpm version pinned in package.json `packageManager` into a Corepack cache
+# every user can read; otherwise the unprivileged `node` user re-downloads pnpm on each start.
+ENV COREPACK_HOME="/usr/local/share/corepack"
+RUN corepack enable \
+    && corepack install \
+    && chmod -R a+rX "$COREPACK_HOME"
+
 # Populate the pnpm store from the lockfile only, so this layer stays cached
 # until dependencies change and later installs can resolve from it.
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm-store,target=/var/cache/pnpm \
     pnpm fetch
 
 ENTRYPOINT ["dumb-init", "--"]
@@ -63,7 +69,7 @@ COPY --chown=node:node scripts/ scripts/
 COPY --chown=node:node projects/database/ projects/database/
 COPY --chown=node:node projects/bot/ projects/bot/
 
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm-store,target=/var/cache/pnpm \
     pnpm install --frozen-lockfile \
     && pnpm --filter wolfstar-database prisma:generate \
     && pnpm --filter wolfstar-database --filter wolfstar-bot run build
@@ -84,7 +90,7 @@ COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm-store,target=/var/cache/pnpm \
     pnpm install --prod --frozen-lockfile
 RUN chown node:node /usr/src/app/
 
@@ -92,5 +98,4 @@ USER node
 
 WORKDIR /usr/src/app/projects/bot
 
-# Run the built application directly; pnpm 12 may auto-install at startup.
-CMD [ "node", "dist/main.mjs" ]
+CMD [ "pnpm", "start" ]

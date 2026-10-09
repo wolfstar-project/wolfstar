@@ -13,7 +13,6 @@ on:
             - 'pnpm-lock.yaml'
             - 'pnpm-workspace.yaml'
             - 'tsconfig.base.json'
-            - '.npmrc'
 
 permissions:
     contents: read

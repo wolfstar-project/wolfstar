@@ -48,7 +48,7 @@ jobs:
                   set -euo pipefail
 
                   # Every path the Dockerfile COPYs, plus the Dockerfile and this workflow.
-                  pattern='^(projects/|scripts/|patches/|\.husky/|Dockerfile$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.npmrc$|\.env\.schema$|tsconfig\.base\.json$|\.github/workflows/pr-image\.yml$)'
+                  pattern='^(projects/|scripts/|patches/|\.husky/|Dockerfile$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.env\.schema$|tsconfig\.base\.json$|\.github/workflows/pr-image\.yml$)'
 
                   # Fetch first: a failed request must fail the job, not read as "no relevant files".
                   # Matching on the variable (not a pipe) avoids a SIGPIPE from the early exit of grep -q.

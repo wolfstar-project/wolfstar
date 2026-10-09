@@ -28,11 +28,21 @@ dedupePeers: true
 
 shellEmulator: true
 
+# Never auto-install from `pnpm run`/`pnpm start`: the production image has no writable store,
+# so a start command like Railway's `pnpm start` would crash with EACCES on /var/cache/pnpm.
+verifyDepsBeforeRun: false
+
 # A release waits a day before an install picks it, so a compromised one has the time to be noticed. The packages of
 # the organization are released and taken the same day.
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
     - '@wolfstar/*'
+    - '@sentry/conventions'
+    - '@sentry/core'
+    - '@sentry/node'
+    - '@sentry/node-core'
+    - '@sentry/opentelemetry'
+    - '@sentry/server-utils'
 
 # Moved here from .npmrc: since pnpm 11 only auth and registry settings are read
 # from .npmrc, everything else must live in this file in camelCase.
