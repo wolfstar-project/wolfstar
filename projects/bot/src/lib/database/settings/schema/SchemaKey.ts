@@ -23,6 +23,7 @@ export type SchemaKeyType =
 	| 'guild'
 	| 'invite'
 	| 'language'
+	| 'messageUpdateStyle'
 	| 'notAllowed'
 	| 'number'
 	| 'integer'

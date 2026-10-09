@@ -1,0 +1,93 @@
+[
+	{
+		"id": "createNativeEnumType.MessageUpdateStyle",
+		"label": "Create enum type \"MessageUpdateStyle\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "MessageUpdateStyle"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"MessageUpdateStyle\"",
+				"sql": "CREATE TYPE \"public\".\"MessageUpdateStyle\" AS ENUM ('Difference', 'Separate')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "table.GuildLogsOptions",
+		"label": "Create table \"GuildLogsOptions\"",
+		"summary": "Creates table \"GuildLogsOptions\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildLogsOptions"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildLogsOptions\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildLogsOptions\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildLogsOptions\"",
+				"sql": "CREATE TABLE \"public\".\"GuildLogsOptions\" (\n  \"id\" int8 NOT NULL,\n  \"message_update_style\" \"MessageUpdateStyle\" DEFAULT 'Difference'::\"MessageUpdateStyle\" NOT NULL,\n  CONSTRAINT \"GuildLogsOptions_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildLogsOptions\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildLogsOptions\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildLogsOptions.GuildLogsOptions_id_fkey",
+		"label": "Add foreign key \"GuildLogsOptions_id_fkey\" on \"GuildLogsOptions\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildLogsOptions_id_fkey",
+				"table": "GuildLogsOptions"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildLogsOptions_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildLogsOptions_id_fkey", "public", "\"public\".\"GuildLogsOptions\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildLogsOptions_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildLogsOptions\"\nADD CONSTRAINT \"GuildLogsOptions_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"Modules\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildLogsOptions_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildLogsOptions_id_fkey", "public", "\"public\".\"GuildLogsOptions\""]
+			}
+		]
+	}
+]

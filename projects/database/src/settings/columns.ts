@@ -12,6 +12,7 @@ export const Tables = [
 	'GuildAutoModeration',
 	'GuildCommands',
 	'GuildLogs',
+	'GuildLogsOptions',
 	'GuildModeration',
 	'GuildPermissions',
 	'GuildReports',
@@ -128,6 +129,9 @@ export const Columns = {
 		logsIgnoreAll: ['ignoreAll', 'snowflakes'],
 		logsIgnoreMessages: ['ignoreMessages', 'snowflakes'],
 		logsIgnoreReactions: ['ignoreReactions', 'snowflakes']
+	}),
+	...columns('GuildLogsOptions', {
+		logsMessageUpdateStyle: ['messageUpdateStyle', 'value']
 	}),
 	...columns('GuildModeration', {
 		moderationChannel: ['channelId', 'snowflake'],
