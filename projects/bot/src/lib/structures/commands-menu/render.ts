@@ -1,5 +1,12 @@
 import type { Translator } from '#lib/structures/commands/utils';
-import { CommandQueryMaximumLength, getCommandCategories, searchCommands, type CatalogCommand } from '#lib/structures/commands-menu/catalog';
+import {
+	CommandQueryMaximumLength,
+	getCommandCategories,
+	listCatalogEntries,
+	searchCatalogEntries,
+	type CatalogCommand,
+	type CatalogEntry
+} from '#lib/structures/commands-menu/catalog';
 import { chatInputApplicationCommandMention, inlineCode } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
@@ -16,6 +23,7 @@ import {
 	type APIMessageTopLevelComponent,
 	type APIModalInteractionResponseCallbackData,
 	type APISelectMenuOption,
+	type APIStringSelectComponent,
 	type Snowflake
 } from 'discord-api-types/v10';
 
@@ -29,13 +37,15 @@ export const CommandsMenuHandlerName = 'commands';
  *
  * - `list`: shows a page of a category, the target is the category, empty for every command.
  * - `category`: the category select menu, the category is its selected value.
- * - `view`: shows a command, the target is its name.
+ * - `edit`: opens the modal that edits a command, the target is the path of its entry, `whois user`.
+ * - `save`: the modal of a command, the target is its name.
  * - `search`: opens the modal of the search.
  * - `query`: the modal of the search.
  * - `results`: shows a page of the results of a search, the target is the query.
- * - `page`: the page indicator, which does nothing.
+ * - `jump`: opens the modal that asks for a page, the target is the list it is in, `list/Tools` or `results/ban`.
+ * - `goto`: the modal of the page, with the same target as `jump`.
  */
-export type CommandsMenuVerb = 'list' | 'category' | 'view' | 'search' | 'query' | 'results' | 'page';
+export type CommandsMenuVerb = 'list' | 'category' | 'edit' | 'save' | 'search' | 'query' | 'results' | 'jump' | 'goto';
 
 export interface CommandsMenuAction {
 	/**
@@ -56,7 +66,7 @@ export function encodeCommandsMenuId(action: CommandsMenuAction) {
 	return encodeCustomId(CommandsMenuHandlerName, action.ownerId, `${action.verb}:${action.target}:${action.page}`);
 }
 
-const Verbs = new Set<string>(['list', 'category', 'view', 'search', 'query', 'results', 'page']);
+const Verbs = new Set<string>(['list', 'category', 'edit', 'save', 'search', 'query', 'results', 'jump', 'goto']);
 
 /**
  * Reads what {@linkcode encodeCommandsMenuId} wrote from the content the framework parsed out of a custom ID.
@@ -78,9 +88,9 @@ export function decodeCommandsMenuId(content: unknown): CommandsMenuAction | nul
 
 /**
  * How many commands a page shows. A message holds 40 components, and every command takes three of them (the section,
- * its text and its button) on top of the ones the rest of the menu takes.
+ * its text and its button) on top of the ones the rest of the menu takes, which are 17.
  */
-const CommandsPerPage = 8;
+const CommandsPerPage = 5;
 
 const AccentColor = 0x5865f2;
 
@@ -93,6 +103,11 @@ export const AllCategoriesValue = '-';
  * The custom ID of the text input of {@linkcode renderCommandsSearchModal}.
  */
 export const CommandsSearchInputId = 'query';
+
+/**
+ * The custom ID of the text input of {@linkcode renderCommandsPageModal}.
+ */
+export const CommandsPageInputId = 'page';
 
 const CategoryEmojis: Record<string, string> = {
 	[AllCategoriesValue]: '📋',
@@ -131,8 +146,9 @@ export interface CommandsMenuContext {
 export type CommandsMenuMessage = Pick<APIInteractionResponseCallbackData, 'components' | 'flags' | 'allowed_mentions'>;
 
 /**
- * Renders a page of a category: the category select menu, the commands of the category with the button that shows
- * each, the search and the navigation.
+ * Renders a page of a category: the category select menu and the search, then the commands of the category, one for
+ * every command that can be run (a subcommand is listed by itself), each with the button that shows it, and the
+ * navigation.
  *
  * @param context - The context of the menu.
  * @param category - The category to render, empty for every command. A category the bot does not have shows them all.
@@ -142,7 +158,7 @@ export function renderCommandsList(context: CommandsMenuContext, category: strin
 	const { t } = context;
 	const categories = getCommandCategories(context.commands);
 	const current = categories.some((entry) => entry.name === category) ? category : '';
-	const commands = current === '' ? context.commands : context.commands.filter((command) => command.category === current);
+	const entries = listCatalogEntries(current === '' ? context.commands : context.commands.filter((command) => command.category === current));
 
 	const options: APISelectMenuOption[] = [
 		{
@@ -162,24 +178,18 @@ export function renderCommandsList(context: CommandsMenuContext, category: strin
 	];
 
 	return renderPage(context, {
-		heading: t('commands/commands:menuSubtitle'),
-		commands,
+		subtitle: t('commands/commands:menuSubtitle'),
+		title: `${CategoryEmojis[current === '' ? AllCategoriesValue : current] ?? '📁'} ${current === '' ? t('commands/commands:menuAllCommands') : current}`,
+		entries,
 		page,
 		verb: 'list',
 		target: current,
-		header: [
-			{
-				type: ComponentType.ActionRow,
-				components: [
-					{
-						type: ComponentType.StringSelect,
-						custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'category', target: '', page: 0 }),
-						placeholder: cutText(t('commands/commands:menuCategoryPlaceholder'), 150),
-						options
-					}
-				]
-			}
-		],
+		select: {
+			type: ComponentType.StringSelect,
+			custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'category', target: '', page: 0 }),
+			placeholder: cutText(t('commands/commands:menuCategoryPlaceholder'), 150),
+			options
+		},
 		empty: t('commands/commands:menuEmpty')
 	});
 }
@@ -193,67 +203,85 @@ export function renderCommandsList(context: CommandsMenuContext, category: strin
  */
 export function renderCommandsResults(context: CommandsMenuContext, query: string, page: number): CommandsMenuMessage {
 	const { t } = context;
-	const commands = searchCommands(context.commands, query);
+	const entries = searchCatalogEntries(listCatalogEntries(context.commands), query);
 	return renderPage(context, {
-		heading: t('commands/commands:menuResults', { count: commands.length, query: inlineCode(query) }),
-		commands,
+		subtitle: t('commands/commands:menuResults', { count: entries.length, query: inlineCode(query) }),
+		title: `🔍 ${t('commands/commands:menuSearchResults')}`,
+		entries,
 		page,
 		verb: 'results',
 		target: query,
-		header: [],
 		empty: t('commands/commands:menuNoResults'),
 		back: true
 	});
 }
 
 interface PageOptions {
-	heading: string;
-	commands: readonly CatalogCommand[];
+	subtitle: string;
+	title: string;
+	entries: readonly CatalogEntry[];
 	page: number;
 	verb: 'list' | 'results';
 	target: string;
-	header: APIComponentInContainer[];
+	select?: APIStringSelectComponent;
 	empty: string;
 	back?: boolean;
 }
 
 function renderPage(context: CommandsMenuContext, options: PageOptions): CommandsMenuMessage {
 	const { t, ownerId } = context;
-	const pages = Math.max(1, Math.ceil(options.commands.length / CommandsPerPage));
+	const pages = Math.max(1, Math.ceil(options.entries.length / CommandsPerPage));
 	const current = Math.min(options.page, pages - 1);
 	const id = (verb: CommandsMenuVerb, target: string, page = current) => encodeCommandsMenuId({ ownerId, verb, target, page });
 
-	const body: APIComponentInContainer[] = [
-		{ type: ComponentType.TextDisplay, content: `## ${t('commands/commands:menuTitle')}\n${options.heading}` },
-		...options.header,
-		{ type: ComponentType.Separator }
+	const header: APIComponentInContainer[] = [
+		{
+			type: ComponentType.Section,
+			components: [{ type: ComponentType.TextDisplay, content: `## ⌘ ${t('commands/commands:menuTitle')}\n${options.subtitle}` }],
+			accessory: button(id('search', ''), { emoji: '🔍' })
+		}
 	];
+	if (options.select !== undefined) header.push({ type: ComponentType.ActionRow, components: [options.select] });
 
-	for (const command of options.commands.slice(current * CommandsPerPage, (current + 1) * CommandsPerPage)) {
+	const first = current * CommandsPerPage;
+	const body: APIComponentInContainer[] = [{ type: ComponentType.TextDisplay, content: `## ${options.title}` }, { type: ComponentType.Separator }];
+	for (const [index, entry] of options.entries.slice(first, first + CommandsPerPage).entries()) {
 		body.push({
 			type: ComponentType.Section,
 			components: [
 				{
 					type: ComponentType.TextDisplay,
-					content: `**${mentionCommand(context, command)}** · ${command.category}\n${cutText(command.description, 150)}`
+					content: `**${first + index + 1}. ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}**\n-# ${cutText(entry.description, 150)}`
 				}
 			],
-			accessory: button(id('view', command.name), { label: t('commands/commands:menuView') })
+			accessory: button(id('edit', entry.path), { emoji: '✏️' })
 		});
 	}
 
-	if (options.commands.length === 0) body.push({ type: ComponentType.TextDisplay, content: options.empty });
+	if (options.entries.length === 0) body.push({ type: ComponentType.TextDisplay, content: options.empty });
 
 	const navigation: APIButtonComponentWithCustomId[] = [
+		button(id(options.verb, options.target, 0), { emoji: '⏮️', disabled: current === 0 }),
 		button(id(options.verb, options.target, Math.max(0, current - 1)), { emoji: '◀️', disabled: current === 0 }),
-		button(id('page', '', current), { label: t('commands/commands:menuPage', { page: current + 1, total: pages }), disabled: true }),
+		button(id('jump', `${options.verb}/${options.target}`), { label: '…', disabled: pages === 1 }),
 		button(id(options.verb, options.target, Math.min(pages - 1, current + 1)), { emoji: '▶️', disabled: current >= pages - 1 }),
-		button(id('search', ''), { label: t('commands/commands:menuSearch'), emoji: '🔍', style: ButtonStyle.Primary })
+		button(id(options.verb, options.target, pages - 1), { emoji: '⏭️', disabled: current >= pages - 1 })
 	];
-	if (options.back) navigation.push(button(id('list', '', 0), { label: t('commands/commands:menuBack') }));
 
-	body.push({ type: ComponentType.Separator }, row(deduplicate(navigation)));
-	return toMessage([{ type: ComponentType.Container, accent_color: AccentColor, components: body }]);
+	body.push(
+		{ type: ComponentType.Separator },
+		{
+			type: ComponentType.TextDisplay,
+			content: `-# ${t('commands/commands:menuFooter', { page: current + 1, total: pages, count: options.entries.length })}`
+		},
+		row(deduplicate(navigation))
+	);
+	if (options.back) body.push(row([button(id('list', '', 0), { label: t('commands/commands:menuBack'), emoji: '◀️' })]));
+
+	return toMessage([
+		{ type: ComponentType.Container, accent_color: AccentColor, components: header },
+		{ type: ComponentType.Container, accent_color: AccentColor, components: body }
+	]);
 }
 
 /**
@@ -299,7 +327,6 @@ export function renderCommand(context: CommandsMenuContext, command: CatalogComm
 				emoji: '◀️'
 			}),
 			button(encodeCommandsMenuId({ ownerId, verb: 'search', target: '', page: 0 }), {
-				label: t('commands/commands:menuSearch'),
 				emoji: '🔍',
 				style: ButtonStyle.Primary
 			})
@@ -331,6 +358,100 @@ export function renderCommandsSearchModal(t: Translator, ownerId: Snowflake): AP
 						required: true,
 						min_length: 1,
 						max_length: CommandQueryMaximumLength
+					}
+				]
+			}
+		]
+	};
+}
+
+/**
+ * The value of the option of the status radio group that enables a command.
+ */
+export const CommandEnabledValue = 'enabled';
+
+/**
+ * The value of the option of the status radio group that disables a command.
+ */
+export const CommandDisabledValue = 'disabled';
+
+/**
+ * The custom ID of the radio group of {@linkcode renderCommandEditModal}.
+ */
+export const CommandStatusInputId = 'status';
+
+/**
+ * The modal that edits a command of the server: for now, whether it can be run.
+ *
+ * @param context - The context of the menu.
+ * @param command - The command to edit.
+ * @param disabledBy - The name in `commands.disabled` that disables it, `null` when it is enabled.
+ */
+export function renderCommandEditModal(
+	context: CommandsMenuContext,
+	command: CatalogCommand,
+	disabledBy: string | null
+): APIModalInteractionResponseCallbackData {
+	const { t } = context;
+	const disabled = disabledBy !== null;
+	const lines = [
+		`### ⌘ ${inlineCode(`/${command.name}`)} · ${command.category}`,
+		command.description,
+		'',
+		t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy }),
+		t('commands/commands:viewPermissions', {
+			permissions: command.permissions === null ? t('commands/commands:viewPermissionsNone') : formatPermissions(t, command.permissions)
+		})
+	];
+	if (command.subcommands.length > 0) lines.push(t('commands/commands:editSubcommands', { count: command.subcommands.length }));
+
+	return {
+		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: 0 }),
+		title: cutText(t('commands/commands:editTitle', { name: command.name }), 45),
+		components: [
+			{ type: ComponentType.TextDisplay, content: cutText(lines.join('\n'), 3500) },
+			{
+				type: ComponentType.Label,
+				label: cutText(t('commands/commands:editStatusLabel'), 45),
+				description: cutText(t('commands/commands:editStatusDescription'), 100),
+				component: {
+					type: ComponentType.RadioGroup,
+					custom_id: CommandStatusInputId,
+					required: true,
+					options: [
+						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !disabled },
+						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: disabled }
+					]
+				}
+			}
+		]
+	};
+}
+
+/**
+ * The modal a user writes the page they want to go to in.
+ *
+ * @param t - The function to translate with.
+ * @param ownerId - The user who opened the menu.
+ * @param target - The list the page is of, `list/Tools` or `results/ban`.
+ */
+export function renderCommandsPageModal(t: Translator, ownerId: Snowflake, target: string): APIModalInteractionResponseCallbackData {
+	return {
+		custom_id: encodeCommandsMenuId({ ownerId, verb: 'goto', target, page: 0 }),
+		title: cutText(t('commands/commands:gotoTitle'), 45),
+		components: [
+			{
+				type: ComponentType.ActionRow,
+				components: [
+					{
+						type: ComponentType.TextInput,
+						custom_id: CommandsPageInputId,
+						label: cutText(t('commands/commands:gotoLabel'), 45),
+						placeholder: cutText(t('commands/commands:gotoPlaceholder'), 100),
+						style: TextInputStyle.Short,
+						required: true,
+						min_length: 1,
+						max_length: 5
 					}
 				]
 			}
@@ -385,7 +506,8 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 }
 
 /**
- * Makes the custom IDs of the buttons unique, by pointing the disabled ones that repeat an ID at nothing.
+ * Makes the custom IDs of the buttons unique, by numbering the ones that repeat an ID: the first and the previous
+ * page are both the first one on the second page, and the handler only reads the first three parts of an ID.
  */
 function deduplicate(buttons: APIButtonComponentWithCustomId[]): APIButtonComponentWithCustomId[] {
 	const seen = new Set<string>();
@@ -395,6 +517,6 @@ function deduplicate(buttons: APIButtonComponentWithCustomId[]): APIButtonCompon
 			return entry;
 		}
 
-		return { ...entry, custom_id: `${entry.custom_id}:${index}`, disabled: true };
+		return { ...entry, custom_id: `${entry.custom_id}:${index}` };
 	});
 }

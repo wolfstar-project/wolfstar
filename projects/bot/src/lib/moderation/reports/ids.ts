@@ -14,10 +14,21 @@ export const ReportModerationVerbs = ['warn', 'timeout', 'kick', 'note', 'mute',
 export type ReportModerationVerb = (typeof ReportModerationVerbs)[number];
 
 /**
- * What the menu of a report offers besides its buttons, in the order it lists them.
+ * What the menu of a report offers besides its buttons, in the order it lists them. The last one is to block the
+ * member who made the report, or to let them report again when they are blocked, see {@linkcode getReportMenuVerbs}.
  */
-export const ReportMenuVerbs = ['note', 'mute', 'softban', 'ban', 'block'] as const;
+export const ReportMenuVerbs = ['note', 'mute', 'softban', 'ban', 'block', 'unblock'] as const;
 export type ReportMenuVerb = (typeof ReportMenuVerbs)[number];
+
+/**
+ * The verbs the menu of a report lists, which has the one that blocks the member who made the report, or the one that
+ * lets them report again, whichever is the opposite of what they are now.
+ *
+ * @param blocked - Whether the member who made the report is blocked from reporting.
+ */
+export function getReportMenuVerbs(blocked: boolean): ReportMenuVerb[] {
+	return ReportMenuVerbs.filter((verb) => verb !== (blocked ? 'block' : 'unblock'));
+}
 
 /**
  * What a component or a modal of a report does:
@@ -27,10 +38,11 @@ export type ReportMenuVerb = (typeof ReportMenuVerbs)[number];
  * - `menu`: the select menu of the other actions, the action is its selected value.
  * - `note`, `mute`, `softban`, `ban`: the modal of a moderation action picked in the menu.
  * - `block`: stops the member who made the report from making more of them.
+ * - `unblock`: lets them make reports again.
  * - `delete`: deletes the reported message.
  * - `dismiss`: closes the report without an action.
  */
-export type ReportVerb = 'new' | ReportModerationVerb | 'menu' | 'block' | 'delete' | 'dismiss';
+export type ReportVerb = 'new' | ReportModerationVerb | 'menu' | 'block' | 'unblock' | 'delete' | 'dismiss';
 
 export interface ReportAction {
 	verb: ReportVerb;
@@ -61,7 +73,7 @@ export function encodeReportId(action: ReportAction) {
 	return encodeCustomId(ReportHandlerName, action.id, `${action.verb}:${action.messageId ?? 0}:${action.submit ? 1 : 0}`);
 }
 
-const Verbs = new Set<string>(['new', ...ReportModerationVerbs, 'menu', 'block', 'delete', 'dismiss']);
+const Verbs = new Set<string>(['new', ...ReportModerationVerbs, 'menu', 'block', 'unblock', 'delete', 'dismiss']);
 const IdRegExp = /^\d{1,20}$/;
 const SnowflakeRegExp = /^\d{17,20}$/;
 

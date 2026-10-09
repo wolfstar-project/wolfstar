@@ -1,4 +1,4 @@
-import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
+import { ApplyOptions } from '@wolfstar/decorators';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
 import { getColor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -22,6 +22,7 @@ interface ErroredChange {
  * The reply is edited to report the progress, through the deferred interaction response. The response is ephemeral to
  * avoid flooding the channel, and the progress is reported every 10 members.
  */
+@ApplyOptions<Command.Options>({ preconditions: ['moderator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/moderation:dehoist')
 		.setContexts(InteractionContextType.Guild)
@@ -30,9 +31,6 @@ interface ErroredChange {
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
-		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 

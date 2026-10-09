@@ -147,31 +147,62 @@ export function normalizeCommandQuery(query: string): string {
 }
 
 /**
- * Searches the commands whose name, description, subcommands or context menu commands have every word of a query.
- * The ones whose name has the query come first.
+ * A command that can be run, as the menu lists it: a command with no subcommands, or one subcommand of a command that
+ * has them, since the parent of a subcommand cannot be run by itself.
+ */
+export interface CatalogEntry {
+	/**
+	 * What a user writes after the slash, `ban` or `automod rule add`.
+	 */
+	path: string;
+	description: string;
+	command: CatalogCommand;
+
+	/**
+	 * The path of the subcommand under its command, `null` for a command that has none.
+	 */
+	subcommand: string | null;
+}
+
+/**
+ * Lists what can be run in a catalog, by path.
  *
- * @param commands - The commands to search in.
+ * @param commands - The commands of the catalog.
+ */
+export function listCatalogEntries(commands: readonly CatalogCommand[]): CatalogEntry[] {
+	const entries: CatalogEntry[] = [];
+	for (const command of commands) {
+		if (command.subcommands.length === 0) {
+			entries.push({ path: command.name, description: command.description, command, subcommand: null });
+			continue;
+		}
+
+		for (const subcommand of command.subcommands) {
+			entries.push({ path: `${command.name} ${subcommand.name}`, description: subcommand.description, command, subcommand: subcommand.name });
+		}
+	}
+
+	return entries.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+/**
+ * Searches the entries whose path, description, category or context menu commands have every word of a query. The ones
+ * whose path has the query come first.
+ *
+ * @param entries - The entries to search in, see {@linkcode listCatalogEntries}.
  * @param query - The query, normalized with {@linkcode normalizeCommandQuery}.
  */
-export function searchCommands(commands: readonly CatalogCommand[], query: string): CatalogCommand[] {
+export function searchCatalogEntries(entries: readonly CatalogEntry[], query: string): CatalogEntry[] {
 	const words = query.split(' ').filter((word) => word.length > 0);
 	if (words.length === 0) return [];
 
-	const matches = commands.filter((command) => {
-		const haystack = [
-			command.name,
-			command.description,
-			command.category,
-			...command.contextMenus,
-			...command.subcommands.flatMap((subcommand) => [subcommand.name, subcommand.description])
-		]
-			.join('\n')
-			.toLowerCase();
+	const matches = entries.filter((entry) => {
+		const haystack = [entry.path, entry.description, entry.command.category, ...entry.command.contextMenus].join('\n').toLowerCase();
 		return words.every((word) => haystack.includes(word));
 	});
 
-	const inName = (command: CatalogCommand) => (command.name.includes(query) ? 0 : 1);
-	return matches.sort((a, b) => inName(a) - inName(b) || a.name.localeCompare(b.name));
+	const inPath = (entry: CatalogEntry) => (entry.path.includes(query) ? 0 : 1);
+	return matches.sort((a, b) => inPath(a) - inPath(b) || a.path.localeCompare(b.path));
 }
 
 let commandIds: Promise<Map<string, Snowflake>> | null = null;

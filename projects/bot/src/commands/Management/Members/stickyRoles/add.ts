@@ -1,4 +1,3 @@
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -14,7 +13,6 @@ import { MessageFlags } from 'discord-api-types/v10';
 		.addRoleOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsRole').setRequired(true))
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'sticky-roles add'>) {
 		const { user, role } = options;
 

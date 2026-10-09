@@ -3,7 +3,14 @@ import { getAction } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { decodeReportId, isReportMenuVerb, isReportModerationVerb, type ReportAction, type ReportModerationVerb } from '#lib/moderation/reports/ids';
 import { takePendingReport } from '#lib/moderation/reports/pending';
-import { addReportNote, closeReport, renderReportActionModal, ReportDurationInputId, ReportReasonInputId } from '#lib/moderation/reports/render';
+import {
+	addReportNote,
+	closeReport,
+	renderReportActionModal,
+	ReportDurationInputId,
+	ReportReasonInputId,
+	setReportReporterBlocked
+} from '#lib/moderation/reports/render';
 import { fetchGuildTranslator, notifyReporter, submitReport } from '#lib/moderation/reports/submit';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
@@ -97,7 +104,9 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (isReportModerationVerb(verb)) return component.showModal(renderReportActionModal(t, report.id, verb));
 		switch (verb) {
 			case 'block':
-				return this.block(component, report, t);
+				return this.setBlocked(component, report, t, true);
+			case 'unblock':
+				return this.setBlocked(component, report, t, false);
 			case 'delete':
 				return this.deleteMessage(component, report, t);
 			case 'dismiss':
@@ -212,27 +221,43 @@ export class UserInteractionHandler extends InteractionHandler {
 	}
 
 	/**
-	 * Stops the member who made the report from making more of them, and notes it on the report, which stays open.
+	 * Stops the member who made the report from making more of them, or lets them report again, and notes it on the
+	 * report, which stays open. Its menu then offers the opposite.
 	 *
-	 * @remarks It is how the moderators stop who abuses of the reports when they are anonymous: the member is blocked
-	 * without being named.
+	 * @remarks Blocking is how the moderators stop who abuses of the reports when they are anonymous: the member is
+	 * blocked without being named.
 	 */
-	private async block(interaction: ComponentInteraction, report: Report, t: Translator) {
+	private async setBlocked(interaction: ComponentInteraction, report: Report, t: Translator, block: boolean) {
 		const settings = await readSettings(report.guildId);
-		if (settings.reportsBlockedUsers.includes(report.reporterId)) {
-			return interaction.reply({ content: t('commands/report:blockAlready'), flags: MessageFlags.Ephemeral });
+		if (settings.reportsBlockedUsers.includes(report.reporterId) === block) {
+			return interaction.reply({
+				content: t(block ? 'commands/report:blockAlready' : 'commands/report:unblockNotBlocked'),
+				flags: MessageFlags.Ephemeral
+			});
 		}
 
 		await writeSettings(
 			report.guildId,
-			(current) => ({ reportsBlockedUsers: [...new Set([...current.reportsBlockedUsers, report.reporterId])] }),
+			(current) => ({
+				reportsBlockedUsers: block
+					? [...new Set([...current.reportsBlockedUsers, report.reporterId])]
+					: current.reportsBlockedUsers.filter((id: string) => id !== report.reporterId)
+			}),
 			interaction.user.id
 		);
 
 		const guildT = await fetchGuildTranslator(report.guildId);
-		const note = guildT('commands/report:statusBlocked', { moderator: userMention(interaction.user.id) });
-		await interaction.update({ components: addReportNote(interaction.message.components ?? [], note), allowed_mentions: { parse: [] } });
-		return interaction.followup({ content: t('commands/report:blockDone'), flags: MessageFlags.Ephemeral });
+		const note = guildT(block ? 'commands/report:statusBlocked' : 'commands/report:statusUnblocked', {
+			moderator: userMention(interaction.user.id)
+		});
+		await interaction.update({
+			components: setReportReporterBlocked(addReportNote(interaction.message.components ?? [], note), guildT, report.id, block),
+			allowed_mentions: { parse: [] }
+		});
+		return interaction.followup({
+			content: t(block ? 'commands/report:blockDone' : 'commands/report:unblockDone'),
+			flags: MessageFlags.Ephemeral
+		});
 	}
 
 	/**

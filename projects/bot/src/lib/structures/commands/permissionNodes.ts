@@ -46,7 +46,7 @@ export function applyAddOrRemove(subcommand: SlashCommandSubcommandBuilder, name
 /**
  * Replies with the result of a handler and translates the {@linkcode UserError} it throws.
  *
- * @remarks The permission level is checked by the handler, with `RequiresCommandPermissionLevel`.
+ * @remarks The permission level is checked by the `administrator` precondition of the `permission-nodes` command.
  */
 export async function replyWithPermissionNodeResult(interaction: GuildChatInputInteraction, callback: (t: TFunction) => Promise<string>) {
 	const t = getSupportedUserLanguageT(interaction);
