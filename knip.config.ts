@@ -25,7 +25,7 @@ export default {
 			// The pieces are loaded from their directories by the framework, and the worker by its path: nothing imports them.
 			entry: [
 				'src/main.ts',
-				'src/{commands,interaction-handlers,listeners,routes,scheduled-tasks,serializers}/**/*.ts',
+				'src/{commands,interaction-handlers,listeners,preconditions,routes,scheduled-tasks,serializers}/**/*.ts',
 				'src/lib/moderation/workers/worker.mts',
 				'scripts/*.{ts,mjs}',
 				'stars.config.ts',

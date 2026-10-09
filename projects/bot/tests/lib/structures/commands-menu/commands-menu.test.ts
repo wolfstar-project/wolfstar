@@ -2,12 +2,15 @@ import {
 	decodeCommandsMenuId,
 	encodeCommandsMenuId,
 	getCommandCategories,
+	listCatalogEntries,
 	normalizeCommandQuery,
 	renderCommand,
+	renderCommandEditModal,
 	renderCommandsList,
+	renderCommandsPageModal,
 	renderCommandsResults,
 	renderCommandsSearchModal,
-	searchCommands,
+	searchCatalogEntries,
 	toCatalogCommand,
 	type CatalogCommand,
 	type CommandsMenuContext
@@ -50,12 +53,17 @@ interface AnyComponent {
 	options?: { value: string; default?: boolean }[];
 	components?: AnyComponent[];
 	accessory?: AnyComponent;
+	component?: AnyComponent;
 }
 
 function flatten(components: readonly unknown[]): AnyComponent[] {
 	return (components as AnyComponent[]).flatMap((component) => [
 		component,
-		...flatten([...(component.components ?? []), ...(component.accessory ? [component.accessory] : [])])
+		...flatten([
+			...(component.components ?? []),
+			...(component.accessory ? [component.accessory] : []),
+			...(component.component ? [component.component] : [])
+		])
 	]);
 }
 
@@ -152,18 +160,35 @@ describe('commands menu', () => {
 			expect(normalizeCommandQuery('::..')).toBe('');
 		});
 
-		test('GIVEN a query THEN it searches names, descriptions, subcommands and context menu commands', () => {
-			expect(searchCommands(commands, 'ban').map((command) => command.name)).toEqual(['ban']);
-			expect(searchCommands(commands, 'rule').map((command) => command.name)).toEqual(['automod']);
-			expect(searchCommands(commands, 'report message').map((command) => command.name)).toEqual(['report']);
-			expect(searchCommands(commands, 'member').map((command) => command.name)).toEqual(['ban', 'report']);
-			expect(searchCommands(commands, 'nothing-like-this')).toEqual([]);
-			expect(searchCommands(commands, '')).toEqual([]);
+		test('GIVEN commands THEN every one that can be run is an entry, and a parent of subcommands is not', () => {
+			expect(
+				listCatalogEntries(commands)
+					.map((entry) => entry.path)
+					.slice(0, 6)
+			).toEqual(['automod create', 'automod delete', 'ban', 'extra-00', 'extra-01', 'extra-02']);
+			expect(listCatalogEntries(commands).some((entry) => entry.path === 'automod')).toBe(false);
+			expect(listCatalogEntries(commands).find((entry) => entry.path === 'automod delete')).toMatchObject({
+				description: 'Delete an auto-moderation rule',
+				subcommand: 'delete'
+			});
+			expect(listCatalogEntries(commands)).toHaveLength(25);
 		});
 
-		test('GIVEN a query a name has THEN that command comes first', () => {
-			const list = [createCommand('alpha', 'Tools', { description: 'mentions whois' }), createCommand('whois', 'Tools')];
-			expect(searchCommands(list, 'whois').map((command) => command.name)).toEqual(['whois', 'alpha']);
+		test('GIVEN a query THEN it searches the paths, descriptions and context menu commands of the entries', () => {
+			const paths = (query: string) => searchCatalogEntries(listCatalogEntries(commands), query).map((entry) => entry.path);
+
+			expect(paths('ban')).toEqual(['ban']);
+			expect(paths('rule')).toEqual(['automod create', 'automod delete']);
+			expect(paths('automod delete')).toEqual(['automod delete']);
+			expect(paths('report message')).toEqual(['report']);
+			expect(paths('member')).toEqual(['ban', 'report']);
+			expect(paths('nothing-like-this')).toEqual([]);
+			expect(paths('')).toEqual([]);
+		});
+
+		test('GIVEN a query a path has THEN that entry comes first', () => {
+			const entries = listCatalogEntries([createCommand('alpha', 'Tools', { description: 'mentions whois' }), createCommand('whois', 'Tools')]);
+			expect(searchCatalogEntries(entries, 'whois').map((entry) => entry.path)).toEqual(['whois', 'alpha']);
 		});
 	});
 
@@ -187,7 +212,7 @@ describe('commands menu', () => {
 			const select = flatten(message.components!).find((component) => component.type === ComponentType.StringSelect)!;
 
 			expect(getText(message.components!)).toContain('`/ban`');
-			expect(getText(message.components!)).not.toContain('`/whois`');
+			expect(getText(message.components!)).not.toContain('`/whois user`');
 			expect(select.options!.map((option) => option.value)).toEqual(['-', 'Management', 'Moderation', 'Tools']);
 			expect(select.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['Moderation']);
 		});
@@ -200,7 +225,92 @@ describe('commands menu', () => {
 		});
 
 		test('GIVEN a page out of range THEN the last one is rendered', () => {
-			expect(getText(renderCommandsList(createContext(), 'Tools', 99).components!)).toContain('`/extra-19`');
+			const text = getText(renderCommandsList(createContext(), 'Tools', 99).components!);
+
+			expect(text).toContain('`/whois user`');
+			expect(text).not.toContain('`/extra-19`');
+			expect(text).toContain('"page":5,"total":5,"count":21');
+		});
+
+		test('GIVEN the commands THEN each subcommand is listed by itself, numbered, with the button that edits its command', () => {
+			const message = renderCommandsList(createContext(), '', 0);
+			const text = getText(message.components!);
+			const edits = getCustomIds(message.components!).filter((id) => id.includes('.edit:'));
+
+			expect(text).toContain('**1. `/automod create`**');
+			// The description is small text under the command:
+			expect(text).toContain('`/automod create`**\n-# Create an auto-moderation rule');
+			expect(text).toContain('**2. `/automod delete`**');
+			expect(text).toContain('**3. `/ban`**');
+			expect(edits).toHaveLength(5);
+			expect(edits[0]).toBe(`commands.${ownerId}.edit:automod create:0`);
+			expect(edits[1]).toBe(`commands.${ownerId}.edit:automod delete:0`);
+		});
+
+		test('GIVEN a page THEN the footer counts the pages and the commands that can be run', () => {
+			expect(getText(renderCommandsList(createContext(), 'Moderation', 0).components!)).toContain('"page":1,"total":1,"count":2');
+		});
+
+		test('GIVEN the middle of a list THEN it can go to the first, previous, next and last page and ask for one', () => {
+			const message = renderCommandsList(createContext(), 'Tools', 1);
+			const buttons = flatten(message.components!).filter(
+				(component) => component.type === ComponentType.Button && component.custom_id?.startsWith(`commands.${ownerId}.`)
+			);
+			const actions = buttons.map((button) => decodeCommandsMenuId(button.custom_id!.split('.').slice(1))).filter((action) => action !== null);
+			const navigation = actions.filter((action) => action.verb !== 'edit' && action.verb !== 'search');
+
+			expect(navigation.map((action) => [action.verb, action.page])).toEqual([
+				['list', 0],
+				['list', 0],
+				['jump', 1],
+				['list', 2],
+				['list', 4]
+			]);
+			expect(buttons.filter((button) => button.disabled)).toHaveLength(0);
+			expect(navigation[2].target).toBe('list/Tools');
+		});
+
+		test('GIVEN the first page THEN it cannot go back, and a single page cannot be jumped in', () => {
+			const disabled = (message: ReturnType<typeof renderCommandsList>) =>
+				flatten(message.components!)
+					.filter((component) => component.type === ComponentType.Button && component.disabled)
+					.map((component) => decodeCommandsMenuId(component.custom_id!.split('.').slice(1))?.verb);
+
+			expect(disabled(renderCommandsList(createContext(), 'Tools', 0))).toEqual(['list', 'list']);
+			expect(disabled(renderCommandsList(createContext(), 'Moderation', 0))).toEqual(['list', 'list', 'jump', 'list', 'list']);
+		});
+
+		test('GIVEN the page modal THEN it asks for a number and keeps the list it is for', () => {
+			const modal = renderCommandsPageModal(t, ownerId, 'results/ban');
+			const [input] = flatten(modal.components).filter((component) => component.type === ComponentType.TextInput);
+
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'goto', target: 'results/ban', page: 0 });
+			expect(input).toMatchObject({ custom_id: 'page', required: true });
+		});
+
+		test('GIVEN a command THEN its modal shows what it is and asks whether it is enabled', () => {
+			const modal = renderCommandEditModal(createContext(), commands[0], null);
+			const text = getText(modal.components);
+			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
+
+			expect(modal.title).toContain('commands/commands:editTitle');
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'save', target: 'automod', page: 0 });
+			expect(text).toContain('`/automod`');
+			expect(text).toContain('commands/commands:editStatusEnabled');
+			expect(text).toContain('"count":2');
+			expect(radio.custom_id).toBe('status');
+			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
+				['enabled', true],
+				['disabled', false]
+			]);
+		});
+
+		test('GIVEN a command a server disabled THEN its modal says by what and selects Disabled', () => {
+			const modal = renderCommandEditModal(createContext(), commands[1], 'Moderation.*');
+			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
+
+			expect(getText(modal.components)).toContain('commands/commands:editStatusDisabled {"rule":"Moderation.*"}');
+			expect(radio.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['disabled']);
 		});
 
 		test('GIVEN the results of a search THEN they can be paged and left', () => {
@@ -208,7 +318,8 @@ describe('commands menu', () => {
 			const verbs = getCustomIds(message.components!).map((id) => decodeCommandsMenuId(id.split('.').slice(1))?.verb);
 
 			expect(getText(message.components!)).toContain('commands/commands:menuResults');
-			expect(verbs.filter((verb) => verb === 'results')).toHaveLength(2);
+			expect(verbs.filter((verb) => verb === 'results')).toHaveLength(4);
+			expect(verbs).toContain('jump');
 			expect(verbs).toContain('list');
 			expect(flatten(message.components!).some((component) => component.type === ComponentType.StringSelect)).toBe(false);
 		});
@@ -221,7 +332,8 @@ describe('commands menu', () => {
 			const context = createContext({ ban: '111111111111111111', automod: '222222222222222222' });
 
 			expect(getText(renderCommandsList(context, '', 0).components!)).toContain('</ban:111111111111111111>');
-			expect(getText(renderCommandsList(context, '', 0).components!)).toContain('`/automod`');
+			expect(getText(renderCommandsList(context, '', 0).components!)).toContain('</automod create:222222222222222222>');
+			expect(getText(renderCommand(context, commands[0]).components!)).not.toContain('`/automod`\n');
 			expect(getText(renderCommand(context, commands[0]).components!)).toContain('</automod create:222222222222222222>');
 		});
 

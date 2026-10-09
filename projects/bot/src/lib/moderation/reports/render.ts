@@ -1,5 +1,5 @@
 import type { Translator } from '#lib/structures/commands/utils';
-import { encodeReportId, ReportMenuVerbs, type ReportModerationVerb, type ReportVerb } from '#lib/moderation/reports/ids';
+import { encodeReportId, getReportMenuVerbs, type ReportModerationVerb, type ReportVerb } from '#lib/moderation/reports/ids';
 import type { ReportSubject } from '#lib/moderation/reports/pending';
 import { channelMention, hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
@@ -7,6 +7,7 @@ import {
 	ButtonStyle,
 	ComponentType,
 	MessageFlags,
+	SeparatorSpacingSize,
 	TextInputStyle,
 	type APIActionRowComponent,
 	type APIButtonComponentWithCustomId,
@@ -41,66 +42,72 @@ export const ReportDurationInputId = 'duration';
 /**
  * Renders the report the moderators get: what was reported, by whom and why, with the components to act on it.
  *
- * @remarks The three actions the moderators take the most have a button, as the report of a message reads best with
- * few of them; the heavier ones, and blocking who made the report, are in the menu under them.
+ * @remarks The report is a container of blocks a separator apart: the title with the report and when it was made, who
+ * is reported, who reported, why, and, for a message, what it said. The three actions the moderators take the most have
+ * a button, as the report of a message reads best with few of them; the heavier ones, and blocking who made the report
+ * (or letting them report again), are in the menu under them.
  *
  * @param t - The function to translate with, in the language of the guild.
  * @param report - The report.
  * @param roleId - The role to mention with the report, if any.
+ * @param reporterBlocked - Whether the member who made the report is blocked from reporting.
  */
 export function renderReport(
 	t: Translator,
 	report: Report,
-	roleId: Snowflake | null
+	roleId: Snowflake | null,
+	reporterBlocked = false
 ): Pick<RESTPostAPIChannelMessageJSONBody, 'components' | 'flags' | 'allowed_mentions'> {
 	const hasMessage = report.channelId !== null && report.messageId !== null;
 	const id = (verb: ReportVerb) => encodeReportId({ verb, id: report.id, messageId: null, submit: false });
+	const block = (...lines: string[]): APIComponentInContainer[] => [
+		{ type: ComponentType.Separator, divider: true, spacing: SeparatorSpacingSize.Small },
+		{ type: ComponentType.TextDisplay, content: lines.join('\n') }
+	];
 
 	const target = { mention: userMention(report.targetId), tag: report.targetTag, id: report.targetId };
-	const lines = [`## ${t(hasMessage ? 'commands/report:titleMessage' : 'commands/report:titleUser')}`];
+	const header = [
+		`## ${t(hasMessage ? 'commands/report:titleMessage' : 'commands/report:titleUser')}`,
+		`-# ${t('commands/report:footer', { id: report.id, time: time(Math.floor(report.createdAt / 1000), TimestampStyles.LongDateTime) })}`
+	];
+
+	const content: APIComponentInContainer[] = [{ type: ComponentType.TextDisplay, content: header.join('\n') }];
 	if (hasMessage) {
 		const link = hyperlink(t('commands/report:fieldMessageLink'), messageLink(report.channelId!, report.messageId!, report.guildId));
-		lines.push(t('commands/report:fieldMessage', { link, channel: channelMention(report.channelId!) }), t('commands/report:fieldAuthor', target));
+		content.push(
+			...block(t('commands/report:fieldAuthor', target)),
+			...block(t('commands/report:fieldMessage', { link, channel: channelMention(report.channelId!) }))
+		);
 	} else {
-		lines.push(t('commands/report:fieldUser', target));
+		content.push(...block(t('commands/report:fieldUser', target)));
 	}
 
-	lines.push(
+	content.push(
 		// The moderators are not told who made an anonymous report, the database is:
-		report.anonymous
-			? t('commands/report:fieldReportedByAnonymous')
-			: t('commands/report:fieldReportedBy', { mention: userMention(report.reporterId) }),
-		t('commands/report:fieldReportedAt', { time: time(Math.floor(report.createdAt / 1000), TimestampStyles.LongDateTime) }),
-		t('commands/report:fieldReason', { reason: quote(cutText(report.reason, ReportReasonMaximumLength)) })
+		...block(
+			report.anonymous
+				? t('commands/report:fieldReportedByAnonymous')
+				: t('commands/report:fieldReportedBy', { mention: userMention(report.reporterId) })
+		),
+		...block(t('commands/report:fieldReason', { reason: quote(cutText(report.reason, ReportReasonMaximumLength)) }))
 	);
 
 	if (hasMessage) {
-		const content = (report.content ?? '').trim();
-		lines.push(
-			t('commands/report:fieldContent', {
-				content: content.length === 0 ? t('commands/report:fieldContentEmpty') : quote(cutText(content, ReportContentMaximumLength))
-			}),
-			t('commands/report:fieldMedia', {
-				media:
-					report.attachments.length === 0
-						? t('commands/report:mediaNone')
-						: report.attachments.map((url, index) => hyperlink(String(index + 1), url)).join(' · ')
-			})
+		const text = (report.content ?? '').trim();
+		content.push(
+			...block(
+				t('commands/report:fieldContent', {
+					content: text.length === 0 ? t('commands/report:fieldContentEmpty') : quote(cutText(text, ReportContentMaximumLength))
+				}),
+				t('commands/report:fieldMedia', {
+					media:
+						report.attachments.length === 0
+							? t('commands/report:mediaNone')
+							: report.attachments.map((url, index) => hyperlink(String(index + 1), url)).join(' · ')
+				})
+			)
 		);
 	}
-
-	lines.push(`-# ${t('commands/report:footer', { id: report.id })}`);
-
-	const menu: APIStringSelectComponent = {
-		type: ComponentType.StringSelect,
-		custom_id: id('menu'),
-		placeholder: cutText(t('commands/report:menuPlaceholder'), 150),
-		options: ReportMenuVerbs.map((verb) => ({
-			label: cutText(t(`commands/report:menu${capitalize(verb)}`), 100),
-			description: cutText(t(`commands/report:menu${capitalize(verb)}Description`), 100),
-			value: verb
-		}))
-	};
 
 	const components: APIMessageTopLevelComponent[] = [];
 	// The mention is outside of the container, so the report reads the same once it is closed:
@@ -109,13 +116,14 @@ export function renderReport(
 		type: ComponentType.Container,
 		accent_color: AccentColor,
 		components: [
-			{ type: ComponentType.TextDisplay, content: lines.join('\n') },
+			...content,
+			{ type: ComponentType.Separator, divider: true, spacing: SeparatorSpacingSize.Large },
 			row([
 				button(id('warn'), t('commands/report:buttonWarn'), ButtonStyle.Secondary),
 				button(id('timeout'), t('commands/report:buttonTimeout'), ButtonStyle.Primary),
 				button(id('kick'), t('commands/report:buttonKick'), ButtonStyle.Danger)
 			]),
-			{ type: ComponentType.ActionRow, components: [menu] },
+			{ type: ComponentType.ActionRow, components: [renderReportMenu(t, report.id, reporterBlocked)] },
 			row([
 				...(hasMessage ? [button(id('delete'), t('commands/report:buttonDelete'), ButtonStyle.Secondary)] : []),
 				button(id('dismiss'), t('commands/report:buttonDismiss'), ButtonStyle.Secondary)
@@ -129,6 +137,50 @@ export function renderReport(
 		// Only the role is notified: the users are mentioned to be clickable, and what was quoted mentions nobody.
 		allowed_mentions: { parse: [], roles: roleId === null ? [] : [roleId] }
 	};
+}
+
+/**
+ * Renders the menu of the other actions of a report.
+ *
+ * @param t - The function to translate with, in the language of the guild.
+ * @param reportId - The ID of the report.
+ * @param reporterBlocked - Whether the member who made the report is blocked from reporting, which makes the menu offer
+ * to let them report again and not to block them.
+ */
+export function renderReportMenu(t: Translator, reportId: string, reporterBlocked: boolean): APIStringSelectComponent {
+	return {
+		type: ComponentType.StringSelect,
+		custom_id: encodeReportId({ verb: 'menu', id: reportId, messageId: null, submit: false }),
+		placeholder: cutText(t('commands/report:menuPlaceholder'), 150),
+		options: getReportMenuVerbs(reporterBlocked).map((verb) => ({
+			label: cutText(t(`commands/report:menu${capitalize(verb)}`), 100),
+			description: cutText(t(`commands/report:menu${capitalize(verb)}Description`), 100),
+			value: verb
+		}))
+	};
+}
+
+/**
+ * Changes the menu of a report that is shown to offer to block the member who made it, or to let them report again.
+ *
+ * @param components - The components of the message of the report.
+ * @param t - The function to translate with, in the language of the guild.
+ * @param reportId - The ID of the report.
+ * @param reporterBlocked - Whether the member who made the report is blocked from reporting.
+ */
+export function setReportReporterBlocked(
+	components: readonly APIMessageTopLevelComponent[],
+	t: Translator,
+	reportId: string,
+	reporterBlocked: boolean
+): APIMessageTopLevelComponent[] {
+	return mapContainer(components, (children) =>
+		children.map((child) =>
+			child.type === ComponentType.ActionRow && child.components.some((entry) => entry.type === ComponentType.StringSelect)
+				? { type: ComponentType.ActionRow, components: [renderReportMenu(t, reportId, reporterBlocked)] }
+				: child
+		)
+	);
 }
 
 /**
@@ -159,6 +211,7 @@ export function addReportNote(components: readonly APIMessageTopLevelComponent[]
 		const rest = children.filter((child) => child.type !== ComponentType.ActionRow);
 		return [
 			...rest,
+			{ type: ComponentType.Separator, divider: true, spacing: SeparatorSpacingSize.Small },
 			{ type: ComponentType.TextDisplay, content: note },
 			...rows.map((entry) => ({
 				...entry,

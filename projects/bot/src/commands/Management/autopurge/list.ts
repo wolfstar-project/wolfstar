@@ -1,6 +1,5 @@
 import { CleanupRoot, describeCleanupFilter } from '#lib/moderation/cleanup/commands';
 import { readAutoPurges } from '#lib/moderation/cleanup/store';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -17,7 +16,6 @@ const Root = CleanupRoot;
  */
 @RegisterAsSubcommand('autopurge', (builder) => applyLocalizedBuilder(builder, `${Root}:autopurgeList`))
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
 		const purges = await readAutoPurges(interaction.guildId);

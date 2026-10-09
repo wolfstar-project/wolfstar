@@ -1,10 +1,8 @@
 import { applyModerationSubcommandBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
-import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { TypeVariation } from '#utils/moderationConstants';
 import type { Command } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 
 type Type = TypeVariation.RoleAdd;
 type ValueType = null;
@@ -26,9 +24,6 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 	}
 
 	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: Command.OptionsOf<'role add'>) {
-		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Administrator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		return super.chatInputRun(interaction, args);
 	}
 

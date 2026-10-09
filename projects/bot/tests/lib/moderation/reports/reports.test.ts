@@ -1,6 +1,13 @@
 import { decodeReportId, encodeReportId, type ReportAction } from '#lib/moderation/reports/ids';
 import type { ReportSubject } from '#lib/moderation/reports/pending';
-import { addReportNote, closeReport, renderReport, renderReportActionModal, renderReportModal } from '#lib/moderation/reports/render';
+import {
+	addReportNote,
+	closeReport,
+	renderReport,
+	renderReportActionModal,
+	renderReportModal,
+	setReportReporterBlocked
+} from '#lib/moderation/reports/render';
 import { ButtonStyle, ComponentType, MessageFlags, type APIMessageTopLevelComponent } from 'discord-api-types/v10';
 import type { Report } from 'wolfstar-database';
 
@@ -112,7 +119,7 @@ describe('reports', () => {
 			expect(getVerbs(message.components!)).toEqual(['warn', 'timeout', 'kick', 'delete', 'dismiss']);
 			expect(getText(message.components!)).toContain(`https://discord.com/channels/${guildId}/${channelId}/${messageId}`);
 			expect(getText(message.components!)).toContain('commands/report:titleMessage');
-			expect(getText(message.components!)).toContain(`commands/report:footer {"id":"${reportId}"}`);
+			expect(getText(message.components!)).toContain(`commands/report:footer {"id":"${reportId}",`);
 		});
 
 		test('GIVEN the menu THEN it offers the heavier actions and blocking the reporter, not a ban button', () => {
@@ -120,6 +127,38 @@ describe('reports', () => {
 
 			expect(decodeReportId(menu.custom_id!.split('.').slice(1))).toEqual({ verb: 'menu', id: reportId, messageId: null, submit: false });
 			expect(menu.options!.map((option) => option.value)).toEqual(['mute', 'softban', 'ban', 'block']);
+		});
+
+		test('GIVEN a reporter that is blocked THEN the menu offers to unblock them and not to block them', () => {
+			const menu = getMenu(renderReport(t, createReport(), null, true).components!)!;
+
+			expect(menu.options!.map((option) => option.value)).toEqual(['mute', 'softban', 'ban', 'unblock']);
+		});
+
+		test('GIVEN a report THEN its blocks are a separator apart, and who is reported comes before who reported', () => {
+			const components = renderReport(t, createReport(), null).components!;
+			const flat = flatten(components);
+			const kinds = flat
+				.filter((component) => [ComponentType.TextDisplay, ComponentType.Separator].includes(component.type))
+				.map((component) => component.type);
+			const text = getText(components);
+
+			expect(kinds[0]).toBe(ComponentType.TextDisplay);
+			expect(kinds.filter((kind) => kind === ComponentType.Separator).length).toBeGreaterThanOrEqual(5);
+			expect(text.indexOf('fieldAuthor')).toBeLessThan(text.indexOf('fieldReportedBy'));
+			expect(text.indexOf('fieldReportedBy')).toBeLessThan(text.indexOf('fieldReason'));
+			expect(text.indexOf('fieldReason')).toBeLessThan(text.indexOf('fieldContent'));
+		});
+
+		test('GIVEN a report that is shown THEN its menu changes with whether the reporter is blocked, and nothing else does', () => {
+			const shown = renderReport(t, createReport(), null).components as APIMessageTopLevelComponent[];
+			const blocked = setReportReporterBlocked(shown, t, reportId, true);
+			const unblocked = setReportReporterBlocked(blocked, t, reportId, false);
+
+			expect(getMenu(blocked)!.options!.map((option) => option.value)).toContain('unblock');
+			expect(getMenu(blocked)!.options!.map((option) => option.value)).not.toContain('block');
+			expect(unblocked).toEqual(shown);
+			expect(getVerbs(blocked)).toEqual(getVerbs(shown));
 		});
 
 		test('GIVEN a user report THEN there is no message to link or to delete', () => {

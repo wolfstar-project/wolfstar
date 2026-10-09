@@ -1,7 +1,6 @@
 import { AutoModerationRoot, AutoModerationRuleTypeKeys, translateRuleError } from '#lib/moderation/automod/commands';
 import { createAutoModerationRule } from '#lib/moderation/automod/rules';
 import { renderAutoModerationRule } from '#lib/structures/automod-menu';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -25,7 +24,6 @@ const Root = AutoModerationRoot;
 		)
 )
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod create'>) {
 		const t = getSupportedUserLanguageT(interaction);
 

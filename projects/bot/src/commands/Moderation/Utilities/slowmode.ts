@@ -1,10 +1,5 @@
-import {
-	CommandPermissionLevel,
-	createTranslator,
-	getCommandPermissionDenial,
-	type GuildChatInputInteraction,
-	type TranslationKey
-} from '#lib/structures/commands';
+import { ApplyOptions } from '@wolfstar/decorators';
+import { createTranslator, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands';
 import { hours, seconds } from '#common';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { Command, RegisterCommand, container } from '@wolfstar/http-framework';
@@ -21,6 +16,7 @@ const MaximumDuration = hours(6);
  * - The required `duration` option accepts a duration, or `reset` and `off` (see `arguments:resetPossibles`) to reset
  *   the slowmode.
  */
+@ApplyOptions<Command.Options>({ preconditions: ['moderator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/moderation:slowmodeName', 'commands/moderation:slowmodeDescription')
 		.setContexts(InteractionContextType.Guild)
@@ -30,9 +26,6 @@ const MaximumDuration = hours(6);
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'slowmode'>) {
-		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-
 		const rawT = getSupportedUserLanguageT(interaction);
 		const t = createTranslator(rawT);
 

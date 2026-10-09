@@ -1,3 +1,4 @@
+import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -14,6 +15,7 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
  * - `edit` with `duration` set to `0` removes the duration of the case.
  * - Every subcommand requires the moderator permission level.
  */
+@ApplyOptions<Subcommand.Options>({ preconditions: ['moderator'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/case:name', 'commands/case:description')
 		.setContexts(InteractionContextType.Guild)
