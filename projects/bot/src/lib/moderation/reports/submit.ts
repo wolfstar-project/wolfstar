@@ -1,4 +1,5 @@
 import { readSettings } from '#lib/database';
+import type { ReportModerationVerb } from '#lib/moderation/reports/ids';
 import { claimReport, releaseReport, ReportCooldownSeconds, type ReportSubject } from '#lib/moderation/reports/pending';
 import { renderReport, ReportContentMaximumLength } from '#lib/moderation/reports/render';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
@@ -105,7 +106,7 @@ export async function submitReport(
  * @param report - The report that was closed.
  * @param status - What became of it.
  */
-export async function notifyReporter(report: Report, status: Exclude<ReportStatus, 'Open'>): Promise<void> {
+export async function notifyReporter(report: Report, status: Exclude<ReportStatus, 'Open'>, action?: ReportModerationVerb): Promise<void> {
 	try {
 		const settings = await readSettings(report.guildId);
 		if (!settings.reportsNotify) return;
@@ -116,7 +117,13 @@ export async function notifyReporter(report: Report, status: Exclude<ReportStatu
 			gatewayClient.users.fetch(report.reporterId),
 			fetchGuildTranslator(report.guildId)
 		]);
-		const key = status === 'Actioned' ? 'commands/report:notifyActioned' : 'commands/report:notifyDismissed';
+		// A note is not an action the member would see, so they are told it was recorded and not that action was taken:
+		const key =
+			status === 'Dismissed'
+				? 'commands/report:notifyDismissed'
+				: action === 'note'
+					? 'commands/report:notifyNoted'
+					: 'commands/report:notifyActioned';
 		await reporter.send({ content: t(key, { guild: guild.name, target: report.targetTag }), allowed_mentions: { parse: [] } });
 	} catch {
 		// The direct messages of the member are closed, or they left: the report is closed all the same.

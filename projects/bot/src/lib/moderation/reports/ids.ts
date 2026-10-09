@@ -7,16 +7,16 @@ import type { Snowflake } from 'discord-api-types/v10';
 export const ReportHandlerName = 'report';
 
 /**
- * The moderation actions the moderators can take from a report: the first three have a button, the others are in its
- * menu.
+ * The moderation actions the moderators can take from a report: `warn`, `timeout` and `kick` have a button, the others are in
+ * its menu.
  */
-export const ReportModerationVerbs = ['warn', 'timeout', 'kick', 'mute', 'softban', 'ban'] as const;
+export const ReportModerationVerbs = ['warn', 'timeout', 'kick', 'note', 'mute', 'softban', 'ban'] as const;
 export type ReportModerationVerb = (typeof ReportModerationVerbs)[number];
 
 /**
  * What the menu of a report offers besides its buttons, in the order it lists them.
  */
-export const ReportMenuVerbs = ['mute', 'softban', 'ban', 'block'] as const;
+export const ReportMenuVerbs = ['note', 'mute', 'softban', 'ban', 'block'] as const;
 export type ReportMenuVerb = (typeof ReportMenuVerbs)[number];
 
 /**
@@ -25,7 +25,7 @@ export type ReportMenuVerb = (typeof ReportMenuVerbs)[number];
  * - `new`: the modal a member writes the reason of their report in.
  * - `warn`, `timeout`, `kick`: a button that opens the modal of a moderation action, and that modal.
  * - `menu`: the select menu of the other actions, the action is its selected value.
- * - `mute`, `softban`, `ban`: the modal of a moderation action picked in the menu.
+ * - `note`, `mute`, `softban`, `ban`: the modal of a moderation action picked in the menu.
  * - `block`: stops the member who made the report from making more of them.
  * - `delete`: deletes the reported message.
  * - `dismiss`: closes the report without an action.

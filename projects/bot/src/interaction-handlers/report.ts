@@ -26,6 +26,7 @@ const ModerationTypes = {
 	warn: TypeVariation.Warning,
 	timeout: TypeVariation.Timeout,
 	kick: TypeVariation.Kick,
+	note: TypeVariation.Note,
 	mute: TypeVariation.Mute,
 	softban: TypeVariation.Softban,
 	ban: TypeVariation.Ban
@@ -35,6 +36,7 @@ const StatusKeys = {
 	warn: 'commands/report:statusWarn',
 	timeout: 'commands/report:statusTimeout',
 	kick: 'commands/report:statusKick',
+	note: 'commands/report:statusNote',
 	mute: 'commands/report:statusMute',
 	softban: 'commands/report:statusSoftban',
 	ban: 'commands/report:statusBan'
@@ -155,7 +157,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const guildT = await fetchGuildTranslator(report.guildId);
 		const status = guildT(StatusKeys[verb], { moderator: userMention(interaction.user.id), case: caseId });
 		await deferred.update({ components: closeReport(message.components ?? [], status), allowed_mentions: { parse: [] } });
-		await notifyReporter(report, 'Actioned');
+		await notifyReporter(report, 'Actioned', verb);
 		return followup(t('commands/report:actionDone', { case: caseId }));
 	}
 

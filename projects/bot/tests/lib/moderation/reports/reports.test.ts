@@ -119,7 +119,7 @@ describe('reports', () => {
 			const menu = getMenu(renderReport(t, createReport(), null).components!)!;
 
 			expect(decodeReportId(menu.custom_id!.split('.').slice(1))).toEqual({ verb: 'menu', id: reportId, messageId: null, submit: false });
-			expect(menu.options!.map((option) => option.value)).toEqual(['mute', 'softban', 'ban', 'block']);
+			expect(menu.options!.map((option) => option.value)).toEqual(['note', 'mute', 'softban', 'ban', 'block']);
 		});
 
 		test('GIVEN a user report THEN there is no message to link or to delete', () => {
@@ -217,6 +217,13 @@ describe('reports', () => {
 			expect(modal.title.length).toBeLessThanOrEqual(45);
 		});
 
+		test('GIVEN the note action THEN its modal carries the verb and a title that fits', () => {
+			const modal = renderReportActionModal(t, reportId, 'note');
+
+			expect(decodeReportId(modal.custom_id.split('.').slice(1))).toEqual({ verb: 'note', id: reportId, messageId: null, submit: true });
+			expect(modal.title.length).toBeLessThanOrEqual(45);
+		});
+
 		test('GIVEN a moderation action THEN only the ones that can last ask for a duration', () => {
 			const inputs = (verb: Parameters<typeof renderReportActionModal>[2]) =>
 				flatten(renderReportActionModal(t, reportId, verb).components)
@@ -226,6 +233,8 @@ describe('reports', () => {
 			expect(inputs('warn')).toEqual([['reason', false]]);
 			expect(inputs('kick')).toEqual([['reason', false]]);
 			expect(inputs('softban')).toEqual([['reason', false]]);
+			// A note is its reason, so it cannot be left empty, and it never lasts:
+			expect(inputs('note')).toEqual([['reason', true]]);
 			expect(inputs('timeout')).toEqual([
 				['duration', true],
 				['reason', false]

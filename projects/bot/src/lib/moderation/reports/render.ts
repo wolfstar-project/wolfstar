@@ -196,18 +196,20 @@ export function renderReportModal(t: Translator, subject: ReportSubject): APIMod
 }
 
 /**
- * The modal a moderator confirms a moderation action in: its reason and how long it lasts, which a timeout needs and a
- * mute or a ban may have.
+ * The modal a moderator confirms a moderation action in: its reason, which a note needs, and how long it lasts, which a
+ * timeout needs and a mute or a ban may have.
  *
  * @param t - The function to translate with, in the language of the moderator.
  * @param reportId - The ID of the report.
  * @param verb - The action.
  */
 export function renderReportActionModal(t: Translator, reportId: string, verb: ReportModerationVerb): APIModalInteractionResponseCallbackData {
+	// A note is its reason, so it cannot be empty:
+	const isNote = verb === 'note';
 	const components = [
-		textInput(ReportReasonInputId, t('commands/report:actionReasonLabel'), {
+		textInput(ReportReasonInputId, t(isNote ? 'commands/report:actionNoteLabel' : 'commands/report:actionReasonLabel'), {
 			style: TextInputStyle.Paragraph,
-			required: false,
+			required: isNote,
 			max_length: ReportReasonMaximumLength
 		})
 	];
