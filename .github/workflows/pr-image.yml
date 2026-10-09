@@ -9,11 +9,17 @@ on:
             - synchronize
             - reopened
             - closed
+    workflow_dispatch:
+        inputs:
+            pr:
+                type: number
+                required: true
+                description: Number of the pull request to build an image for (open, closed or merged)
 
 # One group per PR: closing the PR cancels a build still running,
 # so the cleanup never races with a late push.
 concurrency:
-    group: pr-image-${{ github.event.pull_request.number }}
+    group: pr-image-${{ github.event.pull_request.number || inputs.pr }}
     cancel-in-progress: true
 
 permissions:
@@ -29,7 +35,7 @@ jobs:
         name: Detect image-relevant changes
         runs-on: ubuntu-latest
         # Fork PRs get a read-only GITHUB_TOKEN and no secrets: no image, no cleanup.
-        if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'pull_request' && github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
         outputs:
             build: ${{ steps.filter.outputs.build }}
         steps:
@@ -63,10 +69,51 @@ jobs:
         with:
             tag: pr-${{ github.event.pull_request.number }}
 
+    resolve:
+        name: Resolve requested pull request
+        runs-on: ubuntu-latest
+        if: github.event_name == 'workflow_dispatch'
+        outputs:
+            number: ${{ steps.pr.outputs.number }}
+            sha: ${{ steps.pr.outputs.sha }}
+        steps:
+            - name: Look up the pull request
+              id: pr
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PR_NUMBER: ${{ inputs.pr }}
+              run: |
+                  set -euo pipefail
+
+                  pr=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")
+                  head_repo=$(jq -r '.head.repo.full_name // ""' <<< "$pr")
+
+                  # Same rule as the automatic flow: never build fork code with a write token.
+                  if [ "$head_repo" != "$GITHUB_REPOSITORY" ]; then
+                      echo "::error::PR #${PR_NUMBER} comes from '${head_repo:-a deleted fork}', only same-repository PRs are supported."
+                      exit 1
+                  fi
+
+                  echo "number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+                  echo "sha=$(jq -r '.head.sha' <<< "$pr")" >> "$GITHUB_OUTPUT"
+
+    publish-manual:
+        name: Publish WolfStar image for the requested PR to GHCR
+        needs: resolve
+        uses: wolfstar-project/.github/.github/workflows/reusable-publish-image.yml@main
+        secrets: inherit
+        with:
+            tag: pr-${{ needs.resolve.outputs.number }}
+            commitHash: ${{ needs.resolve.outputs.sha }}
+            # The reusable workflow checks out the dispatched ref, not the PR: build the
+            # PR head through a git context instead (GitHub keeps refs/pull/<n>/head for
+            # closed and merged PRs too).
+            context: https://github.com/${{ github.repository }}.git#refs/pull/${{ needs.resolve.outputs.number }}/head
+
     cleanup:
         name: Delete WolfStar PR image from GHCR
         runs-on: ubuntu-latest
-        if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             OWNER: ${{ github.repository_owner }}
