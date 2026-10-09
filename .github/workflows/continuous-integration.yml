@@ -11,6 +11,7 @@ on:
         branches:
             - main
 
+# cancel in-progress runs on new commits to same PR (github.event.number)
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
     cancel-in-progress: true
@@ -18,89 +19,201 @@ concurrency:
 permissions:
     contents: read
 
+env:
+    HUSKY: 0
+
 jobs:
     lint:
-        name: Lint project
+        name: 🔠 Lint project
         runs-on: ubuntu-24.04-arm
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
-              name: Install pnpm
+              name: 📦 Install pnpm
 
             - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
               with:
                   node-version: 24
                   cache: pnpm
 
-            - name: Install dependencies (root only, no scripts)
+            - name: 📦 Install dependencies (root only, no scripts)
               run: pnpm install --filter . --ignore-scripts
 
-            - name: Lint project
+            - name: 🔠 Lint project
               run: pnpm lint
 
-    build:
-        name: Build project
-        runs-on: ubuntu-latest
+    typecheck:
+        name: 🔎 Typecheck project
+        runs-on: ubuntu-24.04-arm
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
-              name: Install pnpm
+              name: 📦 Install pnpm
 
             - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
               with:
                   node-version: 24
                   cache: pnpm
 
-            - name: Install dependencies
+            - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Generate prisma types
+            - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
-            # The tsconfig and the auto-imports the bot extends are generated, `stars build` writes them too:
-            - name: Prepare the Stars project
+            # The bot is checked against the built types of the database, and against the tsconfig and the
+            # auto-imports the Stars CLI generates:
+            - name: 🏗️ Build the database package
+              run: pnpm --filter wolfstar-database build
+
+            - name: ✨ Prepare the Stars project
               run: pnpm --filter wolfstar-bot exec stars prepare
 
-            - name: Find unused files and dependencies
-              run: pnpm knip
+            - name: 🔎 Typecheck project
+              run: pnpm typecheck
 
-            - name: Build project
-              run: pnpm build
-
-    test:
-        name: Unit tests
-        runs-on: ubuntu-latest
+    unit:
+        name: 🧪 Unit tests
+        runs-on: ubuntu-24.04-arm
 
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
-              name: Install pnpm
+              name: 📦 Install pnpm
 
             - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
               with:
                   node-version: 24
                   cache: pnpm
 
-            - name: Install dependencies
+            - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Generate prisma types
+            - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
-            - name: Build project
-              run: pnpm build
+            - name: 🏗️ Build the database package
+              run: pnpm --filter wolfstar-database build
 
-            - name: Run unit tests
-              run: pnpm test -- --coverage
+            - name: ✨ Prepare the Stars project
+              run: pnpm --filter wolfstar-bot exec stars prepare
 
-            - name: Codecov Upload
-              uses: codecov/codecov-action@v7
+            - name: 🧪 Unit tests
+              run: pnpm test --coverage --reporter=default --reporter=junit --outputFile=test-report.junit.xml
+
+            - name: ⬆︎ Upload test results to Codecov
+              if: ${{ !cancelled() }}
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
               with:
-                  token: ${{ secrets.CODECOV_TOKEN }}
+                  disable_search: true
+                  files: test-report.junit.xml
+                  flags: unit
+                  report_type: test_results
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+            - name: ⬆︎ Upload coverage reports to Codecov
+              if: ${{ !cancelled() }}
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+              with:
+                  disable_search: true
                   files: coverage/cobertura-coverage.xml
-                  fail_ci_if_error: true
+                  flags: unit
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    knip:
+        name: 🧹 Unused code check
+        runs-on: ubuntu-24.04-arm
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              name: 📦 Install pnpm
+
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 📦 Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: 🔼 Generate Prisma contract
+              run: pnpm --filter wolfstar-database prisma:generate
+
+            # The tsconfig and the auto-imports the bot extends are generated:
+            - name: ✨ Prepare the Stars project
+              run: pnpm --filter wolfstar-bot exec stars prepare
+
+            - name: 🧹 Check for unused code
+              run: pnpm knip
+
+    i18n:
+        name: 🌐 i18n validation
+        runs-on: ubuntu-24.04-arm
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              name: 📦 Install pnpm
+
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 📦 Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: 🌐 Check the locale files
+              run: pnpm exec vitest run --config vitest.config.ts tests/languages
+
+            # The typed keys are generated from the en-US files, and committed:
+            - name: 🌐 Check the i18n types are up to date
+              run: |
+                  pnpm --filter wolfstar-bot exec stars codegen --config stars.i18n.config.ts
+                  git diff --exit-code projects/bot/src/@types/i18next.d.ts
+
+    build:
+        name: 🏗️ Build project
+        runs-on: ubuntu-24.04-arm
+
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              name: 📦 Install pnpm
+
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 📦 Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: 🔼 Generate Prisma contract
+              run: pnpm --filter wolfstar-database prisma:generate
+
+            - name: 🏗️ Build project
+              run: pnpm build

@@ -5,7 +5,8 @@
 		"rootDir": ".",
 		"resolvePackageJsonImports": true,
 		"composite": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"module": "Preserve"
 	},
-	"include": ["."]
+	"include": [".", "./**/*.json"]
 }
