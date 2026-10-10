@@ -50,3 +50,17 @@ describe('moderation output', () => {
 		expect(embed(answer)).toMatchObject({ color: Colors.Red, description: 'Failed to moderate user' });
 	});
 });
+
+describe('isModerationCommand', () => {
+	test('GIVEN a command THEN it says whether it applies a moderation action', async () => {
+		const { Command } = await import('@wolfstar/http-framework');
+		const { ModerationCommand } = await import('#lib/moderation/structures/ModerationCommand');
+
+		// A command that is not a moderation one is a subclass of the base one, which is what the method is added to:
+		class Other extends Command {}
+
+		expect(Object.create(ModerationCommand.prototype).isModerationCommand()).toBe(true);
+		expect(Object.create(Other.prototype).isModerationCommand()).toBe(false);
+		expect(Object.create(Command.prototype).isModerationCommand()).toBe(false);
+	});
+});

@@ -105,6 +105,10 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 */
 	protected readonly requiredDuration: boolean;
 
+	public override isModerationCommand(): this is ModerationCommand<TypeVariation, unknown> {
+		return true;
+	}
+
 	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
 		super(context, { requiredMember: false, ...options });
 
@@ -649,6 +653,20 @@ export function renderModerationFailure(description: string): ModerationCommand.
 function toEmbedAnswer(description: string, color: Colors): ModerationCommand.Answer {
 	return { embeds: [new EmbedBuilder().setColor(color).setDescription(description).toJSON()], allowed_mentions: { parse: [] } };
 }
+
+declare module '@wolfstar/http-framework' {
+	interface Command<Options extends Command.Options = Command.Options> {
+		/**
+		 * Whether this command applies a moderation action, see {@linkcode ModerationCommand}, which narrows it to one.
+		 */
+		isModerationCommand(): this is ModerationCommand<TypeVariation, unknown>;
+	}
+}
+
+// Every command answers `false`, the moderation ones override it. The class is loaded with the first moderation command:
+Command.prototype.isModerationCommand = function isModerationCommand() {
+	return false;
+} as Command['isModerationCommand'];
 
 export declare namespace ModerationCommand {
 	/**

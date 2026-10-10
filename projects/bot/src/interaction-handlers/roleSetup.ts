@@ -1,7 +1,9 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { getAction } from '#lib/moderation/actions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
-import { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+// Loading it is what gives every command `isModerationCommand`:
+import type { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import '#lib/moderation/structures/ModerationCommand';
 import { decodeRoleSetupId, takePendingRoleSetupCommand } from '#lib/moderation/structures/RoleSetupPrompt';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
@@ -124,8 +126,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (pending === null) return again();
 
 		const command = container.stores.get('commands').find((piece) => piece.name === pending.command);
-		const isModerationCommand = command instanceof ModerationCommand;
-		if (!isModerationCommand) return again();
+		if (!command?.isModerationCommand()) return again();
 
 		try {
 			// Only the guild, the channel, the author and their language are read, which a click has as a command does:
