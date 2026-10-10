@@ -77,6 +77,8 @@ export const EmojiDefinitions = {
 	Ban: emoji('ban', '1262378308050489468'),
 	// The pencil of what opens something to edit it:
 	Edit: emoji('edit', '✏️'),
+	// The triangle of what the user is warned about:
+	Warning: emoji('warning', '⚠️'),
 	// The checkbox of a setting that is on or off:
 	Checked: emoji('checked', '☑️'),
 	Unchecked: emoji('unchecked', '⬜'),

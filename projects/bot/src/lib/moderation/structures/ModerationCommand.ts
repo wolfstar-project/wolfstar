@@ -2,6 +2,7 @@ import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { Colors } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
 import { EmbedBuilder } from '@discordjs/builders';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
@@ -636,7 +637,7 @@ export function renderModerationOutput(
 ): ModerationCommand.Answer {
 	const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
 	const description = t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason });
-	const lines = output.undelivered ? [description, t('commands/moderation:moderationOutputUndelivered')] : [description];
+	const lines = output.undelivered ? [description, `${Emojis.Warning} ${t('commands/moderation:moderationOutputUndelivered')}`] : [description];
 
 	return toEmbedAnswer(lines.join('\n'), output.undelivered ? Colors.Yellow : Colors.Green);
 }

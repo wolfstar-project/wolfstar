@@ -150,7 +150,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	body.push(
 		{ type: ComponentType.Separator },
 		section(
-			`**⚠️ ${t('commands/conf:menuResetTitle')}**\n${t('commands/conf:menuResetDescription')}`,
+			`**${Emojis.Warning} ${t('commands/conf:menuResetTitle')}**\n${t('commands/conf:menuResetDescription')}`,
 			button(id('resetAll', path), { label: t('commands/conf:menuResetButton'), style: ButtonStyle.Danger, disabled: entries.length === 0 })
 		)
 	);

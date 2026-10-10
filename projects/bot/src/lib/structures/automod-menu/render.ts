@@ -301,7 +301,7 @@ export function renderAutoModerationRule(
 
 	if (options.confirmDelete) {
 		body.push(
-			text(`⚠️ ${translateKey(t, `${Root}:menuDeleteConfirm`, { name: rule.name })}`),
+			text(`${Emojis.Warning} ${translateKey(t, `${Root}:menuDeleteConfirm`, { name: rule.name })}`),
 			row([
 				button(id('confirm'), { label: translateKey(t, `${Root}:menuDeleteConfirmButton`), emoji: '🗑️', style: ButtonStyle.Danger }),
 				button(id('view'), { label: translateKey(t, `${Root}:menuCancel`) })
@@ -458,7 +458,7 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 function renderDuration(t: TFunction, rule: AutoModerationRule): string {
 	if (isNullishOrZero(rule.hardActionDuration)) {
 		const permanent = translateKey(t, `${Root}:menuDurationPermanent`);
-		return rule.hardAction === 'Timeout' ? `${permanent}\n-# ⚠️ ${translateKey(t, `${Root}:menuDurationTimeout`)}` : permanent;
+		return rule.hardAction === 'Timeout' ? `${permanent}\n-# ${Emojis.Warning} ${translateKey(t, `${Root}:menuDurationTimeout`)}` : permanent;
 	}
 
 	return translateKey(t, 'globals:durationValue', { value: rule.hardActionDuration });
