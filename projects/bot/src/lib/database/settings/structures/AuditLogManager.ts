@@ -1,59 +1,30 @@
-import { getSettingName } from '#lib/database/settings/Utils';
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
-import { createTranslator } from '#lib/structures/commands/utils';
-import { Events } from '#lib/types';
-import { Colors } from '#utils/constants';
-import { getDisplayAvatar, getEmbedAuthor } from '#utils/util';
-import { channelMention, chatInputApplicationCommandMention, EmbedBuilder } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';
-import type { User } from '@wolfstar/plugin-gateway';
-import { fetchT, type AnyNamespace, type TFunction as BaseTFunction } from '@wolfstar/plugin-i18next';
-import type { APIUser } from 'discord-api-types/v10';
 import { randomUUID } from 'node:crypto';
 import type { AuditOutcome, Models, ReadonlyGuildData } from 'wolfstar-database';
 
-/**
- * The translation function of a guild, which resolves the keys of every namespace at runtime.
- */
-type TFunction = BaseTFunction<AnyNamespace>;
-
 type TimestampString = Models.public_AuditEvent['timestamp'];
 type JsonColumn = Models.public_AuditEvent['changes'];
-
-interface CommandExecutePayload {
-	actorId: string;
-	commandName: string;
-	commandId?: string;
-	commandType: 'chat-input' | 'context-menu' | 'message';
-	channelId: string;
-	timestamp: Date;
-}
 
 type AuditLogSettingsAction = 'guild.settings.update' | 'guild.settings.add' | 'guild.settings.remove' | 'guild.settings.access-denied';
 
 type AuditLogAction = AuditLogSettingsAction | 'guild.command.execute';
 
-interface SettingsChangePayload {
-	actorId: string;
-	action: AuditLogSettingsAction;
-	before: Record<string, unknown>;
-	after: Record<string, unknown>;
-	reason: string | null;
-	timestamp: Date;
-}
-
+/**
+ * Writes what is done to the settings of a guild, and the commands that are run in it, as rows of `AuditEvent`.
+ *
+ * @remarks The rows are read on the web (`guilds/:guild/audit-logs` and `guilds/:guild/command-logs`). They are not
+ * sent to a channel of the guild: there is no setting for one.
+ */
 export class AuditLogManager {
 	#guildId: string;
-	#settings: ReadonlyGuildData;
 
 	public constructor(settings: ReadonlyGuildData) {
 		this.#guildId = settings.id;
-		this.#settings = settings;
 	}
 
 	public onPatch(settings: ReadonlyGuildData): void {
 		this.#guildId = settings.id;
-		this.#settings = settings;
 	}
 
 	public update(actorId: string, before: Record<string, unknown>, after: Record<string, unknown>): Promise<void> {
@@ -180,165 +151,6 @@ export class AuditLogManager {
 				update: { hash, updatedAt: storedTimestamp }
 			});
 		});
-
-		void this.#emitChannelLog(action, { actorId, before: safeBefore, after: safeAfter, reason, timestamp }).catch(() => null);
-	}
-
-	async #emitChannelLog(
-		action: AuditLogAction,
-		params: {
-			actorId: string;
-			before: Record<string, unknown>;
-			after: Record<string, unknown>;
-			reason: string | null;
-			timestamp: Date;
-		}
-	): Promise<void> {
-		const guild = await container.gatewayClient.guilds.fetch(this.#guildId).catch(() => null);
-		if (!guild) return;
-
-		const channelKey = action === 'guild.command.execute' ? 'logsCommand' : 'logsSettings';
-		const channelId = this.#settings[channelKey];
-		if (!channelId) return;
-
-		const t = (await fetchT(guild)) as unknown as TFunction;
-		const actor = await this.#fetchUser(params.actorId);
-
-		const makeMessage =
-			action === 'guild.command.execute'
-				? () => {
-						const {
-							commandName,
-							commandId,
-							commandType,
-							channelId: cmdChannelId
-						} = params.after as {
-							commandName: string;
-							commandId?: string;
-							commandType: 'chat-input' | 'context-menu' | 'message';
-							channelId: string;
-						};
-						return this.#buildCommandExecuteEmbed(t, actor, {
-							actorId: params.actorId,
-							commandName,
-							commandId,
-							commandType,
-							channelId: cmdChannelId,
-							timestamp: params.timestamp
-						});
-					}
-				: () =>
-						this.#buildSettingsChangeEmbed(t, actor, {
-							actorId: params.actorId,
-							action: action as AuditLogSettingsAction,
-							before: params.before,
-							after: params.after,
-							reason: params.reason,
-							timestamp: params.timestamp
-						});
-
-		container.gatewayClient.emit(Events.GuildMessageLog, guild, channelId, channelKey, makeMessage);
-	}
-
-	#buildCommandExecuteEmbed(t: TFunction, actor: User | APIUser, payload: CommandExecutePayload): EmbedBuilder {
-		const { commandName, commandId, commandType, channelId, timestamp } = payload;
-		const formattedCommandName = commandType === 'chat-input' ? this.#formatChatInputMention(commandName, commandId) : `\`${commandName}\``;
-		const typeLabel =
-			commandType === 'chat-input'
-				? t('events/guilds-logs:commandTypeChatInput')
-				: commandType === 'context-menu'
-					? t('events/guilds-logs:commandTypeContextMenu')
-					: t('events/guilds-logs:commandTypeMessage');
-
-		const description = [
-			`❯ **${t('events/guilds-logs:logFieldType')}:** ${typeLabel}`,
-			`❯ **${t('events/guilds-logs:logFieldCommand')}:** ${formattedCommandName}`,
-			`❯ **${t('events/guilds-logs:logFieldChannel')}:** ${channelMention(channelId)}`
-		].join('\n');
-
-		return new EmbedBuilder()
-			.setColor(Colors.Blue)
-			.setAuthor(getEmbedAuthor(actor))
-			.setDescription(description)
-			.setFooter({
-				text: t('events/guilds-logs:commandExecuteTitle'),
-				iconURL: getDisplayAvatar(container.gatewayClient.user!, { size: 128 })
-			})
-			.setTimestamp(timestamp);
-	}
-
-	#buildSettingsChangeEmbed(t: TFunction, actor: User | APIUser, payload: SettingsChangePayload): EmbedBuilder {
-		const { action, before, after, reason, timestamp } = payload;
-
-		const color = action === 'guild.settings.access-denied' ? Colors.Yellow : action === 'guild.settings.remove' ? Colors.Red : Colors.Green;
-
-		const actionTitle =
-			action === 'guild.settings.access-denied'
-				? t('events/guilds-logs:settingsAccessDeniedTitle')
-				: t('events/guilds-logs:settingsUpdateTitle');
-
-		const descLines = [`❯ **${t('events/guilds-logs:logFieldAction')}:** ${actionTitle}`];
-		if (reason) descLines.push(`❯ **${t('events/guilds-logs:logFieldReason')}:** ${reason}`);
-
-		const embed = new EmbedBuilder()
-			.setColor(color)
-			.setAuthor(getEmbedAuthor(actor))
-			.setDescription(descLines.join('\n'))
-			.setFooter({ text: actionTitle, iconURL: getDisplayAvatar(container.gatewayClient.user!, { size: 128 }) })
-			.setTimestamp(timestamp);
-
-		if (action !== 'guild.settings.access-denied') {
-			const translate = createTranslator(t as never);
-			let fields = 0;
-			for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
-				if (fields === 10) break;
-
-				const hasBefore = key in before;
-				const hasAfter = key in after;
-				let value: string;
-				if (hasBefore && hasAfter) {
-					const previous = this.#formatAuditValue(t, before[key]);
-					const next = this.#formatAuditValue(t, after[key]);
-					if (previous === next) continue;
-					value = t('events/guilds-logs:settingsFieldChanged', { previous, next });
-				} else {
-					value = this.#formatAuditValue(t, hasAfter ? after[key] : before[key]);
-				}
-
-				embed.addFields({ name: getSettingName(translate, key), value: this.#truncateFieldValue(value) });
-				fields++;
-			}
-		}
-
-		return embed;
-	}
-
-	async #fetchUser(userId: string): Promise<User | APIUser> {
-		try {
-			return await container.gatewayClient.users.fetch(userId);
-		} catch {
-			return { id: userId, username: 'Unknown User', discriminator: '0000', global_name: null, avatar: null };
-		}
-	}
-
-	#formatChatInputMention(commandName: string, commandId?: string): string {
-		const parts = commandName.split(' ');
-		if (!commandId) return `\`/${commandName}\``;
-		if (parts.length === 3) return chatInputApplicationCommandMention(parts[0], parts[1], parts[2], commandId);
-		if (parts.length === 2) return chatInputApplicationCommandMention(parts[0], parts[1], commandId);
-		return chatInputApplicationCommandMention(parts[0], commandId);
-	}
-
-	#formatAuditValue(t: TFunction, value: unknown): string {
-		if (value === null || value === undefined || (Array.isArray(value) && value.length === 0)) return t('commands/conf:menuValueNone');
-		if (typeof value === 'string') return value.length === 0 ? '""' : value;
-		if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') return String(value);
-		return '`' + JSON.stringify(value) + '`';
-	}
-
-	#truncateFieldValue(value: string): string {
-		// Discord rejects embed field values longer than 1024 characters:
-		return value.length > 1024 ? `${value.slice(0, 1023)}…` : value;
 	}
 
 	#toJsonSafe(value: unknown): unknown {

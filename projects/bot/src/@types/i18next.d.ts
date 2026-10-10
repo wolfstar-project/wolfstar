@@ -2838,20 +2838,8 @@ declare module "i18next" {
         serverUpdateWidgetChannel: "• **Widget Channel**: {{previous}} → {{next}}";
         serverUpdateWidgetEnabled: "• **Widget Enabled**";
         serverUpdateWidgetDisabled: "• **Widget Disabled**";
-        commandExecuteTitle: "Command Executed";
-        settingsUpdateTitle: "Settings Updated";
-        settingsAccessDeniedTitle: "Settings Access Denied";
-        settingsFieldChanged: "has changed {{previous}} to {{next}}";
         logFieldUser: "User";
-        logFieldCommand: "Command";
-        logFieldType: "Type";
-        logFieldChannel: "Channel";
-        logFieldAction: "Action";
         logFieldChange: "Changes";
-        logFieldReason: "Reason";
-        commandTypeChatInput: "Chat Input";
-        commandTypeContextMenu: "Context Menu";
-        commandTypeMessage: "Message Command";
         voiceChannelJoin: "Joined {{channel}}";
         voiceChannelLeave: "Left {{channel}}";
         voiceChannelMove: "Moved from {{oldChannel}} to {{newChannel}}";
@@ -3461,8 +3449,6 @@ declare module "i18next" {
         automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
         moderationTrackBans: "Whether I should record the bans made without using my commands.";
         moderationTrackTimeouts: "Whether I should record the timeouts made without using my commands.";
-        channelsLogsCommand: "The channel for command execution logs, if set, I send a message whenever a bot command is used.";
-        channelsLogsSettings: "The channel for settings change logs, if set, I send a message whenever settings are updated, added, removed, or access is denied.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
         channelsLogsVoiceChannel: "The channel for voice channel logs, if set, I send a message when a user joins, leaves, or moves to another voice channel.";
@@ -3503,8 +3489,6 @@ declare module "i18next" {
           logsEmojiUpdate: "Emoji Update Logs";
           logsEmojiDelete: "Emoji Delete Logs";
           logsServerUpdate: "Server Update Logs";
-          logsCommand: "Command Logs";
-          logsSettings: "Settings Logs";
           logsIgnoreAll: "Channels Ignored by All Logs";
           logsIgnoreMessages: "Channels Ignored by Message Logs";
           logsIgnoreReactions: "Channels Ignored by Reaction Logs";

@@ -1,9 +1,6 @@
-import { AuditLogManager } from '#lib/database';
+import { AuditLogManager, getConfigurableKeys } from '#lib/database';
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
-import { Events } from '#lib/types';
-import { EmbedBuilder } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';
-import { createUser } from '../../../../mocks/MockInstances.js';
 
 const ADVISORY_LOCK_NS = 1096107084;
 const ACTOR_ID = '111111111111111111';
@@ -185,45 +182,7 @@ describe('AuditLogManager', () => {
 		});
 	});
 
-	describe('channel emit fan-out', () => {
-		let guildStub: { id: string };
-		let settingsStub: ReadonlyGuildData;
-		let tStub: (key: string, options?: Record<string, unknown>) => string;
-		let emitSpy: ReturnType<typeof vi.spyOn>;
-
-		beforeEach(() => {
-			guildStub = { id: '123456789' };
-			settingsStub = Object.assign(Object.create(null), getDefaultGuildSettings(), {
-				id: '123456789',
-				logsCommand: '999000111',
-				logsSettings: '888000222'
-			}) as unknown as ReadonlyGuildData;
-			tStub = (key, options) => (options ? `${key} ${JSON.stringify(options)}` : key);
-
-			// Re-create the manager with channel-log settings so #emitChannelLog can
-			// read logsCommand / logsSettings from the stored settings.
-			manager = new AuditLogManager(settingsStub);
-
-			vi.spyOn(container.gatewayClient.guilds, 'fetch').mockResolvedValue(guildStub as never);
-			emitSpy = vi.spyOn(container.gatewayClient as any, 'emit').mockReturnValue(true);
-
-			// Mock container.i18n so the real fetchT (from @wolfstar/plugin-i18next)
-			// resolves via the shared container.
-			Reflect.set(container, 'i18n', {
-				fetchLanguage: vi.fn().mockResolvedValue('en-US'),
-				getT: vi.fn().mockReturnValue(tStub)
-			});
-
-			// Provide a real-ish User and bot user so embed builders don't crash.
-			const stubbedUser = createUser();
-			vi.spyOn(container.gatewayClient.users, 'fetch').mockResolvedValue(stubbedUser as never);
-			Reflect.set(container.gatewayClient, 'user', stubbedUser);
-		});
-
-		afterEach(() => {
-			vi.restoreAllMocks();
-		});
-
+	describe('command()', () => {
 		test('GIVEN command() THEN writes AuditEvent with guild.command.execute action', async () => {
 			await manager.command(ACTOR_ID, { commandName: 'ban', commandType: 'chat-input', channelId: '555' });
 			const data = eventCreateSpy.mock.calls[0][0];
@@ -231,174 +190,30 @@ describe('AuditLogManager', () => {
 			expect(data.outcome).toBe('success');
 			expect(data.changes).toMatchObject({ after: { commandName: 'ban', commandType: 'chat-input', channelId: '555' } });
 		});
+	});
 
-		test('GIVEN command() with logsCommand set THEN emits GuildMessageLog with logsCommand key', async () => {
+	describe('web only', () => {
+		test('GIVEN a command or a change of the settings THEN nothing is sent to a channel of the guild', async () => {
+			const emit = vi.fn();
+			const previous = (container as any).gatewayClient;
+			(container as any).gatewayClient = { emit };
+
 			await manager.command(ACTOR_ID, { commandName: 'ban', commandType: 'chat-input', channelId: '555' });
-			await new Promise((r) => setImmediate(r));
-			expect(emitSpy).toHaveBeenCalledWith(Events.GuildMessageLog, guildStub, '999000111', 'logsCommand', expect.any(Function));
-			const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
-			expect(makeMessage()).toBeInstanceOf(EmbedBuilder);
+			await manager.update(ACTOR_ID, { prefix: '!' }, { prefix: '?' });
+			await manager.accessDenied(ACTOR_ID, 'Unauthorized');
+
+			expect(eventCreateSpy).toHaveBeenCalledTimes(3);
+			expect(emit).not.toHaveBeenCalled();
+			(container as any).gatewayClient = previous;
 		});
 
-		test('GIVEN update() with logsSettings set THEN emits GuildMessageLog with logsSettings key', async () => {
-			await manager.update(ACTOR_ID, { language: 'en-US' }, { language: 'es-ES' });
-			await new Promise((r) => setImmediate(r));
-			expect(emitSpy).toHaveBeenCalledWith(Events.GuildMessageLog, guildStub, '888000222', 'logsSettings', expect.any(Function));
-		});
+		test('GIVEN the settings of a guild THEN there is no channel to set for the two logs', () => {
+			const settings = getDefaultGuildSettings() as Record<string, unknown>;
 
-		test('GIVEN accessDenied() THEN emits with logsSettings key', async () => {
-			await manager.accessDenied(ACTOR_ID, 'No access');
-			await new Promise((r) => setImmediate(r));
-			expect(emitSpy).toHaveBeenCalledWith(Events.GuildMessageLog, guildStub, '888000222', 'logsSettings', expect.any(Function));
-		});
-
-		test('GIVEN logsCommand is null THEN no emit happens but DB row is still written', async () => {
-			const settingsWithNullCommand = Object.assign(Object.create(null), getDefaultGuildSettings(), {
-				id: '123456789',
-				logsCommand: null
-			}) as unknown as ReadonlyGuildData;
-			manager = new AuditLogManager(settingsWithNullCommand);
-			await manager.command(ACTOR_ID, { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
-			await new Promise((r) => setImmediate(r));
-			expect(eventCreateSpy).toHaveBeenCalledOnce();
-			expect(emitSpy).not.toHaveBeenCalled();
-		});
-
-		test('GIVEN guild cannot be fetched THEN DB write succeeds and no emit is fired', async () => {
-			vi.spyOn(container.gatewayClient.guilds, 'fetch').mockRejectedValue(new Error('Unknown Guild'));
-			await manager.command(ACTOR_ID, { commandName: 'kick', commandType: 'chat-input', channelId: '111' });
-			await new Promise((r) => setImmediate(r));
-			expect(eventCreateSpy).toHaveBeenCalledOnce();
-			expect(emitSpy).not.toHaveBeenCalled();
-		});
-
-		async function getCommandEmbed(payload: Parameters<AuditLogManager['command']>[1]): Promise<ReturnType<EmbedBuilder['toJSON']>> {
-			await manager.command(ACTOR_ID, payload);
-			await new Promise((r) => setImmediate(r));
-			const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
-			return makeMessage().toJSON();
-		}
-
-		describe('#buildCommandExecuteEmbed', () => {
-			test('GIVEN chat-input without commandId THEN uses backtick fallback', async () => {
-				const data = await getCommandEmbed({ commandName: 'ban', commandType: 'chat-input', channelId: '555' });
-				expect(data.color).toBeDefined();
-				expect(data.description).toContain('`/ban`');
-			});
-
-			test('GIVEN context-menu command THEN uses backtick format without slash', async () => {
-				const data = await getCommandEmbed({ commandName: 'userinfo', commandType: 'context-menu', channelId: '555' });
-				expect(data.description).toContain('`userinfo`');
-			});
-
-			test('GIVEN message command THEN uses backtick format without slash', async () => {
-				const data = await getCommandEmbed({ commandName: 'userinfo', commandType: 'message', channelId: '555' });
-				expect(data.description).toContain('`userinfo`');
-			});
-
-			test('GIVEN chat-input with commandId and no subcommand THEN uses slash mention', async () => {
-				const data = await getCommandEmbed({
-					commandName: 'ban',
-					commandId: '111111111111111111',
-					commandType: 'chat-input',
-					channelId: '555'
-				});
-				expect(data.description).toContain('</ban:111111111111111111>');
-			});
-
-			test('GIVEN chat-input with commandId and one subcommand THEN uses slash mention', async () => {
-				const data = await getCommandEmbed({
-					commandName: 'mod ban',
-					commandId: '222222222222222222',
-					commandType: 'chat-input',
-					channelId: '555'
-				});
-				expect(data.description).toContain('</mod ban:222222222222222222>');
-			});
-
-			test('GIVEN chat-input with commandId and subcommand group THEN uses slash mention', async () => {
-				const data = await getCommandEmbed({
-					commandName: 'config settings reset',
-					commandId: '333333333333333333',
-					commandType: 'chat-input',
-					channelId: '555'
-				});
-				expect(data.description).toContain('</config settings reset:333333333333333333>');
-			});
-
-			test('GIVEN chat-input with multi-word name but no commandId THEN uses backtick fallback with slash', async () => {
-				const data = await getCommandEmbed({ commandName: 'mod warn', commandType: 'chat-input', channelId: '555' });
-				expect(data.description).toContain('`/mod warn`');
-			});
-
-			test('GIVEN command() THEN embed has author and correct channel mention in description', async () => {
-				const data = await getCommandEmbed({ commandName: 'kick', commandType: 'chat-input', channelId: '987654321098765432' });
-				expect(data.author).toBeDefined();
-				expect(data.description).toContain('<#987654321098765432>');
-			});
-		});
-
-		describe('#buildSettingsChangeEmbed', () => {
-			async function getSettingsEmbed(
-				before: Record<string, unknown>,
-				after: Record<string, unknown>
-			): Promise<ReturnType<EmbedBuilder['toJSON']>> {
-				await manager.update(ACTOR_ID, before, after);
-				await new Promise((r) => setImmediate(r));
-				const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
-				return makeMessage().toJSON();
-			}
-
-			test('GIVEN settings update THEN embed has diff field for changed key', async () => {
-				const data = await getSettingsEmbed({ language: 'en-US' }, { language: 'es-ES' });
-				expect(data.fields!.length).toBeGreaterThanOrEqual(1);
-				const changeField = data.fields!.find((f) => f.name === 'settings:names.language');
-				expect(changeField).toBeDefined();
-			});
-
-			test('GIVEN a setting that was not set THEN shows none instead of null and a normalized name', async () => {
-				const data = await getSettingsEmbed({ rolesMuted: null }, { rolesMuted: '1297927038459449364' });
-				expect(data.fields).toEqual([
-					{
-						name: 'settings:names.rolesMuted',
-						value: `events/guilds-logs:settingsFieldChanged ${JSON.stringify({
-							previous: 'commands/conf:menuValueNone',
-							next: '1297927038459449364'
-						})}`
-					}
-				]);
-			});
-
-			test('GIVEN a setting that was removed THEN the new value is the translated none', async () => {
-				const data = await getSettingsEmbed({ rolesMuted: '1297927038459449364' }, { rolesMuted: null });
-				expect(data.fields).toEqual([
-					{
-						name: 'settings:names.rolesMuted',
-						value: `events/guilds-logs:settingsFieldChanged ${JSON.stringify({
-							previous: '1297927038459449364',
-							next: 'commands/conf:menuValueNone'
-						})}`
-					}
-				]);
-			});
-
-			test('GIVEN a key the schema does not know THEN keeps the key as the name', async () => {
-				const data = await getSettingsEmbed({}, { unknownKey: 'value' });
-				expect(data.fields).toEqual([{ name: 'unknownKey', value: 'value' }]);
-			});
-
-			test('GIVEN an unset value alone THEN shows the translated none', async () => {
-				const data = await getSettingsEmbed({}, { rolesMuted: null });
-				expect(data.fields).toEqual([{ name: 'settings:names.rolesMuted', value: 'commands/conf:menuValueNone' }]);
-			});
-
-			test('GIVEN access-denied THEN embed carries the reason', async () => {
-				await manager.accessDenied(ACTOR_ID, 'Unauthorized');
-				await new Promise((r) => setImmediate(r));
-				const makeMessage = emitSpy.mock.calls[0][4] as () => EmbedBuilder;
-				const data = makeMessage().toJSON();
-				expect(data.description).toContain('Unauthorized');
-			});
+			expect('logsCommand' in settings).toBe(false);
+			expect('logsSettings' in settings).toBe(false);
+			expect(getConfigurableKeys().has('logsCommand' as never)).toBe(false);
+			expect(getConfigurableKeys().has('logsSettings' as never)).toBe(false);
 		});
 	});
 });
