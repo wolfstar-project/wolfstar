@@ -1,3 +1,4 @@
+import { Emojis } from '#utils/emojis';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSettingName, isSchemaGroup, type Serializer } from '#lib/database';
@@ -167,7 +168,7 @@ export function displaySettingValue(t: Translator, key: SchemaKey, settings: Rea
 function displaySingleValue(t: Translator, key: SchemaKey, value: unknown): string {
 	switch (getSettingKind(key)) {
 		case 'boolean':
-			return t(value ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled');
+			return `${value ? Emojis.ToggleOn : Emojis.ToggleOff} ${t(value ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}`;
 		case 'role':
 			return roleMention(String(value));
 		case 'channel':

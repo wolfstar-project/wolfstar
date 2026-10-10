@@ -1,3 +1,4 @@
+import { getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/database';
@@ -309,6 +310,7 @@ function renderKeyButton(context: SettingsMenuContext, key: SchemaKey, page: num
 			const enabled = context.settings[key.property] === true;
 			return button(id('toggle'), {
 				label: t(enabled ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled'),
+				emoji: getEmojiComponent(enabled ? 'ToggleOn' : 'ToggleOff'),
 				style: enabled ? ButtonStyle.Success : ButtonStyle.Secondary
 			});
 		}
@@ -420,7 +422,11 @@ function row<T extends APIComponentInMessageActionRow>(components: T[]): APIActi
 
 interface ButtonOptions {
 	label?: string;
-	emoji?: string;
+
+	/**
+	 * A Unicode emoji, or one of the bot, see `getEmojiComponent`.
+	 */
+	emoji?: string | EmojiComponent;
 	style?: APIButtonComponentWithCustomId['style'];
 	disabled?: boolean;
 }
@@ -431,7 +437,7 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 		custom_id: customId,
 		style: options.style ?? ButtonStyle.Secondary,
 		...(options.label === undefined ? {} : { label: truncate(options.label, 80) }),
-		...(options.emoji === undefined ? {} : { emoji: { name: options.emoji } }),
+		...(options.emoji === undefined ? {} : { emoji: typeof options.emoji === 'string' ? { name: options.emoji } : options.emoji }),
 		...(options.disabled ? { disabled: true } : {})
 	};
 }

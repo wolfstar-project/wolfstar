@@ -8,8 +8,8 @@ import { container } from '@wolfstar/http-framework';
  * The bot is not one application: staging, beta and production are three, and a custom emoji of an application is
  * its own, so the same emoji has a different ID in each. They are the **application emojis** of Discord, uploaded
  * once to each application with the same name, and the IDs are read from the application the bot runs as, see
- * {@linkcode loadApplicationEmojis}. What is written in this file is the name, and the emoji the bot used before the
- * application had its own, which is written when the application does not have one of that name yet.
+ * {@linkcode loadApplicationEmojis}. What is written in this file is the name, and what is written when the
+ * application does not have one of that name yet.
  */
 interface EmojiDefinition {
 	/**
@@ -19,13 +19,15 @@ interface EmojiDefinition {
 	animated: boolean;
 
 	/**
-	 * The emoji that is written when the application of the bot has no emoji of that name.
+	 * What is written when the application of the bot has no emoji of that name: the ID of the emoji the bot used
+	 * before, or a Unicode emoji for the ones it never had.
 	 */
-	fallbackId: string;
+	fallback: { id: string } | { unicode: string };
 }
 
-function emoji(name: string, fallbackId: string, animated = false): EmojiDefinition {
-	return { name, animated, fallbackId };
+function emoji(name: string, fallback: string, animated = false): EmojiDefinition {
+	// An ID is digits only, anything else is a Unicode emoji:
+	return { name, animated, fallback: /^\d+$/.test(fallback) ? { id: fallback } : { unicode: fallback } };
 }
 
 /**
@@ -72,7 +74,23 @@ export const EmojiDefinitions = {
 	Timeout: emoji('timeout', '1262379856470212659'),
 	Kick: emoji('kick', '1262378332633174017'),
 	Softban: emoji('softban', '1262384411245150208'),
-	Ban: emoji('ban', '1262378308050489468')
+	Ban: emoji('ban', '1262378308050489468'),
+	// The switches of a setting that is on or off:
+	ToggleOn: emoji('toggle_on', '🟢'),
+	ToggleOff: emoji('toggle_off', '🔴'),
+	// The badges of a user, see `getUserBadges`:
+	BadgeStaff: emoji('badge_staff', '🛠️'),
+	BadgePartner: emoji('badge_partner', '🤝'),
+	BadgeHypesquad: emoji('badge_hypesquad', '🎉'),
+	BadgeBravery: emoji('badge_bravery', '🟣'),
+	BadgeBrilliance: emoji('badge_brilliance', '🟠'),
+	BadgeBalance: emoji('badge_balance', '🟢'),
+	BadgeEarlySupporter: emoji('badge_early_supporter', '🐣'),
+	BadgeBugHunter: emoji('badge_bug_hunter', '🐛'),
+	BadgeBugHunterGold: emoji('badge_bug_hunter_gold', '🏅'),
+	BadgeVerifiedDeveloper: emoji('badge_verified_developer', '🧑‍💻'),
+	BadgeCertifiedModerator: emoji('badge_certified_moderator', '🛡️'),
+	BadgeActiveDeveloper: emoji('badge_active_developer', '⌨️')
 } as const satisfies Record<string, EmojiDefinition>;
 
 export type EmojiKey = keyof typeof EmojiDefinitions;
@@ -132,16 +150,36 @@ export async function loadApplicationEmojis(applicationId: string = process.env.
 }
 
 /**
- * Gets the emoji of an application, or the one the bot used before when the application has none of that name.
+ * An emoji as a component takes it (a button, an option of a select menu): the custom one of the application, or a
+ * Unicode one.
+ */
+export interface EmojiComponent {
+	id?: string;
+	name: string;
+	animated?: boolean;
+}
+
+/**
+ * Gets the emoji of an application, or what is written when the application has none of that name.
  *
  * @param key - The emoji, a key of {@linkcode EmojiDefinitions}.
  */
-function resolveEmoji(key: EmojiKey) {
+function resolveEmoji(key: EmojiKey): EmojiComponent {
 	const definition: EmojiDefinition = EmojiDefinitions[key];
 	const found = applicationEmojis.get(definition.name);
 	if (found) return { id: found.id, name: definition.name, animated: found.animated };
+	if ('unicode' in definition.fallback) return { name: definition.fallback.unicode };
 
-	return { id: definition.fallbackId, name: definition.name, animated: definition.animated };
+	return { id: definition.fallback.id, name: definition.name, animated: definition.animated };
+}
+
+/**
+ * Gets an emoji for a component, which takes it as an object and not as text: `emoji: getEmojiComponent('ToggleOn')`.
+ *
+ * @param key - The emoji, a key of {@linkcode EmojiDefinitions}.
+ */
+export function getEmojiComponent(key: EmojiKey): EmojiComponent {
+	return resolveEmoji(key);
 }
 
 /**
@@ -155,7 +193,7 @@ for (const key of Object.keys(EmojiDefinitions) as EmojiKey[]) {
 		enumerable: true,
 		get() {
 			const { id, name, animated } = resolveEmoji(key);
-			return formatEmoji(name, id, animated);
+			return id === undefined ? name : formatEmoji(name, id, animated === true);
 		}
 	});
 }

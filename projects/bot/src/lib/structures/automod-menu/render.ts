@@ -1,3 +1,4 @@
+import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList } from '#lib/moderation/automod/commands';
 import { MaximumAutoModerationRuleIgnored } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -127,7 +128,8 @@ export function renderAutoModerationRules(
 		body.push(text(translateKey(t, `${Root}:listEmpty`, { command: inlineCode('/automod create') })));
 	} else {
 		const lines = rules.map(
-			(rule) => `${rule.enabled ? '🟢' : '🔴'} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
+			(rule) =>
+				`${rule.enabled ? Emojis.ToggleOn : Emojis.ToggleOff} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
 		);
 		body.push(
 			text(lines.join('\n')),
@@ -140,7 +142,7 @@ export function renderAutoModerationRules(
 						label: cutText(rule.name, 100),
 						description: cutText(translateKey(t, AutoModerationRuleTypeKeys[rule.type]), 100),
 						value: rule.id,
-						emoji: { name: rule.enabled ? '🟢' : '🔴' }
+						emoji: getEmojiComponent(rule.enabled ? 'ToggleOn' : 'ToggleOff')
 					}))
 				}
 			])
@@ -259,7 +261,7 @@ export function renderAutoModerationRule(
 			button(id('edit', 'name'), { label: translateKey(t, `${Root}:menuRename`), emoji: '✏️', style: ButtonStyle.Primary })
 		),
 		block(
-			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? '🟢' : '🔴'} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
+			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? Emojis.ToggleOn : Emojis.ToggleOff} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
 			button(id('toggle', 'enabled'), {
 				label: translateKey(t, rule.enabled ? `${Root}:menuDisable` : `${Root}:menuEnable`),
 				style: rule.enabled ? ButtonStyle.Secondary : ButtonStyle.Success
@@ -544,7 +546,7 @@ function renderSwitch(t: TFunction, title: string, description: string, active: 
 		`**${title}**\n-# ${description}`,
 		button(customId, {
 			label: translateKey(t, active ? `${Root}:menuOn` : `${Root}:menuOff`),
-			emoji: active ? '✅' : '⬜',
+			emoji: getEmojiComponent(active ? 'ToggleOn' : 'ToggleOff'),
 			style: active ? ButtonStyle.Success : ButtonStyle.Secondary
 		})
 	);
@@ -720,7 +722,11 @@ function row<T extends APIComponentInMessageActionRow>(components: T[]): APIActi
 
 interface ButtonOptions {
 	label?: string;
-	emoji?: string;
+
+	/**
+	 * A Unicode emoji, or one of the bot, see `getEmojiComponent`.
+	 */
+	emoji?: string | EmojiComponent;
 	style?: APIButtonComponentWithCustomId['style'];
 	disabled?: boolean;
 }
@@ -731,7 +737,7 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 		custom_id: customId,
 		style: options.style ?? ButtonStyle.Secondary,
 		...(options.label === undefined ? {} : { label: cutText(options.label, 80) }),
-		...(options.emoji === undefined ? {} : { emoji: { name: options.emoji } }),
+		...(options.emoji === undefined ? {} : { emoji: typeof options.emoji === 'string' ? { name: options.emoji } : options.emoji }),
 		...(options.disabled ? { disabled: true } : {})
 	};
 }

@@ -1,3 +1,4 @@
+import { Emojis } from '#utils/emojis';
 import type { Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId } from '#lib/structures/settings-menu/ids';
 import { renderSettingsExpiry } from '#lib/structures/settings-menu/render';
@@ -47,7 +48,7 @@ export function renderUserSettings({ t, ownerId, report }: UserSettingsContext):
 				components: [
 					{
 						type: ComponentType.TextDisplay,
-						content: `**${t('commands/conf:menuUserReport')}**\n${t(report ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}\n-# ${t('commands/conf:menuUserReportDescription')}`
+						content: `**${t('commands/conf:menuUserReport')}**\n${report ? Emojis.ToggleOn : Emojis.ToggleOff} ${t(report ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}\n-# ${t('commands/conf:menuUserReportDescription')}`
 					}
 				],
 				accessory: {

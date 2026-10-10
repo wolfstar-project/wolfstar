@@ -1,3 +1,4 @@
+import { Emojis } from '#utils/emojis';
 import type { Translator } from '#lib/structures/commands/utils';
 import {
 	CommandQueryMaximumLength,
@@ -398,7 +399,7 @@ export function renderCommandEditModal(
 		`### ⌘ ${inlineCode(`/${command.name}`)} · ${command.category}`,
 		command.description,
 		'',
-		t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy }),
+		`${disabled ? Emojis.ToggleOff : Emojis.ToggleOn} ${t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy })}`,
 		t('commands/commands:viewPermissions', {
 			permissions: command.permissions === null ? t('commands/commands:viewPermissionsNone') : formatPermissions(t, command.permissions)
 		})

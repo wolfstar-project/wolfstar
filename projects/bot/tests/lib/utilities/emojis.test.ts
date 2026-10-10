@@ -1,5 +1,7 @@
 import { parseInternationalizationDefaultVariables } from '#lib/i18n/options';
-import { EmojiDefinitions, Emojis, formatEmoji, loadApplicationEmojis } from '#utils/emojis';
+import { getUserBadges, getUserBadgesString } from '#utils/functions';
+import { EmojiDefinitions, Emojis, formatEmoji, getEmojiComponent, loadApplicationEmojis } from '#utils/emojis';
+import { UserFlags } from 'discord-api-types/v10';
 import { container } from '@wolfstar/http-framework';
 
 describe('application emojis', () => {
@@ -110,5 +112,31 @@ describe('application emojis', () => {
 		expect(names.every((name) => /^\w{2,32}$/.test(name))).toBe(true);
 		expect(new Set(names).size).toBe(names.length);
 		expect(formatEmoji('a', '1', true)).toBe('<a:a:1>');
+	});
+
+	test('GIVEN an emoji the bot never had THEN a Unicode one is written until the application has it', async () => {
+		expect(Emojis.ToggleOn).toBe('🟢');
+		expect(Emojis.ToggleOff).toBe('🔴');
+		expect(getEmojiComponent('ToggleOn')).toEqual({ name: '🟢' });
+
+		rest.get = async () => ({ items: [{ id: '55', name: 'toggle_on', animated: false }] });
+		await loadApplicationEmojis('1');
+
+		expect(Emojis.ToggleOn).toBe('<:toggle_on:55>');
+		expect(getEmojiComponent('ToggleOn')).toEqual({ id: '55', name: 'toggle_on', animated: false });
+		expect(getEmojiComponent('ToggleOff')).toEqual({ name: '🔴' });
+	});
+
+	test('GIVEN an emoji the bot had before THEN its component is the custom one', () => {
+		expect(getEmojiComponent('GreenTick')).toEqual({ id: '1043562833905987685', name: 'greenTick', animated: false });
+	});
+
+	test('GIVEN the flags of a user THEN their badges are listed in the order Discord shows them', () => {
+		const flags = UserFlags.ActiveDeveloper | UserFlags.Staff | UserFlags.HypeSquadOnlineHouse2 | UserFlags.Spammer;
+
+		expect(getUserBadges(flags)).toEqual(['BadgeStaff', 'BadgeBrilliance', 'BadgeActiveDeveloper']);
+		expect(getUserBadges(0)).toEqual([]);
+		expect(getUserBadgesString(0)).toBe('');
+		expect(getUserBadgesString(UserFlags.Partner | UserFlags.BugHunterLevel2)).toBe(`${Emojis.BadgePartner} ${Emojis.BadgeBugHunterGold}`);
 	});
 });

@@ -232,7 +232,8 @@ describe('settings menu', () => {
 
 			expect(display('rolesMuted')).toBe('<@&111111111111111111>');
 			expect(display('rolesAdmin')).toBe('commands/conf:menuValueNone');
-			expect(display('modulesAutomod')).toBe('commands/conf:menuValueEnabled');
+			// A setting that is on or off is written with its switch:
+			expect(display('modulesAutomod')).toBe('🟢 commands/conf:menuValueEnabled');
 			expect(display('moderationChannel')).toBe('commands/conf:settingNotSet');
 		});
 
