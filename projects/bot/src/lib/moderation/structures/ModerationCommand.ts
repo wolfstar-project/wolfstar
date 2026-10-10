@@ -4,6 +4,7 @@ import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
+import { ModerationCommandPrompt } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
@@ -160,6 +161,8 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 				// noop
 			}
 		} catch (error) {
+			// The command needs an answer before it can go on, such as the role a mute gives:
+			if (error instanceof ModerationCommandPrompt) return deferred.update(error.message);
 			content = this.formatFailure(t, target, error);
 		}
 
