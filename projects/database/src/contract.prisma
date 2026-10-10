@@ -227,6 +227,12 @@ namespace public {
     @@control(external)
   }
 
+  model GuildLogsOptions {
+    id                 BigInt                    @id(map: "GuildLogsOptions_pkey")
+    messageUpdateStyle pg.enum(MessageUpdateStyle) @default("Difference") @map("message_update_style")
+    modules            Modules                   @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildLogsOptions_id_fkey")
+  }
+
   model GuildReports {
     id        BigInt  @id(map: "GuildReports_pkey")
     channelId BigInt? @map("channel_id")
@@ -353,6 +359,11 @@ namespace public {
     Spoilers = "Spoilers"
     MaskedLinks = "MaskedLinks"
     StickersCooldown = "StickersCooldown"
+  }
+
+  native_enum MessageUpdateStyle {
+    Difference = "Difference"
+    Separate = "Separate"
   }
 
   native_enum ReportStatus {

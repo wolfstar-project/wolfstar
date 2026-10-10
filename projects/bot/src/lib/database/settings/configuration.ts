@@ -64,6 +64,12 @@ export function getConfiguration() {
 		logsMessageDeleteNsfw: logChannel('message-delete-nsfw', 'settings:channelsLogsMessageDeleteNsfw'),
 		logsMessageUpdate: logChannel('message-update', 'settings:channelsLogsMessageUpdate'),
 		logsMessageUpdateNsfw: logChannel('message-update-nsfw', 'settings:channelsLogsMessageUpdateNsfw'),
+		logsMessageUpdateStyle: {
+			type: 'messageUpdateStyle',
+			name: 'logs.message-update-style',
+			description: 'settings:logsMessageUpdateStyle',
+			default: 'Difference'
+		},
 		logsPrune: logChannel('prune', 'settings:channelsLogsPrune'),
 		logsReactionEmojiAdd: logChannel('reaction-emoji-add', 'settings:channelsLogsReactionEmojiAdd'),
 		logsReactionEmojiRemove: logChannel('reaction-emoji-remove', 'settings:channelsLogsReactionEmojiRemove'),

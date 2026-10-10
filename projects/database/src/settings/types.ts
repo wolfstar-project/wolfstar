@@ -13,6 +13,18 @@ export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 export type AutoModerationHardAction = Models.public_GuildAutoModerationRule['hardAction'];
 
 /**
+ * How the log of an edited message shows the change, as the `MessageUpdateStyle` enum stores it: `Difference` is one
+ * text with the removed and the added parts marked, `Separate` the content before and the content after, each in a
+ * block of its own.
+ */
+export type MessageUpdateStyle = Models.public_GuildLogsOptions['messageUpdateStyle'];
+
+/**
+ * The values of {@linkcode MessageUpdateStyle}, in the order the settings offer them.
+ */
+export const MessageUpdateStyles = ['Difference', 'Separate'] as const satisfies readonly MessageUpdateStyle[];
+
+/**
  * The settings of a guild, flattened from the normalized Prisma 8 tables (`Guild`, `Modules`, `GuildRoles`, …).
  *
  * Every key is prefixed by the table it is stored in. The keys stored in a column, and their types, are derived from
