@@ -5,6 +5,7 @@ export * from './emojis';
 export * from './guild';
 export * from './logs';
 export * from './messages';
+export * from './messageUpdate';
 export * from './numbers';
 export * from './permissions';
 export * from './pieces';

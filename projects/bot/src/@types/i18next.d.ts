@@ -2880,6 +2880,9 @@ declare module "i18next" {
         messageDelete: "Message Deleted • {{channel}}";
         messageUpdate: "Message Edited • {{channel}}";
         messageDeleteUnknown: "Unknown Message Deleted • {{channel}}";
+        messageUpdateBefore: "Before";
+        messageUpdateAfter: "After";
+        messageUpdateEmpty: "*(no text)*";
         messageUpdateUnknown: "Unknown Message Edited • {{channel}}";
         messageNotFound: "Unknown Message";
         messageDeleteBulk_one: "{{count}} message deleted in {{channel}} by {{author}}";
