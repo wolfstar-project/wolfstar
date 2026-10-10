@@ -188,7 +188,7 @@ describe('AuditLogManager', () => {
 	describe('channel emit fan-out', () => {
 		let guildStub: { id: string };
 		let settingsStub: ReadonlyGuildData;
-		let tStub: (key: string) => string;
+		let tStub: (key: string, options?: Record<string, unknown>) => string;
 		let emitSpy: ReturnType<typeof vi.spyOn>;
 
 		beforeEach(() => {
@@ -198,7 +198,7 @@ describe('AuditLogManager', () => {
 				logsCommand: '999000111',
 				logsSettings: '888000222'
 			}) as unknown as ReadonlyGuildData;
-			tStub = (key: string) => key;
+			tStub = (key, options) => (options ? `${key} ${JSON.stringify(options)}` : key);
 
 			// Re-create the manager with channel-log settings so #emitChannelLog can
 			// read logsCommand / logsSettings from the stored settings.
@@ -352,8 +352,44 @@ describe('AuditLogManager', () => {
 			test('GIVEN settings update THEN embed has diff field for changed key', async () => {
 				const data = await getSettingsEmbed({ language: 'en-US' }, { language: 'es-ES' });
 				expect(data.fields!.length).toBeGreaterThanOrEqual(1);
-				const changeField = data.fields!.find((f) => f.name === 'language');
+				const changeField = data.fields!.find((f) => f.name === 'settings:names.language');
 				expect(changeField).toBeDefined();
+			});
+
+			test('GIVEN a setting that was not set THEN shows none instead of null and a normalized name', async () => {
+				const data = await getSettingsEmbed({ rolesMuted: null }, { rolesMuted: '1297927038459449364' });
+				expect(data.fields).toEqual([
+					{
+						name: 'settings:names.rolesMuted',
+						value: `events/guilds-logs:settingsFieldChanged ${JSON.stringify({
+							previous: 'commands/conf:menuValueNone',
+							next: '1297927038459449364'
+						})}`
+					}
+				]);
+			});
+
+			test('GIVEN a setting that was removed THEN the new value is the translated none', async () => {
+				const data = await getSettingsEmbed({ rolesMuted: '1297927038459449364' }, { rolesMuted: null });
+				expect(data.fields).toEqual([
+					{
+						name: 'settings:names.rolesMuted',
+						value: `events/guilds-logs:settingsFieldChanged ${JSON.stringify({
+							previous: '1297927038459449364',
+							next: 'commands/conf:menuValueNone'
+						})}`
+					}
+				]);
+			});
+
+			test('GIVEN a key the schema does not know THEN keeps the key as the name', async () => {
+				const data = await getSettingsEmbed({}, { unknownKey: 'value' });
+				expect(data.fields).toEqual([{ name: 'unknownKey', value: 'value' }]);
+			});
+
+			test('GIVEN an unset value alone THEN shows the translated none', async () => {
+				const data = await getSettingsEmbed({}, { rolesMuted: null });
+				expect(data.fields).toEqual([{ name: 'settings:names.rolesMuted', value: 'commands/conf:menuValueNone' }]);
 			});
 
 			test('GIVEN access-denied THEN embed carries the reason', async () => {

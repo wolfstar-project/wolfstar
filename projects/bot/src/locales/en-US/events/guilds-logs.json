@@ -143,6 +143,7 @@
 	"commandExecuteTitle": "Command Executed",
 	"settingsUpdateTitle": "Settings Updated",
 	"settingsAccessDeniedTitle": "Settings Access Denied",
+	"settingsFieldChanged": "has changed {{previous}} to {{next}}",
 	"logFieldUser": "User",
 	"logFieldCommand": "Command",
 	"logFieldType": "Type",

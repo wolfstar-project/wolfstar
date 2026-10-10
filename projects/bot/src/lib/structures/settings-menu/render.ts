@@ -10,6 +10,7 @@ import {
 	getAvailableLanguages,
 	getLanguageName,
 	getSettingChannelTypes,
+	getSettingKeyTitle,
 	getSettingKind,
 	getSettingMaximumValues,
 	getSettingTitle,
@@ -125,7 +126,10 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 		}
 
 		body.push(
-			section(`**${getSettingTitle(entry)}**\n${displaySettingValue(t, entry, context.settings)}`, renderKeyButton(context, entry, current))
+			section(
+				`**${getSettingKeyTitle(t, entry)}**\n${displaySettingValue(t, entry, context.settings)}`,
+				renderKeyButton(context, entry, current)
+			)
 		);
 	}
 
@@ -193,7 +197,9 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 		type: ComponentType.Container,
 		accent_color: AccentColor,
 		components: [
-			text(`## ✏️ ${getPathTitle(t, group)} › ${getSettingTitle(key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`),
+			text(
+				`## ✏️ ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
+			),
 			row([renderSelect(context, key, id('pick', key.property))]),
 			row([
 				button(id('view', getSchemaPath(group)), { label: t('commands/conf:menuBack'), emoji: '↩️' }),
@@ -227,7 +233,7 @@ export function renderSettingsModal(context: SettingsMenuContext, key: SchemaKey
 
 	return {
 		custom_id: encodeSettingsMenuId({ ownerId: context.ownerId, verb: 'submit', target: key.property, page }),
-		title: truncate(getSettingTitle(key), 45),
+		title: truncate(getSettingKeyTitle(t, key), 45),
 		components: [
 			{
 				type: ComponentType.ActionRow,

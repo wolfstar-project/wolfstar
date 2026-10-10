@@ -1,4 +1,6 @@
+import { getSettingName } from '#lib/database/settings/Utils';
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
+import { createTranslator } from '#lib/structures/commands/utils';
 import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
 import { getDisplayAvatar, getEmbedAuthor } from '#utils/util';
@@ -286,6 +288,7 @@ export class AuditLogManager {
 			.setTimestamp(timestamp);
 
 		if (action !== 'guild.settings.access-denied') {
+			const translate = createTranslator(t as never);
 			let fields = 0;
 			for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
 				if (fields === 10) break;
@@ -294,15 +297,15 @@ export class AuditLogManager {
 				const hasAfter = key in after;
 				let value: string;
 				if (hasBefore && hasAfter) {
-					const from = this.#formatAuditValue(before[key]);
-					const to = this.#formatAuditValue(after[key]);
-					if (from === to) continue;
-					value = `has changed ${from} to ${to}`;
+					const previous = this.#formatAuditValue(t, before[key]);
+					const next = this.#formatAuditValue(t, after[key]);
+					if (previous === next) continue;
+					value = t('events/guilds-logs:settingsFieldChanged', { previous, next });
 				} else {
-					value = this.#formatAuditValue(hasAfter ? after[key] : before[key]);
+					value = this.#formatAuditValue(t, hasAfter ? after[key] : before[key]);
 				}
 
-				embed.addFields({ name: key, value: this.#truncateFieldValue(value) });
+				embed.addFields({ name: getSettingName(translate, key), value: this.#truncateFieldValue(value) });
 				fields++;
 			}
 		}
@@ -326,8 +329,8 @@ export class AuditLogManager {
 		return chatInputApplicationCommandMention(parts[0], commandId);
 	}
 
-	#formatAuditValue(value: unknown): string {
-		if (value === null || value === undefined) return '`null`';
+	#formatAuditValue(t: TFunction, value: unknown): string {
+		if (value === null || value === undefined || (Array.isArray(value) && value.length === 0)) return t('commands/conf:menuValueNone');
 		if (typeof value === 'string') return value.length === 0 ? '""' : value;
 		if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') return String(value);
 		return '`' + JSON.stringify(value) + '`';
