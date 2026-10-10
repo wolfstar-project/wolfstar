@@ -3,7 +3,7 @@ import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { Events } from '#lib/types';
-import type { LLRCData, LLRCDataEmoji } from '#utils/LongLivingReactionCollector';
+import type { ReactionAddData, ReactionAddEmoji } from '#lib/types';
 import { Colors } from '#utils/constants';
 import {
 	getCodeStyle,
@@ -33,7 +33,7 @@ export class UserListener extends Listener {
 	private readonly kSyncCache = new Collection<string, Promise<InternalCacheEntry | null>>();
 	private kTimerSweeper: NodeJS.Timeout | null = null;
 
-	public async run(data: LLRCData, emoji: SerializedEmoji) {
+	public async run(data: ReactionAddData, emoji: SerializedEmoji) {
 		// The reaction only carries the id of its channel, which `rawMessageReactionAdd` already found in the cache:
 		const channel = (await this.container.gatewayClient.channels.resolve(data.channelId)) as GuildTextBasedChannel | null;
 		if (isNullish(channel)) return;
@@ -77,13 +77,13 @@ export class UserListener extends Listener {
 		if (this.kTimerSweeper) clearInterval(this.kTimerSweeper);
 	}
 
-	#renderThumbnail(emoji: LLRCDataEmoji) {
+	#renderThumbnail(emoji: ReactionAddEmoji) {
 		return emoji.id === null //
 			? getTwemojiUrl(getEncodedTwemoji(emoji.name!))
 			: getCustomEmojiUrl(emoji.id, emoji.animated);
 	}
 
-	#renderDescription(t: TFunction<AnyNamespace>, data: LLRCData) {
+	#renderDescription(t: TFunction<AnyNamespace>, data: ReactionAddData) {
 		return t('events/reactions:reactionDescription', {
 			emoji: data.emoji.id ? `${data.emoji.name} (${inlineCode(data.emoji.id)})` : data.emoji.name!,
 			message: messageLink(data.channelId, data.messageId, data.guildId)
@@ -96,7 +96,7 @@ export class UserListener extends Listener {
 		return permissions.has(PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory);
 	}
 
-	async #retrieveCount(data: LLRCData, emoji: SerializedEmoji): Promise<number | null> {
+	async #retrieveCount(data: ReactionAddData, emoji: SerializedEmoji): Promise<number | null> {
 		const id = `${data.messageId}.${getEmojiId(emoji)}`;
 
 		// Pull from sync queue, and if it exists, await
@@ -119,7 +119,7 @@ export class UserListener extends Listener {
 		return isNullish(resolved) ? null : resolved.count;
 	}
 
-	async #fetchCount(data: LLRCData, emoji: SerializedEmoji, id: string): Promise<InternalCacheEntry | null> {
+	async #fetchCount(data: ReactionAddData, emoji: SerializedEmoji, id: string): Promise<InternalCacheEntry | null> {
 		const result = await toErrorCodeResult(
 			this.container.gatewayClient.api.channels.getMessageReactions(data.channelId, data.messageId, getEmojiReactionFormat(emoji))
 		);
