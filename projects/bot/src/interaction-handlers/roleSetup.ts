@@ -113,7 +113,11 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * after an update), or when it asks again, the administrator is told to run it again.
 	 */
 	private async resume(interaction: ComponentInteraction, guildId: Snowflake, type: TypeVariation, t: Translator, done: string) {
-		const close = (message: string) => ({ content: `${done}\n${message}`, components: [], allowed_mentions: { parse: [] } });
+		const close = (message: string) => ({
+			content: message === '' ? done : `${done}\n${message}`,
+			components: [],
+			allowed_mentions: { parse: [] }
+		});
 		const again = () => close(t('moderationActions:sharedRoleSetupRunAgain'));
 
 		const pending = await takePendingRoleSetupCommand(guildId, interaction.user.id, type);
@@ -128,7 +132,10 @@ export class UserInteractionHandler extends InteractionHandler {
 				interaction as unknown as ModerationCommand.Interaction,
 				pending.args as unknown as ModerationCommand.Arguments
 			);
-			return answer.components?.length ? again() : close(answer.content ?? '');
+			if (answer.components?.length) return again();
+
+			// What the command did follows what was set up, as the embed of its case:
+			return { ...close(answer.content ?? ''), embeds: answer.embeds ?? [] };
 		} catch (error) {
 			this.container.logger.error('[Role setup] Could not run the command that asked for the role:', error);
 			return again();

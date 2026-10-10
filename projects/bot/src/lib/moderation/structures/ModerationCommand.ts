@@ -1,13 +1,16 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
+import { getTypeColorOf, isValidType } from '#lib/moderation/common/constants';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
+import { Colors } from '#utils/constants';
+import { EmbedBuilder } from '@discordjs/builders';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { ModerationCommandPrompt, type RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
-import type { TypeVariation } from '#utils/moderationConstants';
+import type { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 import { resolveTimeSpan } from '#utils/resolvers';
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import type { Awaitable } from '@sapphire/utilities';
@@ -19,6 +22,7 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	PermissionFlagsBits,
+	type APIInteractionResponseCallbackData,
 	type Permissions,
 	type Snowflake
 } from 'discord-api-types/v10';
@@ -144,7 +148,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		const target = await container.gatewayClient.users.fetch(args.user.id);
 		const moderator = await container.gatewayClient.users.fetch(interaction.user.id);
 
-		let content: string;
+		let answer: ModerationCommand.Answer;
 		try {
 			const parameters = this.resolveParameters(t, guild, moderator, target, args, interaction.channel.id);
 			await this.inhibit(interaction, parameters);
@@ -160,14 +164,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 				try {
 					const log = await this.handle(interaction, handled);
-					content = this.formatOutput(t, settings, target, log);
+					answer = this.formatOutput(t, settings, target, log);
 				} catch (error) {
 					// No case was made for the copy to stand under:
 					if (forwardedId !== null) await deleteForwardedCaseMessage(guild, forwardedId);
 					throw error;
 				}
 			} catch (error) {
-				content = this.formatFailure(t, target, error);
+				answer = { content: this.formatFailure(t, target, error) };
 			}
 
 			try {
@@ -178,10 +182,10 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		} catch (error) {
 			// The command needs an answer before it can go on, such as the role a mute gives:
 			if (error instanceof ModerationCommandPrompt) return error.message;
-			content = this.formatFailure(t, target, error);
+			answer = { content: this.formatFailure(t, target, error) };
 		}
 
-		return { content };
+		return answer;
 	}
 
 	/**
@@ -436,10 +440,19 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		};
 	}
 
-	private formatOutput(t: Translator, settings: ModerationCommand.MessageSettings, target: User, log: ModerationManager.Entry) {
-		const reason = settings.reasonDisplay ? log.reason : null;
-		const key = reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
-		return t(key, { count: 1, range: log.id, users: [`\`${target.tag}\``], reason });
+	private formatOutput(
+		t: Translator,
+		settings: ModerationCommand.MessageSettings,
+		target: User,
+		log: ModerationManager.Entry
+	): ModerationCommand.Answer {
+		return renderModerationOutput(t, {
+			reason: settings.reasonDisplay ? log.reason : null,
+			id: log.id,
+			tag: target.tag,
+			type: log.type,
+			metadata: log.metadata
+		});
 	}
 
 	private formatFailure(t: Translator, target: User, error: unknown) {
@@ -602,6 +615,25 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }
 
+/**
+ * What a moderation command answers with when it made a case: a small embed, of the color of the action, that says
+ * the case it created, the user, and the reason when the server wants it shown.
+ *
+ * @param t - The function to translate with.
+ * @param output - The case that was made: its number, the tag of the user, its type and the reason to show.
+ */
+export function renderModerationOutput(
+	t: Translator,
+	output: { id: number; tag: string; reason: string | null; type: TypeVariation; metadata: TypeMetadata }
+): ModerationCommand.Answer {
+	const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
+	const description = t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason });
+
+	// A type that has no color of its own gets the neutral one:
+	const color = isValidType(output.type, output.metadata) ? getTypeColorOf(output.type, output.metadata) : Colors.BlueGrey;
+	return { embeds: [new EmbedBuilder().setColor(color).setDescription(description).toJSON()], allowed_mentions: { parse: [] } };
+}
+
 export declare namespace ModerationCommand {
 	/**
 	 * The ModerationCommand Options
@@ -629,9 +661,12 @@ export declare namespace ModerationCommand {
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
 	 */
 	/**
-	 * What a moderation command answers with: a line of text, with the components of a prompt when it needs one answered.
+	 * What a moderation command answers with: a small embed of the color of the action, a line of text when it failed,
+	 * or the prompt it needs answered, see {@linkcode RoleSetupMessage}.
 	 */
-	type Answer = RoleSetupMessage;
+	type Answer =
+		| RoleSetupMessage
+		| (Pick<APIInteractionResponseCallbackData, 'content' | 'embeds' | 'allowed_mentions'> & { components?: undefined });
 
 	interface Arguments {
 		user: TransformedArguments.User;

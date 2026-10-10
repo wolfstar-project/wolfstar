@@ -65,7 +65,7 @@ export function decodeRoleSetupId(content: unknown): RoleSetupAction | null {
 /**
  * The body of the prompt: a line of text and its components.
  */
-export type RoleSetupMessage = Pick<APIInteractionResponseCallbackData, 'content' | 'components' | 'allowed_mentions'>;
+export type RoleSetupMessage = Pick<APIInteractionResponseCallbackData, 'content' | 'embeds' | 'components' | 'allowed_mentions'>;
 
 /**
  * Renders the prompt an administrator gets when a moderation command needs a role that is not set up: a select menu

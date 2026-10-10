@@ -96,7 +96,14 @@ export function isValidType(type: TypeVariation, metadata?: TypeMetadata): boole
 }
 
 export function getTypeColor(entry: ModerationManager.Entry): number {
-	return Metadata.get(combineTypeData(entry.type, entry.metadata))!;
+	return getTypeColorOf(entry.type, entry.metadata);
+}
+
+/**
+ * Gets the color of a type of case, with its metadata (undo, temporary), `undefined` when it has none.
+ */
+export function getTypeColorOf(type: TypeVariation, metadata?: TypeMetadata): number {
+	return Metadata.get(combineTypeData(type, metadata))!;
 }
 
 const Metadata = new Map<TypeCodes, Colors>([
