@@ -115,16 +115,16 @@ describe('application emojis', () => {
 	});
 
 	test('GIVEN an emoji the bot never had THEN a Unicode one is written until the application has it', async () => {
-		expect(Emojis.ToggleOn).toBe('🟢');
-		expect(Emojis.ToggleOff).toBe('🔴');
-		expect(getEmojiComponent('ToggleOn')).toEqual({ name: '🟢' });
+		expect(Emojis.Checked).toBe('☑️');
+		expect(Emojis.Unchecked).toBe('⬜');
+		expect(getEmojiComponent('Checked')).toEqual({ name: '☑️' });
 
-		rest.get = async () => ({ items: [{ id: '55', name: 'toggle_on', animated: false }] });
+		rest.get = async () => ({ items: [{ id: '55', name: 'checked', animated: false }] });
 		await loadApplicationEmojis('1');
 
-		expect(Emojis.ToggleOn).toBe('<:toggle_on:55>');
-		expect(getEmojiComponent('ToggleOn')).toEqual({ id: '55', name: 'toggle_on', animated: false });
-		expect(getEmojiComponent('ToggleOff')).toEqual({ name: '🔴' });
+		expect(Emojis.Checked).toBe('<:checked:55>');
+		expect(getEmojiComponent('Checked')).toEqual({ id: '55', name: 'checked', animated: false });
+		expect(getEmojiComponent('Unchecked')).toEqual({ name: '⬜' });
 	});
 
 	test('GIVEN an emoji the bot had before THEN its component is the custom one', () => {

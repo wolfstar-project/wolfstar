@@ -302,16 +302,15 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
 export const RootModuleValue = '::root::';
 
 function renderKeyButton(context: SettingsMenuContext, key: SchemaKey, page: number): APIButtonComponentWithCustomId {
-	const { t } = context;
 	const id = (verb: SettingsMenuVerb) => encodeSettingsMenuId({ ownerId: context.ownerId, verb, target: key.property, page });
 
 	switch (getSettingKind(key)) {
 		case 'boolean': {
 			const enabled = context.settings[key.property] === true;
 			return button(id('toggle'), {
-				label: t(enabled ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled'),
-				emoji: getEmojiComponent(enabled ? 'ToggleOn' : 'ToggleOff'),
-				style: enabled ? ButtonStyle.Success : ButtonStyle.Secondary
+				// The checkbox says it all, the button has no label:
+				emoji: getEmojiComponent(enabled ? 'Checked' : 'Unchecked'),
+				style: ButtonStyle.Secondary
 			});
 		}
 		case 'readonly':

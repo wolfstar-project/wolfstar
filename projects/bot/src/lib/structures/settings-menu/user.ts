@@ -48,7 +48,7 @@ export function renderUserSettings({ t, ownerId, report }: UserSettingsContext):
 				components: [
 					{
 						type: ComponentType.TextDisplay,
-						content: `**${t('commands/conf:menuUserReport')}**\n${report ? Emojis.ToggleOn : Emojis.ToggleOff} ${t(report ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}\n-# ${t('commands/conf:menuUserReportDescription')}`
+						content: `**${t('commands/conf:menuUserReport')}**\n${report ? Emojis.Checked : Emojis.Unchecked} ${t(report ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}\n-# ${t('commands/conf:menuUserReportDescription')}`
 					}
 				],
 				accessory: {

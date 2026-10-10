@@ -245,8 +245,6 @@ declare module "i18next" {
         menuDisabled: "Disabled";
         menuEnable: "Enable";
         menuDisable: "Disable";
-        menuOn: "On";
-        menuOff: "Off";
         menuEdit: "Edit";
         menuRename: "Rename";
         menuRenameTitle: "Rename the rule";

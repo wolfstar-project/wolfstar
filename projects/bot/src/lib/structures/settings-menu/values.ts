@@ -168,7 +168,7 @@ export function displaySettingValue(t: Translator, key: SchemaKey, settings: Rea
 function displaySingleValue(t: Translator, key: SchemaKey, value: unknown): string {
 	switch (getSettingKind(key)) {
 		case 'boolean':
-			return `${value ? Emojis.ToggleOn : Emojis.ToggleOff} ${t(value ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}`;
+			return `${value ? Emojis.Checked : Emojis.Unchecked} ${t(value ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}`;
 		case 'role':
 			return roleMention(String(value));
 		case 'channel':

@@ -129,7 +129,7 @@ export function renderAutoModerationRules(
 	} else {
 		const lines = rules.map(
 			(rule) =>
-				`${rule.enabled ? Emojis.ToggleOn : Emojis.ToggleOff} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
+				`${rule.enabled ? Emojis.Checked : Emojis.Unchecked} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
 		);
 		body.push(
 			text(lines.join('\n')),
@@ -142,7 +142,7 @@ export function renderAutoModerationRules(
 						label: cutText(rule.name, 100),
 						description: cutText(translateKey(t, AutoModerationRuleTypeKeys[rule.type]), 100),
 						value: rule.id,
-						emoji: getEmojiComponent(rule.enabled ? 'ToggleOn' : 'ToggleOff')
+						emoji: getEmojiComponent(rule.enabled ? 'Checked' : 'Unchecked')
 					}))
 				}
 			])
@@ -180,14 +180,12 @@ export function renderAutoModerationRules(
 		{ type: ComponentType.Separator },
 		text(`### ⚙️ ${translateKey(t, `${Root}:menuGuildTitle`)}`),
 		renderSwitch(
-			t,
 			translateKey(t, `${Root}:menuGuildModule`),
 			translateKey(t, 'settings:modulesAutomod'),
 			settings.modulesAutomod,
 			setting('module')
 		),
 		renderSwitch(
-			t,
 			translateKey(t, `${Root}:menuGuildNative`),
 			translateKey(t, 'settings:automodTrackNative'),
 			settings.automodTrackNative,
@@ -261,7 +259,7 @@ export function renderAutoModerationRule(
 			button(id('edit', 'name'), { label: translateKey(t, `${Root}:menuRename`), emoji: '✏️', style: ButtonStyle.Primary })
 		),
 		block(
-			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? Emojis.ToggleOn : Emojis.ToggleOff} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
+			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? Emojis.Checked : Emojis.Unchecked} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
 			button(id('toggle', 'enabled'), {
 				label: translateKey(t, rule.enabled ? `${Root}:menuDisable` : `${Root}:menuEnable`),
 				style: rule.enabled ? ButtonStyle.Secondary : ButtonStyle.Success
@@ -541,13 +539,13 @@ function renderExemptions({ t }: AutoModerationMenuContext, rule: AutoModeration
 /**
  * A switch: what it is, what it does, and the button that flips it.
  */
-function renderSwitch(t: TFunction, title: string, description: string, active: boolean, customId: string): APISectionComponent {
+function renderSwitch(title: string, description: string, active: boolean, customId: string): APISectionComponent {
 	return block(
 		`**${title}**\n-# ${description}`,
 		button(customId, {
-			label: translateKey(t, active ? `${Root}:menuOn` : `${Root}:menuOff`),
-			emoji: getEmojiComponent(active ? 'ToggleOn' : 'ToggleOff'),
-			style: active ? ButtonStyle.Success : ButtonStyle.Secondary
+			// The checkbox says it all, the button has no label:
+			emoji: getEmojiComponent(active ? 'Checked' : 'Unchecked'),
+			style: ButtonStyle.Secondary
 		})
 	);
 }
@@ -654,7 +652,7 @@ export function renderAutoModerationModal(
  * A switch whose description is the `Description` key next to the one of its title.
  */
 function renderKeySwitch(t: TFunction, key: TranslationKey, active: boolean, customId: string): APISectionComponent {
-	return renderSwitch(t, translateKey(t, key), translateKey(t, `${key}Description` as TranslationKey), active, customId);
+	return renderSwitch(translateKey(t, key), translateKey(t, `${key}Description` as TranslationKey), active, customId);
 }
 
 /**

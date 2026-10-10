@@ -75,9 +75,9 @@ export const EmojiDefinitions = {
 	Kick: emoji('kick', '1262378332633174017'),
 	Softban: emoji('softban', '1262384411245150208'),
 	Ban: emoji('ban', '1262378308050489468'),
-	// The switches of a setting that is on or off:
-	ToggleOn: emoji('toggle_on', '🟢'),
-	ToggleOff: emoji('toggle_off', '🔴'),
+	// The checkbox of a setting that is on or off:
+	Checked: emoji('checked', '☑️'),
+	Unchecked: emoji('unchecked', '⬜'),
 	// The badges of a user, see `getUserBadges`:
 	BadgeStaff: emoji('badge_staff', '🛠️'),
 	BadgePartner: emoji('badge_partner', '🤝'),
@@ -174,7 +174,7 @@ function resolveEmoji(key: EmojiKey): EmojiComponent {
 }
 
 /**
- * Gets an emoji for a component, which takes it as an object and not as text: `emoji: getEmojiComponent('ToggleOn')`.
+ * Gets an emoji for a component, which takes it as an object and not as text: `emoji: getEmojiComponent('Checked')`.
  *
  * @param key - The emoji, a key of {@linkcode EmojiDefinitions}.
  */

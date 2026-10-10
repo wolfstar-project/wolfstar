@@ -399,7 +399,7 @@ export function renderCommandEditModal(
 		`### ⌘ ${inlineCode(`/${command.name}`)} · ${command.category}`,
 		command.description,
 		'',
-		`${disabled ? Emojis.ToggleOff : Emojis.ToggleOn} ${t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy })}`,
+		`${disabled ? Emojis.Unchecked : Emojis.Checked} ${t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy })}`,
 		t('commands/commands:viewPermissions', {
 			permissions: command.permissions === null ? t('commands/commands:viewPermissionsNone') : formatPermissions(t, command.permissions)
 		})
