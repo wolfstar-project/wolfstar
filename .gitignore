@@ -16,7 +16,6 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
-/.env
 redis.local.conf
 
 # Ignore bwd folders
@@ -25,6 +24,7 @@ dist/
 # Ignore auto-generated files
 .config/
 generated/
+projects/*/.stars/
 
 # Tolgee pull staging (promoted into src/languages by scripts/tolgee-pull-remap.ts)
 .tolgee-pull/
@@ -43,10 +43,25 @@ gh
 
 # Ignore the "wiki" folder so we can checkout the wiki inside the same folder
 wiki/
-plans/
 
 # Profiler data
 *.0x
 
-# Ignore the .claude/state folder
+# Claude
 .claude/state
+
+# Plans
+plans/
+
+# `prisma skills sync` writes a 1.5 MB copy of the Prisma 8 reference docs into
+# each supported agent directory. Regenerate on demand instead of committing it.
+projects/*/.agents/
+projects/*/.claude/
+projects/*/.cursor/
+projects/*/.devin/
+
+# Claude Code: personal, machine-local settings
+.claude/settings.local.json
+
+# The JUnit report of the test run, which the CI uploads
+test-report.junit.xml

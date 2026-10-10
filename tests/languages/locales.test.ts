@@ -16,14 +16,14 @@ import {
 } from '../../scripts/lib/locale-sanitize.ts';
 
 /**
- * Structural guard for `src/languages`.
+ * Structural guard for `projects/bot/src/locales`.
  *
  * The nightly Tolgee sync opens a pull request against main, so these assertions run on the
  * sync's own diff: a regression in `scripts/tolgee-pull-remap.ts` — or a corrupt export —
  * fails CI instead of landing broken locale files.
  */
 
-const languagesRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'src', 'languages');
+const languagesRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'projects', 'bot', 'src', 'locales');
 const BASE_LOCALE = 'en-US';
 
 function collectNamespaces(dir: string, relative = ''): string[] {

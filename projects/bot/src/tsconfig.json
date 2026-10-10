@@ -1,0 +1,17 @@
+{
+	"extends": "../.stars/tsconfig.app.json",
+	"compilerOptions": {
+		"rootDir": "..",
+		"paths": {
+			"#lib/*": ["./lib/*"],
+			"#common": ["./lib/common/index"],
+			"#common/*": ["./lib/common/*"],
+			"#types": ["./lib/types/index"],
+			"#types/*": ["./lib/types/*"],
+			"#utils/*": ["./lib/utilities/*"],
+			"#root/*": ["./*"]
+		}
+	},
+	"include": [".", "./**/*.json", "../.stars/imports.d.ts"],
+	"exclude": ["./tsconfig.json", "../dist"]
+}

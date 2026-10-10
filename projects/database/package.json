@@ -1,0 +1,39 @@
+{
+	"name": "wolfstar-database",
+	"version": "8.0.0",
+	"description": "Database utilities for Wolfstar's projects",
+	"author": "WolfStar Project",
+	"license": "Apache-2.0",
+	"private": true,
+	"main": "dist/index.mjs",
+	"types": "dist/index.d.mts",
+	"exports": {
+		"types": "./dist/index.d.mts",
+		"import": "./dist/index.mjs"
+	},
+	"type": "module",
+	"imports": {
+		"#lib/*": "./dist/lib/*.js"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "pnpm build && pnpm start",
+		"watch": "tsdown --watch",
+		"prisma:generate": "pnpm prisma8:emit",
+		"prisma8:infer": "prisma contract infer --output src/contract.prisma",
+		"prisma8:emit": "prisma contract emit"
+	},
+	"dependencies": {
+		"@prisma/orm-postgres": "8.0.0-rc.13",
+		"@sapphire/utilities": "^3.18.2",
+		"discord-api-types": "^0.38.56",
+		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
+		"varlock": "^1.21.1"
+	},
+	"devDependencies": {
+		"@rollup/plugin-alias": "6.0.0",
+		"prisma": "8.0.0-rc.19",
+		"tsdown": "0.23.0",
+		"typescript": "^7.0.2"
+	}
+}

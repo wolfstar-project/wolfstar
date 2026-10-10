@@ -1,0 +1,28 @@
+# The Dockerfiles copy whole project directories, so the build context has to
+# exclude anything the image installs or produces itself. pnpm's node_modules in
+# particular is a tree of symlinks that does not survive a COPY.
+**/node_modules
+**/dist
+**/coverage
+**/.turbo
+**/*.tsbuildinfo
+
+# Generated Prisma output; the builder stage regenerates it.
+**/generated
+
+.git
+.github
+.vscode
+.idea
+
+# .husky is kept in the context: pnpm still runs the `prepare` script, and
+# .husky/install.mjs is what reads HUSKY=0 to opt out.
+
+# Agent and editor scratch space
+**/.agents
+**/.claude
+**/.cursor
+**/.devin
+
+*.log
+.DS_Store

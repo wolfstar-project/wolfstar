@@ -1,6 +1,8 @@
 {
-	"extends": ["@sapphire/ts-config", "@sapphire/ts-config/extra-strict", "@sapphire/ts-config/decorators", "@sapphire/ts-config/verbatim"],
+	"extends": ["@sapphire/ts-config/extra-strict", "@sapphire/ts-config/bundler"],
 	"compilerOptions": {
-		"removeComments": true
+		"target": "ES2024",
+		"lib": ["ESNext", "DOM"],
+		"emitDecoratorMetadata": false
 	}
 }

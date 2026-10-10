@@ -1,27 +1,30 @@
+packages:
+    - 'projects/*'
+
 allowBuilds:
+    bufferutil: false
+    'zlib-sync': false
     '@prisma/client': true
     '@prisma/engines': true
-    '@tailwindcss/oxide': true
-    better-sqlite3: true
-    bufferutil: false
-    esbuild: true
     prisma: true
-    sharp@0.34.5: true
-    workerd: true
-    zlib-sync: false
+    esbuild: false
+    msgpackr-extract: false
+    workerd: false
 
 overrides:
+    # shared-http-pieces 2.0.7 pins plugin-i18next 2.0.3, whose peer range stops at
+    # http-framework ^3: dedupe it onto the bot's copy, which accepts ^5.
+    '@wolfstar/shared-http-pieces>@wolfstar/plugin-i18next': ^2.1.1
     ansi-regex: ^5.0.1
-    discord-api-types: ^0.38.34
+    discord-api-types: ^0.38.56
     minimist: ^1.2.8
+    vite: ^8.3.2
+    # prisma-orm-extension-typed-json is only published for rc.5: run it on the rc.13 packs the contract needs.
+    prisma-orm-extension-typed-json>@prisma/orm-family-sql: 8.0.0-rc.13
+    prisma-orm-extension-typed-json>@prisma/orm-framework: 8.0.0-rc.13
+    '@prisma/orm-target-postgres': 8.0.0-rc.13
 
 dedupePeers: true
-
-# Moved from .npmrc: pnpm >= 11 only reads auth/registry settings there.
-shamefullyHoist: true
-hoistPattern:
-    - '*prisma*'
-ignoreWorkspaceRootCheck: true
 
 shellEmulator: true
 
@@ -29,13 +32,21 @@ shellEmulator: true
 # so a start command like Railway's `pnpm start` would crash with EACCES on /var/cache/pnpm.
 verifyDepsBeforeRun: false
 
-# Delay installs of very new releases by 24 hours (1440 minutes) as a supply-chain safety buffer.
+# A release waits a day before an install picks it, so a compromised one has the time to be noticed. The packages of
+# the organization are released and taken the same day.
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
+    - '@wolfstar/*'
     - '@sentry/conventions'
     - '@sentry/core'
     - '@sentry/node'
     - '@sentry/node-core'
     - '@sentry/opentelemetry'
     - '@sentry/server-utils'
-    - evlog
+
+# Moved here from .npmrc: since pnpm 11 only auth and registry settings are read
+# from .npmrc, everything else must live in this file in camelCase.
+shamefullyHoist: true
+ignoreWorkspaceRootCheck: true
+patchedDependencies:
+    prisma-orm-extension-typed-json: patches/prisma-orm-extension-typed-json.patch

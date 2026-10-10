@@ -1,0 +1,71 @@
+[
+	{
+		"id": "table.GuildAutoModerationZalgo",
+		"label": "Create table \"GuildAutoModerationZalgo\"",
+		"summary": "Creates table \"GuildAutoModerationZalgo\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationZalgo"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationZalgo\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationZalgo\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildAutoModerationZalgo\"",
+				"sql": "CREATE TABLE \"public\".\"GuildAutoModerationZalgo\" (\n  \"enabled\" bool,\n  \"hard_action\" \"GuildAutoModerationHardAction\" NOT NULL,\n  \"hard_action_duration\" int4,\n  \"id\" int8 NOT NULL,\n  \"ignored_channels\" int8[] DEFAULT '{}' NOT NULL,\n  \"ignored_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"maximum\" int4 NOT NULL,\n  \"soft_action\" int4 NOT NULL,\n  \"threshold_duration\" int4 NOT NULL,\n  \"threshold_maximum\" int4 NOT NULL,\n  CONSTRAINT \"GuildAutoModerationZalgo_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationZalgo\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationZalgo\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildAutoModerationZalgo.GuildAutoModerationZalgo_id_fkey",
+		"label": "Add foreign key \"GuildAutoModerationZalgo_id_fkey\" on \"GuildAutoModerationZalgo\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildAutoModerationZalgo_id_fkey",
+				"table": "GuildAutoModerationZalgo"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildAutoModerationZalgo_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoModerationZalgo_id_fkey", "public", "\"public\".\"GuildAutoModerationZalgo\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildAutoModerationZalgo_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationZalgo\"\nADD CONSTRAINT \"GuildAutoModerationZalgo_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"GuildAutoModeration\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildAutoModerationZalgo_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoModerationZalgo_id_fkey", "public", "\"public\".\"GuildAutoModerationZalgo\""]
+			}
+		]
+	}
+]

@@ -1,7 +1,7 @@
 /**
  * Fold a Tolgee export into the WolfStar language directories.
  *
- * Reads .tolgee-pull/{tag}/{namespace}.json → src/languages/{locale}/{namespace}.json
+ * Reads .tolgee-pull/{tag}/{namespace}.json → projects/bot/src/locales/{locale}/{namespace}.json
  *
  * Tolgee tags (es, pt, zh-Hans, …) are remapped to Discord locale folder names
  * (es-ES, pt-BR, zh-CN, …) using `tolgeeToLocal` from `.tolgeerc.cjs`. Nested namespaces
@@ -9,9 +9,9 @@
  * never touched.
  *
  * This is a *merge*, not an overwrite. For every namespace the file already committed in
- * src/languages is the starting point and only genuine translations are applied on top:
+ * projects/bot/src/locales is the starting point and only genuine translations are applied on top:
  *
- *   - src/languages/en-US is never written — it is the local source of truth, pushed to
+ *   - projects/bot/src/locales/en-US is never written — it is the local source of truth, pushed to
  *     Tolgee and never pulled back;
  *   - `null`, blank and empty ICU plural skeletons are dropped, so a key with no translation
  *     keeps the empty-string placeholder the repository already had (and a namespace with no
@@ -53,7 +53,7 @@ const config = require('../.tolgeerc.cjs') as {
 };
 
 /**
- * Tolgee language tags → local dirs under src/languages/.
+ * Tolgee language tags → local dirs under projects/bot/src/locales/.
  * Single source of truth: `.tolgeerc.cjs` (shared with push).
  */
 const TOLGEE_TO_LOCAL: Record<string, string> = config.tolgeeToLocal;
@@ -62,7 +62,7 @@ const TOLGEE_TO_LOCAL: Record<string, string> = config.tolgeeToLocal;
 const BASE_LOCALE = 'en-US';
 
 const pullRoot = join(root, config.pull.path.replace(/^\.\//, ''));
-const languagesRoot = join(root, 'src/languages');
+const languagesRoot = join(root, 'projects/bot/src/locales');
 const reportPath = join(root, '.tolgee-report.md');
 
 function resolveLocalDir(tag: string): string | undefined {
@@ -137,7 +137,7 @@ for (const namespace of collectJsonFiles(join(languagesRoot, BASE_LOCALE))) {
 	collectFormatters(readJson(join(languagesRoot, BASE_LOCALE, namespace)), knownFormatters);
 }
 
-// Build and validate the full replacement tree in memory before touching src/languages/,
+// Build and validate the full replacement tree in memory before touching projects/bot/src/locales/,
 // so an unreadable or invalid staging file cannot leave the live locale tree partially
 // updated. Namespaces that merge down to no change at all are not queued for writing.
 const writes: { dest: string; content: Buffer }[] = [];
@@ -287,7 +287,7 @@ if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMM
 console.log(
 	writes.length === 0
 		? `Scanned ${scanned} staged locale files; no translation changes to apply.`
-		: `Updated ${writes.length} of ${scanned} staged locale files in src/languages/`
+		: `Updated ${writes.length} of ${scanned} staged locale files in projects/bot/src/locales/`
 );
 for (const [namespace, report] of reports) {
 	const parts: string[] = [];
@@ -306,7 +306,7 @@ function buildSummary(): string {
 	const pruned = [...reports.values()].reduce((total, report) => total + report.pruned.length, 0);
 	lines.push(`- **${updated}** translation${updated === 1 ? '' : 's'} applied across **${writes.length}** file${writes.length === 1 ? '' : 's'}`);
 	if (pruned > 0) lines.push(`- **${pruned}** key${pruned === 1 ? '' : 's'} pruned (no longer defined in ${BASE_LOCALE})`);
-	lines.push(`- \`src/languages/${BASE_LOCALE}\` untouched (source of truth, push-only)`);
+	lines.push(`- \`projects/bot/src/locales/${BASE_LOCALE}\` untouched (source of truth, push-only)`);
 
 	const rejected = [...reports].flatMap(([namespace, report]) => report.skipped.map((entry) => ({ namespace, ...entry })));
 	if (rejected.length > 0) {

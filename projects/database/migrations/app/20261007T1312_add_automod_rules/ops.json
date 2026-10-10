@@ -1,0 +1,193 @@
+[
+	{
+		"id": "createNativeEnumType.GuildAutoModerationRuleType",
+		"label": "Create enum type \"GuildAutoModerationRuleType\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"GuildAutoModerationRuleType\"",
+				"sql": "CREATE TYPE \"public\".\"GuildAutoModerationRuleType\" AS ENUM ('Attachments', 'Capitals', 'Invites', 'Links', 'Newlines', 'NoMentionSpam', 'Words', 'Zalgo')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "table.GuildAutoModerationRule",
+		"label": "Create table \"GuildAutoModerationRule\"",
+		"summary": "Creates table \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationRule\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildAutoModerationRule\"",
+				"sql": "CREATE TABLE \"public\".\"GuildAutoModerationRule\" (\n  \"enabled\" bool DEFAULT true NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"hard_action\" \"GuildAutoModerationHardAction\" NOT NULL,\n  \"hard_action_duration\" int4,\n  \"id\" BIGSERIAL NOT NULL,\n  \"ignored_channels\" int8[] DEFAULT '{}' NOT NULL,\n  \"ignored_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"name\" text NOT NULL,\n  \"options\" \"jsonb\" DEFAULT ('{}'::jsonb) NOT NULL,\n  \"soft_action\" int4 DEFAULT 0 NOT NULL,\n  \"threshold_duration\" int4 NOT NULL,\n  \"threshold_maximum\" int4 NOT NULL,\n  \"type\" \"GuildAutoModerationRuleType\" NOT NULL,\n  CONSTRAINT \"GuildAutoModerationRule_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationRule\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationRule\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildAutoModerationRule.GuildAutoModerationRule_guild_id_idx",
+		"label": "Create index \"GuildAutoModerationRule_guild_id_idx\" on \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoModerationRule_guild_id_idx",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoModerationRule_guild_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationRule_guild_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildAutoModerationRule_guild_id_idx\"",
+				"sql": "CREATE INDEX \"GuildAutoModerationRule_guild_id_idx\" ON \"public\".\"GuildAutoModerationRule\" (\"guild_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoModerationRule_guild_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationRule_guild_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildAutoModerationRule.GuildAutoModerationRule_guild_id_fkey",
+		"label": "Add foreign key \"GuildAutoModerationRule_guild_id_fkey\" on \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildAutoModerationRule_guild_id_fkey",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildAutoModerationRule_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoModerationRule_guild_id_fkey", "public", "\"public\".\"GuildAutoModerationRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildAutoModerationRule_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationRule\"\nADD CONSTRAINT \"GuildAutoModerationRule_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildAutoModerationRule_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoModerationRule_guild_id_fkey", "public", "\"public\".\"GuildAutoModerationRule\""]
+			}
+		]
+	},
+	{
+		"id": "data.GuildAutoModerationRule.copy",
+		"label": "Copy the enabled or customised auto-moderation configurations into GuildAutoModerationRule",
+		"summary": "Creates one rule per enabled or customised configuration of the old tables",
+		"operationClass": "data",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure GuildAutoModerationRule is empty, so the copy is not made twice",
+				"sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"GuildAutoModerationRule\") AS \"result\"",
+				"params": []
+			}
+		],
+		"execute": [
+			{
+				"description": "copy the enabled or customised configurations",
+				"sql": "INSERT INTO \"GuildAutoModerationRule\" (guild_id, name, type, enabled, soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, options)\nSELECT id, 'Attachments', 'Attachments'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, '{}'::jsonb\nFROM \"GuildAutoModerationAttachments\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000\nUNION ALL\nSELECT id, 'Capitals', 'Capitals'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('minimum', minimum, 'maximum', maximum)\nFROM \"GuildAutoModerationCapitals\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000 OR minimum <> 15 OR maximum <> 50\nUNION ALL\nSELECT id, 'Invites', 'Invites'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels,\n  jsonb_build_object('allowedCodes', to_jsonb(allowed_codes), 'allowedGuilds', (SELECT coalesce(jsonb_agg(guild::text), '[]'::jsonb) FROM unnest(allowed_guilds) AS guild))\nFROM \"GuildAutoModerationInvites\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR cardinality(allowed_codes) > 0 OR cardinality(allowed_guilds) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000\nUNION ALL\nSELECT id, 'Links', 'Links'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('allowed', to_jsonb(allowed))\nFROM \"GuildAutoModerationLinks\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR cardinality(allowed) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000\nUNION ALL\nSELECT id, 'New lines', 'Newlines'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('maximum', maximum)\nFROM \"GuildAutoModerationNewlines\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000 OR maximum <> 20\nUNION ALL\nSELECT id, 'Mention spam', 'NoMentionSpam'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels,\n  jsonb_build_object('alerts', alerts, 'mentionsAllowed', mentions_allowed, 'timePeriod', time_period)\nFROM \"GuildAutoModerationNoMentionSpam\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000 OR alerts OR mentions_allowed <> 20 OR time_period <> 8\nUNION ALL\nSELECT id, 'Words', 'Words'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('words', to_jsonb(words))\nFROM \"GuildAutoModerationWords\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR cardinality(words) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000\nUNION ALL\nSELECT id, 'Zalgo text', 'Zalgo'::\"GuildAutoModerationRuleType\", coalesce(enabled, false), soft_action, hard_action, hard_action_duration, threshold_maximum, threshold_duration, ignored_roles, ignored_channels, jsonb_build_object('maximum', maximum)\nFROM \"GuildAutoModerationZalgo\" WHERE enabled OR soft_action <> 0 OR cardinality(ignored_roles) > 0 OR cardinality(ignored_channels) > 0 OR hard_action <> 'Warning' OR hard_action_duration IS NOT NULL OR threshold_maximum <> 10 OR threshold_duration <> 60000 OR maximum <> 4",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "index.GuildAutoModerationRule.GuildAutoModerationRule_guild_id_name_key",
+		"label": "Create the unique index on the lowercase name of a rule",
+		"summary": "Creates index \"GuildAutoModerationRule_guild_id_name_key\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoModerationRule_guild_id_name_key",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoModerationRule_guild_id_name_key\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationRule_guild_id_name_key\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create the unique index",
+				"sql": "CREATE UNIQUE INDEX \"GuildAutoModerationRule_guild_id_name_key\" ON \"public\".\"GuildAutoModerationRule\" (\"guild_id\", lower(\"name\"))",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoModerationRule_guild_id_name_key\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationRule_guild_id_name_key\""]
+			}
+		]
+	}
+]
