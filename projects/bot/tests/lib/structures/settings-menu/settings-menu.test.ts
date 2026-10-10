@@ -152,6 +152,33 @@ describe('settings menu', () => {
 			expect(countComponents(message.components!)).toBeLessThanOrEqual(40);
 		});
 
+		test('GIVEN a key with a few options THEN its editor has a select menu with each one, the stored one picked', () => {
+			const context = createContext({ logsMessageUpdateStyle: 'Separate' });
+			const key = getConfigurableKeys().get('logsMessageUpdateStyle')!;
+			const message = renderSettingsEditor(context, key, 0);
+			const container = message.components![0] as {
+				components: { components?: { type: ComponentType; options?: { value: string; label: string; default: boolean }[] }[] }[];
+			};
+			const select = container.components
+				.flatMap((component) => component.components ?? [])
+				.find((component) => component.type === ComponentType.StringSelect);
+
+			expect(getSettingKind(key)).toBe('choice');
+			expect(select?.options?.map((option) => [option.value, option.label, option.default])).toEqual([
+				['Difference', 'serializers:messageUpdateStyleDifference', false],
+				['Separate', 'serializers:messageUpdateStyleSeparate', true]
+			]);
+		});
+
+		test('GIVEN a key with a few options THEN its value is displayed translated', () => {
+			const key = getConfigurableKeys().get('logsMessageUpdateStyle')!;
+
+			expect(displaySettingValue(t, key, createContext().settings)).toBe('serializers:messageUpdateStyleDifference');
+			expect(displaySettingValue(t, key, createContext({ logsMessageUpdateStyle: 'Separate' }).settings)).toBe(
+				'serializers:messageUpdateStyleSeparate'
+			);
+		});
+
 		test('GIVEN a key that is written THEN its modal holds the stored value', () => {
 			const context = createContext({ commandsDisabled: ['ping', 'conf'] });
 			const modal = renderSettingsModal(context, getConfigurableKeys().get('commandsDisabled')!, 0);

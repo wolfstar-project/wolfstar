@@ -10,6 +10,8 @@ import {
 	getAvailableLanguages,
 	getLanguageName,
 	getSettingChannelTypes,
+	getSettingChoiceLabel,
+	getSettingChoices,
 	getSettingKind,
 	getSettingMaximumValues,
 	getSettingTitle,
@@ -335,6 +337,21 @@ function renderSelect(context: SettingsMenuContext, key: SchemaKey, customId: st
 				placeholder: t('commands/conf:menuSelectChannel'),
 				channel_types: getSettingChannelTypes(key),
 				default_values: values.map((id) => ({ id, type: SelectMenuDefaultValueType.Channel }))
+			};
+		case 'choice':
+			return {
+				...base,
+				type: ComponentType.StringSelect,
+				min_values: 1,
+				max_values: 1,
+				placeholder: t('commands/conf:menuSelectPlaceholder'),
+				options: getSettingChoices(key)
+					.slice(0, MaximumSelectValues)
+					.map((choice) => ({
+						label: truncate(getSettingChoiceLabel(t, key, choice), 100),
+						value: choice,
+						default: values.includes(choice)
+					}))
 			};
 		default: {
 			const languages = getAvailableLanguages().slice(0, MaximumSelectValues);
