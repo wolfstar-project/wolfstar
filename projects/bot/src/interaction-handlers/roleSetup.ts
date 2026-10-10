@@ -124,7 +124,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (pending === null) return again();
 
 		const command = container.stores.get('commands').find((piece) => piece.name === pending.command);
-		if (!(command instanceof ModerationCommand)) return again();
+		const isModerationCommand = command instanceof ModerationCommand;
+		if (!isModerationCommand) return again();
 
 		try {
 			// Only the guild, the channel, the author and their language are read, which a click has as a command does:
