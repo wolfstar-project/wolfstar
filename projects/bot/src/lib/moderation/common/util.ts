@@ -1,5 +1,6 @@
 import { readSettings } from '#lib/database';
 import { TranslationMappings, UndoTaskNameMappings, getTypeColor } from '#lib/moderation/common/constants';
+import { formatCaseRoleMentions } from '#lib/moderation/common/roles';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { seconds } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -88,11 +89,19 @@ async function getEmbedDescription(t: TFunction<AnyNamespace>, entry: Moderation
 		? t('moderation:embedDescription', { type, user, reason })
 		: t('moderation:embedDescriptionTemporary', { type, user, time: getEmbedDescriptionTime(entry.expiresTimestamp!), reason });
 
-	const reference = entry.messageReference;
-	if (reference === null) return description;
+	const lines: string[] = [description];
 
-	const url = messageLink(reference.channelId, reference.messageId, entry.guild.id);
-	return `${description}\n${t('moderation:embedMessage', { url })}`;
+	const reference = entry.messageReference;
+	if (reference !== null) {
+		const url = messageLink(reference.channelId, reference.messageId, entry.guild.id);
+		lines.push(t('moderation:embedMessage', { url }));
+	}
+
+	// The roles the member had are shown when they leave with the member, not when the action is undone:
+	const roles = formatCaseRoleMentions(t, entry);
+	if (roles !== null) lines.push(t('moderation:embedRoles', { roles }));
+
+	return lines.join('\n');
 }
 
 function getEmbedDescriptionTime(timestamp: number) {

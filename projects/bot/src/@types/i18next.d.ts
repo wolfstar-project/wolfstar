@@ -2887,6 +2887,7 @@ declare module "i18next" {
         guildMemberRemove: "User Left";
         guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
         guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
+        guildMemberRemoveRoles: "**Roles**: {{roles}}";
         guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";
         guildMemberSoftBanned: "User Softbanned";
@@ -3131,8 +3132,11 @@ declare module "i18next" {
         embedDescription: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Reason:** {{reason}}";
         embedDescriptionTemporary: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Expires {{time}}**\n❯ **Reason:** {{reason}}";
         embedMessage: "❯ **Message:** {{url}}";
+        embedRoles: "❯ **Roles:** {{roles}}";
         embedReasonNotSet: "*Please use {{command}} to set a reason.*";
         embedFooter: "Case {{caseId}}";
+        rolesOmitted_one: "and {{count}} more";
+        rolesOmitted_other: "and {{count}} more";
         actionIsActive: "This moderation action is still active for this user.";
         actionIsNotActive: "This moderation action is not active for this user.";
         actionIsActiveRole: "This user already has the selected role.";

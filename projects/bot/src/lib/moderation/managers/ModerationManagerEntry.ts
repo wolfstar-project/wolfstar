@@ -366,10 +366,10 @@ export declare namespace ModerationManagerEntry {
 type MakeOptional<Type, OptionalKeys extends keyof Type> = Omit<Type, OptionalKeys> & Partial<Pick<Type, OptionalKeys>>;
 
 interface ExtraDataTypes {
-	[TypeVariation.Ban]: null;
-	[TypeVariation.Kick]: null;
+	[TypeVariation.Ban]: Snowflake[] | null;
+	[TypeVariation.Kick]: Snowflake[] | null;
 	[TypeVariation.Mute]: Snowflake[];
-	[TypeVariation.Softban]: null;
+	[TypeVariation.Softban]: Snowflake[] | null;
 	[TypeVariation.VoiceKick]: null;
 	[TypeVariation.VoiceMute]: null;
 	[TypeVariation.Warning]: null;
