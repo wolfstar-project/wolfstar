@@ -1,0 +1,232 @@
+[
+	{
+		"id": "createNativeEnumType.ReportStatus",
+		"label": "Create enum type \"ReportStatus\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "ReportStatus"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"ReportStatus\"",
+				"sql": "CREATE TYPE \"public\".\"ReportStatus\" AS ENUM ('Open', 'Actioned', 'Dismissed')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "table.GuildReports",
+		"label": "Create table \"GuildReports\"",
+		"summary": "Creates table \"GuildReports\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildReports"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildReports\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildReports\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildReports\"",
+				"sql": "CREATE TABLE \"public\".\"GuildReports\" (\n  \"anonymous\" bool DEFAULT false NOT NULL,\n  \"blocked_users\" int8[] DEFAULT '{}' NOT NULL,\n  \"channel_id\" int8,\n  \"id\" int8 NOT NULL,\n  \"notify\" bool DEFAULT true NOT NULL,\n  \"role_id\" int8,\n  CONSTRAINT \"GuildReports_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildReports\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildReports\""]
+			}
+		]
+	},
+	{
+		"id": "table.Report",
+		"label": "Create table \"Report\"",
+		"summary": "Creates table \"Report\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Report"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"Report\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"Report\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"Report\"",
+				"sql": "CREATE TABLE \"public\".\"Report\" (\n  \"action\" text,\n  \"anonymous\" bool DEFAULT false NOT NULL,\n  \"attachments\" text[] DEFAULT '{}' NOT NULL,\n  \"case_id\" int4,\n  \"channel_id\" int8,\n  \"closed_at\" timestamp(3),\n  \"content\" text,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"message_id\" int8,\n  \"moderator_id\" int8,\n  \"reason\" text NOT NULL,\n  \"reporter_id\" int8 NOT NULL,\n  \"status\" \"ReportStatus\" NOT NULL,\n  \"target_id\" int8 NOT NULL,\n  \"target_tag\" text NOT NULL,\n  CONSTRAINT \"Report_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"Report\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"Report\""]
+			}
+		]
+	},
+	{
+		"id": "index.Report.Report_guild_id_id_idx",
+		"label": "Create index \"Report_guild_id_id_idx\" on \"Report\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "Report_guild_id_id_idx",
+				"table": "Report"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"Report_guild_id_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"Report_guild_id_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"Report_guild_id_id_idx\"",
+				"sql": "CREATE INDEX \"Report_guild_id_id_idx\" ON \"public\".\"Report\" (\"guild_id\", \"id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"Report_guild_id_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"Report_guild_id_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.Report.Report_guild_id_target_id_idx",
+		"label": "Create index \"Report_guild_id_target_id_idx\" on \"Report\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "Report_guild_id_target_id_idx",
+				"table": "Report"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"Report_guild_id_target_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"Report_guild_id_target_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"Report_guild_id_target_id_idx\"",
+				"sql": "CREATE INDEX \"Report_guild_id_target_id_idx\" ON \"public\".\"Report\" (\"guild_id\", \"target_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"Report_guild_id_target_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"Report_guild_id_target_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildReports.GuildReports_id_fkey",
+		"label": "Add foreign key \"GuildReports_id_fkey\" on \"GuildReports\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildReports_id_fkey",
+				"table": "GuildReports"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildReports_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildReports_id_fkey", "public", "\"public\".\"GuildReports\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildReports_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildReports\"\nADD CONSTRAINT \"GuildReports_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"Modules\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildReports_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildReports_id_fkey", "public", "\"public\".\"GuildReports\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.Report.Report_guild_id_fkey",
+		"label": "Add foreign key \"Report_guild_id_fkey\" on \"Report\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "Report_guild_id_fkey",
+				"table": "Report"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"Report_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["Report_guild_id_fkey", "public", "\"public\".\"Report\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"Report_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"Report\"\nADD CONSTRAINT \"Report_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"Report_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["Report_guild_id_fkey", "public", "\"public\".\"Report\""]
+			}
+		]
+	}
+]

@@ -1,7 +1,7 @@
 /**
  * Tolgee CLI config for WolfStar bot (project id 33602).
  *
- * Local layout: src/languages/{discordLocale}/{namespace}.json
+ * Local layout: projects/bot/src/locales/{discordLocale}/{namespace}.json
  * Some Tolgee tags differ from Discord dirs (es-ES → es, zh-CN → zh-Hans, …).
  * Base English matches both sides (en-US → en-US).
  *
@@ -10,7 +10,7 @@
  * scripts/tolgee-pull-remap.ts using `tolgeeToLocal` below.
  *
  * en-US is push-only: it is the local source of truth for every string, so the remap
- * step never writes src/languages/en-US, no matter what the export contains.
+ * step never writes projects/bot/src/locales/en-US, no matter what the export contains.
  *
  * Nested namespaces (commands/admin, events/errors) are discovered from the
  * union of all configured locale directories (some exist only outside en-US).
@@ -21,7 +21,7 @@
 const { existsSync, readdirSync } = require('node:fs');
 const { join } = require('node:path');
 
-/** Local directory under src/languages/ → Tolgee language tag. */
+/** Local directory under projects/bot/src/locales/ → Tolgee language tag. */
 const LOCALE_MAP = {
 	'en-US': 'en-US',
 	'en-GB': 'en-GB',
@@ -75,7 +75,7 @@ function collectNamespaces(dir, relative = '') {
 	return namespaces;
 }
 
-const languagesRoot = join(__dirname, 'src/languages');
+const languagesRoot = join(__dirname, 'projects/bot/src/locales');
 const baseLocaleDir = join(languagesRoot, 'en-US');
 if (!existsSync(baseLocaleDir)) {
 	throw new Error(`Missing base locale directory: ${baseLocaleDir}`);
@@ -96,7 +96,7 @@ const NAMESPACES = [
 // tags (e.g. es-ES → es). Skip missing files — non-English locales omit a few namespaces.
 const pushFiles = Object.entries(LOCALE_MAP).flatMap(([localDir, language]) =>
 	NAMESPACES.flatMap((namespace) => {
-		const path = `./src/languages/${localDir}/${namespace}.json`;
+		const path = `./projects/bot/src/locales/${localDir}/${namespace}.json`;
 		if (!existsSync(join(languagesRoot, localDir, `${namespace}.json`))) return [];
 		return [{ path, language, namespace }];
 	})
