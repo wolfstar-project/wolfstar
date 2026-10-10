@@ -3164,8 +3164,9 @@ declare module "i18next" {
         sharedRoleSetupPickPlaceholder: "Use an existing role";
         sharedRoleSetupCreate: "Create a new role";
         sharedRoleSetupCancel: "Cancel";
-        sharedRoleSetupExistingDone: "{{role}} is now the role of this action. Run the command again to use it.";
-        sharedRoleSetupNewDone: "I created {{role}} and configured it in the channels I can manage. Run the command again to use it.";
+        sharedRoleSetupExistingDone: "{{role}} is now the role of this action.";
+        sharedRoleSetupNewDone: "I created {{role}} and configured it in the channels I can manage.";
+        sharedRoleSetupRunAgain: "Run the command again to use it.";
         sharedRoleSetupInvalidRole: "I cannot use that role: it is `@everyone`, or it is managed by an integration.";
         sharedRoleSetupWrongUser: "This prompt is for who ran the command.";
         softbanNoReason: "[Action] Applying Softban.";

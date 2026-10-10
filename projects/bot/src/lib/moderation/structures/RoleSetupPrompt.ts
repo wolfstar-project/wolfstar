@@ -1,6 +1,8 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
+import { minutes } from '#common';
 import { cutText } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
 import { ButtonStyle, ComponentType, type APIInteractionResponseCallbackData, type Snowflake } from 'discord-api-types/v10';
 
@@ -118,4 +120,52 @@ export function renderRoleSetupPrompt(t: Translator, ownerId: Snowflake, type: T
  */
 export class ModerationCommandPrompt {
 	public constructor(public readonly message: RoleSetupMessage) {}
+}
+
+/**
+ * The command that waits for its prompt to be answered: the piece to run again and the options it was given.
+ */
+export interface PendingRoleSetupCommand {
+	/**
+	 * The name of the command piece, as the `commands` store has it.
+	 */
+	command: string;
+
+	/**
+	 * The options the command was run with.
+	 */
+	args: Record<string, unknown>;
+}
+
+/**
+ * How long the command that opened a prompt waits for its answer.
+ */
+const PendingSeconds = minutes.toSeconds(15);
+
+function getPendingKey(guildId: Snowflake, ownerId: Snowflake, type: TypeVariation) {
+	return `wolfstar:moderation:role-setup:${guildId}:${ownerId}:${type}`;
+}
+
+/**
+ * Keeps the command that opened a prompt, so it is run once the prompt is answered: a click only carries the ID of
+ * its component, not the options of the command.
+ *
+ * @remarks It is in Redis, so it is there for whichever process handles the click, and after a restart.
+ */
+export async function savePendingRoleSetupCommand(guildId: Snowflake, ownerId: Snowflake, type: TypeVariation, pending: PendingRoleSetupCommand) {
+	await container.redis.set(getPendingKey(guildId, ownerId, type), JSON.stringify(pending), 'EX', PendingSeconds);
+}
+
+/**
+ * Takes the command {@linkcode savePendingRoleSetupCommand} kept, which can only be taken once.
+ *
+ * @returns The command, or `null` when it expired.
+ */
+export async function takePendingRoleSetupCommand(
+	guildId: Snowflake,
+	ownerId: Snowflake,
+	type: TypeVariation
+): Promise<PendingRoleSetupCommand | null> {
+	const raw = await container.redis.getdel(getPendingKey(guildId, ownerId, type));
+	return raw === null ? null : (JSON.parse(raw) as PendingRoleSetupCommand);
 }

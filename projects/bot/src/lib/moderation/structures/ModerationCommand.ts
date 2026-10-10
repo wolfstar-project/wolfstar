@@ -4,7 +4,7 @@ import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
-import { ModerationCommandPrompt } from '#lib/moderation/structures/RoleSetupPrompt';
+import { ModerationCommandPrompt, type RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
@@ -119,11 +119,26 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
-		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const settings = await this.readMessageSettings(interaction.guildId);
 
 		// The response is public when the guild wants the moderation messages displayed, otherwise only the moderator sees it:
 		const deferred = await interaction.defer(settings.messageDisplay ? undefined : { flags: MessageFlags.Ephemeral });
+		return deferred.update(await this.execute(interaction, args));
+	}
+
+	/**
+	 * Runs the command and gives its answer: what it did, why it could not, or a prompt it needs answered first.
+	 *
+	 * @remarks It is apart from {@linkcode chatInputRun} so the command can be run again once its prompt is answered,
+	 * with the options it was given, see the `roleSetup` interaction handler. The permission level is not checked here.
+	 *
+	 * @param interaction - The interaction to run the command for: the one of the command, or the click that answered
+	 * its prompt, of which only the guild, the channel, the author and their language are read.
+	 * @param args - The options of the command.
+	 */
+	public async execute(interaction: ModerationCommand.Interaction, args: ModerationCommand.Arguments): Promise<ModerationCommand.Answer> {
+		const t = createTranslator(getSupportedUserLanguageT(interaction));
+		const settings = await this.readMessageSettings(interaction.guildId);
 
 		const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
 		const target = await container.gatewayClient.users.fetch(args.user.id);
@@ -162,11 +177,11 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			}
 		} catch (error) {
 			// The command needs an answer before it can go on, such as the role a mute gives:
-			if (error instanceof ModerationCommandPrompt) return deferred.update(error.message);
+			if (error instanceof ModerationCommandPrompt) return error.message;
 			content = this.formatFailure(t, target, error);
 		}
 
-		return deferred.update({ content });
+		return { content };
 	}
 
 	/**
@@ -613,6 +628,11 @@ export declare namespace ModerationCommand {
 	/**
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
 	 */
+	/**
+	 * What a moderation command answers with: a line of text, with the components of a prompt when it needs one answered.
+	 */
+	type Answer = RoleSetupMessage;
+
 	interface Arguments {
 		user: TransformedArguments.User;
 		duration?: string;

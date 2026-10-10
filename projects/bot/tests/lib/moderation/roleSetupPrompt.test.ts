@@ -1,5 +1,13 @@
-import { decodeRoleSetupId, encodeRoleSetupId, ModerationCommandPrompt, renderRoleSetupPrompt } from '#lib/moderation/structures/RoleSetupPrompt';
+import {
+	decodeRoleSetupId,
+	encodeRoleSetupId,
+	ModerationCommandPrompt,
+	renderRoleSetupPrompt,
+	savePendingRoleSetupCommand,
+	takePendingRoleSetupCommand
+} from '#lib/moderation/structures/RoleSetupPrompt';
 import { TypeVariation } from '#utils/moderationConstants';
+import { container } from '@wolfstar/http-framework';
 import { ButtonStyle, ComponentType } from 'discord-api-types/v10';
 
 const ownerId = '266624760782258186';
@@ -73,6 +81,56 @@ describe('role setup prompt', () => {
 
 		test('GIVEN a prompt that is thrown THEN it carries its message', () => {
 			expect(new ModerationCommandPrompt(message).message).toBe(message);
+		});
+	});
+	describe('pending command', () => {
+		const guildId = '254360814063058944';
+		const stored = new Map<string, { value: string; seconds: number }>();
+		const redis = {
+			set: async (key: string, value: string, _mode: string, seconds: number) => void stored.set(key, { value, seconds }),
+			getdel: async (key: string) => {
+				const entry = stored.get(key);
+				stored.delete(key);
+				return entry?.value ?? null;
+			}
+		};
+		let previous: unknown;
+
+		beforeAll(() => {
+			previous = (container as any).redis;
+			(container as any).redis = redis;
+		});
+
+		afterAll(() => {
+			(container as any).redis = previous;
+		});
+
+		beforeEach(() => stored.clear());
+
+		const pending = { command: 'mute/add', args: { user: { user: { id: '1' } }, reason: 'spam', duration: '1h' } };
+
+		test('GIVEN a command that waits THEN it is kept for a quarter of an hour, and taken once', async () => {
+			await savePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute, pending);
+
+			expect([...stored.values()].map((entry) => entry.seconds)).toEqual([900]);
+			await expect(takePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute)).resolves.toEqual(pending);
+			await expect(takePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute)).resolves.toBeNull();
+		});
+
+		test('GIVEN a command that waits THEN it is of its guild, its author and its action', async () => {
+			await savePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute, pending);
+
+			await expect(takePendingRoleSetupCommand('1', ownerId, TypeVariation.Mute)).resolves.toBeNull();
+			await expect(takePendingRoleSetupCommand(guildId, '2', TypeVariation.Mute)).resolves.toBeNull();
+			await expect(takePendingRoleSetupCommand(guildId, ownerId, TypeVariation.RestrictedReaction)).resolves.toBeNull();
+			await expect(takePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute)).resolves.toEqual(pending);
+		});
+
+		test('GIVEN the same command run again THEN the last one is the one that waits', async () => {
+			await savePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute, pending);
+			await savePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute, { ...pending, args: { reason: 'other' } });
+
+			await expect(takePendingRoleSetupCommand(guildId, ownerId, TypeVariation.Mute)).resolves.toMatchObject({ args: { reason: 'other' } });
 		});
 	});
 });

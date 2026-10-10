@@ -1,7 +1,9 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { getAction } from '#lib/moderation/actions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
-import { decodeRoleSetupId } from '#lib/moderation/structures/RoleSetupPrompt';
+import { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { decodeRoleSetupId, takePendingRoleSetupCommand } from '#lib/moderation/structures/RoleSetupPrompt';
+import type { TypeVariation } from '#utils/moderationConstants';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { roleMention } from '@discordjs/formatters';
 import { ApplyOptions } from '@wolfstar/decorators';
@@ -37,29 +39,29 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (moderationAction === null) return fail(getDefaultExpiredReply());
 
 		const component = interaction as ComponentInteraction;
-		const close = (message: string) => component.update({ content: message, components: [], allowed_mentions: { parse: [] } });
 		switch (action.verb) {
 			case 'existing':
-				return this.useExisting(component, guildId, moderationAction, t, fail, close);
+				return this.useExisting(component, guildId, moderationAction, t, fail);
 			case 'create':
 				return this.create(component, guildId, moderationAction, t);
 			case 'cancel':
-				return close(t('commands/management:commandHandlerAborted'));
+				// The command that waited for the answer is forgotten:
+				await takePendingRoleSetupCommand(guildId, action.ownerId, action.type);
+				return component.update({ content: t('commands/management:commandHandlerAborted'), components: [], allowed_mentions: { parse: [] } });
 			default:
 				return fail(getDefaultExpiredReply());
 		}
 	}
 
 	/**
-	 * Makes the role that was picked the role of the action.
+	 * Makes the role that was picked the role of the action, then runs the command that asked for it.
 	 */
 	private async useExisting(
 		interaction: ComponentInteraction,
 		guildId: Snowflake,
 		action: RoleModerationAction,
 		t: Translator,
-		fail: (message: string) => Promise<unknown>,
-		close: (message: string) => Promise<unknown>
+		fail: (message: string) => Promise<unknown>
 	) {
 		const { data } = interaction;
 		const roleId = 'values' in data ? (data.values[0] ?? null) : null;
@@ -70,12 +72,17 @@ export class UserInteractionHandler extends InteractionHandler {
 		// `@everyone` cannot be given, and neither can a role an integration manages:
 		if (roleId === guildId || role.managed) return fail(t('moderationActions:sharedRoleSetupInvalidRole'));
 
+		// The command that is run after may take longer than Discord waits for an answer:
+		const deferred = await interaction.deferUpdate();
 		await writeSettings(guildId, { [action.roleKey]: roleId }, interaction.user.id);
-		return close(t('moderationActions:sharedRoleSetupExistingDone', { role: roleMention(roleId) }));
+
+		const done = t('moderationActions:sharedRoleSetupExistingDone', { role: roleMention(roleId) });
+		return deferred.update(await this.resume(interaction, guildId, action.type, t, done));
 	}
 
 	/**
-	 * Creates a new role, makes it the role of the action and configures it in every channel.
+	 * Creates a new role, makes it the role of the action and configures it in every channel, then runs the command that
+	 * asked for it.
 	 */
 	private async create(interaction: ComponentInteraction, guildId: Snowflake, action: RoleModerationAction, t: Translator) {
 		// Every channel is edited, which takes longer than Discord waits for an answer:
@@ -94,7 +101,38 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const settings = await readSettings(guildId);
 		const roleId = settings[action.roleKey];
-		return close(t('moderationActions:sharedRoleSetupNewDone', { role: roleId ? roleMention(roleId) : '' }));
+		const done = t('moderationActions:sharedRoleSetupNewDone', { role: roleId ? roleMention(roleId) : '' });
+		return deferred.update(await this.resume(interaction, guildId, action.type, t, done));
+	}
+
+	/**
+	 * Runs the command that opened the prompt, with the options it was given, now that its role is set up.
+	 *
+	 * @param done - What was set up, which the answer of the command follows.
+	 * @returns The message the prompt becomes. When the command is not there anymore (it waited too long, or it is gone
+	 * after an update), or when it asks again, the administrator is told to run it again.
+	 */
+	private async resume(interaction: ComponentInteraction, guildId: Snowflake, type: TypeVariation, t: Translator, done: string) {
+		const close = (message: string) => ({ content: `${done}\n${message}`, components: [], allowed_mentions: { parse: [] } });
+		const again = () => close(t('moderationActions:sharedRoleSetupRunAgain'));
+
+		const pending = await takePendingRoleSetupCommand(guildId, interaction.user.id, type);
+		if (pending === null) return again();
+
+		const command = container.stores.get('commands').find((piece) => piece.name === pending.command);
+		if (!(command instanceof ModerationCommand)) return again();
+
+		try {
+			// Only the guild, the channel, the author and their language are read, which a click has as a command does:
+			const answer = await command.execute(
+				interaction as unknown as ModerationCommand.Interaction,
+				pending.args as unknown as ModerationCommand.Arguments
+			);
+			return answer.components?.length ? again() : close(answer.content ?? '');
+		} catch (error) {
+			this.container.logger.error('[Role setup] Could not run the command that asked for the role:', error);
+			return again();
+		}
 	}
 
 	/**
