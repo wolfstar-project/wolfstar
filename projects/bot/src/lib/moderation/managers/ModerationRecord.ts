@@ -86,7 +86,8 @@ const TypeToAction = {
 	[TypeVariation.RoleAdd]: ['AddRole', 'RemoveRole'],
 	[TypeVariation.RoleRemove]: ['RemoveRole', 'AddRole'],
 	[TypeVariation.RestrictedEmoji]: ['AddRole', 'RemoveRole'],
-	[TypeVariation.Timeout]: ['Timeout', 'TimeoutEnd']
+	[TypeVariation.Timeout]: ['Timeout', 'TimeoutEnd'],
+	[TypeVariation.Note]: ['Nickname', 'Nickname']
 } as const satisfies Readonly<Record<TypeVariation, readonly [ModerationRecordAction, ModerationRecordAction]>>;
 
 /**

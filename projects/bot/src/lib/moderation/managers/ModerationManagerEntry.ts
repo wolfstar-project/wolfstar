@@ -382,4 +382,5 @@ interface ExtraDataTypes {
 	[TypeVariation.RoleRemove]: { role: Snowflake };
 	[TypeVariation.RestrictedEmoji]: null;
 	[TypeVariation.Timeout]: null;
+	[TypeVariation.Note]: null;
 }

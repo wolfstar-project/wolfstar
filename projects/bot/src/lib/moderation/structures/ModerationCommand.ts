@@ -123,7 +123,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		const settings = await this.readMessageSettings(interaction.guildId);
 
 		// The response is public when the guild wants the moderation messages displayed, otherwise only the moderator sees it:
-		const deferred = await interaction.defer(settings.messageDisplay ? undefined : { flags: MessageFlags.Ephemeral });
+		const deferred = await interaction.defer(isModerationReplyPublic(settings, this.action) ? undefined : { flags: MessageFlags.Ephemeral });
 
 		const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
 		const target = await container.gatewayClient.users.fetch(args.user.id);
@@ -528,8 +528,8 @@ export type ModerationBuilder = SlashCommandOptionsOnlyBuilder | SlashCommandSub
  * | `duration` | string     | the action can be scheduled, required if it needs one       |
  * | `reason`   | string     | always                                                      |
  * | `image`    | attachment | always                                                      |
- * | `dm`       | boolean    | always                                                      |
- * | `authored` | boolean    | always                                                      |
+ * | `dm`       | boolean    | the user can be told about the action                       |
+ * | `authored` | boolean    | the user can be told about the action                       |
  *
  * Their names and descriptions are the `commands/shared:optionsUser`, `optionsDuration`, `optionsReason`,
  * `optionsMessage`, `optionsDm` and `optionsAuthored` keys (`…Name` and `…Description`).
@@ -581,10 +581,28 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 
 	if (options.optionalOptions) result = options.optionalOptions(result);
 
+	result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsMessage').setMaxLength(150).setRequired(false));
+
+	// `dm` and `authored` only shape the direct message, which an action that never sends one has no use for:
+	if (!action.isDirectMessageAvailable) return result;
+
 	return result
-		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsMessage').setMaxLength(150).setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDm').setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
+}
+
+/**
+ * Whether the response of a moderation command is shown to the channel. An action that is never told to the
+ * member (a note) is answered in private whatever the guild displays, since the response has its reason.
+ *
+ * @param settings - The message settings of the guild.
+ * @param action - The action the command applies.
+ */
+export function isModerationReplyPublic(
+	settings: Pick<ModerationCommand.MessageSettings, 'messageDisplay'>,
+	action: { readonly isDirectMessageAvailable: boolean }
+) {
+	return settings.messageDisplay && action.isDirectMessageAvailable;
 }
 
 export declare namespace ModerationCommand {

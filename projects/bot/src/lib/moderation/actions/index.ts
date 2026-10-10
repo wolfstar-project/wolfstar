@@ -1,4 +1,5 @@
 import { ModerationActionBan } from '#lib/moderation/actions/ModerationActionBan';
+import { ModerationActionNote } from '#lib/moderation/actions/ModerationActionNote';
 import { ModerationActionKick } from '#lib/moderation/actions/ModerationActionKick';
 import { ModerationActionRestrictedAll } from '#lib/moderation/actions/ModerationActionRestrictedAll';
 import { ModerationActionRestrictedAttachment } from '#lib/moderation/actions/ModerationActionRestrictedAttachment';
@@ -22,6 +23,7 @@ export const ModerationActions = {
 	ban: new ModerationActionBan(),
 	kick: new ModerationActionKick(),
 	mute: new ModerationActionRestrictedAll(),
+	note: new ModerationActionNote(),
 	timeout: new ModerationActionTimeout(),
 	restrictedAttachment: new ModerationActionRestrictedAttachment(),
 	restrictedEmbed: new ModerationActionRestrictedEmbed(),
@@ -61,7 +63,8 @@ const ActionMappings = {
 	[TypeVariation.Softban]: 'softban',
 	[TypeVariation.VoiceKick]: 'voiceKick',
 	[TypeVariation.VoiceMute]: 'voiceMute',
-	[TypeVariation.Warning]: 'warning'
+	[TypeVariation.Warning]: 'warning',
+	[TypeVariation.Note]: 'note'
 } as const satisfies Readonly<Record<TypeVariation, ModerationActionKey>>;
 
 export type ModerationActionKey = keyof typeof ModerationActions;

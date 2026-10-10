@@ -21,6 +21,7 @@
 	"typeBan": "Ban",
 	"typeKick": "Kick",
 	"typeMute": "Mute",
+	"typeNote": "Note",
 	"typeRestrictedAttachment": "Attachment Restriction",
 	"typeRestrictedEmbed": "Embed Restriction",
 	"typeRestrictedEmoji": "Emoji Restriction",

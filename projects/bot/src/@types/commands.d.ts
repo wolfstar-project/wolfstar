@@ -107,7 +107,7 @@ declare module '@wolfstar/http-framework' {
       page?: number;
       'pending-only'?: boolean;
       show?: boolean;
-      type?: 12 | 0 | 1 | 2 | 13 | 9 | 8 | 14 | 7 | 10 | 11 | 3 | 15 | 4 | 5 | 6;
+      type?: 12 | 0 | 1 | 2 | 16 | 13 | 9 | 8 | 14 | 7 | 10 | 11 | 3 | 15 | 4 | 5 | 6;
       user?: TransformedArguments.User;
     };
     'case view': {
@@ -147,6 +147,11 @@ declare module '@wolfstar/http-framework' {
     'mute remove': {
       authored?: boolean;
       dm?: boolean;
+      message?: string;
+      reason?: string;
+      user: TransformedArguments.User;
+    };
+    'note': {
       message?: string;
       reason?: string;
       user: TransformedArguments.User;
