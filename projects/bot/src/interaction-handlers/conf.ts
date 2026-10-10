@@ -13,12 +13,14 @@ import {
 	getSettingKind,
 	getSettingTitle,
 	getVisibleKeys,
+	isSettingsMenuExpired,
 	parseSettingInput,
 	validateSettingPick,
 	type SettingsMenuContext,
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	renderSettingsExpired,
 	renderUserSettings,
 	resolveSettingGroup,
 	type SettingsMenuAction
@@ -40,7 +42,8 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInterac
  *
  * What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the user who
  * opened the menu can use it, and they need the administrator level every time, since it may have been taken away from
- * them in the meantime. The menu of the user only needs to be theirs.
+ * them in the meantime. The menu of the user only needs to be theirs. A menu stops answering fifteen minutes after it
+ * was last used: the time is in the custom IDs, which every click renders again, see `SettingsMenuLifetime`.
  */
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
@@ -52,6 +55,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
 
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/conf:menuWrongUser'));
+
+		// A menu that was left alone too long is closed, as the collector of the message commands closed it:
+		if (isSettingsMenuExpired(action)) {
+			const expired = renderSettingsExpired(t, action.verb === 'userToggle' ? 'settings user' : 'settings server');
+			if (interaction instanceof ModalSubmitInteraction) return fail(t('commands/conf:menuExpiredModal'));
+			return (interaction as ComponentInteraction).update(expired);
+		}
 		if (action.verb === 'userToggle' && !(interaction instanceof ModalSubmitInteraction)) return this.toggleUser(interaction, action, t);
 
 		if (guildId === undefined) return fail(getDefaultExpiredReply());

@@ -599,6 +599,9 @@ declare module "i18next" {
         menuAutomodRules: "Auto-moderation rules";
         menuAutomodRulesDescription: "Create and configure the rules of the auto-moderation.";
         menuWrongUser: "This menu is not for you, run the command to open your own.";
+        menuExpires: "This menu closes {{time}} if it is not used.";
+        menuExpired: "This menu closed after {{minutes, number}} minutes without being used. Run {{command}} to open it again.";
+        menuExpiredModal: "The menu closed while you were writing, so nothing was saved. Open it again and try once more.";
         menuInvalidValue: "That is not a valid value for **{{name}}**.";
         menuTooManyValues: "**{{name}}** accepts at most {{max}} values.";
         settingsName: "settings";

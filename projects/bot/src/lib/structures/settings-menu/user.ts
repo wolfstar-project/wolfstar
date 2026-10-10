@@ -1,5 +1,6 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId } from '#lib/structures/settings-menu/ids';
+import { renderSettingsExpiry } from '#lib/structures/settings-menu/render';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -59,5 +60,5 @@ export function renderUserSettings({ t, ownerId, report }: UserSettingsContext):
 		]
 	};
 
-	return { components: [container], flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral };
+	return { components: [container, renderSettingsExpiry(t)], flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral };
 }

@@ -1,3 +1,4 @@
+import { minutes } from '#common';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
 import type { Snowflake } from 'discord-api-types/v10';
 
@@ -39,18 +40,56 @@ export interface SettingsMenuAction {
 	 * The page of the group to show afterwards.
 	 */
 	page: number;
+
+	/**
+	 * When the menu stops answering, in seconds since the epoch. A component that is built without it expires
+	 * {@linkcode SettingsMenuLifetime} from now, and one that was read without it (a menu from before the menus
+	 * expired) is expired.
+	 */
+	expiresAt?: number;
 }
 
 /**
- * Builds the custom ID of a component of the settings menu, `conf.<ownerId>.<verb>:<target>:<page>`.
+ * How long a settings menu answers after it was last used. Every click renders the menu again, with components that
+ * expire this long after it, so it is the time the menu can be left alone.
+ */
+export const SettingsMenuLifetime = minutes(15);
+
+/**
+ * When a menu that is rendered now expires, in seconds since the epoch.
+ *
+ * @param now - The time the menu is rendered at, in milliseconds.
+ */
+export function getSettingsMenuExpiry(now = Date.now()) {
+	return Math.floor((now + SettingsMenuLifetime) / 1000);
+}
+
+/**
+ * Whether the menu a component is of expired, see {@linkcode SettingsMenuLifetime}.
+ *
+ * @param action - The action that was read from the custom ID of the component.
+ * @param now - The time of the click, in milliseconds.
+ */
+export function isSettingsMenuExpired(action: SettingsMenuAction, now = Date.now()) {
+	return action.expiresAt === undefined || now / 1000 >= action.expiresAt;
+}
+
+/**
+ * Builds the custom ID of a component of the settings menu, `conf.<ownerId>.<verb>:<target>:<page>:<expiresAt>`.
  *
  * @remarks
  *
- * Everything a click needs is in the ID, so the menu keeps working after a restart and on any process. The path of a
- * group is written with `/`, since the framework splits the custom IDs on `.`.
+ * Everything a click needs is in the ID, so the menu keeps working after a restart and on any process, and it expires
+ * without anything being kept: the time it does is in the ID too, in base 36. The path of a group is written with `/`,
+ * since the framework splits the custom IDs on `.`.
  */
 export function encodeSettingsMenuId(action: SettingsMenuAction) {
-	return encodeCustomId(SettingsMenuHandlerName, action.ownerId, `${action.verb}:${action.target.replaceAll('.', '/')}:${action.page}`);
+	const expiresAt = (action.expiresAt ?? getSettingsMenuExpiry()).toString(36);
+	return encodeCustomId(
+		SettingsMenuHandlerName,
+		action.ownerId,
+		`${action.verb}:${action.target.replaceAll('.', '/')}:${action.page}:${expiresAt}`
+	);
 }
 
 /**
@@ -62,11 +101,18 @@ export function decodeSettingsMenuId(content: unknown): SettingsMenuAction | nul
 	const decoded = decodeCustomIdContent(content);
 	if (decoded === null) return null;
 
-	const [verb, target, page] = decoded.action.split(':');
+	const [verb, target, page, expiry] = decoded.action.split(':');
 	if (verb === undefined || target === undefined || page === undefined) return null;
 
 	const pageNumber = Number(page);
 	if (!Number.isSafeInteger(pageNumber) || pageNumber < 0) return null;
 
-	return { ownerId: decoded.sessionId, verb: verb as SettingsMenuVerb, target: target.replaceAll('/', '.'), page: pageNumber };
+	const expiresAt = expiry === undefined ? Number.NaN : Number.parseInt(expiry, 36);
+	return {
+		ownerId: decoded.sessionId,
+		verb: verb as SettingsMenuVerb,
+		target: target.replaceAll('/', '.'),
+		page: pageNumber,
+		...(Number.isSafeInteger(expiresAt) && expiresAt > 0 ? { expiresAt } : {})
+	};
 }

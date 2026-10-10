@@ -3,7 +3,7 @@ import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/database';
 import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
-import { encodeSettingsMenuId, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';
+import { encodeSettingsMenuId, getSettingsMenuExpiry, SettingsMenuLifetime, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';
 import { encodeAutoModerationMenuId } from '#lib/structures/automod-menu/ids';
 import {
 	displaySettingValue,
@@ -17,6 +17,7 @@ import {
 	getVisibleKeys,
 	MaximumSelectValues
 } from '#lib/structures/settings-menu/values';
+import { inlineCode, time, TimestampStyles } from '@discordjs/formatters';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -45,6 +46,7 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 const EntriesPerPage = 7;
 
 const AccentColor = 0x5865f2;
+const ExpiredAccentColor = 0x4f545c;
 
 /**
  * The emojis of the modules, the first groups of the settings.
@@ -169,7 +171,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	// The previous and next buttons of a group with two pages point at the same page, the ID has to be unique:
 	if (navigation.length > 0) components.push(row(deduplicate(navigation)));
 
-	return toMessage(components);
+	return toMessage(context.t, components);
 }
 
 /**
@@ -200,7 +202,7 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 		]
 	};
 
-	return toMessage([container]);
+	return toMessage(context.t, [container]);
 }
 
 /**
@@ -369,9 +371,33 @@ function getPathTitle(t: Translator, group: SchemaGroup): string {
 	return titles.join(' › ');
 }
 
-function toMessage(components: APIMessageTopLevelComponent[]): SettingsMenuMessage {
+function toMessage(t: Translator, components: APIMessageTopLevelComponent[]): SettingsMenuMessage {
 	// The values mention roles and channels, which must not ping anybody:
-	return { components, flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
+	return { components: [...components, renderSettingsExpiry(t)], flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
+}
+
+/**
+ * The line under a settings menu that says when it expires, which Discord counts down.
+ *
+ * @param t - The function to translate with.
+ */
+export function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
+	return text(`-# ⏳ ${t('commands/conf:menuExpires', { time: time(getSettingsMenuExpiry(), TimestampStyles.RelativeTime) })}`);
+}
+
+/**
+ * Renders what a settings menu becomes when it is used after it expired: a line that says so, and no components.
+ *
+ * @param t - The function to translate with.
+ * @param command - The command that opens the menu again, `settings server` or `settings user`.
+ */
+export function renderSettingsExpired(t: Translator, command: string): SettingsMenuMessage {
+	const content = t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command: inlineCode(`/${command}`) });
+	return {
+		components: [{ type: ComponentType.Container, accent_color: ExpiredAccentColor, components: [text(`⌛ ${content}`)] }],
+		flags: MessageFlags.IsComponentsV2,
+		allowed_mentions: { parse: [] }
+	};
 }
 
 function text(content: string): APITextDisplayComponent {
