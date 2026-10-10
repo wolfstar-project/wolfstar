@@ -1,4 +1,5 @@
 import { readSettings, writeSettings, writeSettingsTransaction } from '#lib/database';
+import { markOwnRoleChange } from '#lib/moderation/common/roleChanges';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { TranslationKey } from '#lib/structures/commands/utils';
@@ -210,6 +211,8 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		}
 
 		await (await getStickyRoles(guild)).remove(entry.userId, role.id);
+		// The listener that sees the role go must not take it for one a moderator took by hand:
+		await markOwnRoleChange(guild.id, entry.userId, role.id);
 
 		const reason = await this.getReason(guild, entry.reason, true);
 		if (this.replace) {

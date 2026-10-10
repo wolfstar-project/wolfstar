@@ -1259,7 +1259,7 @@ declare module "i18next" {
         moderationOutput_other: "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.";
         moderationOutputWithReason_one: "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}";
         moderationOutputWithReason_other: "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}";
-        moderationOutputUndelivered: "⚠️ I could not send them a direct message, they may have them closed.";
+        moderationOutputUndelivered: "I could not send them a direct message, they may have them closed.";
         moderationFailed_one: "{{REDCROSS}} Failed to moderate user:\n{{users}}";
         moderationFailed_other: "{{REDCROSS}} Failed to moderate users:\n{{users}}";
         moderationDmFooter: "To disable moderation DMs, write `toggleModerationDM`.";
@@ -3138,6 +3138,7 @@ declare module "i18next" {
         applyReason: "[Action] Applied {{action}} | Reason: {{reason}}";
         requiredMember: "The user does not exist or is not in this server.";
         revokeNoReason: "[Action] Revoked {{action}}";
+        roleRemovedManually: "The role of this action was taken from the member by hand.";
         revokeReason: "[Action] Revoked {{action}} | Reason: {{reason}}";
         setNicknameNoReasonRemoved: "[Action] Removed Nickname.";
         setNicknameNoReasonSet: "[Action] Set Nickname.";
