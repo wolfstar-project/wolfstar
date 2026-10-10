@@ -256,7 +256,7 @@ export function renderAutoModerationRule(
 	const body: APIComponentInContainer[] = [
 		block(
 			`## ${rule.name}\n${translateKey(t, `${Root}:menuRuleDetails`, { id: inlineCode(rule.id), type: inlineCode(type) })}\n-# ${description}`,
-			button(id('edit', 'name'), { label: translateKey(t, `${Root}:menuRename`), emoji: '✏️', style: ButtonStyle.Primary })
+			button(id('edit', 'name'), { label: translateKey(t, `${Root}:menuRename`), emoji: getEmojiComponent('Edit') })
 		),
 		block(
 			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? Emojis.Checked : Emojis.Unchecked} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
@@ -372,7 +372,9 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 	const fields = getAutoModerationMenuNumberFields(rule);
 	if (fields.length > 0) {
 		const lines = fields.map((field) => `**${translateKey(t, field.label)}**\n${inlineCode(String(field.value))}`);
-		body.push(block(lines.join('\n'), button(id('edit', 'numbers'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '✏️' })));
+		body.push(
+			block(lines.join('\n'), button(id('edit', 'numbers'), { label: translateKey(t, `${Root}:menuEdit`), emoji: getEmojiComponent('Edit') }))
+		);
 	}
 
 	if (rule.type === 'NoMentionSpam') {

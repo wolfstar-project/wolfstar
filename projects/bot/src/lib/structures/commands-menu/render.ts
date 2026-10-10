@@ -1,4 +1,4 @@
-import { Emojis } from '#utils/emojis';
+import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import type { Translator } from '#lib/structures/commands/utils';
 import {
 	CommandQueryMaximumLength,
@@ -255,7 +255,7 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 					content: `**${first + index + 1}. ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}**\n-# ${cutText(entry.description, 150)}`
 				}
 			],
-			accessory: button(id('edit', entry.path), { emoji: '✏️' })
+			accessory: button(id('edit', entry.path), { emoji: getEmojiComponent('Edit') })
 		});
 	}
 
@@ -490,7 +490,11 @@ function row(components: APIButtonComponentWithCustomId[]): APIActionRowComponen
 
 interface ButtonOptions {
 	label?: string;
-	emoji?: string;
+
+	/**
+	 * A Unicode emoji, or one of the bot, see `getEmojiComponent`.
+	 */
+	emoji?: string | EmojiComponent;
 	style?: APIButtonComponentWithCustomId['style'];
 	disabled?: boolean;
 }
@@ -501,7 +505,7 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 		custom_id: customId,
 		style: options.style ?? ButtonStyle.Secondary,
 		...(options.label === undefined ? {} : { label: cutText(options.label, 80) }),
-		...(options.emoji === undefined ? {} : { emoji: { name: options.emoji } }),
+		...(options.emoji === undefined ? {} : { emoji: typeof options.emoji === 'string' ? { name: options.emoji } : options.emoji }),
 		...(options.disabled ? { disabled: true } : {})
 	};
 }

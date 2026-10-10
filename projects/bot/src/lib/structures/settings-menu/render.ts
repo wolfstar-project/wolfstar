@@ -1,4 +1,4 @@
-import { getEmojiComponent, type EmojiComponent } from '#utils/emojis';
+import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/database';
@@ -199,7 +199,7 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 		accent_color: AccentColor,
 		components: [
 			text(
-				`## ✏️ ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
+				`## ${Emojis.Edit} ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
 			),
 			row([renderSelect(context, key, id('pick', key.property))]),
 			row([
@@ -316,7 +316,7 @@ function renderKeyButton(context: SettingsMenuContext, key: SchemaKey, page: num
 		case 'readonly':
 			return button(id('edit'), { emoji: '🔒', disabled: true });
 		default:
-			return button(id('edit'), { emoji: '✏️' });
+			return button(id('edit'), { emoji: getEmojiComponent('Edit') });
 	}
 }
 

@@ -75,6 +75,8 @@ export const EmojiDefinitions = {
 	Kick: emoji('kick', '1262378332633174017'),
 	Softban: emoji('softban', '1262384411245150208'),
 	Ban: emoji('ban', '1262378308050489468'),
+	// The pencil of what opens something to edit it:
+	Edit: emoji('edit', '✏️'),
 	// The checkbox of a setting that is on or off:
 	Checked: emoji('checked', '☑️'),
 	Unchecked: emoji('unchecked', '⬜'),
