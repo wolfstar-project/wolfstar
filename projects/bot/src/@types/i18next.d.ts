@@ -1261,6 +1261,7 @@ declare module "i18next" {
         moderationOutput_other: "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.";
         moderationOutputWithReason_one: "{{GREENTICK}} Created case {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}";
         moderationOutputWithReason_other: "{{GREENTICK}} Created cases {{range}} | {{users, list(conjunction)}}.\nWith the reason of: {{reason}}";
+        moderationOutputUndelivered: "⚠️ I could not send them a direct message, they may have them closed.";
         moderationFailed_one: "{{REDCROSS}} Failed to moderate user:\n{{users}}";
         moderationFailed_other: "{{REDCROSS}} Failed to moderate users:\n{{users}}";
         moderationDmFooter: "To disable moderation DMs, write `toggleModerationDM`.";

@@ -334,7 +334,9 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 			const embed = await this.#buildEmbed(guild, entry, data);
 			await target.send({ embeds: [embed] });
 		} catch (error) {
+			// It throws what is not the user having closed their direct messages, which is not a failure of the case:
 			this.#handleDirectMessageError(error as Error);
+			data.directMessageUndelivered = true;
 		}
 	}
 
@@ -416,6 +418,11 @@ export declare namespace ModerationAction {
 		context?: ContextType;
 		sendDirectMessage?: boolean;
 		moderator?: User | null;
+
+		/**
+		 * Set by the action when the user could not be sent the direct message, which the case is made without.
+		 */
+		directMessageUndelivered?: boolean;
 	}
 
 	interface ModerationEntryFetchOptions<Type extends TypeVariation = TypeVariation> {

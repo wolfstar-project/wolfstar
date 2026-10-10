@@ -1,6 +1,5 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
-import { getTypeColorOf, isValidType } from '#lib/moderation/common/constants';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { Colors } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -10,7 +9,7 @@ import type { ModerationManager } from '#lib/moderation/managers/ModerationManag
 import { ModerationCommandPrompt, type RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
-import type { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
+import type { TypeVariation } from '#utils/moderationConstants';
 import { resolveTimeSpan } from '#utils/resolvers';
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import type { Awaitable } from '@sapphire/utilities';
@@ -153,7 +152,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			const parameters = this.resolveParameters(t, guild, moderator, target, args, interaction.channel.id);
 			await this.inhibit(interaction, parameters);
 			const preHandled = await this.preHandle(interaction, parameters);
-			const handled = { ...parameters, preHandled };
+			const handled = { ...parameters, preHandled, directMessageUndelivered: false };
 
 			try {
 				await this.checkTargetCanBeModerated(interaction, handled);
@@ -164,14 +163,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 				try {
 					const log = await this.handle(interaction, handled);
-					answer = this.formatOutput(t, settings, target, log);
+					answer = this.formatOutput(t, settings, target, log, handled.directMessageUndelivered);
 				} catch (error) {
 					// No case was made for the copy to stand under:
 					if (forwardedId !== null) await deleteForwardedCaseMessage(guild, forwardedId);
 					throw error;
 				}
 			} catch (error) {
-				answer = { content: this.formatFailure(t, target, error) };
+				answer = this.formatFailureAnswer(t, target, error);
 			}
 
 			try {
@@ -182,7 +181,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		} catch (error) {
 			// The command needs an answer before it can go on, such as the role a mute gives:
 			if (error instanceof ModerationCommandPrompt) return error.message;
-			answer = { content: this.formatFailure(t, target, error) };
+			answer = this.formatFailureAnswer(t, target, error);
 		}
 
 		return answer;
@@ -236,7 +235,9 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			}
 
 			// @ts-expect-error mismatching types due to unions
-			return this.action.undo(context.guild, options, data);
+			const entry = await this.action.undo(context.guild, options, data);
+			context.directMessageUndelivered = data.directMessageUndelivered === true;
+			return entry;
 		}
 
 		// If this command is not an undo action, and the action is active, throw an error.
@@ -245,7 +246,9 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		}
 
 		// @ts-expect-error mismatching types due to unions
-		return this.action.apply(context.guild, options, data);
+		const entry = await this.action.apply(context.guild, options, data);
+		context.directMessageUndelivered = data.directMessageUndelivered === true;
+		return entry;
 	}
 
 	/**
@@ -444,15 +447,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		t: Translator,
 		settings: ModerationCommand.MessageSettings,
 		target: User,
-		log: ModerationManager.Entry
+		log: ModerationManager.Entry,
+		undelivered: boolean
 	): ModerationCommand.Answer {
-		return renderModerationOutput(t, {
-			reason: settings.reasonDisplay ? log.reason : null,
-			id: log.id,
-			tag: target.tag,
-			type: log.type,
-			metadata: log.metadata
-		});
+		return renderModerationOutput(t, { id: log.id, tag: target.tag, reason: settings.reasonDisplay ? log.reason : null, undelivered });
+	}
+
+	private formatFailureAnswer(t: Translator, target: User, error: unknown): ModerationCommand.Answer {
+		return renderModerationFailure(this.formatFailure(t, target, error));
 	}
 
 	private formatFailure(t: Translator, target: User, error: unknown) {
@@ -616,21 +618,35 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 }
 
 /**
- * What a moderation command answers with when it made a case: a small embed, of the color of the action, that says
- * the case it created, the user, and the reason when the server wants it shown.
+ * What a moderation command answers with when it made a case: a small embed that says the case it created, the user,
+ * and the reason when the server wants it shown. It is green, as a success is, and yellow when the case was made but
+ * the user could not be sent the direct message, which it says.
  *
  * @param t - The function to translate with.
- * @param output - The case that was made: its number, the tag of the user, its type and the reason to show.
+ * @param output - The case that was made: its number, the tag of the user, the reason to show, and whether the user
+ * could not be sent the direct message.
  */
 export function renderModerationOutput(
 	t: Translator,
-	output: { id: number; tag: string; reason: string | null; type: TypeVariation; metadata: TypeMetadata }
+	output: { id: number; tag: string; reason: string | null; undelivered?: boolean }
 ): ModerationCommand.Answer {
 	const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
 	const description = t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason });
+	const lines = output.undelivered ? [description, t('commands/moderation:moderationOutputUndelivered')] : [description];
 
-	// A type that has no color of its own gets the neutral one:
-	const color = isValidType(output.type, output.metadata) ? getTypeColorOf(output.type, output.metadata) : Colors.BlueGrey;
+	return toEmbedAnswer(lines.join('\n'), output.undelivered ? Colors.Yellow : Colors.Green);
+}
+
+/**
+ * What a moderation command answers with when it could not make a case: the reason, in a small red embed.
+ *
+ * @param description - The text of the failure, already translated.
+ */
+export function renderModerationFailure(description: string): ModerationCommand.Answer {
+	return toEmbedAnswer(description, Colors.Red);
+}
+
+function toEmbedAnswer(description: string, color: Colors): ModerationCommand.Answer {
 	return { embeds: [new EmbedBuilder().setColor(color).setDescription(description).toJSON()], allowed_mentions: { parse: [] } };
 }
 
@@ -661,8 +677,8 @@ export declare namespace ModerationCommand {
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
 	 */
 	/**
-	 * What a moderation command answers with: a small embed of the color of the action, a line of text when it failed,
-	 * or the prompt it needs answered, see {@linkcode RoleSetupMessage}.
+	 * What a moderation command answers with: a small embed (green when it made a case, yellow when it could not tell
+	 * the user, red when it failed), or the prompt it needs answered, see {@linkcode RoleSetupMessage}.
 	 */
 	type Answer =
 		| RoleSetupMessage
@@ -731,6 +747,11 @@ export declare namespace ModerationCommand {
 
 	interface HandlerParameters<ValueType> extends Parameters {
 		preHandled: ValueType;
+
+		/**
+		 * Set by the handler when the case was made but the user could not be sent the direct message.
+		 */
+		directMessageUndelivered?: boolean;
 	}
 
 	type PostHandleParameters<ValueType> = HandlerParameters<ValueType>;
