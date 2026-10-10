@@ -1,6 +1,7 @@
 // Loads the `broker` client option and `container.broker` types, the Stars CLI injects the runtime import:
 /// <reference types="@wolfstar/plugin-broker/register" />
 
+import { loadApplicationEmojis } from '#utils/emojis';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { container } from '@wolfstar/http-framework';
 import { createBroker, forwardGatewayDispatches, replayGatewayDispatches } from '@wolfstar/plugin-broker';
@@ -115,6 +116,8 @@ async function ensureBrokerGroup() {
 }
 
 export async function loadAll() {
+	// The emojis are the ones of the application the bot runs as, which staging, beta and production each have:
+	await loadApplicationEmojis();
 	await container.redis.connect();
 	await ensureBrokerGroup();
 	await container.workers.start();

@@ -1,4 +1,4 @@
-import { Emojis } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
 import { userMention } from '@discordjs/builders';
 import { BitField } from '@sapphire/bitfield';
 import { UserFlags, type Snowflake } from 'discord-api-types/v10';

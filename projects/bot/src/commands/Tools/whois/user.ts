@@ -1,7 +1,8 @@
 import type { GuildChatInputInteraction, TranslationKey } from '#lib/structures/commands/utils';
 import { translateKey } from '#lib/structures/commands/utils';
 import { months, resolveOnErrorCodes, seconds } from '#common';
-import { Colors, Emojis } from '#utils/constants';
+import { Colors } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
 import { addAutomaticFields } from '#utils/functions';
 import { PermissionsBits } from '#utils/bits';
 import { getTag } from '#utils/util';

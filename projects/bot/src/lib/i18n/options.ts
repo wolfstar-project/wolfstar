@@ -1,6 +1,7 @@
 import { readSettings } from '#lib/database/settings';
 import { getHandler } from '#lib/i18n/structures/Handler';
-import { Emojis, LanguageFormatters } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
+import { LanguageFormatters } from '#utils/constants';
 import { time, TimestampStyles } from '@discordjs/formatters';
 import { i18next, type I18nextFormatter, type InternationalizationOptions } from '@wolfstar/plugin-i18next';
 import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildVerificationLevel, PermissionFlagsBits } from 'discord-api-types/v10';
@@ -46,12 +47,25 @@ function parseInternationalizationInterpolation(): InterpolationOptions {
 	return { escapeValue: false, defaultVariables: parseInternationalizationDefaultVariables() };
 }
 
-function parseInternationalizationDefaultVariables() {
+/**
+ * The variables every text can use.
+ *
+ * @remarks The emojis are getters: they are the ones of the application the bot runs as, which are read after the
+ * translations are set up, see `loadApplicationEmojis`. The variables are spread every time a text is translated, so
+ * the getters are read then.
+ */
+export function parseInternationalizationDefaultVariables() {
 	return {
 		VERSION: process.env.CLIENT_VERSION,
-		LOADING: Emojis.Loading,
-		GREENTICK: Emojis.GreenTick,
-		REDCROSS: Emojis.RedCross,
+		get LOADING() {
+			return Emojis.Loading;
+		},
+		get GREENTICK() {
+			return Emojis.GreenTick;
+		},
+		get REDCROSS() {
+			return Emojis.RedCross;
+		},
 		CLIENT_ID: process.env.CLIENT_ID,
 		...parseInternationalizationDefaultVariablesPermissions()
 	};
