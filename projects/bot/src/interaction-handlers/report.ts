@@ -33,6 +33,7 @@ const ModerationTypes = {
 	warn: TypeVariation.Warning,
 	timeout: TypeVariation.Timeout,
 	kick: TypeVariation.Kick,
+	note: TypeVariation.Note,
 	mute: TypeVariation.Mute,
 	softban: TypeVariation.Softban,
 	ban: TypeVariation.Ban
@@ -42,6 +43,7 @@ const StatusKeys = {
 	warn: 'commands/report:statusWarn',
 	timeout: 'commands/report:statusTimeout',
 	kick: 'commands/report:statusKick',
+	note: 'commands/report:statusNote',
 	mute: 'commands/report:statusMute',
 	softban: 'commands/report:statusSoftban',
 	ban: 'commands/report:statusBan'
@@ -164,7 +166,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const guildT = await fetchGuildTranslator(report.guildId);
 		const status = guildT(StatusKeys[verb], { moderator: userMention(interaction.user.id), case: caseId });
 		await deferred.update({ components: closeReport(message.components ?? [], status), allowed_mentions: { parse: [] } });
-		await notifyReporter(report, 'Actioned');
+		await notifyReporter(report, 'Actioned', verb);
 		return followup(t('commands/report:actionDone', { case: caseId }));
 	}
 
@@ -177,6 +179,10 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async applyAction(interaction: ModalInteraction, report: Report, verb: ReportModerationVerb, t: Translator) {
 		const { gatewayClient } = container;
 		const moderationAction = getAction(ModerationTypes[verb]);
+
+		// The modal only requires a character, and a note that says nothing is no note:
+		const reason = (getModalValue(interaction.data.components, ReportReasonInputId) ?? '').trim();
+		if (verb === 'note' && isNullishOrEmpty(reason)) throw t('commands/report:noteRequired');
 
 		let duration: number | null = null;
 		const parameter = (getModalValue(interaction.data.components, ReportDurationInputId) ?? '').trim();
@@ -202,7 +208,6 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (await moderationAction.isActive(guild, report.targetId, undefined as never)) throw t('moderation:actionIsActive');
 
 		const [target, moderator] = await Promise.all([gatewayClient.users.fetch(report.targetId), gatewayClient.users.fetch(interaction.user.id)]);
-		const reason = (getModalValue(interaction.data.components, ReportReasonInputId) ?? '').trim();
 		const settings: Partial<Record<string, unknown>> = await readSettings(report.guildId);
 		const entry = await moderationAction.apply(
 			guild,

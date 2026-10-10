@@ -2131,6 +2131,9 @@ declare module "i18next" {
         actionTitleKick: "Kick the reported member";
         actionTitleBan: "Ban the reported member";
         actionReasonLabel: "Reason";
+        actionNoteLabel: "Note";
+        actionTitleNote: "Add a note to the reported member";
+        noteRequired: "The note is empty. Write what the moderators should remember, the report is still open.";
         actionDurationLabel: "Duration, for example 10m, 1h or 1d";
         actionDone: "Done, it is case #{{case, number}}. The report is closed.";
         actionFailed: "Something went wrong and the action was not taken. The report is still open.";
@@ -2147,6 +2150,8 @@ declare module "i18next" {
         fieldReportedByAnonymous: "**📣 Reported by**\n*Anonymous*";
         footer: "Report #{{id}} · {{time}}";
         menuPlaceholder: "Other actions…";
+        menuNote: "Add a note";
+        menuNoteDescription: "Keep a note on the reported member, who is not told about it.";
         menuMute: "Mute";
         menuMuteDescription: "Give the reported member the muted role, for a time if you want.";
         menuSoftban: "Softban";
@@ -2160,6 +2165,7 @@ declare module "i18next" {
         actionTitleMute: "Mute the reported member";
         actionTitleSoftban: "Softban the reported member";
         actionDurationOptionalLabel: "Duration, empty for a permanent one";
+        statusNote: "📝 **Noted** by {{moderator}} · case #{{case, number}}";
         statusMute: "✅ **Muted** by {{moderator}} · case #{{case, number}}";
         statusSoftban: "✅ **Softbanned** by {{moderator}} · case #{{case, number}}";
         statusBlocked: "⛔ Reporter blocked from reporting by {{moderator}}";
@@ -2169,6 +2175,7 @@ declare module "i18next" {
         blockDone: "Whoever made this report cannot send reports anymore. The report is still open.";
         blockAlready: "Whoever made this report is already blocked from reporting.";
         notifyActioned: "The moderators of **{{guild}}** reviewed your report about {{target}} and took action. Thank you for reporting.";
+        notifyNoted: "The moderators of **{{guild}}** reviewed your report about {{target}} and made a note of it. Thank you for reporting.";
         notifyDismissed: "The moderators of **{{guild}}** reviewed your report about {{target}} and decided not to take action.";
         reportsName: "reports";
         reportsDescription: "Manage the reports of this server.";
