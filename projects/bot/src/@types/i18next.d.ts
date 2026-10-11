@@ -3337,14 +3337,14 @@ declare module "i18next" {
         customCommandInvalidType_one: "The type {{tag.type}} is not valid, it must be the following: {{possibles, orList}}";
         customCommandInvalidType_other: "The type {{tag.type}} is not valid, it must be one of the following: {{possibles, orList}}";
         customCommandMissingParameter: "You need to write another parameter!\n\n> **Tip**: The type for the next argument is `{{type}}`!";
+        honeypotActionBan: "Ban";
+        honeypotActionKick: "Kick";
+        honeypotActionSoftban: "Softban";
         invalidBool: "{{name}} must be true or false.";
         invalidChannel: "{{name}} must be a channel tag or valid channel id.";
         invalidCommand: "{{name}} must be a command name.";
         invalidEmoji: "{{name}} must be a valid emoji.";
         invalidFloat: "{{name}} must be a valid number.";
-        honeypotActionBan: "Ban";
-        honeypotActionKick: "Kick";
-        honeypotActionSoftban: "Softban";
         invalidGuild: "{{name}} must be a valid server ID.";
         invalidHoneypotAction: "{{name}} must be one of the following: {{possibles, orList}}.";
         invalidInt: "{{name}} must be an integer.";
@@ -3415,7 +3415,7 @@ declare module "i18next" {
         eventsBanAdd: "This event posts non-bot moderation logs when a user gets banned. You must set up `channels.moderation-logs`.";
         eventsBanRemove: "This event posts non-bot moderation logs when a user gets unbanned. You must set up `channels.moderation-logs`.";
         eventsTwemojiReactions: "Whether or not twemoji reactions are posted in the reaction logs channel.";
-        honeypotChannel: "The honeypot channel, a trap for spam bots: no member has a reason to write there, so I act on whoever does and delete what they sent. Nobody is caught while this is not set, and the moderators never are. Set it up with `/honeypot setup`.";
+        honeypotChannel: "The honeypot channel, a trap for spam bots: no member has a reason to write there, so I act on whoever does and delete what they sent. Nobody is caught while this is not set, and the moderators never are.";
         honeypotLogChannel: "The channel I report every member the honeypot caught to, with what they sent, if any. The case still goes to the moderation logs.";
         honeypotAction: "What I do to who writes in the honeypot channel: `Kick`, `Softban` (a ban and an unban, which also deletes what they sent in the other channels in the last hour) or `Ban`.";
         honeypotDirectMessage: "Whether I tell the members the honeypot catches why, in a direct message. A hacked account that is softbanned can come back once its owner has it again.";
