@@ -49,4 +49,5 @@ minimumReleaseAgeExclude:
 shamefullyHoist: true
 ignoreWorkspaceRootCheck: true
 patchedDependencies:
+    '@wolfstar/http-framework@6.3.1': patches/@wolfstar__http-framework@6.3.1.patch
     prisma-orm-extension-typed-json: patches/prisma-orm-extension-typed-json.patch
