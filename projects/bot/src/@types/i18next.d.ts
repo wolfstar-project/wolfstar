@@ -3483,6 +3483,7 @@ declare module "i18next" {
           logsMessageDeleteNsfw: "NSFW Message Delete Logs";
           logsMessageUpdate: "Message Edit Logs";
           logsMessageUpdateNsfw: "NSFW Message Edit Logs";
+          logsMessageUpdateStyle: "Message Edit Log Style";
           logsPrune: "Prune Logs";
           logsReactionEmojiAdd: "Reaction Add Logs";
           logsReactionEmojiRemove: "Reaction Remove Logs";
