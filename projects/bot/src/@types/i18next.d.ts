@@ -3138,6 +3138,7 @@ declare module "i18next" {
         applyReason: "[Action] Applied {{action}} | Reason: {{reason}}";
         requiredMember: "The user does not exist or is not in this server.";
         revokeNoReason: "[Action] Revoked {{action}}";
+        roleRestored: "The role of this action was deleted while it was in course, so it was made again.";
         roleRemovedManually: "The role of this action was taken from the member by hand.";
         revokeReason: "[Action] Revoked {{action}} | Reason: {{reason}}";
         setNicknameNoReasonRemoved: "[Action] Removed Nickname.";

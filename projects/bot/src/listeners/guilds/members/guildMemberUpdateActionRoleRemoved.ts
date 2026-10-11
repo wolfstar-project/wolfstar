@@ -1,25 +1,13 @@
 import { readSettings } from '#lib/database';
-import { ModerationActions } from '#lib/moderation/actions';
+import { RoleActions } from '#lib/moderation/actions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
-import { getRemovedRoles, takeOwnRoleChange } from '#lib/moderation/common/roleChanges';
+import { getRemovedRoles, getUsersInCourse, takeOwnRoleChange } from '#lib/moderation/common/roleChanges';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { getLogPrefix, getModeration } from '#utils/functions';
 import { isNullish } from '@sapphire/utilities';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Guild, GuildMember } from '@wolfstar/plugin-gateway';
 import { AuditLogEvent, PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
-
-/**
- * The moderation actions that are a role a member has: the mute and the restrictions.
- */
-const RoleActions: readonly RoleModerationAction[] = [
-	ModerationActions.mute,
-	ModerationActions.restrictedAttachment,
-	ModerationActions.restrictedEmbed,
-	ModerationActions.restrictedEmoji,
-	ModerationActions.restrictedReaction,
-	ModerationActions.restrictedVoice
-];
 
 /**
  * Ends a mute, or a restriction, when its role is taken from the member by hand while it is in course.
@@ -85,13 +73,7 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 		const moderation = await getModeration(guild);
 		const entries = await moderation.fetch({ userId });
 
-		let latest: (typeof entries extends { values(): IterableIterator<infer Entry> } ? Entry : never) | null = null;
-		for (const entry of entries.values()) {
-			if (entry.type !== action.type || entry.isArchived()) continue;
-			if (latest === null || entry.id > latest.id) latest = entry;
-		}
-
-		return latest !== null && !latest.isUndo() && !latest.isCompleted();
+		return getUsersInCourse(entries.values(), action.type).includes(userId);
 	}
 
 	/**
@@ -100,7 +82,10 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 	private async fetchExecutor(guild: Guild, userId: Snowflake, roleId: Snowflake) {
 		const { gatewayClient } = this.container;
 		const me = await gatewayClient.members.me(guild.id);
-		if (isNullish(me) || !(await me.permissions).has(PermissionFlagsBits.ViewAuditLog)) return null;
+		if (isNullish(me)) return null;
+
+		const permissions = await me.permissions;
+		if (!permissions.has(PermissionFlagsBits.ViewAuditLog)) return null;
 
 		const logs = await gatewayClient.api.guilds.getAuditLogs(guild.id, { limit: 10, action_type: AuditLogEvent.MemberRoleUpdate });
 		for (const entry of logs.audit_log_entries) {

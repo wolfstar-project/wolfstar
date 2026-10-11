@@ -1,4 +1,5 @@
 import { container } from '@wolfstar/http-framework';
+import type { TypeVariation } from '#utils/moderationConstants';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
@@ -45,4 +46,34 @@ export async function takeOwnRoleChange(guildId: Snowflake, userId: Snowflake, r
 export function getRemovedRoles(previous: readonly Snowflake[], next: readonly Snowflake[]): Snowflake[] {
 	const kept = new Set(next);
 	return previous.filter((id) => !kept.has(id));
+}
+
+/**
+ * What {@linkcode getUsersInCourse} reads of a case.
+ */
+export interface CaseInCourse {
+	readonly id: number;
+	readonly type: TypeVariation;
+	readonly userId: Snowflake;
+	isArchived(): boolean;
+	isCompleted(): boolean;
+	isUndo(): boolean;
+}
+
+/**
+ * The users an action is in course for: the ones whose latest case of its type is not its undo, nor one that ended.
+ *
+ * @param entries - The cases to look in.
+ * @param type - The type of the action.
+ */
+export function getUsersInCourse(entries: Iterable<CaseInCourse>, type: TypeVariation): Snowflake[] {
+	const latest = new Map<Snowflake, CaseInCourse>();
+	for (const entry of entries) {
+		if (entry.type !== type || entry.isArchived()) continue;
+
+		const known = latest.get(entry.userId);
+		if (known === undefined || entry.id > known.id) latest.set(entry.userId, entry);
+	}
+
+	return [...latest.values()].filter((entry) => !entry.isUndo() && !entry.isCompleted()).map((entry) => entry.userId);
 }

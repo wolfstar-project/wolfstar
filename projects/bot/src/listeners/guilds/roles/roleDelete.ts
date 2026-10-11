@@ -1,7 +1,10 @@
-import { readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
+import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
+import { RoleActions } from '#lib/moderation/actions';
+import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
+import { getLogPrefix } from '#utils/functions';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
-import type { Role } from '@wolfstar/plugin-gateway';
+import type { Guild, Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
 import type { StickyRole, UniqueRoleSet } from 'wolfstar-database';
 
@@ -13,6 +16,10 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 
 		// The role may not have been cached, its ID is all that is needed:
 		const roleId = data.role_id;
+
+		// The actions whose role this was, read before the settings forget it:
+		const settings = await readSettings(guild);
+		const actions = RoleActions.filter((action) => settings[action.roleKey] === roleId);
 
 		using trx = await writeSettingsTransaction(guild);
 
@@ -45,6 +52,27 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		for (const rule of await readAutoModerationRules(guild.id)) {
 			if (!rule.ignoredRoles.includes(roleId)) continue;
 			await updateAutoModerationRule(guild.id, rule.id, (current) => ({ ignoredRoles: current.ignoredRoles.filter((id) => id !== roleId) }));
+		}
+
+		for (const action of actions) await this.#restoreActionRole(action, guild);
+	}
+
+	/**
+	 * Makes the role of a mute, or of a restriction, again when it was deleted while the action is in course for
+	 * somebody. It is tried once: what the bot cannot do (it lacks a permission, the server has no room for a role) is
+	 * logged, and the role stays unset.
+	 */
+	async #restoreActionRole(action: RoleModerationAction, guild: Guild) {
+		try {
+			const restored = await action.restore(guild);
+			if (restored === null) return;
+
+			this.container.logger.info(
+				getLogPrefix(this),
+				`Made the role of an action again in ${guild.id}, as ${restored.role.id}, and gave it to ${restored.members} members.`
+			);
+		} catch (error) {
+			this.container.logger.error(getLogPrefix(this), 'Could not make the role of an action again after it was deleted:', error);
 		}
 	}
 
