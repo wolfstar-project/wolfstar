@@ -10,7 +10,7 @@ import {
 import { announceAutoModerationRulesChange, writeAutoModerationRules } from '#lib/moderation/automod/rules';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
-import { writeAutoModerationRulePlan, type AutoModerationRule } from 'wolfstar-database';
+import { writeAutoModerationRulePlan, type AutoModerationRule, type AutoModerationRulePlan } from 'wolfstar-database';
 
 /**
  * What an import throws when the server changed since the file was read in a way that makes the file one it would
@@ -51,9 +51,8 @@ export async function applyConfigurationImport(guildId: Snowflake, parsed: Parse
 		const plan = planConfigurationImport(transaction.settings, rules, parsed);
 		if (plan.isEmpty) return plan;
 
-		const { create, update, remove } = plan.rules;
-		const rulesChanged = create.length + update.length + remove.length > 0;
 		const rulePlan = getPlannedRules(plan);
+		const rulesChanged = rulePlan.create.length + rulePlan.update.length + rulePlan.remove.length > 0;
 
 		let created: AutoModerationRule[] = [];
 		transaction.write(getPlannedSettings(plan));
@@ -66,7 +65,7 @@ export async function applyConfigurationImport(guildId: Snowflake, parsed: Parse
 		);
 
 		if (rulesChanged) announceAutoModerationRulesChange(guildId, rulePlan.remove);
-		void writeAudit(transaction.settings, actorId, plan, rules, created).catch((error: unknown) =>
+		void writeAudit(transaction.settings, actorId, plan, rulePlan, rules, created).catch((error: unknown) =>
 			container.logger.warn('[Settings] Could not write the audit log of an import:', error)
 		);
 
@@ -82,6 +81,7 @@ function writeAudit(
 	settings: Parameters<typeof readSettingsAuditLog>[0],
 	actorId: string,
 	plan: ConfigurationPlan,
+	rulePlan: AutoModerationRulePlan,
 	rules: readonly AutoModerationRule[],
 	created: readonly AutoModerationRule[]
 ) {
@@ -92,11 +92,11 @@ function writeAudit(
 		after[change.key.property] = change.after;
 	}
 
-	const { create, update, remove } = plan.rules;
-	if (create.length + update.length + remove.length > 0) {
-		const removed = new Set(remove.map((rule) => rule.id));
-		const updated = new Map(update.map(({ rule, data }) => [rule.id, data]));
+	if (rulePlan.create.length + rulePlan.update.length + rulePlan.remove.length > 0) {
+		const removed = new Set(rulePlan.remove);
+		const updated = new Map(rulePlan.update.map(({ id, data }) => [id, data]));
 
+		// The rules that are created have the last IDs, so this is the order the rules are read in from now on:
 		before.automodRules = rules;
 		after.automodRules = [
 			...rules.filter((rule) => !removed.has(rule.id)).map((rule) => Object.assign({}, rule, updated.get(rule.id))),

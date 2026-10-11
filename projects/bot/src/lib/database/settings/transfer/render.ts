@@ -1,12 +1,12 @@
 import { getSettingName } from '#lib/database/settings/Utils';
 import type { ConfigurationIssue } from '#lib/database/settings/transfer/parse';
-import type { ConfigurationPlan, PlannedSettingChange } from '#lib/database/settings/transfer/plan';
+import { countPlannedRules, type ConfigurationPlan, type PlannedSettingChange } from '#lib/database/settings/transfer/plan';
 import { AutoModerationRuleTypeKeys } from '#lib/moderation/automod/commands';
 import type { Translator } from '#lib/structures/commands/utils';
 import { cutText } from '@sapphire/utilities';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { APIEmbed } from 'discord-api-types/v10';
-import type { ReadonlyGuildData } from 'wolfstar-database';
+import type { AutoModerationRuleType, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
  * How many lines of a list the preview of an import shows, so it fits an embed whatever the file holds.
@@ -43,19 +43,23 @@ export async function renderConfigurationPreview(plan: ConfigurationPlan, contex
 		);
 	}
 
-	const { create, update, remove, unchanged } = plan.rules;
+	const { create, update, remove } = plan.rules;
+	const counts = countPlannedRules(plan);
 	if (create.length + update.length + remove.length > 0) {
+		const type = (rule: { type: AutoModerationRuleType }) => t(AutoModerationRuleTypeKeys[rule.type]);
 		const lines = [
-			...create.map((rule) => `+ **${rule.name}** (${t(AutoModerationRuleTypeKeys[rule.type])})`),
+			...create.map(({ data, replaces }) => `${replaces === null ? '+' : '↕'} **${data.name}** (${type(data)})`),
 			...update.map(({ rule, fields }) => `~ **${rule.name}**: ${fields.map((field) => `\`${field}\``).join(', ')}`),
-			...remove.map((rule) => `- **${rule.name}** (${t(AutoModerationRuleTypeKeys[rule.type])})`)
+			...remove.map((rule) => `- **${rule.name}** (${type(rule)})`)
 		];
 
 		sections.push(
 			[
-				t('commands/conf:transferPreviewRules', { created: create.length, updated: update.length, removed: remove.length, unchanged }),
+				t('commands/conf:transferPreviewRules', counts),
 				...lines.slice(0, MaximumPreviewLines),
-				...moreLines(lines.length, t)
+				...moreLines(lines.length, t),
+				// A rule that moves starts counting again, which the administrator should know before they confirm:
+				...(counts.moved > 0 ? [t('commands/conf:transferPreviewMoved')] : [])
 			].join('\n')
 		);
 	}

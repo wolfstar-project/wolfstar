@@ -3,7 +3,7 @@ import { applyConfigurationImport, ConfigurationImportStaleError } from '#lib/da
 import { downloadConfigurationFile } from '#lib/database/settings/transfer/attachment';
 import { MaximumConfigurationFileSize } from '#lib/database/settings/transfer/format';
 import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
-import { planConfigurationImport } from '#lib/database/settings/transfer/plan';
+import { countPlannedRules, planConfigurationImport } from '#lib/database/settings/transfer/plan';
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
@@ -87,15 +87,9 @@ export class UserCommand extends Command {
 		});
 		if (done === null) return deferred.update({ content: t('commands/conf:transferImportStale'), embeds: [], components: [] });
 
-		const { create, update, remove } = done.rules;
 		const content = done.isEmpty
 			? t('commands/conf:transferNothing')
-			: t('commands/conf:transferImportDone', {
-					settings: done.settings.length,
-					created: create.length,
-					updated: update.length,
-					removed: remove.length
-				});
+			: t('commands/conf:transferImportDone', { settings: done.settings.length, ...countPlannedRules(done) });
 
 		return deferred.update({ content, embeds: [], components: [] });
 	}

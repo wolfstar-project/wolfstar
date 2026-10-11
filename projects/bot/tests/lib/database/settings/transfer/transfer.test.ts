@@ -7,7 +7,13 @@ import {
 	isPortableKey
 } from '#lib/database/settings/transfer/format';
 import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
-import { findOversizedRuleLists, getPlannedRules, getPlannedSettings, planConfigurationImport } from '#lib/database/settings/transfer/plan';
+import {
+	countPlannedRules,
+	findOversizedRuleLists,
+	getPlannedRules,
+	getPlannedSettings,
+	planConfigurationImport
+} from '#lib/database/settings/transfer/plan';
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
@@ -546,9 +552,9 @@ describe('configuration file', () => {
 				['1', ['name']],
 				['2', ['enabled', 'options']]
 			]);
-			expect(plan.rules.create.map((rule) => [rule.name, rule.type])).toEqual([
-				['Emojis', 'Capitals'],
-				['New rule', 'Newlines']
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, data.type, replaces])).toEqual([
+				['Emojis', 'Capitals', null],
+				['New rule', 'Newlines', null]
 			]);
 			// A rule of another type is made again, since its options depend on it:
 			expect(plan.rules.remove.map((rule) => rule.id)).toEqual(['3', '4']);
@@ -581,6 +587,119 @@ describe('configuration file', () => {
 		});
 	});
 
+	describe('the order of the rules', () => {
+		const file = (rules: unknown[]) => parseOk({ version: 1, automod: { rules } });
+		const words = (name: string, extra: Record<string, unknown> = {}) => ({ name, type: 'Words', ...extra });
+
+		/**
+		 * The rules of a server after a plan is written, as the database gives them: by their ID, the rules that are
+		 * created taking the next ones in the order they are created.
+		 */
+		function write(rules: readonly AutoModerationRule[], parsed: Awaited<ReturnType<typeof file>>) {
+			const { create, update, remove } = getPlannedRules(planConfigurationImport(createSettings(), rules, parsed));
+			let nextId = Math.max(0, ...rules.map((rule) => Number(rule.id))) + 1;
+
+			const kept = rules
+				.filter((rule) => !remove.includes(rule.id))
+				.map((rule) => ({ ...rule, ...update.find((entry) => entry.id === rule.id)?.data }) as AutoModerationRule);
+			const created = create.map((data) => ({ ...data, id: String(nextId++), guildId }) as AutoModerationRule);
+			return [...kept, ...created].sort((a, b) => Number(a.id) - Number(b.id));
+		}
+
+		const names = (rules: readonly AutoModerationRule[], type: AutoModerationRuleType) =>
+			rules.filter((rule) => rule.type === type).map((rule) => rule.name);
+
+		test('GIVEN the rules of a type in another order THEN the ones out of place are made again, after the ones that stay', async () => {
+			const rules = [createRule('Words', 'Ban', '1', { hardAction: 'Ban' }), createRule('Words', 'Warn', '2')];
+			const parsed = await file([words('Warn'), words('Ban', { hardAction: 'Ban' })]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			expect(plan.isEmpty).toBe(false);
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, replaces?.id])).toEqual([['Ban', '1']]);
+			expect(plan.rules).toMatchObject({ update: [], remove: [], unchanged: 1 });
+			expect(getPlannedRules(plan).remove).toEqual(['1']);
+
+			// The warning is the first rule of the type now, as in the file, so it is the one a message is held to:
+			const after = write(rules, parsed);
+			expect(names(after, 'Words')).toEqual(['Warn', 'Ban']);
+			expect(after.map((rule) => rule.id)).toEqual(['2', '3']);
+		});
+
+		test('GIVEN the import was written THEN importing the file again does nothing', async () => {
+			const rules = [createRule('Words', 'Ban', '1'), createRule('Words', 'Warn', '2'), createRule('Words', 'Mute', '3')];
+			const parsed = await file([words('Mute'), words('Warn'), words('New'), words('Ban')]);
+
+			const after = write(rules, parsed);
+			expect(names(after, 'Words')).toEqual(['Mute', 'Warn', 'New', 'Ban']);
+			expect(planConfigurationImport(createSettings(), after, parsed).isEmpty).toBe(true);
+		});
+
+		test('GIVEN a new rule before the ones the server has THEN the ones of its type after it are made again', async () => {
+			const rules = [createRule('Words', 'First', '1'), createRule('Words', 'Second', '2'), createRule('Links', 'Links', '3')];
+			const parsed = await file([words('First'), words('New'), { name: 'Links', type: 'Links' }, words('Second')]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, replaces?.id])).toEqual([
+				['New', undefined],
+				['Second', '2']
+			]);
+			// The rule of another type is not held to any message the others are, so it stays where it is:
+			expect(plan.rules.unchanged).toBe(2);
+			expect(names(write(rules, parsed), 'Words')).toEqual(['First', 'New', 'Second']);
+		});
+
+		test('GIVEN a rule that takes a type THEN the rules of that type after it are made again', async () => {
+			const rules = [createRule('Links', 'Changed', '1'), createRule('Words', 'Words', '2')];
+			const parsed = await file([words('Changed'), words('Words')]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			expect(plan.rules.remove.map((rule) => rule.id)).toEqual(['1']);
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, replaces?.id])).toEqual([
+				['Changed', undefined],
+				['Words', '2']
+			]);
+			expect(names(write(rules, parsed), 'Words')).toEqual(['Changed', 'Words']);
+		});
+
+		test('GIVEN the rules of different types in another order THEN nothing moves, since no message is held to both', async () => {
+			const rules = [createRule('Links', 'Links', '1'), createRule('Words', 'Words', '2')];
+			const plan = planConfigurationImport(createSettings(), rules, await file([words('Words'), { name: 'Links', type: 'Links' }]));
+
+			expect(plan.isEmpty).toBe(true);
+		});
+
+		test('GIVEN a rule that is made again THEN it takes what the file says and keeps its exempt roles and channels', async () => {
+			const exempt = { ignoredRoles: ['100000000000000001'], ignoredChannels: ['100000000000000002'] };
+			const rules = [createRule('Words', 'Ban', '1', exempt), createRule('Words', 'Warn', '2')];
+			const parsed = await file([words('Warn'), words('Ban', { enabled: false, options: { words: ['spam'] } })]);
+			const { create } = getPlannedRules(planConfigurationImport(createSettings(), rules, parsed));
+
+			expect(create).toEqual([
+				{ ...getDefaultAutoModerationRule('Words'), ...exempt, name: 'Ban', enabled: false, options: { words: ['spam'] } }
+			]);
+		});
+
+		test('GIVEN IDs of different lengths THEN they are compared as numbers', async () => {
+			const rules = [createRule('Words', 'Nine', '9'), createRule('Words', 'Ten', '10')];
+			const plan = planConfigurationImport(createSettings(), rules, await file([words('Nine'), words('Ten')]));
+
+			expect(plan.isEmpty).toBe(true);
+		});
+
+		test('GIVEN a plan THEN the rules that move are counted apart from the ones created and deleted', async () => {
+			const rules = [createRule('Words', 'Ban', '1'), createRule('Words', 'Warn', '2'), createRule('Links', 'Gone', '3')];
+			const parsed = await file([words('Warn', { enabled: false }), words('Ban'), words('New')]);
+
+			expect(countPlannedRules(planConfigurationImport(createSettings(), rules, parsed))).toEqual({
+				created: 1,
+				updated: 1,
+				moved: 1,
+				removed: 1,
+				unchanged: 0
+			});
+		});
+	});
+
 	describe('rendering', () => {
 		test('GIVEN a plan THEN the preview lists the settings and the rules it changes', async () => {
 			const settings = createSettings();
@@ -599,10 +718,29 @@ describe('configuration file', () => {
 
 			expect(embed.title).toBe('commands/conf:transferPreviewTitle');
 			expect(embed.description).toContain('"count":2');
-			expect(embed.description).toContain('"created":1,"updated":1,"removed":1');
+			expect(embed.description).toContain('"created":1,"updated":1,"moved":0,"removed":1');
+			expect(embed.description).not.toContain('transferPreviewMoved');
 			expect(embed.description).toContain('+ **New**');
 			expect(embed.description).toContain('~ **Links**: `enabled`');
 			expect(embed.description).toContain('- **Old**');
+		});
+
+		test('GIVEN a rule that changes place THEN the preview says it moves, and what that costs', async () => {
+			const rules = [createRule('Words', 'Ban', '1'), createRule('Words', 'Warn', '2')];
+			const parsed = await parseOk({
+				version: 1,
+				automod: {
+					rules: [
+						{ name: 'Warn', type: 'Words' },
+						{ name: 'Ban', type: 'Words' }
+					]
+				}
+			});
+			const embed = await renderConfigurationPreview(planConfigurationImport(createSettings(), rules, parsed), context());
+
+			expect(embed.description).toContain('"created":0,"updated":0,"moved":1,"removed":0,"unchanged":1');
+			expect(embed.description).toContain('↕ **Ban**');
+			expect(embed.description).toContain('transferPreviewMoved');
 		});
 
 		test('GIVEN many problems THEN the message keeps to the limit of a message', () => {

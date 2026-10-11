@@ -628,11 +628,12 @@ declare module "i18next" {
         transferImportCancelled: "Nothing was imported.";
         transferImportExpired: "I did not get an answer, so nothing was imported.";
         transferImportStale: "The server changed since I read the file, and the file no longer fits it, so nothing was imported. Run the command again.";
-        transferImportDone: "Imported: {{settings}} settings changed. Rules: {{created}} created, {{updated}} edited, {{removed}} deleted.";
+        transferImportDone: "Imported: {{settings}} settings changed. Rules: {{created}} created, {{updated}} edited, {{moved}} moved, {{removed}} deleted.";
         transferNothing: "The server already has this configuration, so there is nothing to import.";
         transferPreviewTitle: "Import this configuration?";
         transferPreviewSettings: "**Settings** ({{count}} to change)";
-        transferPreviewRules: "**Auto-moderation rules**: {{created}} to create, {{updated}} to edit, {{removed}} to delete, {{unchanged}} as they are.";
+        transferPreviewRules: "**Auto-moderation rules**: {{created}} to create, {{updated}} to edit, {{moved}} to move, {{removed}} to delete, {{unchanged}} as they are.";
+        transferPreviewMoved: "-# A rule that moves (↕) is made again so the rules of its type are in the order of the file, the first one that fits a message being the one that is applied. It keeps its exempt roles and channels, and what it counted of the members starts again.";
         transferPreviewMore: "…and {{count}} more.";
         transferPreviewFooter: "-# The rules of the server become the ones of the file. Everything that depends on the server (roles, channels, users, and the exempt roles and channels of the rules) stays as it is.";
         transferNone: "none";
