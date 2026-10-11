@@ -25,9 +25,11 @@ export interface LogMessageOptions {
 	author: Pick<APIUser, 'id' | 'username' | 'discriminator' | 'avatar' | 'global_name'>;
 
 	/**
-	 * The text of the log, which is split in several blocks when it does not fit in one.
+	 * The text of the log, which is split in several blocks when it does not fit in one. An array is the blocks
+	 * themselves: each is kept whole in a block of its own, for a text that cannot be cut anywhere (a code block that
+	 * is cut leaves its second half without a fence, and what it quotes is read as Markdown again).
 	 */
-	content: string;
+	content: string | readonly string[];
 
 	/**
 	 * The line at the bottom of the message, together with the time of the log.
@@ -59,7 +61,8 @@ const MaximumBlockLength = 1024;
  * The embeds had an author, fields, a footer and a timestamp, and the components have none of them, so each is a piece
  * of the container: a section with the avatar for the author, a block of text for every 1024 characters of the content
  * (the length of a field), and a small text for the footer. The text of all the blocks is cut to
- * {@linkcode MaximumLogMessageLength}.
+ * {@linkcode MaximumLogMessageLength}. A caller that gives the blocks itself gets each of them whole, see
+ * {@linkcode LogMessageOptions.content}.
  *
  * @param options - What the message is made of.
  */
@@ -69,7 +72,8 @@ export function createLogMessage(options: LogMessageOptions) {
 
 	// The header and the footer count against the limit too:
 	const available = Math.max(0, MaximumLogMessageLength - header.length - footer.length);
-	const blocks = splitContent(options.content.slice(0, available)).map((content): APITextDisplayComponent => ({
+	const texts = typeof options.content === 'string' ? splitContent(options.content.slice(0, available)) : fitBlocks(options.content, available);
+	const blocks = texts.map((content): APITextDisplayComponent => ({
 		type: ComponentType.TextDisplay,
 		content
 	}));
@@ -92,6 +96,24 @@ export function createLogMessage(options: LogMessageOptions) {
 	const components: APIMessageTopLevelComponent[] = [container];
 	// The log mentions users and roles it only quotes, nobody is pinged:
 	return { components, flags: MessageFlags.IsComponentsV2 as const, allowed_mentions: { parse: [] as AllowedMentionsTypes[] } };
+}
+
+/**
+ * Takes the blocks that fit whole in what is left of the message. The first one that does not fit is left out with the
+ * ones after it: cutting it is what the caller gave the blocks to avoid.
+ */
+function fitBlocks(blocks: readonly string[], available: number): string[] {
+	const fitting: string[] = [];
+	let length = 0;
+	for (const block of blocks) {
+		if (block.length === 0) continue;
+
+		length += block.length;
+		if (length > available) break;
+		fitting.push(block);
+	}
+
+	return fitting;
 }
 
 /**
