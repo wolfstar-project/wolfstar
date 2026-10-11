@@ -51,7 +51,11 @@ export interface HoneypotCatch {
  * Builds the message that reports a catch of the honeypot to the channel the guild set for it: who wrote in the
  * channel, what was done to them and the case it made, or why nothing could be done, and what they sent.
  *
- * @remarks What was sent is quoted in a code block, so a link of a scam cannot be followed from the log.
+ * @remarks
+ *
+ * What was sent is quoted in a code block, so a link of a scam cannot be followed from the log. The quote is a block of
+ * its own that the log never cuts: a code block split in two leaves its second half without a fence, where a link can
+ * be followed again.
  *
  * @param t - The function to translate with, in the language of the guild.
  * @param caught - Who was caught, and what became of them.
@@ -69,12 +73,14 @@ export function renderHoneypotLog(t: TFunction<AnyNamespace>, caught: HoneypotCa
 			: t('events/moderation:honeypotLogCaught', { ...values, caseId: caught.caseId })
 	];
 	if (caught.attachments > 0) lines.push(t('events/moderation:honeypotLogAttachments', { count: caught.attachments }));
-	if (caught.content.length > 0) lines.push(codeBlock(cutText(caught.content.replaceAll('```', "'''"), MaximumQuotedLength)));
+
+	const content = [lines.join('\n')];
+	if (caught.content.length > 0) content.push(codeBlock(cutText(caught.content.replaceAll('```', "'''"), MaximumQuotedLength)));
 
 	return createLogMessage({
 		color: caught.caseId === null ? Colors.Amber : Colors.Red,
 		author: caught.user,
-		content: lines.join('\n'),
+		content,
 		footer: t('events/moderation:honeypotLogFooter')
 	});
 }
