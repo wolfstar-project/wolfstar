@@ -19,7 +19,9 @@ import {
 	getVisibleKeys,
 	MaximumSelectValues
 } from '#lib/structures/settings-menu/values';
-import { inlineCode, time, TimestampStyles } from '@discordjs/formatters';
+import { chatInputApplicationCommandMention, inlineCode, time, TimestampStyles } from '@discordjs/formatters';
+import { isNullish } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -48,7 +50,6 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 const EntriesPerPage = 7;
 
 const AccentColor = 0x5865f2;
-const ExpiredAccentColor = 0x4f545c;
 
 /**
  * The emojis of the modules, the first groups of the settings.
@@ -418,18 +419,16 @@ export function withSettingsExpiry<Component extends APIMessageTopLevelComponent
 }
 
 /**
- * Renders what a settings menu becomes when it is used after it expired: a line that says so, and no components.
+ * Writes what a click on a settings menu that expired is answered with: that it closed, and the command that opens it
+ * again, as a mention when Discord gave the command an ID, so a click writes it.
  *
  * @param t - The function to translate with.
- * @param command - The command that opens the menu again, `settings server` or `settings user`.
+ * @param subcommand - The subcommand of `/settings` that opens the menu again.
  */
-export function renderSettingsExpired(t: Translator, command: string): SettingsMenuMessage {
-	const content = t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command: inlineCode(`/${command}`) });
-	return {
-		components: [{ type: ComponentType.Container, accent_color: ExpiredAccentColor, components: [text(`⌛ ${content}`)] }],
-		flags: MessageFlags.IsComponentsV2,
-		allowed_mentions: { parse: [] }
-	};
+export function renderSettingsExpired(t: Translator, subcommand: 'server' | 'user'): string {
+	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
+	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention('settings', subcommand, id);
+	return `⌛ ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
 }
 
 function text(content: string): APITextDisplayComponent {
