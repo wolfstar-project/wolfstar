@@ -6,7 +6,7 @@ import {
 	type ConfigurationRule
 } from '#lib/database/settings/transfer/format';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import { parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
+import { checkAutoModerationRuleOptions, parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
 import type { Translator } from '#lib/structures/commands/utils';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import {
@@ -259,12 +259,20 @@ function parseRule(entry: unknown, path: string, t: Translator, issues: Configur
 		return null;
 	}
 
+	const report = (errors: readonly string[]) => {
+		for (const error of errors) issues.push({ path: `${path}.${error.split(':')[0]}`, message: error });
+	};
+
+	// The patch below repairs the options it reads (a wrong type takes its default, a bad entry is dropped), which
+	// would have a broken file empty the options of a rule: they are checked as they are written first.
+	if (isRecord(entry.options)) report(checkAutoModerationRuleOptions(type, entry.options));
+
 	// The type is not a field of the patch, the options of the rule depend on it:
 	const fields = { ...entry };
 	delete fields.type;
 	const parsed = parseAutoModerationRulePatch(type, fields);
 	if (parsed.errors) {
-		for (const error of parsed.errors) issues.push({ path: `${path}.${error.split(':')[0]}`, message: error });
+		report(parsed.errors);
 		return null;
 	}
 

@@ -1,4 +1,4 @@
-import { parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
+import { checkAutoModerationRuleOptions, parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
 import { getDefaultAutoModerationRuleOptions, normalizeAutoModerationRuleOptions } from 'wolfstar-database';
 
 describe('auto-moderation rules', () => {
@@ -109,6 +109,43 @@ describe('auto-moderation rules', () => {
 		test('GIVEN some options THEN the others keep the value the rule has', () => {
 			const { data } = parseAutoModerationRulePatch('Capitals', { options: { maximum: 80 } }, { minimum: 30, maximum: 50 });
 			expect(data?.options).toEqual({ minimum: 30, maximum: 80 });
+		});
+	});
+
+	describe('checkAutoModerationRuleOptions', () => {
+		test('GIVEN options as they are stored THEN nothing is wrong', () => {
+			expect(checkAutoModerationRuleOptions('Words', { words: ['spam', ' SCAM ', 'spam'] })).toEqual([]);
+			expect(checkAutoModerationRuleOptions('NoMentionSpam', { alerts: true, mentionsAllowed: 20, timePeriod: 8 })).toEqual([]);
+			expect(checkAutoModerationRuleOptions('Capitals', { minimum: 5 })).toEqual([]);
+			expect(checkAutoModerationRuleOptions('Attachments', {})).toEqual([]);
+		});
+
+		test('GIVEN a value of the wrong type THEN it is reported by its option', () => {
+			expect(checkAutoModerationRuleOptions('Words', { words: 'spam' })).toEqual(['options.words: Expected an array of strings.']);
+			expect(checkAutoModerationRuleOptions('NoMentionSpam', { alerts: 1 })).toEqual(['options.alerts: Expected a boolean.']);
+			expect(checkAutoModerationRuleOptions('Zalgo', { maximum: '4' })).toEqual(['options.maximum: Expected an integer between 1 and 20.']);
+		});
+
+		test('GIVEN a number that is out of its limits or not whole THEN it is reported', () => {
+			expect(checkAutoModerationRuleOptions('Zalgo', { maximum: 21 })).toHaveLength(1);
+			expect(checkAutoModerationRuleOptions('Zalgo', { maximum: 2.5 })).toHaveLength(1);
+			expect(checkAutoModerationRuleOptions('Zalgo', { maximum: Number.NaN })).toHaveLength(1);
+		});
+
+		test('GIVEN entries that are not valid THEN each is reported by its index', () => {
+			expect(checkAutoModerationRuleOptions('Words', { words: ['spam', 'x', 1] })).toEqual([
+				'options.words[1]: Expected a word of 2 to 32 characters.',
+				'options.words[2]: Expected a string that is not empty.'
+			]);
+			expect(checkAutoModerationRuleOptions('Invites', { allowedCodes: [''] })).toEqual([
+				'options.allowedCodes[0]: Expected a string that is not empty.'
+			]);
+		});
+
+		test('GIVEN an option the type does not have THEN it is reported', () => {
+			expect(checkAutoModerationRuleOptions('Attachments', { maximum: 1 })).toEqual([
+				'options.maximum: Not an option of a rule of type Attachments.'
+			]);
 		});
 	});
 });

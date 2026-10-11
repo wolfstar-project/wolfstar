@@ -263,10 +263,89 @@ describe('configuration file', () => {
 			test('GIVEN the options of a rule THEN they are read as the API reads them', async () => {
 				const parsed = await parseOk({
 					version: 1,
-					automod: { rules: [{ name: 'Words', type: 'Words', options: { words: [' BadWord ', 'BADWORD', 'x'] } }] }
+					automod: { rules: [{ name: 'Words', type: 'Words', options: { words: [' BadWord ', 'BADWORD'] } }] }
 				});
 
 				expect(parsed.rules?.[0].options).toEqual({ words: ['badword'] });
+			});
+
+			test('GIVEN some of the options of a rule THEN the others take the defaults of the type', async () => {
+				const parsed = await parseOk({ version: 1, automod: { rules: [{ name: 'Caps', type: 'Capitals', options: { minimum: 30 } }] } });
+
+				expect(parsed.rules?.[0].options).toEqual({ minimum: 30, maximum: 50 });
+			});
+
+			test('GIVEN options of the wrong type THEN the file is refused instead of taking their defaults', async () => {
+				const rule = (type: string, options: unknown) => ({ name: `Rule ${type}`, type, options });
+				const issues = await parseIssues({
+					version: 1,
+					automod: {
+						rules: [
+							rule('Words', { words: 'spam' }),
+							rule('Links', { allowed: { 0: 'example.com' } }),
+							rule('Capitals', { minimum: '30', maximum: null }),
+							rule('NoMentionSpam', { alerts: 'yes' }),
+							rule('Invites', 'none')
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual([
+					'automod.rules[0].options.words',
+					'automod.rules[1].options.allowed',
+					'automod.rules[2].options.minimum',
+					'automod.rules[2].options.maximum',
+					'automod.rules[3].options.alerts',
+					'automod.rules[4].options'
+				]);
+			});
+
+			test('GIVEN a number out of its limits THEN the file is refused instead of bringing it within them', async () => {
+				const issues = await parseIssues({
+					version: 1,
+					automod: { rules: [{ name: 'Caps', type: 'Capitals', options: { minimum: 1, maximum: 50.5 } }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options.minimum', 'automod.rules[0].options.maximum']);
+				expect(issues[0].message).toContain('between 5 and 2000');
+			});
+
+			test('GIVEN an entry of a list that is not valid THEN the file is refused instead of dropping it', async () => {
+				const issues = await parseIssues({
+					version: 1,
+					automod: {
+						rules: [
+							{ name: 'Words', type: 'Words', options: { words: ['spam', 'x', 5, 'a'.repeat(33)] } },
+							{ name: 'Links', type: 'Links', options: { allowed: ['example.com', '  ', null] } }
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual([
+					'automod.rules[0].options.words[1]',
+					'automod.rules[0].options.words[2]',
+					'automod.rules[0].options.words[3]',
+					'automod.rules[1].options.allowed[1]',
+					'automod.rules[1].options.allowed[2]'
+				]);
+			});
+
+			test('GIVEN an option the type does not have THEN the file is refused instead of ignoring it', async () => {
+				const issues = await parseIssues({
+					version: 1,
+					automod: { rules: [{ name: 'Links', type: 'Links', options: { allowed: [], words: ['spam'] } }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options.words']);
+			});
+
+			test('GIVEN a broken file THEN it cannot empty the list of a rule of the server', async () => {
+				const rules = [createRule('Words', 'Words', '1', { options: { words: ['spam', 'scam'] } })];
+				const result = await parse({ version: 1, automod: { rules: [{ name: 'Words', type: 'Words', options: { words: 'spam' } }] } });
+
+				expect(result.ok).toBe(false);
+				// The rule of the server is only ever planned from a file that was read:
+				expect(rules[0].options).toEqual({ words: ['spam', 'scam'] });
 			});
 
 			test('GIVEN exempt roles and channels THEN they are refused, since they depend on the server', async () => {
