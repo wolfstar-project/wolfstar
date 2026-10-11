@@ -20,6 +20,7 @@ import {
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	claimSettingsExpiredNotice,
 	renderSettingsExpired,
 	renderUserSettings,
 	resolveSettingGroup,
@@ -42,8 +43,9 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInterac
  *
  * What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the user who
  * opened the menu can use it, and they need the administrator level every time, since it may have been taken away from
- * them in the meantime. The menu of the user only needs to be theirs. A menu stops answering fifteen minutes after it
- * was last used: the time is in the custom IDs, which every click renders again, see `SettingsMenuLifetime`.
+ * them in the meantime. The menu of the user only needs to be theirs. A menu stops working fifteen minutes after it
+ * was last used: the time is in the custom IDs, which every click renders again, see `SettingsMenuLifetime`. A click
+ * on it is then told so in an ephemeral message, five times at most.
  */
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
@@ -56,11 +58,14 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/conf:menuWrongUser'));
 
-		// A menu that was left alone too long is closed, as the collector of the message commands closed it:
+		// A menu that was left alone too long is closed. It is left as it is, and the click is told so:
 		if (isSettingsMenuExpired(action)) {
-			const expired = renderSettingsExpired(t, action.verb === 'userToggle' ? 'settings user' : 'settings server');
 			if (interaction instanceof ModalSubmitInteraction) return fail(t('commands/conf:menuExpiredModal'));
-			return (interaction as ComponentInteraction).update(expired);
+
+			// Who keeps clicking is not told again, the click is only acknowledged:
+			const component = interaction as ComponentInteraction;
+			const answered = await claimSettingsExpiredNotice(component.message.id, interaction.user.id);
+			return answered ? fail(renderSettingsExpired(t, action.verb === 'userToggle' ? 'user' : 'server')) : component.deferUpdate();
 		}
 		if (action.verb === 'userToggle' && !(interaction instanceof ModalSubmitInteraction)) return this.toggleUser(interaction, action, t);
 

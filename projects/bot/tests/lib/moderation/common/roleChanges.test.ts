@@ -1,4 +1,5 @@
-import { getRemovedRoles, markOwnRoleChange, takeOwnRoleChange } from '#lib/moderation/common/roleChanges';
+import { getRemovedRoles, getUsersInCourse, markOwnRoleChange, takeOwnRoleChange, type CaseInCourse } from '#lib/moderation/common/roleChanges';
+import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
 
 describe('roleChanges', () => {
@@ -17,6 +18,42 @@ describe('roleChanges', () => {
 
 		test('GIVEN a member whose roles were replaced THEN all the ones that went are returned', () => {
 			expect(getRemovedRoles(['1', '2'], ['3'])).toEqual(['1', '2']);
+		});
+	});
+
+	describe('getUsersInCourse', () => {
+		function entry(
+			id: number,
+			user: string,
+			state: 'active' | 'undo' | 'completed' | 'archived' = 'active',
+			type = TypeVariation.Mute
+		): CaseInCourse {
+			return {
+				id,
+				type,
+				userId: user,
+				isArchived: () => state === 'archived',
+				isCompleted: () => state === 'completed',
+				isUndo: () => state === 'undo'
+			};
+		}
+
+		test('GIVEN a mute that is in course THEN its user is returned', () => {
+			expect(getUsersInCourse([entry(1, 'a')], TypeVariation.Mute)).toEqual(['a']);
+		});
+
+		test('GIVEN a mute that was undone THEN its user is not returned', () => {
+			expect(getUsersInCourse([entry(1, 'a', 'completed'), entry(2, 'a', 'undo')], TypeVariation.Mute)).toEqual([]);
+		});
+
+		test('GIVEN a user who was muted again after an unmute THEN they are returned', () => {
+			expect(getUsersInCourse([entry(3, 'a'), entry(1, 'a', 'completed'), entry(2, 'a', 'undo')], TypeVariation.Mute)).toEqual(['a']);
+		});
+
+		test('GIVEN cases of another type and archived ones THEN they are not looked at', () => {
+			const entries = [entry(1, 'a', 'active', TypeVariation.Warning), entry(2, 'b', 'archived'), entry(3, 'c')];
+
+			expect(getUsersInCourse(entries, TypeVariation.Mute)).toEqual(['c']);
 		});
 	});
 
