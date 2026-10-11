@@ -8,7 +8,7 @@ import { normalizeHostname } from '#lib/moderation/automod/phishing';
 import { normalizeAutoModerationRuleWord } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { Emojis } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
 import { resolveTimeSpan } from '#utils/resolvers';
 import type { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { isNullishOrEmpty } from '@sapphire/utilities';
