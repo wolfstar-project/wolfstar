@@ -1,0 +1,13 @@
+diff --git a/dist/esm/index.js b/dist/esm/index.js
+index e2ec9cf7ef383a447aa5dd0cfc5bd92228fac460..8f25b1b67ce4defa3d7b8154d9b373fbf72ba480 100644
+--- a/dist/esm/index.js
++++ b/dist/esm/index.js
+@@ -2777,7 +2777,7 @@ function makeInteraction(response, interaction) {
+ */
+ function handleError(response, error) {
+ 	container$1.client.emit("error", error);
+-	if (!container$1.client.httpReplyOnError || response.closed) return response;
++	if (!container$1.client.httpReplyOnError || response.writableEnded || response.closed) return response;
+ 	response.statusCode = 500;
+ 	return response.end(ErrorMessages.InternalError);
+ }
