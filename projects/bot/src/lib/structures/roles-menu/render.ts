@@ -1,6 +1,7 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import { PermissionsBits } from '#utils/bits';
 import { BrandingColors } from '#utils/constants';
+import { getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import { inlineCode, roleMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
@@ -168,11 +169,11 @@ export function renderRolesList(context: RolesMenuContext, page: number): RolesM
 		},
 		row(
 			deduplicate([
-				button(id('list', 0), { emoji: '⏮️', disabled: current === 0 }),
-				button(id('list', Math.max(0, current - 1)), { emoji: '◀️', disabled: current === 0 }),
+				button(id('list', 0), { emoji: getEmojiComponent('ArrowLeftFast'), disabled: current === 0 }),
+				button(id('list', Math.max(0, current - 1)), { emoji: getEmojiComponent('ArrowLeft'), disabled: current === 0 }),
 				button(id('jump'), { label: '…', disabled: pages === 1 }),
-				button(id('list', Math.min(pages - 1, current + 1)), { emoji: '▶️', disabled: current >= pages - 1 }),
-				button(id('list', pages - 1), { emoji: '⏭️', disabled: current >= pages - 1 })
+				button(id('list', Math.min(pages - 1, current + 1)), { emoji: getEmojiComponent('ArrowRight'), disabled: current >= pages - 1 }),
+				button(id('list', pages - 1), { emoji: getEmojiComponent('ArrowRightFast'), disabled: current >= pages - 1 })
 			])
 		),
 		row([button(id('pick'), { label: t('commands/management:rolesBrowsePick'), emoji: '🔎', style: ButtonStyle.Primary })])
@@ -206,7 +207,12 @@ export function renderRolesPicker(context: RolesMenuContext, page: number): Role
 				}
 			]
 		},
-		row([button(encodeRolesMenuId({ ownerId, verb: 'list', page }), { label: t('commands/management:rolesBrowseBack'), emoji: '◀️' })])
+		row([
+			button(encodeRolesMenuId({ ownerId, verb: 'list', page }), {
+				label: t('commands/management:rolesBrowseBack'),
+				emoji: getEmojiComponent('ArrowLeft')
+			})
+		])
 	];
 
 	return toMessage([{ type: ComponentType.Container, accent_color: BrandingColors.Primary, components: body }]);
@@ -244,7 +250,10 @@ export function renderRoleView(context: RolesMenuContext, role: RolesMenuRole, p
 			content: cutText(`**${t('commands/management:roleInfoTitles.PERMISSIONS' as never)}**\n${permissions}`, 3500)
 		},
 		row([
-			button(encodeRolesMenuId({ ownerId, verb: 'list', page }), { label: t('commands/management:rolesBrowseBack'), emoji: '◀️' }),
+			button(encodeRolesMenuId({ ownerId, verb: 'list', page }), {
+				label: t('commands/management:rolesBrowseBack'),
+				emoji: getEmojiComponent('ArrowLeft')
+			}),
 			button(encodeRolesMenuId({ ownerId, verb: 'pick', page }), {
 				label: t('commands/management:rolesBrowsePick'),
 				emoji: '🔎',
@@ -296,7 +305,10 @@ function row(components: APIButtonComponentWithCustomId[]): APIActionRowComponen
 
 interface ButtonOptions {
 	label?: string;
-	emoji?: string;
+	/**
+	 * A Unicode emoji, or one of the bot, see `getEmojiComponent`.
+	 */
+	emoji?: string | EmojiComponent;
 	style?: APIButtonComponentWithCustomId['style'];
 	disabled?: boolean;
 }
@@ -307,7 +319,7 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 		custom_id: customId,
 		style: options.style ?? ButtonStyle.Secondary,
 		...(options.label === undefined ? {} : { label: cutText(options.label, 80) }),
-		...(options.emoji === undefined ? {} : { emoji: { name: options.emoji } }),
+		...(options.emoji === undefined ? {} : { emoji: typeof options.emoji === 'string' ? { name: options.emoji } : options.emoji }),
 		...(options.disabled ? { disabled: true } : {})
 	};
 }
