@@ -24,7 +24,13 @@ export class UserTask extends ScheduledTask<'honeypotUpkeep'> {
 			if (getHoneypotUpkeepHour(upkeep.guildId) !== hour) continue;
 
 			try {
-				await runHoneypotUpkeep(upkeep);
+				const result = await runHoneypotUpkeep(upkeep);
+				// The channel keeps the warning it had, and the server is not told: the log is where it shows.
+				if (result === 'failed') {
+					logger.warn(
+						`[Honeypot] Could not send the message of the day to the channel ${upkeep.channelId} of the guild ${upkeep.guildId}.`
+					);
+				}
 			} catch (error) {
 				logger.error(`[Honeypot] Could not keep up the channel ${upkeep.channelId} of the guild ${upkeep.guildId}:`, error);
 			}

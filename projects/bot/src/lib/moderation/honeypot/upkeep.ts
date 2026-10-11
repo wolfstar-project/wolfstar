@@ -1,11 +1,11 @@
 import { resolveOnErrorCodes } from '#common';
-import { writeSettings } from '#lib/database';
-import { refreshHoneypotNotice, renderHoneypotNotice } from '#lib/moderation/honeypot/channel';
+import { writeSettingsTransaction } from '#lib/database';
+import { refreshHoneypotNotice, removeHoneypotNotice, renderHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
 import { fetchGuildT } from '#lib/moderation/common';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
-import type { HoneypotUpkeep } from 'wolfstar-database';
+import type { HoneypotUpkeep, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
  * The names a honeypot channel that is renamed every day goes through, so the trap cannot be told apart by one name.
@@ -30,6 +30,11 @@ export const HoneypotChannelNames = [
 	'crypto-signals',
 	'airdrops'
 ] as const;
+
+/**
+ * What became of the upkeep of a honeypot channel, see {@linkcode runHoneypotUpkeep}.
+ */
+export type HoneypotUpkeepResult = 'done' | 'gone' | 'skipped' | 'failed';
 
 /**
  * The errors that mean the bot can no longer do something in the channel, which is not a reason to stop the rest of
@@ -68,32 +73,77 @@ export function pickHoneypotChannelName(current: string | null, random = Math.ra
  * it too, and it is deleted at once: the channel still becomes the latest one that had activity. A channel that was
  * deleted is taken off the settings, so the honeypot is off until it is set up again.
  *
- * @param upkeep - The honeypot channel and what is done to it.
- * @returns `'gone'` when the channel does not exist anymore, `'done'` otherwise.
+ * The task read the honeypots of every guild before it kept the first one up, and an administrator may have disabled
+ * this one, moved it or changed what is done to it since. So the upkeep runs under the lock of the honeypot, as the
+ * commands do, and does what the settings say now: a channel that is not the honeypot anymore is not renamed nor
+ * written in, and the settings are only cleared of the channel that is gone, not of the one that took its place.
+ *
+ * @param upkeep - The honeypot channel the task read.
+ * @returns `'gone'` when the channel does not exist anymore and the honeypot was turned off, `'skipped'` when the
+ * settings changed and there is nothing to do for this channel, `'failed'` when the message of the day could not be
+ * sent (the warning the channel had is kept), `'done'` otherwise.
  */
-export async function runHoneypotUpkeep(upkeep: HoneypotUpkeep): Promise<'done' | 'gone'> {
-	const { gatewayClient } = container;
+export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'channelId'>): Promise<HoneypotUpkeepResult> {
 	const { guildId, channelId } = upkeep;
 
-	const channel = await resolveOnErrorCodes(gatewayClient.channels.fetch(channelId), RESTJSONErrorCodes.UnknownChannel);
-	if (isNullish(channel) || !('guildId' in channel) || channel.guildId !== guildId) {
-		await writeSettings(guildId, { honeypotChannel: null }, gatewayClient.user!.id);
-		return 'gone';
-	}
+	return withHoneypotLock(guildId, async () => {
+		const { gatewayClient } = container;
 
-	if (upkeep.randomName) {
-		const name = pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
-		await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
-	}
+		const settings = await readCurrentSettings(guildId);
+		if (settings.honeypotChannel !== channelId) return 'skipped';
+		if (!settings.honeypotRandomName && !settings.honeypotKeepActive) return 'skipped';
 
-	if (!upkeep.keepActive) return 'done';
-	if (upkeep.warning) {
-		await refreshHoneypotNotice(guildId, channelId, upkeep);
+		const channel = await resolveOnErrorCodes(gatewayClient.channels.fetch(channelId), RESTJSONErrorCodes.UnknownChannel);
+		if (isNullish(channel) || !('guildId' in channel) || channel.guildId !== guildId) {
+			const cleared = await clearHoneypotChannel(guildId, channelId);
+			return cleared ? 'gone' : 'skipped';
+		}
+
+		if (settings.honeypotRandomName) {
+			const name = pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
+			await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
+		}
+
+		if (!settings.honeypotKeepActive) return 'done';
+
+		const action = settings.honeypotAction;
+		if (settings.honeypotWarning) {
+			// The warning the channel had stays when the new one cannot be sent, which the task has to tell about:
+			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: true, action });
+			return noticed ? 'done' : 'failed';
+		}
+
+		const notice = renderHoneypotNotice(await fetchGuildT({ id: guildId }), action);
+		const sent = await resolveOnErrorCodes(gatewayClient.api.channels.createMessage(channelId, notice), ...IgnoredCodes);
+		if (sent === null) return 'failed';
+
+		await resolveOnErrorCodes(gatewayClient.messages.delete(channelId, sent.id, 'Honeypot'), ...IgnoredCodes);
 		return 'done';
-	}
+	});
+}
 
-	const notice = renderHoneypotNotice(await fetchGuildT({ id: guildId }), upkeep.action);
-	const sent = await resolveOnErrorCodes(gatewayClient.api.channels.createMessage(channelId, notice), ...IgnoredCodes);
-	if (sent !== null) await resolveOnErrorCodes(gatewayClient.messages.delete(channelId, sent.id, 'Honeypot'), ...IgnoredCodes);
-	return 'done';
+/**
+ * Reads the settings of a guild as the database has them. The ones a process caches may be a moment behind a write of
+ * another shard, and the upkeep must not act on a honeypot that was just disabled.
+ */
+async function readCurrentSettings(guildId: Snowflake): Promise<ReadonlyGuildData> {
+	using trx = await writeSettingsTransaction(guildId);
+	return { ...trx.settings };
+}
+
+/**
+ * Turns the honeypot of a guild off when its channel is gone, and forgets the warning that went with it.
+ *
+ * @remarks The channel is compared inside the transaction of the settings: an administrator who set the honeypot up
+ * again in another channel meanwhile keeps it.
+ *
+ * @returns Whether the honeypot was turned off.
+ */
+async function clearHoneypotChannel(guildId: Snowflake, channelId: Snowflake): Promise<boolean> {
+	using trx = await writeSettingsTransaction(guildId);
+	if (trx.settings.honeypotChannel !== channelId) return false;
+
+	await trx.write({ honeypotChannel: null }).submitWithAudit(container.gatewayClient.user!.id);
+	await removeHoneypotNotice(guildId);
+	return true;
 }
