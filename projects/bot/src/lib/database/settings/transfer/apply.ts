@@ -25,8 +25,9 @@ export async function applyConfigurationImport(guildId: Snowflake, parsed: Parse
 	// The locks are taken in the order the rest of the bot takes them, the settings and then the rules:
 	using transaction = await writeSettingsTransaction(guildId);
 
-	// This holds the lock of the rules, and gives the rules as the database has them:
-	return writeAutoModerationRules(guildId, async (rules) => {
+	// This holds the lock of the rules, and gives the rules as the database has them. It is awaited here: the lock of
+	// the settings is released when this function returns, which a promise that is only returned does before it settles.
+	return await writeAutoModerationRules(guildId, async (rules) => {
 		const plan = planConfigurationImport(transaction.settings, rules, parsed);
 		if (plan.isEmpty) return plan;
 
