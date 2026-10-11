@@ -1,4 +1,4 @@
-import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
+import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
 import type { Translator } from '#lib/structures/commands/utils';
 import {
 	CommandQueryMaximumLength,
@@ -110,14 +110,30 @@ export const CommandsSearchInputId = 'query';
  */
 export const CommandsPageInputId = 'page';
 
-const CategoryEmojis: Record<string, string> = {
-	[AllCategoriesValue]: '📋',
-	Admin: '⚙️',
-	General: '🧭',
-	Management: '🛠️',
-	Moderation: '🔨',
-	Tools: '🧰'
+const CategoryEmojis: Record<string, EmojiKey> = {
+	[AllCategoriesValue]: 'CategoryAll',
+	Admin: 'CategoryAdmin',
+	General: 'CategoryGeneral',
+	Management: 'CategoryManagement',
+	Moderation: 'CategoryModeration',
+	Tools: 'CategoryTools'
 };
+
+/**
+ * Gets the emoji of a category for its option of the select menu, a folder for one that has none.
+ */
+function getCategoryEmoji(category: string): EmojiComponent {
+	const key = CategoryEmojis[category];
+	return key === undefined ? { name: '📁' } : getEmojiComponent(key);
+}
+
+/**
+ * Writes the emoji of a category in a text, see {@linkcode getCategoryEmoji}.
+ */
+function formatCategoryEmoji(category: string): string {
+	const key = CategoryEmojis[category];
+	return key === undefined ? '📁' : Emojis[key];
+}
 
 export interface CommandsMenuContext {
 	/**
@@ -166,21 +182,21 @@ export function renderCommandsList(context: CommandsMenuContext, category: strin
 			label: t('commands/commands:menuAllCommands'),
 			description: t('commands/commands:menuCount', { count: context.commands.length }),
 			value: AllCategoriesValue,
-			emoji: { name: CategoryEmojis[AllCategoriesValue] },
+			emoji: getCategoryEmoji(AllCategoriesValue),
 			default: current === ''
 		},
 		...categories.map((entry) => ({
 			label: entry.name,
 			description: t('commands/commands:menuCount', { count: entry.count }),
 			value: entry.name,
-			emoji: { name: CategoryEmojis[entry.name] ?? '📁' },
+			emoji: getCategoryEmoji(entry.name),
 			default: entry.name === current
 		}))
 	];
 
 	return renderPage(context, {
 		subtitle: t('commands/commands:menuSubtitle'),
-		title: `${CategoryEmojis[current === '' ? AllCategoriesValue : current] ?? '📁'} ${current === '' ? t('commands/commands:menuAllCommands') : current}`,
+		title: `${formatCategoryEmoji(current === '' ? AllCategoriesValue : current)} ${current === '' ? t('commands/commands:menuAllCommands') : current}`,
 		entries,
 		page,
 		verb: 'list',
