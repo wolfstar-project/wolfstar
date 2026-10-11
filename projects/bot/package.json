@@ -45,7 +45,7 @@
 		"@skyra/char": "^1.0.3",
 		"@wolfstar/decorators": "^0.1.2",
 		"@wolfstar/env-utilities": "^2.3.1",
-		"@wolfstar/http-framework": "^6.3.1",
+		"@wolfstar/http-framework": "6.3.2-next-20261011190015",
 		"@wolfstar/http-framework-utilities": "^0.1.0",
 		"@wolfstar/kit": "^0.2.1",
 		"@wolfstar/plugin-api": "^2.1.1",
