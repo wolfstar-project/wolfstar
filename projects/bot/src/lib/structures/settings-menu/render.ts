@@ -19,7 +19,9 @@ import {
 	getVisibleKeys,
 	MaximumSelectValues
 } from '#lib/structures/settings-menu/values';
-import { inlineCode, time, TimestampStyles } from '@discordjs/formatters';
+import { chatInputApplicationCommandMention, inlineCode, time, TimestampStyles } from '@discordjs/formatters';
+import { isNullish } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -48,7 +50,6 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 const EntriesPerPage = 7;
 
 const AccentColor = 0x5865f2;
-const ExpiredAccentColor = 0x4f545c;
 
 /**
  * The emojis of the modules, the first groups of the settings.
@@ -388,31 +389,47 @@ function getPathTitle(t: Translator, group: SchemaGroup): string {
 
 function toMessage(t: Translator, components: APIMessageTopLevelComponent[]): SettingsMenuMessage {
 	// The values mention roles and channels, which must not ping anybody:
-	return { components: [...components, renderSettingsExpiry(t)], flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
+	return { components: withSettingsExpiry(t, components), flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
 }
 
 /**
- * The line under a settings menu that says when it expires, which Discord counts down.
+ * The line of a settings menu that says when it expires, which Discord counts down.
  *
  * @param t - The function to translate with.
  */
-export function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
+function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
 	return text(`-# ⏳ ${t('commands/conf:menuExpires', { time: time(getSettingsMenuExpiry(), TimestampStyles.RelativeTime) })}`);
 }
 
 /**
- * Renders what a settings menu becomes when it is used after it expired: a line that says so, and no components.
+ * Adds the line that says when a settings menu expires at the bottom of its last container, so it is part of the menu
+ * and not a line that floats under it.
  *
  * @param t - The function to translate with.
- * @param command - The command that opens the menu again, `settings server menu` or `settings user`.
+ * @param components - The components of the menu.
  */
-export function renderSettingsExpired(t: Translator, command: string): SettingsMenuMessage {
-	const content = t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command: inlineCode(`/${command}`) });
-	return {
-		components: [{ type: ComponentType.Container, accent_color: ExpiredAccentColor, components: [text(`⌛ ${content}`)] }],
-		flags: MessageFlags.IsComponentsV2,
-		allowed_mentions: { parse: [] }
-	};
+export function withSettingsExpiry<Component extends APIMessageTopLevelComponent>(t: Translator, components: readonly Component[]) {
+	// A menu may end with the row that goes from a page to another, which is under its last container:
+	const index = components.findLastIndex((component) => component.type === ComponentType.Container);
+	const last = components[index];
+	if (last?.type !== ComponentType.Container) return [...components, renderSettingsExpiry(t)];
+
+	const container = { ...last, components: [...last.components, renderSettingsExpiry(t)] };
+	return components.with(index, container);
+}
+
+/**
+ * Writes what a click on a settings menu that expired is answered with: that it closed, and the command that opens it
+ * again, as a mention when Discord gave the command an ID, so a click writes it.
+ *
+ * @param t - The function to translate with.
+ * @param subcommand - The subcommand of `/settings` that opens the menu again, with its group.
+ */
+export function renderSettingsExpired(t: Translator, subcommand: 'server menu' | 'user'): string {
+	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
+	// The mention of a subcommand takes its path as it is written, group included:
+	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention(`settings ${subcommand}`, id);
+	return `⌛ ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
 }
 
 function text(content: string): APITextDisplayComponent {
