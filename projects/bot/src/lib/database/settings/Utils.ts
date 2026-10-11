@@ -1,9 +1,9 @@
 import type { ISchemaValue } from '#lib/database/settings/base/ISchemaValue';
-import { getConfigurableGroups } from '#lib/database/settings/configuration';
+import { getConfigurableGroups, getConfigurableKeys, type SchemaDataKey } from '#lib/database/settings/configuration';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import type { GuildData, ReadonlyGuildData } from 'wolfstar-database';
-import type { Translator } from '#lib/structures/commands/utils';
+import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { UserError } from '@wolfstar/http-framework';
 
 export function isSchemaGroup(groupOrKey: ISchemaValue): groupOrKey is SchemaGroup {
@@ -94,4 +94,15 @@ export function resolveSchemaPath(path: string): SchemaGroup | SchemaKey {
 	if (!path) return getConfigurableGroups();
 
 	return getConfigurableGroups().getPathString(path) ?? getConfigurableGroups();
+}
+
+/**
+ * The translated name of a setting, `rolesMuted` being `Muted Role`.
+ *
+ * @param t - The function to translate with.
+ * @param property - The property of the setting, as it is in {@linkcode GuildData}. What is not a setting is returned as it
+ * was written.
+ */
+export function getSettingName(t: Translator, property: string): string {
+	return getConfigurableKeys().has(property as SchemaDataKey) ? t(`settings:names.${property}` as TranslationKey) : property;
 }

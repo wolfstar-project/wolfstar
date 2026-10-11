@@ -41,8 +41,6 @@ export function getDefaultGuildSettings() {
 		logsEmojiUpdate: null,
 		logsEmojiDelete: null,
 		logsServerUpdate: null,
-		logsCommand: null,
-		logsSettings: null,
 		logsIgnoreAll: [],
 		logsIgnoreMessages: [],
 		logsIgnoreReactions: [],

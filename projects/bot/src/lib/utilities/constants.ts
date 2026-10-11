@@ -8,12 +8,6 @@ export const rootFolder = join(mainFolder, '..');
 export const ZeroWidthSpace = '\u200B';
 export const LongWidthSpace = '\u3000';
 
-export const EmojiData = {
-	MessageAttachmentIcon: { id: '1262394450580340786', name: 'MessageAttachmentIcon', animated: false },
-	IntegrationIcon: { id: '1251906194759749653', name: 'IntegrationIcon', animated: false },
-	MembersIcon: { id: '1262394698287550474', name: 'MembersIcon', animated: false }
-} as const;
-
 export const ModeratorPermissionsList = [
 	['ManageChannels', PermissionFlagsBits.ManageChannels],
 	['ManageRoles', PermissionFlagsBits.ManageRoles],
@@ -33,58 +27,6 @@ export const ModeratorPermissionsList = [
 ] as const;
 
 export const ModeratorPermissionsBits = ModeratorPermissionsList.reduce((acc, [, bit]) => acc | bit, 0n);
-
-export const enum Emojis {
-	// ArrowB = '<:ArrowB:694594285269680179>',
-	// ArrowBL = '<:ArrowBL:694594285118685259>',
-	// ArrowBR = '<:ArrowBR:694594285445578792>',
-	// ArrowL = '<:ArrowL:694594285521207436>',
-	// ArrowR = '<:ArrowR:694594285466812486>',
-	// ArrowT = '<:ArrowT:694594285487652954>',
-	// ArrowTL = '<:ArrowTL:694594285625933854>',
-	// ArrowTR = '<:ArrowTR:694594285412155393>',
-	ArrowLeft = '<:ArrowL:973978245580075069>',
-	ArrowRight = '<:ArrowR:973978026536747008>',
-	ArrowLeftFast = '<:ArrowFastL:973976973120528484>',
-	ArrowRightFast = '<:ArrowFastR:973977208978800640>',
-	Stop = '<:Stop:973961000313303060>',
-	BoostLevel1 = '<:boostlvl1:935169049523019786>',
-	BoostLevel2 = '<:boostlvl2:935169110311063612>',
-	BoostLevel3 = '<:boostlvl3:935169145056686101>',
-	BoostLevel4 = '<:boostlvl4:935169181362569246>',
-	BoostLevel5 = '<:boostlvl5:935170651117998080>',
-	BoostLevel6 = '<:boostlvl6:935170683653193788>',
-	BoostLevel7 = '<:boostlvl7:935170720365944942>',
-	BoostLevel8 = '<:boostlvl8:935170763894439996>',
-	BoostLevel9 = '<:boostlvl9:935170794374447184>',
-	Bot = '<:bot:1262395021173456916>',
-	IntegrationIcon = '<:IntegrationIcon:1251906194759749653>',
-	Frame = '<:frame:1262396085176107040>',
-	GreenTick = '<:greenTick:1043562833905987685>',
-	GreenTickSerialized = 's1043562833905987685',
-	Loading = '<a:loading:1257373445151395901>',
-	RedCross = '<:redCross:1043562794336919605>',
-	Calendar = '<:calendar_icon:1262390721399492650>',
-	Hourglass = '<:hourglass:1262391693823578245>',
-	Member = '<:member:1262381522942558208>',
-	ShieldMember = '<:shield_member:1262389159155335198>',
-	Moderator = '<:moderator:1262383567388938240>',
-	AutoModerator = '<:auto_moderator:1226106862147993650>',
-	SpammerIcon = '<:spammer:1262395235640676353>',
-	QuarantinedIcon = '<:quarantined:1262395690143973396>',
-	Reply = '<:reply:1262387069909733406>',
-	ReplyInactive = '<:reply_inactive:1262386545529196568>',
-	Flag = '<:flag:1262387528774848522>',
-	FlagInactive = '<:flag_inactive:1262387790348419129>',
-	Timer = '<:timer:985524723490381826>',
-	Bucket = '<:bucket:1262384919783411813>',
-	Delete = '<:delete:1262382721276186704>',
-	DeleteInactive = '<:delete_inactive:1262382743115923478>',
-	Timeout = '<:timeout:1262379856470212659>',
-	Kick = '<:kick:1262378332633174017>',
-	Softban = '<:softban:1262384411245150208>',
-	Ban = '<:ban:1262378308050489468>'
-}
 
 export const enum BrandingColors {
 	Primary = 0x050505,
