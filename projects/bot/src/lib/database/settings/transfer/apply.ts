@@ -1,10 +1,26 @@
 import { readSettingsAuditLog, writeSettingsTransaction } from '#lib/database/settings/functions';
 import type { ParsedConfiguration } from '#lib/database/settings/transfer/parse';
-import { getPlannedRules, getPlannedSettings, planConfigurationImport, type ConfigurationPlan } from '#lib/database/settings/transfer/plan';
+import {
+	findOversizedRuleLists,
+	getPlannedRules,
+	getPlannedSettings,
+	planConfigurationImport,
+	type ConfigurationPlan
+} from '#lib/database/settings/transfer/plan';
 import { announceAutoModerationRulesChange, writeAutoModerationRules } from '#lib/moderation/automod/rules';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 import { writeAutoModerationRulePlan, type AutoModerationRule } from 'wolfstar-database';
+
+/**
+ * What an import throws when the server changed since the file was read in a way that makes the file one it would
+ * have refused: nothing was written, and the file has to be read again.
+ */
+export class ConfigurationImportStaleError extends Error {
+	public constructor() {
+		super('The server changed since the file of the import was read.');
+	}
+}
 
 /**
  * Writes what a file holds to a server, in one database transaction: the settings and the rules are all written or none
@@ -20,6 +36,8 @@ import { writeAutoModerationRulePlan, type AutoModerationRule } from 'wolfstar-d
  * @param parsed - What the file holds, see `parseConfigurationFile`.
  * @param actorId - The user who confirmed the import, for the audit log.
  * @returns What was done.
+ * @throws {@linkcode ConfigurationImportStaleError} When a list of a rule of the file is longer than the limit and than
+ * the one the rule of the server has by now, which the file was allowed for when it was read.
  */
 export async function applyConfigurationImport(guildId: Snowflake, parsed: ParsedConfiguration, actorId: string): Promise<ConfigurationPlan> {
 	// The locks are taken in the order the rest of the bot takes them, the settings and then the rules:
@@ -28,6 +46,8 @@ export async function applyConfigurationImport(guildId: Snowflake, parsed: Parse
 	// This holds the lock of the rules, and gives the rules as the database has them. It is awaited here: the lock of
 	// the settings is released when this function returns, which a promise that is only returned does before it settles.
 	return await writeAutoModerationRules(guildId, async (rules) => {
+		if (findOversizedRuleLists(rules, parsed).length > 0) throw new ConfigurationImportStaleError();
+
 		const plan = planConfigurationImport(transaction.settings, rules, parsed);
 		if (plan.isEmpty) return plan;
 

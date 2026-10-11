@@ -7,7 +7,7 @@ import {
 	isPortableKey
 } from '#lib/database/settings/transfer/format';
 import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
-import { getPlannedRules, getPlannedSettings, planConfigurationImport } from '#lib/database/settings/transfer/plan';
+import { findOversizedRuleLists, getPlannedRules, getPlannedSettings, planConfigurationImport } from '#lib/database/settings/transfer/plan';
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
@@ -17,6 +17,7 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 import {
 	getDefaultAutoModerationRule,
 	getDefaultGuildSettings,
+	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRules,
 	type AutoModerationRule,
 	type AutoModerationRuleType,
@@ -58,17 +59,23 @@ function createRule<Type extends AutoModerationRuleType>(type: Type, name: strin
 	return { ...getDefaultAutoModerationRule(type), id, guildId, name, ...overrides } as AutoModerationRule;
 }
 
-const context = () => ({ settings: createSettings(), guild: { id: guildId } as Guild, t: t as never });
-const parse = (file: unknown) => parseConfigurationFile(typeof file === 'string' ? file : JSON.stringify(file), context());
+const context = (rules: readonly AutoModerationRule[] = []) => ({
+	settings: createSettings(),
+	rules,
+	guild: { id: guildId } as Guild,
+	t: t as never
+});
+const parse = (file: unknown, rules: readonly AutoModerationRule[] = []) =>
+	parseConfigurationFile(typeof file === 'string' ? file : JSON.stringify(file), context(rules));
 
-async function parseOk(file: unknown) {
-	const result = await parse(file);
+async function parseOk(file: unknown, rules: readonly AutoModerationRule[] = []) {
+	const result = await parse(file, rules);
 	if (!result.ok) throw new Error(`Expected a valid file: ${JSON.stringify(result.issues)}`);
 	return result.value;
 }
 
-async function parseIssues(file: unknown) {
-	const result = await parse(file);
+async function parseIssues(file: unknown, rules: readonly AutoModerationRule[] = []) {
+	const result = await parse(file, rules);
 	if (result.ok) throw new Error('Expected the file to be refused.');
 	return result.issues;
 }
@@ -378,6 +385,88 @@ describe('configuration file', () => {
 					'automod.rules[3].hardAction',
 					'automod.rules[4].thresholdMaximum'
 				]);
+			});
+
+			describe('lists longer than the limit', () => {
+				const words = (length: number) => Array.from({ length }, (_, index) => `word${index}`);
+				const over = MaximumAutoModerationRuleListLength + 1;
+				const file = (length: number, name = 'Words') => ({
+					version: 1,
+					automod: { rules: [{ name, type: 'Words', options: { words: words(length) } }] }
+				});
+
+				test('GIVEN a list at the limit THEN it is read in any server', async () => {
+					const parsed = await parseOk(file(MaximumAutoModerationRuleListLength));
+
+					expect(parsed.rules?.[0].options).toEqual({ words: words(MaximumAutoModerationRuleListLength) });
+				});
+
+				test('GIVEN the backup of a rule that holds more THEN it is restored on that rule, whole', async () => {
+					const rules = [createRule('Words', 'words', '1', { options: { words: words(over) } })];
+					const parsed = await parseOk(file(over), rules);
+
+					expect(parsed.rules?.[0].options).toEqual({ words: words(over) });
+					expect(planConfigurationImport(createSettings(), rules, parsed).rules).toMatchObject({ update: [{ fields: ['name'] }] });
+				});
+
+				test('GIVEN a rule that holds more than the file THEN the list of the file can be shorter and still over the limit', async () => {
+					const rules = [createRule('Words', 'Words', '1', { options: { words: words(over + 10) } })];
+					const parsed = await parseOk(file(over), rules);
+
+					expect(parsed.rules?.[0].options).toEqual({ words: words(over) });
+				});
+
+				test('GIVEN no rule of that name and type, or one that holds less, THEN the file cannot make the list grow', async () => {
+					const expected = [{ path: 'automod.rules[0].options.words' }];
+
+					expect(await parseIssues(file(over))).toMatchObject(expected);
+					expect(await parseIssues(file(over), [createRule('Words', 'Other', '1', { options: { words: words(over) } })])).toMatchObject(
+						expected
+					);
+					expect(await parseIssues(file(over), [createRule('Links', 'Words', '1')])).toMatchObject(expected);
+					expect(await parseIssues(file(over), [createRule('Words', 'Words', '1', { options: { words: words(over - 1) } })])).toMatchObject(
+						expected
+					);
+					expect(await parseIssues(file(over + 1), [createRule('Words', 'Words', '1', { options: { words: words(over) } })])).toMatchObject(
+						expected
+					);
+				});
+
+				test('GIVEN every list of the options THEN each has the allowance', async () => {
+					const entries = (prefix: string) => Array.from({ length: over }, (_, index) => `${prefix}${index}`);
+					const invites = { allowedCodes: entries('code'), allowedGuilds: entries('10000000000000') };
+					const links = { allowed: entries('host').map((host) => `${host}.com`) };
+					const rules = [
+						{ name: 'Invites', type: 'Invites', options: invites },
+						{ name: 'Links', type: 'Links', options: links },
+						{ name: 'Phishing', type: 'Phishing', options: links }
+					];
+					const server = [
+						createRule('Invites', 'Invites', '1', { options: invites }),
+						createRule('Links', 'Links', '2', { options: links }),
+						createRule('Phishing', 'Phishing', '3', { options: links })
+					];
+
+					const parsed = await parseOk({ version: 1, automod: { rules } }, server);
+					expect(planConfigurationImport(createSettings(), server, parsed).isEmpty).toBe(true);
+
+					const issues = await parseIssues({ version: 1, automod: { rules } });
+					expect(issues.map((issue) => issue.path)).toEqual([
+						'automod.rules[0].options.allowedCodes',
+						'automod.rules[0].options.allowedGuilds',
+						'automod.rules[1].options.allowed',
+						'automod.rules[2].options.allowed'
+					]);
+				});
+
+				test('GIVEN the rule lost entries after the file was read THEN the list of the file is found too long', async () => {
+					const rule = createRule('Words', 'Words', '1', { options: { words: words(over) } });
+					const parsed = await parseOk(file(over), [rule]);
+
+					expect(findOversizedRuleLists([rule], parsed)).toEqual([]);
+					expect(findOversizedRuleLists([{ ...rule, options: { words: words(5) } }], parsed)).toEqual([{ rule: 'Words', option: 'words' }]);
+					expect(findOversizedRuleLists([], parsed)).toEqual([{ rule: 'Words', option: 'words' }]);
+				});
 			});
 
 			test('GIVEN two rules with the same name, whatever the case, THEN the file is refused', async () => {

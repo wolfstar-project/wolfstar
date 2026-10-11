@@ -1,5 +1,5 @@
 import { readSettings } from '#lib/database';
-import { applyConfigurationImport } from '#lib/database/settings/transfer/apply';
+import { applyConfigurationImport, ConfigurationImportStaleError } from '#lib/database/settings/transfer/apply';
 import { downloadConfigurationFile } from '#lib/database/settings/transfer/attachment';
 import { MaximumConfigurationFileSize } from '#lib/database/settings/transfer/format';
 import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
@@ -56,7 +56,7 @@ export class UserCommand extends Command {
 		if (text === null) return deferred.update({ content: t('commands/conf:transferErrorDownload') });
 
 		const [settings, guild, rules] = await Promise.all([readSettings(guildId), resolveGuild(guildId), readAutoModerationRules(guildId)]);
-		const parsed = await parseConfigurationFile(text, { settings, guild, t });
+		const parsed = await parseConfigurationFile(text, { settings, rules, guild, t });
 		if (!parsed.ok) return deferred.update({ content: renderConfigurationIssues(parsed.issues, t) });
 
 		const plan = planConfigurationImport(settings, rules, parsed.value);
@@ -81,7 +81,12 @@ export class UserCommand extends Command {
 		if (!confirmed) return deferred.update({ content: t('commands/conf:transferImportCancelled'), embeds: [], components: [] });
 
 		// The plan is worked out again under the locks, from what the database has now:
-		const done = await applyConfigurationImport(guildId, parsed.value, interaction.user.id);
+		const done = await applyConfigurationImport(guildId, parsed.value, interaction.user.id).catch((error: unknown) => {
+			if (error instanceof ConfigurationImportStaleError) return null;
+			throw error;
+		});
+		if (done === null) return deferred.update({ content: t('commands/conf:transferImportStale'), embeds: [], components: [] });
+
 		const { create, update, remove } = done.rules;
 		const content = done.isEmpty
 			? t('commands/conf:transferNothing')

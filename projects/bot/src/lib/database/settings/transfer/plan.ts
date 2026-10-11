@@ -4,6 +4,7 @@ import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { isDeepStrictEqual } from 'node:util';
 import {
 	getDefaultAutoModerationRule,
+	MaximumAutoModerationRuleListLength,
 	type AutoModerationRule,
 	type AutoModerationRulePlan,
 	type GuildData,
@@ -109,6 +110,45 @@ export function planConfigurationImport(
 
 	plan.isEmpty = changes.length === 0 && plan.rules.create.length === 0 && plan.rules.update.length === 0 && plan.rules.remove.length === 0;
 	return plan;
+}
+
+/**
+ * A list of the options of a rule of a file that is longer than the server lets it be.
+ */
+export interface OversizedRuleList {
+	/** The name of the rule. */
+	rule: string;
+	/** The option of the rule that holds the list, `words`. */
+	option: string;
+}
+
+/**
+ * Finds the lists of the rules of a file that are longer than `MaximumAutoModerationRuleListLength` and than the list
+ * the rule of the server with the same name and type has.
+ *
+ * @remarks `parseConfigurationFile` refuses them, against the rules the server had when the file was read. This is the
+ * same check against the rules it has when the import is written, which may be later: a list that was shortened
+ * meanwhile no longer allows the one of the file.
+ *
+ * @param rules - The rules of the server, as the database has them.
+ * @param parsed - What the file holds, see `parseConfigurationFile`.
+ */
+export function findOversizedRuleLists(rules: readonly AutoModerationRule[], parsed: ParsedConfiguration): OversizedRuleList[] {
+	const oversized: OversizedRuleList[] = [];
+	for (const data of parsed.rules ?? []) {
+		const lower = data.name.toLowerCase();
+		const current = rules.find((rule) => rule.type === data.type && rule.name.toLowerCase() === lower);
+		const currentOptions = (current?.options ?? {}) as Record<string, unknown>;
+
+		for (const [option, value] of Object.entries(data.options)) {
+			if (!Array.isArray(value) || value.length <= MaximumAutoModerationRuleListLength) continue;
+
+			const previous = currentOptions[option];
+			if (!Array.isArray(previous) || value.length > previous.length) oversized.push({ rule: data.name, option });
+		}
+	}
+
+	return oversized;
 }
 
 /**

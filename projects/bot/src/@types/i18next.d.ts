@@ -627,6 +627,7 @@ declare module "i18next" {
         transferImportCancel: "Cancel";
         transferImportCancelled: "Nothing was imported.";
         transferImportExpired: "I did not get an answer, so nothing was imported.";
+        transferImportStale: "The server changed since I read the file, and the file no longer fits it, so nothing was imported. Run the command again.";
         transferImportDone: "Imported: {{settings}} settings changed. Rules: {{created}} created, {{updated}} edited, {{removed}} deleted.";
         transferNothing: "The server already has this configuration, so there is nothing to import.";
         transferPreviewTitle: "Import this configuration?";

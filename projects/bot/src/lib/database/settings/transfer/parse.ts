@@ -12,9 +12,11 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 import {
 	AutoModerationRuleTypes,
 	getDefaultAutoModerationRule,
+	getDefaultAutoModerationRuleOptions,
 	isAutoModerationRuleType,
 	MaximumAutoModerationRuleNameLength,
 	MaximumAutoModerationRules,
+	type AutoModerationRule,
 	type ReadonlyGuildData
 } from 'wolfstar-database';
 
@@ -43,6 +45,11 @@ export type ParseConfigurationResult = { ok: true; value: ParsedConfiguration } 
 export interface ParseConfigurationContext {
 	/** The settings of the server the file is imported in, which the serializers validate against. */
 	settings: ReadonlyGuildData;
+	/**
+	 * The rules of the server the file is imported in: a list of a rule can be as long as the one the rule of the same
+	 * name and type has there, however long that is.
+	 */
+	rules: readonly AutoModerationRule[];
 	guild: Guild;
 	t: Translator;
 }
@@ -56,7 +63,9 @@ const FileFields = new Set(['version', 'exportedAt', 'settings', 'automod']);
  *
  * Nothing is written, and nothing is dropped: the file is accepted whole or refused with everything that is wrong in it.
  * What a setting is validated with is its serializer (`isValid`, as the dashboard does), and a rule goes through
- * `parseAutoModerationRulePatch`, as the body of a request to the API does. A setting that is not one of the file (it
+ * `parseAutoModerationRulePatch`, as the body of a request to the API does: a list of its options holds
+ * `MaximumAutoModerationRuleListLength` entries at most, or as many as the rule of the server it is imported on has, so
+ * the backup of a rule that was migrated with more can be restored and a file cannot make a list grow past the limit. A setting that is not one of the file (it
  * depends on the server, or it does not exist) is refused instead of ignored, so a file written by hand does not look
  * as if it did something it does not.
  *
@@ -92,7 +101,7 @@ export async function parseConfigurationFile(text: string, context: ParseConfigu
 	}
 
 	const settings = await parseSettings(data.settings, context, issues);
-	const rules = parseRules(data.automod, t, issues);
+	const rules = parseRules(data.automod, context, issues);
 	return issues.length === 0 ? { ok: true, value: { settings, rules } } : failure(issues);
 }
 
@@ -191,8 +200,10 @@ function getJsonType(key: SchemaKey) {
 	}
 }
 
-function parseRules(section: unknown, t: Translator, issues: ConfigurationIssue[]): ConfigurationRule[] | null {
+function parseRules(section: unknown, context: ParseConfigurationContext, issues: ConfigurationIssue[]): ConfigurationRule[] | null {
 	if (section === undefined) return null;
+
+	const { t } = context;
 
 	if (!isRecord(section)) {
 		issues.push({ path: 'automod', message: t('commands/conf:transferErrorExpectedObject', { path: 'automod' }) });
@@ -220,7 +231,7 @@ function parseRules(section: unknown, t: Translator, issues: ConfigurationIssue[
 	for (const [index, entry] of list.entries()) {
 		const path = `automod.rules[${index}]`;
 		const before = issues.length;
-		const rule = parseRule(entry, path, t, issues);
+		const rule = parseRule(entry, path, context, issues);
 		if (rule === null) continue;
 
 		const lower = rule.name.toLowerCase();
@@ -233,7 +244,8 @@ function parseRules(section: unknown, t: Translator, issues: ConfigurationIssue[
 	return rules;
 }
 
-function parseRule(entry: unknown, path: string, t: Translator, issues: ConfigurationIssue[]): ConfigurationRule | null {
+function parseRule(entry: unknown, path: string, context: ParseConfigurationContext, issues: ConfigurationIssue[]): ConfigurationRule | null {
+	const { t } = context;
 	if (!isRecord(entry)) {
 		issues.push({ path, message: t('commands/conf:transferErrorRuleObject') });
 		return null;
@@ -270,7 +282,15 @@ function parseRule(entry: unknown, path: string, t: Translator, issues: Configur
 	// The type is not a field of the patch, the options of the rule depend on it:
 	const fields = { ...entry };
 	delete fields.type;
-	const parsed = parseAutoModerationRulePatch(type, fields);
+
+	// The patch reads the options on top of the ones it is given, and lets a list be as long as the one they have. The
+	// rule of the server is only there for that: an option the file leaves out takes its default, not the one of the
+	// server, so the options are given whole.
+	const lower = trimmed.toLowerCase();
+	const current = context.rules.find((rule) => rule.type === type && rule.name.toLowerCase() === lower);
+	if (isRecord(entry.options)) fields.options = { ...getDefaultAutoModerationRuleOptions(type), ...entry.options };
+
+	const parsed = parseAutoModerationRulePatch(type, fields, current?.options);
 	if (parsed.errors) {
 		report(parsed.errors);
 		return null;
