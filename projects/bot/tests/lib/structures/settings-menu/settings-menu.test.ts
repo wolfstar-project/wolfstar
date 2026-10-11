@@ -6,6 +6,7 @@ import {
 	encodeSettingsMenuId,
 	getSettingsMenuExpiry,
 	isSettingsMenuExpired,
+	claimSettingsExpiredNotice,
 	renderSettingsExpired,
 	SettingsMenuLifetime,
 	getSettingKind,
@@ -160,16 +161,21 @@ describe('settings menu', () => {
 			}
 		});
 
-		test('GIVEN a menu THEN its last line says when it closes, and every component expires then', () => {
+		test('GIVEN a menu THEN the last line of its last container says when it closes, and every component expires then', () => {
 			const now = 1_700_000_000_000;
 			vi.useFakeTimers({ now });
 			try {
 				const message = renderSettingsGroup(createContext(), resolveSettingGroup('logs')!, 0);
-				const last = message.components!.at(-1) as { type: ComponentType; content?: string };
+				const container = message.components!.findLast((component) => component.type === ComponentType.Container) as {
+					type: ComponentType;
+					components: { type: ComponentType; content?: string }[];
+				};
+				const last = container.components.at(-1)!;
 				const expiries = collectCustomIds(message.components!)
 					.filter((id) => id.startsWith('conf.'))
 					.map((id) => decodeSettingsMenuId(id.split('.').slice(1))?.expiresAt);
 
+				expect(container.type).toBe(ComponentType.Container);
 				expect(last.type).toBe(ComponentType.TextDisplay);
 				expect(last.content).toContain(`<t:${now / 1000 + 900}:R>`);
 				expect(expiries.length).toBeGreaterThan(0);
@@ -180,12 +186,64 @@ describe('settings menu', () => {
 			}
 		});
 
-		test('GIVEN a menu that expired THEN it is a line that names the command, with nothing to click', () => {
-			const message = renderSettingsExpired(createContext().t, 'settings server');
+		test('GIVEN a menu that expired THEN a click is told the command that opens it again', () => {
+			expect(renderSettingsExpired(createContext().t, 'server')).toContain('`/settings server`');
+			expect(renderSettingsExpired(createContext().t, 'user')).toContain('`/settings user`');
+		});
 
-			expect(collectCustomIds(message.components!)).toEqual([]);
-			expect(JSON.stringify(message.components)).toContain('`/settings server`');
-			expect(message.flags).toBe(MessageFlags.IsComponentsV2);
+		test('GIVEN a command Discord gave an ID THEN the command is a mention', () => {
+			const previous = (container as any).applicationCommandRegistry;
+			(container as any).applicationCommandRegistry = {
+				getLoadedChatInputCommands: () => new Map([['settings', { getGlobalId: () => '1234567890' }]])
+			};
+			try {
+				expect(renderSettingsExpired(createContext().t, 'server')).toContain('</settings server:1234567890>');
+			} finally {
+				(container as any).applicationCommandRegistry = previous;
+			}
+		});
+
+		describe('clicks on an expired menu', () => {
+			const counts = new Map<string, number>();
+			const redis = {
+				status: 'ready',
+				incr: async (key: string) => {
+					const next = (counts.get(key) ?? 0) + 1;
+					counts.set(key, next);
+					return next;
+				},
+				pexpire: vi.fn(async () => 1)
+			};
+			let previous: unknown;
+
+			beforeAll(() => {
+				previous = (container as any).redis;
+				(container as any).redis = redis;
+			});
+
+			afterAll(() => {
+				(container as any).redis = previous;
+			});
+
+			beforeEach(() => {
+				counts.clear();
+				redis.pexpire.mockClear();
+			});
+
+			test('GIVEN a user who keeps clicking THEN the first five clicks are answered, and the sixth is not', async () => {
+				const answers: boolean[] = [];
+				for (let click = 0; click < 7; click++) answers.push(await claimSettingsExpiredNotice('1', '2'));
+
+				expect(answers).toEqual([true, true, true, true, true, false, false]);
+				expect(redis.pexpire).toHaveBeenCalledTimes(1);
+			});
+
+			test('GIVEN another menu or another user THEN they are counted apart', async () => {
+				for (let click = 0; click < 6; click++) await claimSettingsExpiredNotice('1', '2');
+
+				await expect(claimSettingsExpiredNotice('1', '3')).resolves.toBe(true);
+				await expect(claimSettingsExpiredNotice('4', '2')).resolves.toBe(true);
+			});
 		});
 
 		test('GIVEN a group with more keys than a page THEN it is paginated', () => {
