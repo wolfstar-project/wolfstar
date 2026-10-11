@@ -1,4 +1,4 @@
-import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
+import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/database';
@@ -53,16 +53,24 @@ const ExpiredAccentColor = 0x4f545c;
 /**
  * The emojis of the modules, the first groups of the settings.
  */
-const ModuleEmojis: Record<string, string> = {
-	'': '⚙️',
-	modules: '🧩',
-	automod: '🛡️',
-	commands: '⌨️',
-	logs: '📜',
-	moderation: '🔨',
-	reports: '🚩',
-	roles: '🎭'
+const ModuleEmojis: Record<string, EmojiKey> = {
+	'': 'ModuleGeneral',
+	modules: 'ModuleModules',
+	automod: 'ModuleAutomod',
+	commands: 'ModuleCommands',
+	logs: 'ModuleLogs',
+	moderation: 'ModuleModeration',
+	reports: 'ModuleReports',
+	roles: 'ModuleRoles'
 };
+
+/**
+ * Gets the emoji of a module for its option of the select menu, a folder for one that has none.
+ */
+function getModuleEmoji(module: string): EmojiComponent {
+	const key = ModuleEmojis[module];
+	return key === undefined ? { name: '📁' } : getEmojiComponent(key);
+}
 
 export interface SettingsMenuContext {
 	/**
@@ -267,11 +275,11 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
 	// The module a group belongs to is the first part of its path, the root one holds the general keys:
 	const module = getSchemaPath(group).split('.')[0];
 	const options: APISelectMenuOption[] = [
-		{ label: t('commands/conf:menuModuleGeneral'), value: RootModuleValue, emoji: { name: ModuleEmojis[''] }, default: module === '' },
+		{ label: t('commands/conf:menuModuleGeneral'), value: RootModuleValue, emoji: getModuleEmoji(''), default: module === '' },
 		...getVisibleGroups(root).map((entry) => ({
 			label: getSettingTitle(entry),
 			value: entry.key,
-			emoji: { name: ModuleEmojis[entry.key] ?? '📁' },
+			emoji: getModuleEmoji(entry.key),
 			default: module === entry.key
 		}))
 	];
