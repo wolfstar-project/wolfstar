@@ -82,7 +82,7 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 			user: message.author.toJSON(),
 			channelId: message.channelId,
 			content: message.content,
-			attachments: [...message.attachments.values()].length,
+			attachments: message.attachments.size,
 			caseId,
 			error
 		})
