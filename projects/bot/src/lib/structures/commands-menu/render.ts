@@ -262,11 +262,14 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 	if (options.entries.length === 0) body.push({ type: ComponentType.TextDisplay, content: options.empty });
 
 	const navigation: APIButtonComponentWithCustomId[] = [
-		button(id(options.verb, options.target, 0), { emoji: '⏮️', disabled: current === 0 }),
-		button(id(options.verb, options.target, Math.max(0, current - 1)), { emoji: '◀️', disabled: current === 0 }),
+		button(id(options.verb, options.target, 0), { emoji: getEmojiComponent('ArrowLeftFast'), disabled: current === 0 }),
+		button(id(options.verb, options.target, Math.max(0, current - 1)), { emoji: getEmojiComponent('ArrowLeft'), disabled: current === 0 }),
 		button(id('jump', `${options.verb}/${options.target}`), { label: '…', disabled: pages === 1 }),
-		button(id(options.verb, options.target, Math.min(pages - 1, current + 1)), { emoji: '▶️', disabled: current >= pages - 1 }),
-		button(id(options.verb, options.target, pages - 1), { emoji: '⏭️', disabled: current >= pages - 1 })
+		button(id(options.verb, options.target, Math.min(pages - 1, current + 1)), {
+			emoji: getEmojiComponent('ArrowRight'),
+			disabled: current >= pages - 1
+		}),
+		button(id(options.verb, options.target, pages - 1), { emoji: getEmojiComponent('ArrowRightFast'), disabled: current >= pages - 1 })
 	];
 
 	body.push(
@@ -277,7 +280,7 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 		},
 		row(deduplicate(navigation))
 	);
-	if (options.back) body.push(row([button(id('list', '', 0), { label: t('commands/commands:menuBack'), emoji: '◀️' })]));
+	if (options.back) body.push(row([button(id('list', '', 0), { label: t('commands/commands:menuBack'), emoji: getEmojiComponent('ArrowLeft') })]));
 
 	return toMessage([
 		{ type: ComponentType.Container, accent_color: AccentColor, components: header },
@@ -325,7 +328,7 @@ export function renderCommand(context: CommandsMenuContext, command: CatalogComm
 		row([
 			button(encodeCommandsMenuId({ ownerId, verb: 'list', target: command.category, page: 0 }), {
 				label: t('commands/commands:menuBack'),
-				emoji: '◀️'
+				emoji: getEmojiComponent('ArrowLeft')
 			}),
 			button(encodeCommandsMenuId({ ownerId, verb: 'search', target: '', page: 0 }), {
 				emoji: '🔍',
