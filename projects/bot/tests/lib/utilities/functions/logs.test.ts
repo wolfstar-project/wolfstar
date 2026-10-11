@@ -37,7 +37,7 @@ describe('createLogMessage', () => {
 
 		expect(texts.length).toBeGreaterThan(3);
 		expect(texts.every((text) => text.length <= 1024 + 100)).toBe(true);
-		expect(texts.join('').length).toBeLessThanOrEqual(MaximumLogMessageLength + 50);
+		expect(texts.join('').length).toBeLessThanOrEqual(MaximumLogMessageLength);
 	});
 
 	test('GIVEN several parts THEN each starts a block of its own, in order', () => {
@@ -51,7 +51,7 @@ describe('createLogMessage', () => {
 		const message = createLogMessage({ color: 0, author, content: ['a '.repeat(3000), 'b '.repeat(3000)], footer: 'footer' });
 		const texts = collectText(message.components);
 
-		expect(texts.join('').length).toBeLessThanOrEqual(MaximumLogMessageLength + 50);
+		expect(texts.join('').length).toBeLessThanOrEqual(MaximumLogMessageLength);
 		expect(texts.some((text) => text.startsWith('a'))).toBe(true);
 		expect(texts.some((text) => text.startsWith('b'))).toBe(true);
 	});
