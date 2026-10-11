@@ -288,29 +288,63 @@ describe('commands menu', () => {
 			expect(input).toMatchObject({ custom_id: 'page', required: true });
 		});
 
-		test('GIVEN a command THEN its modal shows what it is and asks whether it is enabled', () => {
-			const modal = renderCommandEditModal(createContext(), commands[0], null);
-			const text = getText(modal.components);
-			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
+		const unrestricted = { command: 'automod', allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [] };
+
+		test('GIVEN a command THEN its modal asks whether it is enabled, and the channels and roles it is restricted to', () => {
+			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted);
+			const components = flatten(modal.components);
+			const radio = components.find((component) => component.type === ComponentType.RadioGroup)!;
 
 			expect(modal.title).toContain('commands/commands:editTitle');
 			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'save', target: 'automod', page: 0 });
-			expect(text).toContain('`/automod`');
-			expect(text).toContain('commands/commands:editStatusEnabled');
-			expect(text).toContain('"count":2');
+			// A modal holds five components at most:
+			expect(modal.components).toHaveLength(5);
+			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusSubcommands {\\"count\\":2}');
 			expect(radio.custom_id).toBe('status');
 			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
 				['enabled', true],
 				['disabled', false]
 			]);
+			expect(components.filter((component) => component.type === ComponentType.ChannelSelect).map((component) => component.custom_id)).toEqual([
+				'allowedChannels',
+				'ignoredChannels'
+			]);
+			expect(components.filter((component) => component.type === ComponentType.RoleSelect).map((component) => component.custom_id)).toEqual([
+				'allowedRoles',
+				'ignoredRoles'
+			]);
 		});
 
-		test('GIVEN a command a server disabled THEN its modal says by what and selects Disabled', () => {
-			const modal = renderCommandEditModal(createContext(), commands[1], 'Moderation.*');
+		test('GIVEN a command a server disabled by its category THEN its modal says by what and selects Disabled', () => {
+			const modal = renderCommandEditModal(createContext(), commands[1], 'Moderation.*', { ...unrestricted, command: 'ban' });
 			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
 
-			expect(getText(modal.components)).toContain('commands/commands:editStatusDisabled {"rule":"Moderation.*"}');
+			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusDisabledBy {\\"rule\\":\\"Moderation.*\\"}');
 			expect(radio.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['disabled']);
+		});
+
+		test('GIVEN a restricted command THEN its modal has what it is restricted to picked', () => {
+			const restriction = {
+				...unrestricted,
+				allowedChannels: ['111111111111111111'],
+				ignoredRoles: ['222222222222222222', '333333333333333333']
+			};
+			const modal = renderCommandEditModal(createContext(), commands[0], null, restriction);
+			const picked = Object.fromEntries(
+				flatten(modal.components)
+					.filter((component) => component.type === ComponentType.ChannelSelect || component.type === ComponentType.RoleSelect)
+					.map((component) => [component.custom_id, (component as { default_values?: { id: string; type: string }[] }).default_values])
+			);
+
+			expect(picked).toEqual({
+				allowedChannels: [{ id: '111111111111111111', type: 'channel' }],
+				ignoredChannels: [],
+				allowedRoles: [],
+				ignoredRoles: [
+					{ id: '222222222222222222', type: 'role' },
+					{ id: '333333333333333333', type: 'role' }
+				]
+			});
 		});
 
 		test('GIVEN the results of a search THEN they can be paged and left', () => {
