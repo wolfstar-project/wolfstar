@@ -1,6 +1,7 @@
 import { retryWithDelays, seconds } from '#common';
 import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
 import { RoleActions } from '#lib/moderation/actions';
+import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { getLogPrefix } from '#utils/functions';
@@ -41,6 +42,11 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		trx.write({ rolesInitialHumans: trx.settings.rolesInitialHumans.filter((rm) => rm !== roleId) });
 		trx.write({ rolesInitialRobots: trx.settings.rolesInitialRobots.filter((rm) => rm !== roleId) });
 		if (trx.settings.reportsRole === roleId) trx.write({ reportsRole: null });
+
+		// The commands that were restricted to the role, or that ignored it, forget it:
+		const restrictions = removeFromCommandRestrictions(readCommandRestrictions(trx.settings.commandsRestrictions), roleId);
+		if (restrictions !== null) trx.write({ commandsRestrictions: restrictions as never });
+
 		if (trx.settings.rolesMuted === roleId) trx.write({ rolesMuted: null });
 		if (trx.settings.rolesRestrictedReaction === roleId) trx.write({ rolesRestrictedReaction: null });
 		if (trx.settings.rolesRestrictedEmbed === roleId) trx.write({ rolesRestrictedEmbed: null });

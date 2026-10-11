@@ -14,6 +14,8 @@
 	"administrator": "You need administrator privileges to run `{{command.name}}`!",
 	"disabledGlobal": "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>",
 	"disabledGuild": "This command has been disabled by an admin in this server!",
+	"restrictedChannel": "This command cannot be used in this channel!",
+	"restrictedRole": "Your roles do not let you use this command in this server!",
 	"moderator": "You need moderator privileges to run `{{command.name}}`!",
 	"permissionNodes": "{{REDCROSS}} You do not have permission to use this command!",
 	"serverOwner": "You need to be the server's owner to run `{{command.name}}`!",

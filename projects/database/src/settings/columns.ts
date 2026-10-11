@@ -97,7 +97,8 @@ export const Columns = {
 	}),
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
-		commandsDisabledChannels: ['disabledChannels', 'snowflakes']
+		commandsDisabledChannels: ['disabledChannels', 'snowflakes'],
+		commandsRestrictions: ['disabledInChannels', 'value']
 	}),
 	...columns('GuildLogs', {
 		logsMemberAdd: ['memberAdd', 'snowflake'],
