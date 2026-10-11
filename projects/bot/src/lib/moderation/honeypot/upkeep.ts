@@ -8,26 +8,27 @@ import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import type { HoneypotUpkeep } from 'wolfstar-database';
 
 /**
- * The names a honeypot channel that is renamed every day goes through. They are the ones a server has for the channels
- * a bot wants to write in, so the trap cannot be told apart by its name.
+ * The names a honeypot channel that is renamed every day goes through, so the trap cannot be told apart by one name.
+ *
+ * @remarks
+ *
+ * They are the channels a bot wants to write in (where the links and the offers go) and no member has a reason to: who
+ * writes there is kicked or banned, and a server that keeps no warning tells nobody. A name that invites the members
+ * to write (`general-chat`, `introductions`) would catch them, and `honeypot` is the one name the bots learn to skip.
  */
 export const HoneypotChannelNames = [
-	'honeypot',
-	'general-chat',
-	'introductions',
-	'off-topic',
 	'self-promo',
 	'promotions',
-	'links',
-	'media',
+	'paid-promotions',
+	'advertise-here',
+	'advertising',
+	'partnerships',
+	'sponsored-links',
 	'giveaways',
 	'free-stuff',
-	'partnerships',
-	'advertise-here',
-	'new-members',
-	'lounge',
-	'share-your-work',
-	'trading'
+	'free-nitro',
+	'crypto-signals',
+	'airdrops'
 ] as const;
 
 /**

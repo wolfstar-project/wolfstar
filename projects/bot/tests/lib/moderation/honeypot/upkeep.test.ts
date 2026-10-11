@@ -58,6 +58,12 @@ describe('pickHoneypotChannelName', () => {
 		expect(pickHoneypotChannelName(null, 0.999_999)).toBe(HoneypotChannelNames.at(-1));
 	});
 
+	test('GIVEN the names THEN none gives the trap away nor invites the members to write', () => {
+		for (const name of ['honeypot', 'general-chat', 'introductions', 'new-members', 'lounge', 'share-your-work', 'trading', 'off-topic']) {
+			expect(HoneypotChannelNames).not.toContain(name);
+		}
+	});
+
 	test('GIVEN the names THEN each is one Discord takes for a text channel', () => {
 		for (const name of HoneypotChannelNames) expect(name).toMatch(/^[a-z-]{1,100}$/);
 		expect(new Set(HoneypotChannelNames).size).toBe(HoneypotChannelNames.length);
@@ -72,7 +78,7 @@ describe('runHoneypotUpkeep', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		fetch.mockResolvedValue({ id: channelId, guildId, name: 'honeypot' });
+		fetch.mockResolvedValue({ id: channelId, guildId, name: 'giveaways' });
 		createMessage.mockResolvedValue({ id: '99' });
 		Object.assign(container, {
 			gatewayClient: {
@@ -88,7 +94,7 @@ describe('runHoneypotUpkeep', () => {
 		expect(await runHoneypotUpkeep(createUpkeep({ randomName: true }))).toBe('done');
 
 		expect(edit).toHaveBeenCalledTimes(1);
-		expect(edit).toHaveBeenCalledWith(channelId, { name: expect.not.stringMatching(/^honeypot$/) }, { reason: 'Honeypot' });
+		expect(edit).toHaveBeenCalledWith(channelId, { name: expect.not.stringMatching(/^giveaways$/) }, { reason: 'Honeypot' });
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
 		expect(createMessage).not.toHaveBeenCalled();
 	});
@@ -129,7 +135,7 @@ describe('runHoneypotUpkeep', () => {
 	});
 
 	test('GIVEN a channel of another guild THEN it is not touched', async () => {
-		fetch.mockResolvedValue({ id: channelId, guildId: '1', name: 'honeypot' });
+		fetch.mockResolvedValue({ id: channelId, guildId: '1', name: 'giveaways' });
 
 		expect(await runHoneypotUpkeep(createUpkeep({ randomName: true }))).toBe('gone');
 		expect(edit).not.toHaveBeenCalled();
