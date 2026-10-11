@@ -56,8 +56,14 @@ describe('catchHoneypotMessage', () => {
 	const deleteMessage = vi.fn(async () => undefined);
 	const emit = vi.fn();
 
+	// A member is claimed for a minute by the process when Redis is not there, so each test starts after the claims of
+	// the one before it ended:
+	let now = Date.UTC(2026, 0, 1);
+
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.useFakeTimers({ toFake: ['Date'] });
+		vi.setSystemTime((now += 61_000));
 		vi.mocked(isModerator).mockResolvedValue(false);
 		vi.mocked(fetchUserReportEnabled).mockResolvedValue(true);
 		for (const action of [ModerationActions.kick, ModerationActions.softban, ModerationActions.ban]) {
@@ -65,6 +71,10 @@ describe('catchHoneypotMessage', () => {
 		}
 
 		Object.assign(container, { gatewayClient: { messages: { delete: deleteMessage } }, client: { emit }, redis: undefined });
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
 	});
 
 	// The log is rendered when the channel it goes to can be written in, so the test renders it as the listener would:
@@ -103,6 +113,7 @@ describe('catchHoneypotMessage', () => {
 
 	test('GIVEN the action of the server THEN it is the one taken', async () => {
 		await catchHoneypotMessage(createMessage(), createSettings({ honeypotAction: 'Kick' }));
+		vi.setSystemTime((now += 61_000));
 		await catchHoneypotMessage(createMessage(), createSettings({ honeypotAction: 'Ban' }));
 
 		expect(ModerationActions.kick.apply).toHaveBeenCalledWith(guild, expect.anything(), { sendDirectMessage: true });
@@ -179,5 +190,46 @@ describe('catchHoneypotMessage', () => {
 		expect(deleteMessage).toHaveBeenCalledTimes(1);
 		expect(ModerationActions.softban.apply).not.toHaveBeenCalled();
 		expect(emit).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN no Redis THEN the messages a member sends in a row still make one case', async () => {
+		await Promise.all([
+			catchHoneypotMessage(createMessage({ id: '1' }), createSettings()),
+			catchHoneypotMessage(createMessage({ id: '2' }), createSettings()),
+			catchHoneypotMessage(createMessage({ id: '3' }), createSettings())
+		]);
+
+		expect(deleteMessage).toHaveBeenCalledTimes(3);
+		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(1);
+		expect(emit).toHaveBeenCalledTimes(1);
+	});
+
+	test('GIVEN no Redis THEN another member, and the same one a minute later, are caught', async () => {
+		const other = { ...author, id: '242043489611808769' };
+
+		await catchHoneypotMessage(createMessage(), createSettings());
+		await catchHoneypotMessage(createMessage({ author: other, member: { id: other.id, guildId } }), createSettings());
+		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(2);
+
+		vi.setSystemTime((now += 59_000));
+		await catchHoneypotMessage(createMessage(), createSettings());
+		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(2);
+
+		vi.setSystemTime((now += 2000));
+		await catchHoneypotMessage(createMessage(), createSettings());
+		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(3);
+	});
+
+	test('GIVEN a Redis that fails THEN the process keeps the claim, and a burst is one case', async () => {
+		const set = vi.fn(async () => {
+			throw new Error('Connection is closed.');
+		});
+		Object.assign(container, { redis: { status: 'ready', set }, logger: { error: vi.fn() } });
+
+		await catchHoneypotMessage(createMessage(), createSettings());
+		await catchHoneypotMessage(createMessage(), createSettings());
+
+		expect(set).toHaveBeenCalledTimes(2);
+		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(1);
 	});
 });

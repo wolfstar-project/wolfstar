@@ -106,16 +106,44 @@ function applyHoneypotAction(guild: Guild, action: HoneypotAction, user: User, r
 }
 
 /**
+ * The members this process caught while Redis could not be asked, and when each claim ends, see
+ * {@linkcode claimHoneypotCatch}.
+ */
+const localClaims = new Map<string, number>();
+
+/**
  * Claims a member the honeypot caught, so the messages they send right after are only deleted.
  *
- * @remarks The claim is in Redis, so it holds across the processes of the bot. Without a connection (the tests) every
- * message is acted on.
+ * @remarks
+ *
+ * The claim is in Redis, so it holds across the processes of the bot. Without a connection, or when Redis fails, the
+ * claim is kept by this process: a burst of messages is still one case here, which is all a single process needs, and
+ * the most that can be done when the connection is down.
  *
  * @returns Whether the member was not claimed yet.
  */
 async function claimHoneypotCatch(guildId: Snowflake, userId: Snowflake): Promise<boolean> {
 	const { redis } = container;
-	if (redis?.status !== 'ready') return true;
+	if (redis?.status === 'ready') {
+		try {
+			return (await redis.set(`wolfstar:honeypot:caught:${guildId}:${userId}`, '1', 'EX', ClaimSeconds, 'NX')) !== null;
+		} catch (error) {
+			container.logger.error(`[Honeypot] Could not claim ${userId} in the guild ${guildId} in Redis:`, error);
+		}
+	}
 
-	return (await redis.set(`wolfstar:honeypot:caught:${guildId}:${userId}`, '1', 'EX', ClaimSeconds, 'NX')) !== null;
+	return claimHoneypotCatchLocally(`${guildId}:${userId}`);
+}
+
+function claimHoneypotCatchLocally(key: string): boolean {
+	const now = Date.now();
+	// The claims that ended are dropped here, so the map only holds the members of the last minute:
+	for (const [claimed, expiresAt] of localClaims) {
+		if (expiresAt <= now) localClaims.delete(claimed);
+	}
+
+	if (localClaims.has(key)) return false;
+
+	localClaims.set(key, now + seconds(ClaimSeconds));
+	return true;
 }
