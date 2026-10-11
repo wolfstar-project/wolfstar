@@ -73,6 +73,29 @@ describe('renderHoneypotLog', () => {
 		expect(text.length).toBeLessThan(2000);
 	});
 
+	test('GIVEN a long message with a link past the length of a block THEN no part of the quote is left without its fences', () => {
+		const content = `${'a'.repeat(1100)} https://example.com/free-nitro\nhttps://example.com/second`;
+		const texts = collectText(renderHoneypotLog(t, createCatch({ content })).components);
+		const quoting = texts.filter((text) => text.includes('https://'));
+
+		// Each component is rendered apart by Discord, so each has to open and close its own code block:
+		expect(quoting).toHaveLength(1);
+		for (const text of quoting) {
+			expect(text.startsWith('```\n')).toBe(true);
+			expect(text.endsWith('\n```')).toBe(true);
+			expect(text.match(/```/g)).toHaveLength(2);
+		}
+		expect(quoting[0]).toContain('https://example.com/free-nitro\nhttps://example.com/second');
+	});
+
+	test('GIVEN what was sent THEN the quote is a component of its own, apart from what the bot says', () => {
+		const texts = collectText(renderHoneypotLog(t, createCatch({ content: 'line one\nline two', attachments: 2 })).components);
+		const quote = texts.find((text) => text.includes('line one'));
+
+		expect(quote).toBe('```\nline one\nline two\n```');
+		expect(texts.filter((text) => text.includes('```'))).toHaveLength(1);
+	});
+
 	test('GIVEN a message with attachments only THEN they are counted and nothing is quoted', () => {
 		const text = readText(renderHoneypotLog(t, createCatch({ content: '', attachments: 3 })));
 

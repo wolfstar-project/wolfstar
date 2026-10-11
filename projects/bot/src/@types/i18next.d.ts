@@ -645,6 +645,8 @@ declare module "i18next" {
         channelUnknown: "I could not find that channel in this server.";
         channelCannotCreate: "I could not create the channel, I am missing the Manage Channels permission. Give it to me, or make the channel yourself and pass it as `channel`.";
         missingPermissions: "I cannot run the honeypot in {{channel}}, I am missing: {{missing, list(conjunction)}}.";
+        setupMissingPermissions: "I cannot run the honeypot in a channel I create, so I did not create one. I am missing: {{missing, list(conjunction)}}.";
+        logsMissingPermissions: "I cannot report the catches to {{channel}}, I am missing: {{missing, list(conjunction)}}.";
         logsSameChannel: "The catches cannot be reported to the honeypot channel itself, choose another channel for `logs`.";
         setupDone: "{{GREENTICK}} {{channel}} is the honeypot channel now: I act on whoever writes there, but the moderators.";
         setupCreated: "{{GREENTICK}} I created {{channel}} and made it the honeypot channel: I act on whoever writes there, but the moderators. Move it where the bots will find it, the top of the list works best.";
@@ -3393,14 +3395,14 @@ declare module "i18next" {
         customCommandInvalidType_one: "The type {{tag.type}} is not valid, it must be the following: {{possibles, orList}}";
         customCommandInvalidType_other: "The type {{tag.type}} is not valid, it must be one of the following: {{possibles, orList}}";
         customCommandMissingParameter: "You need to write another parameter!\n\n> **Tip**: The type for the next argument is `{{type}}`!";
+        honeypotActionBan: "Ban";
+        honeypotActionKick: "Kick";
+        honeypotActionSoftban: "Softban";
         invalidBool: "{{name}} must be true or false.";
         invalidChannel: "{{name}} must be a channel tag or valid channel id.";
         invalidCommand: "{{name}} must be a command name.";
         invalidEmoji: "{{name}} must be a valid emoji.";
         invalidFloat: "{{name}} must be a valid number.";
-        honeypotActionBan: "Ban";
-        honeypotActionKick: "Kick";
-        honeypotActionSoftban: "Softban";
         invalidGuild: "{{name}} must be a valid server ID.";
         invalidHoneypotAction: "{{name}} must be one of the following: {{possibles, orList}}.";
         invalidInt: "{{name}} must be an integer.";
