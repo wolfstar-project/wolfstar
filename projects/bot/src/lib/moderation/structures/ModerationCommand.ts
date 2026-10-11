@@ -1,9 +1,13 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
+import { Colors } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
+import { EmbedBuilder } from '@discordjs/builders';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
+import { ModerationCommandPrompt, type RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
@@ -18,6 +22,7 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	PermissionFlagsBits,
+	type APIInteractionResponseCallbackData,
 	type Permissions,
 	type Snowflake
 } from 'discord-api-types/v10';
@@ -101,6 +106,10 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 */
 	protected readonly requiredDuration: boolean;
 
+	public override isModerationCommand(): this is ModerationCommand<TypeVariation, unknown> {
+		return true;
+	}
+
 	public constructor(context: ModerationCommand.LoaderContext, options: ModerationCommand.Options<Type>) {
 		super(context, { requiredMember: false, ...options });
 
@@ -118,22 +127,37 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
-		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const settings = await this.readMessageSettings(interaction.guildId);
 
 		// The response is public when the guild wants the moderation messages displayed, otherwise only the moderator sees it:
 		const deferred = await interaction.defer(settings.messageDisplay ? undefined : { flags: MessageFlags.Ephemeral });
+		return deferred.update(await this.execute(interaction, args));
+	}
+
+	/**
+	 * Runs the command and gives its answer: what it did, why it could not, or a prompt it needs answered first.
+	 *
+	 * @remarks It is apart from {@linkcode chatInputRun} so the command can be run again once its prompt is answered,
+	 * with the options it was given, see the `roleSetup` interaction handler. The permission level is not checked here.
+	 *
+	 * @param interaction - The interaction to run the command for: the one of the command, or the click that answered
+	 * its prompt, of which only the guild, the channel, the author and their language are read.
+	 * @param args - The options of the command.
+	 */
+	public async execute(interaction: ModerationCommand.Interaction, args: ModerationCommand.Arguments): Promise<ModerationCommand.Answer> {
+		const t = createTranslator(getSupportedUserLanguageT(interaction));
+		const settings = await this.readMessageSettings(interaction.guildId);
 
 		const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
 		const target = await container.gatewayClient.users.fetch(args.user.id);
 		const moderator = await container.gatewayClient.users.fetch(interaction.user.id);
 
-		let content: string;
+		let answer: ModerationCommand.Answer;
 		try {
 			const parameters = this.resolveParameters(t, guild, moderator, target, args, interaction.channel.id);
 			await this.inhibit(interaction, parameters);
 			const preHandled = await this.preHandle(interaction, parameters);
-			const handled = { ...parameters, preHandled };
+			const handled = { ...parameters, preHandled, directMessageUndelivered: false };
 
 			try {
 				await this.checkTargetCanBeModerated(interaction, handled);
@@ -144,14 +168,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 				try {
 					const log = await this.handle(interaction, handled);
-					content = this.formatOutput(t, settings, target, log);
+					answer = this.formatOutput(t, settings, target, log, handled.directMessageUndelivered);
 				} catch (error) {
 					// No case was made for the copy to stand under:
 					if (forwardedId !== null) await deleteForwardedCaseMessage(guild, forwardedId);
 					throw error;
 				}
 			} catch (error) {
-				content = this.formatFailure(t, target, error);
+				answer = this.formatFailureAnswer(t, target, error);
 			}
 
 			try {
@@ -160,10 +184,12 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 				// noop
 			}
 		} catch (error) {
-			content = this.formatFailure(t, target, error);
+			// The command needs an answer before it can go on, such as the role a mute gives:
+			if (error instanceof ModerationCommandPrompt) return error.message;
+			answer = this.formatFailureAnswer(t, target, error);
 		}
 
-		return deferred.update({ content });
+		return answer;
 	}
 
 	/**
@@ -214,7 +240,9 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			}
 
 			// @ts-expect-error mismatching types due to unions
-			return this.action.undo(context.guild, options, data);
+			const entry = await this.action.undo(context.guild, options, data);
+			context.directMessageUndelivered = data.directMessageUndelivered === true;
+			return entry;
 		}
 
 		// If this command is not an undo action, and the action is active, throw an error.
@@ -223,7 +251,9 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		}
 
 		// @ts-expect-error mismatching types due to unions
-		return this.action.apply(context.guild, options, data);
+		const entry = await this.action.apply(context.guild, options, data);
+		context.directMessageUndelivered = data.directMessageUndelivered === true;
+		return entry;
 	}
 
 	/**
@@ -418,10 +448,18 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		};
 	}
 
-	private formatOutput(t: Translator, settings: ModerationCommand.MessageSettings, target: User, log: ModerationManager.Entry) {
-		const reason = settings.reasonDisplay ? log.reason : null;
-		const key = reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
-		return t(key, { count: 1, range: log.id, users: [`\`${target.tag}\``], reason });
+	private formatOutput(
+		t: Translator,
+		settings: ModerationCommand.MessageSettings,
+		target: User,
+		log: ModerationManager.Entry,
+		undelivered: boolean
+	): ModerationCommand.Answer {
+		return renderModerationOutput(t, { id: log.id, tag: target.tag, reason: settings.reasonDisplay ? log.reason : null, undelivered });
+	}
+
+	private formatFailureAnswer(t: Translator, target: User, error: unknown): ModerationCommand.Answer {
+		return renderModerationFailure(this.formatFailure(t, target, error));
 	}
 
 	private formatFailure(t: Translator, target: User, error: unknown) {
@@ -584,6 +622,53 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }
 
+/**
+ * What a moderation command answers with when it made a case: a small embed that says the case it created, the user,
+ * and the reason when the server wants it shown. It is green, as a success is, and yellow when the case was made but
+ * the user could not be sent the direct message, which it says.
+ *
+ * @param t - The function to translate with.
+ * @param output - The case that was made: its number, the tag of the user, the reason to show, and whether the user
+ * could not be sent the direct message.
+ */
+export function renderModerationOutput(
+	t: Translator,
+	output: { id: number; tag: string; reason: string | null; undelivered?: boolean }
+): ModerationCommand.Answer {
+	const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
+	const description = t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason });
+	const lines = output.undelivered ? [description, `${Emojis.Warning} ${t('commands/moderation:moderationOutputUndelivered')}`] : [description];
+
+	return toEmbedAnswer(lines.join('\n'), output.undelivered ? Colors.Yellow : Colors.Green);
+}
+
+/**
+ * What a moderation command answers with when it could not make a case: the reason, in a small red embed.
+ *
+ * @param description - The text of the failure, already translated.
+ */
+export function renderModerationFailure(description: string): ModerationCommand.Answer {
+	return toEmbedAnswer(description, Colors.Red);
+}
+
+function toEmbedAnswer(description: string, color: Colors): ModerationCommand.Answer {
+	return { embeds: [new EmbedBuilder().setColor(color).setDescription(description).toJSON()], allowed_mentions: { parse: [] } };
+}
+
+declare module '@wolfstar/http-framework' {
+	interface Command<Options extends Command.Options = Command.Options> {
+		/**
+		 * Whether this command applies a moderation action, see {@linkcode ModerationCommand}, which narrows it to one.
+		 */
+		isModerationCommand(): this is ModerationCommand<TypeVariation, unknown>;
+	}
+}
+
+// Every command answers `false`, the moderation ones override it. The class is loaded with the first moderation command:
+Command.prototype.isModerationCommand = function isModerationCommand() {
+	return false;
+} as Command['isModerationCommand'];
+
 export declare namespace ModerationCommand {
 	/**
 	 * The ModerationCommand Options
@@ -610,6 +695,14 @@ export declare namespace ModerationCommand {
 	/**
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
 	 */
+	/**
+	 * What a moderation command answers with: a small embed (green when it made a case, yellow when it could not tell
+	 * the user, red when it failed), or the prompt it needs answered, see {@linkcode RoleSetupMessage}.
+	 */
+	type Answer =
+		| RoleSetupMessage
+		| (Pick<APIInteractionResponseCallbackData, 'content' | 'embeds' | 'allowed_mentions'> & { components?: undefined });
+
 	interface Arguments {
 		user: TransformedArguments.User;
 		duration?: string;
@@ -673,6 +766,11 @@ export declare namespace ModerationCommand {
 
 	interface HandlerParameters<ValueType> extends Parameters {
 		preHandled: ValueType;
+
+		/**
+		 * Set by the handler when the case was made but the user could not be sent the direct message.
+		 */
+		directMessageUndelivered?: boolean;
 	}
 
 	type PostHandleParameters<ValueType> = HandlerParameters<ValueType>;

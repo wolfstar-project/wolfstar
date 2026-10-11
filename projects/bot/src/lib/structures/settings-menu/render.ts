@@ -1,9 +1,10 @@
+import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/database';
 import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
-import { encodeSettingsMenuId, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';
+import { encodeSettingsMenuId, getSettingsMenuExpiry, SettingsMenuLifetime, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';
 import { encodeAutoModerationMenuId } from '#lib/structures/automod-menu/ids';
 import {
 	displaySettingValue,
@@ -12,6 +13,7 @@ import {
 	getSettingChannelTypes,
 	getSettingChoiceLabel,
 	getSettingChoices,
+	getSettingKeyTitle,
 	getSettingKind,
 	getSettingMaximumValues,
 	getSettingTitle,
@@ -19,6 +21,9 @@ import {
 	getVisibleKeys,
 	MaximumSelectValues
 } from '#lib/structures/settings-menu/values';
+import { chatInputApplicationCommandMention, inlineCode, time, TimestampStyles } from '@discordjs/formatters';
+import { isNullish } from '@sapphire/utilities';
+import { container } from '@wolfstar/http-framework';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -51,16 +56,24 @@ const AccentColor = 0x5865f2;
 /**
  * The emojis of the modules, the first groups of the settings.
  */
-const ModuleEmojis: Record<string, string> = {
-	'': '⚙️',
-	modules: '🧩',
-	automod: '🛡️',
-	commands: '⌨️',
-	logs: '📜',
-	moderation: '🔨',
-	reports: '🚩',
-	roles: '🎭'
+const ModuleEmojis: Record<string, EmojiKey> = {
+	'': 'ModuleGeneral',
+	modules: 'ModuleModules',
+	automod: 'ModuleAutomod',
+	commands: 'ModuleCommands',
+	logs: 'ModuleLogs',
+	moderation: 'ModuleModeration',
+	reports: 'ModuleReports',
+	roles: 'ModuleRoles'
 };
+
+/**
+ * Gets the emoji of a module for its option of the select menu, a folder for one that has none.
+ */
+function getModuleEmoji(module: string): EmojiComponent {
+	const key = ModuleEmojis[module];
+	return key === undefined ? { name: '📁' } : getEmojiComponent(key);
+}
 
 export interface SettingsMenuContext {
 	/**
@@ -125,7 +138,10 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 		}
 
 		body.push(
-			section(`**${getSettingTitle(entry)}**\n${displaySettingValue(t, entry, context.settings)}`, renderKeyButton(context, entry, current))
+			section(
+				`**${getSettingKeyTitle(t, entry)}**\n${displaySettingValue(t, entry, context.settings)}`,
+				renderKeyButton(context, entry, current)
+			)
 		);
 	}
 
@@ -145,7 +161,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	body.push(
 		{ type: ComponentType.Separator },
 		section(
-			`**⚠️ ${t('commands/conf:menuResetTitle')}**\n${t('commands/conf:menuResetDescription')}`,
+			`**${Emojis.Warning} ${t('commands/conf:menuResetTitle')}**\n${t('commands/conf:menuResetDescription')}`,
 			button(id('resetAll', path), { label: t('commands/conf:menuResetButton'), style: ButtonStyle.Danger, disabled: entries.length === 0 })
 		)
 	);
@@ -171,7 +187,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	// The previous and next buttons of a group with two pages point at the same page, the ID has to be unique:
 	if (navigation.length > 0) components.push(row(deduplicate(navigation)));
 
-	return toMessage(components);
+	return toMessage(context.t, components);
 }
 
 /**
@@ -193,7 +209,9 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 		type: ComponentType.Container,
 		accent_color: AccentColor,
 		components: [
-			text(`## ✏️ ${getPathTitle(t, group)} › ${getSettingTitle(key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`),
+			text(
+				`## ${Emojis.Edit} ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
+			),
 			row([renderSelect(context, key, id('pick', key.property))]),
 			row([
 				button(id('view', getSchemaPath(group)), { label: t('commands/conf:menuBack'), emoji: '↩️' }),
@@ -202,7 +220,7 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 		]
 	};
 
-	return toMessage([container]);
+	return toMessage(context.t, [container]);
 }
 
 /**
@@ -227,7 +245,7 @@ export function renderSettingsModal(context: SettingsMenuContext, key: SchemaKey
 
 	return {
 		custom_id: encodeSettingsMenuId({ ownerId: context.ownerId, verb: 'submit', target: key.property, page }),
-		title: truncate(getSettingTitle(key), 45),
+		title: truncate(getSettingKeyTitle(t, key), 45),
 		components: [
 			{
 				type: ComponentType.ActionRow,
@@ -260,11 +278,11 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
 	// The module a group belongs to is the first part of its path, the root one holds the general keys:
 	const module = getSchemaPath(group).split('.')[0];
 	const options: APISelectMenuOption[] = [
-		{ label: t('commands/conf:menuModuleGeneral'), value: RootModuleValue, emoji: { name: ModuleEmojis[''] }, default: module === '' },
+		{ label: t('commands/conf:menuModuleGeneral'), value: RootModuleValue, emoji: getModuleEmoji(''), default: module === '' },
 		...getVisibleGroups(root).map((entry) => ({
 			label: getSettingTitle(entry),
 			value: entry.key,
-			emoji: { name: ModuleEmojis[entry.key] ?? '📁' },
+			emoji: getModuleEmoji(entry.key),
 			default: module === entry.key
 		}))
 	];
@@ -295,21 +313,21 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
 export const RootModuleValue = '::root::';
 
 function renderKeyButton(context: SettingsMenuContext, key: SchemaKey, page: number): APIButtonComponentWithCustomId {
-	const { t } = context;
 	const id = (verb: SettingsMenuVerb) => encodeSettingsMenuId({ ownerId: context.ownerId, verb, target: key.property, page });
 
 	switch (getSettingKind(key)) {
 		case 'boolean': {
 			const enabled = context.settings[key.property] === true;
 			return button(id('toggle'), {
-				label: t(enabled ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled'),
-				style: enabled ? ButtonStyle.Success : ButtonStyle.Secondary
+				// The checkbox says it all, the button has no label:
+				emoji: getEmojiComponent(enabled ? 'Checked' : 'Unchecked'),
+				style: ButtonStyle.Secondary
 			});
 		}
 		case 'readonly':
 			return button(id('edit'), { emoji: '🔒', disabled: true });
 		default:
-			return button(id('edit'), { emoji: '✏️' });
+			return button(id('edit'), { emoji: getEmojiComponent('Edit') });
 	}
 }
 
@@ -386,9 +404,48 @@ function getPathTitle(t: Translator, group: SchemaGroup): string {
 	return titles.join(' › ');
 }
 
-function toMessage(components: APIMessageTopLevelComponent[]): SettingsMenuMessage {
+function toMessage(t: Translator, components: APIMessageTopLevelComponent[]): SettingsMenuMessage {
 	// The values mention roles and channels, which must not ping anybody:
-	return { components, flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
+	return { components: withSettingsExpiry(t, components), flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
+}
+
+/**
+ * The line of a settings menu that says when it expires, which Discord counts down.
+ *
+ * @param t - The function to translate with.
+ */
+function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
+	return text(`-# ⏳ ${t('commands/conf:menuExpires', { time: time(getSettingsMenuExpiry(), TimestampStyles.RelativeTime) })}`);
+}
+
+/**
+ * Adds the line that says when a settings menu expires at the bottom of its last container, so it is part of the menu
+ * and not a line that floats under it.
+ *
+ * @param t - The function to translate with.
+ * @param components - The components of the menu.
+ */
+export function withSettingsExpiry<Component extends APIMessageTopLevelComponent>(t: Translator, components: readonly Component[]) {
+	// A menu may end with the row that goes from a page to another, which is under its last container:
+	const index = components.findLastIndex((component) => component.type === ComponentType.Container);
+	const last = components[index];
+	if (last?.type !== ComponentType.Container) return [...components, renderSettingsExpiry(t)];
+
+	const container = { ...last, components: [...last.components, renderSettingsExpiry(t)] };
+	return components.with(index, container);
+}
+
+/**
+ * Writes what a click on a settings menu that expired is answered with: that it closed, and the command that opens it
+ * again, as a mention when Discord gave the command an ID, so a click writes it.
+ *
+ * @param t - The function to translate with.
+ * @param subcommand - The subcommand of `/settings` that opens the menu again.
+ */
+export function renderSettingsExpired(t: Translator, subcommand: 'server' | 'user'): string {
+	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
+	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention('settings', subcommand, id);
+	return `⌛ ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
 }
 
 function text(content: string): APITextDisplayComponent {
@@ -405,7 +462,11 @@ function row<T extends APIComponentInMessageActionRow>(components: T[]): APIActi
 
 interface ButtonOptions {
 	label?: string;
-	emoji?: string;
+
+	/**
+	 * A Unicode emoji, or one of the bot, see `getEmojiComponent`.
+	 */
+	emoji?: string | EmojiComponent;
 	style?: APIButtonComponentWithCustomId['style'];
 	disabled?: boolean;
 }
@@ -416,7 +477,7 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 		custom_id: customId,
 		style: options.style ?? ButtonStyle.Secondary,
 		...(options.label === undefined ? {} : { label: truncate(options.label, 80) }),
-		...(options.emoji === undefined ? {} : { emoji: { name: options.emoji } }),
+		...(options.emoji === undefined ? {} : { emoji: typeof options.emoji === 'string' ? { name: options.emoji } : options.emoji }),
 		...(options.disabled ? { disabled: true } : {})
 	};
 }

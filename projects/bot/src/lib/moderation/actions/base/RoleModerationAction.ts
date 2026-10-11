@@ -1,9 +1,10 @@
 import { readSettings, writeSettings, writeSettingsTransaction } from '#lib/database';
+import { getUsersInCourse, markOwnRoleChange } from '#lib/moderation/common/roleChanges';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { TranslationKey } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
-import { getCodeStyle, getStickyRoles } from '#utils/functions';
+import { getCodeStyle, getModeration, getStickyRoles } from '#utils/functions';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { inlineCode } from '@discordjs/builders';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
@@ -133,6 +134,51 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 	}
 
 	/**
+	 * Makes the role of the action again after it was deleted, when the action is in course for somebody: a role that is
+	 * gone would let everybody it muted talk again, with their cases still in course.
+	 *
+	 * @remarks
+	 *
+	 * The new role is saved as the one of the action, configured in every channel as {@linkcode setup} does, and given
+	 * to the members the action is in course for. The ones who left are skipped, their sticky roles are not rewritten.
+	 *
+	 * It can be run again after it failed: the role it made before is used, not made a second time.
+	 *
+	 * @param guild - The guild whose role was deleted.
+	 * @returns The role and how many members it was given to, `null` when the action is in course for nobody.
+	 * @throws {UserError} If there are too many roles in the guild.
+	 */
+	public async restore(guild: Guild) {
+		const moderation = await getModeration(guild);
+		const entries = await moderation.fetch();
+		const userIds = getUsersInCourse(entries.values(), this.type);
+		if (userIds.length === 0) return null;
+
+		const roles = await container.gatewayClient.roles.fetchAll(guild.id);
+		const t = await fetchGuildT(guild);
+		const reason = t('moderationActions:roleRestored');
+		// An earlier attempt that failed half way left the role it made as the one of the action:
+		const settings = await readSettings(guild);
+		const madeBefore = roles.find((role) => role.id === settings[this.roleKey]);
+		if (isNullish(madeBefore) && roles.length >= MaximumRoles) throw new UserError({ identifier: 'moderationActions:setupTooManyRoles' });
+
+		const role = madeBefore ?? (await container.gatewayClient.roles.create(guild.id, { ...this.roleData, reason }));
+		if (isNullish(madeBefore)) await writeSettings(guild, { [this.roleKey]: role.id });
+		await this.updateChannelsOverrides(guild, role);
+
+		let members = 0;
+		for (const userId of userIds) {
+			const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+			if (isNullish(member)) continue;
+
+			if (!member.roleIds.includes(role.id)) await member.roles.add(role.id, reason);
+			members++;
+		}
+
+		return { role, members };
+	}
+
+	/**
 	 * Updates the channel overrides for a given guild and role.
 	 *
 	 * This method iterates through all the channels in the guild, excluding threads, and updates the channel overrides
@@ -210,6 +256,8 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		}
 
 		await (await getStickyRoles(guild)).remove(entry.userId, role.id);
+		// The listener that sees the role go must not take it for one a moderator took by hand:
+		await markOwnRoleChange(guild.id, entry.userId, role.id);
 
 		const reason = await this.getReason(guild, entry.reason, true);
 		if (this.replace) {

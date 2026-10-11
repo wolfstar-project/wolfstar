@@ -1,5 +1,7 @@
+import { Emojis } from '#utils/emojis';
 import type { Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId } from '#lib/structures/settings-menu/ids';
+import { withSettingsExpiry } from '#lib/structures/settings-menu/render';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -46,7 +48,7 @@ export function renderUserSettings({ t, ownerId, report }: UserSettingsContext):
 				components: [
 					{
 						type: ComponentType.TextDisplay,
-						content: `**${t('commands/conf:menuUserReport')}**\n${t(report ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}\n-# ${t('commands/conf:menuUserReportDescription')}`
+						content: `**${t('commands/conf:menuUserReport')}**\n${report ? Emojis.Checked : Emojis.Unchecked} ${t(report ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}\n-# ${t('commands/conf:menuUserReportDescription')}`
 					}
 				],
 				accessory: {
@@ -59,5 +61,5 @@ export function renderUserSettings({ t, ownerId, report }: UserSettingsContext):
 		]
 	};
 
-	return { components: [container], flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral };
+	return { components: withSettingsExpiry(t, [container]), flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral };
 }

@@ -1,9 +1,18 @@
-import { readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
+import { retryWithDelays, seconds } from '#common';
+import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
+import { RoleActions } from '#lib/moderation/actions';
+import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
+import { getLogPrefix } from '#utils/functions';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
-import type { Role } from '@wolfstar/plugin-gateway';
+import type { Guild, Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
 import type { StickyRole, UniqueRoleSet } from 'wolfstar-database';
+
+/**
+ * How long to wait before the role of an action is made again after it could not be, once for each attempt but the first.
+ */
+const RestoreRetryDelays = [seconds(5), seconds(30)];
 
 @RegisterAsGatewayListener('guildRoleDelete')
 export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
@@ -13,6 +22,10 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 
 		// The role may not have been cached, its ID is all that is needed:
 		const roleId = data.role_id;
+
+		// The actions whose role this was, read before the settings forget it:
+		const settings = await readSettings(guild);
+		const actions = RoleActions.filter((action) => settings[action.roleKey] === roleId);
 
 		using trx = await writeSettingsTransaction(guild);
 
@@ -27,6 +40,7 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		trx.write({ rolesInitial: trx.settings.rolesInitial.filter((rm) => rm !== roleId) });
 		trx.write({ rolesInitialHumans: trx.settings.rolesInitialHumans.filter((rm) => rm !== roleId) });
 		trx.write({ rolesInitialRobots: trx.settings.rolesInitialRobots.filter((rm) => rm !== roleId) });
+		if (trx.settings.reportsRole === roleId) trx.write({ reportsRole: null });
 		if (trx.settings.rolesMuted === roleId) trx.write({ rolesMuted: null });
 		if (trx.settings.rolesRestrictedReaction === roleId) trx.write({ rolesRestrictedReaction: null });
 		if (trx.settings.rolesRestrictedEmbed === roleId) trx.write({ rolesRestrictedEmbed: null });
@@ -45,6 +59,32 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		for (const rule of await readAutoModerationRules(guild.id)) {
 			if (!rule.ignoredRoles.includes(roleId)) continue;
 			await updateAutoModerationRule(guild.id, rule.id, (current) => ({ ignoredRoles: current.ignoredRoles.filter((id) => id !== roleId) }));
+		}
+
+		for (const action of actions) await this.#restoreActionRole(action, guild);
+	}
+
+	/**
+	 * Makes the role of a mute, or of a restriction, again when it was deleted while the action is in course for
+	 * somebody. It is tried three times, since what stops the bot may pass (Discord fails, a moderator gives the bot the
+	 * permission it lacks). After that it is logged, and the action is left with no role: the settings forgot the one
+	 * that was deleted before any of this, so they never show a role that is not there.
+	 */
+	async #restoreActionRole(action: RoleModerationAction, guild: Guild) {
+		try {
+			const restored = await retryWithDelays(() => action.restore(guild), RestoreRetryDelays);
+			if (restored === null) return;
+
+			this.container.logger.info(
+				getLogPrefix(this),
+				`Made the role of an action again in ${guild.id}, as ${restored.role.id}, and gave it to ${restored.members} members.`
+			);
+		} catch (error) {
+			this.container.logger.error(
+				getLogPrefix(this),
+				'Could not make the role of an action again after it was deleted, in three attempts:',
+				error
+			);
 		}
 	}
 

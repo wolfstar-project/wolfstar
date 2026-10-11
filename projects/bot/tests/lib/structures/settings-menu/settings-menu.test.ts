@@ -4,6 +4,11 @@ import {
 	decodeSettingsMenuId,
 	displaySettingValue,
 	encodeSettingsMenuId,
+	getSettingsMenuExpiry,
+	isSettingsMenuExpired,
+	claimSettingsExpiredNotice,
+	renderSettingsExpired,
+	SettingsMenuLifetime,
 	getSettingKind,
 	getVisibleGroups,
 	getVisibleKeys,
@@ -65,11 +70,37 @@ function getAllGroups(group = getConfigurableGroups()): ReturnType<typeof getCon
 describe('settings menu', () => {
 	describe('custom IDs', () => {
 		test('GIVEN an action THEN it survives the round trip the framework parser does', () => {
-			const action = { ownerId, verb: 'view', target: 'roles.unique-role-sets', page: 2 } as const;
+			const action = { ownerId, verb: 'view', target: 'roles.unique-role-sets', page: 2, expiresAt: 1_800_000_000 } as const;
 			const id = encodeSettingsMenuId(action);
 
-			expect(id).toBe(`conf.${ownerId}.view:roles/unique-role-sets:2`);
+			expect(id).toBe(`conf.${ownerId}.view:roles/unique-role-sets:2:${(1_800_000_000).toString(36)}`);
 			expect(decodeSettingsMenuId(id.split('.').slice(1))).toEqual(action);
+		});
+
+		test('GIVEN a component THEN it expires a quarter of an hour after it is rendered', () => {
+			const now = 1_700_000_000_000;
+			vi.useFakeTimers({ now });
+			try {
+				const id = encodeSettingsMenuId({ ownerId, verb: 'refresh', target: '', page: 0 });
+				const action = decodeSettingsMenuId(id.split('.').slice(1))!;
+
+				expect(getSettingsMenuExpiry()).toBe(now / 1000 + 900);
+				expect(action.expiresAt).toBe(now / 1000 + 900);
+				expect(SettingsMenuLifetime).toBe(900_000);
+				expect(isSettingsMenuExpired(action, now)).toBe(false);
+				expect(isSettingsMenuExpired(action, now + SettingsMenuLifetime - 1)).toBe(false);
+				expect(isSettingsMenuExpired(action, now + SettingsMenuLifetime)).toBe(true);
+			} finally {
+				vi.useRealTimers();
+			}
+		});
+
+		test('GIVEN a component of a menu from before the menus expired THEN it is expired', () => {
+			const action = decodeSettingsMenuId([ownerId, 'view:logs:1'])!;
+
+			expect(action).toEqual({ ownerId, verb: 'view', target: 'logs', page: 1 });
+			expect(isSettingsMenuExpired(action)).toBe(true);
+			expect(isSettingsMenuExpired(decodeSettingsMenuId([ownerId, 'view:logs:1:nope'])!)).toBe(true);
 		});
 
 		test('GIVEN the longest property THEN the custom ID fits in 100 characters', () => {
@@ -130,12 +161,97 @@ describe('settings menu', () => {
 			}
 		});
 
+		test('GIVEN a menu THEN the last line of its last container says when it closes, and every component expires then', () => {
+			const now = 1_700_000_000_000;
+			vi.useFakeTimers({ now });
+			try {
+				const message = renderSettingsGroup(createContext(), resolveSettingGroup('logs')!, 0);
+				const container = message.components!.findLast((component) => component.type === ComponentType.Container) as {
+					type: ComponentType;
+					components: { type: ComponentType; content?: string }[];
+				};
+				const last = container.components.at(-1)!;
+				const expiries = collectCustomIds(message.components!)
+					.filter((id) => id.startsWith('conf.'))
+					.map((id) => decodeSettingsMenuId(id.split('.').slice(1))?.expiresAt);
+
+				expect(container.type).toBe(ComponentType.Container);
+				expect(last.type).toBe(ComponentType.TextDisplay);
+				expect(last.content).toContain(`<t:${now / 1000 + 900}:R>`);
+				expect(expiries.length).toBeGreaterThan(0);
+				expect(new Set(expiries)).toEqual(new Set([now / 1000 + 900]));
+				expect(countComponents(message.components!)).toBeLessThanOrEqual(40);
+			} finally {
+				vi.useRealTimers();
+			}
+		});
+
+		test('GIVEN a menu that expired THEN a click is told the command that opens it again', () => {
+			expect(renderSettingsExpired(createContext().t, 'server')).toContain('`/settings server`');
+			expect(renderSettingsExpired(createContext().t, 'user')).toContain('`/settings user`');
+		});
+
+		test('GIVEN a command Discord gave an ID THEN the command is a mention', () => {
+			const previous = (container as any).applicationCommandRegistry;
+			(container as any).applicationCommandRegistry = {
+				getLoadedChatInputCommands: () => new Map([['settings', { getGlobalId: () => '1234567890' }]])
+			};
+			try {
+				expect(renderSettingsExpired(createContext().t, 'server')).toContain('</settings server:1234567890>');
+			} finally {
+				(container as any).applicationCommandRegistry = previous;
+			}
+		});
+
+		describe('clicks on an expired menu', () => {
+			const counts = new Map<string, number>();
+			const redis = {
+				status: 'ready',
+				incr: async (key: string) => {
+					const next = (counts.get(key) ?? 0) + 1;
+					counts.set(key, next);
+					return next;
+				},
+				pexpire: vi.fn(async () => 1)
+			};
+			let previous: unknown;
+
+			beforeAll(() => {
+				previous = (container as any).redis;
+				(container as any).redis = redis;
+			});
+
+			afterAll(() => {
+				(container as any).redis = previous;
+			});
+
+			beforeEach(() => {
+				counts.clear();
+				redis.pexpire.mockClear();
+			});
+
+			test('GIVEN a user who keeps clicking THEN the first five clicks are answered, and the sixth is not', async () => {
+				const answers: boolean[] = [];
+				for (let click = 0; click < 7; click++) answers.push(await claimSettingsExpiredNotice('1', '2'));
+
+				expect(answers).toEqual([true, true, true, true, true, false, false]);
+				expect(redis.pexpire).toHaveBeenCalledTimes(1);
+			});
+
+			test('GIVEN another menu or another user THEN they are counted apart', async () => {
+				for (let click = 0; click < 6; click++) await claimSettingsExpiredNotice('1', '2');
+
+				await expect(claimSettingsExpiredNotice('1', '3')).resolves.toBe(true);
+				await expect(claimSettingsExpiredNotice('4', '2')).resolves.toBe(true);
+			});
+		});
+
 		test('GIVEN a group with more keys than a page THEN it is paginated', () => {
 			const logs = resolveSettingGroup('logs')!;
 			const first = collectCustomIds(renderSettingsGroup(createContext(), logs, 0).components!);
 			const last = collectCustomIds(renderSettingsGroup(createContext(), logs, 99).components!);
 
-			expect(first.some((id) => id.endsWith('view:logs:1'))).toBe(true);
+			expect(first.some((id) => id.includes('view:logs:1:'))).toBe(true);
 			expect(last.some((id) => id.includes('page::'))).toBe(true);
 			expect(first).not.toEqual(last);
 		});
@@ -201,7 +317,8 @@ describe('settings menu', () => {
 
 			expect(display('rolesMuted')).toBe('<@&111111111111111111>');
 			expect(display('rolesAdmin')).toBe('commands/conf:menuValueNone');
-			expect(display('modulesAutomod')).toBe('commands/conf:menuValueEnabled');
+			// A setting that is on or off is written with its checkbox:
+			expect(display('modulesAutomod')).toBe('☑️ commands/conf:menuValueEnabled');
 			expect(display('moderationChannel')).toBe('commands/conf:settingNotSet');
 		});
 

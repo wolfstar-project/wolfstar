@@ -1,6 +1,7 @@
+import { Emojis } from '#utils/emojis';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import { getConfigurableGroups, isSchemaGroup, type Serializer } from '#lib/database';
+import { getConfigurableGroups, getSettingName, isSchemaGroup, type Serializer } from '#lib/database';
 import { MessageUpdateStyles, type ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
@@ -105,13 +106,20 @@ export function getSettingMaximumValues(key: SchemaKey) {
 const MaximumTextValues = 100;
 
 /**
- * The title of a group or of a key, from the last part of its path: `ignored-roles` is `Ignored Roles`.
+ * The title of a group, from the last part of its path: `ignored-roles` is `Ignored Roles`.
  */
-export function getSettingTitle(value: SchemaGroup | SchemaKey) {
-	return value.key
+export function getSettingTitle(group: SchemaGroup) {
+	return group.key
 		.split('-')
 		.map((part) => toTitleCase(part))
 		.join(' ');
+}
+
+/**
+ * The translated title of a key, `rolesMuted` being `Muted Role`.
+ */
+export function getSettingKeyTitle(t: Translator, key: SchemaKey) {
+	return getSettingName(t, key.property);
 }
 
 /**
@@ -186,7 +194,7 @@ export function displaySettingValue(t: Translator, key: SchemaKey, settings: Rea
 function displaySingleValue(t: Translator, key: SchemaKey, value: unknown): string {
 	switch (getSettingKind(key)) {
 		case 'boolean':
-			return t(value ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled');
+			return `${value ? Emojis.Checked : Emojis.Unchecked} ${t(value ? 'commands/conf:menuValueEnabled' : 'commands/conf:menuValueDisabled')}`;
 		case 'role':
 			return roleMention(String(value));
 		case 'channel':
@@ -253,7 +261,8 @@ export async function parseSettingInput(context: Serializer.UpdateContext, input
 	}
 
 	const maximum = getSettingMaximumValues(key);
-	if (values.length > maximum) return { ok: false, error: t('commands/conf:menuTooManyValues', { name: key.name, max: maximum }) };
+	if (values.length > maximum)
+		return { ok: false, error: t('commands/conf:menuTooManyValues', { name: getSettingKeyTitle(t, key), max: maximum }) };
 
 	return { ok: true, value: values };
 }
@@ -281,7 +290,7 @@ export async function validateSettingPick(context: Serializer.UpdateContext, val
 	for (const value of values) {
 		try {
 			if (!(await serializer.isValid(value as never, context))) {
-				return { ok: false, error: t('commands/conf:menuInvalidValue', { name: key.name }) };
+				return { ok: false, error: t('commands/conf:menuInvalidValue', { name: getSettingKeyTitle(t, key) }) };
 			}
 		} catch (error) {
 			// The serializers throw the translated reason:
