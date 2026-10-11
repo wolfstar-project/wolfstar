@@ -11,6 +11,7 @@ export const Tables = [
 	'Modules',
 	'GuildAutoModeration',
 	'GuildCommands',
+	'GuildHoneypot',
 	'GuildLogs',
 	'GuildModeration',
 	'GuildPermissions',
@@ -98,6 +99,15 @@ export const Columns = {
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
 		commandsDisabledChannels: ['disabledChannels', 'snowflakes']
+	}),
+	...columns('GuildHoneypot', {
+		honeypotChannel: ['channelId', 'snowflake'],
+		honeypotLogChannel: ['logChannelId', 'snowflake'],
+		honeypotAction: ['action', 'value'],
+		honeypotDirectMessage: ['directMessage', 'value'],
+		honeypotWarning: ['warning', 'value'],
+		honeypotRandomName: ['randomName', 'value'],
+		honeypotKeepActive: ['keepActive', 'value']
 	}),
 	...columns('GuildLogs', {
 		logsMemberAdd: ['memberAdd', 'snowflake'],

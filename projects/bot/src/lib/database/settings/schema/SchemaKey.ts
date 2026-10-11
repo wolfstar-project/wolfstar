@@ -21,6 +21,7 @@ export type SchemaKeyType =
 	| 'commandMatch'
 	| 'emoji'
 	| 'guild'
+	| 'honeypotAction'
 	| 'invite'
 	| 'language'
 	| 'notAllowed'

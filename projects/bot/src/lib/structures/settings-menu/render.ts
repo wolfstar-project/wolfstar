@@ -58,6 +58,7 @@ const ModuleEmojis: Record<string, string> = {
 	modules: '🧩',
 	automod: '🛡️',
 	commands: '⌨️',
+	honeypot: '🍯',
 	logs: '📜',
 	moderation: '🔨',
 	reports: '🚩',

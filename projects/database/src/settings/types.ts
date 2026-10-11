@@ -13,6 +13,17 @@ export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 export type AutoModerationHardAction = Models.public_GuildAutoModerationRule['hardAction'];
 
 /**
+ * What is done to who writes in the honeypot channel of a guild, as the `HoneypotAction` enum stores it. A `Softban`
+ * bans and unbans, which removes the member and deletes what they sent in every channel.
+ */
+export type HoneypotAction = Models.public_GuildHoneypot['action'];
+
+/**
+ * The values of {@linkcode HoneypotAction}, the mildest first, in the order the settings offer them.
+ */
+export const HoneypotActions = ['Kick', 'Softban', 'Ban'] as const satisfies readonly HoneypotAction[];
+
+/**
  * The settings of a guild, flattened from the normalized Prisma 8 tables (`Guild`, `Modules`, `GuildRoles`, …).
  *
  * Every key is prefixed by the table it is stored in. The keys stored in a column, and their types, are derived from
