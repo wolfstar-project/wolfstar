@@ -79,6 +79,16 @@ export const EmojiDefinitions = {
 	Edit: emoji('edit', '✏️'),
 	// The triangle of what the user is warned about:
 	Warning: emoji('warning', '⚠️'),
+	// The modules of the settings menu, in its select menu:
+	ModuleGeneral: emoji('module_general', '⚙️'),
+	ModuleModules: emoji('module_modules', '🧩'),
+	ModuleAutomod: emoji('module_automod', '🛡️'),
+	ModuleCommands: emoji('module_commands', '⌨️'),
+	ModuleHoneypot: emoji('module_honeypot', '🍯'),
+	ModuleLogs: emoji('module_logs', '📜'),
+	ModuleModeration: emoji('module_moderation', '🔨'),
+	ModuleReports: emoji('module_reports', '🚩'),
+	ModuleRoles: emoji('module_roles', '🎭'),
 	// The checkbox of a setting that is on or off:
 	Checked: emoji('checked', '☑️'),
 	Unchecked: emoji('unchecked', '⬜'),
