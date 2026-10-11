@@ -89,8 +89,6 @@ export function getConfiguration() {
 		logsEmojiUpdate: logChannel('emoji-update', 'settings:channelsLogsEmojiUpdate'),
 		logsEmojiDelete: logChannel('emoji-delete', 'settings:channelsLogsEmojiDelete'),
 		logsServerUpdate: logChannel('server-update', 'settings:channelsLogsServerUpdate'),
-		logsCommand: logChannel('command', 'settings:channelsLogsCommand'),
-		logsSettings: logChannel('settings', 'settings:channelsLogsSettings'),
 		logsIgnoreAll: {
 			type: 'guildTextChannel',
 			name: 'logs.ignore.all',

@@ -1,6 +1,7 @@
 import { readSettings } from '#lib/database';
 import type { RoleTypeVariation } from '#lib/moderation';
 import { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
+import { ModerationCommandPrompt, renderRoleSetupPrompt, savePendingRoleSetupCommand } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { container } from '@wolfstar/http-framework';
 
@@ -9,11 +10,15 @@ import { container } from '@wolfstar/http-framework';
  *
  * @remarks
  *
- * A slash command cannot wait for a message inside its handler, so when the role is missing:
+ * When the role is missing:
  *
  * - an author that is not an administrator is told to ask one (`restrictLowlevel`).
- * - an administrator gets a new role created, with the channel overrides applied, through
- *   {@linkcode RoleModerationAction.setup}. To use an existing role instead, configure it in the settings first.
+ * - an administrator is asked what to do, in a prompt: use a role the server has, picked in a select menu, or create a
+ *   new one, which is also configured in every channel through {@linkcode RoleModerationAction.setup}. The `roleSetup`
+ *   interaction handler does what is picked, see `RoleSetupPrompt.ts`.
+ *
+ * A click only carries the ID of its component, so the command and its options are kept in Redis meanwhile
+ * (`savePendingRoleSetupCommand`), and the handler runs the command again with them once the role is set up.
  */
 export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, ValueType> extends ModerationCommand<Type, ValueType> {
 	public constructor(context: ModerationCommand.LoaderContext, options: SetUpModerationCommand.Options<Type>) {
@@ -29,20 +34,27 @@ export abstract class SetUpModerationCommand<Type extends RoleTypeVariation, Val
 		const roleId = settings[this.action.roleKey];
 
 		// Verify for role existence.
-		const role = roleId
-			? await container.gatewayClient.roles.cache.get(container.gatewayClient.roles.resolveKey(context.guild.id, roleId))
-			: undefined;
-		if (role) return;
+		if (roleId && (await this.hasRole(context.guild.id, roleId))) return;
 
 		if (!(await hasCommandPermissionLevel(interaction, CommandPermissionLevel.Administrator))) {
 			throw context.t('commands/moderation:restrictLowlevel');
 		}
 
-		await this.action.setup({
-			guild: context.guild,
-			author: context.moderator,
-			confirm: () => true
-		});
+		// The command is run again with its options once the administrator answers:
+		await savePendingRoleSetupCommand(context.guild.id, interaction.user.id, this.action.type, { command: this.name, args: { ...context.args } });
+		throw new ModerationCommandPrompt(renderRoleSetupPrompt(context.t, interaction.user.id, this.action.type));
+	}
+
+	/**
+	 * Whether the guild has a role. The cache may not have a role that was just created, so the roles are asked for
+	 * when it does not.
+	 */
+	private async hasRole(guildId: string, roleId: string) {
+		const { roles } = container.gatewayClient;
+		if (await roles.cache.get(roles.resolveKey(guildId, roleId))) return true;
+
+		const fetched = await roles.fetchAll(guildId);
+		return fetched.some((role) => role.id === roleId);
 	}
 }
 
