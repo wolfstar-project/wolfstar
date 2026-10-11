@@ -404,7 +404,7 @@ export function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
  * Renders what a settings menu becomes when it is used after it expired: a line that says so, and no components.
  *
  * @param t - The function to translate with.
- * @param command - The command that opens the menu again, `settings server` or `settings user`.
+ * @param command - The command that opens the menu again, `settings server menu` or `settings user`.
  */
 export function renderSettingsExpired(t: Translator, command: string): SettingsMenuMessage {
 	const content = t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command: inlineCode(`/${command}`) });

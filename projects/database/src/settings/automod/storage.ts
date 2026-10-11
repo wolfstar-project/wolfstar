@@ -1,6 +1,7 @@
 import type { Database, Models } from '../../index.js';
 import type { Snowflake } from 'discord-api-types/v10';
 import { isRowId } from '../ids.js';
+import type { DatabaseTransaction } from '../storage.js';
 import {
 	normalizeAutoModerationRuleEscalation,
 	normalizeAutoModerationRuleOptions,
@@ -105,4 +106,59 @@ export async function deleteAutoModerationRule(db: Database, guildId: Snowflake,
 
 	const count = await db.orm.public.GuildAutoModerationRule.where({ id: BigInt(ruleId), guildId: BigInt(guildId) }).deleteAndCount();
 	return Number(count) > 0;
+}
+
+/**
+ * What replaces the rules of a guild in one write: the rules to create, the ones to edit and the ones to delete.
+ */
+export interface AutoModerationRulePlan {
+	/** The rules to create, in the order they are created. */
+	create: AutoModerationRuleData[];
+	/** The rules to edit, by their ID. The exemptions of a rule are only touched when they are in `data`. */
+	update: { id: string; data: Partial<AutoModerationRuleData> }[];
+	/** The IDs of the rules to delete. */
+	remove: string[];
+}
+
+/**
+ * Writes a plan of the rules of a guild inside a transaction that is already open, so it commits or rolls back with
+ * what else the transaction wrote. The rules are deleted first, so a name a plan frees can be taken again by it.
+ * @param tx The transaction to write through.
+ * @param guildId The guild's ID, so a rule of another guild is never touched.
+ * @param plan What to write.
+ * @param language The language a `Guild` row is created with, when the guild has none yet.
+ * @returns The rules created, with their IDs.
+ */
+export async function writeAutoModerationRulePlan(
+	tx: DatabaseTransaction,
+	guildId: Snowflake,
+	plan: AutoModerationRulePlan,
+	language = 'en-US'
+): Promise<AutoModerationRule[]> {
+	const id = BigInt(guildId);
+	await tx.orm.public.Guild.upsert({ create: { id, language }, update: { id } });
+
+	const rules = tx.orm.public.GuildAutoModerationRule;
+	for (const ruleId of plan.remove) {
+		if (!isRowId(ruleId)) continue;
+		await rules.where({ id: BigInt(ruleId), guildId: id }).deleteAndCount();
+	}
+
+	for (const { id: ruleId, data } of plan.update) {
+		if (!isRowId(ruleId)) continue;
+		await rules.where({ id: BigInt(ruleId), guildId: id }).updateAndCount(toColumns(data));
+	}
+
+	const created: AutoModerationRule[] = [];
+	for (const data of plan.create) {
+		const row = await rules.create({
+			...data,
+			guildId: id,
+			ignoredRoles: data.ignoredRoles.map((role) => BigInt(role)),
+			ignoredChannels: data.ignoredChannels.map((channel) => BigInt(channel))
+		});
+		created.push(toRule(row));
+	}
+
+	return created;
 }

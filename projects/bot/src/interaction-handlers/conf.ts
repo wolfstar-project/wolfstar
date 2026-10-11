@@ -35,7 +35,7 @@ type ModalInteraction = InteractionHandler.ModalInteraction;
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInteraction>;
 
 /**
- * Handles the components and the modal of the settings menus `/settings server` and `/settings user` open, see
+ * Handles the components and the modal of the settings menus `/settings server menu` and `/settings user` open, see
  * `lib/structures/settings-menu`.
  *
  * @remarks
@@ -58,7 +58,7 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		// A menu that was left alone too long is closed, as the collector of the message commands closed it:
 		if (isSettingsMenuExpired(action)) {
-			const expired = renderSettingsExpired(t, action.verb === 'userToggle' ? 'settings user' : 'settings server');
+			const expired = renderSettingsExpired(t, action.verb === 'userToggle' ? 'settings user' : 'settings server menu');
 			if (interaction instanceof ModalSubmitInteraction) return fail(t('commands/conf:menuExpiredModal'));
 			return (interaction as ComponentInteraction).update(expired);
 		}
