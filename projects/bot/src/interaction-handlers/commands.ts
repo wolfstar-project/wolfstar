@@ -15,9 +15,17 @@ import {
 	renderCommandsSearchModal
 } from '#lib/structures/commands-menu';
 import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
+import {
+	CommandRestrictionLists,
+	findCommandRestriction,
+	isCommandRestrictionEmpty,
+	readCommandRestrictions,
+	setCommandRestriction,
+	type CommandRestriction
+} from '#lib/structures/commands-menu/restrictions';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
-import { getModalValue } from '#utils/interactions';
+import { getModalValue, getModalValues } from '#utils/interactions';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply, isMessageStringSelectInteractionData } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -116,11 +124,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
 		const settings = await readSettings(interaction.guildId!);
-		return interaction.showModal(renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece)));
+		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), piece.name);
+		return interaction.showModal(renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction));
 	}
 
 	/**
-	 * Enables or disables a command in the server: it adds the command to `commands.disabled`, or takes it out.
+	 * Enables or disables a command in the server: it adds the command to `commands.disabled`, or takes it out. It also
+	 * saves the channels and the roles the command is allowed in, or ignores, see `CommandRestriction`.
 	 *
 	 * @param interaction - The submission of the modal of the command.
 	 * @param name - The name of the command.
@@ -137,22 +147,31 @@ export class UserInteractionHandler extends InteractionHandler {
 		const disable = getModalValue(interaction.data.components, CommandStatusInputId) === CommandDisabledValue;
 		if (disable && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtected', { name }));
 
+		const restriction: CommandRestriction = { command: piece.name, allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [] };
+		for (const list of CommandRestrictionLists) restriction[list] = getModalValues(interaction.data.components, list);
+		const restricted = !isCommandRestrictionEmpty(restriction);
+		if (restricted && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtectedRestricted', { name }));
+
 		const guildId = interaction.guildId!;
 		await writeSettings(
 			guildId,
 			(settings) => {
 				const others = settings.commandsDisabled.filter((entry: string) => entry !== piece.name);
-				return { commandsDisabled: disable ? [...others, piece.name] : others };
+				const restrictions = setCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), restriction);
+				// The restrictions are plain objects, which is what the JSON column holds:
+				return { commandsDisabled: disable ? [...others, piece.name] : others, commandsRestrictions: restrictions as never };
 			},
 			interaction.user.id
 		);
 
-		if (disable) return reply(t('commands/commands:editDisabledDone', { name }));
+		const restrictions = t(restricted ? 'commands/commands:editRestricted' : 'commands/commands:editUnrestricted');
+		if (disable) return reply(`${t('commands/commands:editDisabledDone', { name })}\n${restrictions}`);
 
 		// The command can still be disabled by its category or by `*`, which this does not take out:
 		const settings = await readSettings(guildId);
 		const rule = findDisabledBy(settings.commandsDisabled, piece);
-		return reply(rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule }));
+		const status = rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule });
+		return reply(`${status}\n${restrictions}`);
 	}
 
 	/**

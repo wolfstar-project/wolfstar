@@ -18,6 +18,7 @@ export function getDefaultGuildSettings() {
 		automodTrackNative: false,
 		commandsDisabled: [],
 		commandsDisabledChannels: [],
+		commandsRestrictions: [],
 		logsMemberAdd: null,
 		logsMemberRemove: null,
 		logsMemberNicknameUpdate: null,

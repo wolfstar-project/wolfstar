@@ -8,12 +8,14 @@ import {
 	type CatalogCommand,
 	type CatalogEntry
 } from '#lib/structures/commands-menu/catalog';
+import { MaximumCommandRestrictionEntries, type CommandRestriction, type CommandRestrictionList } from '#lib/structures/commands-menu/restrictions';
 import { chatInputApplicationCommandMention, inlineCode } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
 import {
 	ButtonStyle,
 	ComponentType,
+	SelectMenuDefaultValueType,
 	MessageFlags,
 	PermissionFlagsBits,
 	TextInputStyle,
@@ -396,44 +398,64 @@ export const CommandEnabledValue = 'enabled';
 export const CommandDisabledValue = 'disabled';
 
 /**
- * The custom ID of the radio group of {@linkcode renderCommandEditModal}.
+ * The custom ID of the radio group of {@linkcode renderCommandEditModal}. The select menus of its lists have the name
+ * of their list, see `CommandRestrictionLists`.
  */
 export const CommandStatusInputId = 'status';
 
 /**
- * The modal that edits a command of the server: for now, whether it can be run.
+ * The modal that edits a command of the server: whether it can be run, and the channels and the roles it is allowed
+ * in, or ignores.
+ *
+ * @remarks A modal holds five components, which are the status and the four lists, so what the command is goes in the
+ * title and in the description of the status.
  *
  * @param context - The context of the menu.
  * @param command - The command to edit.
  * @param disabledBy - The name in `commands.disabled` that disables it, `null` when it is enabled.
+ * @param restriction - The channels and the roles the server restricts the command to.
  */
 export function renderCommandEditModal(
 	context: CommandsMenuContext,
 	command: CatalogCommand,
-	disabledBy: string | null
+	disabledBy: string | null,
+	restriction: CommandRestriction
 ): APIModalInteractionResponseCallbackData {
 	const { t } = context;
 	const disabled = disabledBy !== null;
-	const lines = [
-		`### ⌘ ${inlineCode(`/${command.name}`)} · ${command.category}`,
-		command.description,
-		'',
-		`${disabled ? Emojis.Unchecked : Emojis.Checked} ${t(disabled ? 'commands/commands:editStatusDisabled' : 'commands/commands:editStatusEnabled', { rule: disabledBy })}`,
-		t('commands/commands:viewPermissions', {
-			permissions: command.permissions === null ? t('commands/commands:viewPermissionsNone') : formatPermissions(t, command.permissions)
-		})
-	];
-	if (command.subcommands.length > 0) lines.push(t('commands/commands:editSubcommands', { count: command.subcommands.length }));
+	// A command that is disabled by its category, or by `*`, says so, since enabling it here does not undo that:
+	const status =
+		disabledBy !== null && disabledBy !== command.name
+			? t('commands/commands:editStatusDisabledBy', { rule: disabledBy })
+			: command.subcommands.length > 0
+				? t('commands/commands:editStatusSubcommands', { count: command.subcommands.length })
+				: t('commands/commands:editStatusDescription');
+
+	const select = (list: CommandRestrictionList, type: ComponentType.ChannelSelect | ComponentType.RoleSelect) => ({
+		type: ComponentType.Label as const,
+		label: cutText(t(`commands/commands:edit${RestrictionKeys[list]}Label`), 45),
+		description: cutText(t(`commands/commands:edit${RestrictionKeys[list]}Description`), 100),
+		component: {
+			type,
+			custom_id: list,
+			required: false,
+			min_values: 0,
+			max_values: MaximumCommandRestrictionEntries,
+			default_values: restriction[list].map((id) => ({
+				id,
+				type: type === ComponentType.ChannelSelect ? SelectMenuDefaultValueType.Channel : SelectMenuDefaultValueType.Role
+			}))
+		}
+	});
 
 	return {
 		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: 0 }),
 		title: cutText(t('commands/commands:editTitle', { name: command.name }), 45),
 		components: [
-			{ type: ComponentType.TextDisplay, content: cutText(lines.join('\n'), 3500) },
 			{
 				type: ComponentType.Label,
 				label: cutText(t('commands/commands:editStatusLabel'), 45),
-				description: cutText(t('commands/commands:editStatusDescription'), 100),
+				description: cutText(status, 100),
 				component: {
 					type: ComponentType.RadioGroup,
 					custom_id: CommandStatusInputId,
@@ -443,10 +465,24 @@ export function renderCommandEditModal(
 						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: disabled }
 					]
 				}
-			}
-		]
+			},
+			select('allowedChannels', ComponentType.ChannelSelect),
+			select('ignoredChannels', ComponentType.ChannelSelect),
+			select('allowedRoles', ComponentType.RoleSelect),
+			select('ignoredRoles', ComponentType.RoleSelect)
+		] as APIModalInteractionResponseCallbackData['components']
 	};
 }
+
+/**
+ * The part of the keys of the texts of each list of a restriction.
+ */
+const RestrictionKeys = {
+	allowedChannels: 'AllowedChannels',
+	ignoredChannels: 'IgnoredChannels',
+	allowedRoles: 'AllowedRoles',
+	ignoredRoles: 'IgnoredRoles'
+} as const satisfies Record<CommandRestrictionList, string>;
 
 /**
  * The modal a user writes the page they want to go to in.
