@@ -388,16 +388,33 @@ function getPathTitle(t: Translator, group: SchemaGroup): string {
 
 function toMessage(t: Translator, components: APIMessageTopLevelComponent[]): SettingsMenuMessage {
 	// The values mention roles and channels, which must not ping anybody:
-	return { components: [...components, renderSettingsExpiry(t)], flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
+	return { components: withSettingsExpiry(t, components), flags: MessageFlags.IsComponentsV2, allowed_mentions: { parse: [] } };
 }
 
 /**
- * The line under a settings menu that says when it expires, which Discord counts down.
+ * The line of a settings menu that says when it expires, which Discord counts down.
  *
  * @param t - The function to translate with.
  */
-export function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
+function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
 	return text(`-# ⏳ ${t('commands/conf:menuExpires', { time: time(getSettingsMenuExpiry(), TimestampStyles.RelativeTime) })}`);
+}
+
+/**
+ * Adds the line that says when a settings menu expires at the bottom of its last container, so it is part of the menu
+ * and not a line that floats under it.
+ *
+ * @param t - The function to translate with.
+ * @param components - The components of the menu.
+ */
+export function withSettingsExpiry<Component extends APIMessageTopLevelComponent>(t: Translator, components: readonly Component[]) {
+	// A menu may end with the row that goes from a page to another, which is under its last container:
+	const index = components.findLastIndex((component) => component.type === ComponentType.Container);
+	const last = components[index];
+	if (last?.type !== ComponentType.Container) return [...components, renderSettingsExpiry(t)];
+
+	const container = { ...last, components: [...last.components, renderSettingsExpiry(t)] };
+	return components.with(index, container);
 }
 
 /**

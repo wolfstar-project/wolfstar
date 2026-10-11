@@ -1,7 +1,7 @@
 import { Emojis } from '#utils/emojis';
 import type { Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId } from '#lib/structures/settings-menu/ids';
-import { renderSettingsExpiry } from '#lib/structures/settings-menu/render';
+import { withSettingsExpiry } from '#lib/structures/settings-menu/render';
 import {
 	ButtonStyle,
 	ComponentType,
@@ -61,5 +61,5 @@ export function renderUserSettings({ t, ownerId, report }: UserSettingsContext):
 		]
 	};
 
-	return { components: [container, renderSettingsExpiry(t)], flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral };
+	return { components: withSettingsExpiry(t, [container]), flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral };
 }

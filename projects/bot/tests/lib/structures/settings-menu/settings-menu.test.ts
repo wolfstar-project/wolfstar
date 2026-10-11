@@ -160,16 +160,21 @@ describe('settings menu', () => {
 			}
 		});
 
-		test('GIVEN a menu THEN its last line says when it closes, and every component expires then', () => {
+		test('GIVEN a menu THEN the last line of its last container says when it closes, and every component expires then', () => {
 			const now = 1_700_000_000_000;
 			vi.useFakeTimers({ now });
 			try {
 				const message = renderSettingsGroup(createContext(), resolveSettingGroup('logs')!, 0);
-				const last = message.components!.at(-1) as { type: ComponentType; content?: string };
+				const container = message.components!.findLast((component) => component.type === ComponentType.Container) as {
+					type: ComponentType;
+					components: { type: ComponentType; content?: string }[];
+				};
+				const last = container.components.at(-1)!;
 				const expiries = collectCustomIds(message.components!)
 					.filter((id) => id.startsWith('conf.'))
 					.map((id) => decodeSettingsMenuId(id.split('.').slice(1))?.expiresAt);
 
+				expect(container.type).toBe(ComponentType.Container);
 				expect(last.type).toBe(ComponentType.TextDisplay);
 				expect(last.content).toContain(`<t:${now / 1000 + 900}:R>`);
 				expect(expiries.length).toBeGreaterThan(0);
