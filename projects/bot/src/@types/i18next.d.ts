@@ -2891,6 +2891,13 @@ declare module "i18next" {
         capsFilter: "{{REDCROSS}} EEEOOO {{user}}! PLEASE DO NOT SHOUT IN THIS PLACE! YOU HAVE HIT THE CAPS LIMIT!";
         capsFilterDm: "Speak lower! I know you need to express your thoughts. There is the message I deleted:{{message}}";
         capsFilterFooter: "Too Many UpperCases";
+        honeypot: "[Honeypot] Wrote in the honeypot channel.";
+        honeypotLogAttachments_one: "**Attachments**: {{count}}";
+        honeypotLogAttachments_other: "**Attachments**: {{count}}";
+        honeypotLogCaught: "{{user}} wrote in {{channel}}, the honeypot channel.\n**Action**: {{action}}\n**Case**: {{caseId}}";
+        honeypotLogFailed: "{{user}} wrote in {{channel}}, the honeypot channel, and I could not act on them.\n**Action**: {{action}}\n**Error**: {{error}}";
+        honeypotLogFooter: "Honeypot";
+        honeypotLogUnknownError: "Something went wrong, the details are in my logs.";
         inviteFilterAlert: "{{REDCROSS}} Dear {{user}}, invite links aren't allowed here.";
         inviteFilterLog_one: "**Link**: {{links, list(conjunction)}}";
         inviteFilterLog_other: "**Links**: {{links, list(conjunction)}}";
