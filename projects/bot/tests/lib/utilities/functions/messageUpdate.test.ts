@@ -1,4 +1,4 @@
-import { getMessageDifference, getMessageSeparate, getMessageUpdateContent } from '#utils/functions/messageUpdate';
+import { escapeMessageContent, getMessageDifference, getMessageSeparate, getMessageUpdateContent } from '#utils/functions/messageUpdate';
 
 // Echoes the key, the translations are not what is tested here:
 const t = (key: string) => key;
@@ -42,6 +42,30 @@ describe('getMessageSeparate', () => {
 
 		expect(before).toBe('**events/messages:messageUpdateBefore**\nevents/messages:messageUpdateEmpty');
 		expect(after).toBe('**events/messages:messageUpdateAfter**\nnew');
+	});
+});
+
+describe('escapeMessageContent', () => {
+	test.each([
+		['_italic_', '\\_italic\\_'],
+		['*italic*', '\\*italic\\*'],
+		['# Heading', '\\# Heading'],
+		['> quote', '\\> quote'],
+		['>>> every line', '\\>>> every line'],
+		['-# small', '\\-# small'],
+		['- item', '\\- item'],
+		['1. item', '1\\. item'],
+		['[label](https://example.com)', '\\[label](https://example.com)'],
+		['back\\slash *x*', 'back\\\\slash \\*x\\*'],
+		['first\n> second', 'first\n\\> second']
+	])('GIVEN %j THEN every character of it is shown', (content, expected) => {
+		expect(escapeMessageContent(content)).toBe(expected);
+	});
+
+	test('GIVEN a link, a mention or an emoji THEN they are left as they are', () => {
+		const content = 'https://example.com/a_b_c <@266624760782258186> <#1> :smile: 5 > 3';
+
+		expect(escapeMessageContent(content)).toBe(content);
 	});
 });
 

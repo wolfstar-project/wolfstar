@@ -1,6 +1,6 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import { escapeMarkdown } from '#utils/External/escapeMarkdown';
-import { bold, strikethrough } from '@discordjs/formatters';
+import { bold, escapeMarkdown as escapeEveryMarkdown, strikethrough } from '@discordjs/formatters';
 import { isNullishOrEmpty } from '@sapphire/utilities';
 import { diffWordsWithSpace } from 'diff';
 import type { MessageUpdateStyle } from 'wolfstar-database';
@@ -40,9 +40,22 @@ export function getMessageDifference(old: string, current: string): string {
  */
 export function getMessageSeparate(t: Translator, old: string, current: string): [before: string, after: string] {
 	const part = (title: 'events/messages:messageUpdateBefore' | 'events/messages:messageUpdateAfter', content: string) =>
-		`${bold(t(title))}\n${isNullishOrEmpty(content) ? t('events/messages:messageUpdateEmpty') : escapeMarkdown(content)}`;
+		`${bold(t(title))}\n${isNullishOrEmpty(content) ? t('events/messages:messageUpdateEmpty') : escapeMessageContent(content)}`;
 
 	return [part('events/messages:messageUpdateBefore', old), part('events/messages:messageUpdateAfter', current)];
+}
+
+/**
+ * Escapes the content of a message so Discord shows every character that was written: the backslashes it had, the
+ * inline styles, and what only formats at the start of a line (a heading, a list, a quote, a small text) or as a
+ * masked link. The mentions and the emojis are left as they are, they are part of what the message showed.
+ *
+ * @param content - The content of the message.
+ */
+export function escapeMessageContent(content: string): string {
+	const escaped = escapeEveryMarkdown(content, { heading: true, bulletedList: true, numberedList: true, maskedLink: true });
+	// The quotes and the small text are not among what the library escapes:
+	return escaped.replaceAll(/^(\s*)(>{1,3}|-#)(?=\s)/gm, '$1\\$2');
 }
 
 /**
