@@ -1,6 +1,5 @@
-import { Events } from '#lib/types';
+import { Events, type ReactionAddData } from '#lib/types';
 import { getEmojiString } from '#utils/functions';
-import { LongLivingReactionCollector, type LLRCData } from '#utils/LongLivingReactionCollector';
 import { canReadMessages, isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, GuildEmoji, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { MessageReaction, MessageReactionEventDetails, User } from '@wolfstar/plugin-gateway';
@@ -14,7 +13,7 @@ export class UserListener extends EventGatewayListener<'messageReactionAdd'> {
 		// The emoji of the guild is only known when it is cached, the reaction itself carries its id, name and animated:
 		const { emoji } = reaction;
 		const guildEmoji = emoji instanceof GuildEmoji ? emoji : null;
-		const data: LLRCData = {
+		const data: ReactionAddData = {
 			channelId: channel.id,
 			emoji: {
 				animated: emoji.animated ?? false,
@@ -29,8 +28,6 @@ export class UserListener extends EventGatewayListener<'messageReactionAdd'> {
 			messageId: reaction.messageId,
 			userId: details.userId
 		};
-
-		LongLivingReactionCollector.feed(data);
 
 		const serialized = getEmojiString(data.emoji);
 		if (serialized === null) return;

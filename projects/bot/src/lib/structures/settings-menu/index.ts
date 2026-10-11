@@ -5,6 +5,7 @@ import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT, type Target } from '@wolfstar/plugin-i18next';
 import type { Snowflake } from 'discord-api-types/v10';
 
+export * from '#lib/structures/settings-menu/expired';
 export * from '#lib/structures/settings-menu/ids';
 export * from '#lib/structures/settings-menu/render';
 export * from '#lib/structures/settings-menu/user';
