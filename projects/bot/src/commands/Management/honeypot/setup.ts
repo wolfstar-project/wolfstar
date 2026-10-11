@@ -1,5 +1,13 @@
 import { readSettings, writeSettings } from '#lib/database';
-import { createHoneypotChannel, getMissingHoneypotPermissions, refreshHoneypotNotice } from '#lib/moderation/honeypot/channel';
+import {
+	createHoneypotChannel,
+	deleteHoneypotChannel,
+	getMissingHoneypotGuildPermissions,
+	getMissingHoneypotLogPermissions,
+	getMissingHoneypotPermissions,
+	refreshHoneypotNotice,
+	withHoneypotLock
+} from '#lib/moderation/honeypot/channel';
 import { HoneypotActionKeys, HoneypotRoot, renderHoneypotSummary } from '#lib/moderation/honeypot/commands';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
@@ -18,6 +26,10 @@ const Root = HoneypotRoot;
  *
  * Without the `channel` option the channel the honeypot already has is kept, and one is created at the top of the
  * list when it has none or the one it had is gone. The `action` and `logs` options are the ones of `/honeypot edit`.
+ *
+ * Everything that can refuse the setup is asked before a channel is created, and a channel that was created and did
+ * not become the honeypot is deleted: a setup that fails would leave a channel behind every time it is tried. The
+ * whole of it runs under the lock of the honeypot, see `withHoneypotLock`.
  */
 @RegisterAsSubcommand('honeypot', (builder) =>
 	applyLocalizedBuilder(builder, `${Root}:setup`)
@@ -38,37 +50,63 @@ export class UserCommand extends Command {
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const update = (content: string) => deferred.update({ content, allowed_mentions: { parse: [] } });
 
-		const settings = await readSettings(guildId);
-		const action = options.action ?? settings.honeypotAction;
-		const logs = options.logs?.id ?? settings.honeypotLogChannel;
+		return withHoneypotLock(guildId, async () => {
+			const settings = await readSettings(guildId);
+			const action = options.action ?? settings.honeypotAction;
+			const logs = options.logs?.id ?? settings.honeypotLogChannel;
 
-		let channelId = options.channel?.id ?? settings.honeypotChannel;
-		if (channelId !== null && channelId === logs) return update(translateKey(t, `${Root}:logsSameChannel`));
+			let channelId = options.channel?.id ?? settings.honeypotChannel;
+			if (channelId !== null && channelId === logs) return update(translateKey(t, `${Root}:logsSameChannel`));
 
-		let missing = channelId === null ? null : await getMissingHoneypotPermissions(guildId, channelId, action);
-		let created = false;
-		// The channel the honeypot had may be gone, a new one takes its place as when it never had one:
-		if (missing === null && options.channel === undefined) {
-			channelId = await createHoneypotChannel(guildId);
-			if (channelId === null) return update(translateKey(t, `${Root}:channelCannotCreate`));
+			// A channel the bot cannot write in would be saved, and every report dropped without a word:
+			if (options.logs !== undefined) {
+				const lacking = await getMissingHoneypotLogPermissions(guildId, options.logs.id);
+				if (lacking === null) return update(translateKey(t, `${Root}:channelUnknown`));
+				if (lacking.length > 0) {
+					return update(translateKey(t, `${Root}:logsMissingPermissions`, { channel: channelMention(options.logs.id), missing: lacking }));
+				}
+			}
 
-			created = true;
-			missing = await getMissingHoneypotPermissions(guildId, channelId, action);
-		}
+			let missing = channelId === null ? null : await getMissingHoneypotPermissions(guildId, channelId, action);
+			let created = false;
+			// The channel the honeypot had may be gone, a new one takes its place as when it never had one:
+			if (missing === null && options.channel === undefined) {
+				// What the bot lacks in the guild it lacks in a new channel too, which is known before there is one:
+				const lacking = await getMissingHoneypotGuildPermissions(guildId, action);
+				if (lacking.length > 0) return update(translateKey(t, `${Root}:setupMissingPermissions`, { missing: lacking }));
 
-		if (missing === null || channelId === null) return update(translateKey(t, `${Root}:channelUnknown`));
-		const channel = channelMention(channelId);
-		if (missing.length > 0) return update(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
+				channelId = await createHoneypotChannel(guildId);
+				if (channelId === null) return update(translateKey(t, `${Root}:channelCannotCreate`));
 
-		await writeSettings(guildId, { honeypotChannel: channelId, honeypotAction: action, honeypotLogChannel: logs }, interaction.user.id);
-		const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: settings.honeypotWarning, action });
+				created = true;
+			}
 
-		const lines = [translateKey(t, created ? `${Root}:setupCreated` : `${Root}:setupDone`, { channel })];
-		if (!noticed) lines.push(translateKey(t, `${Root}:setupNoticeFailed`));
-		return deferred.update({
-			content: lines.join('\n'),
-			embeds: [renderHoneypotSummary(t, await readSettings(guildId)).toJSON()],
-			allowed_mentions: { parse: [] }
+			if (channelId === null) return update(translateKey(t, `${Root}:channelUnknown`));
+			const channel = channelMention(channelId);
+
+			let saved = false;
+			try {
+				if (created) missing = await getMissingHoneypotPermissions(guildId, channelId, action);
+				if (missing === null) return await update(translateKey(t, `${Root}:channelUnknown`));
+				if (missing.length > 0) return await update(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
+
+				await writeSettings(guildId, { honeypotChannel: channelId, honeypotAction: action, honeypotLogChannel: logs }, interaction.user.id);
+				saved = true;
+			} finally {
+				// The next attempt would create another channel, so the one that did not become the honeypot goes:
+				if (created && !saved) await deleteHoneypotChannel(channelId);
+			}
+
+			// The warning the honeypot had is replaced wherever it was, so a channel it moved from keeps none:
+			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: settings.honeypotWarning, action });
+
+			const lines = [translateKey(t, created ? `${Root}:setupCreated` : `${Root}:setupDone`, { channel })];
+			if (!noticed) lines.push(translateKey(t, `${Root}:setupNoticeFailed`));
+			return deferred.update({
+				content: lines.join('\n'),
+				embeds: [renderHoneypotSummary(t, await readSettings(guildId)).toJSON()],
+				allowed_mentions: { parse: [] }
+			});
 		});
 	}
 }
