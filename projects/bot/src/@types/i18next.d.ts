@@ -626,7 +626,8 @@ declare module "i18next" {
         transferImportConfirm: "Import";
         transferImportCancel: "Cancel";
         transferImportCancelled: "Nothing was imported.";
-        transferImportExpired: "I did not get an answer, so nothing was imported.";
+        transferImportExpires: "This import closes {{time}} if it is not confirmed.";
+        transferImportExpired: "This import closed without an answer, so nothing was imported. Run the command again.";
         transferImportStale: "The server changed since I read the file, and the file no longer fits it, so nothing was imported. Run the command again.";
         transferImportDone: "Imported: {{settings}} settings changed. Rules: {{created}} created, {{updated}} edited, {{moved}} moved, {{removed}} deleted.";
         transferNothing: "The server already has this configuration, so there is nothing to import.";
