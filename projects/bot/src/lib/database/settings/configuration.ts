@@ -54,6 +54,14 @@ export function getConfiguration() {
 			description: 'settings:disabledChannels',
 			array: true
 		},
+		// The channels and the roles each command is allowed in, or ignores, which the modal of `/commands` edits:
+		commandsRestrictions: {
+			type: 'notAllowed',
+			name: 'commands.restrictions',
+			description: 'settings:dashboardOnlyKey',
+			array: true,
+			dashboardOnly: true
+		},
 
 		// Logs
 		logsMemberAdd: logChannel('member-add', 'settings:channelsLogsMemberAdd'),
