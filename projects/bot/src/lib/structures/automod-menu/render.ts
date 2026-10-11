@@ -1,3 +1,4 @@
+import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList } from '#lib/moderation/automod/commands';
 import { MaximumAutoModerationRuleIgnored } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -127,7 +128,8 @@ export function renderAutoModerationRules(
 		body.push(text(translateKey(t, `${Root}:listEmpty`, { command: inlineCode('/automod create') })));
 	} else {
 		const lines = rules.map(
-			(rule) => `${rule.enabled ? '🟢' : '🔴'} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
+			(rule) =>
+				`${rule.enabled ? Emojis.Checked : Emojis.Unchecked} **${rule.name}** · ${translateKey(t, AutoModerationRuleTypeKeys[rule.type])}`
 		);
 		body.push(
 			text(lines.join('\n')),
@@ -140,7 +142,7 @@ export function renderAutoModerationRules(
 						label: cutText(rule.name, 100),
 						description: cutText(translateKey(t, AutoModerationRuleTypeKeys[rule.type]), 100),
 						value: rule.id,
-						emoji: { name: rule.enabled ? '🟢' : '🔴' }
+						emoji: getEmojiComponent(rule.enabled ? 'Checked' : 'Unchecked')
 					}))
 				}
 			])
@@ -178,14 +180,12 @@ export function renderAutoModerationRules(
 		{ type: ComponentType.Separator },
 		text(`### ⚙️ ${translateKey(t, `${Root}:menuGuildTitle`)}`),
 		renderSwitch(
-			t,
 			translateKey(t, `${Root}:menuGuildModule`),
 			translateKey(t, 'settings:modulesAutomod'),
 			settings.modulesAutomod,
 			setting('module')
 		),
 		renderSwitch(
-			t,
 			translateKey(t, `${Root}:menuGuildNative`),
 			translateKey(t, 'settings:automodTrackNative'),
 			settings.automodTrackNative,
@@ -256,10 +256,10 @@ export function renderAutoModerationRule(
 	const body: APIComponentInContainer[] = [
 		block(
 			`## ${rule.name}\n${translateKey(t, `${Root}:menuRuleDetails`, { id: inlineCode(rule.id), type: inlineCode(type) })}\n-# ${description}`,
-			button(id('edit', 'name'), { label: translateKey(t, `${Root}:menuRename`), emoji: '✏️', style: ButtonStyle.Primary })
+			button(id('edit', 'name'), { label: translateKey(t, `${Root}:menuRename`), emoji: getEmojiComponent('Edit') })
 		),
 		block(
-			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? '🟢' : '🔴'} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
+			`**${translateKey(t, `${Root}:menuStatus`)}**\n${rule.enabled ? Emojis.Checked : Emojis.Unchecked} ${translateKey(t, rule.enabled ? `${Root}:menuEnabled` : `${Root}:menuDisabled`)}`,
 			button(id('toggle', 'enabled'), {
 				label: translateKey(t, rule.enabled ? `${Root}:menuDisable` : `${Root}:menuEnable`),
 				style: rule.enabled ? ButtonStyle.Secondary : ButtonStyle.Success
@@ -301,7 +301,7 @@ export function renderAutoModerationRule(
 
 	if (options.confirmDelete) {
 		body.push(
-			text(`⚠️ ${translateKey(t, `${Root}:menuDeleteConfirm`, { name: rule.name })}`),
+			text(`${Emojis.Warning} ${translateKey(t, `${Root}:menuDeleteConfirm`, { name: rule.name })}`),
 			row([
 				button(id('confirm'), { label: translateKey(t, `${Root}:menuDeleteConfirmButton`), emoji: '🗑️', style: ButtonStyle.Danger }),
 				button(id('view'), { label: translateKey(t, `${Root}:menuCancel`) })
@@ -372,7 +372,9 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 	const fields = getAutoModerationMenuNumberFields(rule);
 	if (fields.length > 0) {
 		const lines = fields.map((field) => `**${translateKey(t, field.label)}**\n${inlineCode(String(field.value))}`);
-		body.push(block(lines.join('\n'), button(id('edit', 'numbers'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '✏️' })));
+		body.push(
+			block(lines.join('\n'), button(id('edit', 'numbers'), { label: translateKey(t, `${Root}:menuEdit`), emoji: getEmojiComponent('Edit') }))
+		);
 	}
 
 	if (rule.type === 'NoMentionSpam') {
@@ -456,7 +458,7 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 function renderDuration(t: TFunction, rule: AutoModerationRule): string {
 	if (isNullishOrZero(rule.hardActionDuration)) {
 		const permanent = translateKey(t, `${Root}:menuDurationPermanent`);
-		return rule.hardAction === 'Timeout' ? `${permanent}\n-# ⚠️ ${translateKey(t, `${Root}:menuDurationTimeout`)}` : permanent;
+		return rule.hardAction === 'Timeout' ? `${permanent}\n-# ${Emojis.Warning} ${translateKey(t, `${Root}:menuDurationTimeout`)}` : permanent;
 	}
 
 	return translateKey(t, 'globals:durationValue', { value: rule.hardActionDuration });
@@ -539,13 +541,13 @@ function renderExemptions({ t }: AutoModerationMenuContext, rule: AutoModeration
 /**
  * A switch: what it is, what it does, and the button that flips it.
  */
-function renderSwitch(t: TFunction, title: string, description: string, active: boolean, customId: string): APISectionComponent {
+function renderSwitch(title: string, description: string, active: boolean, customId: string): APISectionComponent {
 	return block(
 		`**${title}**\n-# ${description}`,
 		button(customId, {
-			label: translateKey(t, active ? `${Root}:menuOn` : `${Root}:menuOff`),
-			emoji: active ? '✅' : '⬜',
-			style: active ? ButtonStyle.Success : ButtonStyle.Secondary
+			// The checkbox says it all, the button has no label:
+			emoji: getEmojiComponent(active ? 'Checked' : 'Unchecked'),
+			style: ButtonStyle.Secondary
 		})
 	);
 }
@@ -652,7 +654,7 @@ export function renderAutoModerationModal(
  * A switch whose description is the `Description` key next to the one of its title.
  */
 function renderKeySwitch(t: TFunction, key: TranslationKey, active: boolean, customId: string): APISectionComponent {
-	return renderSwitch(t, translateKey(t, key), translateKey(t, `${key}Description` as TranslationKey), active, customId);
+	return renderSwitch(translateKey(t, key), translateKey(t, `${key}Description` as TranslationKey), active, customId);
 }
 
 /**
@@ -720,7 +722,11 @@ function row<T extends APIComponentInMessageActionRow>(components: T[]): APIActi
 
 interface ButtonOptions {
 	label?: string;
-	emoji?: string;
+
+	/**
+	 * A Unicode emoji, or one of the bot, see `getEmojiComponent`.
+	 */
+	emoji?: string | EmojiComponent;
 	style?: APIButtonComponentWithCustomId['style'];
 	disabled?: boolean;
 }
@@ -731,7 +737,7 @@ function button(customId: string, options: ButtonOptions): APIButtonComponentWit
 		custom_id: customId,
 		style: options.style ?? ButtonStyle.Secondary,
 		...(options.label === undefined ? {} : { label: cutText(options.label, 80) }),
-		...(options.emoji === undefined ? {} : { emoji: { name: options.emoji } }),
+		...(options.emoji === undefined ? {} : { emoji: typeof options.emoji === 'string' ? { name: options.emoji } : options.emoji }),
 		...(options.disabled ? { disabled: true } : {})
 	};
 }

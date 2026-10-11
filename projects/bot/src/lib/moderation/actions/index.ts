@@ -39,6 +39,18 @@ export const ModerationActions = {
 	warning: new ModerationActionWarning()
 } as const;
 
+/**
+ * The moderation actions that are a role a member has: the mute and the restrictions.
+ */
+export const RoleActions: readonly RoleModerationAction[] = [
+	ModerationActions.mute,
+	ModerationActions.restrictedAttachment,
+	ModerationActions.restrictedEmbed,
+	ModerationActions.restrictedEmoji,
+	ModerationActions.restrictedReaction,
+	ModerationActions.restrictedVoice
+];
+
 export function getAction<const Type extends TypeVariation>(type: Type): ActionByType<Type> {
 	return ModerationActions[ActionMappings[type]];
 }

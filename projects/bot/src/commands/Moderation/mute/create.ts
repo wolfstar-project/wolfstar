@@ -1,7 +1,7 @@
-import { writeSettings } from '#lib/database';
+import { getSettingName, writeSettings } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
-import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
+import { createTranslator, translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { UserError, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -30,7 +30,10 @@ export class UserCommand extends Command {
 		if (role) {
 			await writeSettings(interaction.guildId, { rolesMuted: role.id }, interaction.user.id);
 
-			const content = translateKey(t, 'commands/conf:updated', { key: 'rolesMuted', response: role.name });
+			const content = translateKey(t, 'commands/conf:updated', {
+				key: getSettingName(createTranslator(t), 'rolesMuted'),
+				response: role.name
+			});
 			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		}
 

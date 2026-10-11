@@ -1,8 +1,9 @@
 import type { GuildChatInputInteraction, TranslationKey } from '#lib/structures/commands/utils';
 import { translateKey } from '#lib/structures/commands/utils';
 import { months, resolveOnErrorCodes, seconds } from '#common';
-import { Colors, Emojis } from '#utils/constants';
-import { addAutomaticFields } from '#utils/functions';
+import { Colors } from '#utils/constants';
+import { Emojis } from '#utils/emojis';
+import { addAutomaticFields, getUserBadgesString } from '#utils/functions';
 import { PermissionsBits } from '#utils/bits';
 import { getTag } from '#utils/util';
 import { EmbedBuilder, time, TimestampStyles, userMention, roleMention } from '@discordjs/builders';
@@ -105,7 +106,9 @@ export class UserCommand extends Command {
 	private getUserInformation(user: User, extras = ''): string {
 		const bot = user.bot ? ` ${Emojis.Bot}` : '';
 		const avatar = `[Avatar ${Emojis.Frame}](${user.displayAvatarURL({ size: 4096, extension: 'png' })})`;
-		return `**${getTag(user)}**${bot} - ${userMention(user.id)}${extras} - ${avatar}`;
+		const badges = getUserBadgesString(Number(user.flags.bitField));
+		const information = `**${getTag(user)}**${bot} - ${userMention(user.id)}${extras} - ${avatar}`;
+		return badges === '' ? information : `${information}\n${badges}`;
 	}
 
 	private async applyMemberRoles(t: TFunction, guildId: string, member: GuildMember, embed: EmbedBuilder) {

@@ -3,6 +3,7 @@ import { err, ok, type Result } from '@sapphire/result';
 import { isThenable, type Awaitable } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { RESTJSONErrorCodes } from 'discord-api-types/v10';
+import { setTimeout as sleep } from 'node:timers/promises';
 
 export async function resolveOnErrorCodes<T>(promise: Promise<T>, ...codes: readonly RESTJSONErrorCodes[]) {
 	try {
@@ -44,4 +45,24 @@ export function createReferPromise<T>(): ReferredPromise<T> {
 	});
 
 	return { promise, resolve: resolve!, reject: reject! };
+}
+
+/**
+ * Runs a function again when it throws, a delay after each failure: it is tried once more than there are delays.
+ *
+ * @param run - The function to run, which is given the attempt it is, from 1.
+ * @param delays - How long to wait after each failure, in milliseconds.
+ * @throws The error of the last attempt.
+ */
+export async function retryWithDelays<T>(run: (attempt: number) => Awaitable<T>, delays: readonly number[]): Promise<T> {
+	for (let attempt = 1; ; attempt++) {
+		try {
+			return await run(attempt);
+		} catch (error) {
+			const delay = delays[attempt - 1];
+			if (delay === undefined) throw error;
+
+			await sleep(delay);
+		}
+	}
 }
