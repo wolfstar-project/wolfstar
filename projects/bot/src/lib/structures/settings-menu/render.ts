@@ -133,7 +133,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 			body.push(
 				section(
 					`**📁 ${getSettingTitle(entry)}**\n${t('commands/conf:menuGroupCount', { count })}`,
-					button(id('view', getSchemaPath(entry), 0), { emoji: '➡️' })
+					button(id('view', getSchemaPath(entry), 0), { emoji: getEmojiComponent('ArrowRight') })
 				)
 			);
 			continue;
@@ -141,7 +141,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 
 		body.push(
 			section(
-				`**${getSettingKeyTitle(t, entry)}${getSettingExperimentalNote(entry) === null ? '' : ' 🧪'}**\n${displaySettingValue(t, entry, context.settings)}`,
+				`**${getSettingKeyTitle(t, entry)}${getSettingExperimentalNote(entry) === null ? '' : ` ${Emojis.Experimental}`}**\n${displaySettingValue(t, entry, context.settings)}`,
 				renderKeyButton(context, entry, current)
 			)
 		);
@@ -155,7 +155,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 			{ type: ComponentType.Separator },
 			section(
 				`**🛡️ ${t('commands/conf:menuAutomodRules')}**\n${t('commands/conf:menuAutomodRulesDescription')}`,
-				button(encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'list' }), { emoji: '➡️' })
+				button(encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'list' }), { emoji: getEmojiComponent('ArrowRight') })
 			)
 		);
 	}
@@ -175,7 +175,9 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 
 	const navigation: APIButtonComponentWithCustomId[] = [];
 	if (!isRoot && group.parent!.parent !== null) {
-		navigation.push(button(id('view', getSchemaPath(group.parent!), 0), { label: t('commands/conf:menuBack'), emoji: '↩️' }));
+		navigation.push(
+			button(id('view', getSchemaPath(group.parent!), 0), { label: t('commands/conf:menuBack'), emoji: getEmojiComponent('ArrowLeft') })
+		);
 	}
 
 	if (pages > 1) {
@@ -213,11 +215,11 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 		accent_color: AccentColor,
 		components: [
 			text(
-				`## ${Emojis.Edit} ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}${experimental === null ? '' : `\n\n🧪 ${t(experimental)}`}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
+				`## ${Emojis.Edit} ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}${experimental === null ? '' : `\n\n${Emojis.Experimental} ${t(experimental)}`}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
 			),
 			row([renderSelect(context, key, id('pick', key.property))]),
 			row([
-				button(id('view', getSchemaPath(group)), { label: t('commands/conf:menuBack'), emoji: '↩️' }),
+				button(id('view', getSchemaPath(group)), { label: t('commands/conf:menuBack'), emoji: getEmojiComponent('ArrowLeft') }),
 				button(id('reset', key.property), { label: t('commands/conf:menuResetKey'), style: ButtonStyle.Danger })
 			])
 		]
@@ -418,7 +420,7 @@ function toMessage(t: Translator, components: APIMessageTopLevelComponent[]): Se
  * @param t - The function to translate with.
  */
 function renderSettingsExpiry(t: Translator): APITextDisplayComponent {
-	return text(`-# ⏳ ${t('commands/conf:menuExpires', { time: time(getSettingsMenuExpiry(), TimestampStyles.RelativeTime) })}`);
+	return text(`-# ${Emojis.Hourglass} ${t('commands/conf:menuExpires', { time: time(getSettingsMenuExpiry(), TimestampStyles.RelativeTime) })}`);
 }
 
 /**
@@ -449,7 +451,7 @@ export function renderSettingsExpired(t: Translator, subcommand: 'server menu' |
 	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
 	// The mention of a subcommand takes its path as it is written, group included:
 	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention(`settings ${subcommand}`, id);
-	return `⌛ ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
+	return `${Emojis.Hourglass} ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
 }
 
 function text(content: string): APITextDisplayComponent {

@@ -9,6 +9,7 @@ import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { resolveGuild, seconds } from '#common';
+import { Emojis } from '#utils/emojis';
 import { time, TimestampStyles } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommandGroup } from '@wolfstar/plugin-subcommands-advanced';
@@ -65,7 +66,7 @@ export class UserCommand extends Command {
 		const embed = await renderConfigurationPreview(plan, { settings, guild, t });
 		const expiresAt = new Date(Date.now() + seconds(PendingImportSeconds));
 		return deferred.update({
-			content: `-# ⏳ ${t('commands/conf:transferImportExpires', { time: time(expiresAt, TimestampStyles.RelativeTime) })}`,
+			content: `-# ${Emojis.Hourglass} ${t('commands/conf:transferImportExpires', { time: time(expiresAt, TimestampStyles.RelativeTime) })}`,
 			embeds: [embed],
 			components: [renderSettingsImportButtons(t, interaction.user.id, interaction.id)]
 		});

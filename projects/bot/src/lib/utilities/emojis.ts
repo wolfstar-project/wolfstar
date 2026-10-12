@@ -79,6 +79,8 @@ export const EmojiDefinitions = {
 	Edit: emoji('edit', '✏️'),
 	// The triangle of what the user is warned about:
 	Warning: emoji('warning', '⚠️'),
+	// The flask of what is experimental, next to a setting or in its note:
+	Experimental: emoji('experimental', '🧪'),
 	// The categories of the commands menu, in its select menu and its title:
 	CategoryAll: emoji('category_all', '📋'),
 	CategoryAdmin: emoji('category_admin', '⚙️'),
