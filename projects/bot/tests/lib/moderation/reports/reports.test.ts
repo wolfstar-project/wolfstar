@@ -8,6 +8,7 @@ import {
 	renderReportModal,
 	setReportReporterBlocked
 } from '#lib/moderation/reports/render';
+import { getReporterNotificationKey } from '#lib/moderation/reports/submit';
 import { ButtonStyle, ComponentType, MessageFlags, type APIMessageTopLevelComponent } from 'discord-api-types/v10';
 import type { Report } from 'wolfstar-database';
 
@@ -126,13 +127,13 @@ describe('reports', () => {
 			const menu = getMenu(renderReport(t, createReport(), null).components!)!;
 
 			expect(decodeReportId(menu.custom_id!.split('.').slice(1))).toEqual({ verb: 'menu', id: reportId, messageId: null, submit: false });
-			expect(menu.options!.map((option) => option.value)).toEqual(['mute', 'softban', 'ban', 'block']);
+			expect(menu.options!.map((option) => option.value)).toEqual(['note', 'mute', 'softban', 'ban', 'block']);
 		});
 
 		test('GIVEN a reporter that is blocked THEN the menu offers to unblock them and not to block them', () => {
 			const menu = getMenu(renderReport(t, createReport(), null, true).components!)!;
 
-			expect(menu.options!.map((option) => option.value)).toEqual(['mute', 'softban', 'ban', 'unblock']);
+			expect(menu.options!.map((option) => option.value)).toEqual(['note', 'mute', 'softban', 'ban', 'unblock']);
 		});
 
 		test('GIVEN a report THEN its blocks are a separator apart, and who is reported comes before who reported', () => {
@@ -246,6 +247,28 @@ describe('reports', () => {
 		});
 	});
 
+	describe('reporter notification', () => {
+		test('GIVEN a report closed by a note THEN the reporter is told it was noted', () => {
+			expect(getReporterNotificationKey('Actioned', 'note')).toBe('commands/report:notifyNoted');
+		});
+
+		test.each(['warn', 'timeout', 'kick', 'mute', 'softban', 'ban'] as const)(
+			'GIVEN a report closed by %s THEN the reporter is told action was taken',
+			(verb) => {
+				expect(getReporterNotificationKey('Actioned', verb)).toBe('commands/report:notifyActioned');
+			}
+		);
+
+		test('GIVEN a report closed by an action that is not named THEN the reporter is told action was taken', () => {
+			expect(getReporterNotificationKey('Actioned')).toBe('commands/report:notifyActioned');
+		});
+
+		test('GIVEN a dismissed report THEN the reporter is told no action was taken', () => {
+			expect(getReporterNotificationKey('Dismissed')).toBe('commands/report:notifyDismissed');
+			expect(getReporterNotificationKey('Dismissed', 'note')).toBe('commands/report:notifyDismissed');
+		});
+	});
+
 	describe('modals', () => {
 		test('GIVEN a report THEN its modal asks for a reason and carries what is reported', () => {
 			const modal = renderReportModal(t, messageSubject);
@@ -253,6 +276,13 @@ describe('reports', () => {
 
 			expect(decodeReportId(modal.custom_id.split('.').slice(1))).toEqual({ verb: 'new', id: targetId, messageId, submit: true });
 			expect(input).toMatchObject({ custom_id: 'reason', required: true });
+			expect(modal.title.length).toBeLessThanOrEqual(45);
+		});
+
+		test('GIVEN the note action THEN its modal carries the verb and a title that fits', () => {
+			const modal = renderReportActionModal(t, reportId, 'note');
+
+			expect(decodeReportId(modal.custom_id.split('.').slice(1))).toEqual({ verb: 'note', id: reportId, messageId: null, submit: true });
 			expect(modal.title.length).toBeLessThanOrEqual(45);
 		});
 
@@ -265,6 +295,8 @@ describe('reports', () => {
 			expect(inputs('warn')).toEqual([['reason', false]]);
 			expect(inputs('kick')).toEqual([['reason', false]]);
 			expect(inputs('softban')).toEqual([['reason', false]]);
+			// A note is its reason, so it cannot be left empty, and it never lasts:
+			expect(inputs('note')).toEqual([['reason', true]]);
 			expect(inputs('timeout')).toEqual([
 				['duration', true],
 				['reason', false]

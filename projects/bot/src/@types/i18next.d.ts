@@ -1416,6 +1416,20 @@ declare module "i18next" {
           ];
           examples: ["@Sarah", "@Sarah Spamming general chat."];
         };
+        noteDescription: "Add a note to a member, which they are never told about.";
+        noteExtended: {
+          usages: ["User", "User Reason", "User Reason Message"];
+          explainedUsage: [
+            ["User", "The member to add the note to."],
+            [
+              "Reason",
+              "The note itself, which is shown in the history of the member and in the moderation log.",
+            ],
+            ["Message", "The link or the ID of a message to attach to the note."],
+          ];
+          extendedHelp: "This command requires **{{ModerateMembers, permissions}}**.\nA note is a case that is not a punishment: the member is never told about it, whatever the settings of the moderation direct messages say, and it does not count as a warning.\nIt has no duration and there is nothing to undo, but it can be edited and archived like any other case.";
+          examples: ["@Sarah", "@Sarah Was told to keep the voice chat clean."];
+        };
         muteDescription: "Mute or unmute a user, or prepare the mute system.";
         muteAddDescription: "Mute a user in all text and voice channels.";
         muteExtended: {
@@ -1989,6 +2003,7 @@ declare module "i18next" {
         muteAddName: "add";
         muteRemoveName: "remove";
         muteCreateName: "create";
+        noteName: "note";
         timeoutName: "timeout";
         timeoutAddName: "add";
         timeoutRemoveName: "remove";
@@ -2171,6 +2186,9 @@ declare module "i18next" {
         actionTitleKick: "Kick the reported member";
         actionTitleBan: "Ban the reported member";
         actionReasonLabel: "Reason";
+        actionNoteLabel: "Note";
+        actionTitleNote: "Add a note to the reported member";
+        noteRequired: "The note is empty. Write what the moderators should remember, the report is still open.";
         actionDurationLabel: "Duration, for example 10m, 1h or 1d";
         actionDone: "Done, it is case #{{case, number}}. The report is closed.";
         actionFailed: "Something went wrong and the action was not taken. The report is still open.";
@@ -2187,6 +2205,8 @@ declare module "i18next" {
         fieldReportedByAnonymous: "**📣 Reported by**\n*Anonymous*";
         footer: "Report #{{id}} · {{time}}";
         menuPlaceholder: "Other actions…";
+        menuNote: "Add a note";
+        menuNoteDescription: "Keep a note on the reported member, who is not told about it.";
         menuMute: "Mute";
         menuMuteDescription: "Give the reported member the muted role, for a time if you want.";
         menuSoftban: "Softban";
@@ -2200,6 +2220,7 @@ declare module "i18next" {
         actionTitleMute: "Mute the reported member";
         actionTitleSoftban: "Softban the reported member";
         actionDurationOptionalLabel: "Duration, empty for a permanent one";
+        statusNote: "📝 **Noted** by {{moderator}} · case #{{case, number}}";
         statusMute: "✅ **Muted** by {{moderator}} · case #{{case, number}}";
         statusSoftban: "✅ **Softbanned** by {{moderator}} · case #{{case, number}}";
         statusBlocked: "⛔ Reporter blocked from reporting by {{moderator}}";
@@ -2209,6 +2230,7 @@ declare module "i18next" {
         blockDone: "Whoever made this report cannot send reports anymore. The report is still open.";
         blockAlready: "Whoever made this report is already blocked from reporting.";
         notifyActioned: "The moderators of **{{guild}}** reviewed your report about {{target}} and took action. Thank you for reporting.";
+        notifyNoted: "The moderators of **{{guild}}** reviewed your report about {{target}} and made a note of it. Thank you for reporting.";
         notifyDismissed: "The moderators of **{{guild}}** reviewed your report about {{target}} and decided not to take action.";
         reportsName: "reports";
         reportsDescription: "Manage the reports of this server.";
@@ -2909,6 +2931,7 @@ declare module "i18next" {
         guildMemberRemove: "User Left";
         guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
         guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
+        guildMemberRemoveRoles: "**Roles**: {{roles}}";
         guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";
         guildMemberSoftBanned: "User Softbanned";
@@ -3133,6 +3156,7 @@ declare module "i18next" {
         typeBan: "Ban";
         typeKick: "Kick";
         typeMute: "Mute";
+        typeNote: "Note";
         typeRestrictedAttachment: "Attachment Restriction";
         typeRestrictedEmbed: "Embed Restriction";
         typeRestrictedEmoji: "Emoji Restriction";
@@ -3152,8 +3176,11 @@ declare module "i18next" {
         embedDescription: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Reason:** {{reason}}";
         embedDescriptionTemporary: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Expires {{time}}**\n❯ **Reason:** {{reason}}";
         embedMessage: "❯ **Message:** {{url}}";
+        embedRoles: "❯ **Roles:** {{roles}}";
         embedReasonNotSet: "*Please use {{command}} to set a reason.*";
         embedFooter: "Case {{caseId}}";
+        rolesOmitted_one: "and {{count}} more";
+        rolesOmitted_other: "and {{count}} more";
         actionIsActive: "This moderation action is still active for this user.";
         actionIsNotActive: "This moderation action is not active for this user.";
         actionIsActiveRole: "This user already has the selected role.";

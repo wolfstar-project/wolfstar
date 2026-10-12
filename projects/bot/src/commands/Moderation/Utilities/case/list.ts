@@ -21,6 +21,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 				createLocalizedChoice('moderation:typeBan', { value: TypeVariation.Ban }),
 				createLocalizedChoice('moderation:typeKick', { value: TypeVariation.Kick }),
 				createLocalizedChoice('moderation:typeMute', { value: TypeVariation.Mute }),
+				createLocalizedChoice('moderation:typeNote', { value: TypeVariation.Note }),
 				createLocalizedChoice('moderation:typeRoleRemove', { value: TypeVariation.RoleRemove }),
 				createLocalizedChoice('moderation:typeRestrictedAttachment', { value: TypeVariation.RestrictedAttachment }),
 				createLocalizedChoice('moderation:typeRestrictedEmbed', { value: TypeVariation.RestrictedEmbed }),
