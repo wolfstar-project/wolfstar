@@ -313,43 +313,6 @@
 							"table": "GuildCommands"
 						}
 					},
-					"GuildHoneypot": {
-						"fields": {
-							"action": {
-								"nullable": false,
-								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "HoneypotAction" } }
-							},
-							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"directMessage": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
-							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"keepActive": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
-							"logChannelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"randomName": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
-							"warning": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } }
-						},
-						"relations": {
-							"modules": {
-								"cardinality": "N:1",
-								"nullable": false,
-								"on": { "localFields": ["id"], "targetFields": ["id"] },
-								"to": { "model": "Modules", "namespace": "public" }
-							}
-						},
-						"storage": {
-							"fields": {
-								"action": { "column": "action" },
-								"channelId": { "column": "channel_id" },
-								"directMessage": { "column": "direct_message" },
-								"id": { "column": "id" },
-								"keepActive": { "column": "keep_active" },
-								"logChannelId": { "column": "log_channel_id" },
-								"randomName": { "column": "random_name" },
-								"warning": { "column": "warning" }
-							},
-							"namespaceId": "public",
-							"table": "GuildHoneypot"
-						}
-					},
 					"GuildLogs": {
 						"fields": {
 							"channelCreate": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
@@ -424,6 +387,28 @@
 							},
 							"namespaceId": "public",
 							"table": "GuildLogs"
+						}
+					},
+					"GuildLogsOptions": {
+						"fields": {
+							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"messageUpdateStyle": {
+								"nullable": false,
+								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "MessageUpdateStyle" } }
+							}
+						},
+						"relations": {
+							"modules": {
+								"cardinality": "N:1",
+								"nullable": false,
+								"on": { "localFields": ["id"], "targetFields": ["id"] },
+								"to": { "model": "Modules", "namespace": "public" }
+							}
+						},
+						"storage": {
+							"fields": { "id": { "column": "id" }, "messageUpdateStyle": { "column": "message_update_style" } },
+							"namespaceId": "public",
+							"table": "GuildLogsOptions"
 						}
 					},
 					"GuildModeration": {
@@ -779,8 +764,8 @@
 		"GuildAutoModerationRule": { "model": "GuildAutoModerationRule", "namespace": "public" },
 		"GuildAutoPurge": { "model": "GuildAutoPurge", "namespace": "public" },
 		"GuildCommands": { "model": "GuildCommands", "namespace": "public" },
-		"GuildHoneypot": { "model": "GuildHoneypot", "namespace": "public" },
 		"GuildLogs": { "model": "GuildLogs", "namespace": "public" },
+		"GuildLogsOptions": { "model": "GuildLogsOptions", "namespace": "public" },
 		"GuildModeration": { "model": "GuildModeration", "namespace": "public" },
 		"GuildPermissions": { "model": "GuildPermissions", "namespace": "public" },
 		"GuildReports": { "model": "GuildReports", "namespace": "public" },
@@ -830,7 +815,7 @@
 							],
 							"typeName": "GuildAutoModerationRuleType"
 						},
-						"HoneypotAction": { "kind": "postgres-enum", "members": ["Kick", "Softban", "Ban"], "typeName": "HoneypotAction" },
+						"MessageUpdateStyle": { "kind": "postgres-enum", "members": ["Difference", "Separate"], "typeName": "MessageUpdateStyle" },
 						"ModerationActionType": {
 							"kind": "postgres-enum",
 							"members": [
@@ -1214,62 +1199,6 @@
 							"primaryKey": { "columns": ["id"], "name": "GuildCommands_pkey" },
 							"uniques": []
 						},
-						"GuildHoneypot": {
-							"columns": {
-								"action": {
-									"codecId": "pg/enum@1",
-									"default": { "kind": "literal", "value": "Softban" },
-									"nativeType": "HoneypotAction",
-									"nullable": false,
-									"typeParams": { "typeName": "HoneypotAction" },
-									"valueSet": {
-										"entityKind": "valueSet",
-										"entityName": "HoneypotAction",
-										"namespaceId": "public",
-										"plane": "storage"
-									}
-								},
-								"channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
-								"direct_message": {
-									"codecId": "pg/bool@1",
-									"default": { "kind": "literal", "value": true },
-									"nativeType": "bool",
-									"nullable": false
-								},
-								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"keep_active": {
-									"codecId": "pg/bool@1",
-									"default": { "kind": "literal", "value": false },
-									"nativeType": "bool",
-									"nullable": false
-								},
-								"log_channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
-								"random_name": {
-									"codecId": "pg/bool@1",
-									"default": { "kind": "literal", "value": false },
-									"nativeType": "bool",
-									"nullable": false
-								},
-								"warning": {
-									"codecId": "pg/bool@1",
-									"default": { "kind": "literal", "value": true },
-									"nativeType": "bool",
-									"nullable": false
-								}
-							},
-							"foreignKeys": [
-								{
-									"name": "GuildHoneypot_id_fkey",
-									"onDelete": "cascade",
-									"onUpdate": "cascade",
-									"source": { "columns": ["id"], "namespaceId": "public", "tableName": "GuildHoneypot" },
-									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Modules" }
-								}
-							],
-							"indexes": [],
-							"primaryKey": { "columns": ["id"], "name": "GuildHoneypot_pkey" },
-							"uniques": []
-						},
 						"GuildLogs": {
 							"columns": {
 								"channel_create": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
@@ -1337,6 +1266,36 @@
 							],
 							"indexes": [],
 							"primaryKey": { "columns": ["id"], "name": "GuildLogs_pkey" },
+							"uniques": []
+						},
+						"GuildLogsOptions": {
+							"columns": {
+								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"message_update_style": {
+									"codecId": "pg/enum@1",
+									"default": { "kind": "literal", "value": "Difference" },
+									"nativeType": "MessageUpdateStyle",
+									"nullable": false,
+									"typeParams": { "typeName": "MessageUpdateStyle" },
+									"valueSet": {
+										"entityKind": "valueSet",
+										"entityName": "MessageUpdateStyle",
+										"namespaceId": "public",
+										"plane": "storage"
+									}
+								}
+							},
+							"foreignKeys": [
+								{
+									"name": "GuildLogsOptions_id_fkey",
+									"onDelete": "cascade",
+									"onUpdate": "cascade",
+									"source": { "columns": ["id"], "namespaceId": "public", "tableName": "GuildLogsOptions" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Modules" }
+								}
+							],
+							"indexes": [],
+							"primaryKey": { "columns": ["id"], "name": "GuildLogsOptions_pkey" },
 							"uniques": []
 						},
 						"GuildModeration": {
@@ -1776,7 +1735,7 @@
 								"StickersCooldown"
 							]
 						},
-						"HoneypotAction": { "kind": "valueSet", "values": ["Kick", "Softban", "Ban"] },
+						"MessageUpdateStyle": { "kind": "valueSet", "values": ["Difference", "Separate"] },
 						"ModerationActionType": {
 							"kind": "valueSet",
 							"values": [
@@ -1800,7 +1759,7 @@
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "1af249406d3aacb1bee2140bca52aef61203e6d7cbacbf4127e95cc3acd9904e",
+		"storageHash": "772e28567a17447a20c52589459c840951f08a904b796fc0d715a4855883c4a7",
 		"types": {
 			"AuditEventChanges": {
 				"codecId": "typed/json@1",

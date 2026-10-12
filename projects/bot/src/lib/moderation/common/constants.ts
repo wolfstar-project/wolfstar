@@ -19,7 +19,8 @@ export const TranslationMappings = {
 	[TypeVariation.Timeout]: 'moderation:typeTimeout',
 	[TypeVariation.VoiceKick]: 'moderation:typeVoiceKick',
 	[TypeVariation.VoiceMute]: 'moderation:typeVoiceMute',
-	[TypeVariation.Warning]: 'moderation:typeWarning'
+	[TypeVariation.Warning]: 'moderation:typeWarning',
+	[TypeVariation.Note]: 'moderation:typeNote'
 } as const satisfies Readonly<Record<TypeVariation, `moderation:type${string}`>>;
 
 export const UndoTaskNameMappings = {
@@ -61,6 +62,7 @@ const TypeCodes = {
 	VoiceKick: combineTypeData(TypeVariation.VoiceKick),
 	VoiceMute: combineTypeData(TypeVariation.VoiceMute),
 	Warning: combineTypeData(TypeVariation.Warning),
+	Note: combineTypeData(TypeVariation.Note),
 	UndoBan: combineTypeData(TypeVariation.Ban, TypeMetadata.Undo),
 	UndoMute: combineTypeData(TypeVariation.Mute, TypeMetadata.Undo),
 	UndoRestrictedAttachment: combineTypeData(TypeVariation.RestrictedAttachment, TypeMetadata.Undo),
@@ -116,6 +118,7 @@ const Metadata = new Map<TypeCodes, Colors>([
 	[TypeCodes.VoiceKick, Colors.Orange],
 	[TypeCodes.VoiceMute, Colors.Amber],
 	[TypeCodes.Warning, Colors.Yellow],
+	[TypeCodes.Note, Colors.BlueGrey],
 	[TypeCodes.UndoBan, Colors.LightBlue],
 	[TypeCodes.UndoMute, Colors.LightBlue],
 	[TypeCodes.UndoRestrictedAttachment, Colors.LightBlue],

@@ -24,6 +24,7 @@ export type SchemaKeyType =
 	| 'honeypotAction'
 	| 'invite'
 	| 'language'
+	| 'messageUpdateStyle'
 	| 'notAllowed'
 	| 'number'
 	| 'integer'

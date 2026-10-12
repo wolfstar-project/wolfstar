@@ -3,6 +3,10 @@ import { remove as removeConfusables } from 'confusables';
 import {
 	AutoModerationHardActions,
 	AutoModerationRuleLimits,
+	AutoModerationRuleOptionLimits,
+	AutoModerationRuleWordLength,
+	getDefaultAutoModerationRuleOptions,
+	isAutoModerationRuleWord,
 	MaximumAutoModerationRuleEscalationSteps,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
@@ -151,6 +155,60 @@ export function parseAutoModerationRulePatch(
 	}
 
 	return errors.length === 0 ? { data } : { errors };
+}
+
+/**
+ * Checks the options of a rule as they were written, before they are normalized.
+ *
+ * @remarks `normalizeAutoModerationRuleOptions` repairs what it reads: a value of the wrong type takes its default, a
+ * number is brought within its limits and an entry of a list that is not valid is dropped. That is right for what the
+ * database stores, and wrong for a file that has to be taken whole or refused: a list written as a text would empty the
+ * list of the rule. What only differs in how it is written (the case, the spaces around, a duplicate) is not a problem.
+ *
+ * @param type - The type of the rule, which its options depend on.
+ * @param options - The options to check.
+ * @returns What is wrong, one message per value, each starting with where it is (`options.words[2]: …`).
+ */
+export function checkAutoModerationRuleOptions(type: AutoModerationRuleType, options: Record<string, unknown>): string[] {
+	const defaults = getDefaultAutoModerationRuleOptions(type) as Record<string, unknown>;
+	const limits = (AutoModerationRuleOptionLimits as Record<string, Record<string, { minimum: number; maximum: number }> | undefined>)[type];
+	const errors: string[] = [];
+
+	for (const [key, value] of Object.entries(options)) {
+		const path = `options.${key}`;
+		if (!Object.hasOwn(defaults, key)) {
+			errors.push(`${path}: Not an option of a rule of type ${type}.`);
+			continue;
+		}
+
+		const fallback = defaults[key];
+		if (typeof fallback === 'number') {
+			const { minimum, maximum } = limits?.[key] ?? { minimum: Number.MIN_SAFE_INTEGER, maximum: Number.MAX_SAFE_INTEGER };
+			if (!isInteger(value, minimum, maximum)) errors.push(`${path}: Expected an integer between ${minimum} and ${maximum}.`);
+		} else if (typeof fallback === 'boolean') {
+			if (typeof value !== 'boolean') errors.push(`${path}: Expected a boolean.`);
+		} else if (Array.isArray(value)) {
+			for (const [index, entry] of value.entries()) {
+				const error = checkListEntry(type, entry);
+				if (error !== null) errors.push(`${path}[${index}]: ${error}`);
+			}
+		} else {
+			errors.push(`${path}: Expected an array of strings.`);
+		}
+	}
+
+	return errors;
+}
+
+/**
+ * @returns Why a value cannot be an entry of a list of the options of a rule, `null` when it can.
+ */
+function checkListEntry(type: AutoModerationRuleType, entry: unknown): string | null {
+	if (typeof entry !== 'string' || entry.trim().length === 0) return 'Expected a string that is not empty.';
+	if (type !== 'Words' || isAutoModerationRuleWord(normalizeAutoModerationRuleWord(entry))) return null;
+
+	const { minimum, maximum } = AutoModerationRuleWordLength;
+	return `Expected a word of ${minimum} to ${maximum} characters.`;
 }
 
 /**

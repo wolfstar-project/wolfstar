@@ -6,6 +6,7 @@ import type { Snowflake } from 'discord-api-types/v10';
 
 export * from '#lib/structures/commands-menu/catalog';
 export * from '#lib/structures/commands-menu/render';
+export * from '#lib/structures/commands-menu/restrictions';
 
 /**
  * Creates the context the commands menu is rendered with: the language of the user and the commands in it.

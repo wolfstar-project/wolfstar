@@ -1,6 +1,6 @@
 import { seconds } from '#common';
 import { readSettings } from '#lib/database';
-import { fetchGuildT } from '#lib/moderation/common';
+import { fetchGuildT, fetchMemberRoleIds, formatRoleMentions } from '#lib/moderation/common';
 import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
 import { getLogger, getModeration, getUserMentionWithFlagsString } from '#utils/functions';
@@ -32,6 +32,8 @@ export class UserListener extends Listener {
 					: t('events/guilds-members:guildMemberRemove');
 
 		const joinedTimestamp = this.processJoinedTimestamp(member);
+		// The gateway no longer has the roles of the member, they come from the member the cache held:
+		const roles = formatRoleMentions(t, await fetchMemberRoleIds(member));
 		const logger = await getLogger(guild);
 		await logger.send({
 			key: 'logsMemberRemove',
@@ -41,10 +43,11 @@ export class UserListener extends Listener {
 					joinedTimestamp === -1
 						? 'events/guilds-members:guildMemberRemoveDescription'
 						: 'events/guilds-members:guildMemberRemoveDescriptionWithJoinedAt';
-				const description = t(key, {
+				const joined = t(key, {
 					user: getUserMentionWithFlagsString(user.flags ?? 0, user.id),
 					relativeTime: time(seconds.fromMilliseconds(joinedTimestamp), TimestampStyles.RelativeTime)
 				});
+				const description = roles === null ? joined : `${joined}\n${t('events/guilds-members:guildMemberRemoveRoles', { roles })}`;
 
 				return new EmbedBuilder()
 					.setColor(Colors.Red)

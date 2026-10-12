@@ -11,6 +11,16 @@ import { getDisplayAvatar, getFullEmbedAuthor } from '#utils/util';
 import { time, TimestampStyles } from '@discordjs/formatters';
 
 /**
+ * The blocks of a log that are never cut: each is a component of its own, kept whole, for a text that cannot be cut
+ * anywhere (a code block that is cut leaves its second half without a fence, and what it quotes is read as Markdown
+ * again). The blocks that do not fit in what is left of the message are left out, the first one that does not and the
+ * ones after it, instead of being cut.
+ */
+export interface LogBlocks {
+	blocks: readonly string[];
+}
+
+/**
  * What a log message is made of.
  */
 export interface LogMessageOptions {
@@ -25,11 +35,11 @@ export interface LogMessageOptions {
 	author: Pick<APIUser, 'id' | 'username' | 'discriminator' | 'avatar' | 'global_name'>;
 
 	/**
-	 * The text of the log, which is split in several blocks when it does not fit in one. An array is the blocks
-	 * themselves: each is kept whole in a block of its own, for a text that cannot be cut anywhere (a code block that
-	 * is cut leaves its second half without a fence, and what it quotes is read as Markdown again).
+	 * The text of the log, which is split in several blocks when it does not fit in one. A list is several parts of text:
+	 * each one starts a block of its own, and when they do not fit the message together, the longest are cut first
+	 * ({@linkcode fitLogParts}). {@linkcode LogBlocks} are blocks that are never cut.
 	 */
-	content: string | readonly string[];
+	content: string | readonly string[] | LogBlocks;
 
 	/**
 	 * The line at the bottom of the message, together with the time of the log.
@@ -61,8 +71,7 @@ const MaximumBlockLength = 1024;
  * The embeds had an author, fields, a footer and a timestamp, and the components have none of them, so each is a piece
  * of the container: a section with the avatar for the author, a block of text for every 1024 characters of the content
  * (the length of a field), and a small text for the footer. The text of all the blocks is cut to
- * {@linkcode MaximumLogMessageLength}. A caller that gives the blocks itself gets each of them whole, see
- * {@linkcode LogMessageOptions.content}.
+ * {@linkcode MaximumLogMessageLength}. A caller that gives {@linkcode LogBlocks} gets each of them whole.
  *
  * @param options - What the message is made of.
  */
@@ -72,7 +81,9 @@ export function createLogMessage(options: LogMessageOptions) {
 
 	// The header and the footer count against the limit too:
 	const available = Math.max(0, MaximumLogMessageLength - header.length - footer.length);
-	const texts = typeof options.content === 'string' ? splitContent(options.content.slice(0, available)) : fitBlocks(options.content, available);
+	const texts = isLogBlocks(options.content)
+		? fitBlocks(options.content.blocks, available)
+		: fitLogParts(typeof options.content === 'string' ? [options.content] : options.content, available).flatMap((part) => splitContent(part));
 	const blocks = texts.map((content): APITextDisplayComponent => ({
 		type: ComponentType.TextDisplay,
 		content
@@ -98,6 +109,10 @@ export function createLogMessage(options: LogMessageOptions) {
 	return { components, flags: MessageFlags.IsComponentsV2 as const, allowed_mentions: { parse: [] as AllowedMentionsTypes[] } };
 }
 
+function isLogBlocks(content: LogMessageOptions['content']): content is LogBlocks {
+	return typeof content === 'object' && !Array.isArray(content) && 'blocks' in content;
+}
+
 /**
  * Takes the blocks that fit whole in what is left of the message. The first one that does not fit is left out with the
  * ones after it: cutting it is what the caller gave the blocks to avoid.
@@ -114,6 +129,32 @@ function fitBlocks(blocks: readonly string[], available: number): string[] {
 	}
 
 	return fitting;
+}
+
+/**
+ * Cuts the parts of a log so that all of them fit in the characters the message has left.
+ *
+ * @remarks
+ *
+ * The parts that fit in an even share of what is left are kept whole, and the rest is shared between the ones that do
+ * not: two texts of 100 and 5000 characters in a budget of 3000 give 100 and 2900.
+ *
+ * @param parts - The parts to fit.
+ * @param budget - The most characters all of them can hold together.
+ */
+export function fitLogParts(parts: readonly string[], budget: number): string[] {
+	const limits = Array.from<number>({ length: parts.length }).fill(0);
+	let remaining = Math.max(0, budget);
+
+	// The shortest first, so that what they do not use is left to the longer ones:
+	const order = parts.map((part, index) => ({ length: part.length, index })).sort((left, right) => left.length - right.length);
+	for (const [position, { length, index }] of order.entries()) {
+		const limit = Math.min(length, Math.floor(remaining / (order.length - position)));
+		limits[index] = limit;
+		remaining -= limit;
+	}
+
+	return parts.map((part, index) => part.slice(0, limits[index]));
 }
 
 /**

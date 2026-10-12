@@ -11,6 +11,8 @@ import {
 	getAvailableLanguages,
 	getLanguageName,
 	getSettingChannelTypes,
+	getSettingChoiceLabel,
+	getSettingChoices,
 	getSettingKeyTitle,
 	getSettingKind,
 	getSettingMaximumValues,
@@ -177,9 +179,9 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 
 	if (pages > 1) {
 		navigation.push(
-			button(id('view', path, Math.max(0, current - 1)), { emoji: '◀️', disabled: current === 0 }),
+			button(id('view', path, Math.max(0, current - 1)), { emoji: getEmojiComponent('ArrowLeft'), disabled: current === 0 }),
 			button(id('page', ''), { label: t('commands/conf:menuPage', { page: current + 1, total: pages }), disabled: true }),
-			button(id('view', path, Math.min(pages - 1, current + 1)), { emoji: '▶️', disabled: current === pages - 1 })
+			button(id('view', path, Math.min(pages - 1, current + 1)), { emoji: getEmojiComponent('ArrowRight'), disabled: current === pages - 1 })
 		);
 	}
 
@@ -355,6 +357,21 @@ function renderSelect(context: SettingsMenuContext, key: SchemaKey, customId: st
 				channel_types: getSettingChannelTypes(key),
 				default_values: values.map((id) => ({ id, type: SelectMenuDefaultValueType.Channel }))
 			};
+		case 'choice':
+			return {
+				...base,
+				type: ComponentType.StringSelect,
+				min_values: 1,
+				max_values: 1,
+				placeholder: t('commands/conf:menuSelectPlaceholder'),
+				options: getSettingChoices(key)
+					.slice(0, MaximumSelectValues)
+					.map((choice) => ({
+						label: truncate(getSettingChoiceLabel(t, key, choice), 100),
+						value: choice,
+						default: values.includes(choice)
+					}))
+			};
 		default: {
 			const languages = getAvailableLanguages().slice(0, MaximumSelectValues);
 			return {
@@ -424,11 +441,12 @@ export function withSettingsExpiry<Component extends APIMessageTopLevelComponent
  * again, as a mention when Discord gave the command an ID, so a click writes it.
  *
  * @param t - The function to translate with.
- * @param subcommand - The subcommand of `/settings` that opens the menu again.
+ * @param subcommand - The subcommand of `/settings` that opens the menu again, with its group.
  */
-export function renderSettingsExpired(t: Translator, subcommand: 'server' | 'user'): string {
+export function renderSettingsExpired(t: Translator, subcommand: 'server menu' | 'user'): string {
 	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
-	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention('settings', subcommand, id);
+	// The mention of a subcommand takes its path as it is written, group included:
+	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention(`settings ${subcommand}`, id);
 	return `⌛ ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
 }
 

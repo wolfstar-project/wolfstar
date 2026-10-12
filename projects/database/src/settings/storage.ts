@@ -18,6 +18,11 @@ interface TableCollection {
 
 type Orm = Database['orm'];
 
+/**
+ * The transaction `Database#transaction` hands to its callback, to write more than the settings in the same one.
+ */
+export type DatabaseTransaction = Parameters<Parameters<Database['transaction']>[0]>[0];
+
 function table(orm: Pick<Orm, 'public'>, name: TableName): TableCollection {
 	return orm.public[name] as unknown as TableCollection;
 }
@@ -84,8 +89,14 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
  * @param db The database to write through.
  * @param settings The settings the changes apply to, with the changes already merged in.
  * @param changes The changed keys and their new values.
+ * @param alongside What else is written in the same transaction, after the settings: a failure of it undoes them.
  */
-export async function writeGuildData(db: Database, settings: ReadonlyGuildData, changes: Partial<ReadonlyGuildData>): Promise<void> {
+export async function writeGuildData(
+	db: Database,
+	settings: ReadonlyGuildData,
+	changes: Partial<ReadonlyGuildData>,
+	alongside?: (tx: DatabaseTransaction) => Promise<void>
+): Promise<void> {
 	const id = BigInt(settings.id);
 	const changedKeys = Object.keys(changes) as GuildDataKey[];
 
@@ -96,10 +107,10 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 		else touched.add(ColumnsByKey[key].table);
 	}
 
-	if (touched.size === 0) return;
+	if (touched.size === 0 && alongside === undefined) return;
 
 	// Every table references the chain above it, so the whole chain has to exist first:
-	touched.add('Guild');
+	if (touched.size > 0) touched.add('Guild');
 	if (touched.size > 1) touched.add('Modules');
 	if ([...touched].some((name) => name.startsWith('GuildAutoModeration'))) touched.add('GuildAutoModeration');
 
@@ -134,5 +145,7 @@ export async function writeGuildData(db: Database, settings: ReadonlyGuildData, 
 				);
 			}
 		}
+
+		await alongside?.(tx);
 	});
 }

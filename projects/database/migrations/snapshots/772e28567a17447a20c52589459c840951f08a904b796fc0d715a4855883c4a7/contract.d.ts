@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'1af249406d3aacb1bee2140bca52aef61203e6d7cbacbf4127e95cc3acd9904e'>;
+export type StorageHash = StorageHashBase<'772e28567a17447a20c52589459c840951f08a904b796fc0d715a4855883c4a7'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -347,16 +347,6 @@ export type FieldOutputTypes = {
 			readonly disabledInChannels: CodecTypes['pg/jsonb@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 		};
-		readonly GuildHoneypot: {
-			readonly action: 'Kick' | 'Softban' | 'Ban';
-			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
-			readonly directMessage: CodecTypes['pg/bool@1']['output'];
-			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly keepActive: CodecTypes['pg/bool@1']['output'];
-			readonly logChannelId: CodecTypes['pg/int8@1']['output'] | null;
-			readonly randomName: CodecTypes['pg/bool@1']['output'];
-			readonly warning: CodecTypes['pg/bool@1']['output'];
-		};
 		readonly GuildLogs: {
 			readonly channelCreate: CodecTypes['pg/int8@1']['output'] | null;
 			readonly channelDelete: CodecTypes['pg/int8@1']['output'] | null;
@@ -387,6 +377,10 @@ export type FieldOutputTypes = {
 			readonly roleUpdate: CodecTypes['pg/int8@1']['output'] | null;
 			readonly serverUpdate: CodecTypes['pg/int8@1']['output'] | null;
 			readonly settings: CodecTypes['pg/int8@1']['output'] | null;
+		};
+		readonly GuildLogsOptions: {
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly messageUpdateStyle: 'Difference' | 'Separate';
 		};
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
@@ -601,16 +595,6 @@ export type FieldInputTypes = {
 			readonly disabledInChannels: CodecTypes['pg/jsonb@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 		};
-		readonly GuildHoneypot: {
-			readonly action: 'Kick' | 'Softban' | 'Ban';
-			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
-			readonly directMessage: CodecTypes['pg/bool@1']['input'];
-			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly keepActive: CodecTypes['pg/bool@1']['input'];
-			readonly logChannelId: CodecTypes['pg/int8@1']['input'] | null;
-			readonly randomName: CodecTypes['pg/bool@1']['input'];
-			readonly warning: CodecTypes['pg/bool@1']['input'];
-		};
 		readonly GuildLogs: {
 			readonly channelCreate: CodecTypes['pg/int8@1']['input'] | null;
 			readonly channelDelete: CodecTypes['pg/int8@1']['input'] | null;
@@ -641,6 +625,10 @@ export type FieldInputTypes = {
 			readonly roleUpdate: CodecTypes['pg/int8@1']['input'] | null;
 			readonly serverUpdate: CodecTypes['pg/int8@1']['input'] | null;
 			readonly settings: CodecTypes['pg/int8@1']['input'] | null;
+		};
+		readonly GuildLogsOptions: {
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly messageUpdateStyle: 'Difference' | 'Separate';
 		};
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
@@ -855,16 +843,6 @@ export type StorageColumnTypes = {
 			readonly disabled_in_channels: CodecTypes['pg/jsonb@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 		};
-		readonly GuildHoneypot: {
-			readonly action: 'Kick' | 'Softban' | 'Ban';
-			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
-			readonly direct_message: CodecTypes['pg/bool@1']['output'];
-			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly keep_active: CodecTypes['pg/bool@1']['output'];
-			readonly log_channel_id: CodecTypes['pg/int8@1']['output'] | null;
-			readonly random_name: CodecTypes['pg/bool@1']['output'];
-			readonly warning: CodecTypes['pg/bool@1']['output'];
-		};
 		readonly GuildLogs: {
 			readonly channel_create: CodecTypes['pg/int8@1']['output'] | null;
 			readonly channel_delete: CodecTypes['pg/int8@1']['output'] | null;
@@ -895,6 +873,10 @@ export type StorageColumnTypes = {
 			readonly role_update: CodecTypes['pg/int8@1']['output'] | null;
 			readonly server_update: CodecTypes['pg/int8@1']['output'] | null;
 			readonly settings: CodecTypes['pg/int8@1']['output'] | null;
+		};
+		readonly GuildLogsOptions: {
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly message_update_style: 'Difference' | 'Separate';
 		};
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
@@ -1109,16 +1091,6 @@ export type StorageColumnInputTypes = {
 			readonly disabled_in_channels: CodecTypes['pg/jsonb@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 		};
-		readonly GuildHoneypot: {
-			readonly action: 'Kick' | 'Softban' | 'Ban';
-			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
-			readonly direct_message: CodecTypes['pg/bool@1']['input'];
-			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly keep_active: CodecTypes['pg/bool@1']['input'];
-			readonly log_channel_id: CodecTypes['pg/int8@1']['input'] | null;
-			readonly random_name: CodecTypes['pg/bool@1']['input'];
-			readonly warning: CodecTypes['pg/bool@1']['input'];
-		};
 		readonly GuildLogs: {
 			readonly channel_create: CodecTypes['pg/int8@1']['input'] | null;
 			readonly channel_delete: CodecTypes['pg/int8@1']['input'] | null;
@@ -1149,6 +1121,10 @@ export type StorageColumnInputTypes = {
 			readonly role_update: CodecTypes['pg/int8@1']['input'] | null;
 			readonly server_update: CodecTypes['pg/int8@1']['input'] | null;
 			readonly settings: CodecTypes['pg/int8@1']['input'] | null;
+		};
+		readonly GuildLogsOptions: {
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly message_update_style: 'Difference' | 'Separate';
 		};
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
@@ -1379,18 +1355,6 @@ export namespace Models {
 		modules: public_Modules;
 		readonly [RelationKeys]?: 'modules';
 	};
-	export type public_GuildHoneypot = {
-		action: 'Kick' | 'Softban' | 'Ban';
-		channelId: CodecTypes['pg/int8@1']['output'] | null;
-		directMessage: CodecTypes['pg/bool@1']['output'];
-		id: CodecTypes['pg/int8@1']['output'];
-		keepActive: CodecTypes['pg/bool@1']['output'];
-		logChannelId: CodecTypes['pg/int8@1']['output'] | null;
-		randomName: CodecTypes['pg/bool@1']['output'];
-		warning: CodecTypes['pg/bool@1']['output'];
-		modules: public_Modules;
-		readonly [RelationKeys]?: 'modules';
-	};
 	export type public_GuildLogs = {
 		channelCreate: CodecTypes['pg/int8@1']['output'] | null;
 		channelDelete: CodecTypes['pg/int8@1']['output'] | null;
@@ -1421,6 +1385,12 @@ export namespace Models {
 		roleUpdate: CodecTypes['pg/int8@1']['output'] | null;
 		serverUpdate: CodecTypes['pg/int8@1']['output'] | null;
 		settings: CodecTypes['pg/int8@1']['output'] | null;
+		modules: public_Modules;
+		readonly [RelationKeys]?: 'modules';
+	};
+	export type public_GuildLogsOptions = {
+		id: CodecTypes['pg/int8@1']['output'];
+		messageUpdateStyle: 'Difference' | 'Separate';
 		modules: public_Modules;
 		readonly [RelationKeys]?: 'modules';
 	};
@@ -1558,8 +1528,8 @@ export declare const models: {
 		GuildAutoModerationRule: Models.public_GuildAutoModerationRule;
 		GuildAutoPurge: Models.public_GuildAutoPurge;
 		GuildCommands: Models.public_GuildCommands;
-		GuildHoneypot: Models.public_GuildHoneypot;
 		GuildLogs: Models.public_GuildLogs;
+		GuildLogsOptions: Models.public_GuildLogsOptions;
 		GuildModeration: Models.public_GuildModeration;
 		GuildPermissions: Models.public_GuildPermissions;
 		GuildReports: Models.public_GuildReports;
@@ -2254,92 +2224,6 @@ type ContractBase = Omit<
 								}
 							];
 						};
-						readonly GuildHoneypot: {
-							columns: {
-								readonly action: {
-									readonly nativeType: 'HoneypotAction';
-									readonly codecId: 'pg/enum@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/enum@1', 'Softban'>;
-									};
-									readonly typeParams: { readonly typeName: 'HoneypotAction' };
-								};
-								readonly channel_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: true;
-								};
-								readonly direct_message: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-									};
-								};
-								readonly id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-								};
-								readonly keep_active: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly log_channel_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: true;
-								};
-								readonly random_name: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly warning: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-									};
-								};
-							};
-							primaryKey: {
-								readonly columns: readonly ['id'];
-								readonly name: 'GuildHoneypot_pkey';
-							};
-							uniques: readonly [];
-							indexes: readonly [];
-							foreignKeys: readonly [
-								{
-									readonly source: {
-										readonly namespaceId: 'public' & NamespaceId;
-										readonly tableName: 'GuildHoneypot';
-										readonly columns: readonly ['id'];
-									};
-									readonly target: {
-										readonly namespaceId: 'public' & NamespaceId;
-										readonly tableName: 'Modules';
-										readonly columns: readonly ['id'];
-									};
-									readonly name: 'GuildHoneypot_id_fkey';
-								}
-							];
-						};
 						readonly GuildLogs: {
 							columns: {
 								readonly channel_create: {
@@ -2520,6 +2404,46 @@ type ContractBase = Omit<
 										readonly columns: readonly ['id'];
 									};
 									readonly name: 'GuildLogs_id_fkey';
+								}
+							];
+						};
+						readonly GuildLogsOptions: {
+							columns: {
+								readonly id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly message_update_style: {
+									readonly nativeType: 'MessageUpdateStyle';
+									readonly codecId: 'pg/enum@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/enum@1', 'Difference'>;
+									};
+									readonly typeParams: { readonly typeName: 'MessageUpdateStyle' };
+								};
+							};
+							primaryKey: {
+								readonly columns: readonly ['id'];
+								readonly name: 'GuildLogsOptions_pkey';
+							};
+							uniques: readonly [];
+							indexes: readonly [];
+							foreignKeys: readonly [
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'GuildLogsOptions';
+										readonly columns: readonly ['id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Modules';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'GuildLogsOptions_id_fkey';
 								}
 							];
 						};
@@ -3248,9 +3172,9 @@ type ContractBase = Omit<
 								'StickersCooldown'
 							];
 						};
-						readonly HoneypotAction: {
+						readonly MessageUpdateStyle: {
 							readonly kind: 'valueSet';
-							readonly values: readonly ['Kick', 'Softban', 'Ban'];
+							readonly values: readonly ['Difference', 'Separate'];
 						};
 						readonly ModerationActionType: {
 							readonly kind: 'valueSet';
@@ -3348,11 +3272,11 @@ type ContractBase = Omit<
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'GuildCommands';
 		};
-		readonly GuildHoneypot: {
-			readonly namespace: 'public' & NamespaceId;
-			readonly model: 'GuildHoneypot';
-		};
 		readonly GuildLogs: { readonly namespace: 'public' & NamespaceId; readonly model: 'GuildLogs' };
+		readonly GuildLogsOptions: {
+			readonly namespace: 'public' & NamespaceId;
+			readonly model: 'GuildLogsOptions';
+		};
 		readonly GuildModeration: {
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'GuildModeration';
@@ -3945,74 +3869,6 @@ type ContractBase = Omit<
 							};
 						};
 					};
-					readonly GuildHoneypot: {
-						readonly fields: {
-							readonly action: {
-								readonly nullable: false;
-								readonly type: {
-									readonly kind: 'scalar';
-									readonly codecId: 'pg/enum@1';
-									readonly typeParams: { readonly typeName: 'HoneypotAction' };
-								};
-							};
-							readonly channelId: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly directMessage: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly id: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly keepActive: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly logChannelId: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly randomName: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly warning: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-						};
-						readonly relations: {
-							readonly modules: {
-								readonly to: {
-									readonly namespace: 'public' & NamespaceId;
-									readonly model: 'Modules';
-								};
-								readonly cardinality: 'N:1';
-								readonly nullable: false;
-								readonly on: {
-									readonly localFields: readonly ['id'];
-									readonly targetFields: readonly ['id'];
-								};
-							};
-						};
-						readonly storage: {
-							readonly table: 'GuildHoneypot';
-							readonly namespaceId: 'public';
-							readonly fields: {
-								readonly action: { readonly column: 'action' };
-								readonly channelId: { readonly column: 'channel_id' };
-								readonly directMessage: { readonly column: 'direct_message' };
-								readonly id: { readonly column: 'id' };
-								readonly keepActive: { readonly column: 'keep_active' };
-								readonly logChannelId: { readonly column: 'log_channel_id' };
-								readonly randomName: { readonly column: 'random_name' };
-								readonly warning: { readonly column: 'warning' };
-							};
-						};
-					};
 					readonly GuildLogs: {
 						readonly fields: {
 							readonly channelCreate: {
@@ -4184,6 +4040,44 @@ type ContractBase = Omit<
 								readonly roleUpdate: { readonly column: 'role_update' };
 								readonly serverUpdate: { readonly column: 'server_update' };
 								readonly settings: { readonly column: 'settings' };
+							};
+						};
+					};
+					readonly GuildLogsOptions: {
+						readonly fields: {
+							readonly id: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly messageUpdateStyle: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/enum@1';
+									readonly typeParams: { readonly typeName: 'MessageUpdateStyle' };
+								};
+							};
+						};
+						readonly relations: {
+							readonly modules: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'Modules';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: false;
+								readonly on: {
+									readonly localFields: readonly ['id'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+						};
+						readonly storage: {
+							readonly table: 'GuildLogsOptions';
+							readonly namespaceId: 'public';
+							readonly fields: {
+								readonly id: { readonly column: 'id' };
+								readonly messageUpdateStyle: { readonly column: 'message_update_style' };
 							};
 						};
 					};

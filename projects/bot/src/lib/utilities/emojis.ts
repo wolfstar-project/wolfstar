@@ -79,6 +79,13 @@ export const EmojiDefinitions = {
 	Edit: emoji('edit', '✏️'),
 	// The triangle of what the user is warned about:
 	Warning: emoji('warning', '⚠️'),
+	// The categories of the commands menu, in its select menu and its title:
+	CategoryAll: emoji('category_all', '📋'),
+	CategoryAdmin: emoji('category_admin', '⚙️'),
+	CategoryGeneral: emoji('category_general', '🧭'),
+	CategoryManagement: emoji('category_management', '🛠️'),
+	CategoryModeration: emoji('category_moderation', '🔨'),
+	CategoryTools: emoji('category_tools', '🧰'),
 	// The modules of the settings menu, in its select menu:
 	ModuleGeneral: emoji('module_general', '⚙️'),
 	ModuleModules: emoji('module_modules', '🧩'),

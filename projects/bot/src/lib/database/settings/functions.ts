@@ -1,7 +1,14 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { acquireSharedLock } from '#utils/locks';
-import { fetchGuildData, getDefaultGuildSettings, writeGuildData, type GuildData, type ReadonlyGuildData } from 'wolfstar-database';
+import {
+	fetchGuildData,
+	getDefaultGuildSettings,
+	writeGuildData,
+	type DatabaseTransaction,
+	type GuildData,
+	type ReadonlyGuildData
+} from 'wolfstar-database';
 import { AsyncQueue } from '@sapphire/async-queue';
 import type { Awaitable } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -129,14 +136,20 @@ export class Transaction {
 			.catch(() => null);
 	}
 
-	public async submit() {
+	/**
+	 * Writes the changes, and releases the lock.
+	 *
+	 * @param alongside - What else is written in the same database transaction, after the settings: when it throws,
+	 * the settings are not written either. The caller holds whatever lock it needs for it.
+	 */
+	public async submit(alongside?: (tx: DatabaseTransaction) => Promise<void>) {
 		if (!this.#hasChanges) {
 			return;
 		}
 
 		try {
 			// Write the merged settings, so the rows created for the first time carry every column and not just the changes:
-			await writeGuildData(container.prisma, { ...this.settings, ...this.#changes }, this.#changes);
+			await writeGuildData(container.prisma, { ...this.settings, ...this.#changes }, this.#changes, alongside);
 
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;

@@ -486,12 +486,22 @@ declare module "i18next" {
         editTitle: "Edit /{{name}}";
         editStatusLabel: "Status";
         editStatusDescription: "Enable or disable this command in this server";
+        editStatusDisabledBy: "Disabled by {{rule}} in commands.disabled, which enabling it here does not undo";
+        editStatusSubcommands_one: "The status and the lists are of the whole command, its {{count, number}} subcommand included";
+        editStatusSubcommands_other: "The status and the lists are of the whole command, its {{count, number}} subcommands included";
+        editAllowedChannelsLabel: "Allowed channels";
+        editAllowedChannelsDescription: "When any is picked, the command only runs in them";
+        editIgnoredChannelsLabel: "Ignored channels";
+        editIgnoredChannelsDescription: "The command does not run in them";
+        editAllowedRolesLabel: "Allowed roles";
+        editAllowedRolesDescription: "When any is picked, only the members with one of them run the command";
+        editIgnoredRolesLabel: "Ignored roles";
+        editIgnoredRolesDescription: "The members with one of them do not run the command";
+        editRestricted: "Where it runs and who runs it was saved. The administrators are not restricted.";
+        editUnrestricted: "It runs in every channel, for every role.";
+        editProtectedRestricted: "`/{{name}}` cannot be restricted: it is how the commands are turned back on.";
         editEnabled: "Enabled";
         editDisabled: "Disabled";
-        editStatusEnabled: "**Status:** Enabled";
-        editStatusDisabled: "**Status:** Disabled by `{{rule}}`";
-        editSubcommands_one: "It has {{count, number}} subcommand, and the status is of the whole command.";
-        editSubcommands_other: "It has {{count, number}} subcommands, and the status is of the whole command.";
         editEnabledDone: "`/{{name}}` is enabled.";
         editDisabledDone: "`/{{name}}` is disabled in this server, and whoever runs it is told so.";
         editStillDisabled: "`/{{name}}` is still disabled by `{{rule}}` in `commands.disabled`, take that out to enable it.";
@@ -605,7 +615,15 @@ declare module "i18next" {
         settingsName: "settings";
         settingsDescription: "Open the settings menu of the server or your own.";
         settingsServerName: "server";
-        settingsServerDescription: "Open the settings menu of the server.";
+        settingsServerDescription: "Open the settings menu of the server, or export and import its configuration.";
+        settingsServerMenuName: "menu";
+        settingsServerMenuDescription: "Open the settings menu of the server.";
+        settingsServerExportName: "export";
+        settingsServerExportDescription: "Export the settings and the auto-moderation rules of the server to a file.";
+        settingsServerImportName: "import";
+        settingsServerImportDescription: "Import the settings and the auto-moderation rules from a file made by export.";
+        settingsServerImportFileName: "file";
+        settingsServerImportFileDescription: "The file `export` made.";
         settingsUserName: "user";
         settingsUserDescription: "Open your own settings.";
         menuUserTitle: "Your settings";
@@ -614,6 +632,41 @@ declare module "i18next" {
         menuUserReportDescription: "Whether I send you a direct message when a moderator takes an action on you, or the auto-moderation does.";
         menuUserEnable: "Enable";
         menuUserDisable: "Disable";
+        transferExportDone: "Here is the configuration of the server: {{settings}} settings and {{rules}} auto-moderation rules. Roles, channels and users are not in it, and neither are the exempt roles and channels of the rules.";
+        transferImportConfirm: "Import";
+        transferImportCancel: "Cancel";
+        transferImportCancelled: "Nothing was imported.";
+        transferImportExpires: "This import closes {{time}} if it is not confirmed.";
+        transferImportExpired: "This import closed without an answer, so nothing was imported. Run the command again.";
+        transferImportStale: "The server changed since I read the file, and the file no longer fits it, so nothing was imported. Run the command again.";
+        transferImportDone: "Imported: {{settings}} settings changed. Rules: {{created}} created, {{updated}} edited, {{moved}} moved, {{removed}} deleted.";
+        transferNothing: "The server already has this configuration, so there is nothing to import.";
+        transferPreviewTitle: "Import this configuration?";
+        transferPreviewSettings: "**Settings** ({{count}} to change)";
+        transferPreviewRules: "**Auto-moderation rules**: {{created}} to create, {{updated}} to edit, {{moved}} to move, {{removed}} to delete, {{unchanged}} as they are.";
+        transferPreviewMoved: "-# A rule that moves (↕) is made again so the rules of its type are in the order of the file, the first one that fits a message being the one that is applied. It keeps its exempt roles and channels, and what it counted of the members starts again.";
+        transferPreviewMore: "…and {{count}} more.";
+        transferPreviewFooter: "-# The rules of the server become the ones of the file. Everything that depends on the server (roles, channels, users, and the exempt roles and channels of the rules) stays as it is.";
+        transferNone: "none";
+        transferRefused: "The file was not imported, nothing was changed. {{count}} problems:";
+        transferErrorTooLarge: "That file is too large, it can be {{maximum}} at most.";
+        transferErrorDownload: "I could not read that file. Export the configuration again and use the file as it is.";
+        transferErrorJson: "The file is not valid JSON.";
+        transferErrorObject: "The file has to be a JSON object.";
+        transferErrorVersion: "The file has no `version`, or it is not a whole number.";
+        transferErrorVersionUnsupported: "The file is of version {{version}}, and I only read version {{supported}}.";
+        transferErrorUnknownField: "`{{path}}` is not a field of the file.";
+        transferErrorUnknownSetting: "`{{name}}` is not a setting a file carries: it does not exist, or it depends on the server.";
+        transferErrorExpectedObject: "`{{path}}` has to be an object.";
+        transferErrorExpectedArray: "**{{name}}** has to be a list.";
+        transferErrorExpectedValue: "**{{name}}** has to be one value, not a list.";
+        transferErrorWrongType: "**{{name}}** has to be a {{type}}.";
+        transferErrorInvalidValue: "That is not a valid value for **{{name}}**.";
+        transferErrorRuleList: "`automod.rules` has to be a list of rules.";
+        transferErrorRuleObject: "A rule has to be an object.";
+        transferErrorRuleType: "A rule needs a `type`, one of: {{types}}.";
+        transferErrorRuleName: "A rule needs a `name` of up to {{maximum}} characters that is not only digits.";
+        transferErrorRuleNameTaken: "Two rules are named **{{name}}**.";
       };
       "commands/honeypot": {
         honeypotName: "honeypot";
@@ -1414,6 +1467,20 @@ declare module "i18next" {
           ];
           examples: ["@Sarah", "@Sarah Spamming general chat."];
         };
+        noteDescription: "Add a note to a member, which they are never told about.";
+        noteExtended: {
+          usages: ["User", "User Reason", "User Reason Message"];
+          explainedUsage: [
+            ["User", "The member to add the note to."],
+            [
+              "Reason",
+              "The note itself, which is shown in the history of the member and in the moderation log.",
+            ],
+            ["Message", "The link or the ID of a message to attach to the note."],
+          ];
+          extendedHelp: "This command requires **{{ModerateMembers, permissions}}**.\nA note is a case that is not a punishment: the member is never told about it, whatever the settings of the moderation direct messages say, and it does not count as a warning.\nIt has no duration and there is nothing to undo, but it can be edited and archived like any other case.";
+          examples: ["@Sarah", "@Sarah Was told to keep the voice chat clean."];
+        };
         muteDescription: "Mute or unmute a user, or prepare the mute system.";
         muteAddDescription: "Mute a user in all text and voice channels.";
         muteExtended: {
@@ -1987,6 +2054,7 @@ declare module "i18next" {
         muteAddName: "add";
         muteRemoveName: "remove";
         muteCreateName: "create";
+        noteName: "note";
         timeoutName: "timeout";
         timeoutAddName: "add";
         timeoutRemoveName: "remove";
@@ -2137,7 +2205,7 @@ declare module "i18next" {
         modalTitleUser: "Report this user";
         modalReasonLabel: "Why are you reporting this?";
         modalReasonPlaceholder: "Tell the moderators what happened. Only they will see your report.";
-        notConfigured: "Reports are not set up in this server. An administrator can set the reports channel with `/settings server`.";
+        notConfigured: "Reports are not set up in this server. An administrator can set the reports channel with `/settings server menu`.";
         targetSelf: "You cannot report yourself.";
         targetWolf: "You cannot report me. If something I did is wrong, tell the moderators of this server.";
         targetWebhook: "This message was not written by a member, so there is nobody to report.";
@@ -2169,6 +2237,9 @@ declare module "i18next" {
         actionTitleKick: "Kick the reported member";
         actionTitleBan: "Ban the reported member";
         actionReasonLabel: "Reason";
+        actionNoteLabel: "Note";
+        actionTitleNote: "Add a note to the reported member";
+        noteRequired: "The note is empty. Write what the moderators should remember, the report is still open.";
         actionDurationLabel: "Duration, for example 10m, 1h or 1d";
         actionDone: "Done, it is case #{{case, number}}. The report is closed.";
         actionFailed: "Something went wrong and the action was not taken. The report is still open.";
@@ -2185,6 +2256,8 @@ declare module "i18next" {
         fieldReportedByAnonymous: "**📣 Reported by**\n*Anonymous*";
         footer: "Report #{{id}} · {{time}}";
         menuPlaceholder: "Other actions…";
+        menuNote: "Add a note";
+        menuNoteDescription: "Keep a note on the reported member, who is not told about it.";
         menuMute: "Mute";
         menuMuteDescription: "Give the reported member the muted role, for a time if you want.";
         menuSoftban: "Softban";
@@ -2198,6 +2271,7 @@ declare module "i18next" {
         actionTitleMute: "Mute the reported member";
         actionTitleSoftban: "Softban the reported member";
         actionDurationOptionalLabel: "Duration, empty for a permanent one";
+        statusNote: "📝 **Noted** by {{moderator}} · case #{{case, number}}";
         statusMute: "✅ **Muted** by {{moderator}} · case #{{case, number}}";
         statusSoftban: "✅ **Softbanned** by {{moderator}} · case #{{case, number}}";
         statusBlocked: "⛔ Reporter blocked from reporting by {{moderator}}";
@@ -2207,6 +2281,7 @@ declare module "i18next" {
         blockDone: "Whoever made this report cannot send reports anymore. The report is still open.";
         blockAlready: "Whoever made this report is already blocked from reporting.";
         notifyActioned: "The moderators of **{{guild}}** reviewed your report about {{target}} and took action. Thank you for reporting.";
+        notifyNoted: "The moderators of **{{guild}}** reviewed your report about {{target}} and made a note of it. Thank you for reporting.";
         notifyDismissed: "The moderators of **{{guild}}** reviewed your report about {{target}} and decided not to take action.";
         reportsName: "reports";
         reportsDescription: "Manage the reports of this server.";
@@ -2907,6 +2982,7 @@ declare module "i18next" {
         guildMemberRemove: "User Left";
         guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
         guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
+        guildMemberRemoveRoles: "**Roles**: {{roles}}";
         guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";
         guildMemberSoftBanned: "User Softbanned";
@@ -2922,6 +2998,9 @@ declare module "i18next" {
         messageDelete: "Message Deleted • {{channel}}";
         messageUpdate: "Message Edited • {{channel}}";
         messageDeleteUnknown: "Unknown Message Deleted • {{channel}}";
+        messageUpdateBefore: "Before";
+        messageUpdateAfter: "After";
+        messageUpdateEmpty: "*(no text)*";
         messageUpdateUnknown: "Unknown Message Edited • {{channel}}";
         messageNotFound: "Unknown Message";
         messageDeleteBulk_one: "{{count}} message deleted in {{channel}} by {{author}}";
@@ -3138,6 +3217,7 @@ declare module "i18next" {
         typeBan: "Ban";
         typeKick: "Kick";
         typeMute: "Mute";
+        typeNote: "Note";
         typeRestrictedAttachment: "Attachment Restriction";
         typeRestrictedEmbed: "Embed Restriction";
         typeRestrictedEmoji: "Emoji Restriction";
@@ -3157,8 +3237,11 @@ declare module "i18next" {
         embedDescription: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Reason:** {{reason}}";
         embedDescriptionTemporary: "❯ **Type:** {{type}}\n❯ **User:** {{user}}\n❯ **Expires {{time}}**\n❯ **Reason:** {{reason}}";
         embedMessage: "❯ **Message:** {{url}}";
+        embedRoles: "❯ **Roles:** {{roles}}";
         embedReasonNotSet: "*Please use {{command}} to set a reason.*";
         embedFooter: "Case {{caseId}}";
+        rolesOmitted_one: "and {{count}} more";
+        rolesOmitted_other: "and {{count}} more";
         actionIsActive: "This moderation action is still active for this user.";
         actionIsNotActive: "This moderation action is not active for this user.";
         actionIsActiveRole: "This user already has the selected role.";
@@ -3338,6 +3421,8 @@ declare module "i18next" {
         administrator: "You need administrator privileges to run `{{command.name}}`!";
         disabledGlobal: "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>";
         disabledGuild: "This command has been disabled by an admin in this server!";
+        restrictedChannel: "This command cannot be used in this channel!";
+        restrictedRole: "Your roles do not let you use this command in this server!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
         permissionNodes: "{{REDCROSS}} You do not have permission to use this command!";
         serverOwner: "You need to be the server's owner to run `{{command.name}}`!";
@@ -3407,10 +3492,13 @@ declare module "i18next" {
         invalidHoneypotAction: "{{name}} must be one of the following: {{possibles, orList}}.";
         invalidInt: "{{name}} must be an integer.";
         invalidInvite: "{{name}} must be a valid invite code.";
+        invalidMessageUpdateStyle: "{{name}} must be one of the following: {{possibles, orList}}.";
         invalidRole: "{{name}} must be a role mention or role id.";
         invalidSnowflake: "{{name}} must be a valid snowflake.";
         invalidUrl: "{{name}} must be a valid url.";
         invalidUser: "{{name}} must be a mention or valid user id.";
+        messageUpdateStyleDifference: "Difference";
+        messageUpdateStyleSeparate: "Separate";
         minMaxBothExclusive: "{{name}} must be between {{min}} and {{max}} exclusively.";
         minMaxBothInclusive: "{{name}} must be between {{min}} and {{max}} inclusively.";
         minMaxExactlyExclusive: "{{name}} must be exactly {{min}}.";
@@ -3481,6 +3569,7 @@ declare module "i18next" {
         honeypotRandomName: "Whether I give the honeypot channel another name every day, so the bots cannot avoid it by its name.";
         honeypotKeepActive: "Whether I send a message to the honeypot channel every day, so it does not look abandoned.";
         language: "The language I will use for your server. It may not be available in the language you want.";
+        logsMessageUpdateStyle: "How the log of an edited message shows the change. `Difference` is one text with what was removed struck through and what was added in bold, `Separate` shows the content before and the content after, each in a block of its own.";
         messagesIgnoreChannels: "The channels configured to not increase the point counter for users.";
         messagesModerationAutoDelete: "Whether or not moderation commands should be auto-deleted or not.";
         messagesModerationDm: "Whether or not I should send a direct message to the target user on moderation actions.";
@@ -3536,6 +3625,7 @@ declare module "i18next" {
           automodChannel: "Auto-moderation Channel";
           automodTrackNative: "Track Native Auto-moderation";
           commandsDisabled: "Disabled Commands";
+          commandsRestrictions: "Command Restrictions";
           commandsDisabledChannels: "Disabled Command Channels";
           honeypotChannel: "Honeypot Channel";
           honeypotLogChannel: "Honeypot Logs Channel";
@@ -3552,6 +3642,7 @@ declare module "i18next" {
           logsMessageDeleteNsfw: "NSFW Message Delete Logs";
           logsMessageUpdate: "Message Edit Logs";
           logsMessageUpdateNsfw: "NSFW Message Edit Logs";
+          logsMessageUpdateStyle: "Message Edit Log Style";
           logsPrune: "Prune Logs";
           logsReactionEmojiAdd: "Reaction Add Logs";
           logsReactionEmojiRemove: "Reaction Remove Logs";

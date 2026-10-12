@@ -54,6 +54,14 @@ export function getConfiguration() {
 			description: 'settings:disabledChannels',
 			array: true
 		},
+		// The channels and the roles each command is allowed in, or ignores, which the modal of `/commands` edits:
+		commandsRestrictions: {
+			type: 'notAllowed',
+			name: 'commands.restrictions',
+			description: 'settings:dashboardOnlyKey',
+			array: true,
+			dashboardOnly: true
+		},
 
 		// Honeypot
 		honeypotChannel: { type: 'guildTextChannel', name: 'honeypot.channel', description: 'settings:honeypotChannel' },
@@ -78,6 +86,12 @@ export function getConfiguration() {
 		logsMessageDeleteNsfw: logChannel('message-delete-nsfw', 'settings:channelsLogsMessageDeleteNsfw'),
 		logsMessageUpdate: logChannel('message-update', 'settings:channelsLogsMessageUpdate'),
 		logsMessageUpdateNsfw: logChannel('message-update-nsfw', 'settings:channelsLogsMessageUpdateNsfw'),
+		logsMessageUpdateStyle: {
+			type: 'messageUpdateStyle',
+			name: 'logs.message-update-style',
+			description: 'settings:logsMessageUpdateStyle',
+			default: 'Difference'
+		},
 		logsPrune: logChannel('prune', 'settings:channelsLogsPrune'),
 		logsReactionEmojiAdd: logChannel('reaction-emoji-add', 'settings:channelsLogsReactionEmojiAdd'),
 		logsReactionEmojiRemove: logChannel('reaction-emoji-remove', 'settings:channelsLogsReactionEmojiRemove'),

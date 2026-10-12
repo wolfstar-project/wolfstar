@@ -3,10 +3,10 @@ import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/str
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { createSettingsMenuContext, renderSettingsGroup } from '#lib/structures/settings-menu';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
-import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { Command, RegisterAsSubcommandGroup } from '@wolfstar/plugin-subcommands-advanced';
 
 /**
- * `/settings server`, see the `settings` parent command.
+ * `/settings server menu`, see the `settings` parent command.
  *
  * Opens the settings menu of the server, to configure the bot from Discord as an alternative to the dashboard.
  *
@@ -18,7 +18,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
  *
  * The keys that are only configurable on the dashboard are not shown.
  */
-@RegisterAsSubcommand('settings', (builder) => applyLocalizedBuilder(builder, 'commands/conf:settingsServer'))
+@RegisterAsSubcommandGroup('settings', 'server', (builder) => applyLocalizedBuilder(builder, 'commands/conf:settingsServerMenu'))
 export class UserCommand extends Command {
 	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {

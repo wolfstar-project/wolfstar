@@ -187,7 +187,7 @@ describe('settings menu', () => {
 		});
 
 		test('GIVEN a menu that expired THEN a click is told the command that opens it again', () => {
-			expect(renderSettingsExpired(createContext().t, 'server')).toContain('`/settings server`');
+			expect(renderSettingsExpired(createContext().t, 'server menu')).toContain('`/settings server menu`');
 			expect(renderSettingsExpired(createContext().t, 'user')).toContain('`/settings user`');
 		});
 
@@ -197,7 +197,7 @@ describe('settings menu', () => {
 				getLoadedChatInputCommands: () => new Map([['settings', { getGlobalId: () => '1234567890' }]])
 			};
 			try {
-				expect(renderSettingsExpired(createContext().t, 'server')).toContain('</settings server:1234567890>');
+				expect(renderSettingsExpired(createContext().t, 'server menu')).toContain('</settings server menu:1234567890>');
 			} finally {
 				(container as any).applicationCommandRegistry = previous;
 			}
@@ -266,6 +266,33 @@ describe('settings menu', () => {
 
 			expect(select?.default_values).toHaveLength(2);
 			expect(countComponents(message.components!)).toBeLessThanOrEqual(40);
+		});
+
+		test('GIVEN a key with a few options THEN its editor has a select menu with each one, the stored one picked', () => {
+			const context = createContext({ logsMessageUpdateStyle: 'Separate' });
+			const key = getConfigurableKeys().get('logsMessageUpdateStyle')!;
+			const message = renderSettingsEditor(context, key, 0);
+			const container = message.components![0] as {
+				components: { components?: { type: ComponentType; options?: { value: string; label: string; default: boolean }[] }[] }[];
+			};
+			const select = container.components
+				.flatMap((component) => component.components ?? [])
+				.find((component) => component.type === ComponentType.StringSelect);
+
+			expect(getSettingKind(key)).toBe('choice');
+			expect(select?.options?.map((option) => [option.value, option.label, option.default])).toEqual([
+				['Difference', 'serializers:messageUpdateStyleDifference', false],
+				['Separate', 'serializers:messageUpdateStyleSeparate', true]
+			]);
+		});
+
+		test('GIVEN a key with a few options THEN its value is displayed translated', () => {
+			const key = getConfigurableKeys().get('logsMessageUpdateStyle')!;
+
+			expect(displaySettingValue(t, key, createContext().settings)).toBe('serializers:messageUpdateStyleDifference');
+			expect(displaySettingValue(t, key, createContext({ logsMessageUpdateStyle: 'Separate' }).settings)).toBe(
+				'serializers:messageUpdateStyleSeparate'
+			);
 		});
 
 		test('GIVEN a key that is written THEN its modal holds the stored value', () => {

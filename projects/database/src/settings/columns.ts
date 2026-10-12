@@ -13,6 +13,7 @@ export const Tables = [
 	'GuildCommands',
 	'GuildHoneypot',
 	'GuildLogs',
+	'GuildLogsOptions',
 	'GuildModeration',
 	'GuildPermissions',
 	'GuildReports',
@@ -98,7 +99,8 @@ export const Columns = {
 	}),
 	...columns('GuildCommands', {
 		commandsDisabled: ['disabled', 'value'],
-		commandsDisabledChannels: ['disabledChannels', 'snowflakes']
+		commandsDisabledChannels: ['disabledChannels', 'snowflakes'],
+		commandsRestrictions: ['disabledInChannels', 'value']
 	}),
 	...columns('GuildHoneypot', {
 		honeypotChannel: ['channelId', 'snowflake'],
@@ -136,6 +138,9 @@ export const Columns = {
 		logsIgnoreAll: ['ignoreAll', 'snowflakes'],
 		logsIgnoreMessages: ['ignoreMessages', 'snowflakes'],
 		logsIgnoreReactions: ['ignoreReactions', 'snowflakes']
+	}),
+	...columns('GuildLogsOptions', {
+		logsMessageUpdateStyle: ['messageUpdateStyle', 'value']
 	}),
 	...columns('GuildModeration', {
 		moderationChannel: ['channelId', 'snowflake'],

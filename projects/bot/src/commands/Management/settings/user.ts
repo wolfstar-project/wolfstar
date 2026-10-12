@@ -9,7 +9,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
  *
  * Opens the settings of the user who ran it, which are stored in the `User` model and are the same in every server.
  *
- * @remarks Everybody can use it, and the menu is only for them, like the one of `/settings server`. The clicks are
+ * @remarks Everybody can use it, and the menu is only for them, like the one of `/settings server menu`. The clicks are
  * handled by the `conf` interaction handler.
  */
 @RegisterAsSubcommand('settings', (builder) => applyLocalizedBuilder(builder, 'commands/conf:settingsUser'))

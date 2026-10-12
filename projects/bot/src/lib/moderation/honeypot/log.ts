@@ -80,7 +80,7 @@ export function renderHoneypotLog(t: TFunction<AnyNamespace>, caught: HoneypotCa
 	return createLogMessage({
 		color: caught.caseId === null ? Colors.Amber : Colors.Red,
 		author: caught.user,
-		content,
+		content: { blocks: content },
 		footer: t('events/moderation:honeypotLogFooter')
 	});
 }
