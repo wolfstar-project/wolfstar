@@ -1,5 +1,6 @@
 import { writeSettings } from '#lib/database';
 import { type GuildSettingsOfType } from 'wolfstar-database';
+import { sendLogMessage } from '#lib/moderation/logs/send';
 import { PruneLoggerTypeManager, TimeoutLoggerTypeManager } from '#lib/moderation/managers/loggers';
 import { toErrorCodeResult } from '#common';
 // Not the barrel: it loads `guild.ts`, which loads the managers, this file included.
@@ -83,7 +84,7 @@ export class LoggerManager {
 		const hasPermissions = (await computePermissionsIn(channel, me)).has(requiredPermissions);
 		if (!hasPermissions) return false;
 
-		const result = await toErrorCodeResult(channel.send(messageOptions));
+		const result = await toErrorCodeResult(sendLogMessage(channel, options.key, messageOptions));
 		return result //
 			.inspectErr((code) => this.#logError(code, options.channelId!, 'Failed to send message in'))
 			.isOk();

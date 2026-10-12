@@ -1,4 +1,5 @@
 import { writeSettings } from '#lib/database';
+import { sendLogMessage } from '#lib/moderation/logs/send';
 import { toErrorCodeResult } from '#common';
 import { EmbedBuilder } from '@discordjs/builders';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
@@ -36,7 +37,7 @@ export class UserListener extends Listener {
 
 		const options = this.resolveOptions(await makeMessage());
 		try {
-			await channel.send(options);
+			await sendLogMessage(channel, key, options);
 		} catch (error) {
 			this.container.logger.fatal(
 				error instanceof DiscordAPIError || error instanceof HTTPError

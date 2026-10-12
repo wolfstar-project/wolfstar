@@ -1,4 +1,5 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
+import { deleteLogWebhooks, getLogWebhookChannels, getUnusedLogWebhookChannels } from '#lib/moderation/logs/webhooks';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { acquireSharedLock } from '#utils/locks';
 import {
@@ -151,8 +152,14 @@ export class Transaction {
 			// Write the merged settings, so the rows created for the first time carry every column and not just the changes:
 			await writeGuildData(container.prisma, { ...this.settings, ...this.#changes }, this.#changes, alongside);
 
+			const webhookChannels = getLogWebhookChannels(this.settings);
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;
+
+			// A channel that lost its last log, or every channel when the webhooks were turned off, keeps no webhook. It
+			// is not waited for: the settings are written, and a webhook that stays is found again by its channel.
+			const unused = getUnusedLogWebhookChannels(webhookChannels, getLogWebhookChannels(this.settings));
+			if (unused.length > 0) void deleteLogWebhooks(unused);
 			updateSettingsContext(this.settings, this.#changes);
 			broadcastShardMessage({ type: 'settingsUpdate', guildId: this.settings.id });
 		} finally {
