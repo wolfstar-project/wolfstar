@@ -3285,6 +3285,7 @@ declare module "i18next" {
         revokeNoReason: "[Action] Revoked {{action}}";
         roleRestored: "The role of this action was deleted while it was in course, so it was made again.";
         roleRemovedManually: "The role of this action was taken from the member by hand.";
+        voiceMuteRestored: "The voice mute of this member is still in course, so it was applied again when they came back to a voice channel.";
         revokeReason: "[Action] Revoked {{action}} | Reason: {{reason}}";
         setNicknameNoReasonRemoved: "[Action] Removed Nickname.";
         setNicknameNoReasonSet: "[Action] Set Nickname.";

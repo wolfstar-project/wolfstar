@@ -1,4 +1,5 @@
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
+import { forgetNotVoiceMuted } from '#lib/moderation/common/voiceMutes';
 import { resolveOnErrorCodes } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
@@ -22,6 +23,18 @@ export class ModerationActionVoiceMute extends ModerationAction<never, TypeVaria
 		// of the member as a fallback:
 		const voice = await member.fetchVoiceState();
 		return voice?.serverMute ?? member.mute;
+	}
+
+	/**
+	 * Applies the voice mute, then forgets that the member had none in course: the listener that mutes them again when
+	 * they come back to a voice channel would otherwise trust what it remembered until it expires. It is forgotten once
+	 * the case is written, so a lookup that read the cases before it has most likely remembered the member already.
+	 */
+	public override async apply(...args: Parameters<ModerationAction<never, TypeVariation.VoiceMute>['apply']>) {
+		const [guild] = args;
+		const entry = await super.apply(...args);
+		await forgetNotVoiceMuted(guild.id, entry.userId);
+		return entry;
 	}
 
 	protected override async handleApplyPre(guild: Guild, entry: ModerationAction.Entry) {
