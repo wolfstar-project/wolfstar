@@ -312,7 +312,7 @@ export function renderAutoModerationRule(
 			row([
 				button(encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'list' }), {
 					label: translateKey(t, `${Root}:menuRules`),
-					emoji: getEmojiComponent('ArrowLeft')
+					emoji: getEmojiComponent('Back')
 				}),
 				button(id('view'), { emoji: '🔄' }),
 				button(id('delete'), { label: translateKey(t, `${Root}:menuDelete`), emoji: '🗑️', style: ButtonStyle.Danger })

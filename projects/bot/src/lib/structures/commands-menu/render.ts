@@ -298,7 +298,7 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 		},
 		row(deduplicate(navigation))
 	);
-	if (options.back) body.push(row([button(id('list', '', 0), { label: t('commands/commands:menuBack'), emoji: getEmojiComponent('ArrowLeft') })]));
+	if (options.back) body.push(row([button(id('list', '', 0), { label: t('commands/commands:menuBack'), emoji: getEmojiComponent('Back') })]));
 
 	return toMessage([
 		{ type: ComponentType.Container, accent_color: AccentColor, components: header },
@@ -346,7 +346,7 @@ export function renderCommand(context: CommandsMenuContext, command: CatalogComm
 		row([
 			button(encodeCommandsMenuId({ ownerId, verb: 'list', target: command.category, page: 0 }), {
 				label: t('commands/commands:menuBack'),
-				emoji: getEmojiComponent('ArrowLeft')
+				emoji: getEmojiComponent('Back')
 			}),
 			button(encodeCommandsMenuId({ ownerId, verb: 'search', target: '', page: 0 }), {
 				emoji: '🔍',

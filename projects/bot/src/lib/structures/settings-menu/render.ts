@@ -176,7 +176,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	const navigation: APIButtonComponentWithCustomId[] = [];
 	if (!isRoot && group.parent!.parent !== null) {
 		navigation.push(
-			button(id('view', getSchemaPath(group.parent!), 0), { label: t('commands/conf:menuBack'), emoji: getEmojiComponent('ArrowLeft') })
+			button(id('view', getSchemaPath(group.parent!), 0), { label: t('commands/conf:menuBack'), emoji: getEmojiComponent('Back') })
 		);
 	}
 
@@ -219,7 +219,7 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 			),
 			row([renderSelect(context, key, id('pick', key.property))]),
 			row([
-				button(id('view', getSchemaPath(group)), { label: t('commands/conf:menuBack'), emoji: getEmojiComponent('ArrowLeft') }),
+				button(id('view', getSchemaPath(group)), { label: t('commands/conf:menuBack'), emoji: getEmojiComponent('Back') }),
 				button(id('reset', key.property), { label: t('commands/conf:menuResetKey'), style: ButtonStyle.Danger })
 			])
 		]

@@ -79,6 +79,8 @@ export const EmojiDefinitions = {
 	Edit: emoji('edit', '✏️'),
 	// The triangle of what the user is warned about:
 	Warning: emoji('warning', '⚠️'),
+	// The return arrow of a button that goes back to where the user came from:
+	Back: emoji('back', '↩️'),
 	// The flask of what is experimental, next to a setting or in its note:
 	Experimental: emoji('experimental', '🧪'),
 	// The categories of the commands menu, in its select menu and its title:

@@ -210,7 +210,7 @@ export function renderRolesPicker(context: RolesMenuContext, page: number): Role
 		row([
 			button(encodeRolesMenuId({ ownerId, verb: 'list', page }), {
 				label: t('commands/management:rolesBrowseBack'),
-				emoji: getEmojiComponent('ArrowLeft')
+				emoji: getEmojiComponent('Back')
 			})
 		])
 	];
@@ -252,7 +252,7 @@ export function renderRoleView(context: RolesMenuContext, role: RolesMenuRole, p
 		row([
 			button(encodeRolesMenuId({ ownerId, verb: 'list', page }), {
 				label: t('commands/management:rolesBrowseBack'),
-				emoji: getEmojiComponent('ArrowLeft')
+				emoji: getEmojiComponent('Back')
 			}),
 			button(encodeRolesMenuId({ ownerId, verb: 'pick', page }), {
 				label: t('commands/management:rolesBrowsePick'),
