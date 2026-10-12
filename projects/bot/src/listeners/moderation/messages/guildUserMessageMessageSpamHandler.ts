@@ -1,3 +1,4 @@
+import { getMessageSpamCounterKey } from '#lib/moderation/automod/detectors';
 import { addAutoModerationRuleHits } from '#lib/moderation/automod/rules';
 import { AutoModerationRuleListener } from '#lib/moderation';
 import type { GuildMessage } from '#lib/types';
@@ -12,6 +13,7 @@ export class UserModerationMessageListener extends AutoModerationRuleListener<'M
 	protected detect(message: GuildMessage, rule: AutoModerationRule<'MessageSpam'>): boolean {
 		// An edit is not a new message:
 		if (!isNullishOrZero(message.editedTimestamp)) return false;
-		return addAutoModerationRuleHits(rule, `${message.channelId}:${message.author.id}`, 1);
+		const key = getMessageSpamCounterKey(rule.options.perChannel, message.channelId, message.author.id);
+		return addAutoModerationRuleHits(rule, key, 1);
 	}
 }

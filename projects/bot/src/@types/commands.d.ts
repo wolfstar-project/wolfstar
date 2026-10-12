@@ -51,6 +51,7 @@ declare module '@wolfstar/http-framework' {
       threshold?: number;
       'threshold-period'?: string;
       warn?: boolean;
+      'whole-channel'?: boolean;
     };
     'automod ignore': {
       channel?: TransformedArguments.Channel;

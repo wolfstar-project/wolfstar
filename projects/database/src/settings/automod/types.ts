@@ -72,8 +72,11 @@ export interface AutoModerationRuleOptionsMap {
 	Characters: { maximum: number };
 	/** Messages with more than `maximum` emojis. */
 	Emojis: { maximum: number };
-	/** More than `maximum` messages of a member in a channel within `timePeriod` seconds. */
-	MessageSpam: { maximum: number; timePeriod: number };
+	/**
+	 * More than `maximum` messages in a channel within `timePeriod` seconds: the ones of a member, or with `perChannel`
+	 * the ones of everybody together, which also catches several members that take turns.
+	 */
+	MessageSpam: { maximum: number; timePeriod: number; perChannel: boolean };
 	/** More than `maximum` images of a member within `timePeriod` seconds, in one message or several. */
 	ImageSpam: { maximum: number; timePeriod: number };
 	/** More than `maximum` links of a member within `timePeriod` seconds, across the channels. */
@@ -199,7 +202,7 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Duplicates: { characters: 10, words: 5 },
 		Characters: { maximum: 1500 },
 		Emojis: { maximum: 10 },
-		MessageSpam: { maximum: 5, timePeriod: 5 },
+		MessageSpam: { maximum: 5, timePeriod: 5, perChannel: false },
 		ImageSpam: { maximum: 3, timePeriod: 10 },
 		LinksCooldown: { maximum: 3, timePeriod: 10 },
 		MassMentions: { maximum: 5 },

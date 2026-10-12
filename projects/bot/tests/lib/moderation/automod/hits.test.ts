@@ -8,7 +8,7 @@ function createRule<Type extends AutoModerationRuleType>(type: Type, id: string,
 
 describe('addAutoModerationRuleHits', () => {
 	test('GIVEN more hits than the maximum within the period THEN the member went over it', () => {
-		const rule = createRule('MessageSpam', '9001', { maximum: 3, timePeriod: 60 });
+		const rule = createRule('MessageSpam', '9001', { maximum: 3, timePeriod: 60, perChannel: false });
 
 		expect(addAutoModerationRuleHits(rule, 'member', 1)).toBe(false);
 		expect(addAutoModerationRuleHits(rule, 'member', 2)).toBe(false);

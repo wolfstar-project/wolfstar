@@ -32,13 +32,14 @@ const TypeOptions = [
 	['maximum', 'maximum'],
 	['mentions', 'mentionsAllowed'],
 	['period', 'timePeriod'],
-	['warn', 'alerts']
+	['warn', 'alerts'],
+	['whole-channel', 'perChannel']
 ] as const satisfies readonly (readonly [keyof Options, string])[];
 
 /**
  * `/automod edit`, see the `automod` parent command.
  *
- * @remarks The `minimum`, `maximum`, `mentions`, `period` and `warn` options set the options of the rule, which depend
+ * @remarks The `minimum`, `maximum`, `mentions`, `period`, `warn` and `whole-channel` options set the options of the rule, which depend
  * on its type: a rule answers with an error when it is given one it does not have.
  */
 @RegisterAsSubcommand('automod', (builder) =>
@@ -71,6 +72,7 @@ const TypeOptions = [
 		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsMentions`))
 		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsPeriod`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWarn`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWholeChannel`))
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod edit'>) {

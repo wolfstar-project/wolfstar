@@ -312,7 +312,14 @@ describe('auto-moderation menu', () => {
 			expect(toggleAutoModerationMenuSwitch(rule, 'alerts')).toMatchObject({ options: { alerts: true } });
 		});
 
+		test('GIVEN a fast message spam rule THEN whether it counts the whole channel is flipped', () => {
+			const rule = createRule('MessageSpam');
+
+			expect(toggleAutoModerationMenuSwitch(rule, 'perChannel')).toMatchObject({ options: { perChannel: true, maximum: 5, timePeriod: 5 } });
+		});
+
 		test('GIVEN a switch the rule does not have THEN nothing changes', () => {
+			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'perChannel')).toBeNull();
 			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'alerts')).toBeNull();
 			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'everything')).toBeNull();
 		});

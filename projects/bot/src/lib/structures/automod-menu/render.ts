@@ -382,6 +382,11 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 		body.push(renderKeySwitch(t, `${Root}:menuOptionAlerts`, alerts, id('toggle', 'alerts')));
 	}
 
+	if (rule.type === 'MessageSpam') {
+		const { perChannel } = (rule as AutoModerationRule<'MessageSpam'>).options;
+		body.push(renderKeySwitch(t, `${Root}:menuOptionPerChannel`, perChannel, id('toggle', 'perChannel')));
+	}
+
 	if (body.length === 0) body.push(text(translateKey(t, `${Root}:menuNoOptions`)));
 	return body;
 }

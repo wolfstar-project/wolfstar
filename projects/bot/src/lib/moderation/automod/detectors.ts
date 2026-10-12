@@ -120,3 +120,15 @@ export class WindowCounter {
 
 	private static readonly sweepSize = 1000;
 }
+
+/**
+ * What the messages of a `MessageSpam` rule are counted by: each member in each channel, or with `perChannel` the
+ * channel as a whole, so several members that take turns to flood it are counted together.
+ *
+ * @param perChannel - Whether the rule counts the messages of everybody in the channel together.
+ * @param channelId - The channel the message was sent in.
+ * @param userId - The author of the message.
+ */
+export function getMessageSpamCounterKey(perChannel: boolean, channelId: string, userId: string): string {
+	return perChannel ? channelId : `${channelId}:${userId}`;
+}

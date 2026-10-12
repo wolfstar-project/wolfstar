@@ -27,7 +27,7 @@ export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[numb
  *   type where the others carry the ID of a rule, with the argument `create`.
  * - `view`: shows a section of a rule.
  * - `section`: the section select menu, the section is its selected value.
- * - `toggle`: flips what the argument names: `enabled`, a soft action (`delete`, `alert`, `log`) or `alerts`.
+ * - `toggle`: flips what the argument names: `enabled`, a soft action (`delete`, `alert`, `log`), `alerts` or `perChannel`.
  * - `punishment`: the punishment select menu.
  * - `edit`: opens a modal: `name`, `add` and `remove` (the list), `numbers`, `duration`, `threshold` or `escalation`.
  * - `submit`: the modal `edit` opened, with the same argument.

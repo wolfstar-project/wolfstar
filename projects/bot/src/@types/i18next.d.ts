@@ -136,6 +136,8 @@ declare module "i18next" {
         optionsPeriodDescription: "Mention spam: the seconds in which the mentions are counted";
         optionsWarnName: "warn";
         optionsWarnDescription: "Mention spam: warn the member who is about to be banned";
+        optionsWholeChannelName: "whole-channel";
+        optionsWholeChannelDescription: "Fast message spam: count the messages of everybody in the channel together";
         optionsValueName: "value";
         optionsValueDescription: "A word, the hostname of a link, an invite code or the ID of a server";
         optionsRoleName: "role";
@@ -284,6 +286,8 @@ declare module "i18next" {
         menuOptionNoMentionSpamTimePeriod: "Period, in seconds";
         menuOptionAlerts: "Warn before the ban";
         menuOptionAlertsDescription: "Warns the member when they are close to the limit.";
+        menuOptionPerChannel: "Count the whole channel";
+        menuOptionPerChannelDescription: "Counts the messages of everybody in the channel together, not the ones of each member, to catch members that take turns.";
         menuNumberInvalid: "**{{option}}** must be a whole number between {{minimum, number}} and {{maximum, number}}.";
         menuResponseDelete: "Delete the message";
         menuResponseDeleteDescription: "Deletes the message that triggered the rule.";

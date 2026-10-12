@@ -1,4 +1,5 @@
 import {
+	getMessageSpamCounterKey,
 	WindowCounter,
 	countEmojis,
 	countLinks,
@@ -98,6 +99,18 @@ describe('auto-moderation detectors', () => {
 			counter.reset('a');
 
 			expect(counter.add('a', 1, 1500)).toBe(1);
+		});
+	});
+
+	describe('getMessageSpamCounterKey', () => {
+		test('GIVEN a rule that counts each member THEN two members of a channel are counted apart', () => {
+			expect(getMessageSpamCounterKey(false, '1', '10')).not.toBe(getMessageSpamCounterKey(false, '1', '11'));
+			expect(getMessageSpamCounterKey(false, '1', '10')).not.toBe(getMessageSpamCounterKey(false, '2', '10'));
+		});
+
+		test('GIVEN a rule that counts the whole channel THEN its members are counted together, and the channels apart', () => {
+			expect(getMessageSpamCounterKey(true, '1', '10')).toBe(getMessageSpamCounterKey(true, '1', '11'));
+			expect(getMessageSpamCounterKey(true, '1', '10')).not.toBe(getMessageSpamCounterKey(true, '2', '10'));
 		});
 	});
 });
