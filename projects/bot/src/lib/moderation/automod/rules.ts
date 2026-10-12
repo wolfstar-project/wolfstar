@@ -87,6 +87,19 @@ function changed(guildId: Snowflake) {
 }
 
 /**
+ * Tells this process and the other shards that the rules of a guild were written by something that is not one of the
+ * functions of this module, such as the import of a configuration: the cached rules are dropped and the state of the
+ * rules that were deleted is forgotten.
+ *
+ * @param guildId - The ID of the guild.
+ * @param removedRuleIds - The IDs of the rules that were deleted.
+ */
+export function announceAutoModerationRulesChange(guildId: Snowflake, removedRuleIds: readonly string[] = []) {
+	for (const ruleId of removedRuleIds) states.delete(ruleId);
+	changed(guildId);
+}
+
+/**
  * Finds a rule by its ID or by its name, whatever the case.
  *
  * @param rules - The rules of the guild.
@@ -115,7 +128,7 @@ const locks = new Collection<Snowflake, AsyncQueue>();
  * Runs the writes of a guild one after the other, each on the rules the database has at that time and not on the cached
  * ones, so two changes made at once do not undo each other.
  */
-async function write<T>(guildId: Snowflake, callback: (rules: readonly AutoModerationRule[]) => Promise<T>): Promise<T> {
+export async function writeAutoModerationRules<T>(guildId: Snowflake, callback: (rules: readonly AutoModerationRule[]) => Promise<T>): Promise<T> {
 	const lock = locks.ensure(guildId, () => new AsyncQueue());
 	await lock.wait();
 	try {
@@ -155,7 +168,7 @@ export function createAutoModerationRule(
 	type: AutoModerationRuleType,
 	data: Partial<Omit<AutoModerationRuleData, 'name' | 'type'>> = {}
 ): Promise<AutoModerationRule> {
-	return write(guildId, async (rules) => {
+	return writeAutoModerationRules(guildId, async (rules) => {
 		if (rules.length >= MaximumAutoModerationRules) throw new AutoModerationRuleError('limit');
 
 		const rule = await insertAutoModerationRule(container.prisma, guildId, {
@@ -189,7 +202,7 @@ export function updateAutoModerationRule(
 	ruleId: string,
 	data: AutoModerationRuleUpdate | ((rule: AutoModerationRule) => AutoModerationRuleUpdate | null)
 ): Promise<AutoModerationRule> {
-	return write(guildId, async (rules) => {
+	return writeAutoModerationRules(guildId, async (rules) => {
 		const rule = rules.find((entry) => entry.id === ruleId);
 		if (!rule) throw new AutoModerationRuleError('unknown');
 
@@ -213,7 +226,7 @@ export function updateAutoModerationRule(
  * @throws {@linkcode AutoModerationRuleError} When the rule does not exist.
  */
 export function deleteAutoModerationRule(guildId: Snowflake, ruleId: string): Promise<void> {
-	return write(guildId, async () => {
+	return writeAutoModerationRules(guildId, async () => {
 		if (!(await removeAutoModerationRule(container.prisma, guildId, ruleId))) throw new AutoModerationRuleError('unknown');
 
 		states.delete(ruleId);

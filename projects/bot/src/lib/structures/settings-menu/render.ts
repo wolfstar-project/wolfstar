@@ -423,11 +423,12 @@ export function withSettingsExpiry<Component extends APIMessageTopLevelComponent
  * again, as a mention when Discord gave the command an ID, so a click writes it.
  *
  * @param t - The function to translate with.
- * @param subcommand - The subcommand of `/settings` that opens the menu again.
+ * @param subcommand - The subcommand of `/settings` that opens the menu again, with its group.
  */
-export function renderSettingsExpired(t: Translator, subcommand: 'server' | 'user'): string {
+export function renderSettingsExpired(t: Translator, subcommand: 'server menu' | 'user'): string {
 	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
-	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention('settings', subcommand, id);
+	// The mention of a subcommand takes its path as it is written, group included:
+	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention(`settings ${subcommand}`, id);
 	return `⌛ ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
 }
 

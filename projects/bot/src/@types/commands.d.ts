@@ -400,7 +400,11 @@ declare module '@wolfstar/http-framework' {
       reason?: string;
       user: TransformedArguments.User;
     };
-    'settings server': {};
+    'settings server export': {};
+    'settings server import': {
+      file: TransformedArguments.Attachment;
+    };
+    'settings server menu': {};
     'settings user': {};
     'slowmode': {
       duration: string;

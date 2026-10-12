@@ -187,7 +187,7 @@ describe('settings menu', () => {
 		});
 
 		test('GIVEN a menu that expired THEN a click is told the command that opens it again', () => {
-			expect(renderSettingsExpired(createContext().t, 'server')).toContain('`/settings server`');
+			expect(renderSettingsExpired(createContext().t, 'server menu')).toContain('`/settings server menu`');
 			expect(renderSettingsExpired(createContext().t, 'user')).toContain('`/settings user`');
 		});
 
@@ -197,7 +197,7 @@ describe('settings menu', () => {
 				getLoadedChatInputCommands: () => new Map([['settings', { getGlobalId: () => '1234567890' }]])
 			};
 			try {
-				expect(renderSettingsExpired(createContext().t, 'server')).toContain('</settings server:1234567890>');
+				expect(renderSettingsExpired(createContext().t, 'server menu')).toContain('</settings server menu:1234567890>');
 			} finally {
 				(container as any).applicationCommandRegistry = previous;
 			}
