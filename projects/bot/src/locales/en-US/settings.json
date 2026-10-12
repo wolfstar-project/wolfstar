@@ -91,6 +91,7 @@
 		"automodChannel": "Auto-moderation Channel",
 		"automodTrackNative": "Track Native Auto-moderation",
 		"commandsDisabled": "Disabled Commands",
+		"commandsRestrictions": "Command Restrictions",
 		"commandsDisabledChannels": "Disabled Command Channels",
 		"logsMemberAdd": "Member Join Logs",
 		"logsMemberRemove": "Member Leave Logs",

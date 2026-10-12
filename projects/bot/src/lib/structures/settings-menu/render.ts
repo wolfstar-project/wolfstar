@@ -176,9 +176,9 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 
 	if (pages > 1) {
 		navigation.push(
-			button(id('view', path, Math.max(0, current - 1)), { emoji: '◀️', disabled: current === 0 }),
+			button(id('view', path, Math.max(0, current - 1)), { emoji: getEmojiComponent('ArrowLeft'), disabled: current === 0 }),
 			button(id('page', ''), { label: t('commands/conf:menuPage', { page: current + 1, total: pages }), disabled: true }),
-			button(id('view', path, Math.min(pages - 1, current + 1)), { emoji: '▶️', disabled: current === pages - 1 })
+			button(id('view', path, Math.min(pages - 1, current + 1)), { emoji: getEmojiComponent('ArrowRight'), disabled: current === pages - 1 })
 		);
 	}
 
