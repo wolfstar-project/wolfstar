@@ -2947,6 +2947,9 @@ declare module "i18next" {
         messageDelete: "Message Deleted • {{channel}}";
         messageUpdate: "Message Edited • {{channel}}";
         messageDeleteUnknown: "Unknown Message Deleted • {{channel}}";
+        messageUpdateBefore: "Before";
+        messageUpdateAfter: "After";
+        messageUpdateEmpty: "*(no text)*";
         messageUpdateUnknown: "Unknown Message Edited • {{channel}}";
         messageNotFound: "Unknown Message";
         messageDeleteBulk_one: "{{count}} message deleted in {{channel}} by {{author}}";
@@ -3427,10 +3430,13 @@ declare module "i18next" {
         invalidGuild: "{{name}} must be a valid server ID.";
         invalidInt: "{{name}} must be an integer.";
         invalidInvite: "{{name}} must be a valid invite code.";
+        invalidMessageUpdateStyle: "{{name}} must be one of the following: {{possibles, orList}}.";
         invalidRole: "{{name}} must be a role mention or role id.";
         invalidSnowflake: "{{name}} must be a valid snowflake.";
         invalidUrl: "{{name}} must be a valid url.";
         invalidUser: "{{name}} must be a mention or valid user id.";
+        messageUpdateStyleDifference: "Difference";
+        messageUpdateStyleSeparate: "Separate";
         minMaxBothExclusive: "{{name}} must be between {{min}} and {{max}} exclusively.";
         minMaxBothInclusive: "{{name}} must be between {{min}} and {{max}} inclusively.";
         minMaxExactlyExclusive: "{{name}} must be exactly {{min}}.";
@@ -3494,6 +3500,7 @@ declare module "i18next" {
         eventsBanRemove: "This event posts non-bot moderation logs when a user gets unbanned. You must set up `channels.moderation-logs`.";
         eventsTwemojiReactions: "Whether or not twemoji reactions are posted in the reaction logs channel.";
         language: "The language I will use for your server. It may not be available in the language you want.";
+        logsMessageUpdateStyle: "How the log of an edited message shows the change. `Difference` is one text with what was removed struck through and what was added in bold, `Separate` shows the content before and the content after, each in a block of its own.";
         messagesIgnoreChannels: "The channels configured to not increase the point counter for users.";
         messagesModerationAutoDelete: "Whether or not moderation commands should be auto-deleted or not.";
         messagesModerationDm: "Whether or not I should send a direct message to the target user on moderation actions.";
@@ -3559,6 +3566,7 @@ declare module "i18next" {
           logsMessageDeleteNsfw: "NSFW Message Delete Logs";
           logsMessageUpdate: "Message Edit Logs";
           logsMessageUpdateNsfw: "NSFW Message Edit Logs";
+          logsMessageUpdateStyle: "Message Edit Log Style";
           logsPrune: "Prune Logs";
           logsReactionEmojiAdd: "Reaction Add Logs";
           logsReactionEmojiRemove: "Reaction Remove Logs";

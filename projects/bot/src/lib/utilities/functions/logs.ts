@@ -25,9 +25,11 @@ export interface LogMessageOptions {
 	author: Pick<APIUser, 'id' | 'username' | 'discriminator' | 'avatar' | 'global_name'>;
 
 	/**
-	 * The text of the log, which is split in several blocks when it does not fit in one.
+	 * The text of the log, which is split in several blocks when it does not fit in one. A list is several parts of text:
+	 * each one starts a block of its own, and when they do not fit the message together, the longest are cut first
+	 * ({@linkcode fitLogParts}).
 	 */
-	content: string;
+	content: string | readonly string[];
 
 	/**
 	 * The line at the bottom of the message, together with the time of the log.
@@ -69,10 +71,13 @@ export function createLogMessage(options: LogMessageOptions) {
 
 	// The header and the footer count against the limit too:
 	const available = Math.max(0, MaximumLogMessageLength - header.length - footer.length);
-	const blocks = splitContent(options.content.slice(0, available)).map((content): APITextDisplayComponent => ({
-		type: ComponentType.TextDisplay,
-		content
-	}));
+	const parts = typeof options.content === 'string' ? [options.content] : options.content;
+	const blocks = fitLogParts(parts, available)
+		.flatMap((part) => splitContent(part))
+		.map((content): APITextDisplayComponent => ({
+			type: ComponentType.TextDisplay,
+			content
+		}));
 
 	const container: APIContainerComponent = {
 		type: ComponentType.Container,
@@ -92,6 +97,32 @@ export function createLogMessage(options: LogMessageOptions) {
 	const components: APIMessageTopLevelComponent[] = [container];
 	// The log mentions users and roles it only quotes, nobody is pinged:
 	return { components, flags: MessageFlags.IsComponentsV2 as const, allowed_mentions: { parse: [] as AllowedMentionsTypes[] } };
+}
+
+/**
+ * Cuts the parts of a log so that all of them fit in the characters the message has left.
+ *
+ * @remarks
+ *
+ * The parts that fit in an even share of what is left are kept whole, and the rest is shared between the ones that do
+ * not: two texts of 100 and 5000 characters in a budget of 3000 give 100 and 2900.
+ *
+ * @param parts - The parts to fit.
+ * @param budget - The most characters all of them can hold together.
+ */
+export function fitLogParts(parts: readonly string[], budget: number): string[] {
+	const limits = Array.from<number>({ length: parts.length }).fill(0);
+	let remaining = Math.max(0, budget);
+
+	// The shortest first, so that what they do not use is left to the longer ones:
+	const order = parts.map((part, index) => ({ length: part.length, index })).sort((left, right) => left.length - right.length);
+	for (const [position, { length, index }] of order.entries()) {
+		const limit = Math.min(length, Math.floor(remaining / (order.length - position)));
+		limits[index] = limit;
+		remaining -= limit;
+	}
+
+	return parts.map((part, index) => part.slice(0, limits[index]));
 }
 
 /**
