@@ -9,6 +9,7 @@ let cachedDefaultGuildSettings: DefaultGuildData | null = null;
 export function getDefaultGuildSettings() {
 	cachedDefaultGuildSettings ??= Object.assign(Object.create(null), {
 		language: 'en-US',
+		timezone: 'UTC',
 		modulesAutomod: true,
 		modulesModeration: true,
 		modulesLogs: true,

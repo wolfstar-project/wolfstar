@@ -22,6 +22,7 @@ export type SchemaKeyType =
 	| 'emoji'
 	| 'guild'
 	| 'honeypotAction'
+	| 'timezone'
 	| 'invite'
 	| 'language'
 	| 'messageUpdateStyle'

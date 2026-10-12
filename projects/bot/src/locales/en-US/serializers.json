@@ -22,6 +22,7 @@
 	"invalidMessageUpdateStyle": "{{name}} must be one of the following: {{possibles, orList}}.",
 	"invalidRole": "{{name}} must be a role mention or role id.",
 	"invalidSnowflake": "{{name}} must be a valid snowflake.",
+	"invalidTimezone": "{{name}} must be the name of a time zone of the IANA database, such as `Europe/Rome`, `America/New_York` or `UTC`.",
 	"invalidUrl": "{{name}} must be a valid url.",
 	"invalidUser": "{{name}} must be a mention or valid user id.",
 	"messageUpdateStyleDifference": "Difference",

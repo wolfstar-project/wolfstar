@@ -89,6 +89,7 @@ namespace public {
   model Guild {
     id                BigInt             @id(map: "Guild_pkey")
     language          String             @default("en-US")
+    timezone          String             @default("UTC")
     moderationActions ModerationAction[]
     stickyRoles       StickyRole[]
 

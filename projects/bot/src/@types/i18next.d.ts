@@ -3500,6 +3500,7 @@ declare module "i18next" {
         invalidMessageUpdateStyle: "{{name}} must be one of the following: {{possibles, orList}}.";
         invalidRole: "{{name}} must be a role mention or role id.";
         invalidSnowflake: "{{name}} must be a valid snowflake.";
+        invalidTimezone: "{{name}} must be the name of a time zone of the IANA database, such as `Europe/Rome`, `America/New_York` or `UTC`.";
         invalidUrl: "{{name}} must be a valid url.";
         invalidUser: "{{name}} must be a mention or valid user id.";
         messageUpdateStyleDifference: "Difference";
@@ -3574,6 +3575,7 @@ declare module "i18next" {
         honeypotRandomName: "Whether I give the honeypot channel another name every day, so the bots cannot avoid it by its name.";
         honeypotKeepActive: "Whether I send a message to the honeypot channel every day, so it does not look abandoned.";
         language: "The language I will use for your server. It may not be available in the language you want.";
+        timezone: "The time zone of your server, by its name in the IANA database, such as `Europe/Rome` or `America/New_York`. It is `UTC` until you set one.";
         logsMessageUpdateStyle: "How the log of an edited message shows the change. `Difference` is one text with what was removed struck through and what was added in bold, `Separate` shows the content before and the content after, each in a block of its own.";
         logsWebhooks: "Whether I send the logs through a webhook of their channel, which I create the first time I have something to send there. You can then change its name and its avatar in the settings of the channel. Without the **Manage Webhooks** permission in a channel I send its logs as I do now. The moderation log and the reports are always sent as my own messages.";
         messagesIgnoreChannels: "The channels configured to not increase the point counter for users.";
@@ -3623,6 +3625,7 @@ declare module "i18next" {
         eventsIncludeBots: "Whether or not I should ignore bots in the server logs.";
         names: {
           language: "Language";
+          timezone: "Time Zone";
           modulesAutomod: "Auto-moderation Module";
           modulesModeration: "Moderation Module";
           modulesLogs: "Logs Module";

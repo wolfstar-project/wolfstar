@@ -17,6 +17,7 @@ import {
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
 import { UserSerializer as HoneypotActionSerializer } from '#root/serializers/honeypotAction';
+import { UserSerializer as TimezoneSerializer } from '#root/serializers/timezone';
 import { UserSerializer as MessageUpdateStyleSerializer } from '#root/serializers/messageUpdateStyle';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
 import { UserSerializer as StringSerializer } from '#root/serializers/string';
@@ -97,6 +98,7 @@ beforeAll(async () => {
 		commandMatch: CommandMatchSerializer,
 		language: LanguageSerializer,
 		honeypotAction: HoneypotActionSerializer,
+		timezone: TimezoneSerializer,
 		messageUpdateStyle: MessageUpdateStyleSerializer
 	};
 	for (const [name, piece] of Object.entries(pieces)) {
@@ -112,6 +114,7 @@ describe('configuration file', () => {
 			// A new setting of one of these types has to be looked at: this list is what a file carries across servers.
 			expect(getPortableKeys().map((key) => key.name)).toEqual([
 				'language',
+				'timezone',
 				'modules.automod',
 				'modules.moderation',
 				'modules.logs',

@@ -28,6 +28,11 @@ export function getConfiguration() {
 			description: 'settings:language',
 			default: 'en-US'
 		},
+		timezone: {
+			type: 'timezone',
+			description: 'settings:timezone',
+			default: 'UTC'
+		},
 
 		// Modules
 		modulesAutomod: { type: 'boolean', name: 'modules.automod', description: 'settings:modulesAutomod', default: true },

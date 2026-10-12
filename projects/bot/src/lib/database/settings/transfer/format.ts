@@ -36,6 +36,7 @@ const PortableTypes = new Set<SchemaKeyType>([
 	'number',
 	'string',
 	'timespan',
+	'timezone',
 	'url'
 ]);
 

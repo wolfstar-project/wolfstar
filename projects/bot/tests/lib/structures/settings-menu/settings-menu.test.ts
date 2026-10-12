@@ -121,7 +121,7 @@ describe('settings menu', () => {
 		test('GIVEN the root THEN the keys that are only on the dashboard are hidden', () => {
 			const root = getConfigurableGroups();
 
-			expect(getVisibleKeys(root).map((key) => key.property)).toEqual(['language']);
+			expect(getVisibleKeys(root).map((key) => key.property)).toEqual(['language', 'timezone']);
 			expect(getVisibleGroups(root).map((group) => group.key)).not.toContain('permissions');
 			expect(getVisibleKeys(root, true).every((key) => !key.dashboardOnly)).toBe(true);
 		});
