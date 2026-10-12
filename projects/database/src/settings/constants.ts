@@ -53,6 +53,7 @@ export function getDefaultGuildSettings() {
 		logsIgnoreMessages: [],
 		logsIgnoreReactions: [],
 		logsMessageUpdateStyle: 'Difference',
+		logsWebhooks: false,
 		moderationChannel: null,
 		moderationTrackBans: false,
 		moderationTrackTimeouts: false,

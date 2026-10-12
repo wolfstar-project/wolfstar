@@ -129,6 +129,7 @@ export function getConfiguration() {
 			description: 'settings:channelsIgnoreReactionAdd',
 			array: true
 		},
+		logsWebhooks: { type: 'boolean', name: 'logs.webhooks', description: 'settings:logsWebhooks' },
 
 		// Moderation
 		moderationChannel: {

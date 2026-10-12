@@ -126,6 +126,7 @@ describe('configuration file', () => {
 				'honeypot.keep-active',
 				'logs.message-update-style',
 				'logs.reaction-emoji-include-twemoji',
+				'logs.webhooks',
 				'moderation.track-bans',
 				'moderation.track-timeouts',
 				'reports.anonymous',

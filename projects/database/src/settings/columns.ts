@@ -140,7 +140,8 @@ export const Columns = {
 		logsIgnoreReactions: ['ignoreReactions', 'snowflakes']
 	}),
 	...columns('GuildLogsOptions', {
-		logsMessageUpdateStyle: ['messageUpdateStyle', 'value']
+		logsMessageUpdateStyle: ['messageUpdateStyle', 'value'],
+		logsWebhooks: ['webhooks', 'value']
 	}),
 	...columns('GuildModeration', {
 		moderationChannel: ['channelId', 'snowflake'],
