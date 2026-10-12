@@ -3,9 +3,11 @@ import {
 	deleteLogWebhooks,
 	findOwnedLogWebhook,
 	getLogWebhookChannels,
+	getLogWebhookTarget,
 	getUnusedLogWebhookChannels,
 	isWebhookLogKey,
 	readLogWebhook,
+	releaseUnusedLogWebhooks,
 	resolveLogWebhook,
 	sendThroughLogWebhook,
 	WebhookLogKeys
@@ -14,7 +16,7 @@ import { getConfigurableKeys } from '#lib/database/settings/configuration';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import { computePermissionsIn } from '@wolfstar/plugin-gateway';
-import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { ChannelType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 
 vi.mock('@wolfstar/plugin-gateway', async (importOriginal) => ({
@@ -69,7 +71,7 @@ const message = { components: [], flags: MessageFlags.IsComponentsV2, allowed_me
 describe('the keys of the logs a webhook sends', () => {
 	test('GIVEN the settings THEN every log channel is one, and the honeypot log', () => {
 		const logChannels = [...getConfigurableKeys().values()]
-			.filter((key) => key.name.startsWith('logs.') && key.type === 'guildTextChannel' && !key.array)
+			.filter((key) => key.name.startsWith('logs.') && key.type === 'guildLogChannel' && !key.array)
 			.map((key) => key.property);
 
 		// A new log has to be looked at: it goes through a webhook only when nothing edits its message afterwards.
@@ -136,6 +138,25 @@ describe('getUnusedLogWebhookChannels', () => {
 		const after = getLogWebhookChannels(createSettings({ logsMemberAdd: '1', logsMemberRemove: '2' }));
 
 		expect(getUnusedLogWebhookChannels(before, after)).toEqual(['1', '2']);
+	});
+});
+
+describe('getLogWebhookTarget', () => {
+	test('GIVEN a text or an announcement channel THEN its own webhook is used, with no thread', () => {
+		expect(getLogWebhookTarget({ id: '1', type: ChannelType.GuildText })).toEqual({ channelId: '1' });
+		expect(getLogWebhookTarget({ id: '1', type: ChannelType.GuildAnnouncement })).toEqual({ channelId: '1' });
+	});
+
+	test('GIVEN a thread, or the post of a forum THEN the webhook is the one of its parent, and it posts in the thread', () => {
+		for (const type of [ChannelType.PublicThread, ChannelType.PrivateThread, ChannelType.AnnouncementThread]) {
+			expect(getLogWebhookTarget({ id: '2', type, parentId: '1' })).toEqual({ channelId: '1', threadId: '2' });
+		}
+	});
+
+	test('GIVEN a thread with no parent, or a channel that is not text THEN there is no webhook', () => {
+		expect(getLogWebhookTarget({ id: '2', type: ChannelType.PublicThread, parentId: null })).toBeNull();
+		expect(getLogWebhookTarget({ id: '3', type: ChannelType.GuildForum })).toBeNull();
+		expect(getLogWebhookTarget({ id: '4', type: ChannelType.GuildVoice })).toBeNull();
 	});
 });
 
@@ -265,6 +286,21 @@ describe('the webhook of a log channel', () => {
 			expect(send).toHaveBeenCalledWith('50', token, embeds);
 		});
 
+		test('GIVEN the thread of a log THEN the webhook posts in it', async () => {
+			redis.store.set(channelId, `50:${token}`);
+
+			expect(await sendThroughLogWebhook(guildId, channelId, message, '777')).toBe(true);
+			expect(send).toHaveBeenCalledWith('50', token, { ...message, threadId: '777' });
+		});
+
+		test('GIVEN the thread of a log made of components THEN it has both the thread and the components', async () => {
+			redis.store.set(channelId, `50:${token}`);
+			const components = { ...message, components: [{ type: 10, content: 'A log' }] };
+
+			expect(await sendThroughLogWebhook(guildId, channelId, components as never, '777')).toBe(true);
+			expect(send).toHaveBeenCalledWith('50', token, { ...components, threadId: '777', withComponents: true });
+		});
+
 		test('GIVEN a log made of components THEN the webhook is asked to send them', async () => {
 			redis.store.set(channelId, `50:${token}`);
 			const components = { ...message, components: [{ type: 10, content: 'A log' }] };
@@ -317,6 +353,72 @@ describe('the webhook of a log channel', () => {
 
 			expect(await sendThroughLogWebhook(guildId, channelId, message)).toBe(false);
 			expect(JSON.stringify(warn.mock.calls)).not.toContain(token);
+		});
+	});
+
+	describe('releaseUnusedLogWebhooks', () => {
+		const channels = new Map<string, { type: ChannelType; parentId?: string }>();
+
+		beforeEach(() => {
+			channels.clear();
+			(container.gatewayClient as any).channels = {
+				fetch: vi.fn(async (id: string) => {
+					const channel = channels.get(id);
+					if (channel === undefined) throw new Error('Unknown Channel');
+					return channel;
+				})
+			};
+		});
+
+		test('GIVEN a log that moved to another channel THEN the webhook of the channel it left is deleted', async () => {
+			const other = nextChannelId();
+			redis.store.set(channelId, `50:${token}`);
+			channels.set(channelId, { type: ChannelType.GuildText });
+			channels.set(other, { type: ChannelType.GuildText });
+
+			await releaseUnusedLogWebhooks(new Set([channelId]), new Set([other]));
+
+			expect(remove).toHaveBeenCalledWith('50', expect.objectContaining({ token }));
+			expect(await readLogWebhook(channelId)).toBeNull();
+		});
+
+		test('GIVEN a log that moved to a thread of the same channel THEN the webhook is kept, since the thread uses it', async () => {
+			const thread = nextChannelId();
+			redis.store.set(channelId, `50:${token}`);
+			channels.set(channelId, { type: ChannelType.GuildText });
+			channels.set(thread, { type: ChannelType.PublicThread, parentId: channelId });
+
+			await releaseUnusedLogWebhooks(new Set([channelId]), new Set([thread]));
+
+			expect(remove).not.toHaveBeenCalled();
+			expect(await readLogWebhook(channelId)).toEqual({ id: '50', token });
+		});
+
+		test('GIVEN a log that left a thread while another one is sent to the parent THEN the webhook of the parent is kept', async () => {
+			const thread = nextChannelId();
+			redis.store.set(channelId, `50:${token}`);
+			channels.set(channelId, { type: ChannelType.GuildText });
+			channels.set(thread, { type: ChannelType.PublicThread, parentId: channelId });
+
+			await releaseUnusedLogWebhooks(new Set([thread, channelId]), new Set([channelId]));
+
+			expect(remove).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN the last log of a thread THEN the webhook of its parent is deleted', async () => {
+			const thread = nextChannelId();
+			redis.store.set(channelId, `50:${token}`);
+			channels.set(thread, { type: ChannelType.PublicThread, parentId: channelId });
+
+			await releaseUnusedLogWebhooks(new Set([thread]), new Set());
+
+			expect(remove).toHaveBeenCalledWith('50', expect.objectContaining({ token }));
+		});
+
+		test('GIVEN a change that left no channel THEN Discord is not asked about any', async () => {
+			await releaseUnusedLogWebhooks(new Set([channelId]), new Set([channelId]));
+
+			expect((container.gatewayClient as any).channels.fetch).not.toHaveBeenCalled();
 		});
 	});
 

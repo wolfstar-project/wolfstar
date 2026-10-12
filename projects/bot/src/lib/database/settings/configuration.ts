@@ -224,7 +224,7 @@ export function getConfiguration() {
 }
 
 function logChannel(name: string, description: TypedT<string>): ConfigurableKeyOptions {
-	return { type: 'guildTextChannel', name: `logs.${name}`, description };
+	return { type: 'guildLogChannel', name: `logs.${name}`, description };
 }
 
 function makeKeys(record: Record<SchemaDataKey, ConfigurableKeyOptions>): Record<SchemaDataKey, SchemaKey> {

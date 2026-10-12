@@ -611,6 +611,7 @@ declare module "i18next" {
         menuAutomodRules: "Auto-moderation rules";
         menuAutomodRulesDescription: "Create and configure the rules of the auto-moderation.";
         menuWrongUser: "This menu is not for you, run the command to open your own.";
+        menuExperimentalThreads: "**Experimental:** the channel of a log can also be a thread of a text channel, or a post of a forum, which is not tested in every case yet. The bot needs to send messages in threads there, and a locked thread needs Manage Threads.";
         menuExpires: "This menu closes {{time}} if it is not used.";
         menuExpired: "This menu closed after {{minutes, number}} minutes without being used. Run {{command}} to open it again.";
         menuExpiredModal: "The menu closed while you were writing, so nothing was saved. Open it again and try once more.";

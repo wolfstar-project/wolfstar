@@ -13,6 +13,7 @@ import {
 	getSettingChannelTypes,
 	getSettingChoiceLabel,
 	getSettingChoices,
+	getSettingExperimentalNote,
 	getSettingKeyTitle,
 	getSettingKind,
 	getSettingMaximumValues,
@@ -140,7 +141,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 
 		body.push(
 			section(
-				`**${getSettingKeyTitle(t, entry)}**\n${displaySettingValue(t, entry, context.settings)}`,
+				`**${getSettingKeyTitle(t, entry)}${getSettingExperimentalNote(entry) === null ? '' : ' 🧪'}**\n${displaySettingValue(t, entry, context.settings)}`,
 				renderKeyButton(context, entry, current)
 			)
 		);
@@ -205,13 +206,14 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
 	const id = (verb: SettingsMenuVerb, target: string) => encodeSettingsMenuId({ ownerId: context.ownerId, verb, target, page });
 
 	const description = t(key.description as TranslationKey);
+	const experimental = getSettingExperimentalNote(key);
 	const value = displaySettingValue(t, key, context.settings);
 	const container: APIContainerComponent = {
 		type: ComponentType.Container,
 		accent_color: AccentColor,
 		components: [
 			text(
-				`## ${Emojis.Edit} ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
+				`## ${Emojis.Edit} ${getPathTitle(t, group)} › ${getSettingKeyTitle(t, key)}\n${description}${experimental === null ? '' : `\n\n🧪 ${t(experimental)}`}\n\n**${t('commands/conf:menuCurrentValue')}**\n${value}`
 			),
 			row([renderSelect(context, key, id('pick', key.property))]),
 			row([

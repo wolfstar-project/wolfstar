@@ -33,7 +33,7 @@ describe('sendLogMessage', () => {
 
 		await sendLogMessage(channel as never, 'logsMemberAdd', message);
 
-		expect(sendThroughLogWebhook).toHaveBeenCalledWith(guildId, channelId, message);
+		expect(sendThroughLogWebhook).toHaveBeenCalledWith(guildId, channelId, message, undefined);
 		expect(channel.send).not.toHaveBeenCalled();
 	});
 
@@ -75,8 +75,26 @@ describe('sendLogMessage', () => {
 		expect(channel.send).toHaveBeenCalledWith(forward);
 	});
 
-	test('GIVEN a thread THEN it is a regular message', async () => {
-		const channel = createChannel(ChannelType.PublicThread);
+	test('GIVEN a thread THEN the log goes through the webhook of its parent, posted in the thread', async () => {
+		const channel = { ...createChannel(ChannelType.PublicThread), parentId: '254360814063058999' };
+
+		await sendLogMessage(channel as never, 'logsMemberAdd', message);
+
+		expect(sendThroughLogWebhook).toHaveBeenCalledWith(guildId, '254360814063058999', message, channelId);
+		expect(channel.send).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a thread whose webhook cannot send THEN the log is sent to the thread by the bot', async () => {
+		vi.mocked(sendThroughLogWebhook).mockResolvedValue(false);
+		const channel = { ...createChannel(ChannelType.PublicThread), parentId: '254360814063058999' };
+
+		await sendLogMessage(channel as never, 'logsMemberAdd', message);
+
+		expect(channel.send).toHaveBeenCalledWith(message);
+	});
+
+	test('GIVEN a channel that is not text THEN it is a regular message', async () => {
+		const channel = createChannel(ChannelType.GuildForum);
 
 		await sendLogMessage(channel as never, 'logsMemberAdd', message);
 

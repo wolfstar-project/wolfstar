@@ -3,10 +3,10 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyChannel } from '@wolfstar/plugin-gateway';
 import { ChannelType } from 'discord-api-types/v10';
 
-type SerializerType = 'guildTextChannel' | 'guildVoiceChannel' | 'guildCategoryChannel';
+type SerializerType = 'guildTextChannel' | 'guildLogChannel' | 'guildVoiceChannel' | 'guildCategoryChannel';
 
 @ApplyOptions<Serializer.Options>({
-	aliases: ['guildTextChannel', 'guildVoiceChannel', 'guildCategoryChannel'] satisfies SerializerType[]
+	aliases: ['guildTextChannel', 'guildLogChannel', 'guildVoiceChannel', 'guildCategoryChannel'] satisfies SerializerType[]
 })
 export class UserSerializer extends Serializer<string> {
 	public async parse(input: string, { t, entry, guild }: Serializer.UpdateContext) {
@@ -29,6 +29,15 @@ export class UserSerializer extends Serializer<string> {
 		switch (type) {
 			case 'guildTextChannel':
 				return channel.type === ChannelType.GuildText || channel.type === ChannelType.GuildAnnouncement;
+			// Experimental: a log can also be sent to a thread, which is a post when its channel is a forum:
+			case 'guildLogChannel':
+				return (
+					channel.type === ChannelType.GuildText ||
+					channel.type === ChannelType.GuildAnnouncement ||
+					channel.type === ChannelType.PublicThread ||
+					channel.type === ChannelType.PrivateThread ||
+					channel.type === ChannelType.AnnouncementThread
+				);
 			case 'guildVoiceChannel':
 				return channel.type === ChannelType.GuildVoice;
 			case 'guildCategoryChannel':

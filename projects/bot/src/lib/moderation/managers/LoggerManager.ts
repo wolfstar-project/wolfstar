@@ -6,6 +6,7 @@ import { toErrorCodeResult } from '#common';
 // Not the barrel: it loads `guild.ts`, which loads the managers, this file included.
 import { getCodeStyle, getLogPrefix } from '#utils/functions/pieces';
 import { EmbedBuilder } from '@discordjs/builders';
+import { isThreadChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { isFunction, isNullish, isNullishOrEmpty, type Awaitable, type Nullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import {
@@ -76,7 +77,9 @@ export class LoggerManager {
 
 		const messageOptions = this.#resolveMessageOptions(rawOptions);
 
-		let requiredPermissions = PermissionFlagsBits.SendMessages | PermissionFlagsBits.ViewChannel;
+		// A thread is sent to with its own permission, a text channel's Send Messages is not enough there:
+		const sendPermission = isThreadChannel(channel) ? PermissionFlagsBits.SendMessagesInThreads : PermissionFlagsBits.SendMessages;
+		let requiredPermissions = sendPermission | PermissionFlagsBits.ViewChannel;
 		if (!isNullishOrEmpty(messageOptions.embeds)) requiredPermissions |= PermissionFlagsBits.EmbedLinks;
 		if (!isNullishOrEmpty(messageOptions.files)) requiredPermissions |= PermissionFlagsBits.AttachFiles;
 

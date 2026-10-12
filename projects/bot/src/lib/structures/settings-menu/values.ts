@@ -26,6 +26,7 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 		case 'role':
 			return 'role';
 		case 'guildTextChannel':
+		case 'guildLogChannel':
 		case 'guildVoiceChannel':
 		case 'guildCategoryChannel':
 		case 'categoryOrTextChannel':
@@ -60,6 +61,14 @@ export function getSettingChannelTypes(key: SchemaKey): ChannelType[] {
 			return [ChannelType.GuildCategory];
 		case 'categoryOrTextChannel':
 			return [ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildCategory];
+		case 'guildLogChannel':
+			return [
+				ChannelType.GuildText,
+				ChannelType.GuildAnnouncement,
+				ChannelType.PublicThread,
+				ChannelType.PrivateThread,
+				ChannelType.AnnouncementThread
+			];
 		default:
 			return [ChannelType.GuildText, ChannelType.GuildAnnouncement];
 	}
@@ -120,6 +129,17 @@ export function getSettingTitle(group: SchemaGroup) {
  */
 export function getSettingKeyTitle(t: Translator, key: SchemaKey) {
 	return getSettingName(t, key.property);
+}
+
+/**
+ * What of a key is experimental, `null` when nothing is: the channel of a log can be a thread, or a post of a forum,
+ * which is not tested in every case yet.
+ *
+ * @param key - The key.
+ * @returns The key of the text that says it, in `commands/conf`.
+ */
+export function getSettingExperimentalNote(key: SchemaKey): 'commands/conf:menuExperimentalThreads' | null {
+	return key.type === 'guildLogChannel' ? 'commands/conf:menuExperimentalThreads' : null;
 }
 
 /**

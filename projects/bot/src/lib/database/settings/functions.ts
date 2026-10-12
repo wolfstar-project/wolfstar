@@ -1,5 +1,5 @@
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
-import { deleteLogWebhooks, getLogWebhookChannels, getUnusedLogWebhookChannels } from '#lib/moderation/logs/webhooks';
+import { getLogWebhookChannels, releaseUnusedLogWebhooks } from '#lib/moderation/logs/webhooks';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { acquireSharedLock } from '#utils/locks';
 import {
@@ -158,8 +158,7 @@ export class Transaction {
 
 			// A channel that lost its last log, or every channel when the webhooks were turned off, keeps no webhook. It
 			// is not waited for: the settings are written, and a webhook that stays is found again by its channel.
-			const unused = getUnusedLogWebhookChannels(webhookChannels, getLogWebhookChannels(this.settings));
-			if (unused.length > 0) void deleteLogWebhooks(unused);
+			void releaseUnusedLogWebhooks(webhookChannels, getLogWebhookChannels(this.settings));
 			updateSettingsContext(this.settings, this.#changes);
 			broadcastShardMessage({ type: 'settingsUpdate', guildId: this.settings.id });
 		} finally {

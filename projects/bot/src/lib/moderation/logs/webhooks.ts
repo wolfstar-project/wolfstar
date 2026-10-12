@@ -3,7 +3,7 @@ import { DiscordAPIError } from '@discordjs/rest';
 import { isNullish, isNullishOrEmpty, type Nullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { computePermissionsIn, type MessageCreateOptions, type WebhookMessageCreateOptions } from '@wolfstar/plugin-gateway';
-import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { ChannelType, PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import type { GuildSettingsOfType, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
@@ -63,6 +63,11 @@ export const WebhookLogKeys = [
 const WebhooksHash = 'wolfstar:logs:webhooks';
 
 /**
+ * The types of channel that are a thread: the post of a forum is a public thread.
+ */
+const ThreadTypes: ReadonlySet<ChannelType> = new Set([ChannelType.PublicThread, ChannelType.PrivateThread, ChannelType.AnnouncementThread]);
+
+/**
  * The webhooks this process uses while Redis cannot be asked.
  */
 const localWebhooks = new Map<Snowflake, LogWebhook>();
@@ -98,7 +103,32 @@ function hasStickers(message: MessageCreateOptions) {
 }
 
 /**
+ * Where a webhook sends the log of a channel: the webhook is of `channelId`, and `threadId` is the thread it posts in.
+ */
+export interface LogWebhookTarget {
+	channelId: Snowflake;
+	threadId?: Snowflake;
+}
+
+/**
+ * Finds the webhook a log channel is sent through. A webhook belongs to a text or an announcement channel, or to the
+ * forum a thread is a post of, and a message is sent to one of their threads with its ID: so the webhook of a thread is
+ * the one of its parent.
+ *
+ * @param channel - The channel of the log.
+ * @returns Where to send it, `null` when no webhook can (a channel that is not text, or a thread that has no parent).
+ */
+export function getLogWebhookTarget(channel: { id: Snowflake; type: ChannelType; parentId?: Snowflake | Nullish }): LogWebhookTarget | null {
+	if (channel.type === ChannelType.GuildText || channel.type === ChannelType.GuildAnnouncement) return { channelId: channel.id };
+	if (ThreadTypes.has(channel.type) && !isNullish(channel.parentId)) return { channelId: channel.parentId, threadId: channel.id };
+	return null;
+}
+
+/**
  * The channels the settings of a guild send a log through a webhook to: none when `logs.webhooks` is off.
+ *
+ * @remarks They are the channels of the settings, so the thread of a log and not the channel its webhook belongs to,
+ * which {@linkcode releaseUnusedLogWebhooks} looks up.
  */
 export function getLogWebhookChannels(settings: ReadonlyGuildData): Set<Snowflake> {
 	const channels = new Set<Snowflake>();
@@ -118,6 +148,41 @@ export function getLogWebhookChannels(settings: ReadonlyGuildData): Set<Snowflak
  */
 export function getUnusedLogWebhookChannels(before: ReadonlySet<Snowflake>, after: ReadonlySet<Snowflake>): Snowflake[] {
 	return [...before].filter((channelId) => !after.has(channelId));
+}
+
+/**
+ * The channel each one of some channels sends through a webhook of: the parent of a thread, the channel itself for the
+ * rest. A channel that cannot be found is its own, it has no webhook that is not its own.
+ */
+async function resolveLogWebhookChannels(channelIds: Iterable<Snowflake>): Promise<Set<Snowflake>> {
+	const resolved = new Set<Snowflake>();
+	for (const channelId of channelIds) {
+		try {
+			const channel = await container.gatewayClient.channels.fetch(channelId);
+			const parentId = channel !== null && ThreadTypes.has(channel.type) && 'parentId' in channel ? channel.parentId : null;
+			resolved.add(parentId ?? channelId);
+		} catch {
+			resolved.add(channelId);
+		}
+	}
+
+	return resolved;
+}
+
+/**
+ * Deletes the webhooks of the channels a change of the settings left without a log, taking the threads for the channel
+ * their webhook belongs to: a webhook is kept while any log is sent to the channel or to one of its threads.
+ *
+ * @param before - The channels of the logs before the change, see {@linkcode getLogWebhookChannels}.
+ * @param after - The channels of the logs after it.
+ */
+export async function releaseUnusedLogWebhooks(before: ReadonlySet<Snowflake>, after: ReadonlySet<Snowflake>): Promise<void> {
+	const left = getUnusedLogWebhookChannels(before, after);
+	if (left.length === 0) return;
+
+	const [candidates, kept] = await Promise.all([resolveLogWebhookChannels(left), resolveLogWebhookChannels(after)]);
+	const unused = [...candidates].filter((channelId) => !kept.has(channelId));
+	if (unused.length > 0) await deleteLogWebhooks(unused);
 }
 
 /**
@@ -232,16 +297,22 @@ async function createLogWebhook(channelId: Snowflake): Promise<LogWebhook | null
  * never lost to its webhook.
  *
  * @param guildId - The ID of the guild of the channel.
- * @param channelId - The ID of the channel the log goes to.
+ * @param channelId - The ID of the channel the webhook belongs to: the one of the log, or its parent for a thread.
  * @param message - The message of the log, as the channel would be sent it.
+ * @param threadId - The thread the log goes to, when the log channel is one. Discord unarchives it.
  * @returns Whether the message was sent.
  */
-export async function sendThroughLogWebhook(guildId: Snowflake, channelId: Snowflake, message: MessageCreateOptions): Promise<boolean> {
+export async function sendThroughLogWebhook(
+	guildId: Snowflake,
+	channelId: Snowflake,
+	message: MessageCreateOptions,
+	threadId?: Snowflake
+): Promise<boolean> {
 	try {
 		const webhook = await resolveLogWebhook(guildId, channelId);
 		if (webhook === null) return false;
 
-		const options = toWebhookMessage(message);
+		const options = toWebhookMessage(message, threadId);
 		try {
 			await container.gatewayClient.webhooks.send(webhook.id, webhook.token, options);
 			return true;
@@ -308,9 +379,10 @@ async function forgetLogWebhook(channelId: Snowflake, webhook: LogWebhook) {
  * A webhook that is owned by an application sends components without being asked to. The parameter is set anyway, it
  * is what lets any other webhook send the ones that are not interactive.
  */
-function toWebhookMessage(message: MessageCreateOptions): WebhookMessageCreateOptions {
+function toWebhookMessage(message: MessageCreateOptions, threadId?: Snowflake): WebhookMessageCreateOptions {
 	const options = message as WebhookMessageCreateOptions;
-	return isNullishOrEmpty(message.components) ? options : { ...options, withComponents: true };
+	const withThread = isNullish(threadId) ? options : { ...options, threadId };
+	return isNullishOrEmpty(message.components) ? withThread : { ...withThread, withComponents: true };
 }
 
 function isUnknownWebhook(error: unknown) {

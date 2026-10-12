@@ -15,6 +15,7 @@ export type SchemaKeyType =
 	| 'boolean'
 	| 'categoryOrTextChannel'
 	| 'guildTextChannel'
+	| 'guildLogChannel'
 	| 'guildVoiceChannel'
 	| 'guildCategoryChannel'
 	| 'command'
