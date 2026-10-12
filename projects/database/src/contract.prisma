@@ -173,6 +173,18 @@ namespace public {
     @@control(external)
   }
 
+  model GuildHoneypot {
+    id            BigInt                  @id(map: "GuildHoneypot_pkey")
+    channelId     BigInt?                 @map("channel_id")
+    logChannelId  BigInt?                 @map("log_channel_id")
+    action        pg.enum(HoneypotAction) @default("Softban")
+    directMessage Boolean                 @default(true) @map("direct_message")
+    warning       Boolean                 @default(true)
+    randomName    Boolean                 @default(false) @map("random_name")
+    keepActive    Boolean                 @default(false) @map("keep_active")
+    modules       Modules                 @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildHoneypot_id_fkey")
+  }
+
   model GuildLogs {
     id                     BigInt   @id(map: "GuildLogs_pkey")
     memberAdd              BigInt?  @map("member_add")
@@ -359,6 +371,12 @@ namespace public {
     Spoilers = "Spoilers"
     MaskedLinks = "MaskedLinks"
     StickersCooldown = "StickersCooldown"
+  }
+
+  native_enum HoneypotAction {
+    Kick = "Kick"
+    Softban = "Softban"
+    Ban = "Ban"
   }
 
   native_enum MessageUpdateStyle {

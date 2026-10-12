@@ -85,4 +85,19 @@ describe('fitLogParts', () => {
 		expect(fitLogParts(['abc', 'def'], 0)).toEqual(['', '']);
 		expect(fitLogParts(['abc', 'def'], -5)).toEqual(['', '']);
 	});
+
+	test('GIVEN the blocks themselves THEN each is a component of its own that is never cut', () => {
+		const quote = `\`\`\`\n${'a'.repeat(1500)}\n\`\`\``;
+		const message = createLogMessage({ color: 0, author, content: { blocks: ['head', '', quote] }, footer: 'footer' });
+		const texts = collectText(message.components);
+
+		expect(texts.slice(1, -1)).toEqual(['head', quote]);
+	});
+
+	test('GIVEN blocks that do not fit THEN the first that does not is left out whole, with the ones after it', () => {
+		const message = createLogMessage({ color: 0, author, content: { blocks: ['a'.repeat(3000), 'b'.repeat(3000), 'c'] }, footer: 'footer' });
+		const texts = collectText(message.components);
+
+		expect(texts.slice(1, -1)).toEqual(['a'.repeat(3000)]);
+	});
 });

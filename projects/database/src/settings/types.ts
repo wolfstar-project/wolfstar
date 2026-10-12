@@ -13,6 +13,17 @@ export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 export type AutoModerationHardAction = Models.public_GuildAutoModerationRule['hardAction'];
 
 /**
+ * What is done to who writes in the honeypot channel of a guild, as the `HoneypotAction` enum stores it. A `Softban`
+ * bans and unbans, which removes the member and deletes what they sent in every channel.
+ */
+export type HoneypotAction = Models.public_GuildHoneypot['action'];
+
+/**
+ * The values of {@linkcode HoneypotAction}, the mildest first, in the order the settings offer them.
+ */
+export const HoneypotActions = ['Kick', 'Softban', 'Ban'] as const satisfies readonly HoneypotAction[];
+
+/**
  * How the log of an edited message shows the change, as the `MessageUpdateStyle` enum stores it: `Difference` is one
  * text with the removed and the added parts marked, `Separate` the content before and the content after, each in a
  * block of its own.

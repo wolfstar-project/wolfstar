@@ -118,6 +118,21 @@ declare module '@wolfstar/http-framework' {
       command?: string;
     };
     'dehoist': {};
+    'honeypot disable': {};
+    'honeypot edit': {
+      action?: 'Kick' | 'Softban' | 'Ban';
+      'direct-message'?: boolean;
+      'keep-active'?: boolean;
+      logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
+      'random-name'?: boolean;
+      warning?: boolean;
+    };
+    'honeypot setup': {
+      action?: 'Kick' | 'Softban' | 'Ban';
+      channel?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0> };
+      logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
+    };
+    'honeypot show': {};
     'info': {};
     'kick': {
       authored?: boolean;

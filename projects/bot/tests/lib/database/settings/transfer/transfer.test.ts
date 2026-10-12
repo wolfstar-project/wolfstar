@@ -16,6 +16,8 @@ import {
 } from '#lib/database/settings/transfer/plan';
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
+import { UserSerializer as HoneypotActionSerializer } from '#root/serializers/honeypotAction';
+import { UserSerializer as MessageUpdateStyleSerializer } from '#root/serializers/messageUpdateStyle';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
 import { UserSerializer as StringSerializer } from '#root/serializers/string';
 import { container } from '@wolfstar/http-framework';
@@ -93,7 +95,9 @@ beforeAll(async () => {
 		number: NumberSerializer,
 		string: StringSerializer,
 		commandMatch: CommandMatchSerializer,
-		language: LanguageSerializer
+		language: LanguageSerializer,
+		honeypotAction: HoneypotActionSerializer,
+		messageUpdateStyle: MessageUpdateStyleSerializer
 	};
 	for (const [name, piece] of Object.entries(pieces)) {
 		await container.stores.loadPiece({ store: 'serializers', name, piece: piece as never });
@@ -115,6 +119,12 @@ describe('configuration file', () => {
 				'modules.roles',
 				'automod.track-native',
 				'commands.disabled',
+				'honeypot.action',
+				'honeypot.direct-message',
+				'honeypot.warning',
+				'honeypot.random-name',
+				'honeypot.keep-active',
+				'logs.message-update-style',
 				'logs.reaction-emoji-include-twemoji',
 				'moderation.track-bans',
 				'moderation.track-timeouts',

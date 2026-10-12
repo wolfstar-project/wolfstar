@@ -63,6 +63,20 @@ export function getConfiguration() {
 			dashboardOnly: true
 		},
 
+		// Honeypot
+		honeypotChannel: { type: 'guildTextChannel', name: 'honeypot.channel', description: 'settings:honeypotChannel' },
+		honeypotLogChannel: { type: 'guildTextChannel', name: 'honeypot.log-channel', description: 'settings:honeypotLogChannel' },
+		honeypotAction: { type: 'honeypotAction', name: 'honeypot.action', description: 'settings:honeypotAction', default: 'Softban' },
+		honeypotDirectMessage: {
+			type: 'boolean',
+			name: 'honeypot.direct-message',
+			description: 'settings:honeypotDirectMessage',
+			default: true
+		},
+		honeypotWarning: { type: 'boolean', name: 'honeypot.warning', description: 'settings:honeypotWarning', default: true },
+		honeypotRandomName: { type: 'boolean', name: 'honeypot.random-name', description: 'settings:honeypotRandomName' },
+		honeypotKeepActive: { type: 'boolean', name: 'honeypot.keep-active', description: 'settings:honeypotKeepActive' },
+
 		// Logs
 		logsMemberAdd: logChannel('member-add', 'settings:channelsLogsMemberAdd'),
 		logsMemberRemove: logChannel('member-remove', 'settings:channelsLogsMemberRemove'),
