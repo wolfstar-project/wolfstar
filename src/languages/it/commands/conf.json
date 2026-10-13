@@ -24,7 +24,7 @@
 	"optionsKeyDescription": "La chiave di configurazione da modificare",
 	"optionsKeyName": "chiave",
 	"optionsValueDescription": "Il valore da impostare o rimuovere",
-	"optionsValueName": "Valore",
+	"optionsValueName": "valore",
 	"removeDescription": "Rimuovi un valore da una chiave di configurazione",
 	"removeName": "rimuovere",
 	"resetDescription": "Reimposta un valore di configurazione al suo valore predefinito",
@@ -54,7 +54,7 @@
 		]
 	},
 	"setDescription": "Imposta un valore per una chiave di configurazione",
-	"setName": "Imposta",
+	"setName": "imposta",
 	"settingNotSet": "Non Impostato",
 	"showDescription": "Mostra le impostazioni correnti o una chiave specifica",
 	"showName": "mostra",

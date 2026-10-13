@@ -14,7 +14,7 @@
 	"newlinesDescription": "Gestisci l'automoderatore per le righe",
 	"newlinesName": "automod-nuove-linee",
 	"optionsActionAlertDescription": "Attiva o disattiva gli avvisi di messaggi nel canale",
-	"optionsActionAlertName": "Avviso",
+	"optionsActionAlertName": "avviso",
 	"optionsActionDeleteDescription": "Attiva/disattiva cancellazione messaggi",
 	"optionsActionDeleteName": "elimina",
 	"optionsActionLogDescription": "Attiva o disattiva la registrazione di messaggi nel canale dei registri di moderazione, se impostato.",
