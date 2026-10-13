@@ -12,6 +12,7 @@ export function getDefaultGuildSettings() {
 		permissionsUsers: [],
 		permissionsRoles: [],
 		channelsMediaOnly: [],
+		channelsUpdates: null,
 		channelsLogsModeration: null,
 		channelsLogsImage: null,
 		channelsLogsMemberAdd: null,
