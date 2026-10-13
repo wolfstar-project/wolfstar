@@ -1,5 +1,6 @@
 {
 	"channelsMediaOnly": "The channels where only media attachments can be sent.",
+	"channelsUpdates": "The channel where I send announcements about WolfStar updates, new features, and maintenance notices for this server.",
 	"channelsIgnoreAll": "Channels I should ignore for all types of logging.",
 	"channelsIgnoreMessageDelete": "Channels I should ignore when checking for deleted messages to log.",
 	"channelsIgnoreMessageEdit": "Channels I should ignore when checking for edited messages to log.",

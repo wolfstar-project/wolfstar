@@ -49,6 +49,7 @@ model Guild {
   channelsLogsVoiceChannel             String?  @map("channels.logs.voice-activity") @db.VarChar(19)
   channelsLogsCommand                  String?  @map("channels.logs.command") @db.VarChar(19)
   channelsLogsSettings                 String?  @map("channels.logs.settings") @db.VarChar(19)
+  channelsUpdates                      String?  @map("channels.updates") @db.VarChar(19)
   channelsIgnoreAll                    String[] @default([]) @map("channels.ignore.all") @db.VarChar(19)
   channelsIgnoreMessageEdit            String[] @default([]) @map("channels.ignore.message-edit") @db.VarChar(19)
   channelsIgnoreMessageDelete          String[] @default([]) @map("channels.ignore.message-delete") @db.VarChar(19)

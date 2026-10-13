@@ -71,6 +71,11 @@ export function getConfiguration() {
 			description: LanguageKeys.Settings.Channels.MediaOnly,
 			array: true
 		},
+		channelsUpdates: {
+			type: 'guildTextChannel',
+			name: 'channels.updates',
+			description: LanguageKeys.Settings.Channels.Updates
+		},
 		channelsLogsModeration: {
 			type: 'guildTextChannel',
 			name: 'channels.logs.moderation',
