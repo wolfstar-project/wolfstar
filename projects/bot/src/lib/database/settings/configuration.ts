@@ -33,6 +33,7 @@ export function getConfiguration() {
 			description: 'settings:timezone',
 			default: 'UTC'
 		},
+		updatesChannel: { type: 'guildTextChannel', name: 'updates-channel', description: 'settings:updatesChannel' },
 
 		// Modules
 		modulesAutomod: { type: 'boolean', name: 'modules.automod', description: 'settings:modulesAutomod', default: true },

@@ -10,6 +10,7 @@ export function getDefaultGuildSettings() {
 	cachedDefaultGuildSettings ??= Object.assign(Object.create(null), {
 		language: 'en-US',
 		timezone: 'UTC',
+		updatesChannel: null,
 		modulesAutomod: true,
 		modulesModeration: true,
 		modulesLogs: true,
