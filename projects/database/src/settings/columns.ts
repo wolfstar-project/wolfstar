@@ -85,7 +85,11 @@ function columns<const Table extends TableName, const Entries extends ColumnEntr
  * `configuration.ts` of the bot.
  */
 export const Columns = {
-	...columns('Guild', { language: ['language', 'value'], timezone: ['timezone', 'value'] }),
+	...columns('Guild', {
+		language: ['language', 'value'],
+		timezone: ['timezone', 'value'],
+		updatesChannel: ['updatesChannelId', 'snowflake']
+	}),
 	...columns('Modules', {
 		modulesAutomod: ['automod', 'value'],
 		modulesModeration: ['moderation', 'value'],

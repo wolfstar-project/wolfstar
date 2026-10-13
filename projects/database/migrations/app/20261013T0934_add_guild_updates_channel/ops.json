@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.Guild.updates_channel_id",
+		"label": "Add the updates channel of a guild",
+		"summary": "Adds column \"updates_channel_id\" to \"Guild\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Guild"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the nullable column, so the guilds that are there have no updates channel",
+				"sql": "ALTER TABLE \"public\".\"Guild\" ADD COLUMN IF NOT EXISTS \"updates_channel_id\" int8",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"updates_channel_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Guild' AND column_name = 'updates_channel_id') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

@@ -90,6 +90,7 @@ namespace public {
     id                BigInt             @id(map: "Guild_pkey")
     language          String             @default("en-US")
     timezone          String             @default("UTC")
+    updatesChannelId  BigInt?            @map("updates_channel_id")
     moderationActions ModerationAction[]
     stickyRoles       StickyRole[]
 
