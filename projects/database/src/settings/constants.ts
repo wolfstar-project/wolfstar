@@ -60,6 +60,7 @@ export function getDefaultGuildSettings() {
 		moderationTrackBans: false,
 		moderationTrackTimeouts: false,
 		moderationTrackRoles: false,
+		moderationTrackKicks: false,
 		permissionsUsers: [],
 		permissionsRoles: [],
 		reportsChannel: null,
