@@ -333,6 +333,15 @@ namespace public {
     @@id([caseId, guildId], map: "ModerationCaseData_pkey")
   }
 
+  model StickyNickname {
+    guildId  BigInt @map("guild_id")
+    userId   BigInt @map("user_id")
+    nickname String
+    guild    Guild  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "StickyNickname_guild_id_fkey", index: false)
+
+    @@id([guildId, userId], map: "StickyNickname_pkey")
+  }
+
   model StickyRole {
     userId  BigInt   @map("user_id")
     guildId BigInt   @map("guild_id")
