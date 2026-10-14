@@ -150,7 +150,8 @@ export const Columns = {
 	...columns('GuildModeration', {
 		moderationChannel: ['channelId', 'snowflake'],
 		moderationTrackBans: ['trackBans', 'value'],
-		moderationTrackTimeouts: ['trackTimeouts', 'value']
+		moderationTrackTimeouts: ['trackTimeouts', 'value'],
+		moderationTrackRoles: ['trackRoles', 'value']
 	}),
 	...columns('GuildPermissions', {
 		permissionsUsers: ['users', 'value'],
