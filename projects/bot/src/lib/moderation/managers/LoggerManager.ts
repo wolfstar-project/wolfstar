@@ -1,7 +1,15 @@
 import { writeSettings } from '#lib/database';
 import { type GuildSettingsOfType } from 'wolfstar-database';
 import { sendLogMessage } from '#lib/moderation/logs/send';
-import { PruneLoggerTypeManager, TimeoutLoggerTypeManager } from '#lib/moderation/managers/loggers';
+import {
+	BanLoggerTypeManager,
+	KickLoggerTypeManager,
+	NicknameLoggerTypeManager,
+	PruneLoggerTypeManager,
+	RoleUpdateLoggerTypeManager,
+	TimeoutLoggerTypeManager,
+	UnbanLoggerTypeManager
+} from '#lib/moderation/managers/loggers';
 import { toErrorCodeResult } from '#common';
 // Not the barrel: it loads `guild.ts`, which loads the managers, this file included.
 import { getCodeStyle, getLogPrefix } from '#utils/functions/pieces';
@@ -25,8 +33,13 @@ import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord
 export type GuildTextBasedChannel = Exclude<Extract<AnyChannel, { send: unknown }>, DMChannel | GroupDMChannel>;
 
 export class LoggerManager {
-	public readonly timeout = new TimeoutLoggerTypeManager(this);
+	public readonly ban = new BanLoggerTypeManager(this);
+	public readonly kick = new KickLoggerTypeManager(this);
+	public readonly nickname = new NicknameLoggerTypeManager(this);
 	public readonly prune = new PruneLoggerTypeManager(this);
+	public readonly roleUpdate = new RoleUpdateLoggerTypeManager(this);
+	public readonly timeout = new TimeoutLoggerTypeManager(this);
+	public readonly unban = new UnbanLoggerTypeManager(this);
 	public readonly guild: Guild;
 
 	public constructor(guild: Guild) {

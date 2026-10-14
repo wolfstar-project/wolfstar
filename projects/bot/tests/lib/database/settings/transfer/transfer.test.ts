@@ -133,6 +133,7 @@ describe('configuration file', () => {
 				'moderation.track-bans',
 				'moderation.track-timeouts',
 				'moderation.track-roles',
+				'moderation.track-kicks',
 				'reports.anonymous',
 				'reports.notify',
 				'roles.remove-initial'

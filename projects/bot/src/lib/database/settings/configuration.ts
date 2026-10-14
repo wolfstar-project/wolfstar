@@ -158,6 +158,11 @@ export function getConfiguration() {
 			name: 'moderation.track-roles',
 			description: 'settings:moderationTrackRoles'
 		},
+		moderationTrackKicks: {
+			type: 'boolean',
+			name: 'moderation.track-kicks',
+			description: 'settings:moderationTrackKicks'
+		},
 
 		// Permissions
 		permissionsUsers: {

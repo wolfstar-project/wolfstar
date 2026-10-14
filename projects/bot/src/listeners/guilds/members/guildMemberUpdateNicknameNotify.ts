@@ -2,8 +2,9 @@ import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
+import { getLogger } from '#utils/functions';
 import { getFullEmbedAuthor } from '#utils/util';
-import { EmbedBuilder } from '@discordjs/builders';
+import { EmbedBuilder, userMention } from '@discordjs/builders';
 import { isNullish } from '@sapphire/utilities';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
@@ -26,11 +27,22 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 			const user = next.user ?? (await next.fetchUser());
 			const guild = next.guild ?? (await next.fetchGuild());
 			const t = await fetchGuildT(guild);
+
+			// Who changed it, when the audit log has it and it was not the member themselves:
+			const logger = await getLogger(guild);
+			const context = await logger.nickname.wait(user.id).catch(() => null);
+			const moderator = context !== null && context.userId !== user.id ? userMention(context.userId) : null;
+
 			this.container.client.emit(Events.GuildMessageLog, guild, logChannelId, 'logsMemberNicknameUpdate', () =>
 				new EmbedBuilder()
 					.setColor(Colors.Yellow)
 					.setAuthor(getFullEmbedAuthor(user))
-					.setDescription(this.getNameDescription(t, prevNickname, nextNickname))
+					.setDescription(
+						[
+							this.getNameDescription(t, prevNickname, nextNickname),
+							...(moderator === null ? [] : [t('events/guilds-logs:changedBy', { moderator })])
+						].join('\n')
+					)
 					.setFooter({ text: t('events/guilds-members:nicknameUpdate') })
 					.setTimestamp()
 			);

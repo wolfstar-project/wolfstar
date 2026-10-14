@@ -2834,6 +2834,7 @@ declare module "i18next" {
         unexpectedErrorWithContext: "$t(events/errors:unexpectedError)\nYou may add `{{report}}` to the report so they can look what error was triggered.";
       };
       "events/guilds-logs": {
+        changedBy: "**Changed by**: {{moderator}}";
         channelCreate: "Channel Created";
         channelCreateParent: "• **Parent**: {{value}}";
         channelCreatePosition: "• **Position**: `{{value, number}}`";
@@ -3628,6 +3629,7 @@ declare module "i18next" {
         moderationTrackBans: "Whether I should record the bans made without using my commands.";
         moderationTrackTimeouts: "Whether I should record the timeouts made without using my commands.";
         moderationTrackRoles: "Whether I should record the muted and restriction roles given or taken away without using my commands. A muted role given by hand mutes the member as `/mute add` does: their other roles are taken away and kept, and they are given back when the role is taken away.";
+        moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
         channelsLogsVoiceChannel: "The channel for voice channel logs, if set, I send a message when a user joins, leaves, or moves to another voice channel.";
@@ -3687,6 +3689,7 @@ declare module "i18next" {
           moderationTrackBans: "Track Bans";
           moderationTrackTimeouts: "Track Timeouts";
           moderationTrackRoles: "Track Roles";
+          moderationTrackKicks: "Track Kicks";
           permissionsUsers: "User Permissions";
           permissionsRoles: "Role Permissions";
           reportsChannel: "Reports Channel";

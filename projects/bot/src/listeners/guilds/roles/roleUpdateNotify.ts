@@ -4,7 +4,7 @@ import { toPermissionsArray } from '#utils/bits';
 import { differenceBitField } from '#common/comparators';
 import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
-import { EmbedBuilder } from '@discordjs/builders';
+import { EmbedBuilder, userMention } from '@discordjs/builders';
 import { fetchT } from '@wolfstar/plugin-i18next';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
@@ -24,6 +24,10 @@ export class UserListener extends EventGatewayListener<'guildRoleUpdate'> {
 				const t = createTranslator(await fetchT(logger.guild));
 				const changes: string[] = [...this.differenceRole(t, previous, next)];
 				if (changes.length === 0) return null;
+
+				// Who changed it, when the audit log has it:
+				const context = await logger.roleUpdate.wait(next.id).catch(() => null);
+				if (context !== null) changes.push(t('events/guilds-logs:changedBy', { moderator: userMention(context.userId) }));
 
 				return new EmbedBuilder()
 					.setColor(Colors.Yellow)
