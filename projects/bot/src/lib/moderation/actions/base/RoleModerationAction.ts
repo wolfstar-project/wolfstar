@@ -231,6 +231,8 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		}
 
 		await (await getStickyRoles(guild)).add(entry.userId, role.id);
+		// The listener that sees the role come must not take it for one a moderator gave by hand:
+		await markOwnRoleChange(guild.id, entry.userId, role.id, 'add');
 
 		const reason = await this.getReason(guild, entry.reason);
 		const data = this.replace

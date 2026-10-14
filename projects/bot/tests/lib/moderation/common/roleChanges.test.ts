@@ -1,4 +1,11 @@
-import { getRemovedRoles, getUsersInCourse, markOwnRoleChange, takeOwnRoleChange, type CaseInCourse } from '#lib/moderation/common/roleChanges';
+import {
+	getAddedRoles,
+	getRemovedRoles,
+	getUsersInCourse,
+	markOwnRoleChange,
+	takeOwnRoleChange,
+	type CaseInCourse
+} from '#lib/moderation/common/roleChanges';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
 
@@ -18,6 +25,20 @@ describe('roleChanges', () => {
 
 		test('GIVEN a member whose roles were replaced THEN all the ones that went are returned', () => {
 			expect(getRemovedRoles(['1', '2'], ['3'])).toEqual(['1', '2']);
+		});
+	});
+
+	describe('getAddedRoles', () => {
+		test('GIVEN a member who gained a role THEN it is the one returned', () => {
+			expect(getAddedRoles(['1', '3'], ['1', '2', '3'])).toEqual(['2']);
+		});
+
+		test('GIVEN a member who only lost roles THEN nothing is returned', () => {
+			expect(getAddedRoles(['1', '2'], ['1'])).toEqual([]);
+		});
+
+		test('GIVEN a member whose roles were replaced THEN all the ones that came are returned', () => {
+			expect(getAddedRoles(['1', '2'], ['3', '4'])).toEqual(['3', '4']);
 		});
 	});
 
@@ -97,6 +118,14 @@ describe('roleChanges', () => {
 			await markOwnRoleChange(guildId, userId, '1');
 
 			await expect(takeOwnRoleChange(guildId, userId, roleId)).resolves.toBe(false);
+		});
+
+		test('GIVEN a role the bot is about to give THEN it is not taken for one the bot took', async () => {
+			await markOwnRoleChange(guildId, userId, roleId, 'add');
+
+			expect([...stored.keys()]).toEqual([`wolfstar:moderation:role-change:${guildId}:${userId}:${roleId}:add`]);
+			await expect(takeOwnRoleChange(guildId, userId, roleId)).resolves.toBe(false);
+			await expect(takeOwnRoleChange(guildId, userId, roleId, 'add')).resolves.toBe(true);
 		});
 
 		test('GIVEN no connection THEN nothing is remembered', async () => {

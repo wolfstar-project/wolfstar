@@ -153,6 +153,11 @@ export function getConfiguration() {
 			name: 'moderation.track-timeouts',
 			description: 'settings:moderationTrackTimeouts'
 		},
+		moderationTrackRoles: {
+			type: 'boolean',
+			name: 'moderation.track-roles',
+			description: 'settings:moderationTrackRoles'
+		},
 
 		// Permissions
 		permissionsUsers: {

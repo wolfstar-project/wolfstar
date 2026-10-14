@@ -7,33 +7,44 @@ import type { Snowflake } from 'discord-api-types/v10';
  */
 const OwnRoleChangeSeconds = 30;
 
-function getKey(guildId: Snowflake, userId: Snowflake, roleId: Snowflake) {
-	return `wolfstar:moderation:role-change:${guildId}:${userId}:${roleId}`;
+/**
+ * Whether the bot gave the role of a moderation action to a member, or took it from them.
+ */
+export type OwnRoleChange = 'add' | 'remove';
+
+function getKey(guildId: Snowflake, userId: Snowflake, roleId: Snowflake, change: OwnRoleChange) {
+	const key = `wolfstar:moderation:role-change:${guildId}:${userId}:${roleId}`;
+	return change === 'add' ? `${key}:add` : key;
 }
 
 /**
  * Remembers that the bot is about to take the role of a moderation action (the muted role, a restriction) from a member,
- * so the listener that sees the role go knows it was not taken by hand.
+ * or to give it to them, so the listener that sees the role go, or come, knows it was not done by hand.
  *
  * @remarks It is in Redis: the command that takes the role may run on another process than the one the gateway tells.
  * Without a connection (the tests) nothing is remembered.
  */
-export async function markOwnRoleChange(guildId: Snowflake, userId: Snowflake, roleId: Snowflake): Promise<void> {
+export async function markOwnRoleChange(guildId: Snowflake, userId: Snowflake, roleId: Snowflake, change: OwnRoleChange = 'remove'): Promise<void> {
 	const { redis } = container;
 	if (redis?.status !== 'ready') return;
 
-	await redis.set(getKey(guildId, userId, roleId), '1', 'EX', OwnRoleChangeSeconds);
+	await redis.set(getKey(guildId, userId, roleId, change), '1', 'EX', OwnRoleChangeSeconds);
 }
 
 /**
  * Whether the bot took the role of a moderation action from a member, see {@linkcode markOwnRoleChange}. It answers
  * once: the mark is taken.
  */
-export async function takeOwnRoleChange(guildId: Snowflake, userId: Snowflake, roleId: Snowflake): Promise<boolean> {
+export async function takeOwnRoleChange(
+	guildId: Snowflake,
+	userId: Snowflake,
+	roleId: Snowflake,
+	change: OwnRoleChange = 'remove'
+): Promise<boolean> {
 	const { redis } = container;
 	if (redis?.status !== 'ready') return false;
 
-	const mark = await redis.getdel(getKey(guildId, userId, roleId));
+	const mark = await redis.getdel(getKey(guildId, userId, roleId, change));
 	return mark !== null;
 }
 
@@ -46,6 +57,17 @@ export async function takeOwnRoleChange(guildId: Snowflake, userId: Snowflake, r
 export function getRemovedRoles(previous: readonly Snowflake[], next: readonly Snowflake[]): Snowflake[] {
 	const kept = new Set(next);
 	return previous.filter((id) => !kept.has(id));
+}
+
+/**
+ * The roles a member gained between two states of them.
+ *
+ * @param previous - The roles the member had.
+ * @param next - The roles the member has.
+ */
+export function getAddedRoles(previous: readonly Snowflake[], next: readonly Snowflake[]): Snowflake[] {
+	const had = new Set(previous);
+	return next.filter((id) => !had.has(id));
 }
 
 /**

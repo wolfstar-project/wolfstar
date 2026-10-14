@@ -132,6 +132,7 @@ describe('configuration file', () => {
 				'logs.webhooks',
 				'moderation.track-bans',
 				'moderation.track-timeouts',
+				'moderation.track-roles',
 				'reports.anonymous',
 				'reports.notify',
 				'roles.remove-initial'
