@@ -829,6 +829,8 @@ declare module "i18next" {
         stickyRolesAdd: "Successfully added the specified role as sticky to {{user}}.";
         stickyRolesShowEmpty: "There are no sticky roles to show.";
         stickyRolesShowSingle: "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.";
+        stickyNicknameEmpty: "**{{user}}** has no sticky nickname.";
+        stickyNicknameSingle: "Sticky nickname of **{{user}}**: {{nickname}}";
         createMuteExtended: {
           extendedHelp: "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role.";
         };
@@ -905,6 +907,7 @@ declare module "i18next" {
           examples: ["Administrator", "Moderator", ""];
         };
         stickyRolesDescription: "Manage sticky roles for users.";
+        stickyNicknameDescription: "Show the sticky nickname of a user.";
         stickyRolesExtended: {
           usages: ["add User Role", "remove User Role", "reset User", "show User", "User"];
           extendedHelp: "The stickyRoles command allows you to manage per-member's sticky roles, they are roles that are kept even when you leave, and are applied back as soon as they join.";
@@ -1242,6 +1245,7 @@ declare module "i18next" {
         permissionNodesName: "permission-nodes";
         manageReactionRolesName: "reaction-roles";
         stickyRolesName: "sticky-roles";
+        stickyNicknameName: "sticky-nickname";
         rolesName: "roles";
         permissionNodesSubcommandAddName: "add";
         permissionNodesSubcommandAddDescription: "Add a command to a permission node.";
@@ -2088,6 +2092,8 @@ declare module "i18next" {
         removeroleOptionsRoleDescription: "The role to remove from the user.";
         setNicknameOptionsNicknameName: "nickname";
         setNicknameOptionsNicknameDescription: "The new nickname, leave empty to remove it.";
+        setNicknameOptionsStickyName: "sticky";
+        setNicknameOptionsStickyDescription: "Whether the nickname is set again when the member joins the server back.";
         pruneAnyName: "any";
         pruneAnyDescription: "Delete the latest messages, up to 1000, or the ones that match several filters.";
         pruneAttachmentsName: "attachments";
@@ -3292,6 +3298,7 @@ declare module "i18next" {
         setNicknameNoReasonSet: "[Action] Set Nickname.";
         setNicknameRemoved: "[Action] Removed Nickname | Reason: {{reason}}";
         setNicknameSet: "[Action] Set Nickname | Reason: {{reason}}";
+        setNicknameStickyRestored: "[Action] Set the sticky nickname back.";
         setupMuteExists: '**Aborting creating muted**: There is already a role called "Muted".';
         setupRestrictionExists: "**Aborting restriction role creation**: There is already one that exists.";
         setupTooManyRoles: "**Aborting role creation**: There are 250 roles in this server, you need to delete one role.";

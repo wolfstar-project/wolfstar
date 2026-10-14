@@ -419,6 +419,7 @@ declare module '@wolfstar/http-framework' {
       message?: string;
       nickname?: string;
       reason?: string;
+      sticky?: boolean;
       user: TransformedArguments.User;
     };
     'settings server export': {};
@@ -436,6 +437,9 @@ declare module '@wolfstar/http-framework' {
       dm?: boolean;
       message?: string;
       reason?: string;
+      user: TransformedArguments.User;
+    };
+    'sticky-nickname': {
       user: TransformedArguments.User;
     };
     'sticky-roles add': {

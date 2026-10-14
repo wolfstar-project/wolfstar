@@ -10,12 +10,43 @@ import { isNullish, type Nullish } from '@sapphire/utilities';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { fetchStickyNickname } from 'wolfstar-database';
 
 @RegisterAsGatewayListener('guildMemberAdd')
 export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 	public async run(member: GuildMember) {
+		void this.#handleStickyNickname(member);
 		if (await this.#handleStickyRoles(member)) return;
 		this.container.client.emit(Events.NotMutedMemberAdd, member);
+	}
+
+	async #handleStickyNickname(member: GuildMember) {
+		try {
+			const userId = member.user?.id ?? (await member.fetchUser()).id;
+			const nickname = await fetchStickyNickname(this.container.prisma, member.guildId, userId);
+			if (isNullish(nickname)) return;
+
+			const me = await this.container.gatewayClient.members.fetchMe(member.guildId);
+			await me.roles.fetch();
+			if (!(await me.permissions).has(PermissionFlagsBits.ManageNicknames)) return;
+
+			const t = await fetchGuildT({ id: member.guildId });
+			const result = await toErrorCodeResult(
+				this.container.gatewayClient.api.guilds.editMember(
+					member.guildId,
+					userId,
+					{ nick: nickname },
+					{ reason: t('moderationActions:setNicknameStickyRestored') }
+				)
+			);
+			// The member left the guild before we could set it back, ignore:
+			await result.inspectErrAsync((code) => {
+				if (code === RESTJSONErrorCodes.UnknownMember) return;
+				this.container.logger.error(`${getLogPrefix(this)} Failed to set the sticky nickname of a member (${code}).`);
+			});
+		} catch (error) {
+			this.container.logger.error(`${getLogPrefix(this)} Failed to set the sticky nickname of a member.`, error);
+		}
 	}
 
 	async #handleStickyRoles(member: GuildMember) {

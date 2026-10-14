@@ -558,6 +558,8 @@
 	"removeroleOptionsRoleDescription": "The role to remove from the user.",
 	"setNicknameOptionsNicknameName": "nickname",
 	"setNicknameOptionsNicknameDescription": "The new nickname, leave empty to remove it.",
+	"setNicknameOptionsStickyName": "sticky",
+	"setNicknameOptionsStickyDescription": "Whether the nickname is set again when the member joins the server back.",
 	"pruneAnyName": "any",
 	"pruneAnyDescription": "Delete the latest messages, up to 1000, or the ones that match several filters.",
 	"pruneAttachmentsName": "attachments",
