@@ -8,6 +8,7 @@ import { createTranslator, type Translator } from '#lib/structures/commands/util
 import {
 	RootModuleValue,
 	SettingsModalInputId,
+	getTimeZoneInputId,
 	createSettingsMenuContext,
 	decodeSettingsMenuId,
 	getSettingKind,
@@ -26,7 +27,8 @@ import {
 	resolveSettingGroup,
 	type SettingsMenuAction
 } from '#lib/structures/settings-menu';
-import { getModalValue } from '#utils/interactions';
+import { getModalValue, getModalValues } from '#utils/interactions';
+import { TimeZoneGroups, type TimeZoneGroup } from '#utils/timezones';
 import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { MessagePrompter, getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -151,6 +153,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				return interaction.update(renderSettingsEditor(context, key, action.page));
 			case 'number':
 			case 'text':
+			case 'timezone':
 				return interaction.showModal(renderSettingsModal(context, key, action.page));
 			default:
 				return interaction.update(renderSettingsGroup(context, key.parent ?? getConfigurableGroups(), action.page));
@@ -159,7 +162,21 @@ export class UserInteractionHandler extends InteractionHandler {
 
 	private async submit(interaction: ModalInteraction, guildId: Snowflake, action: SettingsMenuAction, key: SchemaKey) {
 		const context = await createSettingsMenuContext(interaction, guildId, action.ownerId);
-		const input = getModalValue(interaction.data.components, SettingsModalInputId) ?? '';
+		let input: string;
+		if (getSettingKind(key) === 'timezone') {
+			// A select menu for each group of zones, of which the user picks one:
+			const picked = (Object.keys(TimeZoneGroups) as TimeZoneGroup[]).flatMap((group) =>
+				getModalValues(interaction.data.components, getTimeZoneInputId(group))
+			);
+			// Nothing was chosen, the zone stays as it is:
+			if (picked.length === 0) return interaction.update(renderSettingsGroup(context, this.getGroup(key), action.page));
+			if (picked.length > 1)
+				return interaction.reply({ content: context.t('commands/conf:menuTimezoneMultiple'), flags: MessageFlags.Ephemeral });
+			input = picked[0];
+		} else {
+			input = getModalValue(interaction.data.components, SettingsModalInputId) ?? '';
+		}
+
 		const parsed = await parseSettingInput(this.getSerializerContext(context, key), input);
 		if (!parsed.ok) return interaction.reply({ content: parsed.error, flags: MessageFlags.Ephemeral });
 

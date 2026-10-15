@@ -305,6 +305,39 @@ describe('settings menu', () => {
 		});
 	});
 
+	describe('time zone', () => {
+		test('GIVEN the time zone key THEN it is picked, not written', () => {
+			expect(getSettingKind(getConfigurableKeys().get('timezone')!)).toBe('timezone');
+		});
+
+		test('GIVEN its modal THEN each group of zones is a select menu with nothing selected, and the current zone is told', () => {
+			const context = createContext({ timezone: 'Europe/Rome' });
+			const modal = renderSettingsModal(context, getConfigurableKeys().get('timezone')!, 0);
+			const labels = modal.components as unknown as {
+				label: string;
+				description?: string;
+				component: { custom_id: string; options: { value: string; default?: boolean }[]; required: boolean };
+			}[];
+
+			expect(labels).toHaveLength(5);
+			expect(labels.map((entry) => entry.component.custom_id)).toEqual([
+				'timezone.americas',
+				'timezone.europe',
+				'timezone.africa',
+				'timezone.asia',
+				'timezone.pacific'
+			]);
+			for (const entry of labels) {
+				expect(entry.component.required).toBe(false);
+				expect(entry.component.options.length).toBeLessThanOrEqual(25);
+				expect(entry.component.options.some((option) => option.default)).toBe(false);
+			}
+
+			expect(labels[0].description).toContain('Europe/Rome');
+			expect(modal.title.length).toBeLessThanOrEqual(45);
+		});
+	});
+
 	describe('values', () => {
 		test('GIVEN the keys the menu shows THEN each has an editor', () => {
 			const readonly = getVisibleKeys(getConfigurableGroups(), true).filter((key) => getSettingKind(key) === 'readonly');

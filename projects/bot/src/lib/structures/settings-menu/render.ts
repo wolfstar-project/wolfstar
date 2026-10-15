@@ -23,7 +23,8 @@ import {
 	MaximumSelectValues
 } from '#lib/structures/settings-menu/values';
 import { chatInputApplicationCommandMention, inlineCode, time, TimestampStyles } from '@discordjs/formatters';
-import { isNullish } from '@sapphire/utilities';
+import { isNullish, toTitleCase } from '@sapphire/utilities';
+import { getTimeZoneChoices, getTimeZoneOffset, TimeZoneGroups, type TimeZoneGroup } from '#utils/timezones';
 import { container } from '@wolfstar/http-framework';
 import {
 	ButtonStyle,
@@ -236,6 +237,8 @@ export function renderSettingsEditor(context: SettingsMenuContext, key: SchemaKe
  * @param page - The page of the group to go back to.
  */
 export function renderSettingsModal(context: SettingsMenuContext, key: SchemaKey, page: number): APIModalInteractionResponseCallbackData {
+	if (getSettingKind(key) === 'timezone') return renderTimeZoneModal(context, key, page);
+
 	const { t } = context;
 	const value = context.settings[key.property] as unknown;
 	// A duration is stored in milliseconds, but written as `1h30m`, so it is not written back:
@@ -275,6 +278,54 @@ export function renderSettingsModal(context: SettingsMenuContext, key: SchemaKey
  * The custom ID of the text input of {@linkcode renderSettingsModal}.
  */
 export const SettingsModalInputId = 'value';
+
+/**
+ * The custom ID of the select menu of a group of time zones in the modal of a `timezone` key.
+ */
+export function getTimeZoneInputId(group: TimeZoneGroup) {
+	return `timezone.${group}`;
+}
+
+/**
+ * Renders the modal of a time zone: a select menu for each group of zones, since one holds 25 values at most. Nothing is
+ * selected, so what was picked is what the user chose, and the zone the server has is told in the first label.
+ *
+ * @param context - The context of the menu.
+ * @param key - The key to edit.
+ * @param page - The page of the group to go back to.
+ */
+function renderTimeZoneModal(context: SettingsMenuContext, key: SchemaKey, page: number): APIModalInteractionResponseCallbackData {
+	const { t } = context;
+	const current = context.settings[key.property] as unknown;
+	const groups = Object.keys(TimeZoneGroups) as TimeZoneGroup[];
+
+	return {
+		custom_id: encodeSettingsMenuId({ ownerId: context.ownerId, verb: 'submit', target: key.property, page }),
+		title: truncate(getSettingKeyTitle(t, key), 45),
+		components: groups.map((group, index) => ({
+			type: ComponentType.Label as const,
+			label: truncate(t(`commands/conf:menuTimezoneGroup${toTitleCase(group)}` as TranslationKey), 45),
+			// The zone the server has, which may be one of none of the lists:
+			description:
+				index === 0 && typeof current === 'string' && current !== ''
+					? truncate(t('commands/conf:menuTimezoneCurrent', { zone: current, offset: getTimeZoneOffset(current) }), 100)
+					: undefined,
+			component: {
+				type: ComponentType.StringSelect as const,
+				custom_id: getTimeZoneInputId(group),
+				required: false,
+				min_values: 0,
+				max_values: 1,
+				placeholder: truncate(t('commands/conf:menuTimezonePlaceholder'), 100),
+				options: getTimeZoneChoices(group).map((choice) => ({
+					label: truncate(choice.label, 100),
+					value: choice.value,
+					description: getTimeZoneOffset(choice.value)
+				}))
+			}
+		})) as APIModalInteractionResponseCallbackData['components']
+	};
+}
 
 function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshId: string): APIContainerComponent {
 	const { t } = context;

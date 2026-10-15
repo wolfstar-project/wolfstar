@@ -600,6 +600,14 @@ declare module "i18next" {
         menuSelectLanguage: "Select a language";
         menuModalLabel: "New value, leave empty to reset";
         menuModalLabelList: "One value per line, leave empty to reset";
+        menuTimezoneGroupAmericas: "Americas";
+        menuTimezoneGroupEurope: "Europe";
+        menuTimezoneGroupAfrica: "Africa and Middle East";
+        menuTimezoneGroupAsia: "Asia";
+        menuTimezoneGroupPacific: "Pacific, Australia and others";
+        menuTimezoneCurrent: "Now: {{zone}} ({{offset}}). Pick one zone, or none to keep it.";
+        menuTimezonePlaceholder: "Select a time zone";
+        menuTimezoneMultiple: "Pick only one time zone.";
         menuResetKey: "Reset to default";
         menuResetTitle: "Reset Configurations";
         menuResetDescription: "Resets the settings of this module to their defaults.";

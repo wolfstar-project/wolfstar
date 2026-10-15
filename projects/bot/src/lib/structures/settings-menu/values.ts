@@ -14,10 +14,11 @@ import { ChannelType } from 'discord-api-types/v10';
  *
  * - `boolean`: toggled with its button.
  * - `role`, `channel`, `language` and `choice`: picked from a select menu.
+ * - `timezone`: picked from the select menus of a modal, one for each group of zones.
  * - `number` and `text`: written in a modal, one value per line for the keys that hold a list.
  * - `readonly`: displayed only, the menu has no editor for its type.
  */
-export type SettingKind = 'boolean' | 'role' | 'channel' | 'language' | 'choice' | 'number' | 'text' | 'readonly';
+export type SettingKind = 'boolean' | 'role' | 'channel' | 'language' | 'choice' | 'timezone' | 'number' | 'text' | 'readonly';
 
 export function getSettingKind(key: SchemaKey): SettingKind {
 	switch (key.type) {
@@ -35,6 +36,8 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 			return 'language';
 		case 'messageUpdateStyle':
 			return 'choice';
+		case 'timezone':
+			return 'timezone';
 		case 'integer':
 		case 'number':
 		case 'float':
