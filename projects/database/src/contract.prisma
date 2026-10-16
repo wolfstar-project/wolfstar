@@ -28,6 +28,7 @@ types {
   AuditEventChanges     = typed.Json("PrismaJson.AuditEventChanges")
   AutoModerationRuleOptions = typed.Json("PrismaJson.AutoModerationRuleOptions")
   AutoModerationRuleEscalation = typed.Json("PrismaJson.AutoModerationRuleEscalation")
+  MessageHistoryMessages = typed.Json("PrismaJson.MessageHistoryMessages")
 }
 
 namespace public {
@@ -294,6 +295,20 @@ namespace public {
     guild     Guild   @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoleMessage_guild_id_fkey", index: false)
 
     @@unique([guildId, roleId], map: "GuildRoleMessage_guild_id_role_id_key")
+  }
+
+  model MessageHistory {
+    id          BigInt                 @id(map: "MessageHistory_pkey") @default(autoincrement())
+    guildId     BigInt                 @map("guild_id")
+    userId      BigInt                 @map("user_id")
+    moderatorId BigInt                 @map("moderator_id")
+    caseId      Int?                   @map("case_id")
+    createdAt   TimestampString(3)     @map("created_at")
+    expiresAt   TimestampString(3)     @map("expires_at")
+    messages    MessageHistoryMessages @default(sql`'[]'::jsonb`)
+    guild       Guild                  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "MessageHistory_guild_id_fkey", index: false)
+
+    @@index([guildId], map: "MessageHistory_guild_id_idx")
   }
 
   model GuildPermissions {
