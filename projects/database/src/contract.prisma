@@ -245,6 +245,18 @@ namespace public {
     @@unique([guildId, alias], map: "GuildModerationReason_guild_id_alias_key")
   }
 
+  model GuildWarnThreshold {
+    id       BigInt                                 @id(map: "GuildWarnThreshold_pkey") @default(autoincrement())
+    guildId  BigInt                                 @map("guild_id")
+    count    Int
+    period   Int                                    @default(0)
+    action   pg.enum(GuildAutoModerationHardAction)
+    duration Int?
+    guild    Guild                                  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildWarnThreshold_guild_id_fkey", index: false)
+
+    @@unique([guildId, count], map: "GuildWarnThreshold_guild_id_count_key")
+  }
+
   model GuildPermissions {
     id      BigInt  @id(map: "GuildPermissions_pkey")
     users   PermissionNodeEntries @default(sql`'[]'::jsonb`)

@@ -27,6 +27,7 @@ export * from './settings/cleanup/storage.js';
 export * from './settings/cleanup/types.js';
 export * from './settings/nicknames/storage.js';
 export * from './settings/reasons/storage.js';
+export * from './settings/warnings/storage.js';
 export * from './settings/columns.js';
 export * from './settings/constants.js';
 export * from './settings/honeypot/storage.js';
