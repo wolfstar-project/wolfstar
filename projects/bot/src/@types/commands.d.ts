@@ -412,6 +412,21 @@ declare module '@wolfstar/http-framework' {
       role: TransformedArguments.Role;
       user: TransformedArguments.User;
     };
+    'role-rules add': {
+      'any-of'?: TransformedArguments.Role;
+      'any-of-2'?: TransformedArguments.Role;
+      'any-of-3'?: TransformedArguments.Role;
+      requires?: TransformedArguments.Role;
+      'requires-2'?: TransformedArguments.Role;
+      'requires-3'?: TransformedArguments.Role;
+      role: TransformedArguments.Role;
+      without?: TransformedArguments.Role;
+      'without-2'?: TransformedArguments.Role;
+    };
+    'role-rules list': {};
+    'role-rules remove': {
+      role: TransformedArguments.Role;
+    };
     'roles browse': {};
     'roles claim': {
       role: TransformedArguments.Role;

@@ -32,6 +32,11 @@ export interface ShardMessages {
 	 * The thresholds of warnings of a guild were changed by a shard, the others drop their cached copy.
 	 */
 	warnThresholdsUpdate: { guildId: string };
+
+	/**
+	 * The role rules of a guild were changed by a shard, the others drop their cached copy.
+	 */
+	roleRulesUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

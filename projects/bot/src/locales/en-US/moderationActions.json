@@ -32,6 +32,7 @@
 	"recentCaseWrongUser": "Only the moderator who ran the command can answer this.",
 	"warnThresholdReason_one": "[Warnings] Reached {{count}} warning.",
 	"warnThresholdReason_other": "[Warnings] Reached {{count}} warnings.",
+	"roleRuleReason": "[Role rules] The member meets, or no longer meets, the rule of the role.",
 	"voiceMuteRestored": "The voice mute of this member is still in course, so it was applied again when they came back to a voice channel.",
 	"revokeReason": "[Action] Revoked {{action}} | Reason: {{reason}}",
 	"setNicknameNoReasonRemoved": "[Action] Removed Nickname.",
