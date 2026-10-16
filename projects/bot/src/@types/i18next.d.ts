@@ -1442,6 +1442,8 @@ declare module "i18next" {
         moderationFailed_one: "{{REDCROSS}} Failed to moderate user:\n{{users}}";
         moderationFailed_other: "{{REDCROSS}} Failed to moderate users:\n{{users}}";
         moderationDmFooter: "To disable moderation DMs, write `toggleModerationDM`.";
+        moderationDmAppealTitle: "Appeal";
+        moderationDmAppeal: "You can ask the moderators to undo this on {{url}}.";
         moderationDmDescription: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified";
         moderationDmDescriptionWithReason: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: {{reason}}";
         moderationDmDescriptionWithDuration: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Duration**: {{duration, duration}}\n**❯ Reason**: None specified";
@@ -3480,6 +3482,23 @@ declare module "i18next" {
         actionTargetWolf: "I... I cannot do that to myself! You broke my heart. 💔";
         actionTargetHigherHierarchyWolf: "This action cannot be performed on a member with a role position that is higher than or equal to mine.";
         actionTargetHigherHierarchyAuthor: "This action cannot be performed on a member with a role position that is higher than or equal to yours.";
+        appealDefaultQuestion: "Why should this case be undone?";
+        appealTitle: "Appeal of the case #{{case}} ({{type}})";
+        appealUser: "**User**: {{user}}";
+        appealCaseReason: "**Reason of the case**: {{reason}}";
+        appealDate: "**Sent**: {{time}}";
+        appealAccept: "Accept";
+        appealDeny: "Deny";
+        appealReasonLabel: "Reason, sent to the member";
+        appealAccepted: "Accepted: {{reason}}";
+        appealDenied: "Denied: {{reason}}";
+        appealReviewer: "Decided by";
+        appealUndoReason: "Appeal of the case #{{case}} accepted: {{reason}}";
+        appealDmAccepted: "Your appeal of the case #{{case}} in **{{guild}}** was accepted: {{reason}}";
+        appealDmDenied: "Your appeal of the case #{{case}} in **{{guild}}** was denied: {{reason}}";
+        appealCaseGone: "The case of this appeal is gone.";
+        appealAlreadyDecided: "This appeal was already decided.";
+        appealUndoFailed: "I could not undo the case, the appeal is still pending. Check my permissions and try again.";
       };
       moderationActions: {
         actions: {
@@ -3791,6 +3810,12 @@ declare module "i18next" {
         channelsLogsReactionEmojiIncludeTwemoji: "Whether the reaction logs should include the default (Twemoji) emojis.";
         channelsLogsRoleCreate: "The channel for role creation logs, if set, I send a message when a new role is craeted.";
         channelsLogsInvites: "The channel for invite logs, if set, I send a message when an invite is created or deleted.";
+        appealsEnabled: "Whether the members can appeal their bans, mutes and timeouts on the website. The direct message of the punishment links to the appeal page.";
+        appealsChannel: "The channel I send the appeals to, where the moderators accept or deny them.";
+        appealsBans: "Whether the bans can be appealed.";
+        appealsMutes: "Whether the mutes can be appealed.";
+        appealsTimeouts: "Whether the timeouts can be appealed.";
+        appealsQuestions: "The questions of the appeal form, one per line, five at most. Without any, the form asks why the case should be undone.";
         greetingsJoinChannel: "The channel I greet the members who join in.";
         greetingsJoinMessages: "The messages I greet a member who joins with, one picked at random. Write %user% to mention them, %username% for their name, %server% and %memberCount% for the server, and \\n for a new line.";
         greetingsJoinDirect: "Whether I greet a member who joins in a direct message instead of the join channel.";
@@ -3906,6 +3931,12 @@ declare module "i18next" {
           logsImage: "Image Logs";
           logsRoleCreate: "Role Create Logs";
           logsInvites: "Invite Logs";
+          appealsEnabled: "Appeals";
+          appealsChannel: "Appeals Channel";
+          appealsBans: "Appeal Bans";
+          appealsMutes: "Appeal Mutes";
+          appealsTimeouts: "Appeal Timeouts";
+          appealsQuestions: "Appeal Questions";
           greetingsJoinChannel: "Join Channel";
           greetingsJoinMessages: "Join Messages";
           greetingsJoinDirect: "Join Message in DM";

@@ -1,3 +1,4 @@
+import { getAppealUrl, shouldLinkAppeal } from '#lib/moderation/appeals';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { fetchGuildT, getTitle, getTranslationKey } from '#lib/moderation/common';
 import type { TranslationMappings } from '#lib/moderation/common/constants';
@@ -383,6 +384,13 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 			.setFooter({ text: t('commands/moderation:moderationDmFooter') });
 
 		if (data.moderator) embed.setAuthor(getFullEmbedAuthor(data.moderator));
+		// The case can be appealed on the website, when the guild takes appeals for its type:
+		if (await shouldLinkAppeal(guild.id, entry.type, entry.isUndo())) {
+			embed.addFields({
+				name: t('commands/moderation:moderationDmAppealTitle'),
+				value: t('commands/moderation:moderationDmAppeal', { url: getAppealUrl(guild.id) })
+			});
+		}
 		return embed;
 	}
 

@@ -60,6 +60,8 @@
 	"moderationFailed_one": "{{REDCROSS}} Failed to moderate user:\n{{users}}",
 	"moderationFailed_other": "{{REDCROSS}} Failed to moderate users:\n{{users}}",
 	"moderationDmFooter": "To disable moderation DMs, write `toggleModerationDM`.",
+	"moderationDmAppealTitle": "Appeal",
+	"moderationDmAppeal": "You can ask the moderators to undo this on {{url}}.",
 	"moderationDmDescription": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified",
 	"moderationDmDescriptionWithReason": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: {{reason}}",
 	"moderationDmDescriptionWithDuration": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Duration**: {{duration, duration}}\n**❯ Reason**: None specified",

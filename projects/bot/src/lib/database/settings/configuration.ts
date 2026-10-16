@@ -83,6 +83,14 @@ export function getConfiguration() {
 		honeypotRandomName: { type: 'boolean', name: 'honeypot.random-name', description: 'settings:honeypotRandomName' },
 		honeypotKeepActive: { type: 'boolean', name: 'honeypot.keep-active', description: 'settings:honeypotKeepActive' },
 
+		// Appeals
+		appealsEnabled: { type: 'boolean', name: 'appeals.enabled', description: 'settings:appealsEnabled' },
+		appealsChannel: { type: 'guildTextChannel', name: 'appeals.channel', description: 'settings:appealsChannel' },
+		appealsBans: { type: 'boolean', name: 'appeals.bans', description: 'settings:appealsBans', default: true },
+		appealsMutes: { type: 'boolean', name: 'appeals.mutes', description: 'settings:appealsMutes', default: true },
+		appealsTimeouts: { type: 'boolean', name: 'appeals.timeouts', description: 'settings:appealsTimeouts', default: true },
+		appealsQuestions: { type: 'string', name: 'appeals.questions', description: 'settings:appealsQuestions', array: true },
+
 		// Greetings
 		greetingsJoinChannel: { type: 'guildTextChannel', name: 'greetings.join-channel', description: 'settings:greetingsJoinChannel' },
 		greetingsJoinMessages: { type: 'string', name: 'greetings.join-messages', description: 'settings:greetingsJoinMessages', array: true },

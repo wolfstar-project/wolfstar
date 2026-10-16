@@ -60,6 +60,7 @@ const AccentColor = 0x5865f2;
  */
 const ModuleEmojis: Record<string, EmojiKey> = {
 	'': 'ModuleGeneral',
+	appeals: 'ModuleAppeals',
 	modules: 'ModuleModules',
 	automod: 'ModuleAutomod',
 	commands: 'ModuleCommands',
