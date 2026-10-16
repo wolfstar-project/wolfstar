@@ -110,6 +110,32 @@ namespace public {
     @@control(external)
   }
 
+  model GuildAppeals {
+    id        BigInt   @id(map: "GuildAppeals_pkey")
+    enabled   Boolean  @default(false)
+    channelId BigInt?  @map("channel_id")
+    bans      Boolean  @default(true)
+    mutes     Boolean  @default(true)
+    timeouts  Boolean  @default(true)
+    questions String[] @default([]) @noCheck(elementNotNull)
+    modules   Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAppeals_id_fkey")
+  }
+
+  model Appeal {
+    id         BigInt             @id(map: "Appeal_pkey") @default(autoincrement())
+    guildId    BigInt             @map("guild_id")
+    caseId     Int                @map("case_id")
+    userId     BigInt             @map("user_id")
+    answers    String[]           @default([]) @noCheck(elementNotNull)
+    status     String             @default("pending")
+    reviewerId BigInt?            @map("reviewer_id")
+    reason     String?
+    createdAt  TimestampString(3) @map("created_at")
+    guild      Guild              @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "Appeal_guild_id_fkey", index: false)
+
+    @@unique([guildId, caseId], map: "Appeal_guild_id_case_id_key")
+  }
+
   model GuildAutoModeration {
     id          BigInt  @id(map: "GuildAutoModeration_pkey")
     channelId   BigInt? @map("channel_id")

@@ -9,6 +9,7 @@ import type { Snowflake } from 'discord-api-types/v10';
 export const Tables = [
 	'Guild',
 	'Modules',
+	'GuildAppeals',
 	'GuildAutoModeration',
 	'GuildCommands',
 	'GuildGreetings',
@@ -160,6 +161,14 @@ export const Columns = {
 		moderationTrackRoles: ['trackRoles', 'value'],
 		moderationTrackKicks: ['trackKicks', 'value'],
 		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value']
+	}),
+	...columns('GuildAppeals', {
+		appealsEnabled: ['enabled', 'value'],
+		appealsChannel: ['channelId', 'snowflake'],
+		appealsBans: ['bans', 'value'],
+		appealsMutes: ['mutes', 'value'],
+		appealsTimeouts: ['timeouts', 'value'],
+		appealsQuestions: ['questions', 'value']
 	}),
 	...columns('GuildGreetings', {
 		greetingsJoinChannel: ['joinChannelId', 'snowflake'],
