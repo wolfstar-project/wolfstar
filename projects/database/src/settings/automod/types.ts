@@ -21,6 +21,7 @@ export const AutoModerationRuleTypes = [
 	'Newlines',
 	'NoMentionSpam',
 	'Phishing',
+	'Polls',
 	'Spoilers',
 	'Stickers',
 	'StickersCooldown',
@@ -91,6 +92,8 @@ export interface AutoModerationRuleOptionsMap {
 	MaskedLinks: Record<string, never>;
 	/** More than `maximum` stickers of a member within `timePeriod` seconds. */
 	StickersCooldown: { maximum: number; timePeriod: number };
+	/** Every message with a native poll of Discord infringes the rule. */
+	Polls: Record<string, never>;
 }
 
 export type AutoModerationRuleOptions = AutoModerationRuleOptionsMap[AutoModerationRuleType];
@@ -209,7 +212,8 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		MentionsCooldown: { maximum: 5, timePeriod: 30 },
 		Spoilers: {},
 		MaskedLinks: {},
-		StickersCooldown: { maximum: 3, timePeriod: 60 }
+		StickersCooldown: { maximum: 3, timePeriod: 60 },
+		Polls: {}
 	};
 	return structuredClone(defaults[type]);
 }
