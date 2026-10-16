@@ -1,3 +1,4 @@
+import { fetchModerationMember } from '#lib/moderation/common/members';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import { resolveOnErrorCodes } from '#common';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -16,7 +17,7 @@ export class ModerationActionRoleAdd extends ModerationAction<Pick<Role, 'id'>, 
 	}
 
 	public override async isActive(guild: Guild, userId: string, context: Pick<Role, 'id'>) {
-		const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+		const member = await resolveOnErrorCodes(fetchModerationMember(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 		return !isNullish(member) && member.roleIds.includes(context.id);
 	}
 

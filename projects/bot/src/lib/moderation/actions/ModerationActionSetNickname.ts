@@ -1,3 +1,4 @@
+import { fetchModerationMember } from '#lib/moderation/common/members';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import { resolveOnErrorCodes } from '#common';
@@ -17,7 +18,7 @@ export class ModerationActionSetNickname extends ModerationAction<string | null,
 	}
 
 	public override async isActive(guild: Guild, userId: string, context: string | null) {
-		const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+		const member = await resolveOnErrorCodes(fetchModerationMember(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 		return !isNullish(member) && member.nickname === context;
 	}
 
@@ -41,7 +42,7 @@ export class ModerationActionSetNickname extends ModerationAction<string | null,
 
 	protected override async resolveOptionsExtraData(guild: Guild, options: ModerationAction.PartialOptions) {
 		const userId = typeof options.user === 'string' ? options.user : options.user.id;
-		const member = await container.gatewayClient.members.fetch(guild.id, userId);
+		const member = await fetchModerationMember(guild.id, userId);
 		return { oldName: member.nickname };
 	}
 }

@@ -1,5 +1,6 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import { container } from '@wolfstar/http-framework';
+import { fetchModerationMember } from '#lib/moderation/common/members';
 import type { Guild, GuildMember } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
 
@@ -40,7 +41,7 @@ export async function checkTargetCanBeModerated(options: CheckTargetCanBeModerat
 	}
 
 	const { members } = container.gatewayClient;
-	const member = await members.fetch(guild.id, targetId).catch(() => {
+	const member = await fetchModerationMember(guild.id, targetId).catch(() => {
 		if (options.requiredMember) throw t('errors:userNotInGuild');
 		return null;
 	});
@@ -56,7 +57,7 @@ export async function checkTargetCanBeModerated(options: CheckTargetCanBeModerat
 
 		// A member who isn't a server owner is not allowed to moderate somebody with higher role than them:
 		if (moderatorId !== guild.ownerId) {
-			const author = await members.fetch(guild.id, moderatorId);
+			const author = await fetchModerationMember(guild.id, moderatorId);
 			if (targetHighestRolePosition >= (await getHighestRolePosition(author))) {
 				throw t('moderation:actionTargetHigherHierarchyAuthor');
 			}

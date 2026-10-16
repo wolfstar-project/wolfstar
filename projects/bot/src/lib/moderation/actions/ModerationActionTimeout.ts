@@ -1,3 +1,4 @@
+import { fetchModerationMember } from '#lib/moderation/common/members';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import { days, resolveOnErrorCodes } from '#common';
 import { getLogger } from '#utils/functions';
@@ -20,7 +21,7 @@ export class ModerationActionTimeout extends ModerationAction<never, TypeVariati
 	}
 
 	public override async isActive(guild: Guild, userId: Snowflake) {
-		const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+		const member = await resolveOnErrorCodes(fetchModerationMember(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 		return !isNullish(member) && member.isCommunicationDisabled();
 	}
 

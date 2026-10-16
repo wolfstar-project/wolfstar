@@ -1,3 +1,4 @@
+import { fetchModerationMember } from '#lib/moderation/common/members';
 import { readSettings, writeSettings, writeSettingsTransaction } from '#lib/database';
 import { getUsersInCourse, markOwnRoleChange } from '#lib/moderation/common/roleChanges';
 import { fetchGuildT } from '#lib/moderation/common/util';
@@ -87,7 +88,7 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 		const roleId = settings[this.roleKey];
 		if (isNullish(roleId)) return false;
 
-		const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+		const member = await resolveOnErrorCodes(fetchModerationMember(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 		return !isNullish(member) && member.roleIds.includes(roleId);
 	}
 
@@ -168,7 +169,7 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 
 		let members = 0;
 		for (const userId of userIds) {
-			const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+			const member = await resolveOnErrorCodes(fetchModerationMember(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 			if (isNullish(member)) continue;
 
 			if (!member.roleIds.includes(role.id)) await member.roles.add(role.id, reason);
@@ -425,7 +426,7 @@ export abstract class RoleModerationAction<ContextType = never, Type extends Typ
 	 */
 	async #fetchMember(guild: Guild, entry: ModerationAction.Entry<Type>) {
 		try {
-			return await container.gatewayClient.members.fetch(guild.id, entry.userId);
+			return await fetchModerationMember(guild.id, entry.userId);
 		} catch (error) {
 			this.#handleFetchMemberError(error as Error);
 		}

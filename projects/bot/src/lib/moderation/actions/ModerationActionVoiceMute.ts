@@ -1,3 +1,4 @@
+import { fetchModerationMember } from '#lib/moderation/common/members';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import { forgetNotVoiceMuted } from '#lib/moderation/common/voiceMutes';
 import { resolveOnErrorCodes } from '#common';
@@ -16,7 +17,7 @@ export class ModerationActionVoiceMute extends ModerationAction<never, TypeVaria
 	}
 
 	public override async isActive(guild: Guild, userId: Snowflake) {
-		const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+		const member = await resolveOnErrorCodes(fetchModerationMember(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 		if (member === null) return false;
 
 		// The voice state is `null` when the member is not connected (or not cached), use the server-wide mute flag
