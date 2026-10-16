@@ -257,6 +257,18 @@ namespace public {
     @@unique([guildId, count], map: "GuildWarnThreshold_guild_id_count_key")
   }
 
+  model GuildRoleRule {
+    id             BigInt   @id(map: "GuildRoleRule_pkey") @default(autoincrement())
+    guildId        BigInt   @map("guild_id")
+    roleId         BigInt   @map("role_id")
+    requiredRoles  BigInt[] @default([]) @noCheck(elementNotNull) @map("required_roles")
+    anyRoles       BigInt[] @default([]) @noCheck(elementNotNull) @map("any_roles")
+    forbiddenRoles BigInt[] @default([]) @noCheck(elementNotNull) @map("forbidden_roles")
+    guild          Guild    @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoleRule_guild_id_fkey", index: false)
+
+    @@unique([guildId, roleId], map: "GuildRoleRule_guild_id_role_id_key")
+  }
+
   model GuildPermissions {
     id      BigInt  @id(map: "GuildPermissions_pkey")
     users   PermissionNodeEntries @default(sql`'[]'::jsonb`)
