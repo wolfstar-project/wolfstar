@@ -25,6 +25,7 @@ export * from './settings/cases/storage.js';
 export * from './settings/cases/types.js';
 export * from './settings/cleanup/storage.js';
 export * from './settings/cleanup/types.js';
+export * from './settings/greetings/storage.js';
 export * from './settings/nicknames/storage.js';
 export * from './settings/reasons/storage.js';
 export * from './settings/roles/storage.js';

@@ -11,6 +11,7 @@ export const Tables = [
 	'Modules',
 	'GuildAutoModeration',
 	'GuildCommands',
+	'GuildGreetings',
 	'GuildHoneypot',
 	'GuildLogs',
 	'GuildLogsOptions',
@@ -159,6 +160,13 @@ export const Columns = {
 		moderationTrackRoles: ['trackRoles', 'value'],
 		moderationTrackKicks: ['trackKicks', 'value'],
 		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value']
+	}),
+	...columns('GuildGreetings', {
+		greetingsJoinChannel: ['joinChannelId', 'snowflake'],
+		greetingsJoinMessages: ['joinMessages', 'value'],
+		greetingsJoinDirect: ['joinDirect', 'value'],
+		greetingsLeaveChannel: ['leaveChannelId', 'snowflake'],
+		greetingsLeaveMessages: ['leaveMessages', 'value']
 	}),
 	...columns('GuildPermissions', {
 		permissionsUsers: ['users', 'value'],

@@ -175,6 +175,16 @@ namespace public {
     @@control(external)
   }
 
+  model GuildGreetings {
+    id             BigInt   @id(map: "GuildGreetings_pkey")
+    joinChannelId  BigInt?  @map("join_channel_id")
+    joinMessages   String[] @default([]) @noCheck(elementNotNull) @map("join_messages")
+    joinDirect     Boolean  @default(false) @map("join_direct")
+    leaveChannelId BigInt?  @map("leave_channel_id")
+    leaveMessages  String[] @default([]) @noCheck(elementNotNull) @map("leave_messages")
+    modules        Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildGreetings_id_fkey")
+  }
+
   model GuildHoneypot {
     id            BigInt                  @id(map: "GuildHoneypot_pkey")
     channelId     BigInt?                 @map("channel_id")
@@ -272,6 +282,18 @@ namespace public {
     guild          Guild    @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoleRule_guild_id_fkey", index: false)
 
     @@unique([guildId, roleId], map: "GuildRoleRule_guild_id_role_id_key")
+  }
+
+  model GuildRoleMessage {
+    id        BigInt  @id(map: "GuildRoleMessage_pkey") @default(autoincrement())
+    guildId   BigInt  @map("guild_id")
+    roleId    BigInt  @map("role_id")
+    channelId BigInt  @map("channel_id")
+    added     String?
+    removed   String?
+    guild     Guild   @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildRoleMessage_guild_id_fkey", index: false)
+
+    @@unique([guildId, roleId], map: "GuildRoleMessage_guild_id_role_id_key")
   }
 
   model GuildPermissions {
