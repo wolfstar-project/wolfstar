@@ -119,6 +119,19 @@ declare module '@wolfstar/http-framework' {
       command?: string;
     };
     'dehoist': {};
+    'greetings role-list': {};
+    'greetings role-remove': {
+      role: TransformedArguments.Role;
+    };
+    'greetings role-set': {
+      added?: string;
+      channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
+      removed?: string;
+      role: TransformedArguments.Role;
+    };
+    'greetings test': {
+      type: 'join' | 'leave';
+    };
     'honeypot disable': {};
     'honeypot edit': {
       action?: 'Kick' | 'Softban' | 'Ban';
