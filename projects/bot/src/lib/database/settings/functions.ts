@@ -3,6 +3,7 @@ import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from
 import { getLogWebhookChannels, releaseUnusedLogWebhooks } from '#lib/moderation/logs/webhooks';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { acquireSharedLock } from '#utils/locks';
+import { syncUpdatesChannelFollow } from '#utils/updates';
 import {
 	fetchGuildData,
 	getDefaultGuildSettings,
@@ -153,12 +154,15 @@ export class Transaction {
 			await writeGuildData(container.prisma, { ...this.settings, ...this.#changes }, this.#changes, alongside);
 
 			const webhookChannels = getLogWebhookChannels(this.settings);
+			const updatesChannel = this.settings.updatesChannel;
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;
 
 			// A channel that lost its last log, or every channel when the webhooks were turned off, keeps no webhook. It
 			// is not waited for: the settings are written, and a webhook that stays is found again by its channel.
 			void releaseUnusedLogWebhooks(webhookChannels, getLogWebhookChannels(this.settings));
+			// The updates channel follows the announcements of the support server, see `syncUpdatesChannelFollow`:
+			void syncUpdatesChannelFollow(updatesChannel, this.settings.updatesChannel);
 			updateSettingsContext(this.settings, this.#changes);
 			broadcastShardMessage({ type: 'settingsUpdate', guildId: this.settings.id });
 		} finally {

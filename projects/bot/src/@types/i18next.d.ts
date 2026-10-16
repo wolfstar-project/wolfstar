@@ -3803,7 +3803,7 @@ declare module "i18next" {
         honeypotKeepActive: "Whether I send a message to the honeypot channel every day, so it does not look abandoned.";
         language: "The language I will use for your server. It may not be available in the language you want.";
         timezone: "The time zone of your server, by its name in the IANA database, such as `Europe/Rome` or `America/New_York`. It is `UTC` until you set one.";
-        updatesChannel: "The channel where I send announcements about WolfStar updates, new features, and maintenance notices for your server.";
+        updatesChannel: "The channel where the announcements of the WolfStar support server are posted: updates, new features and maintenance notices. I make it follow the announcement channel, so I need the **Manage Webhooks** permission in it.";
         logsMessageUpdateStyle: "How the log of an edited message shows the change. `Difference` is one text with what was removed struck through and what was added in bold, `Separate` shows the content before and the content after, each in a block of its own.";
         logsWebhooks: "Whether I send the logs through a webhook of their channel, which I create the first time I have something to send there. You can then change its name and its avatar in the settings of the channel. Without the **Manage Webhooks** permission in a channel I send its logs as I do now. The moderation log and the reports are always sent as my own messages.";
         messagesIgnoreChannels: "The channels configured to not increase the point counter for users.";
