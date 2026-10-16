@@ -1,3 +1,5 @@
+import { replyModerationReasonAutocomplete } from '#lib/moderation/reasons';
+import type { Command } from '@wolfstar/http-framework';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
@@ -15,4 +17,9 @@ import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits
 		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 )
-export class UserCommand extends Subcommand {}
+export class UserCommand extends Subcommand {
+	// The autocomplete of the subcommands reaches the parent, see `replyModerationReasonAutocomplete`:
+	public override autocompleteRun(interaction: Command.AutocompleteInteraction, args: Command.AutocompleteArguments<{ reason?: string }>) {
+		return replyModerationReasonAutocomplete(interaction, args);
+	}
+}

@@ -1,6 +1,7 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
+import { replyModerationReasonAutocomplete, resolveModerationReason } from '#lib/moderation/reasons';
 import { Colors } from '#utils/constants';
 import { Emojis } from '#utils/emojis';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -123,6 +124,10 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		this.requiredDuration = this.action.durationRequired && !this.isUndoAction;
 	}
 
+	public override autocompleteRun(interaction: Command.AutocompleteInteraction, args: Command.AutocompleteArguments<{ reason?: string }>) {
+		return replyModerationReasonAutocomplete(interaction, args);
+	}
+
 	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: ModerationCommand.Arguments) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
@@ -155,6 +160,8 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		let answer: ModerationCommand.Answer;
 		try {
 			const parameters = this.resolveParameters(t, guild, moderator, target, args, interaction.channel.id);
+			// An alias of a predefined reason is written in the case as the reason it stands for:
+			parameters.reason = await resolveModerationReason(guild.id, parameters.reason);
 			await this.inhibit(interaction, parameters);
 			const preHandled = await this.preHandle(interaction, parameters);
 			const handled = { ...parameters, preHandled, directMessageUndelivered: false };
@@ -612,7 +619,9 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 		result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDuration').setRequired(false));
 	}
 
-	result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsReason').setMaxLength(500).setRequired(false));
+	result = result.addStringOption((option) =>
+		applyLocalizedBuilder(option, 'commands/shared:optionsReason').setMaxLength(500).setRequired(false).setAutocomplete(true)
+	);
 
 	if (options.optionalOptions) result = options.optionalOptions(result);
 

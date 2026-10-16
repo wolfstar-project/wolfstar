@@ -333,6 +333,14 @@ declare module '@wolfstar/http-framework' {
       silent?: boolean;
       user?: TransformedArguments.User;
     };
+    'reasons add': {
+      alias: string;
+      reason: string;
+    };
+    'reasons list': {};
+    'reasons remove': {
+      alias: string;
+    };
     'report': {
       reason: string;
       user: TransformedArguments.User;

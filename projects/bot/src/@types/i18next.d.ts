@@ -2211,6 +2211,27 @@ declare module "i18next" {
         optionsShowDescription: "Whether or not to show the message publicly (default: False)";
         title: "Permissions for {{username}} ({{id}})";
       };
+      "commands/reasons": {
+        reasonsName: "reasons";
+        reasonsDescription: "Manage the predefined reasons of the moderation commands.";
+        addName: "add";
+        addDescription: "Define a reason, written in the reason option of a moderation command by its alias.";
+        removeName: "remove";
+        removeDescription: "Remove a predefined reason.";
+        listName: "list";
+        listDescription: "List the predefined reasons of the server.";
+        optionsAliasName: "alias";
+        optionsAliasDescription: "The short name written in the reason option, such as r3.";
+        optionsReasonName: "reason";
+        optionsReasonDescription: "The reason the alias stands for, written in the case.";
+        added: "The reason {{alias}} was defined. Write it in the reason option of a moderation command.";
+        replaced: "The reason {{alias}} was replaced.";
+        removed: "The reason {{alias}} was removed.";
+        notFound: "There is no reason {{alias}}.";
+        limit: "The server already has {{maximum}} predefined reasons, the most it can have.";
+        listEmpty: "The server has no predefined reasons. Add one with `/reasons add`.";
+        listTitle: "Predefined reasons ({{count}}/{{maximum}}):";
+      };
       "commands/report": {
         name: "report";
         description: "Report a member to the moderators of this server.";

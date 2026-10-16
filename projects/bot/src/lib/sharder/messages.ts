@@ -22,6 +22,11 @@ export interface ShardMessages {
 	 * The automatic deletions of a guild were changed by a shard, the others drop their cached copy.
 	 */
 	cleanupUpdate: { guildId: string };
+
+	/**
+	 * The predefined reasons of a guild were changed by a shard, the others drop their cached copy.
+	 */
+	moderationReasonsUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;
