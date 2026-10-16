@@ -234,6 +234,16 @@ namespace public {
     @@control(external)
   }
 
+  model GuildModerationReason {
+    id      BigInt @id(map: "GuildModerationReason_pkey") @default(autoincrement())
+    guildId BigInt @map("guild_id")
+    alias   String
+    reason  String
+    guild   Guild  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModerationReason_guild_id_fkey", index: false)
+
+    @@unique([guildId, alias], map: "GuildModerationReason_guild_id_alias_key")
+  }
+
   model GuildPermissions {
     id      BigInt  @id(map: "GuildPermissions_pkey")
     users   PermissionNodeEntries @default(sql`'[]'::jsonb`)
