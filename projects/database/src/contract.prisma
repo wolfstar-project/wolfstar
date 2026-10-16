@@ -212,6 +212,11 @@ namespace public {
     emojiUpdate            BigInt?  @map("emoji_update")
     emojiDelete            BigInt?  @map("emoji_delete")
     serverUpdate           BigInt?  @map("server_update")
+    invites                BigInt?
+    threads                BigInt?
+    events                 BigInt?
+    expressions            BigInt?
+    integrations           BigInt?
     command                BigInt?
     settings               BigInt?
     ignoreAll              BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_all")

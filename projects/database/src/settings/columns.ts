@@ -139,6 +139,11 @@ export const Columns = {
 		logsEmojiUpdate: ['emojiUpdate', 'snowflake'],
 		logsEmojiDelete: ['emojiDelete', 'snowflake'],
 		logsServerUpdate: ['serverUpdate', 'snowflake'],
+		logsInvites: ['invites', 'snowflake'],
+		logsThreads: ['threads', 'snowflake'],
+		logsEvents: ['events', 'snowflake'],
+		logsExpressions: ['expressions', 'snowflake'],
+		logsIntegrations: ['integrations', 'snowflake'],
 		logsIgnoreAll: ['ignoreAll', 'snowflakes'],
 		logsIgnoreMessages: ['ignoreMessages', 'snowflakes'],
 		logsIgnoreReactions: ['ignoreReactions', 'snowflakes']
