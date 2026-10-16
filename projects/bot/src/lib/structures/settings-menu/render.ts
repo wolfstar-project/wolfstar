@@ -64,7 +64,6 @@ const ModuleEmojis: Record<string, EmojiKey> = {
 	modules: 'ModuleModules',
 	automod: 'ModuleAutomod',
 	commands: 'ModuleCommands',
-	greetings: 'ModuleGreetings',
 	honeypot: 'ModuleHoneypot',
 	logs: 'ModuleLogs',
 	moderation: 'ModuleModeration',

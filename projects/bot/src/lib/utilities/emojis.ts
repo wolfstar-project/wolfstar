@@ -96,7 +96,6 @@ export const EmojiDefinitions = {
 	ModuleAutomod: emoji('module_automod', '🛡️'),
 	ModuleCommands: emoji('module_commands', '⌨️'),
 	ModuleHoneypot: emoji('module_honeypot', '🍯'),
-	ModuleGreetings: emoji('module_greetings', '👋'),
 	ModuleAppeals: emoji('module_appeals', '⚖️'),
 	ModuleLogs: emoji('module_logs', '📜'),
 	ModuleModeration: emoji('module_moderation', '🔨'),

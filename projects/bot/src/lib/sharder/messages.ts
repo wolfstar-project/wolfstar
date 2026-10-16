@@ -37,11 +37,6 @@ export interface ShardMessages {
 	 * The role rules of a guild were changed by a shard, the others drop their cached copy.
 	 */
 	roleRulesUpdate: { guildId: string };
-
-	/**
-	 * The role messages of a guild were changed by a shard, the others drop their cached copy.
-	 */
-	roleMessagesUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

@@ -91,13 +91,6 @@ export function getConfiguration() {
 		appealsTimeouts: { type: 'boolean', name: 'appeals.timeouts', description: 'settings:appealsTimeouts', default: true },
 		appealsQuestions: { type: 'string', name: 'appeals.questions', description: 'settings:appealsQuestions', array: true },
 
-		// Greetings
-		greetingsJoinChannel: { type: 'guildTextChannel', name: 'greetings.join-channel', description: 'settings:greetingsJoinChannel' },
-		greetingsJoinMessages: { type: 'string', name: 'greetings.join-messages', description: 'settings:greetingsJoinMessages', array: true },
-		greetingsJoinDirect: { type: 'boolean', name: 'greetings.join-direct', description: 'settings:greetingsJoinDirect' },
-		greetingsLeaveChannel: { type: 'guildTextChannel', name: 'greetings.leave-channel', description: 'settings:greetingsLeaveChannel' },
-		greetingsLeaveMessages: { type: 'string', name: 'greetings.leave-messages', description: 'settings:greetingsLeaveMessages', array: true },
-
 		// Logs
 		logsMemberAdd: logChannel('member-add', 'settings:channelsLogsMemberAdd'),
 		logsMemberRemove: logChannel('member-remove', 'settings:channelsLogsMemberRemove'),
