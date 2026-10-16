@@ -163,6 +163,13 @@ export function getConfiguration() {
 			name: 'moderation.track-kicks',
 			description: 'settings:moderationTrackKicks'
 		},
+		moderationConfirmRecentMinutes: {
+			type: 'integer',
+			name: 'moderation.confirm-recent',
+			description: 'settings:moderationConfirmRecentMinutes',
+			minimum: 0,
+			maximum: 60
+		},
 
 		// Permissions
 		permissionsUsers: {

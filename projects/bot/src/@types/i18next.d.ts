@@ -3323,6 +3323,13 @@ declare module "i18next" {
         roleRestored: "The role of this action was deleted while it was in course, so it was made again.";
         roleRemovedManually: "The role of this action was taken from the member by hand.";
         roleAddedManually: "The role of this action was given to the member by hand.";
+        recentCasePrompt: "{{user}} already has a recent case: **#{{case}}** ({{type}}) by {{moderator}} {{time}}, for: {{reason}}\nDo you want to go on?";
+        recentCaseNoReason: "no reason";
+        recentCaseConfirm: "Go on";
+        recentCaseCancel: "Cancel";
+        recentCaseCancelled: "Nothing was done.";
+        recentCaseExpired: "This confirmation expired, run the command again.";
+        recentCaseWrongUser: "Only the moderator who ran the command can answer this.";
         voiceMuteRestored: "The voice mute of this member is still in course, so it was applied again when they came back to a voice channel.";
         revokeReason: "[Action] Revoked {{action}} | Reason: {{reason}}";
         setNicknameNoReasonRemoved: "[Action] Removed Nickname.";
@@ -3659,6 +3666,7 @@ declare module "i18next" {
         moderationTrackTimeouts: "Whether I should record the timeouts made without using my commands.";
         moderationTrackRoles: "Whether I should record the muted and restriction roles given or taken away without using my commands. A muted role given by hand mutes the member as `/mute add` does: their other roles are taken away and kept, and they are given back when the role is taken away.";
         moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
+        moderationConfirmRecentMinutes: "When a member already has a case made within these minutes, I ask the moderator to confirm before taking another action on them, so two moderators acting on one message do not punish twice. 0 never asks.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
         channelsLogsVoiceChannel: "The channel for voice channel logs, if set, I send a message when a user joins, leaves, or moves to another voice channel.";
@@ -3719,6 +3727,7 @@ declare module "i18next" {
           moderationTrackTimeouts: "Track Timeouts";
           moderationTrackRoles: "Track Roles";
           moderationTrackKicks: "Track Kicks";
+          moderationConfirmRecentMinutes: "Confirm After a Recent Case";
           permissionsUsers: "User Permissions";
           permissionsRoles: "Role Permissions";
           reportsChannel: "Reports Channel";

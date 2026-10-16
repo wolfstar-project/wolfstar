@@ -2,6 +2,8 @@ import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { replyModerationReasonAutocomplete, resolveModerationReason } from '#lib/moderation/reasons';
+import { findRecentCase, renderRecentCasePrompt, savePendingRecentCaseCommand } from '#lib/moderation/structures/RecentCasePrompt';
+import { getModeration } from '#utils/functions';
 import { Colors } from '#utils/constants';
 import { Emojis } from '#utils/emojis';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -148,8 +150,13 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 * @param interaction - The interaction to run the command for: the one of the command, or the click that answered
 	 * its prompt, of which only the guild, the channel, the author and their language are read.
 	 * @param args - The options of the command.
+	 * @param options - How it is run: `confirmed` when the moderator already confirmed it after a recent case.
 	 */
-	public async execute(interaction: ModerationCommand.Interaction, args: ModerationCommand.Arguments): Promise<ModerationCommand.Answer> {
+	public async execute(
+		interaction: ModerationCommand.Interaction,
+		args: ModerationCommand.Arguments,
+		options: ModerationCommand.ExecuteOptions = {}
+	): Promise<ModerationCommand.Answer> {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const settings = await this.readMessageSettings(interaction.guildId);
 
@@ -163,6 +170,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			// An alias of a predefined reason is written in the case as the reason it stands for:
 			parameters.reason = await resolveModerationReason(guild.id, parameters.reason);
 			await this.inhibit(interaction, parameters);
+			if (!options.confirmed) await this.confirmRecentCase(interaction, parameters);
 			const preHandled = await this.preHandle(interaction, parameters);
 			const handled = { ...parameters, preHandled, directMessageUndelivered: false };
 
@@ -197,6 +205,32 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		}
 
 		return answer;
+	}
+
+	/**
+	 * Asks the moderator to confirm the action when the member has a case made within the minutes of
+	 * `moderation.confirm-recent`, since two moderators often act on one message at once.
+	 *
+	 * @remarks The undo of a case is never asked about: it follows the case it undoes. The command and its options wait in
+	 * Redis for the answer, which the `moderationConfirm` interaction handler gives by running it again, confirmed.
+	 *
+	 * @throws {@linkcode ModerationCommandPrompt} With the prompt, when there is a recent case.
+	 */
+	protected async confirmRecentCase(interaction: ModerationCommand.Interaction, context: ModerationCommand.Parameters): Promise<void> {
+		if (this.isUndoAction) return;
+
+		const settings = await readSettings(context.guild);
+		const within = settings.moderationConfirmRecentMinutes;
+		if (within <= 0) return;
+
+		const moderation = await getModeration(context.guild);
+		const entries = await moderation.fetch({ userId: context.target.id });
+		const recent = findRecentCase(entries.values(), within);
+		if (recent === null) return;
+
+		const action = { ownerId: interaction.user.id, promptId: interaction.id };
+		await savePendingRecentCaseCommand(context.guild.id, action.ownerId, action.promptId, { command: this.name, args: { ...context.args } });
+		throw new ModerationCommandPrompt(renderRecentCasePrompt(context.t, action, recent));
 	}
 
 	/**
@@ -718,6 +752,13 @@ export declare namespace ModerationCommand {
 	 * The interaction of the command, which is always sent from a guild.
 	 */
 	type Interaction = GuildChatInputInteraction;
+
+	interface ExecuteOptions {
+		/**
+		 * The moderator confirmed the action after being told about a recent case, which is not asked about again.
+		 */
+		confirmed?: boolean;
+	}
 
 	/**
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
