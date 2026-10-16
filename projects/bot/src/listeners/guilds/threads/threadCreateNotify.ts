@@ -12,8 +12,8 @@ export class UserListener extends EventGatewayListener<'threadCreate'> {
 			author: `${thread.name} (${thread.id})`,
 			lines: [
 				t('events/guilds-logs:fieldThread', { value: channelMention(thread.id) }),
-				thread.parentId === null ? null : t('events/guilds-logs:fieldParent', { value: channelMention(thread.parentId) }),
-				thread.ownerId === null ? null : t('events/guilds-logs:fieldCreator', { value: userMention(thread.ownerId) })
+				thread.parentId ? t('events/guilds-logs:fieldParent', { value: channelMention(thread.parentId) }) : null,
+				thread.ownerId ? t('events/guilds-logs:fieldCreator', { value: userMention(thread.ownerId) }) : null
 			],
 			footer: t('events/guilds-logs:threadCreate')
 		}));

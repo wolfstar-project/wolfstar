@@ -33,7 +33,7 @@ export function bindShardClient(shard: ShardClient, client: GatewayClient) {
 	client.gateway.fetchGatewayInformation = () => shard.fetchGatewayInformation();
 
 	const pending = new Set(shard.shards);
-	client.on('shardReady', (shardId) => {
+	client.on('shardReady', (shardId: number) => {
 		if (pending.delete(shardId) && pending.size === 0) void shard.ready();
 	});
 

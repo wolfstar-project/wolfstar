@@ -177,7 +177,7 @@ export function renderAppealMessage(
 		return { embeds: [embed.toJSON()], components: [] };
 	}
 
-	const button = (verb: 'accept' | 'deny', style: ButtonStyle, label: string): APIButtonComponent => ({
+	const button = (verb: 'accept' | 'deny', style: ButtonStyle.Success | ButtonStyle.Danger, label: string): APIButtonComponent => ({
 		type: ComponentType.Button,
 		custom_id: encodeAppealId({ appealId: appeal.id, verb, submit: false }),
 		style,

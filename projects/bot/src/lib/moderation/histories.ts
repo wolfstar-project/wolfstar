@@ -36,7 +36,11 @@ const TextChannelTypes = new Set<ChannelType>([
  */
 export function selectHistoryMessages(
 	messages: Iterable<
-		Pick<Message, 'id' | 'channelId' | 'content' | 'createdTimestamp'> & { author: { id: string }; attachments: readonly { url: string }[] }
+		// The attachments of a message are a collection, the ones of the tests an array: both have `values()`.
+		Pick<Message, 'id' | 'channelId' | 'content' | 'createdTimestamp'> & {
+			author: { id: string };
+			attachments: { values(): Iterable<{ url: string }> };
+		}
 	>,
 	userId: Snowflake,
 	now = Date.now()
@@ -51,7 +55,7 @@ export function selectHistoryMessages(
 			channelId: message.channelId,
 			content: message.content,
 			createdAt: message.createdTimestamp,
-			attachments: message.attachments.map((attachment) => attachment.url)
+			attachments: Array.from(message.attachments.values(), (attachment) => attachment.url)
 		});
 	}
 
