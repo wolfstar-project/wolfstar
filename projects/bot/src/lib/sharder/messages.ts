@@ -27,6 +27,11 @@ export interface ShardMessages {
 	 * The predefined reasons of a guild were changed by a shard, the others drop their cached copy.
 	 */
 	moderationReasonsUpdate: { guildId: string };
+
+	/**
+	 * The thresholds of warnings of a guild were changed by a shard, the others drop their cached copy.
+	 */
+	warnThresholdsUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

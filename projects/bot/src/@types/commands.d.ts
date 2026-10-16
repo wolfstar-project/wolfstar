@@ -550,6 +550,16 @@ declare module '@wolfstar/http-framework' {
       reason?: string;
       user: TransformedArguments.User;
     };
+    'warn-thresholds add': {
+      action: 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
+      count: number;
+      duration?: string;
+      period?: string;
+    };
+    'warn-thresholds list': {};
+    'warn-thresholds remove': {
+      count: number;
+    };
     'whois channel': {
       channel?: TransformedArguments.Channel;
     };

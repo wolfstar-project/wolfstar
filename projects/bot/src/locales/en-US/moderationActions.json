@@ -30,6 +30,8 @@
 	"recentCaseCancelled": "Nothing was done.",
 	"recentCaseExpired": "This confirmation expired, run the command again.",
 	"recentCaseWrongUser": "Only the moderator who ran the command can answer this.",
+	"warnThresholdReason_one": "[Warnings] Reached {{count}} warning.",
+	"warnThresholdReason_other": "[Warnings] Reached {{count}} warnings.",
 	"voiceMuteRestored": "The voice mute of this member is still in course, so it was applied again when they came back to a voice channel.",
 	"revokeReason": "[Action] Revoked {{action}} | Reason: {{reason}}",
 	"setNicknameNoReasonRemoved": "[Action] Removed Nickname.",
