@@ -12,7 +12,6 @@ export const Tables = [
 	'GuildAppeals',
 	'GuildAutoModeration',
 	'GuildCommands',
-	'GuildGreetings',
 	'GuildHoneypot',
 	'GuildLogs',
 	'GuildLogsOptions',
@@ -169,13 +168,6 @@ export const Columns = {
 		appealsMutes: ['mutes', 'value'],
 		appealsTimeouts: ['timeouts', 'value'],
 		appealsQuestions: ['questions', 'value']
-	}),
-	...columns('GuildGreetings', {
-		greetingsJoinChannel: ['joinChannelId', 'snowflake'],
-		greetingsJoinMessages: ['joinMessages', 'value'],
-		greetingsJoinDirect: ['joinDirect', 'value'],
-		greetingsLeaveChannel: ['leaveChannelId', 'snowflake'],
-		greetingsLeaveMessages: ['leaveMessages', 'value']
 	}),
 	...columns('GuildPermissions', {
 		permissionsUsers: ['users', 'value'],
