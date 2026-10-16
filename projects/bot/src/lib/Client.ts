@@ -34,6 +34,9 @@ export function createClient() {
 			GatewayIntentBits.GuildModeration |
 			GatewayIntentBits.GuildExpressions |
 			GatewayIntentBits.GuildInvites |
+			GatewayIntentBits.GuildIntegrations |
+			GatewayIntentBits.GuildScheduledEvents |
+			GatewayIntentBits.GuildWebhooks |
 			GatewayIntentBits.GuildMembers |
 			GatewayIntentBits.GuildMessageReactions |
 			GatewayIntentBits.GuildMessages |

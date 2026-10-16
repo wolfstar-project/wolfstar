@@ -47,6 +47,11 @@ export const WebhookLogKeys = [
 	'logsEmojiUpdate',
 	'logsEmojiDelete',
 	'logsServerUpdate',
+	'logsInvites',
+	'logsThreads',
+	'logsEvents',
+	'logsExpressions',
+	'logsIntegrations',
 	'honeypotLogChannel'
 ] as const satisfies readonly GuildSettingsOfType<string | Nullish>[];
 
