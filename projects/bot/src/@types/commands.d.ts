@@ -9,6 +9,16 @@ import type { TransformedArguments } from '@wolfstar/http-framework';
 // prettier-ignore
 declare module '@wolfstar/http-framework' {
   interface CommandOptionsRegistry {
+    'archive create': {
+      case?: number;
+      user: TransformedArguments.User;
+    };
+    'archive list': {
+      user?: TransformedArguments.User;
+    };
+    'archive show': {
+      id: string;
+    };
     'autodelete disable': {
       channel: TransformedArguments.Channel;
     };
@@ -77,6 +87,7 @@ declare module '@wolfstar/http-framework' {
     };
     'autopurge list': {};
     'ban add': {
+      archive?: boolean;
       authored?: boolean;
       'delete-days'?: number;
       dm?: boolean;
@@ -149,6 +160,7 @@ declare module '@wolfstar/http-framework' {
     'honeypot show': {};
     'info': {};
     'kick': {
+      archive?: boolean;
       authored?: boolean;
       dm?: boolean;
       message?: string;
@@ -468,6 +480,7 @@ declare module '@wolfstar/http-framework' {
       duration: string;
     };
     'softban': {
+      archive?: boolean;
       authored?: boolean;
       'delete-days'?: number;
       dm?: boolean;

@@ -20,6 +20,7 @@ type ValueType = Unlock | null;
 @RegisterAsSubcommand('ban', (builder) =>
 	applyModerationSubcommandBuilder(builder, {
 		root: 'commands/moderation:banAdd',
+		archive: true,
 		type: TypeVariation.Ban,
 		optionalOptions: (options) =>
 			options.addIntegerOption((option) =>

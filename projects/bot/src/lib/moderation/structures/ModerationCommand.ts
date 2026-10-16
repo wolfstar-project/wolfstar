@@ -4,6 +4,7 @@ import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { replyModerationReasonAutocomplete, resolveModerationReason } from '#lib/moderation/reasons';
 import { findRecentCase, renderRecentCasePrompt, savePendingRecentCaseCommand } from '#lib/moderation/structures/RecentCasePrompt';
 import { getModeration } from '#utils/functions';
+import { archiveMemberMessages, linkMessageHistory } from '#lib/moderation/histories';
 import { Colors } from '#utils/constants';
 import { Emojis } from '#utils/emojis';
 import { EmbedBuilder } from '@discordjs/builders';
@@ -181,8 +182,12 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 				const forwardedId = await forwardCaseMessage(guild, handled.messageReference);
 				if (forwardedId !== null) handled.messageReference = { ...handled.messageReference!, forwardedId };
 
+				// So are the recent messages of the member, when they are archived, for the same reason:
+				const history = (args as { archive?: boolean }).archive === true ? await this.archiveMessages(guild, target, moderator) : null;
+
 				try {
 					const log = await this.handle(interaction, handled);
+					if (history !== null) await linkMessageHistory(guild.id, history.id, log.id).catch(() => null);
 					answer = this.formatOutput(t, settings, target, log, handled.directMessageUndelivered);
 				} catch (error) {
 					// No case was made for the copy to stand under:
@@ -205,6 +210,19 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		}
 
 		return answer;
+	}
+
+	/**
+	 * Saves the recent messages of the target as a message history, see the `archive` option. A history that cannot be
+	 * made does not keep the action from being taken.
+	 */
+	protected async archiveMessages(guild: Guild, target: User, moderator: User) {
+		try {
+			return await archiveMemberMessages(guild, target.id, moderator.id);
+		} catch (error) {
+			container.logger.error('[Moderation] Could not archive the messages of a member:', error);
+			return null;
+		}
 	}
 
 	/**
@@ -568,6 +586,14 @@ export interface ModerationBuilderOptions {
 	isUndoAction?: boolean;
 
 	/**
+	 * Whether the command takes the `archive` option, which saves the recent messages of the member before the action,
+	 * for the actions that take them out of the guild.
+	 *
+	 * @default false
+	 */
+	archive?: boolean;
+
+	/**
 	 * The permissions that are required by default to use the command, given to `setDefaultMemberPermissions`. A
 	 * server can override them in `Server Settings > Integrations`.
 	 *
@@ -660,6 +686,10 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 	if (options.optionalOptions) result = options.optionalOptions(result);
 
 	result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsMessage').setMaxLength(150).setRequired(false));
+
+	if (options.archive) {
+		result = result.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsArchive').setRequired(false));
+	}
 
 	// `dm` and `authored` only shape the direct message, which an action that never sends one has no use for:
 	if (!action.isDirectMessageAvailable) return result;

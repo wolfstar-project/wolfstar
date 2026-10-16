@@ -83,6 +83,26 @@ declare module "i18next" {
       assertions: {
         expectedNonThreadChannel: "Expected a regular text channel, but I received the thread channel {{channel}} instead.";
       };
+      "commands/archive": {
+        archiveName: "archive";
+        archiveDescription: "Save and read the recent messages of members.";
+        createName: "create";
+        createDescription: "Save the messages a member sent in the last 14 days.";
+        listName: "list";
+        listDescription: "List the latest message histories.";
+        showName: "show";
+        showDescription: "Get the file of a message history.";
+        optionsCaseName: "case";
+        optionsCaseDescription: "The case the history is for.";
+        optionsIdName: "id";
+        optionsIdDescription: "The ID of the history, which /archive list shows.";
+        created_one: "History {{id}} of {{user}} saved, with {{count}} message.";
+        created_other: "History {{id}} of {{user}} saved, with {{count}} messages.";
+        notFound: "There is no history with that ID, or it expired.";
+        listEmpty: "There are no message histories.";
+        listLine_one: "{{id}}: {{user}}, {{count}} message, {{time}} by {{moderator}}";
+        listLine_other: "{{id}}: {{user}}, {{count}} messages, {{time}} by {{moderator}}";
+      };
       "commands/auto-moderation": {
         automodName: "automod";
         automodDescription: "Manage the auto-moderation rules of this server";
@@ -2444,6 +2464,8 @@ declare module "i18next" {
         optionsDurationDescription: "How long the action lasts, for example 30m, 2h or 7d.";
         optionsMessageName: "message";
         optionsMessageDescription: "The message the case is about, as its link or its ID. It is linked and forwarded in the log.";
+        optionsArchiveName: "archive";
+        optionsArchiveDescription: "Save the recent messages of the member with the case, before they are deleted.";
         messageReferenceInvalid: "`{{parameter}}` is not the link or the ID of a message of this server.";
         optionsDmName: "dm";
         optionsDmDescription: "Whether to send the user a direct message about the action.";

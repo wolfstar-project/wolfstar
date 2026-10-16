@@ -15,6 +15,7 @@ type ValueType = Unlock | null;
 @RegisterCommand((builder) =>
 	applyModerationBuilder(builder, {
 		root: 'commands/moderation:kick',
+		archive: true,
 		type: TypeVariation.Kick,
 		permissions: PermissionFlagsBits.KickMembers
 	})

@@ -20,6 +20,7 @@ type ValueType = Unlock | null;
 @RegisterCommand((builder) =>
 	applyModerationBuilder(builder, {
 		root: 'commands/moderation:softBan',
+		archive: true,
 		type: TypeVariation.Softban,
 		permissions: PermissionFlagsBits.BanMembers,
 		optionalOptions: (options) =>
