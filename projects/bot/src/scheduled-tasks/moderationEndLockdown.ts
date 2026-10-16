@@ -16,7 +16,7 @@ export class UserTask extends ScheduledTask<'moderationEndLockdown'> {
 			// Anything else fails the job, which BullMQ tries again (see `customJobOptions` in `LockdownManager#add`):
 			if (!isIgnorableReleaseError(error)) throw error;
 
-			// What the lockdown was applied to is gone, or out of reach, so there is nothing left to release:
+			// What the lockdown was applied to is gone, so there is nothing left to release:
 			await lockdowns.remove(data);
 		}
 	}

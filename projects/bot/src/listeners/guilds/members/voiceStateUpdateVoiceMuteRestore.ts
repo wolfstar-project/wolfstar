@@ -62,10 +62,9 @@ export class UserListener extends EventGatewayListener<'voiceStateUpdate'> {
 	}
 
 	private async canMute(guildId: Snowflake) {
-		const me = await this.container.gatewayClient.members.me(guildId);
-		if (isNullish(me)) return false;
-
-		const permissions = await me.permissions;
+		// The roles of the bot are fetched, the getter skips the ones the cache lacks and may answer fewer permissions:
+		const me = await this.container.gatewayClient.members.fetchMe(guildId);
+		const permissions = await me.fetchPermissions();
 		return permissions.has(PermissionFlagsBits.MuteMembers);
 	}
 }

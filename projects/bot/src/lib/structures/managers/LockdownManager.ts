@@ -180,14 +180,13 @@ const ReleaseBackoff = 30_000;
 const IgnoredReleaseErrors = new Set<RESTJSONErrorCodes>([
 	RESTJSONErrorCodes.UnknownGuild,
 	RESTJSONErrorCodes.UnknownRole,
-	RESTJSONErrorCodes.UnknownChannel,
-	RESTJSONErrorCodes.MissingAccess,
-	RESTJSONErrorCodes.MissingPermissions
+	RESTJSONErrorCodes.UnknownChannel
 ]);
 
 /**
  * Whether there is nothing to do about an error of {@linkcode LockdownManager.release}: what the lockdown applied to
- * is gone, or the bot can no longer reach it, so trying again would not change anything.
+ * is gone, so trying again would not change anything. A missing permission is not one of them: the channel or the role
+ * is still locked, and the lockdown is kept so it can be released once the bot has its permissions back.
  */
 export function isIgnorableReleaseError(error: unknown) {
 	return error instanceof DiscordAPIError && IgnoredReleaseErrors.has(error.code as RESTJSONErrorCodes);

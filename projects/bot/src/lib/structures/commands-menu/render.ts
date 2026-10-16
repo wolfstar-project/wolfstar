@@ -414,12 +414,14 @@ export const CommandStatusInputId = 'status';
  * @param command - The command to edit.
  * @param disabledBy - The name in `commands.disabled` that disables it, `null` when it is enabled.
  * @param restriction - The channels and the roles the server restricts the command to.
+ * @param revision - The revision of the command the modal is opened with, see `getCommandRestrictionRevision`.
  */
 export function renderCommandEditModal(
 	context: CommandsMenuContext,
 	command: CatalogCommand,
 	disabledBy: string | null,
-	restriction: CommandRestriction
+	restriction: CommandRestriction,
+	revision: number
 ): APIModalInteractionResponseCallbackData {
 	const { t } = context;
 	const disabled = disabledBy !== null;
@@ -441,7 +443,8 @@ export function renderCommandEditModal(
 			required: false,
 			min_values: 0,
 			max_values: MaximumCommandRestrictionEntries,
-			default_values: restriction[list].map((id) => ({
+			// A select menu shows 25 values at most, the ones past them are kept when the modal is saved:
+			default_values: restriction[list].slice(0, MaximumCommandRestrictionEntries).map((id) => ({
 				id,
 				type: type === ComponentType.ChannelSelect ? SelectMenuDefaultValueType.Channel : SelectMenuDefaultValueType.Role
 			}))
@@ -449,7 +452,8 @@ export function renderCommandEditModal(
 	});
 
 	return {
-		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: 0 }),
+		// The modal of `save` carries the revision where the other actions carry their page:
+		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: revision }),
 		title: cutText(t('commands/commands:editTitle', { name: command.name }), 45),
 		components: [
 			{

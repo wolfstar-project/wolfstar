@@ -5,6 +5,7 @@ import { toModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { SortedCollection } from '#lib/structures/data';
 import { Events } from '#lib/types';
 import { createReferPromise, desc, floatPromise, minutes, orMix, seconds, type BooleanFn, type ReferredPromise } from '#common';
+import { withSharedLock } from '#utils/locks';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 import { AsyncQueue } from '@sapphire/async-queue';
 import { isNullish } from '@sapphire/utilities';
@@ -116,10 +117,16 @@ export class ModerationManager {
 		await this.#saveQueue.wait();
 
 		try {
-			const id = (await this.getCurrentId()) + 1;
-			const entry = new ModerationManagerEntry({ ...data.toData(), id, createdAt: Date.now() });
-			await this.#performInsert(entry);
-			return this.#addToCache(entry, CacheActions.Insert);
+			// The queue is of this process: another shard, or the API, may write a case of the guild at the same time,
+			// or may have written one since the latest ID was cached. The number is taken under a shared lock, from
+			// what the database has, so two cases never get the same one:
+			return await withSharedLock(`moderation-cases:${this.guild.id}`, async () => {
+				this.#latest = null;
+				const id = (await this.getCurrentId()) + 1;
+				const entry = new ModerationManagerEntry({ ...data.toData(), id, createdAt: Date.now() });
+				await this.#performInsert(entry);
+				return this.#addToCache(entry, CacheActions.Insert);
+			});
 		} finally {
 			this.#saveQueue.shift();
 		}

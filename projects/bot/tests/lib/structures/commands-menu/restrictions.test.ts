@@ -1,6 +1,8 @@
 import {
 	findCommandRestriction,
 	getCommandRestrictionDenial,
+	getCommandRestrictionRevision,
+	keepHiddenRestrictionEntries,
 	readCommandRestrictions,
 	removeFromCommandRestrictions,
 	setCommandRestriction,
@@ -46,10 +48,44 @@ describe('command restrictions', () => {
 			]);
 		});
 
-		test('GIVEN more entries than a list holds THEN it is cut', () => {
+		test('GIVEN more entries than a select menu shows THEN every one is kept', () => {
 			const many = Array.from({ length: 30 }, (_, index) => `1000000000000000${String(index).padStart(2, '0')}`);
 
-			expect(readCommandRestrictions([{ command: 'ban', ignoredRoles: many }])[0].ignoredRoles).toHaveLength(25);
+			expect(readCommandRestrictions([{ command: 'ban', ignoredRoles: many }])[0].ignoredRoles).toEqual(many);
+		});
+	});
+
+	describe('keepHiddenRestrictionEntries', () => {
+		const many = Array.from({ length: 30 }, (_, index) => `1000000000000000${String(index).padStart(2, '0')}`);
+
+		test('GIVEN a stored list longer than the modal shows THEN the entries it did not show are kept', () => {
+			const picked = restriction({ ignoredChannels: [channelA, ...many.slice(1, 25)] });
+			const kept = keepHiddenRestrictionEntries(picked, restriction({ ignoredChannels: many }));
+
+			expect(kept.ignoredChannels).toEqual([channelA, ...many.slice(1)]);
+		});
+
+		test('GIVEN a stored list the modal showed whole THEN what was picked is saved', () => {
+			const kept = keepHiddenRestrictionEntries(restriction({ allowedRoles: [roleB] }), restriction({ allowedRoles: [roleA] }));
+
+			expect(kept).toEqual(restriction({ allowedRoles: [roleB] }));
+		});
+	});
+
+	describe('getCommandRestrictionRevision', () => {
+		test('GIVEN the same restriction and status THEN the revision is the same', () => {
+			const revision = getCommandRestrictionRevision(restriction({ ignoredRoles: [roleA] }), false);
+
+			expect(getCommandRestrictionRevision(restriction({ ignoredRoles: [roleA] }), false)).toBe(revision);
+			expect(Number.isSafeInteger(revision) && revision >= 0).toBe(true);
+		});
+
+		test('GIVEN a list or the status that changed THEN the revision changes', () => {
+			const revision = getCommandRestrictionRevision(restriction({ ignoredRoles: [roleA] }), false);
+
+			expect(getCommandRestrictionRevision(restriction({ ignoredRoles: [roleA] }), true)).not.toBe(revision);
+			expect(getCommandRestrictionRevision(restriction({ ignoredRoles: [roleA, roleB] }), false)).not.toBe(revision);
+			expect(getCommandRestrictionRevision(restriction({ allowedRoles: [roleA] }), false)).not.toBe(revision);
 		});
 	});
 

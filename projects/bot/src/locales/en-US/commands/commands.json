@@ -35,6 +35,7 @@
 	"editRestricted": "Where it runs and who runs it was saved. The administrators are not restricted.",
 	"editUnrestricted": "It runs in every channel, for every role.",
 	"editProtectedRestricted": "`/{{name}}` cannot be restricted: it is how the commands are turned back on.",
+	"editStale": "`/{{name}}` was changed since this form was opened, so nothing was saved. Open it again to see what it has now.",
 	"editEnabled": "Enabled",
 	"editDisabled": "Disabled",
 	"editEnabledDone": "`/{{name}}` is enabled.",

@@ -1,4 +1,4 @@
-import { readSettings, writeSettings } from '#lib/database';
+import { readSettings, writeSettingsTransaction } from '#lib/database';
 import {
 	AllCategoriesValue,
 	CommandDisabledValue,
@@ -18,7 +18,9 @@ import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/struct
 import {
 	CommandRestrictionLists,
 	findCommandRestriction,
+	getCommandRestrictionRevision,
 	isCommandRestrictionEmpty,
+	keepHiddenRestrictionEntries,
 	readCommandRestrictions,
 	setCommandRestriction,
 	type CommandRestriction
@@ -72,7 +74,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				);
 			}
 
-			if (action.verb === 'save') return this.save(modal, action.target, t);
+			if (action.verb === 'save') return this.save(modal, action.target, action.page, t);
 
 			return fail(getDefaultExpiredReply());
 		}
@@ -125,7 +127,10 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const settings = await readSettings(interaction.guildId!);
 		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), piece.name);
-		return interaction.showModal(renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction));
+		const revision = getCommandRestrictionRevision(restriction, settings.commandsDisabled.includes(piece.name));
+		return interaction.showModal(
+			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision)
+		);
 	}
 
 	/**
@@ -134,9 +139,10 @@ export class UserInteractionHandler extends InteractionHandler {
 	 *
 	 * @param interaction - The submission of the modal of the command.
 	 * @param name - The name of the command.
+	 * @param revision - The revision of the command the modal was opened with, see `getCommandRestrictionRevision`.
 	 * @param t - The function to translate with.
 	 */
-	private async save(interaction: ModalInteraction, name: string, t: ReturnType<typeof createTranslator>) {
+	private async save(interaction: ModalInteraction, name: string, revision: number, t: ReturnType<typeof createTranslator>) {
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return reply(denial);
@@ -153,16 +159,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (restricted && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtectedRestricted', { name }));
 
 		const guildId = interaction.guildId!;
-		await writeSettings(
-			guildId,
-			(settings) => {
-				const others = settings.commandsDisabled.filter((entry: string) => entry !== piece.name);
-				const restrictions = setCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), restriction);
-				// The restrictions are plain objects, which is what the JSON column holds:
-				return { commandsDisabled: disable ? [...others, piece.name] : others, commandsRestrictions: restrictions as never };
-			},
-			interaction.user.id
-		);
+		const saved = await this.write(guildId, piece.name, disable, restriction, revision, interaction.user.id);
+		if (!saved) return reply(t('commands/commands:editStale', { name }));
 
 		const restrictions = t(restricted ? 'commands/commands:editRestricted' : 'commands/commands:editUnrestricted');
 		if (disable) return reply(`${t('commands/commands:editDisabledDone', { name })}\n${restrictions}`);
@@ -172,6 +170,30 @@ export class UserInteractionHandler extends InteractionHandler {
 		const rule = findDisabledBy(settings.commandsDisabled, piece);
 		const status = rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule });
 		return reply(`${status}\n${restrictions}`);
+	}
+
+	/**
+	 * Writes the status and the restriction of a command, on the settings the database has.
+	 *
+	 * @returns Whether it was written: not when another administrator saved the command since the modal was opened,
+	 * since the modal would undo what they saved.
+	 */
+	private async write(guildId: string, command: string, disable: boolean, picked: CommandRestriction, revision: number, actorId: string) {
+		using trx = await writeSettingsTransaction(guildId);
+		const { settings } = trx;
+		const stored = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), command);
+		if (getCommandRestrictionRevision(stored, settings.commandsDisabled.includes(command)) !== revision) return false;
+
+		const others = settings.commandsDisabled.filter((entry: string) => entry !== command);
+		const restrictions = setCommandRestriction(
+			readCommandRestrictions(settings.commandsRestrictions),
+			keepHiddenRestrictionEntries(picked, stored)
+		);
+		// The restrictions are plain objects, which is what the JSON column holds:
+		await trx
+			.write({ commandsDisabled: disable ? [...others, command] : others, commandsRestrictions: restrictions as never })
+			.submitWithAudit(actorId);
+		return true;
 	}
 
 	/**

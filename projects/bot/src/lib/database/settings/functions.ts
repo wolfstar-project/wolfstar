@@ -1,3 +1,4 @@
+import { resolveGuildId } from '#common';
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import { getLogWebhookChannels, releaseUnusedLogWebhooks } from '#lib/moderation/logs/webhooks';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
@@ -15,7 +16,6 @@ import type { Awaitable } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { Collection } from '@discordjs/collection';
 import type { GuildResolvable } from '@wolfstar/plugin-gateway';
-import type { Snowflake } from 'discord-api-types/v10';
 
 const cache = new Collection<string, GuildData>();
 const queue = new Collection<string, Promise<GuildData>>();
@@ -229,18 +229,4 @@ async function fetch(id: string): Promise<GuildData> {
 		(await fetchGuildData(container.prisma.orm, id)) ?? (Object.assign(Object.create(null), getDefaultGuildSettings(), { id }) as GuildData);
 	if ((generations.get(id) ?? 0) === generation) cache.set(id, data);
 	return data;
-}
-
-/**
- * Resolves the ID of the guild a structure belongs to. The HTTP framework keeps no guild cache, so the ID is read from
- * the structure itself: a snowflake is a guild ID, a structure with a `guild` (a channel, a member, a role, an emoji, an
- * invite) belongs to that guild, and any other structure is a guild.
- */
-function resolveGuildId(guild: GuildResolvable): Snowflake {
-	if (typeof guild === 'string') return guild;
-
-	const owner = 'guild' in guild ? guild.guild : null;
-	const resolvedId = owner?.id ?? (guild as { id?: Snowflake }).id;
-	if (!resolvedId) throw new TypeError(`Cannot resolve "guild" to a Guild instance.`);
-	return resolvedId;
 }

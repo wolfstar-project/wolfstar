@@ -2,7 +2,7 @@ import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/struc
 import { TypeVariation } from '#utils/moderationConstants';
 import type { Command } from '@wolfstar/http-framework';
 import { container, RegisterCommand } from '@wolfstar/http-framework';
-import { deleteStickyNickname, setStickyNickname } from 'wolfstar-database';
+import { deleteStickyNickname, fetchStickyNickname, setStickyNickname } from 'wolfstar-database';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
@@ -41,14 +41,32 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 		const { guild, target } = context;
 
 		// A reset unsticks the nickname even when the member has none right now, which would make the action fail:
-		if (nickname === undefined) await deleteStickyNickname(container.prisma, guild.id, target.id);
+		if (nickname === undefined) {
+			await deleteStickyNickname(container.prisma, guild.id, target.id);
+			return super.handle(interaction, context);
+		}
 
-		const entry = await super.handle(interaction, context);
-		if (nickname === undefined) return entry;
-
+		// The sticky nickname is written before Discord is asked, so a database that fails leaves the nickname of the
+		// member as it was, and it is put back as it was when Discord refuses the change:
+		const previous = await fetchStickyNickname(container.prisma, guild.id, target.id);
 		if (sticky) await setStickyNickname(container.prisma, guild.id, target.id, nickname);
-		else await deleteStickyNickname(container.prisma, guild.id, target.id);
-		return entry;
+		else if (previous !== null) await deleteStickyNickname(container.prisma, guild.id, target.id);
+
+		try {
+			return await super.handle(interaction, context);
+		} catch (error) {
+			await this.restoreStickyNickname(guild.id, target.id, previous);
+			throw error;
+		}
+	}
+
+	private async restoreStickyNickname(guildId: string, userId: string, previous: string | null) {
+		try {
+			if (previous === null) await deleteStickyNickname(container.prisma, guildId, userId);
+			else await setStickyNickname(container.prisma, guildId, userId, previous);
+		} catch (error) {
+			container.logger.error('Could not put the sticky nickname back after a nickname change failed:', error);
+		}
 	}
 
 	protected override getHandleDataContext(_interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {

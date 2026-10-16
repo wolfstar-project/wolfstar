@@ -1,4 +1,4 @@
-import { parseTimestamp, type ModerationData } from 'wolfstar-database';
+import { formatTimestamp, parseTimestamp, type ModerationData } from 'wolfstar-database';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 
 /**
@@ -176,7 +176,7 @@ export function toModerationRow(record: ModerationRecord) {
 		guildId: BigInt(record.guildId),
 		action: getModerationRecordAction(record.type, record.metadata),
 		metadata: encodeModerationRecordMetadata(record.type, record.metadata),
-		createdAt: new Date(record.createdAt).toISOString() as ModerationData['createdAt'],
+		createdAt: formatTimestamp(record.createdAt) as ModerationData['createdAt'],
 		duration: encodeModerationRecordDuration(record.duration),
 		targetId: BigInt(record.userId),
 		moderatorId: BigInt(record.moderatorId),

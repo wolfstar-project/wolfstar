@@ -1,7 +1,8 @@
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
- * How many channels, or roles, a list of a restriction holds: what a select menu of a modal lets pick.
+ * How many channels, or roles, a select menu of the modal of a restriction shows and lets pick. A list that is stored
+ * keeps every entry: the ones a server set up before, a channel at a time, can be more than that.
  */
 export const MaximumCommandRestrictionEntries = 25;
 
@@ -42,7 +43,7 @@ function isSnowflake(value: unknown): value is Snowflake {
 
 function readList(value: unknown): Snowflake[] {
 	if (!Array.isArray(value)) return [];
-	return [...new Set(value.filter((entry) => isSnowflake(entry)))].slice(0, MaximumCommandRestrictionEntries);
+	return [...new Set(value.filter((entry) => isSnowflake(entry)))];
 }
 
 /**
@@ -117,6 +118,40 @@ export function setCommandRestriction(restrictions: readonly CommandRestriction[
 	const others = restrictions.filter((entry) => entry.command !== restriction.command);
 	const [next] = readCommandRestrictions([restriction]);
 	return next === undefined ? others : [...others, next];
+}
+
+/**
+ * Adds to what the modal of a command picked the entries of the stored restriction that the modal could not show, the
+ * ones past the {@linkcode MaximumCommandRestrictionEntries} of a select menu, so saving the modal does not drop them.
+ *
+ * @param picked - What the modal picked.
+ * @param stored - The restriction the modal was opened with.
+ * @returns The restriction to save.
+ */
+export function keepHiddenRestrictionEntries(picked: CommandRestriction, stored: CommandRestriction): CommandRestriction {
+	const next = createCommandRestriction(picked.command);
+	for (const list of CommandRestrictionLists) next[list] = readList([...picked[list], ...stored[list].slice(MaximumCommandRestrictionEntries)]);
+	return next;
+}
+
+/**
+ * The revision of what the modal of a command edits: whether the command is disabled by its name, and its restriction.
+ * The modal carries the one it was opened with, so a modal that was opened before another administrator saved the
+ * command is refused instead of undoing what they saved.
+ *
+ * @param restriction - The restriction of the command.
+ * @param disabled - Whether `commands.disabled` has the name of the command.
+ * @returns A hash of 32 bits (FNV-1a), which fits a custom ID.
+ */
+export function getCommandRestrictionRevision(restriction: CommandRestriction, disabled: boolean): number {
+	const text = JSON.stringify([disabled, ...CommandRestrictionLists.map((list) => restriction[list])]);
+	let hash = 0x811c9dc5;
+	for (let index = 0; index < text.length; index++) {
+		hash ^= text.charCodeAt(index);
+		hash = Math.imul(hash, 0x01000193) >>> 0;
+	}
+
+	return hash;
 }
 
 /**

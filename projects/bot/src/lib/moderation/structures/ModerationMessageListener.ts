@@ -47,6 +47,10 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 	}
 
 	public async run(message: GuildMessage) {
+		// The module of the auto-moderation turns every rule off, whatever each of them says:
+		const settings = await readSettings(message.guildId);
+		if (!settings.modulesAutomod) return;
+
 		const rules = (await readAutoModerationRules(message.guildId)).filter(
 			(rule): rule is AutoModerationRule<Type> => rule.type === this.type && rule.enabled && this.checkRule(rule, message)
 		);

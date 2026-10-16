@@ -291,7 +291,7 @@ describe('commands menu', () => {
 		const unrestricted = { command: 'automod', allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [] };
 
 		test('GIVEN a command THEN its modal asks whether it is enabled, and the channels and roles it is restricted to', () => {
-			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted);
+			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted, 0);
 			const components = flatten(modal.components);
 			const radio = components.find((component) => component.type === ComponentType.RadioGroup)!;
 
@@ -316,7 +316,7 @@ describe('commands menu', () => {
 		});
 
 		test('GIVEN a command a server disabled by its category THEN its modal says by what and selects Disabled', () => {
-			const modal = renderCommandEditModal(createContext(), commands[1], 'Moderation.*', { ...unrestricted, command: 'ban' });
+			const modal = renderCommandEditModal(createContext(), commands[1], 'Moderation.*', { ...unrestricted, command: 'ban' }, 0);
 			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
 
 			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusDisabledBy {\\"rule\\":\\"Moderation.*\\"}');
@@ -329,7 +329,7 @@ describe('commands menu', () => {
 				allowedChannels: ['111111111111111111'],
 				ignoredRoles: ['222222222222222222', '333333333333333333']
 			};
-			const modal = renderCommandEditModal(createContext(), commands[0], null, restriction);
+			const modal = renderCommandEditModal(createContext(), commands[0], null, restriction, 0);
 			const picked = Object.fromEntries(
 				flatten(modal.components)
 					.filter((component) => component.type === ComponentType.ChannelSelect || component.type === ComponentType.RoleSelect)
@@ -345,6 +345,23 @@ describe('commands menu', () => {
 					{ id: '333333333333333333', type: 'role' }
 				]
 			});
+		});
+
+		test('GIVEN a revision THEN the modal carries it where the other actions carry their page', () => {
+			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted, 4_294_967_295);
+
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toMatchObject({ verb: 'save', page: 4_294_967_295 });
+			expect(modal.custom_id.length).toBeLessThanOrEqual(100);
+		});
+
+		test('GIVEN more entries than a select menu shows THEN the modal shows the first ones', () => {
+			const many = Array.from({ length: 30 }, (_, index) => `1000000000000000${String(index).padStart(2, '0')}`);
+			const modal = renderCommandEditModal(createContext(), commands[0], null, { ...unrestricted, ignoredChannels: many }, 0);
+			const select = flatten(modal.components).find((component) => component.custom_id === 'ignoredChannels') as unknown as {
+				default_values: unknown[];
+			};
+
+			expect(select.default_values).toHaveLength(25);
 		});
 
 		test('GIVEN the results of a search THEN they can be paged and left', () => {

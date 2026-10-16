@@ -1,3 +1,4 @@
+import { readSettings } from '#lib/database';
 import { getAutoModerationRuleMentions, readAutoModerationRules } from '#lib/moderation/automod/rules';
 import { Events } from '#lib/types/Enums';
 import type { GuildMessage } from '#lib/types';
@@ -20,6 +21,10 @@ export class UserListener extends Listener {
 		// Without the member the roles and the moderator level cannot be checked, so nobody is moderated by guess:
 		const { member } = message;
 		if (member === null) return;
+
+		// The module of the auto-moderation turns every rule off, whatever each of them says:
+		const settings = await readSettings(message.guildId);
+		if (!settings.modulesAutomod) return;
 
 		const { roleIds } = member;
 		const rules = (await readAutoModerationRules(message.guildId)).filter(
