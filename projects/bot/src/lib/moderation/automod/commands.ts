@@ -49,6 +49,7 @@ export const AutoModerationRuleTypeKeys = {
 	NoMentionSpam: `${Root}:typeNoMentionSpam`,
 	Phishing: `${Root}:typePhishing`,
 	Spoilers: `${Root}:typeSpoilers`,
+	Polls: `${Root}:typePolls`,
 	Stickers: `${Root}:typeStickers`,
 	StickersCooldown: `${Root}:typeStickersCooldown`,
 	Words: `${Root}:typeWords`,

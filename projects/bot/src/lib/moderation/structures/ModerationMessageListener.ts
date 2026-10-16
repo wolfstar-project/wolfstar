@@ -340,7 +340,8 @@ export declare namespace ModerationMessageListener {
 		| 'MentionsCooldown'
 		| 'Spoilers'
 		| 'MaskedLinks'
-		| 'StickersCooldown';
+		| 'StickersCooldown'
+		| 'Polls';
 
 	/**
 	 * The keys of the alerts the rules send to the channel when a message infringes them.

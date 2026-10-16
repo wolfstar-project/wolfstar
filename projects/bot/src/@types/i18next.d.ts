@@ -170,6 +170,8 @@ declare module "i18next" {
         typeMentionsCooldownDescription: "Detects more than {{maximum, number}} mentions of a member within {{timePeriod, number}} seconds.";
         typeSpoilers: "Spoilers";
         typeSpoilersDescription: "Detects the messages with a spoiler, text or attachment.";
+        typePolls: "Polls";
+        typePollsDescription: "Detects the messages with a native poll of Discord.";
         typeMaskedLinks: "Masked links";
         typeMaskedLinksDescription: "Detects the links that are shown as another text.";
         typeStickersCooldown: "Sticker cooldown";
@@ -3134,6 +3136,10 @@ declare module "i18next" {
         ruleSpoilersWithMaximum: "[Auto-Moderation] Triggered spoiler filter, reached {{amount}} out of {{maximum}} infractions.";
         ruleSpoilersAlert: "{{REDCROSS}} Hey {{user}}, spoilers aren't allowed here.";
         ruleSpoilersFooter: "Spoiler";
+        rulePolls: "[Auto-Moderation] Triggered poll filter, no threshold.";
+        rulePollsWithMaximum: "[Auto-Moderation] Triggered poll filter, reached {{amount}} out of {{maximum}} infractions.";
+        rulePollsAlert: "{{REDCROSS}} Hey {{user}}, polls aren't allowed here.";
+        rulePollsFooter: "Poll";
         ruleMaskedLinks: "[Auto-Moderation] Triggered masked link filter, no threshold.";
         ruleMaskedLinksWithMaximum: "[Auto-Moderation] Triggered masked link filter, reached {{amount}} out of {{maximum}} infractions.";
         ruleMaskedLinksAlert: "{{REDCROSS}} Hey {{user}}, masked links aren't allowed here.";

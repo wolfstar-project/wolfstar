@@ -85,6 +85,8 @@
 	"typeMentionsCooldownDescription": "Detects more than {{maximum, number}} mentions of a member within {{timePeriod, number}} seconds.",
 	"typeSpoilers": "Spoilers",
 	"typeSpoilersDescription": "Detects the messages with a spoiler, text or attachment.",
+	"typePolls": "Polls",
+	"typePollsDescription": "Detects the messages with a native poll of Discord.",
 	"typeMaskedLinks": "Masked links",
 	"typeMaskedLinksDescription": "Detects the links that are shown as another text.",
 	"typeStickersCooldown": "Sticker cooldown",
