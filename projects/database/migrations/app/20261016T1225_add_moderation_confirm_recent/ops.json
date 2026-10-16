@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.GuildModeration.confirm_recent_minutes",
+		"label": "Add the setting that asks to confirm a punishment when the member has a recent case",
+		"summary": "Adds column \"confirm_recent_minutes\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, 0 (never asking) for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"confirm_recent_minutes\" int4 NOT NULL DEFAULT 0",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"confirm_recent_minutes\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'confirm_recent_minutes') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

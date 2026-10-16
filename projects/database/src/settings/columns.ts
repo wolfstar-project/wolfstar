@@ -152,7 +152,8 @@ export const Columns = {
 		moderationTrackBans: ['trackBans', 'value'],
 		moderationTrackTimeouts: ['trackTimeouts', 'value'],
 		moderationTrackRoles: ['trackRoles', 'value'],
-		moderationTrackKicks: ['trackKicks', 'value']
+		moderationTrackKicks: ['trackKicks', 'value'],
+		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value']
 	}),
 	...columns('GuildPermissions', {
 		permissionsUsers: ['users', 'value'],
