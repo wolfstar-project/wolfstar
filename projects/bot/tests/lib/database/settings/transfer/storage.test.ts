@@ -37,13 +37,13 @@ function createDatabase() {
 	return { db, tx, log, committed };
 }
 
-const settings = { ...getDefaultGuildSettings(), id: guildId, modulesLogs: false } as ReadonlyGuildData;
+const settings = { ...getDefaultGuildSettings(), id: guildId, modulesModeration: false } as ReadonlyGuildData;
 
 describe('writeGuildData', () => {
 	test('GIVEN what is written alongside THEN it runs in the transaction of the settings, after them', async () => {
 		const { db, log, committed } = createDatabase();
 
-		await writeGuildData(db, settings, { modulesLogs: false }, async () => void log.push('alongside'));
+		await writeGuildData(db, settings, { modulesModeration: false }, async () => void log.push('alongside'));
 
 		expect(log.at(-1)).toBe('alongside');
 		expect(log.indexOf('upsert Modules')).toBeLessThan(log.indexOf('alongside'));
@@ -54,7 +54,7 @@ describe('writeGuildData', () => {
 		const { db, committed } = createDatabase();
 
 		await expect(
-			writeGuildData(db, settings, { modulesLogs: false }, async () => {
+			writeGuildData(db, settings, { modulesModeration: false }, async () => {
 				throw new Error('nope');
 			})
 		).rejects.toThrow('nope');

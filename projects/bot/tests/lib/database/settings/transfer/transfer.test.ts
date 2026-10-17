@@ -117,8 +117,6 @@ describe('configuration file', () => {
 				'timezone',
 				'modules.automod',
 				'modules.moderation',
-				'modules.logs',
-				'modules.commands',
 				'modules.roles',
 				'automod.track-native',
 				'commands.disabled',
@@ -165,7 +163,7 @@ describe('configuration file', () => {
 		test('GIVEN a server THEN the file has the version, the date, the portable settings and the rules', () => {
 			const settings = createSettings({
 				language: 'it',
-				modulesLogs: false,
+				modulesModeration: false,
 				commandsDisabled: ['ping'],
 				rolesAdmin: ['1'],
 				logsMemberAdd: '2'
@@ -174,7 +172,7 @@ describe('configuration file', () => {
 
 			expect(file.version).toBe(ConfigurationFileVersion);
 			expect(file.exportedAt).toBe('2026-10-11T08:30:00.000Z');
-			expect(file.settings).toMatchObject({ language: 'it', 'modules.logs': false, 'commands.disabled': ['ping'] });
+			expect(file.settings).toMatchObject({ language: 'it', 'modules.moderation': false, 'commands.disabled': ['ping'] });
 			expect(Object.keys(file.settings)).toHaveLength(getPortableKeys().length);
 			expect(JSON.stringify(file)).not.toContain('"roles.admin"');
 			expect(file.automod.rules).toHaveLength(1);
@@ -192,7 +190,7 @@ describe('configuration file', () => {
 		});
 
 		test('GIVEN the file THEN it is read back as it is', async () => {
-			const settings = createSettings({ modulesLogs: false, commandsDisabled: ['ok-ping'] });
+			const settings = createSettings({ modulesModeration: false, commandsDisabled: ['ok-ping'] });
 			const rules = [createRule('Words', 'Bad words', '1', { options: { words: ['spam'] } })];
 			const file = createConfigurationFile(settings, rules, now);
 
@@ -203,13 +201,19 @@ describe('configuration file', () => {
 	});
 
 	describe('parseConfigurationFile', () => {
-		const valid = { version: 1, settings: { 'modules.logs': false }, automod: { rules: [] } };
+		const valid = { version: 1, settings: { 'modules.moderation': false }, automod: { rules: [] } };
 
 		test('GIVEN a valid file THEN it is read', async () => {
 			const parsed = await parseOk(valid);
 
-			expect(parsed.settings).toEqual([{ key: findPortableKey('modules.logs'), value: false }]);
+			expect(parsed.settings).toEqual([{ key: findPortableKey('modules.moderation'), value: false }]);
 			expect(parsed.rules).toEqual([]);
+		});
+
+		test('GIVEN a file exported with a setting the bot no longer has THEN it is left out', async () => {
+			const parsed = await parseOk({ ...valid, settings: { ...valid.settings, 'modules.logs': false, 'modules.commands': true } });
+
+			expect(parsed.settings).toEqual([{ key: findPortableKey('modules.moderation'), value: false }]);
 		});
 
 		test('GIVEN a file without the sections THEN they are left out', async () => {
@@ -245,11 +249,11 @@ describe('configuration file', () => {
 		test('GIVEN values of the wrong type THEN they are refused', async () => {
 			const issues = await parseIssues({
 				version: 1,
-				settings: { 'modules.logs': 'yes', language: 3, 'commands.disabled': 'ok-ping', 'reports.notify': [true] }
+				settings: { 'modules.moderation': 'yes', language: 3, 'commands.disabled': 'ok-ping', 'reports.notify': [true] }
 			});
 
 			expect(issues.map((issue) => issue.path)).toEqual([
-				'settings.modules.logs',
+				'settings.modules.moderation',
 				'settings.language',
 				'settings.commands.disabled',
 				'settings.reports.notify'
@@ -278,7 +282,7 @@ describe('configuration file', () => {
 		test('GIVEN every problem THEN every one is reported, and the file is not partly accepted', async () => {
 			const issues = await parseIssues({
 				version: 1,
-				settings: { language: 'xx', 'modules.logs': false },
+				settings: { language: 'xx', 'modules.moderation': false },
 				automod: { rules: [{ type: 'Links', name: '' }] }
 			});
 
@@ -536,8 +540,8 @@ describe('configuration file', () => {
 			parseOk({ version: 1, settings, ...(rules ? { automod: { rules } } : {}) });
 
 		test('GIVEN settings THEN only the ones that differ are changed', async () => {
-			const settings = createSettings({ modulesLogs: false });
-			const parsed = await file(undefined, { 'modules.logs': false, 'modules.roles': false, 'commands.disabled': ['ok-a'] });
+			const settings = createSettings({ modulesModeration: false });
+			const parsed = await file(undefined, { 'modules.moderation': false, 'modules.roles': false, 'commands.disabled': ['ok-a'] });
 			const plan = planConfigurationImport(settings, [], parsed);
 
 			expect(plan.settings.map((change) => change.key.property)).toEqual(['modulesRoles', 'commandsDisabled']);
@@ -728,7 +732,7 @@ describe('configuration file', () => {
 			const rules = [createRule('Links', 'Links', '1'), createRule('Invites', 'Old', '2')];
 			const parsed = await parseOk({
 				version: 1,
-				settings: { 'modules.logs': false, language: 'it' },
+				settings: { 'modules.moderation': false, language: 'it' },
 				automod: {
 					rules: [
 						{ name: 'Links', type: 'Links', enabled: false },

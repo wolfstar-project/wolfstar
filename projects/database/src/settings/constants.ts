@@ -13,8 +13,6 @@ export function getDefaultGuildSettings() {
 		updatesChannel: null,
 		modulesAutomod: true,
 		modulesModeration: true,
-		modulesLogs: true,
-		modulesCommands: true,
 		modulesRoles: true,
 		automodChannel: null,
 		automodTrackNative: false,

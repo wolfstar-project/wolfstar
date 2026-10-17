@@ -2,6 +2,7 @@ import {
 	ConfigurationFileVersion,
 	ConfigurationRuleFields,
 	findPortableKey,
+	RemovedSettings,
 	toConfigurationRule,
 	type ConfigurationRule
 } from '#lib/database/settings/transfer/format';
@@ -116,6 +117,8 @@ async function parseSettings(section: unknown, context: ParseConfigurationContex
 	}
 
 	for (const [name, value] of Object.entries(section)) {
+		if (RemovedSettings.has(name)) continue;
+
 		const path = `settings.${name}`;
 		const key = findPortableKey(name);
 		if (key === null) {

@@ -54,13 +54,13 @@ vi.mock('#lib/moderation/automod/rules', () => ({
 }));
 
 function createParsed(value: boolean): ParsedConfiguration {
-	return { settings: [{ key: { property: 'modulesLogs' } as never, value }], rules: null };
+	return { settings: [{ key: { property: 'modulesModeration' } as never, value }], rules: null };
 }
 
 describe('applyConfigurationImport', () => {
 	beforeEach(() => {
 		mocks.events.length = 0;
-		mocks.settings = { ...getDefaultGuildSettings(), id: guildId, modulesLogs: true } as ReadonlyGuildData;
+		mocks.settings = { ...getDefaultGuildSettings(), id: guildId, modulesModeration: true } as ReadonlyGuildData;
 	});
 
 	test('GIVEN a file that changes nothing THEN the lock of the settings is held until the rules were read', async () => {

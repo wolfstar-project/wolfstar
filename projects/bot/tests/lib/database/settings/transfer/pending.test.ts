@@ -70,7 +70,7 @@ describe('pending import', () => {
 
 			const { ignoredRoles: _roles, ignoredChannels: _channels, ...rule } = getDefaultAutoModerationRule('Words');
 			parsed = {
-				settings: [{ key: findPortableKey('modules.logs')!, value: false }],
+				settings: [{ key: findPortableKey('modules.moderation')!, value: false }],
 				rules: [{ ...rule, name: 'Words', options: { words: ['spam'] } }]
 			};
 		});
@@ -88,7 +88,7 @@ describe('pending import', () => {
 			expect(key).toBe(`wolfstar:settings:import:${guildId}:${ownerId}:${importId}`);
 			expect(entry.seconds).toBe(PendingImportSeconds);
 			expect(entry.seconds).toBe(300);
-			expect(JSON.parse(entry.value)).toEqual({ settings: [['modules.logs', false]], rules: parsed.rules });
+			expect(JSON.parse(entry.value)).toEqual({ settings: [['modules.moderation', false]], rules: parsed.rules });
 		});
 
 		test('GIVEN an import that waits THEN it is taken as it was read, with the keys of its settings, and only once', async () => {
@@ -96,7 +96,7 @@ describe('pending import', () => {
 
 			const taken = await takePendingImport(guildId, ownerId, importId);
 			expect(taken).toEqual(parsed);
-			expect(taken?.settings[0].key).toBe(findPortableKey('modules.logs'));
+			expect(taken?.settings[0].key).toBe(findPortableKey('modules.moderation'));
 			await expect(takePendingImport(guildId, ownerId, importId)).resolves.toBeNull();
 		});
 
