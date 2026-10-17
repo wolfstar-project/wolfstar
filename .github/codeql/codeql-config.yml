@@ -1,0 +1,6 @@
+name: wolfstar
+
+# The tests are not shipped, and some hold what the scan looks for on purpose: the worker tests run an expression
+# that backtracks exponentially to check that it is timed out.
+paths-ignore:
+    - '**/tests/**'

@@ -1,0 +1,431 @@
+[
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.Duplicates",
+		"label": "Add value \"Duplicates\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"Duplicates\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"Duplicates\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Duplicates"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"Duplicates\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'Duplicates'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"Duplicates\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Duplicates"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.Characters",
+		"label": "Add value \"Characters\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"Characters\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"Characters\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Characters"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"Characters\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'Characters'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"Characters\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Characters"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.Emojis",
+		"label": "Add value \"Emojis\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"Emojis\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"Emojis\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Emojis"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"Emojis\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'Emojis'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"Emojis\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Emojis"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.MessageSpam",
+		"label": "Add value \"MessageSpam\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"MessageSpam\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"MessageSpam\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MessageSpam"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"MessageSpam\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'MessageSpam'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"MessageSpam\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MessageSpam"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.ImageSpam",
+		"label": "Add value \"ImageSpam\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"ImageSpam\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"ImageSpam\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "ImageSpam"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"ImageSpam\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'ImageSpam'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"ImageSpam\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "ImageSpam"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.LinksCooldown",
+		"label": "Add value \"LinksCooldown\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"LinksCooldown\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"LinksCooldown\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "LinksCooldown"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"LinksCooldown\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'LinksCooldown'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"LinksCooldown\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "LinksCooldown"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.MassMentions",
+		"label": "Add value \"MassMentions\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"MassMentions\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"MassMentions\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MassMentions"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"MassMentions\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'MassMentions'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"MassMentions\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MassMentions"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.MentionsCooldown",
+		"label": "Add value \"MentionsCooldown\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"MentionsCooldown\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"MentionsCooldown\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MentionsCooldown"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"MentionsCooldown\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'MentionsCooldown'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"MentionsCooldown\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MentionsCooldown"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.Spoilers",
+		"label": "Add value \"Spoilers\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"Spoilers\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"Spoilers\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Spoilers"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"Spoilers\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'Spoilers'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"Spoilers\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "Spoilers"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.MaskedLinks",
+		"label": "Add value \"MaskedLinks\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"MaskedLinks\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"MaskedLinks\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MaskedLinks"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"MaskedLinks\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'MaskedLinks'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"MaskedLinks\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "MaskedLinks"]
+			}
+		]
+	},
+	{
+		"id": "addNativeEnumValue.GuildAutoModerationRuleType.StickersCooldown",
+		"label": "Add value \"StickersCooldown\" to enum type \"GuildAutoModerationRuleType\"",
+		"summary": "Adds value \"StickersCooldown\" to enum type \"GuildAutoModerationRuleType\". A newly added enum value cannot be used until the transaction that adds it commits, so a migration that both appends a value and uses it in the same step will fail at apply.",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure enum type \"GuildAutoModerationRuleType\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_type\" AS \"t\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"t\".\"typtype\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "e"]
+			},
+			{
+				"description": "ensure value \"StickersCooldown\" is absent from enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "StickersCooldown"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add value \"StickersCooldown\" to enum type \"GuildAutoModerationRuleType\"",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" ADD VALUE 'StickersCooldown'"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify value \"StickersCooldown\" exists on enum type \"GuildAutoModerationRuleType\"",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_enum\" AS \"e\" INNER JOIN \"pg_type\" AS \"t\" ON \"t\".\"oid\" = \"e\".\"enumtypid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"t\".\"typnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"t\".\"typname\" = $2 AND \"e\".\"enumlabel\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRuleType", "StickersCooldown"]
+			}
+		]
+	}
+]

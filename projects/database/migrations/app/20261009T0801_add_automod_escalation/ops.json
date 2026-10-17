@@ -1,0 +1,70 @@
+[
+	{
+		"id": "column.public.GuildAutoModerationRule.escalation",
+		"label": "Add column \"escalation\" to \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "escalation",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"escalation\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "escalation"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"escalation\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationRule\" ADD COLUMN \"escalation\" \"jsonb\" DEFAULT ('[]'::jsonb) NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"escalation\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "escalation"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAutoModerationRule.escalation_duration",
+		"label": "Add column \"escalation_duration\" to \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "escalation_duration",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"escalation_duration\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "escalation_duration"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"escalation_duration\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationRule\" ADD COLUMN \"escalation_duration\" int4 DEFAULT 86400000 NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"escalation_duration\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "escalation_duration"]
+			}
+		]
+	}
+]

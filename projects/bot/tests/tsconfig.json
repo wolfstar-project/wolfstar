@@ -1,0 +1,21 @@
+{
+	"extends": "../.stars/tsconfig.app.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"incremental": false,
+		"types": ["vitest/globals"],
+		"verbatimModuleSyntax": false,
+		"paths": {
+			"#lib/*": ["../src/lib/*"],
+			"#common": ["../src/lib/common/index"],
+			"#common/*": ["../src/lib/common/*"],
+			"#types": ["../src/lib/types/index"],
+			"#types/*": ["../src/lib/types/*"],
+			"#utils/*": ["../src/lib/utilities/*"],
+			"#root/*": ["../src/*"],
+			"#mocks/*": ["./mocks/*"]
+		}
+	},
+	"include": [".", "../src/**/*"],
+	"exclude": ["../dist/**/*"]
+}
