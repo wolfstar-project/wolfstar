@@ -174,6 +174,7 @@ overrides:
   '@prisma/orm-target-postgres': 8.0.0-rc.13
 
 patchedDependencies:
+  '@wolfstar/plugin-subcommands-advanced@2.2.0': f0fcab68648752f70a42e3bff7ab0d0debcc061276b0cae2251cfd1010895c72
   prisma-orm-extension-typed-json: 0d3a5a0b92c2c9f5ec59df4645d5355dd5751077a9322d29179f9e493a4c240a
 
 importers:
@@ -329,7 +330,7 @@ importers:
         version: 0.2.1(@wolfstar/kit@0.2.1)
       '@wolfstar/plugin-subcommands-advanced':
         specifier: ^2.2.0
-        version: 2.2.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)
+        version: 2.2.0(patch_hash=f0fcab68648752f70a42e3bff7ab0d0debcc061276b0cae2251cfd1010895c72)(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)
       '@wolfstar/shared-http-pieces':
         specifier: ^2.0.12
         version: 2.0.12(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.2.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.0)(typescript@7.0.2)(varlock@1.21.1)(vite@8.3.2)
@@ -8141,7 +8142,7 @@ snapshots:
     optionalDependencies:
       '@wolfstar/kit': 0.2.1(magicast@0.5.5)
 
-  '@wolfstar/plugin-subcommands-advanced@2.2.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)':
+  '@wolfstar/plugin-subcommands-advanced@2.2.0(patch_hash=f0fcab68648752f70a42e3bff7ab0d0debcc061276b0cae2251cfd1010895c72)(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)':
     dependencies:
       '@discordjs/builders': 1.14.1
       '@discordjs/collection': 2.1.1

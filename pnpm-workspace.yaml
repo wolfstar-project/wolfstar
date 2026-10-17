@@ -49,4 +49,8 @@ minimumReleaseAgeExclude:
 shamefullyHoist: true
 ignoreWorkspaceRootCheck: true
 patchedDependencies:
+    # Adds the subcommands to their parent in the order of their names, not in the order the pieces load, which changes
+    # from a start to the next and made the registration on start update the commands every time. Drop it once
+    # wolfstar-project/plugins#256 is released.
+    '@wolfstar/plugin-subcommands-advanced@2.2.0': patches/@wolfstar__plugin-subcommands-advanced@2.2.0.patch
     prisma-orm-extension-typed-json: patches/prisma-orm-extension-typed-json.patch
