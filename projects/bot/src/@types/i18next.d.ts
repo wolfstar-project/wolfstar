@@ -770,7 +770,7 @@ declare module "i18next" {
         durationName: "duration";
         durationDescription: "How long the lockdown lasts, from 30 seconds to a month. Only applies when locking.";
         globalName: "global";
-        globalDescription: "⚠️ Whether to lock down the whole server instead of a channel.";
+        globalDescription: "⚠ Whether to lock down the whole server instead of a channel.";
         auditLogLockRequestedBy: "Locked down at the request of {{user}}";
         auditLogUnlockRequestedBy: "Unlocked at the request of {{user}}";
         guildLocked: "{{role}} is already locked down in the server.";
