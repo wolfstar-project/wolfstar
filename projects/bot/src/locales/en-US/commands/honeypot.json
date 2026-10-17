@@ -31,6 +31,7 @@
 	"setupMissingPermissions": "I cannot run the honeypot in a channel I create, so I did not create one. I am missing: {{missing, list(conjunction)}}.",
 	"logsMissingPermissions": "I cannot report the catches to {{channel}}, I am missing: {{missing, list(conjunction)}}.",
 	"logsSameChannel": "The catches cannot be reported to the honeypot channel itself, choose another channel for `logs`.",
+	"menuLogsSameChannel": "The catches cannot be reported to the honeypot channel itself, choose another channel to report them to.",
 	"setupDone": "{{GREENTICK}} {{channel}} is the honeypot channel now: I act on whoever writes there, but the moderators.",
 	"setupCreated": "{{GREENTICK}} I created {{channel}} and made it the honeypot channel: I act on whoever writes there, but the moderators. Move it where the bots will find it, the top of the list works best.",
 	"setupNoticeFailed": "I could not send the warning to the channel, so it says nothing for now.",

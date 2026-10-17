@@ -4,6 +4,7 @@ import { getConfigurableGroups, getConfigurableKeys, reset, writeSettings, type 
 import { type ReadonlyGuildData } from 'wolfstar-database';
 import { fetchUserReportEnabled, toggleUserReportEnabled } from '#lib/database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { isHoneypotSettingsWrite, writeHoneypotSettings } from '#lib/moderation/honeypot/settings';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import {
 	RootModuleValue,
@@ -180,10 +181,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const parsed = await parseSettingInput(this.getSerializerContext(context, key), input);
 		if (!parsed.ok) return interaction.reply({ content: parsed.error, flags: MessageFlags.Ephemeral });
 
-		await writeSettings(guildId, { [key.property]: parsed.value }, interaction.user.id);
-		return interaction.update(
-			renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), this.getGroup(key), action.page)
-		);
+		return this.commit(interaction, guildId, action, key, () => ({ [key.property]: parsed.value }), context.t);
 	}
 
 	/**
@@ -215,10 +213,42 @@ export class UserInteractionHandler extends InteractionHandler {
 		key: SchemaKey,
 		getValue: (settings: ReadonlyGuildData) => unknown
 	) {
-		await writeSettings(guildId, (settings) => ({ [key.property]: getValue(settings) }), interaction.user.id);
+		return this.commit(
+			interaction,
+			guildId,
+			action,
+			key,
+			(settings) => ({ [key.property]: getValue(settings) }),
+			createTranslator(getSupportedUserLanguageT(interaction))
+		);
+	}
 
-		const context = await createSettingsMenuContext(interaction, guildId, action.ownerId);
-		return interaction.update(renderSettingsGroup(context, key.parent ?? getConfigurableGroups(), action.page));
+	/**
+	 * Writes a key, then shows the page of its group it was on. The keys of the honeypot go through
+	 * `writeHoneypotSettings`, which checks them and keeps the warning of its channel as the `/honeypot` commands do.
+	 */
+	private async commit(
+		interaction: InteractionHandler.Interaction,
+		guildId: Snowflake,
+		action: SettingsMenuAction,
+		key: SchemaKey,
+		getData: (settings: ReadonlyGuildData) => Partial<ReadonlyGuildData>,
+		t: Translator
+	) {
+		const group = this.getGroup(key);
+		if (!isHoneypotSettingsWrite([key.property])) {
+			await writeSettings(guildId, getData, interaction.user.id);
+			return interaction.update(renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), group, action.page));
+		}
+
+		// The permissions are read and the warning is sent, which may take longer than Discord waits for an answer:
+		const deferred = await interaction.deferUpdate();
+		const written = await writeHoneypotSettings(guildId, getData as never, interaction.user.id, t);
+		if (!written.ok) return interaction.followup({ content: written.error, flags: MessageFlags.Ephemeral });
+
+		await deferred.update(renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), group, action.page));
+		if (written.notes.length === 0) return null;
+		return interaction.followup({ content: written.notes.join('\n'), flags: MessageFlags.Ephemeral });
 	}
 
 	/**
@@ -246,7 +276,16 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (confirmed === null) return null;
 		if (!confirmed) return interaction.followup({ content: t('commands/conf:menuResetCancelled'), flags: MessageFlags.Ephemeral });
 
-		await writeSettings(guildId, Object.assign({}, ...keys.map((key) => reset(key))), interaction.user.id);
+		// A reset of the honeypot takes the warning off its channel, as `/honeypot disable` does:
+		const data = Object.assign({}, ...keys.map((key) => reset(key))) as Partial<ReadonlyGuildData>;
+		let notes: string[] = [];
+		if (isHoneypotSettingsWrite(Object.keys(data))) {
+			const written = await writeHoneypotSettings(guildId, data as never, interaction.user.id, t);
+			if (!written.ok) return interaction.followup({ content: written.error, flags: MessageFlags.Ephemeral });
+			notes = written.notes;
+		} else {
+			await writeSettings(guildId, data, interaction.user.id);
+		}
 
 		// The click was answered with the prompt, so the menu is edited as the message of the bot it is:
 		const context = await createSettingsMenuContext(interaction, guildId, action.ownerId);
@@ -255,7 +294,8 @@ export class UserInteractionHandler extends InteractionHandler {
 			.patch(Routes.channelMessage(message.channel_id, message.id), { body: renderSettingsGroup(context, group, action.page) })
 			.catch((error: unknown) => container.logger.warn('[Settings] Could not refresh the menu after a reset:', error));
 
-		return interaction.followup({ content: t('commands/conf:menuResetDone', { module }), flags: MessageFlags.Ephemeral });
+		const content = [t('commands/conf:menuResetDone', { module }), ...notes].join('\n');
+		return interaction.followup({ content, flags: MessageFlags.Ephemeral });
 	}
 
 	/**
