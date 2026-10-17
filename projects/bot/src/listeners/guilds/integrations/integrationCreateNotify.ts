@@ -1,13 +1,14 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { userMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Integration } from '@wolfstar/plugin-gateway';
 
 /**
  * Logs an app or an integration that is added to the server, and who added it.
  */
-@RegisterAsGatewayListener('integrationCreate')
+@RegisterAsDispatchListener('integrationCreate')
 export class UserListener extends EventGatewayListener<'integrationCreate'> {
 	public async run(integration: Integration) {
 		await sendSimpleLog(integration.guildId, 'logsIntegrations', (t) => ({

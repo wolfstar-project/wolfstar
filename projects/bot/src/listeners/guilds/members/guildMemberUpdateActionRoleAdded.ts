@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { RoleActions } from '#lib/moderation/actions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
@@ -6,7 +7,7 @@ import { getAddedRoles, takeOwnRoleChange } from '#lib/moderation/common/roleCha
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { getLogPrefix } from '#utils/functions';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
 
@@ -25,7 +26,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  * Nothing is sent to the member: the roles are not given by a command, so there is no answer to carry their
  * preference of direct messages through.
  */
-@RegisterAsGatewayListener('guildMemberUpdate')
+@RegisterAsDispatchListener('guildMemberUpdate')
 export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 	public async run(previous: GuildMember | null, next: GuildMember) {
 		// The roles a member had are only known when it was cached:

@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { RoleActions } from '#lib/moderation/actions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
@@ -6,7 +7,7 @@ import { getRemovedRoles, takeOwnRoleChange } from '#lib/moderation/common/roleC
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { getLogPrefix } from '#utils/functions';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
 
@@ -23,7 +24,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  * given back, the task is dropped), in the name of who took the role when the audit log says it. A role the bot took
  * itself is not taken for one, see `markOwnRoleChange`.
  */
-@RegisterAsGatewayListener('guildMemberUpdate')
+@RegisterAsDispatchListener('guildMemberUpdate')
 export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 	public async run(previous: GuildMember | null, next: GuildMember) {
 		// The roles a member had are only known when it was cached:

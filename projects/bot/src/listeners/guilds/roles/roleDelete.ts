@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { retryWithDelays, seconds } from '#common';
 import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
 import { RoleActions } from '#lib/moderation/actions';
@@ -5,7 +6,7 @@ import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/str
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { getLogPrefix } from '#utils/functions';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Guild, Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
 import type { StickyRole, UniqueRoleSet } from 'wolfstar-database';
@@ -15,7 +16,7 @@ import type { StickyRole, UniqueRoleSet } from 'wolfstar-database';
  */
 const RestoreRetryDelays = [seconds(5), seconds(30)];
 
-@RegisterAsGatewayListener('guildRoleDelete')
+@RegisterAsDispatchListener('guildRoleDelete')
 export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 	public async run(_role: Role | null, data: GatewayGuildRoleDeleteDispatchData) {
 		const guild = await this.container.gatewayClient.guilds.resolve(data.guild_id);

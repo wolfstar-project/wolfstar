@@ -1,10 +1,11 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention, userMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { AnyThreadChannel } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('threadCreate')
+@RegisterAsDispatchListener('threadCreate')
 export class UserListener extends EventGatewayListener<'threadCreate'> {
 	public async run(thread: AnyThreadChannel) {
 		await sendSimpleLog(thread.guildId, 'logsThreads', (t) => ({

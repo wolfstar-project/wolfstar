@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events } from '#lib/types';
@@ -6,11 +7,11 @@ import { getLogger } from '#utils/functions';
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder, userMention } from '@discordjs/builders';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 
-@RegisterAsGatewayListener('guildMemberUpdate')
+@RegisterAsDispatchListener('guildMemberUpdate')
 export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 	public async run(previous: GuildMember | null, next: GuildMember) {
 		// Without the previous state of the member there is nothing to compare the nickname with:

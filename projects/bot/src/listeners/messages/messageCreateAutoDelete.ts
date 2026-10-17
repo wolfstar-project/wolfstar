@@ -1,7 +1,8 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { resolveOnErrorCodes } from '#common';
 import { shouldAutoDelete } from '#lib/moderation/cleanup/filters';
 import { readAutoDeletes } from '#lib/moderation/cleanup/store';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
@@ -15,7 +16,7 @@ import { RESTJSONErrorCodes } from 'discord-api-types/v10';
  * messages deleted too. The messages of the bot itself are never deleted, nor the ones of the system (joins, pins,
  * boosts). A message that is deleted after a delay is a job of the `autoDeleteMessage` task, so it survives a restart.
  */
-@RegisterAsGatewayListener('messageCreate')
+@RegisterAsDispatchListener('messageCreate')
 export class UserListener extends EventGatewayListener<'messageCreate'> {
 	public async run(message: Message) {
 		const { guildId } = message;

@@ -1,9 +1,10 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { deleteSettingsCached } from '#lib/database';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildDeleteDispatchData } from 'discord-api-types/v10';
 
-@RegisterAsGatewayListener('guildDelete')
+@RegisterAsDispatchListener('guildDelete')
 export class UserListener extends EventGatewayListener<'guildDelete'> {
 	public run(_guild: Guild | null, data: GatewayGuildDeleteDispatchData) {
 		if (data.unavailable) return;

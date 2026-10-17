@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { resolveOnErrorCodes, seconds, toErrorCodeResult } from '#common';
 import { readSettings, writeSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -7,12 +8,12 @@ import { getLogPrefix, getLogger, getStickyRoles, getUserMentionWithFlagsString 
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
 import { isNullish, type Nullish } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import { fetchStickyNickname } from 'wolfstar-database';
 
-@RegisterAsGatewayListener('guildMemberAdd')
+@RegisterAsDispatchListener('guildMemberAdd')
 export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 	public async run(member: GuildMember) {
 		void this.#handleStickyNickname(member);

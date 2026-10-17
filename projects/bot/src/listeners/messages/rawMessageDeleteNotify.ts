@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -7,12 +8,12 @@ import { getContent, getFullEmbedAuthor, getImages, setMultipleEmbedImages } fro
 import { EmbedBuilder } from '@discordjs/builders';
 import { cutText, isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { isNsfwChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 import type { GatewayMessageDeleteDispatchData } from 'discord-api-types/v10';
 import type { GuildDataKey, ReadonlyGuildData } from 'wolfstar-database';
 
-@RegisterAsGatewayListener('messageDelete')
+@RegisterAsDispatchListener('messageDelete')
 export class UserListener extends EventGatewayListener<'messageDelete'> {
 	public async run(message: Message | null, data: GatewayMessageDeleteDispatchData) {
 		if (!data.guild_id) return;

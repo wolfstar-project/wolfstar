@@ -1,13 +1,14 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('guildRoleDelete')
+@RegisterAsDispatchListener('guildRoleDelete')
 export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 	public async run(role: Role | null) {
 		// The role was not cached, its name is unknown:

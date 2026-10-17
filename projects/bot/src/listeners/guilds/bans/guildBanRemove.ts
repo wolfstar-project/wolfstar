@@ -1,10 +1,11 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { getLogger, getModeration } from '#utils/functions';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildBan } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('guildBanRemove')
+@RegisterAsDispatchListener('guildBanRemove')
 export class UserListener extends EventGatewayListener<'guildBanRemove'> {
 	public async run({ guild, user }: GuildBan) {
 		if (!guild?.available) return;

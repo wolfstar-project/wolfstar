@@ -1,14 +1,15 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { getScheduledEventLines, getScheduledEventStatus } from '#lib/moderation/logs/events';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildScheduledEvent } from '@wolfstar/plugin-gateway';
 
 /**
  * Logs the changes of a scheduled event a moderator makes: its name, its time, its place and its status (started,
  * ended, cancelled). The count of the members who are interested is not logged.
  */
-@RegisterAsGatewayListener('guildScheduledEventUpdate')
+@RegisterAsDispatchListener('guildScheduledEventUpdate')
 export class UserListener extends EventGatewayListener<'guildScheduledEventUpdate'> {
 	public async run(previous: GuildScheduledEvent | null, next: GuildScheduledEvent) {
 		if (previous === null) return;

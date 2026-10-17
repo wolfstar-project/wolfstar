@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { toPermissionsArray } from '#utils/bits';
@@ -8,7 +9,7 @@ import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { isGuildBasedChannel, isNsfwChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type {
 	AnnouncementChannel,
 	AnyChannel,
@@ -21,7 +22,7 @@ import type {
 } from '@wolfstar/plugin-gateway';
 import { ChannelType, OverwriteType } from 'discord-api-types/v10';
 
-@RegisterAsGatewayListener('channelUpdate')
+@RegisterAsDispatchListener('channelUpdate')
 export class UserListener extends EventGatewayListener<'channelUpdate'> {
 	public async run(old: AnyChannel | null, updated: AnyChannel) {
 		// The channel was not cached, there is nothing to compare it with:

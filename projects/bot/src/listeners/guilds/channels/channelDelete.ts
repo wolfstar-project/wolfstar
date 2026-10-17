@@ -1,14 +1,15 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings, writeSettings } from '#lib/database';
 import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import { isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
 
 /**
  * Takes a channel that was deleted out of what the server restricted its commands to: a command that was only allowed
  * in that channel would otherwise run nowhere.
  */
-@RegisterAsGatewayListener('channelDelete')
+@RegisterAsDispatchListener('channelDelete')
 export class UserListener extends EventGatewayListener<'channelDelete'> {
 	public async run(deleted: AnyChannel) {
 		if (!isGuildBasedChannel(deleted)) return;

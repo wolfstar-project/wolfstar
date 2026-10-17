@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { toChannelsArray } from '#utils/bits';
@@ -6,7 +7,7 @@ import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Guild, SystemChannelFlagsBitField } from '@wolfstar/plugin-gateway';
 import { GuildMFALevel } from 'discord-api-types/v10';
 import type {
@@ -20,7 +21,7 @@ import type {
 type ChannelFlags = Readonly<SystemChannelFlagsBitField>;
 type Features = readonly `${GuildFeature}`[];
 
-@RegisterAsGatewayListener('guildUpdate')
+@RegisterAsDispatchListener('guildUpdate')
 export class UserListener extends EventGatewayListener<'guildUpdate'> {
 	public async run(previous: Guild | null, next: Guild) {
 		// The guild was not cached, there is nothing to compare it with:

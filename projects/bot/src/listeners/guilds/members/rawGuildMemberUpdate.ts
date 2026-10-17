@@ -1,7 +1,8 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { floatPromise } from '#common';
 import { readSettings } from '#lib/database';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import {
 	AuditLogEvent,
 	GatewayDispatchEvents,
@@ -14,7 +15,7 @@ import {
 
 type GatewayData = Readonly<GatewayGuildMemberUpdateDispatchData>;
 
-@RegisterAsGatewayListener('raw')
+@RegisterAsDispatchListener('raw')
 export class UserListener extends EventGatewayListener<'raw'> {
 	private readonly requiredPermissions = PermissionFlagsBits.ViewAuditLog;
 

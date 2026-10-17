@@ -1,9 +1,10 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { SoundboardSound } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('guildSoundboardSoundCreate')
+@RegisterAsDispatchListener('guildSoundboardSoundCreate')
 export class UserListener extends EventGatewayListener<'guildSoundboardSoundCreate'> {
 	public async run(sound: SoundboardSound) {
 		if (!sound.guildId) return;

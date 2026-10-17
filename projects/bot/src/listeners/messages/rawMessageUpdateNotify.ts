@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -7,11 +8,11 @@ import { createLogMessage, getLogger, getMessageUpdateContent } from '#utils/fun
 import { hyperlink, messageLink } from '@discordjs/formatters';
 import { isNullish } from '@sapphire/utilities';
 import { isNsfwChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Message, User } from '@wolfstar/plugin-gateway';
 import type { GuildDataKey, ReadonlyGuildData } from 'wolfstar-database';
 
-@RegisterAsGatewayListener('messageUpdate')
+@RegisterAsDispatchListener('messageUpdate')
 export class UserListener extends EventGatewayListener<'messageUpdate'> {
 	public async run(cachedMessage: Message | null, message: Message) {
 		if (!message.guildId) return;

@@ -1,9 +1,10 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Sticker } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('stickerDelete')
+@RegisterAsDispatchListener('stickerDelete')
 export class UserListener extends EventGatewayListener<'stickerDelete'> {
 	public async run(sticker: Sticker) {
 		if (!sticker.guildId) return;

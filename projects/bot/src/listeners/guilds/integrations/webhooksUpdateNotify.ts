@@ -1,7 +1,8 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GatewayWebhooksUpdateDispatchData } from 'discord-api-types/v10';
 
 /**
@@ -9,7 +10,7 @@ import type { GatewayWebhooksUpdateDispatchData } from 'discord-api-types/v10';
  * the log says the channel and nothing more. The webhooks the bot makes for its own logs (`logs.webhooks`) are changes
  * too, and are logged as the others.
  */
-@RegisterAsGatewayListener('webhooksUpdate')
+@RegisterAsDispatchListener('webhooksUpdate')
 export class UserListener extends EventGatewayListener<'webhooksUpdate'> {
 	public async run(data: GatewayWebhooksUpdateDispatchData) {
 		await sendSimpleLog(data.guild_id, 'logsIntegrations', (t) => ({

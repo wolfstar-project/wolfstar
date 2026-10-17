@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events } from '#lib/types';
@@ -5,14 +6,14 @@ import { Colors } from '#utils/constants';
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
 import { isIterableCache } from '@wolfstar/plugin-cache';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { User } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import type { Snowflake } from 'discord-api-types/v10';
 
 type FooterKey = 'events/guilds-members:usernameUpdate';
 
-@RegisterAsGatewayListener('userUpdate')
+@RegisterAsDispatchListener('userUpdate')
 export class UserListener extends EventGatewayListener<'userUpdate'> {
 	public async run(previous: User | null, user: User) {
 		// Without the previous state of the user there is nothing to compare the username with:

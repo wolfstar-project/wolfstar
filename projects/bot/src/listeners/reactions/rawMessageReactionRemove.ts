@@ -1,10 +1,11 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { Events } from '#lib/types';
 import { canReadMessages, isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { MessageReaction, MessageReactionEventDetails, User } from '@wolfstar/plugin-gateway';
 import type { GatewayMessageReactionRemoveDispatchData } from 'discord-api-types/v10';
 
-@RegisterAsGatewayListener('messageReactionRemove')
+@RegisterAsDispatchListener('messageReactionRemove')
 export class UserListener extends EventGatewayListener<'messageReactionRemove'> {
 	public async run(reaction: MessageReaction, _user: User | null, details: MessageReactionEventDetails) {
 		const channel = await this.container.gatewayClient.channels.resolve(reaction.channelId);

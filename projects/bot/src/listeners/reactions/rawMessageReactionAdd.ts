@@ -1,10 +1,11 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { Events, type ReactionAddData } from '#lib/types';
 import { getEmojiString } from '#utils/functions';
 import { canReadMessages, isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener, GuildEmoji, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, GuildEmoji } from '@wolfstar/plugin-gateway';
 import type { MessageReaction, MessageReactionEventDetails, User } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('messageReactionAdd')
+@RegisterAsDispatchListener('messageReactionAdd')
 export class UserListener extends EventGatewayListener<'messageReactionAdd'> {
 	public async run(reaction: MessageReaction, _user: User | null, details: MessageReactionEventDetails) {
 		const channel = await this.container.gatewayClient.channels.resolve(reaction.channelId);

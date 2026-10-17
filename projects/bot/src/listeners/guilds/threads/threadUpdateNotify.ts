@@ -1,14 +1,15 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { AnyThreadChannel } from '@wolfstar/plugin-gateway';
 
 /**
  * Logs what a moderator does to a thread: renaming, archiving and locking it. The other updates of a thread (the count
  * of its messages and members) are not logged.
  */
-@RegisterAsGatewayListener('threadUpdate')
+@RegisterAsDispatchListener('threadUpdate')
 export class UserListener extends EventGatewayListener<'threadUpdate'> {
 	public async run(previous: AnyThreadChannel | null, next: AnyThreadChannel) {
 		// The thread was not cached, there is nothing to compare it with:

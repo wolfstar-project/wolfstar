@@ -1,11 +1,12 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildInvite } from '@wolfstar/plugin-gateway';
 import type { GatewayInviteDeleteDispatchData } from 'discord-api-types/v10';
 
-@RegisterAsGatewayListener('inviteDelete')
+@RegisterAsDispatchListener('inviteDelete')
 export class UserListener extends EventGatewayListener<'inviteDelete'> {
 	public async run(_invite: GuildInvite | null, data: GatewayInviteDeleteDispatchData) {
 		if (!data.guild_id) return;

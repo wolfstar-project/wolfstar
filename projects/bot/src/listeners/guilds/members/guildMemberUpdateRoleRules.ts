@@ -1,8 +1,9 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { getRoleRuleChanges, readRoleRules } from '#lib/roles/rules';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { getLogPrefix } from '#utils/functions';
 import { toErrorCodeResult } from '#common';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord-api-types/v10';
 
@@ -16,7 +17,7 @@ import { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord-api-types/v10';
  * a role another rule gives (`checkRoleRule`). A role the bot cannot manage (above its own, or managed by an
  * integration) is left as it is.
  */
-@RegisterAsGatewayListener('guildMemberUpdate')
+@RegisterAsDispatchListener('guildMemberUpdate')
 export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 	public async run(previous: GuildMember | null, next: GuildMember) {
 		// Only a change of the roles can change what the rules say, the other updates of a member cost nothing:

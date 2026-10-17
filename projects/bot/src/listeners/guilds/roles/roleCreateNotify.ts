@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { toPermissionsArray } from '#utils/bits';
@@ -5,10 +6,10 @@ import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('guildRoleCreate')
+@RegisterAsDispatchListener('guildRoleCreate')
 export class UserListener extends EventGatewayListener<'guildRoleCreate'> {
 	public async run(next: Role) {
 		const settings = await readSettings(next);

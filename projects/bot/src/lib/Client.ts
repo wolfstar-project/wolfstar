@@ -13,7 +13,7 @@ import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
 import { bindShardClient, createShardClient } from '#lib/sharder/client';
 import { AnalyticsData } from '#lib/structures/AnalyticsData';
-import { isWorker } from '#utils/worker';
+import { forwardsDispatches, isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
 
 export function createClient() {
@@ -88,7 +88,8 @@ export function createClient() {
 	if (worker) replayGatewayDispatches(container.broker, container.gatewayClient);
 
 	// Publishes every gateway dispatch onto a Redis stream, for workers that replay them (see `@wolfstar/plugin-broker`):
-	if (!worker && envParseBoolean('BROKER_ENABLED', false)) {
+	// The listeners of the dispatches are not loaded here then, the workers run them (see `RegisterAsDispatchListener`):
+	if (forwardsDispatches()) {
 		const broker = createBroker({
 			redis: container.redis,
 			stream: envParseString('BROKER_STREAM', 'wolfstar:events'),
@@ -106,7 +107,7 @@ export function createClient() {
  * the end of the stream, so one the first worker creates when it starts would never see what was published before.
  */
 async function ensureBrokerGroup() {
-	if (isWorker() || !envParseBoolean('BROKER_ENABLED', false)) return;
+	if (!forwardsDispatches()) return;
 
 	const stream = envParseString('BROKER_STREAM', 'wolfstar:events');
 	const group = envParseString('BROKER_GROUP', 'workers');

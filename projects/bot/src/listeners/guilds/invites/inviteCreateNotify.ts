@@ -1,10 +1,11 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildInvite } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('inviteCreate')
+@RegisterAsDispatchListener('inviteCreate')
 export class UserListener extends EventGatewayListener<'inviteCreate'> {
 	public async run(invite: GuildInvite) {
 		if (invite.guildId === null) return;

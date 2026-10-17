@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { toPermissionsArray } from '#utils/bits';
@@ -6,10 +7,10 @@ import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder, userMention } from '@discordjs/builders';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('guildRoleUpdate')
+@RegisterAsDispatchListener('guildRoleUpdate')
 export class UserListener extends EventGatewayListener<'guildRoleUpdate'> {
 	public async run(previous: Role | null, next: Role) {
 		// The role was not cached, there is nothing to compare it with:

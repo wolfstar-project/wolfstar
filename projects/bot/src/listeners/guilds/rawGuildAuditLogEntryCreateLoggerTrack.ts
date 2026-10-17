@@ -1,13 +1,14 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { getLogger } from '#utils/functions/guild';
 import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildAuditLogsEntry } from '@wolfstar/plugin-gateway';
 import { AuditLogEvent } from 'discord-api-types/v10';
 
 /**
  * Hands the audit log entries to the logger managers, which pass who did what to the listener that waits for it.
  */
-@RegisterAsGatewayListener('guildAuditLogEntryCreate')
+@RegisterAsDispatchListener('guildAuditLogEntryCreate')
 export class UserListener extends EventGatewayListener<'guildAuditLogEntryCreate'> {
 	public override async run(entry: GuildAuditLogsEntry) {
 		const guild = await this.container.gatewayClient.guilds.resolve(entry.guildId);

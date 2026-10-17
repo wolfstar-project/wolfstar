@@ -1,11 +1,12 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention } from '@discordjs/formatters';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { AnyThreadChannel } from '@wolfstar/plugin-gateway';
 import type { GatewayThreadDeleteDispatchData } from 'discord-api-types/v10';
 
-@RegisterAsGatewayListener('threadDelete')
+@RegisterAsDispatchListener('threadDelete')
 export class UserListener extends EventGatewayListener<'threadDelete'> {
 	public async run(thread: AnyThreadChannel | null, data: GatewayThreadDeleteDispatchData) {
 		await sendSimpleLog(data.guild_id, 'logsThreads', (t) => ({

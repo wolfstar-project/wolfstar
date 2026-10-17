@@ -1,3 +1,4 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { resolveOnErrorCodes } from '#common';
 import { getUsersInCourse } from '#lib/moderation/common/roleChanges';
 import { fetchGuildT } from '#lib/moderation/common/util';
@@ -5,7 +6,7 @@ import { isKnownNotVoiceMuted, markNotVoiceMuted, shouldRestoreVoiceMute } from 
 import { getLogPrefix, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { VoiceState } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 
@@ -24,7 +25,7 @@ import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord
  * This runs for every voice state update of every server, so the cases are only read for a member who came into a
  * channel and is not muted, and who was not found to have no voice mute a moment ago (`markNotVoiceMuted`).
  */
-@RegisterAsGatewayListener('voiceStateUpdate')
+@RegisterAsDispatchListener('voiceStateUpdate')
 export class UserListener extends EventGatewayListener<'voiceStateUpdate'> {
 	public async run(previous: VoiceState | null, next: VoiceState) {
 		const { guildId, userId } = next;

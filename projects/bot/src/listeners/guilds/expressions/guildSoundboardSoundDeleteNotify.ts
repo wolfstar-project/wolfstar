@@ -1,10 +1,11 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { SoundboardSound } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildSoundboardSoundDeleteDispatchData } from 'discord-api-types/v10';
 
-@RegisterAsGatewayListener('guildSoundboardSoundDelete')
+@RegisterAsDispatchListener('guildSoundboardSoundDelete')
 export class UserListener extends EventGatewayListener<'guildSoundboardSoundDelete'> {
 	public async run(sound: SoundboardSound | null, data: GatewayGuildSoundboardSoundDeleteDispatchData) {
 		await sendSimpleLog(data.guild_id, 'logsExpressions', (t) => ({

@@ -1,11 +1,12 @@
+import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { fetchCaseMemberRoleIds } from '#lib/moderation/common/roles';
 import { getLogger, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
-import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener } from '@wolfstar/plugin-gateway';
 import type { GuildBan } from '@wolfstar/plugin-gateway';
 
-@RegisterAsGatewayListener('guildBanAdd')
+@RegisterAsDispatchListener('guildBanAdd')
 export class UserListener extends EventGatewayListener<'guildBanAdd'> {
 	public async run({ guild, user }: GuildBan) {
 		if (!guild?.available) return;
