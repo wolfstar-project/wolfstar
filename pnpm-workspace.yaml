@@ -15,9 +15,6 @@ overrides:
     # shared-http-pieces 2.0.7 pins plugin-i18next 2.0.3, whose peer range stops at
     # http-framework ^3: dedupe it onto the bot's copy, which accepts ^5.
     '@wolfstar/shared-http-pieces>@wolfstar/plugin-i18next': ^2.1.1
-    # The plugins ask for http-framework ^6, which a prerelease does not satisfy: without this they get a second
-    # copy of the framework, with a container of its own. Drop it with the pin of the bot, once 6.3.2 is released.
-    '@wolfstar/http-framework': 6.3.2-next-20261011190015
     ansi-regex: ^5.0.1
     discord-api-types: ^0.38.56
     minimist: ^1.2.8
