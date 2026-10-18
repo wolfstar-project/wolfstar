@@ -317,7 +317,7 @@ importers:
         version: 2.2.0(@wolfstar/http-framework@6.4.0)(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.2.1)(typescript@7.0.2)
       '@wolfstar/plugin-logger':
         specifier: ^0.4.0
-        version: 0.4.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)(consola@3.4.2)
+        version: 0.4.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)(consola@3.4.2)(evlog@2.33.0)
       '@wolfstar/plugin-scheduled-tasks':
         specifier: ^0.2.0
         version: 0.2.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)(ioredis@6.0.0)(pg@8.23.1)
@@ -345,6 +345,9 @@ importers:
       discord-api-types:
         specifier: ^0.38.56
         version: 0.38.56
+      evlog:
+        specifier: ^2.33.0
+        version: 2.33.0(ofetch@1.5.1)(react@19.3.0)(vite@8.3.4)
       gradient-string:
         specifier: ^3.0.0
         version: 3.0.0
@@ -4052,6 +4055,73 @@ packages:
   eventsource@2.0.2:
     resolution: {integrity: sha512-IzUmBGPR3+oUG9dUeXynyNmf91/3zUSJg1lCktzKw47OXuhco54U3r9B7O4XX+Rb1Itm9OZ2b0RkTs10bICOxA==}
     engines: {node: '>=12.0.0'}
+
+  evlog@2.33.0:
+    resolution: {integrity: sha512-QXu0QCrkY3jw+Wr8s6Pj0W0HLtXXDCnSjNMeYxi4WX6IXuyJqeT9iKp9zn6lJBUGm4a+pFjNccL7eAQq/UrM3A==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@nestjs/common': '>=11.2.7'
+      '@nestjs/core': '>=11.2.7'
+      '@nuxt/kit': ^4.4.2
+      '@orpc/server': '>=1.15.4'
+      '@tanstack/start-client-core': ^1.170.34
+      ai: '>=6.0.168 <8.0.0'
+      effect: ^4.0.0
+      elysia: '>=1.4.30'
+      eve: '>=0.30.0'
+      express: '>=5.2.1'
+      fastify: '>=5.12.5'
+      h3: ^1.15.11
+      hono: '>=4.13.12'
+      next: '>=16.3.8'
+      nitro: ^3.0.260311-beta
+      nitropack: ^2.13.4
+      ofetch: ^1.5.1
+      react: '>=19.3.0'
+      react-router: '>=7.18.4'
+      vite: ^8.3.2
+    peerDependenciesMeta:
+      '@nestjs/common':
+        optional: true
+      '@nestjs/core':
+        optional: true
+      '@nuxt/kit':
+        optional: true
+      '@orpc/server':
+        optional: true
+      '@tanstack/start-client-core':
+        optional: true
+      ai:
+        optional: true
+      effect:
+        optional: true
+      elysia:
+        optional: true
+      eve:
+        optional: true
+      express:
+        optional: true
+      fastify:
+        optional: true
+      h3:
+        optional: true
+      hono:
+        optional: true
+      next:
+        optional: true
+      nitro:
+        optional: true
+      nitropack:
+        optional: true
+      ofetch:
+        optional: true
+      react:
+        optional: true
+      react-router:
+        optional: true
+      vite:
+        optional: true
 
   execa@9.6.1:
     resolution: {integrity: sha512-9Be3ZoN4LmYR90tUoVu2te2BsbzHfhJyfEiAVfz7N5/zv+jduIfLrV2xdQXOHbaD6KgpGdO9PRPM1Y4Q9QkPkA==}
@@ -8281,12 +8351,13 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@wolfstar/plugin-logger@0.4.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)(consola@3.4.2)':
+  '@wolfstar/plugin-logger@0.4.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)(consola@3.4.2)(evlog@2.33.0)':
     dependencies:
       '@wolfstar/http-framework': 6.4.0(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
     optionalDependencies:
       '@wolfstar/kit': 0.2.1(magicast@0.5.5)
       consola: 3.4.2
+      evlog: 2.33.0(ofetch@1.5.1)(react@19.3.0)(vite@8.3.4)
 
   '@wolfstar/plugin-scheduled-tasks@0.2.0(@wolfstar/http-framework@6.4.0)(@wolfstar/kit@0.2.1)(ioredis@6.0.0)(pg@8.23.1)':
     dependencies:
@@ -8978,6 +9049,12 @@ snapshots:
       - bare-abort-controller
 
   eventsource@2.0.2: {}
+
+  evlog@2.33.0(ofetch@1.5.1)(react@19.3.0)(vite@8.3.4):
+    optionalDependencies:
+      ofetch: 1.5.1
+      react: 19.3.0
+      vite: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
 
   execa@9.6.1:
     dependencies:

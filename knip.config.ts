@@ -27,6 +27,8 @@ export default {
 				'src/main.ts',
 				'src/{commands,interaction-handlers,listeners,preconditions,routes,scheduled-tasks,serializers}/**/*.ts',
 				'src/lib/moderation/workers/worker.mts',
+				// The drain of the logger module in `stars.config.ts`, which names it by its path:
+				'src/evlog-drain.ts',
 				'scripts/*.{ts,mjs}',
 				'stars.config.ts',
 				'tests/**/*.ts'
