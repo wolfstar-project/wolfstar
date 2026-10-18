@@ -1,6 +1,5 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettingsCached, readSettingsPermissionNodes, writeSettings } from '#lib/database';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Role } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('guildRoleUpdate')

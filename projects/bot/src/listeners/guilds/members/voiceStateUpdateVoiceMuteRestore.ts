@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { resolveOnErrorCodes } from '#common';
 import { getUsersInCourse } from '#lib/moderation/common/roleChanges';
 import { fetchGuildT } from '#lib/moderation/common/util';
@@ -6,7 +5,7 @@ import { isKnownNotVoiceMuted, markNotVoiceMuted, shouldRestoreVoiceMute } from 
 import { getLogPrefix, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { VoiceState } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 

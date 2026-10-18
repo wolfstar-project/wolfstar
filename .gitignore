@@ -62,6 +62,8 @@ projects/*/.devin/
 
 # Claude Code: personal, machine-local settings
 .claude/settings.local.json
+# exclude backup
+.claude/settings.local.json.bak-doctor
 
 # The JUnit report of the test run, which the CI uploads
 test-report.junit.xml

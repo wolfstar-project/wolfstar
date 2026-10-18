@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { retryWithDelays } from '#common';
 import { seconds } from 'wolfstar-shared';
 import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
@@ -7,7 +6,7 @@ import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/str
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { getLogPrefix } from '#utils/functions';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Guild, Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
 import type { StickyRole, UniqueRoleSet } from 'wolfstar-database';

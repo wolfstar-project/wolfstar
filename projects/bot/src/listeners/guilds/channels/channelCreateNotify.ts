@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { toPermissionsArray } from 'wolfstar-shared';
@@ -8,7 +7,7 @@ import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { isGuildBasedChannel, isNsfwChannel, isThreadChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type {
 	AnnouncementChannel,
 	AnyChannel,

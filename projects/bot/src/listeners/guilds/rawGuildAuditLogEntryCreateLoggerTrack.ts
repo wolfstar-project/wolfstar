@@ -1,7 +1,6 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { getLogger } from '#utils/functions/guild';
 import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildAuditLogsEntry } from '@wolfstar/plugin-gateway';
 import { AuditLogEvent } from 'discord-api-types/v10';
 
