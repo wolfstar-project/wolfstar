@@ -400,6 +400,9 @@ namespace public {
     guild       Guild                         @relation(fields:[guildId], references:[id], onDelete: Restrict, onUpdate: Cascade, map: "ModerationAction_guild_id_fkey", index: false)
 
     @@id([id, guildId], map: "ModerationAction_pkey")
+    // The table is owned outside this repository, so the indexes are created by hand (`20261018T1353_add_moderation_action_indexes`).
+    @@index([guildId, createdAt, id], map: "ModerationAction_guild_id_created_at_id_idx")
+    @@index([guildId, targetId, createdAt], map: "ModerationAction_guild_id_target_id_created_at_idx")
 
     @@control(external)
   }
