@@ -38,6 +38,7 @@ COPY --chown=node:node patches/ patches/
 COPY --chown=node:node .husky/ .husky/
 COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
+COPY --chown=node:node projects/shared/package.json projects/shared/package.json
 
 # Install the pnpm version pinned in package.json `packageManager` into a Corepack cache
 # every user can read; otherwise the unprivileged `node` user re-downloads pnpm on each start.
@@ -64,15 +65,16 @@ ENV NODE_ENV="development"
 COPY --chown=node:node tsconfig.base.json tsconfig.base.json
 COPY --chown=node:node scripts/ scripts/
 
-# wolfstar-bot links wolfstar-database as a workspace dependency, so it has to
-# be built before it.
+# wolfstar-bot links wolfstar-database and wolfstar-shared as workspace
+# dependencies, so they have to be built before it.
 COPY --chown=node:node projects/database/ projects/database/
+COPY --chown=node:node projects/shared/ projects/shared/
 COPY --chown=node:node projects/bot/ projects/bot/
 
 RUN --mount=type=cache,id=pnpm-store,target=/var/cache/pnpm \
     pnpm install --frozen-lockfile \
     && pnpm --filter wolfstar-database prisma:generate \
-    && pnpm --filter wolfstar-database --filter wolfstar-bot run build
+    && pnpm --filter wolfstar-database --filter wolfstar-shared --filter wolfstar-bot run build
 
 # ================ #
 #   Runner Stage   #
@@ -89,6 +91,7 @@ COPY --chown=node:node .env.schema .env.schema
 COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
+COPY --chown=node:node --from=builder /usr/src/app/projects/shared/dist projects/shared/dist
 
 RUN --mount=type=cache,id=pnpm-store,target=/var/cache/pnpm \
     pnpm install --prod --frozen-lockfile

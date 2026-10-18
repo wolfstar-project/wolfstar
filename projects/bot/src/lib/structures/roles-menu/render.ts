@@ -1,5 +1,5 @@
 import type { Translator } from '#lib/structures/commands/utils';
-import { PermissionsBits } from '#utils/bits';
+import { PermissionsBits } from 'wolfstar-shared';
 import { BrandingColors } from '#utils/constants';
 import { getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import { inlineCode, roleMention } from '@discordjs/formatters';

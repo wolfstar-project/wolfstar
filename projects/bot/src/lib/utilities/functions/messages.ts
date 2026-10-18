@@ -1,4 +1,5 @@
-import { floatPromise, minutes, resolveOnErrorCodes } from '#common';
+import { floatPromise, resolveOnErrorCodes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import type { MessageResponseOptions, PartialMessage } from '@wolfstar/http-framework';
 import type { Message } from '@wolfstar/plugin-gateway';
 import {

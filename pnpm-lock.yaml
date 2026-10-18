@@ -364,6 +364,9 @@ importers:
       wolfstar-database:
         specifier: workspace:^
         version: link:../database
+      wolfstar-shared:
+        specifier: workspace:^
+        version: link:../shared
     devDependencies:
       '@rollup/plugin-alias':
         specifier: 6.0.0
@@ -402,6 +405,28 @@ importers:
       prisma:
         specifier: 8.0.0-rc.19
         version: 8.0.0-rc.19(@types/node@24.19.1)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.2)(vitest@5.0.3)(ws@8.22.0)
+      tsdown:
+        specifier: 0.23.0
+        version: 0.23.0(oxc-resolver@11.24.2)(typescript@7.0.2)
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+
+  projects/shared:
+    dependencies:
+      '@sapphire/bitfield':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@sapphire/utilities':
+        specifier: ^3.18.2
+        version: 3.18.2
+      discord-api-types:
+        specifier: ^0.38.56
+        version: 0.38.56
+    devDependencies:
+      '@types/node':
+        specifier: ^24.19.1
+        version: 24.19.1
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(oxc-resolver@11.24.2)(typescript@7.0.2)

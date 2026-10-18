@@ -3,7 +3,7 @@ import type { GuildMessage } from '#lib/types';
 import { Colors } from '#utils/constants';
 import { deleteMessage } from '#utils/functions';
 import { getContent, getFullEmbedAuthor } from '#utils/util';
-import { isZalgo } from '#utils/zalgo';
+import { isZalgo } from 'wolfstar-shared';
 import { EmbedBuilder } from '@discordjs/builders';
 import { ApplyOptions } from '@wolfstar/decorators';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';

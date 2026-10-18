@@ -32,11 +32,15 @@ export default {
 				'tests/**/*.ts'
 			],
 			project: ['src/**/*.{ts,mts}', 'scripts/**/*.{ts,mjs}', 'tests/**/*.ts'],
-			// Kept although nothing imports them yet: the barrels of `src/lib`, and the timer helpers ported from the original bot.
+			// Kept although nothing imports them yet: the barrels of `src/lib`.
 			// `env.d.ts` is written by Varlock and only declares globals, so nothing imports it either.
-			ignore: ['src/lib/**/index.ts', 'src/lib/utilities/Timers.ts', 'src/@types/env.d.ts'],
+			ignore: ['src/lib/**/index.ts', 'src/@types/env.d.ts'],
 			// The Stars CLI injects `import '@wolfstar/plugin-*/register'` into `main.ts` for every plugin in `dependencies`:
 			ignoreDependencies: ['@wolfstar/plugin-.+']
+		},
+		'projects/shared': {
+			entry: ['tests/**/*.ts'],
+			project: ['src/**/*.ts', 'tests/**/*.ts']
 		},
 		'projects/database': {
 			project: ['src/**/*.ts']

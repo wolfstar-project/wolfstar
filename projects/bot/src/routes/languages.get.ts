@@ -1,5 +1,5 @@
 import { ratelimit } from '#lib/api/utils';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { Route } from '@wolfstar/plugin-api';
 
 export class UserRoute extends Route {

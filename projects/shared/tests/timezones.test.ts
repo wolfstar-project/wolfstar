@@ -1,4 +1,4 @@
-import { getTimeZoneChoices, getTimeZoneOffset, isTimeZone, resolveTimeZone, TimeZoneGroups } from '#utils/timezones';
+import { getTimeZoneChoices, getTimeZoneOffset, isTimeZone, resolveTimeZone, TimeZoneGroups } from '../src/timezones';
 
 describe('timezones', () => {
 	describe('resolveTimeZone', () => {

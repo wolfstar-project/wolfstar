@@ -2,7 +2,7 @@ import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import { getConfigurableKeys, isSchemaKey, serializeSettings, writeSettingsTransaction, type SchemaDataKey, type Serializer } from '#lib/database';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { cast } from '#utils/util';
 import { HttpCodes, Route, type MimeType } from '@wolfstar/plugin-api';
 import type { GuildDataValue, ReadonlyGuildData } from 'wolfstar-database';

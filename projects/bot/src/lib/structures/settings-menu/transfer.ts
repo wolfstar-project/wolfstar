@@ -1,5 +1,5 @@
 import { SettingsImportFileInputId, SettingsImportTextInputId } from '#lib/structures/settings-menu/render';
-import { getModalValue, getModalValues } from '#utils/interactions';
+import { getModalValue, getModalValues } from 'wolfstar-shared';
 import type { APIAttachment, APIModalSubmission } from 'discord-api-types/v10';
 
 /**

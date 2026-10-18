@@ -1,7 +1,7 @@
 import { ratelimit } from '#lib/api/utils';
 import { getCategory, getSubCategory } from '#lib/database/utils/matchers/Command';
 import { PermissionLevels } from '#lib/types';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import type { Command } from '@wolfstar/http-framework';
 import { Route } from '@wolfstar/plugin-api';
 import { PermissionFlagsBits } from 'discord-api-types/v10';

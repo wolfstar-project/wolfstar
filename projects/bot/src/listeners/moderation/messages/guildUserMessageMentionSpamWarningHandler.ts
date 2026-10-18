@@ -1,4 +1,5 @@
-import { floatPromise, minutes } from '#common';
+import { floatPromise } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events, type GuildMessage } from '#lib/types';
 import { deleteMessage } from '#utils/functions';

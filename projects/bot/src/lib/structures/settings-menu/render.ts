@@ -25,7 +25,7 @@ import {
 } from '#lib/structures/settings-menu/values';
 import { chatInputApplicationCommandMention, inlineCode, time, TimestampStyles } from '@discordjs/formatters';
 import { isNullish, toTitleCase } from '@sapphire/utilities';
-import { getTimeZoneChoices, getTimeZoneOffset, TimeZoneGroups, type TimeZoneGroup } from '#utils/timezones';
+import { getTimeZoneChoices, getTimeZoneOffset, TimeZoneGroups, type TimeZoneGroup } from 'wolfstar-shared';
 import { container } from '@wolfstar/http-framework';
 import {
 	ButtonStyle,

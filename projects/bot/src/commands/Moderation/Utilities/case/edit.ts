@@ -2,7 +2,7 @@ import { getAction } from '#lib/moderation';
 import { getTranslationKey } from '#lib/moderation/common';
 import { type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
 import { getCase, handleCase } from '#lib/structures/commands/moderationCase';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { getModeration } from '#utils/functions';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { TimestampStyles, time } from '@discordjs/builders';

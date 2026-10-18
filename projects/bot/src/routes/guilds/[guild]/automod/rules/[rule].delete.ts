@@ -2,7 +2,7 @@ import { resolveManagedGuildId, sendAutoModerationRuleError } from '#lib/api/aut
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, ratelimit } from '#lib/api/utils';
 import { deleteAutoModerationRule } from '#lib/moderation/automod/rules';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 
 /**

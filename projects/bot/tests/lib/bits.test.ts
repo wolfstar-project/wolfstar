@@ -1,4 +1,4 @@
-import { toChannelsArray, toPermissionsArray } from '#utils/bits';
+import { toChannelsArray, toPermissionsArray } from 'wolfstar-shared';
 import { enumToObject } from '@sapphire/bitfield';
 import { GuildSystemChannelFlags, PermissionFlagsBits } from 'discord-api-types/v10';
 

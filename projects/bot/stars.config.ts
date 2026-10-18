@@ -11,6 +11,8 @@ export default defineConfig({
 		// The barrels are left out: they only export what the other files of `src/lib` already do, and the scanner cannot
 		// follow their `export * from '#lib/…'` through the path aliases.
 		dirs: ['src/lib/**/!(index).ts'],
+		// The defaults, and the utilities of `projects/shared`, which used to be in `src/lib`:
+		presets: ['@wolfstar/http-framework', '@wolfstar/decorators', '@wolfstar/env-utilities', 'wolfstar-shared'],
 		// `Events` is the enum of `#lib/types`, not the one of the framework:
 		exclude: ['Events']
 	},

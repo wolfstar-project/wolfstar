@@ -1,7 +1,7 @@
 import { findPortableKey } from '#lib/database/settings/transfer/format';
 import type { ParsedConfiguration } from '#lib/database/settings/transfer/parse';
 import type { Translator } from '#lib/structures/commands/utils';
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';

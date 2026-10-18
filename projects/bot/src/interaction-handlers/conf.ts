@@ -33,8 +33,8 @@ import {
 	resolveSettingGroup,
 	type SettingsMenuAction
 } from '#lib/structures/settings-menu';
-import { getModalValue, getModalValues } from '#utils/interactions';
-import { TimeZoneGroups, type TimeZoneGroup } from '#utils/timezones';
+import { getModalValue, getModalValues } from 'wolfstar-shared';
+import { TimeZoneGroups, type TimeZoneGroup } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { MessagePrompter, getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';

@@ -1,6 +1,6 @@
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { PermissionsBits } from '#utils/bits';
+import { PermissionsBits } from 'wolfstar-shared';
 import { BrandingColors } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
 import { container, type TransformedArguments } from '@wolfstar/http-framework';

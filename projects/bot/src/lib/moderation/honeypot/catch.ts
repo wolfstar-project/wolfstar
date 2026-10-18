@@ -1,4 +1,5 @@
-import { floatPromise, resolveGuild, resolveOnErrorCodes, seconds } from '#common';
+import { floatPromise, resolveGuild, resolveOnErrorCodes } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { fetchUserReportEnabled } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { fetchGuildT } from '#lib/moderation/common';

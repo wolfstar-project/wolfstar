@@ -1,7 +1,7 @@
 import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
-import { toPermissionsArray } from '#utils/bits';
+import { toPermissionsArray } from 'wolfstar-shared';
 import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';

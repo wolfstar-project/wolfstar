@@ -1,6 +1,6 @@
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, getAuth, ratelimit } from '#lib/api/utils';
-import { minutes, Time } from '#common';
+import { minutes, Time } from 'wolfstar-shared';
 import { HttpCodes, Route, type MimeType } from '@wolfstar/plugin-api';
 import { OAuth2Routes, type RESTPostOAuth2AccessTokenResult } from 'discord-api-types/v10';
 import { stringify } from 'node:querystring';

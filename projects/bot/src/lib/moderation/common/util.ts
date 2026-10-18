@@ -2,7 +2,7 @@ import { readSettings } from '#lib/database';
 import { TranslationMappings, UndoTaskNameMappings, getTypeColor } from '#lib/moderation/common/constants';
 import { formatCaseRoleMentions } from '#lib/moderation/common/roles';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { TypeVariation } from '#utils/moderationConstants';
 import { getFullEmbedAuthor, getTag } from '#utils/util';
 import { EmbedBuilder, TimestampStyles, chatInputApplicationCommandMention, messageLink, time } from '@discordjs/builders';

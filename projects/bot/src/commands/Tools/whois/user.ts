@@ -1,10 +1,11 @@
 import type { GuildChatInputInteraction, TranslationKey } from '#lib/structures/commands/utils';
 import { translateKey } from '#lib/structures/commands/utils';
-import { months, resolveOnErrorCodes, seconds } from '#common';
+import { resolveOnErrorCodes } from '#common';
+import { months, seconds } from 'wolfstar-shared';
 import { Colors } from '#utils/constants';
 import { Emojis } from '#utils/emojis';
 import { addAutomaticFields, getUserBadgesString } from '#utils/functions';
-import { PermissionsBits } from '#utils/bits';
+import { PermissionsBits } from 'wolfstar-shared';
 import { getTag } from '#utils/util';
 import { EmbedBuilder, time, TimestampStyles, userMention, roleMention } from '@discordjs/builders';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';

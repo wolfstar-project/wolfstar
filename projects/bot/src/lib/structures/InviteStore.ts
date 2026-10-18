@@ -1,4 +1,5 @@
-import { minutes, resolveOnErrorCodes } from '#common';
+import { resolveOnErrorCodes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { Collection } from '@discordjs/collection';
 import { container } from '@wolfstar/http-framework';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';

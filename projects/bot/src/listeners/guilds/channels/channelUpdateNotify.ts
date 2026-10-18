@@ -1,9 +1,9 @@
 import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
-import { toPermissionsArray } from '#utils/bits';
-import { seconds } from '#common';
-import { differenceBitField, differenceMap } from '#common/comparators';
+import { toPermissionsArray } from 'wolfstar-shared';
+import { seconds } from 'wolfstar-shared';
+import { differenceBitField, differenceMap } from 'wolfstar-shared';
 import { Colors, LongWidthSpace } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';

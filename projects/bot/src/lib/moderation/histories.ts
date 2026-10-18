@@ -1,4 +1,4 @@
-import { days } from '#common';
+import { days } from 'wolfstar-shared';
 import { container } from '@wolfstar/http-framework';
 import { computePermissionsIn, type Guild, type Message } from '@wolfstar/plugin-gateway';
 import { ChannelType, PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';

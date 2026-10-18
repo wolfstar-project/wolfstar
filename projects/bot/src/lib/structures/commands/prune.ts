@@ -1,8 +1,9 @@
-import { andMix, days, floatPromise, seconds, type BooleanFn } from '#common';
+import { floatPromise } from '#common';
+import { andMix, days, seconds, type BooleanFn } from 'wolfstar-shared';
 import { bulkDeleteChannelMessages, fetchChannelMessages } from '#lib/moderation/cleanup/messages';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
-import { urlRegex } from '#utils/Links/UrlRegex';
+import { urlRegex } from 'wolfstar-shared';
 import { deleteMessage } from '#utils/functions';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { getImageUrl } from '#utils/util';

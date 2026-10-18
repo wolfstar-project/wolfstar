@@ -30,7 +30,7 @@ import {
 	type AutoModerationMenuSection
 } from '#lib/structures/automod-menu';
 import { translateKey } from '#lib/structures/commands/utils';
-import { getModalValue } from '#utils/interactions';
+import { getModalValue } from 'wolfstar-shared';
 import { inlineCode } from '@discordjs/formatters';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';

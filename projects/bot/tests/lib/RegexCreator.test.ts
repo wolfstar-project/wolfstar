@@ -6,7 +6,7 @@ import {
 	processWordPattern,
 	processWordPatternsWithGroups,
 	WordBoundary
-} from '#utils/Security/RegexCreator';
+} from 'wolfstar-shared';
 
 describe('RegexCreator', () => {
 	describe('processLetter', () => {

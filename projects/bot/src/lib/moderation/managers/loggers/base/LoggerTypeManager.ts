@@ -1,5 +1,6 @@
 import type { LoggerManager } from '#lib/moderation/managers/LoggerManager';
-import { createReferPromise, seconds, type ReferredPromise } from '#common';
+import { createReferPromise, type ReferredPromise } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { Collection } from '@discordjs/collection';
 import { container } from '@wolfstar/http-framework';
 import { snowflakeTimestamp } from '@wolfstar/plugin-gateway';

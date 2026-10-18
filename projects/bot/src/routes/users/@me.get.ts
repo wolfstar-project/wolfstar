@@ -1,7 +1,7 @@
 import { fetchFlattenedGuild, flattenUser, type FlattenedGuild } from '#lib/api/ApiTransformers';
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, ratelimit } from '#lib/api/utils';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { isNullish } from '@sapphire/utilities';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 import { isIterableCache } from '@wolfstar/plugin-cache';

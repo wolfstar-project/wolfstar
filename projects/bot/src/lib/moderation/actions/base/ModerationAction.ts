@@ -3,7 +3,7 @@ import type { TypeVariation } from '#utils/moderationConstants';
 import { fetchGuildT, getTitle, getTranslationKey } from '#lib/moderation/common';
 import type { TranslationMappings } from '#lib/moderation/common/constants';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
-import { seconds, years } from '#common';
+import { seconds, years } from 'wolfstar-shared';
 import { getCodeStyle, getLogPrefix, getModeration } from '#utils/functions';
 import { TypeMetadata } from '#utils/moderationConstants';
 import { getFullEmbedAuthor } from '#utils/util';

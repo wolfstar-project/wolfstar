@@ -31,6 +31,6 @@ const footer = '\n];\n';
 const sorted = [...hostnames].sort();
 const content = sorted.map((hostname, index) => `\t'${hostname}'${index === sorted.length - 1 ? '' : ','}`).join('\n');
 
-const outputFile = new URL('../projects/bot/src/lib/utilities/Links/PhishingHostnames.ts', import.meta.url);
+const outputFile = new URL('../projects/shared/src/links/PhishingHostnames.ts', import.meta.url);
 
 void writeFile(outputFile, header + content + footer);

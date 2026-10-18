@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@wolfstar/decorators';
-import { months, toErrorCodeResult } from '#common';
+import { toErrorCodeResult } from '#common';
+import { months } from 'wolfstar-shared';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
 import {
 	LockdownGuildPermissions,
@@ -11,7 +12,7 @@ import {
 	type LockdownChannel,
 	type LockdownData
 } from '#lib/structures/managers/LockdownManager';
-import { PermissionsBits } from '#utils/bits';
+import { PermissionsBits } from 'wolfstar-shared';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { getTag } from '#utils/util';
 import { channelMention, roleMention } from '@discordjs/formatters';

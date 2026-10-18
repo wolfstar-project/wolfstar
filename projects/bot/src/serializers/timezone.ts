@@ -1,5 +1,5 @@
 import { Serializer } from '#lib/database';
-import { isTimeZone, resolveTimeZone } from '#utils/timezones';
+import { isTimeZone, resolveTimeZone } from 'wolfstar-shared';
 import type { Awaitable } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<string> {

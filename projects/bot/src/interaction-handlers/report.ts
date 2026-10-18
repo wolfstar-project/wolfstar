@@ -15,7 +15,7 @@ import { fetchGuildTranslator, notifyReporter, submitReport } from '#lib/moderat
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
-import { getModalValue } from '#utils/interactions';
+import { getModalValue } from 'wolfstar-shared';
 import { TypeVariation } from '#utils/moderationConstants';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { userMention } from '@discordjs/formatters';

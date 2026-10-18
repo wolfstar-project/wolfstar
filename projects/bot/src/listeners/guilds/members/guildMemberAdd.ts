@@ -1,5 +1,6 @@
 import { RegisterAsDispatchListener } from '#utils/worker';
-import { resolveOnErrorCodes, seconds, toErrorCodeResult } from '#common';
+import { resolveOnErrorCodes, toErrorCodeResult } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { readSettings, writeSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events } from '#lib/types';

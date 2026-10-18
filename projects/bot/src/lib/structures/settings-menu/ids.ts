@@ -1,4 +1,4 @@
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
 import type { Snowflake } from 'discord-api-types/v10';
 

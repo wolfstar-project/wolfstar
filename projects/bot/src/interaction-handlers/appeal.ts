@@ -4,7 +4,7 @@ import { applyAppealDecision, getAppealQuestions, renderAppealMessage } from '#l
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { createTranslator } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
-import { getModalValue } from '#utils/interactions';
+import { getModalValue } from 'wolfstar-shared';
 import { cutText } from '@sapphire/utilities';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';

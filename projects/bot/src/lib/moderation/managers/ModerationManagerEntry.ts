@@ -1,7 +1,7 @@
 import type { TypeVariation } from '#utils/moderationConstants';
 import { fromModerationRow, type ModerationRecord, type ModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { getUndoTaskId, type UndoTaskName } from '#lib/moderation/common/util';
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { TypeMetadata } from '#utils/moderationConstants';
 import { isNullishOrZero } from '@sapphire/utilities';
 import { UserError, container } from '@wolfstar/http-framework';

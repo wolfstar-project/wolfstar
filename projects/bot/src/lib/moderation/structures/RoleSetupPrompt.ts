@@ -1,6 +1,6 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
