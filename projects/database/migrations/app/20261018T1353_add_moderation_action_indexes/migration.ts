@@ -41,8 +41,9 @@ export default class M extends Migration<Start, End> {
 
 	override get operations() {
 		return [
-			// The cases of a guild, newest first (the moderation log of the dashboard): read backwards, the index gives
-			// `created_at DESC, id DESC` with no sort.
+			// The cases of a guild, newest first, which the bot reads whole and the moderation log of the dashboard will read
+			// once it moves from the old `moderation` table to this one (wolfstar.rocks `feat/moderation-cases`): read
+			// backwards, the index gives `created_at DESC, id DESC` with no sort.
 			createIndex('ModerationAction_guild_id_created_at_id_idx', ['guild_id', 'created_at', 'id'], 'Index the cases of a guild by their date'),
 			// The cases of a member, which the bot reads on every moderation command, warning, appeal and voice connection.
 			createIndex(
