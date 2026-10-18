@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { floatPromise } from '#common';
 import { readSettings } from '#lib/database';
 import { isNullish } from '@sapphire/utilities';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import {
 	AuditLogEvent,
 	GatewayDispatchEvents,

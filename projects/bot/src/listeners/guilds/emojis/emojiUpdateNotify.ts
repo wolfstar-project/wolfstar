@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { differenceArray } from 'wolfstar-shared';
@@ -6,7 +5,7 @@ import { Colors } from '#utils/constants';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { fetchT } from '@wolfstar/plugin-i18next';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildEmoji } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('emojiUpdate')

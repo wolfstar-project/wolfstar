@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events } from '#lib/types';
@@ -6,7 +5,7 @@ import { Colors } from '#utils/constants';
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder } from '@discordjs/builders';
 import { isIterableCache } from '@wolfstar/plugin-cache';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { User } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import type { Snowflake } from 'discord-api-types/v10';

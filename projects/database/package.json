@@ -25,15 +25,15 @@
 	},
 	"dependencies": {
 		"@prisma/orm-postgres": "8.0.0-rc.13",
-		"@sapphire/utilities": "^3.18.2",
+		"@sapphire/utilities": "^3.18.3",
 		"discord-api-types": "^0.38.56",
 		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
-		"varlock": "^1.21.1"
+		"varlock": "^1.23.0"
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",
 		"prisma": "8.0.0-rc.19",
-		"tsdown": "0.23.0",
+		"tsdown": "0.23.1",
 		"typescript": "^7.0.2"
 	}
 }

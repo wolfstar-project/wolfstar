@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { resolveOnErrorCodes, toErrorCodeResult } from '#common';
 import { seconds } from 'wolfstar-shared';
 import { readSettings, writeSettings } from '#lib/database';
@@ -9,7 +8,7 @@ import { getLogPrefix, getLogger, getStickyRoles, getUserMentionWithFlagsString 
 import { getFullEmbedAuthor } from '#utils/util';
 import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
 import { isNullish, type Nullish } from '@sapphire/utilities';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import { fetchStickyNickname } from 'wolfstar-database';

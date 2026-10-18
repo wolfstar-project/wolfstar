@@ -1,9 +1,8 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import { fetchCaseMemberRoleIds } from '#lib/moderation/common/roles';
 import { getLogger, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildBan } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('guildBanAdd')

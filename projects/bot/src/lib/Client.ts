@@ -91,7 +91,7 @@ export function createClient() {
 	if (worker) replayGatewayDispatches(container.broker, container.gatewayClient);
 
 	// Publishes every gateway dispatch onto a Redis stream, for workers that replay them (see `@wolfstar/plugin-broker`):
-	// The listeners of the dispatches are not loaded here then, the workers run them (see `RegisterAsDispatchListener`):
+	// The listeners of the dispatches do nothing here then, the workers run them (see `RegisterAsDispatchListener`):
 	if (forwardsDispatches()) {
 		const broker = createBroker({
 			redis: container.redis,

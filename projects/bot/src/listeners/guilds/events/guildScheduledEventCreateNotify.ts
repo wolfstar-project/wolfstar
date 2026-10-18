@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { getScheduledEventLines } from '#lib/moderation/logs/events';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildScheduledEvent } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('guildScheduledEventCreate')

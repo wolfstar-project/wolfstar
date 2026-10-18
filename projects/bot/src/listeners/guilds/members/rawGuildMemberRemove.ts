@@ -1,6 +1,5 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { Events } from '#lib/types';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildMemberRemoveDispatchData } from 'discord-api-types/v10';
 

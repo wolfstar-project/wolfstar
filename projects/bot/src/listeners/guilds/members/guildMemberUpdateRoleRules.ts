@@ -1,9 +1,8 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { getRoleRuleChanges, readRoleRules } from '#lib/roles/rules';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { getLogPrefix } from '#utils/functions';
 import { toErrorCodeResult } from '#common';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord-api-types/v10';
 

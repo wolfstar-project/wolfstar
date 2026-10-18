@@ -1,4 +1,3 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -8,7 +7,7 @@ import { formatMessage, formatTimestamp } from '#utils/formatters';
 import { getLogger } from '#utils/functions';
 import { EmbedBuilder } from '@discordjs/builders';
 import { channelMention, messageLink, userMention } from '@discordjs/formatters';
-import { EventGatewayListener, snowflakeTimestamp } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, snowflakeTimestamp, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { AttachmentPayload, Message } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import type { GatewayMessageDeleteBulkDispatchData, Snowflake } from 'discord-api-types/v10';

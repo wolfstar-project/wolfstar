@@ -1,7 +1,6 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { SoundboardSound } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('guildSoundboardSoundCreate')

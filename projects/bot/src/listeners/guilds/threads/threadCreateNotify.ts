@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { sendSimpleLog } from '#lib/moderation/logs/simple';
 import { Colors } from '#utils/constants';
 import { channelMention, userMention } from '@discordjs/formatters';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { AnyThreadChannel } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('threadCreate')

@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { Events, type ReactionAddData } from '#lib/types';
 import { getEmojiString } from '#utils/functions';
 import { canReadMessages, isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener, GuildEmoji } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, GuildEmoji, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { MessageReaction, MessageReactionEventDetails, User } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('messageReactionAdd')

@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { readSettings, writeSettings } from '#lib/database';
 import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import { isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
 
 /**

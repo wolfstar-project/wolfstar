@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { resolveOnErrorCodes } from '#common';
 import { shouldAutoDelete } from '#lib/moderation/cleanup/filters';
 import { readAutoDeletes } from '#lib/moderation/cleanup/store';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 

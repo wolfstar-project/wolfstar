@@ -1,8 +1,7 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { isGuildMessage } from '#common';
 import { readSettings } from '#lib/database';
 import { catchHoneypotMessage } from '#lib/moderation/honeypot/catch';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 
 /**

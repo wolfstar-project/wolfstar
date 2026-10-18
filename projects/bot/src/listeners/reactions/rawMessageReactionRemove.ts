@@ -1,7 +1,6 @@
-import { RegisterAsDispatchListener } from '#utils/worker';
 import { Events } from '#lib/types';
 import { canReadMessages, isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
-import { EventGatewayListener } from '@wolfstar/plugin-gateway';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { MessageReaction, MessageReactionEventDetails, User } from '@wolfstar/plugin-gateway';
 import type { GatewayMessageReactionRemoveDispatchData } from 'discord-api-types/v10';
 
