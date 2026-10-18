@@ -17,6 +17,9 @@ import { Command, RegisterAsSubcommandGroup } from '@wolfstar/plugin-subcommands
  * the user who ran the command can use the menu. It requires the administrator permission level.
  *
  * The keys that are only configurable on the dashboard are not shown.
+ *
+ * Its first page also exports the configuration of the server to a file and imports one, to set up another server the
+ * same way or to keep a copy before changing a lot.
  */
 @RegisterAsSubcommandGroup('settings', 'server', (builder) => applyLocalizedBuilder(builder, 'commands/conf:settingsServerMenu'))
 export class UserCommand extends Command {

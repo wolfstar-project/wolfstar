@@ -2,6 +2,7 @@ import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSchemaPath, isSchemaGroup } from '#lib/database';
+import { MaximumConfigurationFileSize } from '#lib/database/settings/transfer/format';
 import type { ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { encodeSettingsMenuId, getSettingsMenuExpiry, SettingsMenuLifetime, type SettingsMenuVerb } from '#lib/structures/settings-menu/ids';
@@ -162,6 +163,18 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 		);
 	}
 
+	// The configuration of the whole server is exported and imported from the page of the general module:
+	if (isRoot) {
+		body.push(
+			{ type: ComponentType.Separator },
+			text(`**📦 ${t('commands/conf:menuTransferTitle')}**\n${t('commands/conf:menuTransferDescription')}`),
+			row([
+				button(id('export', ''), { label: t('commands/conf:menuExportButton'), emoji: '📤' }),
+				button(id('import', ''), { label: t('commands/conf:menuImportButton'), emoji: '📥' })
+			])
+		);
+	}
+
 	body.push(
 		{ type: ComponentType.Separator },
 		section(
@@ -270,6 +283,61 @@ export function renderSettingsModal(context: SettingsMenuContext, key: SchemaKey
 						...(current === '' ? {} : { value: truncate(current, 4000) })
 					}
 				]
+			}
+		]
+	};
+}
+
+/**
+ * The custom ID of the file upload of {@linkcode renderSettingsImportModal}.
+ */
+export const SettingsImportFileInputId = 'file';
+
+/**
+ * The custom ID of the text input of {@linkcode renderSettingsImportModal}, where the file can be pasted.
+ */
+export const SettingsImportTextInputId = 'json';
+
+/**
+ * How much text can be pasted in the modal of the import, the most a text input holds.
+ */
+export const MaximumSettingsImportTextLength = 4000;
+
+/**
+ * Renders the modal of the import of a configuration: what it does, the file an export made, and a text input to paste
+ * what it holds instead. Both are optional, the handler asks for one of them.
+ *
+ * @param context - What the modal is rendered with: it needs neither the guild nor its settings, which are not read before
+ * it is shown, since a modal is the first answer to a click.
+ * @param page - The page of the group the menu was on.
+ */
+export function renderSettingsImportModal(
+	context: Pick<SettingsMenuContext, 't' | 'ownerId'>,
+	page: number
+): APIModalInteractionResponseCallbackData {
+	const { t } = context;
+	return {
+		custom_id: encodeSettingsMenuId({ ownerId: context.ownerId, verb: 'importSubmit', target: '', page }),
+		title: truncate(t('commands/conf:menuImportTitle'), 45),
+		components: [
+			{ type: ComponentType.TextDisplay, content: t('commands/conf:menuImportDescription') },
+			{
+				type: ComponentType.Label,
+				label: truncate(t('commands/conf:menuImportFileLabel'), 45),
+				description: truncate(t('commands/conf:menuImportFileDescription', { maximum: `${MaximumConfigurationFileSize / 1024} KiB` }), 100),
+				component: { type: ComponentType.FileUpload, custom_id: SettingsImportFileInputId, required: false, min_values: 0, max_values: 1 }
+			},
+			{
+				type: ComponentType.Label,
+				label: truncate(t('commands/conf:menuImportTextLabel'), 45),
+				description: truncate(t('commands/conf:menuImportTextDescription', { maximum: MaximumSettingsImportTextLength }), 100),
+				component: {
+					type: ComponentType.TextInput,
+					custom_id: SettingsImportTextInputId,
+					style: TextInputStyle.Paragraph,
+					required: false,
+					max_length: MaximumSettingsImportTextLength
+				}
 			}
 		]
 	};

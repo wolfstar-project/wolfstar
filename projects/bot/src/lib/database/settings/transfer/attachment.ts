@@ -13,7 +13,7 @@ const AttachmentHosts = new Set(['cdn.discordapp.com', 'media.discordapp.net']);
  * download is not bound by it. The URL comes from the interaction, which is signed by Discord, but it is only followed
  * when it is one of the hosts of its attachments.
  *
- * @param attachment - The attachment option of the command.
+ * @param attachment - The file attached to the modal of the import.
  * @returns The content of the file, `null` when it cannot be read or it is too large.
  */
 export async function downloadConfigurationFile(attachment: Pick<APIAttachment, 'url' | 'size'>): Promise<string | null> {

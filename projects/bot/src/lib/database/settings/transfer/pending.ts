@@ -25,14 +25,14 @@ export type SettingsImportVerb = 'confirm' | 'cancel';
 
 export interface SettingsImportAction {
 	/**
-	 * The administrator who ran the command, the only one that can answer.
+	 * The administrator who imports the file, the only one that can answer.
 	 */
 	ownerId: Snowflake;
 	verb: SettingsImportVerb;
 
 	/**
-	 * The ID of the import that waits, which is the ID of the interaction of the command: two imports of an
-	 * administrator are two previews, and each button confirms its own.
+	 * The ID of the import that waits, which is the ID of the submission of the modal of the import: two imports of
+	 * an administrator are two previews, and each button confirms its own.
 	 */
 	importId: Snowflake;
 }
@@ -68,7 +68,7 @@ export function decodeSettingsImportId(content: unknown): SettingsImportAction |
  * The buttons under the preview of an import: one to confirm it and one to cancel.
  *
  * @param t - The function to translate with, in the language of the administrator.
- * @param ownerId - The administrator who ran the command.
+ * @param ownerId - The administrator who imports the file.
  * @param importId - The ID the import waits under, see {@linkcode savePendingImport}.
  */
 export function renderSettingsImportButtons(t: Translator, ownerId: Snowflake, importId: Snowflake): APIActionRowComponent<APIButtonComponent> {
@@ -108,8 +108,8 @@ function getPendingKey(guildId: Snowflake, ownerId: Snowflake, importId: Snowfla
  * file holds and not what it would change: the changes are worked out again when the import is written.
  *
  * @param guildId - The server the file is imported in.
- * @param ownerId - The administrator who ran the command.
- * @param importId - The ID of the import, the ID of the interaction of the command.
+ * @param ownerId - The administrator who imports the file.
+ * @param importId - The ID of the import, the ID of the interaction that brought the file.
  * @param parsed - What the file holds, see `parseConfigurationFile`.
  */
 export async function savePendingImport(guildId: Snowflake, ownerId: Snowflake, importId: Snowflake, parsed: ParsedConfiguration) {

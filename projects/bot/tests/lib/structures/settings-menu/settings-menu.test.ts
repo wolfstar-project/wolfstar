@@ -16,7 +16,10 @@ import {
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	renderSettingsImportModal,
 	resolveSettingGroup,
+	SettingsImportFileInputId,
+	SettingsImportTextInputId,
 	type SettingsMenuContext
 } from '#lib/structures/settings-menu';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
@@ -302,6 +305,51 @@ describe('settings menu', () => {
 
 			expect(input.value).toBe('ping\nconf');
 			expect(modal.title.length).toBeLessThanOrEqual(45);
+		});
+	});
+
+	describe('export and import', () => {
+		const verbs = (message: ReturnType<typeof renderSettingsGroup>) =>
+			collectCustomIds(message.components!)
+				.filter((id) => id.startsWith('conf.'))
+				.map((id) => decodeSettingsMenuId(id.split('.').slice(1))?.verb);
+
+		test('GIVEN the page of the general module THEN it has the buttons that export and import the configuration', () => {
+			const message = renderSettingsGroup(createContext(), getConfigurableGroups(), 0);
+
+			expect(verbs(message)).toEqual(expect.arrayContaining(['export', 'import']));
+			expect(countComponents(message.components!)).toBeLessThanOrEqual(40);
+		});
+
+		test('GIVEN the page of another module THEN it has neither', () => {
+			const message = renderSettingsGroup(createContext(), resolveSettingGroup('logs')!, 0);
+
+			expect(verbs(message)).not.toContain('export');
+			expect(verbs(message)).not.toContain('import');
+		});
+
+		test('GIVEN the modal of the import THEN it takes a file or the pasted JSON, both optional, and submits to the menu', () => {
+			const modal = renderSettingsImportModal(createContext(), 2);
+			const [description, file, pasted] = modal.components as unknown as [
+				{ type: ComponentType },
+				{ type: ComponentType; label: string; component: { type: ComponentType; custom_id: string; required: boolean; max_values: number } },
+				{ type: ComponentType; label: string; component: { type: ComponentType; custom_id: string; required: boolean; max_length: number } }
+			];
+
+			expect(decodeSettingsMenuId(modal.custom_id.split('.').slice(1))).toMatchObject({ ownerId, verb: 'importSubmit', target: '', page: 2 });
+			expect(modal.title.length).toBeLessThanOrEqual(45);
+			expect(description.type).toBe(ComponentType.TextDisplay);
+			expect(file).toMatchObject({
+				type: ComponentType.Label,
+				component: { type: ComponentType.FileUpload, custom_id: SettingsImportFileInputId }
+			});
+			expect(file.component).toMatchObject({ required: false, max_values: 1 });
+			expect(pasted).toMatchObject({
+				type: ComponentType.Label,
+				component: { type: ComponentType.TextInput, custom_id: SettingsImportTextInputId }
+			});
+			expect(pasted.component).toMatchObject({ required: false, max_length: 4000 });
+			expect([file.label, pasted.label].every((label) => label.length <= 45)).toBe(true);
 		});
 	});
 

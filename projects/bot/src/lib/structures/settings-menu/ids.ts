@@ -21,8 +21,25 @@ export const SettingsMenuHandlerName = 'conf';
  * - `resetAll`: resets every key of a group to its default, after a confirmation.
  * - `page`: the page indicator, which does nothing.
  * - `userToggle`: flips a setting of the user, the menu of `/settings user`, the target is the setting.
+ * - `export`: answers with the file of the configuration of the server, in an ephemeral message.
+ * - `import`: opens the modal that takes a file of a configuration.
+ * - `importSubmit`: the modal of `import`, answered with the preview of what the file changes.
  */
-export type SettingsMenuVerb = 'view' | 'refresh' | 'module' | 'toggle' | 'edit' | 'pick' | 'submit' | 'reset' | 'resetAll' | 'page' | 'userToggle';
+export type SettingsMenuVerb =
+	| 'view'
+	| 'refresh'
+	| 'module'
+	| 'toggle'
+	| 'edit'
+	| 'pick'
+	| 'submit'
+	| 'reset'
+	| 'resetAll'
+	| 'page'
+	| 'userToggle'
+	| 'export'
+	| 'import'
+	| 'importSubmit';
 
 export interface SettingsMenuAction {
 	/**
@@ -32,7 +49,8 @@ export interface SettingsMenuAction {
 	verb: SettingsMenuVerb;
 
 	/**
-	 * The path of a group (`view`, `refresh`, `resetAll`) or the property of a key, empty for `module` and `page`.
+	 * The path of a group (`view`, `refresh`, `resetAll`) or the property of a key, empty for `module`, `page` and the
+	 * verbs of the export and the import.
 	 */
 	target: string;
 

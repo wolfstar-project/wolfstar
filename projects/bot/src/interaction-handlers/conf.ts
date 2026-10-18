@@ -6,6 +6,9 @@ import { fetchUserReportEnabled, toggleUserReportEnabled } from '#lib/database';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { isHoneypotSettingsWrite, writeHoneypotSettings } from '#lib/moderation/honeypot/settings';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
+import { downloadConfigurationFile } from '#lib/database/settings/transfer/attachment';
+import { MaximumConfigurationFileSize } from '#lib/database/settings/transfer/format';
+import { createConfigurationExportMessage, createConfigurationImportMessage } from '#lib/database/settings/transfer/messages';
 import {
 	RootModuleValue,
 	SettingsModalInputId,
@@ -22,6 +25,9 @@ import {
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	renderSettingsImportModal,
+	SettingsImportFileInputId,
+	SettingsImportTextInputId,
 	claimSettingsExpiredNotice,
 	renderSettingsExpired,
 	renderUserSettings,
@@ -49,6 +55,10 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInterac
  * them in the meantime. The menu of the user only needs to be theirs. A menu stops working fifteen minutes after it
  * was last used: the time is in the custom IDs, which every click renders again, see `SettingsMenuLifetime`. A click
  * on it is then told so in an ephemeral message, five times at most.
+ *
+ * The page of the general module exports the configuration of the server and imports one, see
+ * `lib/database/settings/transfer`: the export is an ephemeral file, the import a modal that takes the file or what it
+ * holds, answered with the preview the `settingsImport` interaction handler confirms.
  */
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
@@ -80,8 +90,10 @@ export class UserInteractionHandler extends InteractionHandler {
 			return fail(t('preconditions:administrator', { command: { name: this.name } }));
 		}
 
-		// The modal of a key is the only thing that is submitted, everything else is a click:
+		// The modal of a key and the one of the import are the only things that are submitted, everything else is a click:
 		if (interaction instanceof ModalSubmitInteraction) {
+			if (action.verb === 'importSubmit') return this.importFile(interaction, guildId, t);
+
 			const key = this.getKey(action);
 			if (key === null || action.verb !== 'submit') return fail(t('commands/conf:getNoExt', { key: action.target }));
 			return this.submit(interaction, guildId, action, key);
@@ -97,6 +109,10 @@ export class UserInteractionHandler extends InteractionHandler {
 				return this.resetGroup(interaction, guildId, action, t);
 			case 'page':
 				return interaction.deferUpdate();
+			case 'export':
+				return this.exportFile(interaction, guildId, t);
+			case 'import':
+				return interaction.showModal(renderSettingsImportModal({ t, ownerId: action.ownerId }, action.page));
 		}
 
 		const key = this.getKey(action);
@@ -249,6 +265,43 @@ export class UserInteractionHandler extends InteractionHandler {
 		await deferred.update(renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), group, action.page));
 		if (written.notes.length === 0) return null;
 		return interaction.followup({ content: written.notes.join('\n'), flags: MessageFlags.Ephemeral });
+	}
+
+	/**
+	 * Answers with the file of the configuration of the server, which is only for the administrator who asked.
+	 */
+	private async exportFile(interaction: ComponentInteraction, guildId: Snowflake, t: Translator) {
+		// A file cannot be sent with the first response of an interaction, so it is acknowledged first:
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+		const message = await createConfigurationExportMessage(guildId, t);
+		return deferred.update(message);
+	}
+
+	/**
+	 * Reads the file of the modal of the import, or what was pasted in it when no file was attached, and answers with
+	 * the preview of what it changes, which the `settingsImport` interaction handler confirms.
+	 */
+	private async importFile(interaction: ModalInteraction, guildId: Snowflake, t: Translator) {
+		const { data } = interaction;
+		const [attachmentId] = getModalValues(data.components, SettingsImportFileInputId);
+		const attachment = attachmentId === undefined ? undefined : data.resolved?.attachments?.[attachmentId];
+		const pasted = getModalValue(data.components, SettingsImportTextInputId)?.trim() ?? '';
+
+		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		if (attachment === undefined && pasted === '') return fail(t('commands/conf:menuImportMissing'));
+		if (attachment !== undefined && attachment.size > MaximumConfigurationFileSize) {
+			return fail(t('commands/conf:transferErrorTooLarge', { maximum: `${MaximumConfigurationFileSize / 1024} KiB` }));
+		}
+
+		// Reading the file and the guild may take longer than the three seconds an interaction waits for an answer:
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+
+		// A file that was attached wins over what was pasted:
+		const text = attachment === undefined ? pasted : await downloadConfigurationFile(attachment);
+		if (text === null) return deferred.update({ content: t('commands/conf:transferErrorDownload') });
+
+		const message = await createConfigurationImportMessage({ guildId, ownerId: interaction.user.id, importId: interaction.id, text, t });
+		return deferred.update(message);
 	}
 
 	/**

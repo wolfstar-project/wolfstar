@@ -58,7 +58,7 @@ export interface ParseConfigurationContext {
 const FileFields = new Set(['version', 'exportedAt', 'settings', 'automod']);
 
 /**
- * Reads the file `/settings server export` writes, from text that is not trusted.
+ * Reads the file the export of the settings menu writes, from text that is not trusted.
  *
  * @remarks
  *
