@@ -20,7 +20,7 @@
 		"knip": "knip",
 		"knip:fix": "knip --fix",
 		"scripts:tlds": "node --experimental-strip-types scripts/tlds.ts",
-		"scripts:phishing": "node --experimental-strip-types scripts/phishing.rs",
+		"scripts:phishing": "node --experimental-strip-types scripts/phishing.ts",
 		"prepare": "node .husky/install.mjs",
 		"tolgee:pull": "varlock run -- tolgee pull && node --experimental-strip-types scripts/tolgee-pull-remap.ts",
 		"tolgee:push": "varlock run -- tolgee push --languages en-US",
