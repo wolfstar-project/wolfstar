@@ -3,6 +3,7 @@ import 'varlock/auto-load';
 import { createClient, loadAll } from '#lib/Client';
 import { initializeApp } from '#lib/setup/all';
 import { isShardManager, startShardManager } from '#lib/sharder/manager';
+import { closeLoggerOnShutdown } from '#utils/shutdown';
 import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { container } from '@wolfstar/http-framework';
@@ -15,6 +16,8 @@ if (isShardManager()) {
 } else {
 	initializeApp();
 	createClient();
+	// A worker stops through the signals of its broker consumer (`shutdownSignals`), which have it finish what it is doing:
+	if (!isWorker()) closeLoggerOnShutdown();
 	await loadAll();
 
 	// Every shard would print the same banner:

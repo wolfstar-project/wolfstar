@@ -1,4 +1,5 @@
 import { dispatchShardMessage, type ShardMessage } from '#lib/sharder/messages';
+import { closeLogger } from '#utils/shutdown';
 import { container } from '@wolfstar/http-framework';
 import type { GatewayClient } from '@wolfstar/plugin-gateway';
 import { ShardClient } from '@wolfstar/plugin-sharder';
@@ -37,7 +38,10 @@ export function bindShardClient(shard: ShardClient, client: GatewayClient) {
 		if (pending.delete(shardId) && pending.size === 0) void shard.ready();
 	});
 
-	shard.setCloseHandler(() => client.destroy());
+	shard.setCloseHandler(async () => {
+		await client.destroy();
+		await closeLogger();
+	});
 }
 
 declare module '@sapphire/pieces' {

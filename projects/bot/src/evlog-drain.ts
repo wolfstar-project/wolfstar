@@ -12,5 +12,6 @@ export default defineEvlogDrain(async (batch: DrainContext[]) => {
 	// Without a DSN nothing is built, and the drain would print a missing DSN error for every batch:
 	if (!envParseString('SENTRY_DSN', '')) return;
 	sentry ??= createSentryDrain();
-	await sentry(batch);
+	// `raw` lets a failed delivery reach the pipeline, which retries the batch; the plain drain swallows the error:
+	await sentry.raw(batch);
 });
