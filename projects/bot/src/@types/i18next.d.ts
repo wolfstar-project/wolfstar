@@ -662,9 +662,7 @@ declare module "i18next" {
         settingsName: "settings";
         settingsDescription: "Open the settings menu of the server or your own.";
         settingsServerName: "server";
-        settingsServerDescription: "Configure the server.";
-        settingsServerMenuName: "menu";
-        settingsServerMenuDescription: "Open the settings menu of the server.";
+        settingsServerDescription: "Open the settings menu of the server.";
         settingsUserName: "user";
         settingsUserDescription: "Open your own settings.";
         menuUserTitle: "Your settings";
@@ -2276,7 +2274,7 @@ declare module "i18next" {
         modalTitleUser: "Report this user";
         modalReasonLabel: "Why are you reporting this?";
         modalReasonPlaceholder: "Tell the moderators what happened. Only they will see your report.";
-        notConfigured: "Reports are not set up in this server. An administrator can set the reports channel with `/settings server menu`.";
+        notConfigured: "Reports are not set up in this server. An administrator can set the reports channel with `/settings server`.";
         targetSelf: "You cannot report yourself.";
         targetWolf: "You cannot report me. If something I did is wrong, tell the moderators of this server.";
         targetWebhook: "This message was not written by a member, so there is nobody to report.";

@@ -457,7 +457,7 @@ declare module '@wolfstar/http-framework' {
       sticky?: boolean;
       user: TransformedArguments.User;
     };
-    'settings server menu': {};
+    'settings server': {};
     'settings user': {};
     'slowmode': {
       duration: string;

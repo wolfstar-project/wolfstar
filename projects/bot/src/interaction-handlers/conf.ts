@@ -44,7 +44,7 @@ type ModalInteraction = InteractionHandler.ModalInteraction;
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInteraction>;
 
 /**
- * Handles the components and the modal of the settings menus `/settings server menu` and `/settings user` open, see
+ * Handles the components and the modal of the settings menus `/settings server` and `/settings user` open, see
  * `lib/structures/settings-menu`.
  *
  * @remarks
@@ -77,7 +77,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			// Who keeps clicking is not told again, the click is only acknowledged:
 			const component = interaction as ComponentInteraction;
 			const answered = await claimSettingsExpiredNotice(component.message.id, interaction.user.id);
-			return answered ? fail(renderSettingsExpired(t, action.verb === 'userToggle' ? 'user' : 'server menu')) : component.deferUpdate();
+			return answered ? fail(renderSettingsExpired(t, action.verb === 'userToggle' ? 'user' : 'server')) : component.deferUpdate();
 		}
 		if (action.verb === 'userToggle' && !(interaction instanceof ModalSubmitInteraction)) return this.toggleUser(interaction, action, t);
 
