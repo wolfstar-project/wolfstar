@@ -1,4 +1,5 @@
 import { parseInternationalizationOptions } from '#lib/i18n/options';
+import { closeLogger } from '#utils/shutdown';
 import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { Client, container } from '@wolfstar/http-framework';
@@ -48,7 +49,14 @@ export async function startShardManager() {
 	await client.load({ baseUserDirectory: null });
 
 	for (const signal of ['SIGTERM', 'SIGINT'] as const) {
-		process.once(signal, () => void manager.destroy().finally(() => process.exit(0)));
+		process.once(
+			signal,
+			() =>
+				void manager
+					.destroy()
+					.finally(closeLogger)
+					.finally(() => process.exit(0))
+		);
 	}
 
 	await manager.spawn();

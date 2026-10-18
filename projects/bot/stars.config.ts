@@ -16,6 +16,16 @@ export default defineConfig({
 		// `Events` is the enum of `#lib/types`, not the one of the framework:
 		exclude: ['Events']
 	},
+	modules: [
+		[
+			// Takes the place of the `/register` import the CLI injects for `@wolfstar/plugin-logger`. evlog prints the logs
+			// itself and delivers them to the drain of `src/evlog-drain.ts` (Sentry logs), batched and retried by the
+			// pipeline, with one wide event for every interaction. The options are written into the build, so no secret
+			// goes here: the drain reads the DSN from the environment.
+			'@wolfstar/plugin-logger/module',
+			{ evlog: { env: { service: 'wolfstar' }, pipeline: true, drain: './src/evlog-drain.ts' } }
+		]
+	],
 	tsdown: {
 		plugins: [alias({ entries: aliasEntries })],
 		copy: [{ from: 'src/locales', to: 'dist' }]

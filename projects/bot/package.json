@@ -62,6 +62,7 @@
 		"confusables": "^1.1.1",
 		"diff": "^9.0.0",
 		"discord-api-types": "^0.38.56",
+		"evlog": "^2.33.0",
 		"gradient-string": "^3.0.0",
 		"i18next": "^26.4.7",
 		"ioredis": "^6.0.0",
