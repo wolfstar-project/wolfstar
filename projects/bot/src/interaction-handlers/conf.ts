@@ -26,8 +26,7 @@ import {
 	renderSettingsGroup,
 	renderSettingsModal,
 	renderSettingsImportModal,
-	SettingsImportFileInputId,
-	SettingsImportTextInputId,
+	readSettingsImportSubmission,
 	claimSettingsExpiredNotice,
 	renderSettingsExpired,
 	renderUserSettings,
@@ -282,22 +281,18 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * the preview of what it changes, which the `settingsImport` interaction handler confirms.
 	 */
 	private async importFile(interaction: ModalInteraction, guildId: Snowflake, t: Translator) {
-		const { data } = interaction;
-		const [attachmentId] = getModalValues(data.components, SettingsImportFileInputId);
-		const attachment = attachmentId === undefined ? undefined : data.resolved?.attachments?.[attachmentId];
-		const pasted = getModalValue(data.components, SettingsImportTextInputId)?.trim() ?? '';
+		const submission = readSettingsImportSubmission(interaction.data);
 
 		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
-		if (attachment === undefined && pasted === '') return fail(t('commands/conf:menuImportMissing'));
-		if (attachment !== undefined && attachment.size > MaximumConfigurationFileSize) {
+		if (submission === null) return fail(t('commands/conf:menuImportMissing'));
+		if (submission.type === 'file' && submission.attachment.size > MaximumConfigurationFileSize) {
 			return fail(t('commands/conf:transferErrorTooLarge', { maximum: `${MaximumConfigurationFileSize / 1024} KiB` }));
 		}
 
 		// Reading the file and the guild may take longer than the three seconds an interaction waits for an answer:
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 
-		// A file that was attached wins over what was pasted:
-		const text = attachment === undefined ? pasted : await downloadConfigurationFile(attachment);
+		const text = submission.type === 'text' ? submission.text : await downloadConfigurationFile(submission.attachment);
 		if (text === null) return deferred.update({ content: t('commands/conf:transferErrorDownload') });
 
 		const message = await createConfigurationImportMessage({ guildId, ownerId: interaction.user.id, importId: interaction.id, text, t });

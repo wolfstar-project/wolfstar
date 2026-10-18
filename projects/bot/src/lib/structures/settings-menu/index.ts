@@ -8,6 +8,7 @@ import type { Snowflake } from 'discord-api-types/v10';
 export * from '#lib/structures/settings-menu/expired';
 export * from '#lib/structures/settings-menu/ids';
 export * from '#lib/structures/settings-menu/render';
+export * from '#lib/structures/settings-menu/transfer';
 export * from '#lib/structures/settings-menu/user';
 export * from '#lib/structures/settings-menu/values';
 

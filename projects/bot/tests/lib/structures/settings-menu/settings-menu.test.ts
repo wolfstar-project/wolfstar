@@ -17,6 +17,7 @@ import {
 	renderSettingsGroup,
 	renderSettingsModal,
 	renderSettingsImportModal,
+	readSettingsImportSubmission,
 	resolveSettingGroup,
 	SettingsImportFileInputId,
 	SettingsImportTextInputId,
@@ -350,6 +351,54 @@ describe('settings menu', () => {
 			});
 			expect(pasted.component).toMatchObject({ required: false, max_length: 4000 });
 			expect([file.label, pasted.label].every((label) => label.length <= 45)).toBe(true);
+		});
+	});
+
+	describe('import submission', () => {
+		const attachment = { id: '1300000000000000000', filename: 'wolfstar-settings.json', size: 512, url: 'https://cdn.discordapp.com/a.json' };
+
+		// A submission as Discord sends it: the text display, then a label for the file upload and one for the text input:
+		function submit(options: { files?: string[]; text?: string; resolved?: boolean }) {
+			return {
+				components: [
+					{ type: ComponentType.TextDisplay, id: 1 },
+					{
+						type: ComponentType.Label,
+						id: 2,
+						component: { type: ComponentType.FileUpload, id: 3, custom_id: SettingsImportFileInputId, values: options.files ?? [] }
+					},
+					{
+						type: ComponentType.Label,
+						id: 4,
+						component: { type: ComponentType.TextInput, id: 5, custom_id: SettingsImportTextInputId, value: options.text ?? '' }
+					}
+				],
+				resolved: options.resolved === false ? undefined : { attachments: { [attachment.id]: attachment } }
+			} as unknown as Parameters<typeof readSettingsImportSubmission>[0];
+		}
+
+		test('GIVEN a file THEN it is the attachment Discord resolved', () => {
+			expect(readSettingsImportSubmission(submit({ files: [attachment.id] }))).toEqual({ type: 'file', attachment });
+		});
+
+		test('GIVEN pasted JSON THEN it is the text, without the blanks around it', () => {
+			expect(readSettingsImportSubmission(submit({ text: '  {"version":1}\n' }))).toEqual({ type: 'text', text: '{"version":1}' });
+		});
+
+		test('GIVEN both THEN the file wins', () => {
+			expect(readSettingsImportSubmission(submit({ files: [attachment.id], text: '{"version":1}' }))).toEqual({ type: 'file', attachment });
+		});
+
+		test('GIVEN a file Discord did not resolve THEN what was pasted is read instead', () => {
+			expect(readSettingsImportSubmission(submit({ files: [attachment.id], text: '{}', resolved: false }))).toEqual({
+				type: 'text',
+				text: '{}'
+			});
+		});
+
+		test('GIVEN nothing, or only blanks THEN there is nothing to import', () => {
+			expect(readSettingsImportSubmission(submit({}))).toBeNull();
+			expect(readSettingsImportSubmission(submit({ text: '   ' }))).toBeNull();
 		});
 	});
 
