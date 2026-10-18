@@ -11,14 +11,14 @@ import { MessageFlags } from 'discord-api-types/v10';
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionHandler.ModalInteraction>;
 
 /**
- * Handles the buttons under the preview of `/settings server import`, see `lib/database/settings/transfer/pending.ts`.
+ * Handles the buttons under the preview of an import of the settings menu, see `lib/database/settings/transfer/pending.ts`.
  *
  * @remarks
  *
- * The command keeps nothing in memory: what the file holds waits in Redis and the button says which import it answers,
+ * The menu keeps nothing in memory: what the file holds waits in Redis and the button says which import it answers,
  * so any process can handle the click, the shard that showed the preview or another one. The import is taken before it
  * is written, which only one click can do. What is written is worked out again from what the database has by then, see
- * `applyConfigurationImport`. Only the administrator who ran the command can answer, and the `administrator`
+ * `applyConfigurationImport`. Only the administrator who imports the file can answer, and the `administrator`
  * precondition checks the level again at the click.
  */
 @ApplyOptions<InteractionHandler.Options>({ preconditions: ['administrator'] })

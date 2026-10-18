@@ -1,7 +1,7 @@
 import { ModerationMessageListener } from '#lib/moderation';
 import { getPhishingHostnames, isListedHostname, normalizeHostname } from '#lib/moderation/automod/phishing';
 import type { GuildMessage } from '#lib/types';
-import { urlRegex } from '#utils/Links/UrlRegex';
+import { urlRegex } from 'wolfstar-shared';
 import { Colors } from '#utils/constants';
 import { deleteMessage } from '#utils/functions';
 import { getFullEmbedAuthor } from '#utils/util';

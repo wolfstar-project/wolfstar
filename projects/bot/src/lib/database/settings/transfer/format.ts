@@ -3,7 +3,7 @@ import type { SchemaKey, SchemaKeyType } from '#lib/database/settings/schema/Sch
 import type { AutoModerationRule, AutoModerationRuleData, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
- * The version of the file `/settings server export` writes. It changes when a file of the previous version can no
+ * The version of the file the export of the settings menu writes. It changes when a file of the previous version can no
  * longer be read, which a setting or a field that is added does not do: it is left out of the files that predate it.
  */
 export const ConfigurationFileVersion = 1;
@@ -94,7 +94,7 @@ export const ConfigurationRuleFields = [
 export type ConfigurationRule = Pick<AutoModerationRuleData, (typeof ConfigurationRuleFields)[number]>;
 
 /**
- * The file `/settings server export` answers with, and `/settings server import` reads.
+ * The file the export of the settings menu answers with, and its import reads.
  */
 export interface ConfigurationFile {
 	version: typeof ConfigurationFileVersion;

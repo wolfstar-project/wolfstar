@@ -1,5 +1,5 @@
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { getColor, getTag } from '#utils/util';
 import { EmbedBuilder, roleMention, time, TimestampStyles } from '@discordjs/builders';
 import { container } from '@wolfstar/http-framework';

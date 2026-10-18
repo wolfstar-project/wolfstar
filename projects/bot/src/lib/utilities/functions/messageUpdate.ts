@@ -1,5 +1,5 @@
 import type { Translator } from '#lib/structures/commands/utils';
-import { escapeMarkdown } from '#utils/External/escapeMarkdown';
+import { escapeMarkdown } from 'wolfstar-shared';
 import { bold, escapeMarkdown as escapeEveryMarkdown, strikethrough } from '@discordjs/formatters';
 import { isNullishOrEmpty } from '@sapphire/utilities';
 import { diffWordsWithSpace } from 'diff';

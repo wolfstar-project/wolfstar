@@ -1,7 +1,7 @@
 import type { ModerationManager } from '#lib/moderation';
 import { getTitle } from '#lib/moderation/common';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
-import { desc, seconds } from '#common';
+import { desc, seconds } from 'wolfstar-shared';
 import { BrandingColors } from '#utils/constants';
 import { Emojis } from '#utils/emojis';
 import { TypeVariation } from '#utils/moderationConstants';

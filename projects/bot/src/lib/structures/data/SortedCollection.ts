@@ -1,4 +1,4 @@
-import { asc } from '#common';
+import { asc } from 'wolfstar-shared';
 import { isFunction } from '@sapphire/utilities';
 
 /**

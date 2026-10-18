@@ -4,7 +4,8 @@ import { ModerationManagerEntry } from '#lib/moderation/managers/ModerationManag
 import { toModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { SortedCollection } from '#lib/structures/data';
 import { Events } from '#lib/types';
-import { createReferPromise, desc, floatPromise, minutes, orMix, seconds, type BooleanFn, type ReferredPromise } from '#common';
+import { createReferPromise, floatPromise, type ReferredPromise } from '#common';
+import { desc, minutes, orMix, seconds, type BooleanFn } from 'wolfstar-shared';
 import { withSharedLock } from '#utils/locks';
 import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
 import { AsyncQueue } from '@sapphire/async-queue';

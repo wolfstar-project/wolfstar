@@ -1,7 +1,7 @@
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, ratelimit } from '#lib/api/utils';
 import { submitAppeal } from '#lib/moderation/appealService';
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 
 /**

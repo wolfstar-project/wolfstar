@@ -1,6 +1,7 @@
 import { fetchModerationMember } from '#lib/moderation/common/members';
 import { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
-import { days, resolveOnErrorCodes } from '#common';
+import { resolveOnErrorCodes } from '#common';
+import { days } from 'wolfstar-shared';
 import { getLogger } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { isNullish } from '@sapphire/utilities';

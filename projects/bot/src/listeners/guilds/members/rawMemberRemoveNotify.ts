@@ -1,4 +1,4 @@
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { readSettings } from '#lib/database';
 import { fetchGuildT, fetchMemberRoleIds, formatRoleMentions } from '#lib/moderation/common';
 import { Events } from '#lib/types';

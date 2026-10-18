@@ -3,7 +3,7 @@ import { fetchGuildT } from '#lib/moderation/common/util';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { Collection } from '@discordjs/collection';
 import { container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';

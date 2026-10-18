@@ -1,7 +1,7 @@
 import { addWarnThreshold, WarnThresholdLimitError } from '#lib/moderation/warnThresholds';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
 import { resolveTimeSpan } from '#utils/resolvers';
-import { days } from '#common';
+import { days } from 'wolfstar-shared';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';

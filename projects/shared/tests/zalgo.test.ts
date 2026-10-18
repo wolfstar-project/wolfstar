@@ -1,4 +1,4 @@
-import { getMaximumCombiningMarks, isZalgo } from '#utils/zalgo';
+import { getMaximumCombiningMarks, isZalgo } from '../src/zalgo';
 
 describe('zalgo', () => {
 	describe('getMaximumCombiningMarks', () => {

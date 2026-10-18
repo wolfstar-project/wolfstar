@@ -1,4 +1,4 @@
-import type { BooleanFn } from '#common';
+import type { BooleanFn } from 'wolfstar-shared';
 import { getLogger } from '#utils/functions';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';

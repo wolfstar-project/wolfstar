@@ -16,7 +16,11 @@ import {
 	renderSettingsEditor,
 	renderSettingsGroup,
 	renderSettingsModal,
+	renderSettingsImportModal,
+	readSettingsImportSubmission,
 	resolveSettingGroup,
+	SettingsImportFileInputId,
+	SettingsImportTextInputId,
 	type SettingsMenuContext
 } from '#lib/structures/settings-menu';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
@@ -187,7 +191,7 @@ describe('settings menu', () => {
 		});
 
 		test('GIVEN a menu that expired THEN a click is told the command that opens it again', () => {
-			expect(renderSettingsExpired(createContext().t, 'server menu')).toContain('`/settings server menu`');
+			expect(renderSettingsExpired(createContext().t, 'server')).toContain('`/settings server`');
 			expect(renderSettingsExpired(createContext().t, 'user')).toContain('`/settings user`');
 		});
 
@@ -197,7 +201,7 @@ describe('settings menu', () => {
 				getLoadedChatInputCommands: () => new Map([['settings', { getGlobalId: () => '1234567890' }]])
 			};
 			try {
-				expect(renderSettingsExpired(createContext().t, 'server menu')).toContain('</settings server menu:1234567890>');
+				expect(renderSettingsExpired(createContext().t, 'server')).toContain('</settings server:1234567890>');
 			} finally {
 				(container as any).applicationCommandRegistry = previous;
 			}
@@ -302,6 +306,99 @@ describe('settings menu', () => {
 
 			expect(input.value).toBe('ping\nconf');
 			expect(modal.title.length).toBeLessThanOrEqual(45);
+		});
+	});
+
+	describe('export and import', () => {
+		const verbs = (message: ReturnType<typeof renderSettingsGroup>) =>
+			collectCustomIds(message.components!)
+				.filter((id) => id.startsWith('conf.'))
+				.map((id) => decodeSettingsMenuId(id.split('.').slice(1))?.verb);
+
+		test('GIVEN the page of the general module THEN it has the buttons that export and import the configuration', () => {
+			const message = renderSettingsGroup(createContext(), getConfigurableGroups(), 0);
+
+			expect(verbs(message)).toEqual(expect.arrayContaining(['export', 'import']));
+			expect(countComponents(message.components!)).toBeLessThanOrEqual(40);
+		});
+
+		test('GIVEN the page of another module THEN it has neither', () => {
+			const message = renderSettingsGroup(createContext(), resolveSettingGroup('logs')!, 0);
+
+			expect(verbs(message)).not.toContain('export');
+			expect(verbs(message)).not.toContain('import');
+		});
+
+		test('GIVEN the modal of the import THEN it takes a file or the pasted JSON, both optional, and submits to the menu', () => {
+			const modal = renderSettingsImportModal(createContext(), 2);
+			const [description, file, pasted] = modal.components as unknown as [
+				{ type: ComponentType },
+				{ type: ComponentType; label: string; component: { type: ComponentType; custom_id: string; required: boolean; max_values: number } },
+				{ type: ComponentType; label: string; component: { type: ComponentType; custom_id: string; required: boolean; max_length: number } }
+			];
+
+			expect(decodeSettingsMenuId(modal.custom_id.split('.').slice(1))).toMatchObject({ ownerId, verb: 'importSubmit', target: '', page: 2 });
+			expect(modal.title.length).toBeLessThanOrEqual(45);
+			expect(description.type).toBe(ComponentType.TextDisplay);
+			expect(file).toMatchObject({
+				type: ComponentType.Label,
+				component: { type: ComponentType.FileUpload, custom_id: SettingsImportFileInputId }
+			});
+			expect(file.component).toMatchObject({ required: false, max_values: 1 });
+			expect(pasted).toMatchObject({
+				type: ComponentType.Label,
+				component: { type: ComponentType.TextInput, custom_id: SettingsImportTextInputId }
+			});
+			expect(pasted.component).toMatchObject({ required: false, max_length: 4000 });
+			expect([file.label, pasted.label].every((label) => label.length <= 45)).toBe(true);
+		});
+	});
+
+	describe('import submission', () => {
+		const attachment = { id: '1300000000000000000', filename: 'wolfstar-settings.json', size: 512, url: 'https://cdn.discordapp.com/a.json' };
+
+		// A submission as Discord sends it: the text display, then a label for the file upload and one for the text input:
+		function submit(options: { files?: string[]; text?: string; resolved?: boolean }) {
+			return {
+				components: [
+					{ type: ComponentType.TextDisplay, id: 1 },
+					{
+						type: ComponentType.Label,
+						id: 2,
+						component: { type: ComponentType.FileUpload, id: 3, custom_id: SettingsImportFileInputId, values: options.files ?? [] }
+					},
+					{
+						type: ComponentType.Label,
+						id: 4,
+						component: { type: ComponentType.TextInput, id: 5, custom_id: SettingsImportTextInputId, value: options.text ?? '' }
+					}
+				],
+				resolved: options.resolved === false ? undefined : { attachments: { [attachment.id]: attachment } }
+			} as unknown as Parameters<typeof readSettingsImportSubmission>[0];
+		}
+
+		test('GIVEN a file THEN it is the attachment Discord resolved', () => {
+			expect(readSettingsImportSubmission(submit({ files: [attachment.id] }))).toEqual({ type: 'file', attachment });
+		});
+
+		test('GIVEN pasted JSON THEN it is the text, without the blanks around it', () => {
+			expect(readSettingsImportSubmission(submit({ text: '  {"version":1}\n' }))).toEqual({ type: 'text', text: '{"version":1}' });
+		});
+
+		test('GIVEN both THEN the file wins', () => {
+			expect(readSettingsImportSubmission(submit({ files: [attachment.id], text: '{"version":1}' }))).toEqual({ type: 'file', attachment });
+		});
+
+		test('GIVEN a file Discord did not resolve THEN what was pasted is read instead', () => {
+			expect(readSettingsImportSubmission(submit({ files: [attachment.id], text: '{}', resolved: false }))).toEqual({
+				type: 'text',
+				text: '{}'
+			});
+		});
+
+		test('GIVEN nothing, or only blanks THEN there is nothing to import', () => {
+			expect(readSettingsImportSubmission(submit({}))).toBeNull();
+			expect(readSettingsImportSubmission(submit({ text: '   ' }))).toBeNull();
 		});
 	});
 

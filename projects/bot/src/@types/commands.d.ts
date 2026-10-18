@@ -457,11 +457,7 @@ declare module '@wolfstar/http-framework' {
       sticky?: boolean;
       user: TransformedArguments.User;
     };
-    'settings server export': {};
-    'settings server import': {
-      file: TransformedArguments.Attachment;
-    };
-    'settings server menu': {};
+    'settings server': {};
     'settings user': {};
     'slowmode': {
       duration: string;

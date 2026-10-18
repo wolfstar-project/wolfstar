@@ -1,4 +1,4 @@
-import { PermissionsBits } from '#utils/bits';
+import { PermissionsBits } from 'wolfstar-shared';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import type {

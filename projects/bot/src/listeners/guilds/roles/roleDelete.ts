@@ -1,5 +1,6 @@
 import { RegisterAsDispatchListener } from '#utils/worker';
-import { retryWithDelays, seconds } from '#common';
+import { retryWithDelays } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
 import { RoleActions } from '#lib/moderation/actions';
 import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';

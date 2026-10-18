@@ -69,10 +69,10 @@ jobs:
             - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
-            # The bot is checked against the built types of the database, and against the tsconfig and the
+            # The bot is checked against the built types of the database and of shared, and against the tsconfig and the
             # auto-imports the Stars CLI generates:
-            - name: 🏗️ Build the database package
-              run: pnpm --filter wolfstar-database build
+            - name: 🏗️ Build the database and shared packages
+              run: pnpm --filter wolfstar-database --filter wolfstar-shared build
 
             - name: ✨ Prepare the Stars project
               run: pnpm --filter wolfstar-bot exec stars prepare
@@ -103,8 +103,8 @@ jobs:
             - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
-            - name: 🏗️ Build the database package
-              run: pnpm --filter wolfstar-database build
+            - name: 🏗️ Build the database and shared packages
+              run: pnpm --filter wolfstar-database --filter wolfstar-shared build
 
             - name: ✨ Prepare the Stars project
               run: pnpm --filter wolfstar-bot exec stars prepare
@@ -156,6 +156,10 @@ jobs:
             - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
+            # The auto-imports of the bot read the built types of shared:
+            - name: 🏗️ Build the shared package
+              run: pnpm --filter wolfstar-shared build
+
             # The tsconfig and the auto-imports the bot extends are generated:
             - name: ✨ Prepare the Stars project
               run: pnpm --filter wolfstar-bot exec stars prepare
@@ -193,8 +197,8 @@ jobs:
             - name: 🔼 Generate Prisma contract
               run: pnpm --filter wolfstar-database prisma:generate
 
-            - name: 🏗️ Build the database package
-              run: pnpm --filter wolfstar-database build
+            - name: 🏗️ Build the database and shared packages
+              run: pnpm --filter wolfstar-database --filter wolfstar-shared build
 
             - name: ✨ Prepare the Stars project
               run: pnpm --filter wolfstar-bot exec stars prepare

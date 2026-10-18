@@ -1,4 +1,4 @@
-import { urlRegex } from '#utils/Links/UrlRegex';
+import { urlRegex } from 'wolfstar-shared';
 
 /**
  * The longest run of the same character, and of the same word, in a text: `aaaa` is a run of four characters and

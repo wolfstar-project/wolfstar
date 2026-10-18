@@ -1,4 +1,4 @@
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 

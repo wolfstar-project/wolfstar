@@ -1,4 +1,4 @@
-import { urlRegex } from '#utils/Links/UrlRegex';
+import { urlRegex } from 'wolfstar-shared';
 import { getImageUrl } from '#utils/util';
 import type { AutoDelete, CleanupFilterKind } from 'wolfstar-database';
 

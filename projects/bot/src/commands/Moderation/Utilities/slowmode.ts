@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@wolfstar/decorators';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands';
-import { hours, seconds } from '#common';
+import { hours, seconds } from 'wolfstar-shared';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { Command, RegisterCommand, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type AnyNamespace, type TFunction } from '@wolfstar/plugin-i18next';

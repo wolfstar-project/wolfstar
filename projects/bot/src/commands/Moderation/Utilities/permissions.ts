@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@wolfstar/decorators';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
-import { PermissionsBits, PermissionsBitsList } from '#utils/bits';
+import { PermissionsBits, PermissionsBitsList } from 'wolfstar-shared';
 import { ModeratorPermissionsBits, ModeratorPermissionsList } from '#utils/constants';
 import { getColor, getTag } from '#utils/util';
 import { EmbedBuilder, bold } from '@discordjs/builders';

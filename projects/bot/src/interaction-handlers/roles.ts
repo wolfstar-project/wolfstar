@@ -8,7 +8,7 @@ import {
 	renderRoleView,
 	RolesPageInputId
 } from '#lib/structures/roles-menu';
-import { getModalValue } from '#utils/interactions';
+import { getModalValue } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';

@@ -1,4 +1,5 @@
-import { days, resolveOnErrorCodes } from '#common';
+import { resolveOnErrorCodes } from '#common';
+import { days } from 'wolfstar-shared';
 import { matchesCleanupFilter } from '#lib/moderation/cleanup/filters';
 import { bulkDeleteChannelMessages, fetchChannelMessages } from '#lib/moderation/cleanup/messages';
 import { container } from '@wolfstar/http-framework';

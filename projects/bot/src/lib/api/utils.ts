@@ -2,7 +2,7 @@ import { fetchFlattenedGuild, flattenGuild } from '#lib/api/ApiTransformers';
 import { Auth, resolveRequestAuth, type ApiAuthRequest, type LoginData } from '#lib/api/Auth';
 import type { OauthFlattenedGuild, PartialOauthFlattenedGuild, TransformedLoginData } from '#lib/api/types';
 import { readSettings, readSettingsPermissionNodes } from '#lib/database/settings';
-import { PermissionsBits } from '#utils/bits';
+import { PermissionsBits } from 'wolfstar-shared';
 import { RateLimitManager } from '@sapphire/ratelimits';
 import { createFunctionPrecondition } from '@wolfstar/decorators';
 import { container } from '@wolfstar/http-framework';

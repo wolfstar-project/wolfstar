@@ -2,7 +2,7 @@ import type { ModerationManager } from '#lib/moderation/managers/ModerationManag
 import type { RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
 import { getTranslationKey } from '#lib/moderation/common/util';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
-import { minutes } from '#common';
+import { minutes } from 'wolfstar-shared';
 import { time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';

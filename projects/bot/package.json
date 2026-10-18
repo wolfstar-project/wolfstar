@@ -67,7 +67,8 @@
 		"i18next": "^26.4.2",
 		"ioredis": "^6.0.0",
 		"varlock": "^1.21.1",
-		"wolfstar-database": "workspace:^"
+		"wolfstar-database": "workspace:^",
+		"wolfstar-shared": "workspace:^"
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",

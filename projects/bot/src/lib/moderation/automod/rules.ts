@@ -2,7 +2,7 @@ import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { Adder } from '#lib/database/utils/Adder';
 import { WindowCounter } from '#lib/moderation/automod/detectors';
 import { withSharedLock } from '#utils/locks';
-import { create } from '#utils/Security/RegexCreator';
+import { create } from 'wolfstar-shared';
 import { Collection } from '@discordjs/collection';
 import { AsyncQueue } from '@sapphire/async-queue';
 import { RateLimitManager } from '@sapphire/ratelimits';

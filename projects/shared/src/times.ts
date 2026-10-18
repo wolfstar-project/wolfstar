@@ -2,8 +2,10 @@ import { roundNumber } from '@sapphire/utilities';
 
 /**
  * The amount of milliseconds of the common units of time, same values as `Time` from `@sapphire/time-utilities`.
+ *
+ * @remarks Not a `const enum`: the bot reads it from the built package, where `verbatimModuleSyntax` cannot inline one.
  */
-export const enum Time {
+export enum Time {
 	Millisecond = 1,
 	Second = 1000,
 	Minute = 1000 * 60,

@@ -2,7 +2,7 @@ import { auditDiff } from '#lib/api/auditDiff';
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import { DASHBOARD_AUDIT_ACTIONS } from '#lib/database/settings/auditActions';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
 import type { APIGuildMember, GuildMemberFlags } from 'discord-api-types/v10';

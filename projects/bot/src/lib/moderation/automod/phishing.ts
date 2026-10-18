@@ -1,4 +1,4 @@
-import { PhishingHostnames } from '#utils/Links/PhishingHostnames';
+import { PhishingHostnames } from 'wolfstar-shared';
 
 /**
  * The hostnames that are known to steal accounts, the list kept by the Discord-AntiScam community. It is the copy

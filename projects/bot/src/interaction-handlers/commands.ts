@@ -27,7 +27,7 @@ import {
 } from '#lib/structures/commands-menu/restrictions';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
-import { getModalValue, getModalValues } from '#utils/interactions';
+import { getModalValue, getModalValues } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply, isMessageStringSelectInteractionData } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';

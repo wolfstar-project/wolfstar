@@ -1,4 +1,4 @@
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 
 export const SecondsOptions = ['s', 'sec', 'secs', 'second', 'seconds'] as const;
 export const MinutesOptions = ['m', 'min', 'mins', 'minute', 'minutes'] as const;

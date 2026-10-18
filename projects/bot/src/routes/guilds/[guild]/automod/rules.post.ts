@@ -3,7 +3,7 @@ import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, ratelimit } from '#lib/api/utils';
 import { createAutoModerationRule } from '#lib/moderation/automod/rules';
 import { parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
-import { seconds } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 import { isAutoModerationRuleType } from 'wolfstar-database';
 

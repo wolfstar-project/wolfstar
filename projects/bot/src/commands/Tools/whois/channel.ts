@@ -1,5 +1,6 @@
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
-import { resolveOnErrorCodes, seconds } from '#common';
+import { resolveOnErrorCodes } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { Colors } from '#utils/constants';
 import { channelMention, EmbedBuilder, time, TimestampStyles } from '@discordjs/builders';
 import { DiscordSnowflake } from '@sapphire/snowflake';

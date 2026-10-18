@@ -4,8 +4,8 @@ import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationIntegrationType, InteractionContextType } from 'discord-api-types/v10';
 
 /**
- * The parent of the `settings` subcommands: `server`, a group of `menu`, `export` and `import`, and `user`, which are
- * wired onto this command by `@wolfstar/plugin-subcommands-advanced`.
+ * The parent of the `settings` subcommands (`server` and `user`), which are wired onto this command by
+ * `@wolfstar/plugin-subcommands-advanced`.
  *
  * @remarks The command has no default member permissions, since everybody can open their own settings: `server`
  * requires the administrator permission level by itself.
@@ -14,6 +14,5 @@ import { ApplicationIntegrationType, InteractionContextType } from 'discord-api-
 	applyLocalizedBuilder(builder, 'commands/conf:settings')
 		.setContexts(InteractionContextType.Guild)
 		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
-		.addSubcommandGroup((group) => applyLocalizedBuilder(group, 'commands/conf:settingsServer'))
 )
 export class UserCommand extends Subcommand {}

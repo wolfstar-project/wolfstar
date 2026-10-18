@@ -1,4 +1,4 @@
-import { bidirectionalReplace } from '#common/comparators';
+import { bidirectionalReplace } from './comparators';
 
 export const kWordStartBoundary = String.raw`(?<=^|\W)`;
 export const kWordEndBoundary = String.raw`(?=$|\W)`;
@@ -8,7 +8,7 @@ export const kRegExpSymbols = /[-/\\^$*+?.()|[\]{}]/;
 export const kPatternGroupReplacer = /\[([^\]]+)\](?=(.)?)/g;
 export const kGroupRangeReplacer = /(.)-(.)/g;
 
-export const enum WordBoundary {
+export enum WordBoundary {
 	None,
 	Start,
 	End,
