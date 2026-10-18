@@ -6,11 +6,10 @@ import { codeBlock } from '@discordjs/builders';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
 import { ResultError } from '@sapphire/result';
 import { cutText, isObject } from '@sapphire/utilities';
-import { captureException, lastEventId } from '@sentry/node';
 import { ArgumentError, UserError, container } from '@wolfstar/http-framework';
 import type { Command } from '@wolfstar/http-framework';
 import type { TFunction } from '@wolfstar/plugin-i18next';
-import { isSentryInitialized } from '@wolfstar/shared-http-pieces';
+import { isSentryInitialized, Sentry } from '@wolfstar/shared-http-pieces';
 import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import { exists } from 'i18next';
 
@@ -88,8 +87,8 @@ export function generateUnexpectedErrorMessage(userId: Snowflake, command: Comma
  * again returns an ID no event has, so the ID of the event its listener sent is read instead when it ran first.
  */
 function reportError(command: Command, error: unknown) {
-	if (isObject(error) && Reflect.get(error, '__sentry_captured__') === true) return lastEventId();
-	return captureException(error, { tags: { command: command.name } });
+	if (isObject(error) && Reflect.get(error, '__sentry_captured__') === true) return Sentry.lastEventId();
+	return Sentry.captureException(error, { tags: { command: command.name } });
 }
 
 function getDiscordError(code: RESTJSONErrorCodes) {

@@ -41,7 +41,6 @@
 		"@sapphire/snowflake": "^3.5.5",
 		"@sapphire/time-utilities": "^1.7.14",
 		"@sapphire/utilities": "^3.18.3",
-		"@sentry/node": "^11.8.0",
 		"@skyra/char": "^1.0.3",
 		"@wolfstar/decorators": "^0.1.2",
 		"@wolfstar/env-utilities": "^2.3.1",
