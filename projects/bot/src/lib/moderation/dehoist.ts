@@ -1,6 +1,7 @@
 import { toErrorCodeResult } from '#common';
 import { readSettings } from '#lib/database/settings/functions';
 import { fetchGuildT } from '#lib/moderation/common';
+import { withNicknameLock } from '#lib/moderation/common/nicknames';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
@@ -50,7 +51,8 @@ export function getDehoistedNickname(name: string, username: string): string | n
  *
  * A member with a sticky nickname keeps it, since a moderator chose it, and so does a member who can manage the
  * nicknames, who would only set theirs back. A member the bot is not above is left alone, and one who left meanwhile
- * is not an error.
+ * is not an error. The nickname is read again and written under the lock `/setnickname` takes
+ * ({@linkcode withNicknameLock}), so what a moderator sets while the checks run is not overwritten.
  *
  * @param member - The member.
  * @param user - The user of the member.
@@ -59,32 +61,42 @@ export async function dehoistMember(member: GuildMember, user: User): Promise<vo
 	const settings = await readSettings(member.guildId);
 	if (!settings.moderationDehoist) return;
 
-	const nickname = getDehoistedNickname(member.nickname ?? user.globalName ?? user.username, user.username);
-	if (nickname === null) return;
-
-	const { gatewayClient, logger, prisma } = container;
-	const sticky = await fetchStickyNickname(prisma, member.guildId, user.id);
-	if (!isNullish(sticky)) return;
+	// Most names are not hoisted, which costs nothing to tell:
+	if (getDehoistedNickname(member.nickname ?? user.globalName ?? user.username, user.username) === null) return;
 
 	const permissions = await member.fetchPermissions();
 	if (permissions.has(PermissionFlagsBits.ManageNicknames)) return;
 
+	const { gatewayClient, logger, prisma } = container;
 	const me = await gatewayClient.members.fetchMe(member.guildId);
 	await me.roles.fetch();
 	if (!(await me.permissions).has(PermissionFlagsBits.ManageNicknames)) return;
 
 	// Discord refuses to rename a member whose highest role is not below the one of the bot, asking would only fail:
 	await member.roles.fetch();
-	const position = (await me.roles.highest)?.position ?? 0;
-	if (((await member.roles.highest)?.position ?? 0) >= position) return;
+	const [ownHighest, memberHighest] = await Promise.all([me.roles.highest, member.roles.highest]);
+	if (isNullish(ownHighest) || (!isNullish(memberHighest) && ownHighest.comparePositionTo(memberHighest) <= 0)) return;
 
 	const t = await fetchGuildT({ id: member.guildId });
-	const result = await toErrorCodeResult(
-		gatewayClient.api.guilds.editMember(member.guildId, user.id, { nick: nickname }, { reason: t('moderationActions:dehoistReason') })
-	);
-	result.inspectErr((code) => {
-		// The member left meanwhile, or is the owner of the server:
-		if (code === RESTJSONErrorCodes.UnknownMember || code === RESTJSONErrorCodes.MissingPermissions) return;
-		logger.error(`[DEHOIST] Could not dehoist a member (${code}).`);
+	await withNicknameLock(member.guildId, user.id, async () => {
+		const sticky = await fetchStickyNickname(prisma, member.guildId, user.id);
+		if (!isNullish(sticky)) return;
+
+		// The member as Discord has it now, since a moderator may have renamed them while the checks ran:
+		const current = await toErrorCodeResult(gatewayClient.api.guilds.getMember(member.guildId, user.id));
+		if (current.isErr()) return;
+
+		const { nick, user: currentUser } = current.unwrap();
+		const nickname = getDehoistedNickname(nick ?? currentUser.global_name ?? currentUser.username, currentUser.username);
+		if (nickname === null) return;
+
+		const result = await toErrorCodeResult(
+			gatewayClient.api.guilds.editMember(member.guildId, user.id, { nick: nickname }, { reason: t('moderationActions:dehoistReason') })
+		);
+		result.inspectErr((code) => {
+			// The member left meanwhile, or is the owner of the server:
+			if (code === RESTJSONErrorCodes.UnknownMember || code === RESTJSONErrorCodes.MissingPermissions) return;
+			logger.error(`[DEHOIST] Could not dehoist a member (${code}).`);
+		});
 	});
 }
