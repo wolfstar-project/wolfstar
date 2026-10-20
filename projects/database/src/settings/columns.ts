@@ -143,6 +143,7 @@ export const Columns = {
 		logsEvents: ['events', 'snowflake'],
 		logsExpressions: ['expressions', 'snowflake'],
 		logsIntegrations: ['integrations', 'snowflake'],
+		logsBoosts: ['boosts', 'snowflake'],
 		logsIgnoreAll: ['ignoreAll', 'snowflakes'],
 		logsIgnoreMessages: ['ignoreMessages', 'snowflakes'],
 		logsIgnoreReactions: ['ignoreReactions', 'snowflakes']

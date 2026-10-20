@@ -244,6 +244,7 @@ namespace public {
     events                 BigInt?
     expressions            BigInt?
     integrations           BigInt?
+    boosts                 BigInt?
     command                BigInt?
     settings               BigInt?
     ignoreAll              BigInt[] @default([]) @noCheck(elementNotNull) @map("ignore_all")
