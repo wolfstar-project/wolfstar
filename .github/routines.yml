@@ -4,13 +4,13 @@ routines:
       on:
           schedule:
               - cron: '0 10 * * 1'
-      timezone: Australia/Melbourne
+      timezone: Europe/Rome
       mode: propose
       enabled: true
     - name: dependency-updates
       on:
           schedule:
               - cron: '0 8 * * 1'
-      timezone: Australia/Melbourne
+      timezone: Europe/Rome
       mode: propose
       enabled: true
