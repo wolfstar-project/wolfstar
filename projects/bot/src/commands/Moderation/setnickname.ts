@@ -1,3 +1,4 @@
+import { withNicknameLock } from '#lib/moderation/common/nicknames';
 import { applyModerationBuilder, ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
 import { TypeVariation } from '#utils/moderationConstants';
 import type { Command } from '@wolfstar/http-framework';
@@ -36,7 +37,14 @@ export class UserCommand extends ModerationCommand<Type, ValueType> {
 		super(context, { ...options, type: TypeVariation.SetNickname, requiredMember: true });
 	}
 
-	protected override async handle(interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
+	protected override handle(interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
+		const { guild, target } = context;
+		// The dehoisting reads the sticky nickname and renames the member under the same lock, so it never overwrites
+		// what is set here:
+		return withNicknameLock(guild.id, target.id, () => this.setNickname(interaction, context));
+	}
+
+	private async setNickname(interaction: ModerationCommand.Interaction, context: ModerationCommand.HandlerParameters<ValueType>) {
 		const { nickname, sticky } = context.args as Command.OptionsOf<'setnickname'>;
 		const { guild, target } = context;
 
