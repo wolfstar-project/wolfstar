@@ -13,4 +13,4 @@ routines:
               - cron: '0 8 * * 1'
       timezone: Europe/Rome
       mode: propose
-      enabled: true
+      enabled: false
