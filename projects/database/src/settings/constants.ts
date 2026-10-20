@@ -54,6 +54,7 @@ export function getDefaultGuildSettings() {
 		logsEvents: null,
 		logsExpressions: null,
 		logsIntegrations: null,
+		logsBoosts: null,
 		logsIgnoreAll: [],
 		logsIgnoreMessages: [],
 		logsIgnoreReactions: [],
