@@ -28,8 +28,15 @@ export class UserTask extends ScheduledTask<'autoMessage'> {
 		for (const message of await fetchDueAutoMessages(prisma.orm, now, MessagesPerRun)) {
 			try {
 				await setAutoMessageNextRun(prisma, message.id, now + message.interval);
+				const result = await runAutoMessage(message);
 				// A channel that was deleted gets no message anymore:
-				if ((await runAutoMessage(message)) === 'gone') await deleteAutoMessage(prisma, message.guildId, message.channelId);
+				if (result === 'gone') await deleteAutoMessage(prisma, message.guildId, message.channelId);
+				// It is tried again at the next interval, and is sent once the bot has the permissions back:
+				else if (result === 'missing') {
+					logger.warn(
+						`[AutoMessage] Missing the permissions to send the message of the channel ${message.channelId} of the guild ${message.guildId}.`
+					);
+				}
 			} catch (error) {
 				logger.error(`[AutoMessage] Could not send the message of the channel ${message.channelId} of the guild ${message.guildId}:`, error);
 			}
