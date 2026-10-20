@@ -182,6 +182,11 @@ export function getConfiguration() {
 			minimum: 0,
 			maximum: 60
 		},
+		moderationDehoist: {
+			type: 'boolean',
+			name: 'moderation.dehoist',
+			description: 'settings:moderationDehoist'
+		},
 
 		// Permissions
 		permissionsUsers: {

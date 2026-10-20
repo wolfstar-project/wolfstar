@@ -3517,6 +3517,7 @@ declare module "i18next" {
         setNicknameRemoved: "[Action] Removed Nickname | Reason: {{reason}}";
         setNicknameSet: "[Action] Set Nickname | Reason: {{reason}}";
         setNicknameStickyRestored: "[Action] Set the sticky nickname back.";
+        dehoistReason: "[Dehoist] The name started with characters that list it above the others, or had characters that are not plain text.";
         setupMuteExists: '**Aborting creating muted**: There is already a role called "Muted".';
         setupRestrictionExists: "**Aborting restriction role creation**: There is already one that exists.";
         setupTooManyRoles: "**Aborting role creation**: There are 250 roles in this server, you need to delete one role.";
@@ -3857,6 +3858,7 @@ declare module "i18next" {
         moderationTrackRoles: "Whether I should record the muted and restriction roles given or taken away without using my commands. A muted role given by hand mutes the member as `/mute add` does: their other roles are taken away and kept, and they are given back when the role is taken away.";
         moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
         moderationConfirmRecentMinutes: "When a member already has a case made within these minutes, I ask the moderator to confirm before taking another action on them, so two moderators acting on one message do not punish twice. 0 never asks.";
+        moderationDehoist: "Whether I should clean the names of the members when they join or change them, with a nickname: what lists a name above the others (spaces and `!`, `.`, `-` and the like at its start) is taken away, and the strange characters (fancy fonts, zalgo, symbols, emojis, other scripts) are turned into plain letters. The accents are kept. A sticky nickname and the members who can manage nicknames are left alone.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
         channelsLogsVoiceChannel: "The channel for voice channel logs, if set, I send a message when a user joins, leaves, or moves to another voice channel.";
@@ -3928,6 +3930,7 @@ declare module "i18next" {
           moderationTrackRoles: "Track Roles";
           moderationTrackKicks: "Track Kicks";
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
+          moderationDehoist: "Dehoist Names";
           permissionsUsers: "User Permissions";
           permissionsRoles: "Role Permissions";
           reportsChannel: "Reports Channel";

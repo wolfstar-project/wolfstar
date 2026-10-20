@@ -158,7 +158,8 @@ export const Columns = {
 		moderationTrackTimeouts: ['trackTimeouts', 'value'],
 		moderationTrackRoles: ['trackRoles', 'value'],
 		moderationTrackKicks: ['trackKicks', 'value'],
-		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value']
+		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value'],
+		moderationDehoist: ['dehoist', 'value']
 	}),
 	...columns('GuildAppeals', {
 		appealsEnabled: ['enabled', 'value'],

@@ -28,6 +28,7 @@
 		"stars:info": "stars info"
 	},
 	"dependencies": {
+		"@aero/sanitizer": "^1.3.2",
 		"@discordjs/builders": "^1.14.1",
 		"@discordjs/collection": "^2.1.1",
 		"@discordjs/formatters": "^0.6.2",
