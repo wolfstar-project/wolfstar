@@ -66,6 +66,7 @@ export function getDefaultGuildSettings() {
 		moderationTrackRoles: false,
 		moderationTrackKicks: false,
 		moderationConfirmRecentMinutes: 0,
+		moderationDehoist: false,
 		permissionsUsers: [],
 		permissionsRoles: [],
 		appealsEnabled: false,
