@@ -36,6 +36,14 @@ export function readAutoMessage(guildId: Snowflake, channelId: Snowflake): Promi
 }
 
 /**
+ * Runs a function while holding the lock of the automatic messages of a guild, which `/automessage` writes under and
+ * the task sends under, so a message that is disabled or edited is never sent as it was.
+ */
+export function withAutoMessageLock<T>(guildId: Snowflake, callback: () => Promise<T>): Promise<T> {
+	return withSharedLock(`automessages:${guildId}`, callback);
+}
+
+/**
  * Sends a message in a channel every interval from now on, which replaces the one the channel had. The first one is
  * one interval away.
  *
@@ -45,7 +53,7 @@ export function readAutoMessage(guildId: Snowflake, channelId: Snowflake): Promi
 export async function enableAutoMessage(guildId: Snowflake, data: AutoMessageData): Promise<AutoMessage> {
 	const { prisma } = container;
 	// The count and the write are one step for every process, so two channels enabled at once do not both take the last slot:
-	return withSharedLock(`automessages:${guildId}`, async () => {
+	return withAutoMessageLock(guildId, async () => {
 		const existing = await fetchAutoMessages(prisma.orm, guildId);
 		if (existing.length >= MaximumAutoMessages && !existing.some((message) => message.channelId === data.channelId)) {
 			throw new AutoMessageLimitError(MaximumAutoMessages);
@@ -61,5 +69,5 @@ export async function enableAutoMessage(guildId: Snowflake, data: AutoMessageDat
  * @returns Whether the channel had one.
  */
 export function disableAutoMessage(guildId: Snowflake, channelId: Snowflake): Promise<boolean> {
-	return deleteAutoMessage(container.prisma, guildId, channelId);
+	return withAutoMessageLock(guildId, () => deleteAutoMessage(container.prisma, guildId, channelId));
 }
