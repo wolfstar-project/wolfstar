@@ -171,6 +171,21 @@ namespace public {
     @@index([nextRunAt], map: "GuildAutoPurge_next_run_at_idx")
   }
 
+  model GuildAutoMessage {
+    id            BigInt             @id(map: "GuildAutoMessage_pkey") @default(autoincrement())
+    guildId       BigInt             @map("guild_id")
+    channelId     BigInt             @unique(map: "GuildAutoMessage_channel_id_key") @map("channel_id")
+    content       String
+    interval      Int
+    mentions      Boolean            @default(false)
+    lastMessageId BigInt?            @map("last_message_id")
+    nextRunAt     TimestampString(3) @map("next_run_at")
+    guild         Guild              @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoMessage_guild_id_fkey", index: false)
+
+    @@index([guildId], map: "GuildAutoMessage_guild_id_idx")
+    @@index([nextRunAt], map: "GuildAutoMessage_next_run_at_idx")
+  }
+
   model GuildAutoModerationRule {
     id                 BigInt                                 @id(map: "GuildAutoModerationRule_pkey") @default(autoincrement())
     guildId            BigInt                                 @map("guild_id")

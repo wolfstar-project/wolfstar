@@ -34,6 +34,15 @@ declare module '@wolfstar/http-framework' {
       text?: boolean;
     };
     'autodelete list': {};
+    'automessage disable': {
+      channel: TransformedArguments.Channel;
+    };
+    'automessage enable': {
+      channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
+      interval: string;
+      mentions?: boolean;
+    };
+    'automessage list': {};
     'automod add': {
       rule: string;
       value: string;
