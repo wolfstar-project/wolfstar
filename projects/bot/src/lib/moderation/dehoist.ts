@@ -2,6 +2,7 @@ import { toErrorCodeResult } from '#common';
 import { readSettings } from '#lib/database/settings/functions';
 import { fetchGuildT } from '#lib/moderation/common';
 import { withNicknameLock } from '#lib/moderation/common/nicknames';
+import sanitize from '@aero/sanitizer';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
@@ -15,37 +16,84 @@ import { fetchStickyNickname } from 'wolfstar-database';
 const HoistingPrefix = /^[\s!-/]+/u;
 
 /**
- * The longest nickname Discord takes.
+ * The characters a clean name is made of: the printable ASCII ones and the Latin-1 ones, so the accents of a name
+ * (`José`, `Niccolò`) are kept and the fancy fonts, the zalgo, the symbols and the emojis are not.
  */
+const PlainCharacters = /^[\x20-\x7E\u00A0-\u00FF]*$/u;
+
+/**
+ * The shortest and the longest nickname the dehoisting sets. Discord takes 1 to 32 characters; a single one left of a
+ * name is not worth keeping.
+ */
+const MinimumNicknameLength = 2;
 const MaximumNicknameLength = 32;
 
 /**
- * The nickname of a member whose name and username are nothing but what hoists them.
+ * The nickname of a member none of whose names can be cleaned.
  */
 export const DehoistedNickname = 'dehoisted';
 
 /**
- * The nickname that dehoists a member, or `null` when their name is not hoisted.
+ * The names of a member, the nickname and the display name of their user being the ones they may not have.
+ */
+export interface MemberNames {
+	nickname: string | null;
+	globalName: string | null;
+	username: string;
+}
+
+/**
+ * What the dehoisting does to the nickname of a member: sets it, or removes it (`null`) so the display name shows.
+ */
+export interface DehoistChange {
+	nick: string | null;
+}
+
+/**
+ * Whether a name is clean: it is not hoisted, and has none of the characters {@link PlainCharacters} leaves out.
+ */
+function isCleanName(name: string): boolean {
+	return !HoistingPrefix.test(name) && PlainCharacters.test(name);
+}
+
+/**
+ * Cleans a name as the Fire bot does: a name with characters that are not plain is turned into plain ASCII
+ * (`@aero/sanitizer`: the accents, the fancy fonts, the zalgo and the other scripts become the letters they stand
+ * for, what has none is dropped), then loses what hoists it.
+ */
+function cleanName(name: string): string {
+	const plain = PlainCharacters.test(name) ? name : sanitize(name);
+	return plain.replace(HoistingPrefix, '').replaceAll(/\s+/gu, ' ').slice(0, MaximumNicknameLength).trim();
+}
+
+/**
+ * What the dehoisting changes of a member whose name is hoisted or made of characters that are not plain, `null` when
+ * the name they show is clean.
  *
  * @remarks
  *
- * The name loses what hoists it. A name that is nothing else takes the username in its place, cut the same way (a
- * username may start with `.`), and a username that is nothing else either takes {@link DehoistedNickname}.
+ * The name the member shows (the nickname, else the display name, else the username) is cleaned. When too little of
+ * it is left, a nickname is removed when the name shown without it is clean, else the username is cleaned in its
+ * place, and a username that cannot be cleaned either takes {@link DehoistedNickname}.
  *
- * @param name - The name the member list shows: the nickname, else the display name of the user.
- * @param username - The username of the member.
+ * @param names - The names of the member.
  */
-export function getDehoistedNickname(name: string, username: string): string | null {
-	const dehoisted = name.replace(HoistingPrefix, '');
-	if (dehoisted === name) return null;
+export function getDehoistChange(names: MemberNames): DehoistChange | null {
+	const shown = names.nickname ?? names.globalName ?? names.username;
+	if (isCleanName(shown)) return null;
 
-	const nickname = dehoisted || username.replace(HoistingPrefix, '') || DehoistedNickname;
-	return nickname.slice(0, MaximumNicknameLength);
+	const cleaned = cleanName(shown);
+	if (cleaned.length >= MinimumNicknameLength) return { nick: cleaned };
+
+	if (names.nickname !== null && isCleanName(names.globalName ?? names.username)) return { nick: null };
+
+	const username = cleanName(names.username);
+	return { nick: username.length >= MinimumNicknameLength ? username : DehoistedNickname };
 }
 
 /**
  * Dehoists a member when the guild turned `moderation.dehoist` on: the name they show is given a nickname without the
- * characters that list it above the others.
+ * characters that list it above the others nor the ones that are not plain text, see {@linkcode getDehoistChange}.
  *
  * @remarks
  *
@@ -61,8 +109,8 @@ export async function dehoistMember(member: GuildMember, user: User): Promise<vo
 	const settings = await readSettings(member.guildId);
 	if (!settings.moderationDehoist) return;
 
-	// Most names are not hoisted, which costs nothing to tell:
-	if (getDehoistedNickname(member.nickname ?? user.globalName ?? user.username, user.username) === null) return;
+	// Most names are clean, which costs nothing to tell:
+	if (getDehoistChange({ nickname: member.nickname, globalName: user.globalName, username: user.username }) === null) return;
 
 	const permissions = await member.fetchPermissions();
 	if (permissions.has(PermissionFlagsBits.ManageNicknames)) return;
@@ -87,11 +135,11 @@ export async function dehoistMember(member: GuildMember, user: User): Promise<vo
 		if (current.isErr()) return;
 
 		const { nick, user: currentUser } = current.unwrap();
-		const nickname = getDehoistedNickname(nick ?? currentUser.global_name ?? currentUser.username, currentUser.username);
-		if (nickname === null) return;
+		const change = getDehoistChange({ nickname: nick ?? null, globalName: currentUser.global_name, username: currentUser.username });
+		if (change === null) return;
 
 		const result = await toErrorCodeResult(
-			gatewayClient.api.guilds.editMember(member.guildId, user.id, { nick: nickname }, { reason: t('moderationActions:dehoistReason') })
+			gatewayClient.api.guilds.editMember(member.guildId, user.id, change, { reason: t('moderationActions:dehoistReason') })
 		);
 		result.inspectErr((code) => {
 			// The member left meanwhile, or is the owner of the server:
