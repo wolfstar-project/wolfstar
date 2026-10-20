@@ -3000,6 +3000,9 @@ declare module "i18next" {
         integrationCreate: "App Added";
         integrationDelete: "App Removed";
         webhooksUpdate: "Webhooks Changed";
+        boostStart: "Boost Started";
+        boostStop: "Boost Ended";
+        boostStopLeft: "• **Left the server**";
         fieldChannel: "• **Channel**: {{value}}";
         fieldCreator: "• **By**: {{value}}";
         fieldMaxUses: "• **Uses**: {{value}} at most";
@@ -3014,6 +3017,9 @@ declare module "i18next" {
         fieldStatus: "• **Status**: {{previous}} → {{next}}";
         fieldDescription: "• **Description**: {{value}}";
         fieldType: "• **Type**: {{value}}";
+        fieldMember: "• **Member**: {{value}}";
+        fieldBoostingSince: "• **Boosting since**: {{value}}";
+        fieldBoostedFor: "• **Boosted for**: {{duration, duration}}, since {{since}}";
         channelCreate: "Channel Created";
         channelCreateParent: "• **Parent**: {{value}}";
         channelCreatePosition: "• **Position**: `{{value, number}}`";
@@ -3789,6 +3795,7 @@ declare module "i18next" {
         channelsLogsEvents: "The channel for scheduled event logs, if set, I send a message when an event is created, changed, started, ended or deleted.";
         channelsLogsExpressions: "The channel for sticker and sound logs, if set, I send a message when a sticker or a soundboard sound is created, changed or deleted.";
         channelsLogsIntegrations: "The channel for app and webhook logs, if set, I send a message when an app is added or removed, and when the webhooks of a channel change.";
+        channelsLogsBoosts: "The channel for boost logs, if set, I send a message when a member starts boosting the server and when they stop, with how long they boosted for. Discord only tells me since when a member boosts, not how many boosts they gave, so a second boost of a member who already boosts is not logged.";
         channelsLogsRoleDelete: "The channel for role deletion logs, if set, I send a message when a role is deleted.";
         channelsLogsRoleUpdate: "The channel for role update logs, if set, I send a message when a role is updated in any way. This message will contain the changes made to the role.";
         channelsLogsServerUpdate: "The channel for server update logs, if set, I send a message when the server is updated in any way. This message will contain the changes made to the server.";
@@ -3901,6 +3908,7 @@ declare module "i18next" {
           logsEvents: "Event Logs";
           logsExpressions: "Sticker and Sound Logs";
           logsIntegrations: "App and Webhook Logs";
+          logsBoosts: "Boost Logs";
           logsRoleUpdate: "Role Update Logs";
           logsRoleDelete: "Role Delete Logs";
           logsChannelCreate: "Channel Create Logs";

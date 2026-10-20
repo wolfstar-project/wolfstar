@@ -128,6 +128,7 @@ export function getConfiguration() {
 		logsEvents: logChannel('events', 'settings:channelsLogsEvents'),
 		logsExpressions: logChannel('expressions', 'settings:channelsLogsExpressions'),
 		logsIntegrations: logChannel('integrations', 'settings:channelsLogsIntegrations'),
+		logsBoosts: logChannel('boosts', 'settings:channelsLogsBoosts'),
 		logsIgnoreAll: {
 			type: 'guildTextChannel',
 			name: 'logs.ignore.all',

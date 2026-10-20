@@ -7,9 +7,9 @@ import { fetchT } from '@wolfstar/plugin-i18next';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
- * The logs that are a title and a few lines: invites, threads, scheduled events, stickers and sounds, integrations.
+ * The logs that are a title and a few lines: invites, threads, scheduled events, stickers and sounds, integrations, boosts.
  */
-export type SimpleLogKey = 'logsInvites' | 'logsThreads' | 'logsEvents' | 'logsExpressions' | 'logsIntegrations';
+export type SimpleLogKey = 'logsInvites' | 'logsThreads' | 'logsEvents' | 'logsExpressions' | 'logsIntegrations' | 'logsBoosts';
 
 /**
  * What a simple log shows.
