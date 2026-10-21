@@ -7,6 +7,8 @@ export default defineConfig({
 		// `Command.OptionsOf<'parent sub'>`, read from the built bot: run `stars build` before `stars codegen`.
 		commands: true
 	},
+	// The environment is described by the Varlock schemas (`src/.env.schema`), see the **Environment (Varlock)** section of AGENTS.md.
+	env: { loader: 'varlock' },
 	imports: {
 		// The barrels are left out: they only export what the other files of `src/lib` already do, and the scanner cannot
 		// follow their `export * from '#lib/…'` through the path aliases.
