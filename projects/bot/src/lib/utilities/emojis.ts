@@ -101,6 +101,10 @@ export const EmojiDefinitions = {
 	ModuleModeration: emoji('module_moderation', '🔨'),
 	ModuleReports: emoji('module_reports', '🚩'),
 	ModuleRoles: emoji('module_roles', '🎭'),
+	// The two arrows of a button that reads what it shows again:
+	Refresh: emoji('refresh', '🔄'),
+	// The plus of a button that adds an entry:
+	Add: emoji('add', '➕'),
 	// The checkbox of a setting that is on or off:
 	Checked: emoji('checked', '☑️'),
 	Unchecked: emoji('unchecked', '⬜'),

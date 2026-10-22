@@ -497,7 +497,7 @@ declare module "i18next" {
         channelUnknown: "I could not find that channel in this server.";
         missingPermissions: "I cannot delete messages in {{channel}}, I am missing: {{missing, list(conjunction)}}.";
         autopurgeLimit: "This server already has {{maximum, number}} purged channels, which is the most it can have. Disable one first.";
-        autopurgeEnabled: "{{channel}} is purged every {{interval}}, the first time in {{interval}}.\n**Deletes:** {{filter}}\nUp to {{maximum, number}} messages each time, but the pinned ones and the ones older than 14 days.";
+        autopurgeEnabled: "{{channel}} is purged every {{interval}}, the first time in {{interval}}.\n**Deletes:** {{filter}}\n-# Up to {{maximum, number}} messages each time, but the pinned ones and the ones older than 14 days.";
         autopurgeDisabled: "{{channel}} is no longer purged.";
         autopurgeNotEnabled: "{{channel}} was not purged.";
         autopurgeListTitle_one: "Purged channel ({{count, number}})";

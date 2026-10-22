@@ -67,7 +67,14 @@ const MaximumSelectValues = 25;
  */
 const MaximumListLength = 1500;
 
-const SectionEmojis: Record<AutoModerationMenuSection, string> = { options: '📝', response: '🛡️', exempt: '📜' };
+/**
+ * The emoji of a section in the select menu. It is read when the menu is rendered, since the emojis of the application
+ * are loaded after this file.
+ */
+function getSectionEmoji(section: AutoModerationMenuSection): EmojiComponent {
+	if (section === 'response') return getEmojiComponent('ModuleAutomod');
+	return { name: section === 'options' ? '📝' : '📜' };
+}
 
 export interface AutoModerationMenuContext {
 	/**
@@ -118,7 +125,7 @@ export function renderAutoModerationRules(
 	const { t, ownerId } = context;
 	const body: APIComponentInContainer[] = [
 		text(
-			`## 🛡️ ${translateKey(t, `${Root}:menuTitle`, { count: rules.length, maximum: MaximumAutoModerationRules })}\n${translateKey(t, `${Root}:menuSubtitle`)}`
+			`## ${Emojis.ModuleAutomod} ${translateKey(t, `${Root}:menuTitle`, { count: rules.length, maximum: MaximumAutoModerationRules })}\n${translateKey(t, `${Root}:menuSubtitle`)}`
 		)
 	];
 	if (notice !== undefined) body.push(text(`-# ${notice}`));
@@ -178,7 +185,7 @@ export function renderAutoModerationRules(
 	const channel = settings.automodChannel;
 	body.push(
 		{ type: ComponentType.Separator },
-		text(`### ⚙️ ${translateKey(t, `${Root}:menuGuildTitle`)}`),
+		text(`### ${Emojis.ModuleGeneral} ${translateKey(t, `${Root}:menuGuildTitle`)}`),
 		renderSwitch(
 			translateKey(t, `${Root}:menuGuildModule`),
 			translateKey(t, 'settings:modulesAutomod'),
@@ -210,11 +217,11 @@ export function renderAutoModerationRules(
 	body.push(
 		{ type: ComponentType.Separator },
 		row([
-			button(encodeAutoModerationMenuId({ ownerId, verb: 'list' }), { emoji: '🔄' }),
+			button(encodeAutoModerationMenuId({ ownerId, verb: 'list' }), { emoji: getEmojiComponent('Refresh') }),
 			// The page of the settings menu the rules are opened from:
 			button(encodeSettingsMenuId({ ownerId, verb: 'view', target: 'automod', page: 0 }), {
 				label: translateKey(t, `${Root}:menuSettings`),
-				emoji: '⚙️'
+				emoji: getEmojiComponent('ModuleGeneral')
 			})
 		])
 	);
@@ -292,7 +299,7 @@ export function renderAutoModerationRule(
 					label: cutText(translateKey(t, SectionKeys[entry]), 100),
 					description: cutText(translateKey(t, `${SectionKeys[entry]}Description` as TranslationKey), 100),
 					value: entry,
-					emoji: { name: SectionEmojis[entry] },
+					emoji: getSectionEmoji(entry),
 					default: entry === section
 				}))
 			}
@@ -314,7 +321,7 @@ export function renderAutoModerationRule(
 					label: translateKey(t, `${Root}:menuRules`),
 					emoji: getEmojiComponent('Back')
 				}),
-				button(id('view'), { emoji: '🔄' }),
+				button(id('view'), { emoji: getEmojiComponent('Refresh') }),
 				button(id('delete'), { label: translateKey(t, `${Root}:menuDelete`), emoji: '🗑️', style: ButtonStyle.Danger })
 			])
 		);
@@ -354,8 +361,8 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 			row([
 				button(id('edit', 'add'), {
 					label: translateKey(t, `${Root}:menuListAdd`),
-					emoji: '➕',
-					style: ButtonStyle.Primary,
+					emoji: getEmojiComponent('Add'),
+					style: ButtonStyle.Secondary,
 					disabled: list.length >= MaximumAutoModerationRuleListLength
 				}),
 				button(id('edit', 'remove'), { label: translateKey(t, `${Root}:menuListRemove`), emoji: '➖', disabled: list.length === 0 }),
