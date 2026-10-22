@@ -1,12 +1,12 @@
+import { AnalyticsListener } from '#lib/structures/listeners/AnalyticsListener';
 import { fetchApproximateUserCount, fetchShardId } from '#utils/analytics';
 import { Actions, Events, Points, Tags } from '#lib/types';
 import { Point } from '@influxdata/influxdb-client';
 import { ApplyOptions } from '@wolfstar/decorators';
-import { InfluxListener } from '@wolfstar/shared-influx-pieces';
 import type { Guild } from '@wolfstar/plugin-gateway';
 
-@ApplyOptions<InfluxListener.Options>({ emitter: 'client', event: Events.GuildCreate })
-export class UserAnalyticsEvent extends InfluxListener {
+@ApplyOptions<AnalyticsListener.Options>({ emitter: 'client', event: Events.GuildCreate })
+export class UserAnalyticsEvent extends AnalyticsListener {
 	public async run(guild: Guild) {
 		// Every guild is created once more while the shards connect, discord.js only emitted the ones joined afterwards:
 		if (!this.container.gatewayClient.isClientReady()) return;

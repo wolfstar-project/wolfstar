@@ -1,13 +1,13 @@
+import { AnalyticsListener } from '#lib/structures/listeners/AnalyticsListener';
 import { fetchApproximateUserCount, fetchShardId } from '#utils/analytics';
 import { Actions, Events, Points, Tags } from '#lib/types';
 import { Point } from '@influxdata/influxdb-client';
 import { ApplyOptions } from '@wolfstar/decorators';
-import { InfluxListener } from '@wolfstar/shared-influx-pieces';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildDeleteDispatchData } from 'discord-api-types/v10';
 
-@ApplyOptions<InfluxListener.Options>({ emitter: 'client', event: Events.GuildDelete })
-export class UserAnalyticsEvent extends InfluxListener {
+@ApplyOptions<AnalyticsListener.Options>({ emitter: 'client', event: Events.GuildDelete })
+export class UserAnalyticsEvent extends AnalyticsListener {
 	public async run(_guild: Guild | null, data: GatewayGuildDeleteDispatchData) {
 		// An outage, not a guild the bot left:
 		if (data.unavailable) return;

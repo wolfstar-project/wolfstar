@@ -1,11 +1,11 @@
+import { AnalyticsListener } from '#lib/structures/listeners/AnalyticsListener';
 import { takeMessageCount } from '#utils/analytics';
 import { Actions, Events, Points, Tags } from '#lib/types';
 import { Point } from '@influxdata/influxdb-client';
 import { ApplyOptions } from '@wolfstar/decorators';
-import { InfluxListener } from '@wolfstar/shared-influx-pieces';
 
-@ApplyOptions<InfluxListener.Options>({ emitter: 'client', event: Events.AnalyticsSync })
-export class UserAnalyticsEvent extends InfluxListener {
+@ApplyOptions<AnalyticsListener.Options>({ emitter: 'client', event: Events.AnalyticsSync })
+export class UserAnalyticsEvent extends AnalyticsListener {
 	public run(guilds: number, users: number) {
 		this.writePoints([this.syncGuilds(guilds), this.syncUsers(users), this.syncMessageCount()]);
 
