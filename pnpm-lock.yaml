@@ -333,6 +333,9 @@ importers:
       '@wolfstar/shared-http-pieces':
         specifier: ^2.1.0
         version: 2.1.0(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)
+      '@wolfstar/shared-influx-pieces':
+        specifier: ^1.2.0
+        version: 1.2.0(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)
       '@wolfstar/start-banner':
         specifier: ^2.1.3
         version: 2.1.3
@@ -3229,6 +3232,10 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
+  '@wolfstar/influx-utilities@1.1.6':
+    resolution: {integrity: sha512-tzH/MaykmSIy8VRoyt93vHBiRe8OJ33LizVJ+uJOE9GrtdkiczWqz3wTtzs4Suwj0vCfH1OEFB1HdHW2JqeWTQ==}
+    engines: {node: '>=20'}
+
   '@wolfstar/kit@0.3.1':
     resolution: {integrity: sha512-a1VvAzx+EZUeTwqsCkLEqgodbCbxfz0d1EVDtU+07cp5Nf0JlPvfKsHyeAE93f+O8rsPpnhHHF8sTap4eHcr5A==}
     engines: {node: '>=20'}
@@ -3382,6 +3389,15 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       '@wolfstar/kit': '>=0.3.0'
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
+
+  '@wolfstar/shared-influx-pieces@1.2.0':
+    resolution: {integrity: sha512-0+P/Uw6163f9stNxi80eW2oOZKnGh2ZEjmsQnDFVGg2mKoT/vmkFdBtF8RyFj2m+3LL86eP0JAIIycbBcu2Wjw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@wolfstar/kit': '>=0.2.1'
     peerDependenciesMeta:
       '@wolfstar/kit':
         optional: true
@@ -5661,49 +5677,6 @@ packages:
   verkit@0.5.0:
     resolution: {integrity: sha512-u4J1hr6Y+C/hit34GwL3eIcUf3wngT8TlYUjK7tk0jxydKLAq3sYvifjdTDA6U3KCKRcQCQDGf/srjxfZF3l7g==}
     engines: {node: '>=18.12.0'}
-
-  vite@8.3.2:
-    resolution: {integrity: sha512-SQr1x6W5vVSbROg7vsyXIaxK9b0G7zsT68acdWWRmnBUsgDieLCRG+Rep9WdZgcposvv/GSnr4GUUBqB3vXq6w==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^20.19.0 || >=22.12.0
-      '@vitejs/devtools': ^0.7.1
-      esbuild: ^0.27.0 || ^0.28.0
-      jiti: '>=1.21.0'
-      less: ^4.0.0
-      sass: ^1.70.0
-      sass-embedded: ^1.70.0
-      stylus: '>=0.54.8'
-      sugarss: ^5.0.0
-      terser: ^5.16.0
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      '@vitejs/devtools':
-        optional: true
-      esbuild:
-        optional: true
-      jiti:
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      sass-embedded:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
 
   vite@8.3.4:
     resolution: {integrity: sha512-IftLE8phJhdNRIGNEV4JCCvfNScoZQVfcXaN8TQropWGJtOHcu+iAB9pHcuGvmEb/kddw0LBe/jS8ztdC6xdiQ==}
@@ -8328,6 +8301,15 @@ snapshots:
       - svelte
       - vite-plus
 
+  '@wolfstar/influx-utilities@1.1.6(dotenv-expand@13.0.0)(varlock@1.23.0)':
+    dependencies:
+      '@influxdata/influxdb-client': 1.35.0
+      '@wolfstar/env-utilities': 2.3.1(dotenv-expand@13.0.0)(varlock@1.23.0)
+    transitivePeerDependencies:
+      - dotenv
+      - dotenv-expand
+      - varlock
+
   '@wolfstar/kit@0.3.1(magicast@0.5.5)':
     dependencies:
       '@wolfstar/schema': 0.12.0(magicast@0.5.5)
@@ -8474,6 +8456,43 @@ snapshots:
       - '@types/react'
       - '@wolfstar/i18next-type-generator'
       - '@wolfstar/schema'
+      - acorn
+      - bufferutil
+      - bun-types-no-globals
+      - dotenv
+      - dotenv-expand
+      - esbuild
+      - magicast
+      - nitro
+      - oxc-parser
+      - react-devtools-core
+      - rolldown
+      - rollup
+      - tsdown
+      - typescript
+      - unloader
+      - utf-8-validate
+      - varlock
+      - vite
+      - webpack
+
+  '@wolfstar/shared-influx-pieces@1.2.0(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)':
+    dependencies:
+      '@sapphire/pieces': 4.4.1
+      '@sapphire/result': 2.8.0
+      '@wolfstar/env-utilities': 2.3.1(dotenv-expand@13.0.0)(varlock@1.23.0)
+      '@wolfstar/http-framework': 6.5.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
+      '@wolfstar/influx-utilities': 1.1.6(dotenv-expand@13.0.0)(varlock@1.23.0)
+      discord-api-types: 0.38.56
+      tslib: 2.8.1
+    optionalDependencies:
+      '@wolfstar/kit': 0.3.1(magicast@0.5.5)
+    transitivePeerDependencies:
+      - '@farmfe/core'
+      - '@ngrok/ngrok'
+      - '@rsbuild/core'
+      - '@rspack/core'
+      - '@types/react'
       - acorn
       - bufferutil
       - bun-types-no-globals
@@ -10766,20 +10785,6 @@ snapshots:
       '@varlock/native-helper-win32-x64': 1.23.0
 
   verkit@0.5.0: {}
-
-  vite@8.3.2(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1):
-    dependencies:
-      lightningcss: 1.33.0
-      picomatch: 4.0.7
-      postcss: 8.5.30
-      rolldown: 1.2.14
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 24.19.2
-      esbuild: 0.28.2
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      yaml: 2.9.1
 
   vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1):
     dependencies:

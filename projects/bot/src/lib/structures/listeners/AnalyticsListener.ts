@@ -1,50 +1,18 @@
-import { Tags } from '#lib/types/AnalyticsSchema';
-import type { Point } from '@influxdata/influxdb-client';
-import { envParseBoolean } from '@wolfstar/env-utilities';
-import { Listener } from '@wolfstar/http-framework';
+import { InfluxListener, isInfluxInitialized } from '@wolfstar/shared-influx-pieces';
 
-export abstract class AnalyticsListener extends Listener {
-	public tags: [Tags, string][] = [];
-
-	public constructor(context: Listener.LoaderContext, options?: AnalyticsListener.Options) {
-		super(context, { emitter: 'client', ...options, enabled: envParseBoolean('INFLUX_ENABLED', false) });
-	}
-
-	public override onLoad() {
-		this.initTags();
-		return super.onLoad();
-	}
-
-	public writePoint(point: Point) {
-		return this.container.analytics!.writeApi.writePoint(this.injectTags(point));
-	}
-
-	public writePoints(points: Point[]) {
-		points = points.map((point) => this.injectTags(point));
-		return this.container.analytics!.writeApi.writePoints(points);
-	}
-
-	/**
-	 * The shard a guild is on, for the `shard` tag: the structures of the gateway plugin do not hold it.
-	 */
-	protected async fetchShardId(guildId: string) {
-		const shardCount = await this.container.gatewayClient.gateway.getShardCount();
-		return Number((BigInt(guildId) >> 22n) % BigInt(shardCount));
-	}
-
-	protected injectTags(point: Point) {
-		for (const tag of this.tags) {
-			point.tag(tag[0], tag[1]);
-		}
-		return point;
-	}
-
-	protected initTags() {
-		this.tags.push([Tags.Client, process.env.CLIENT_ID], [Tags.OriginEvent, this.event]);
+/**
+ * A listener of the analytics, which is only enabled when `container.influx` exists.
+ *
+ * @remarks `InfluxListener` decides it with `isInfluxInitialized()`, but spreads the options of the piece after, and the
+ * loader gives every piece `enabled: true`: with analytics off, the listener would be enabled with no client to write to.
+ */
+export abstract class AnalyticsListener extends InfluxListener {
+	public constructor(context: InfluxListener.LoaderContext, options: InfluxListener.Options) {
+		super(context, { ...options, enabled: isInfluxInitialized() });
 	}
 }
 
 export declare namespace AnalyticsListener {
-	type LoaderContext = Listener.LoaderContext;
-	type Options = Partial<Omit<Listener.Options, 'enabled'>>;
+	type LoaderContext = InfluxListener.LoaderContext;
+	type Options = Omit<InfluxListener.Options, 'enabled'>;
 }

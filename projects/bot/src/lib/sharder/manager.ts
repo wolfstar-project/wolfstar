@@ -1,4 +1,5 @@
 import { parseInternationalizationOptions } from '#lib/i18n/options';
+import { getLoggerOptions } from '#utils/logger';
 import { closeLogger } from '#utils/shutdown';
 import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
@@ -42,6 +43,7 @@ export async function startShardManager() {
 		discordToken: envParseString('DISCORD_TOKEN'),
 		discordPublicKey: envParseString('DISCORD_PUBLIC_KEY'),
 		api: { automaticallyConnect: false },
+		logger: getLoggerOptions(),
 		// The plugins are registered for every client of the process, and the translations one needs its locales:
 		i18n: parseInternationalizationOptions()
 	});

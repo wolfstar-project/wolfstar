@@ -1,15 +1,15 @@
 import { AnalyticsListener } from '#lib/structures/listeners/AnalyticsListener';
+import { takeMessageCount } from '#utils/analytics';
 import { Actions, Events, Points, Tags } from '#lib/types';
 import { Point } from '@influxdata/influxdb-client';
 import { ApplyOptions } from '@wolfstar/decorators';
 
-@ApplyOptions<AnalyticsListener.Options>({ event: Events.AnalyticsSync })
+@ApplyOptions<AnalyticsListener.Options>({ emitter: 'client', event: Events.AnalyticsSync })
 export class UserAnalyticsEvent extends AnalyticsListener {
-	// eslint-disable-next-line @typescript-eslint/require-await
-	public async run(guilds: number, users: number) {
+	public run(guilds: number, users: number) {
 		this.writePoints([this.syncGuilds(guilds), this.syncUsers(users), this.syncMessageCount()]);
 
-		return this.container.analytics!.writeApi.flush();
+		return this.flush();
 	}
 
 	private syncGuilds(value: number) {
@@ -31,12 +31,8 @@ export class UserAnalyticsEvent extends AnalyticsListener {
 	}
 
 	private syncMessageCount() {
-		const analytics = this.container.analytics!;
-		const value = analytics.messageCount;
-		analytics.messageCount = 0;
-
 		return new Point(Points.MessageCount) //
 			.tag(Tags.Action, Actions.Sync)
-			.intField('value', value);
+			.intField('value', takeMessageCount());
 	}
 }

@@ -154,7 +154,6 @@ declare module '@wolfstar/http-framework' {
       logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
     };
     'honeypot show': {};
-    'info': {};
     'kick': {
       archive?: boolean;
       authored?: boolean;

@@ -1,5 +1,4 @@
 import { CommandMatcher, readSettings, readSettingsAuditLog } from '#lib/database';
-import { Events } from '#lib/types';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { Listener, type ClientEventCommandContext } from '@wolfstar/http-framework';
 import { ApplicationCommandType } from 'discord-api-types/v10';
@@ -10,7 +9,6 @@ export class UserListener extends Listener {
 	public async run(context: ClientEventCommandContext) {
 		const { command, interaction } = context;
 		const category = CommandMatcher.getCategory(command);
-		this.container.client.emit(Events.CommandUsageAnalytics, command.name, category);
 
 		if (!interaction.guild_id || category === 'System') return;
 		const settings = await readSettings(interaction.guild_id);

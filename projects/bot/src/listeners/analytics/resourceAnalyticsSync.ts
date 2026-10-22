@@ -4,12 +4,12 @@ import { Point } from '@influxdata/influxdb-client';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { cpus } from 'node:os';
 
-@ApplyOptions<AnalyticsListener.Options>({ event: Events.ResourceAnalyticsSync })
+@ApplyOptions<AnalyticsListener.Options>({ emitter: 'client', event: Events.ResourceAnalyticsSync })
 export class UserAnalyticsEvent extends AnalyticsListener {
 	public run() {
 		this.writePoints([this.syncPerCoreLoad(), this.syncMem()]);
 
-		return this.container.analytics!.writeApi.flush();
+		return this.flush();
 	}
 
 	private syncPerCoreLoad() {
