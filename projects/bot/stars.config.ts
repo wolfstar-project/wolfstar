@@ -26,7 +26,11 @@ export default defineConfig({
 			// goes here: the drain reads the DSN from the environment.
 			'@wolfstar/plugin-logger/module',
 			{ evlog: { env: { service: 'wolfstar' }, pipeline: true, drain: './src/evlog-drain.ts' } }
-		]
+		],
+		// The shared commands, listeners and locales, which `lib/setup/all.ts` used to import through `/register`:
+		'@wolfstar/shared-http-pieces/module',
+		// Creates `container.influx` and loads the shared Influx listeners when `INFLUX_ENABLED` is on and the credentials are set:
+		'@wolfstar/shared-influx-pieces/module'
 	],
 	tsdown: {
 		plugins: [alias({ entries: aliasEntries })],

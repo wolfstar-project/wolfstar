@@ -1,5 +1,5 @@
-import { fetchApproximateUserCount } from '#lib/structures/AnalyticsData';
 import { Events } from '#lib/types';
+import { fetchApproximateUserCount } from '#utils/analytics';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
 import { blueBright, green, red } from 'colorette';
 

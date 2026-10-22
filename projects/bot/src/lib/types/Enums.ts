@@ -3,7 +3,6 @@ export const enum Events {
 	Error = 'error',
 	PreMessageParsed = 'preMessageParsed',
 	ArgumentError = 'argumentError',
-	CommandUsageAnalytics = 'commandUsageAnalytics',
 	CoreSettingsDelete = 'coreSettingsDelete',
 	CoreSettingsUpdate = 'coreSettingsUpdate',
 	Disconnect = 'disconnect',

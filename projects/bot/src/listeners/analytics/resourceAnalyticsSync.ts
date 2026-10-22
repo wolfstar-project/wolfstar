@@ -1,15 +1,15 @@
-import { AnalyticsListener } from '#lib/structures/listeners/AnalyticsListener';
 import { Actions, Events, Points, Tags } from '#lib/types';
 import { Point } from '@influxdata/influxdb-client';
 import { ApplyOptions } from '@wolfstar/decorators';
+import { InfluxListener } from '@wolfstar/shared-influx-pieces';
 import { cpus } from 'node:os';
 
-@ApplyOptions<AnalyticsListener.Options>({ event: Events.ResourceAnalyticsSync })
-export class UserAnalyticsEvent extends AnalyticsListener {
+@ApplyOptions<InfluxListener.Options>({ emitter: 'client', event: Events.ResourceAnalyticsSync })
+export class UserAnalyticsEvent extends InfluxListener {
 	public run() {
 		this.writePoints([this.syncPerCoreLoad(), this.syncMem()]);
 
-		return this.container.analytics!.writeApi.flush();
+		return this.flush();
 	}
 
 	private syncPerCoreLoad() {

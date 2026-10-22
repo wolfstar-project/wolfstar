@@ -1,7 +1,7 @@
-import { fetchApproximateUserCount } from '#lib/structures/AnalyticsData';
 import { Events } from '#lib/types';
-import { envParseBoolean } from '@wolfstar/env-utilities';
+import { fetchApproximateUserCount } from '#utils/analytics';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
+import { isInfluxInitialized } from '@wolfstar/shared-influx-pieces';
 
 /**
  * Writes the first server and user counts to the analytics once the client is ready, the `poststats` task does it
@@ -23,7 +23,7 @@ export class UserListener extends EventGatewayListener<'clientReady'> {
 	}
 
 	private async initAnalytics() {
-		if (!envParseBoolean('INFLUX_ENABLED', false)) return;
+		if (!isInfluxInitialized()) return;
 
 		const { client, gatewayClient } = this.container;
 		client.emit(Events.AnalyticsSync, await gatewayClient.guilds.cache.getSize(), await fetchApproximateUserCount());

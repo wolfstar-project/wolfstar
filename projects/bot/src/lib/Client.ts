@@ -3,7 +3,7 @@
 
 import { loadApplicationEmojis } from '#utils/emojis';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
-import { container } from '@wolfstar/http-framework';
+import { container, LogLevel } from '@wolfstar/http-framework';
 import { createBroker, forwardGatewayDispatches, replayGatewayDispatches } from '@wolfstar/plugin-broker';
 import { createRedisCache, createRedisSessionStore } from '@wolfstar/plugin-cache';
 import { GatewayClient } from '@wolfstar/plugin-gateway';
@@ -12,9 +12,18 @@ import { GatewayIntentBits } from 'discord-api-types/v10';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
 import { bindShardClient, createShardClient } from '#lib/sharder/client';
-import { AnalyticsData } from '#lib/structures/AnalyticsData';
 import { forwardsDispatches, isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
+
+const LogLevels = {
+	trace: LogLevel.Trace,
+	debug: LogLevel.Debug,
+	info: LogLevel.Info,
+	warn: LogLevel.Warn,
+	error: LogLevel.Error,
+	fatal: LogLevel.Fatal,
+	none: LogLevel.None
+} as const;
 
 export function createClient() {
 	const worker = isWorker();
@@ -23,7 +32,6 @@ export function createClient() {
 
 	// The threads that run the word filter, started by `loadAll()`:
 	container.workers = new WorkerManager();
-	container.analytics = envParseBoolean('INFLUX_ENABLED', false) ? new AnalyticsData() : null;
 
 	// The client registers itself as `container.gatewayClient`:
 	// oxlint-disable-next-line no-new
@@ -59,6 +67,8 @@ export function createClient() {
 			prefix: envParseString('API_PREFIX', '') || undefined
 		},
 		i18n: parseInternationalizationOptions(),
+		// The logger module of `stars.config.ts` builds the logger from this, the level is the one of `LOG_LEVEL`:
+		logger: { level: LogLevels[envParseString('LOG_LEVEL', 'info') as keyof typeof LogLevels] },
 		// Runs the tasks the bot schedules, like the end of a lockdown, from the jobs BullMQ keeps in Redis:
 		plugins: [scheduledTasks()],
 		// `listeners/errors/taskError` logs the task errors, the plugin's own listener would log them twice:
