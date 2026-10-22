@@ -157,7 +157,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 		body.push(
 			{ type: ComponentType.Separator },
 			section(
-				`**🛡️ ${t('commands/conf:menuAutomodRules')}**\n${t('commands/conf:menuAutomodRulesDescription')}`,
+				`**${Emojis.ModuleAutomod} ${t('commands/conf:menuAutomodRules')}**\n${t('commands/conf:menuAutomodRulesDescription')}`,
 				button(encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'list' }), { emoji: getEmojiComponent('ArrowRight') })
 			)
 		);
@@ -418,7 +418,7 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
 		components: [
 			section(
 				`## ${t('commands/conf:menuTitle')}\n${t('commands/conf:menuSubtitle', { guild: context.guild.name })}`,
-				button(refreshId, { emoji: '🔄' })
+				button(refreshId, { emoji: getEmojiComponent('Refresh') })
 			),
 			row([
 				{
