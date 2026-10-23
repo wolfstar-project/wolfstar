@@ -40,9 +40,8 @@ export default {
 			// `env.d.ts` is written by Varlock and only declares globals, so nothing imports it either.
 			ignore: ['src/lib/**/index.ts', 'src/@types/env.d.ts'],
 			// The Stars CLI injects `import '@wolfstar/plugin-*/register'` into `main.ts` for every plugin in `dependencies`.
-			// `instrumentation.mjs` gives the loader hook of `@opentelemetry/instrumentation` to `module.register` by its
-			// name, and `@opentelemetry/api` is the peer of the instrumentations, which nothing of the bot imports:
-			ignoreDependencies: ['@wolfstar/plugin-.+', '@opentelemetry/instrumentation', '@opentelemetry/api']
+			// `instrumentation.mjs` gives the loader hook of `@opentelemetry/instrumentation` to `module.register` by its name:
+			ignoreDependencies: ['@wolfstar/plugin-.+', '@opentelemetry/instrumentation']
 		},
 		'projects/shared': {
 			entry: ['tests/**/*.ts'],
