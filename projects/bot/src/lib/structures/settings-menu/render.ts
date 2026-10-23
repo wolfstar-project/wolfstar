@@ -167,10 +167,10 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	if (isRoot) {
 		body.push(
 			{ type: ComponentType.Separator },
-			text(`**📦 ${t('commands/conf:menuTransferTitle')}**\n${t('commands/conf:menuTransferDescription')}`),
+			text(`**${Emojis.Package} ${t('commands/conf:menuTransferTitle')}**\n${t('commands/conf:menuTransferDescription')}`),
 			row([
-				button(id('export', ''), { label: t('commands/conf:menuExportButton'), emoji: '📤' }),
-				button(id('import', ''), { label: t('commands/conf:menuImportButton'), emoji: '📥' })
+				button(id('export', ''), { label: t('commands/conf:menuExportButton'), emoji: getEmojiComponent('Export') }),
+				button(id('import', ''), { label: t('commands/conf:menuImportButton'), emoji: getEmojiComponent('Import') })
 			])
 		);
 	}
