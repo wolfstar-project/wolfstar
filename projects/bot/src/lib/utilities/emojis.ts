@@ -105,6 +105,10 @@ export const EmojiDefinitions = {
 	Refresh: emoji('refresh', '🔄'),
 	// The plus of a button that adds an entry:
 	Add: emoji('add', '➕'),
+	// The box of the export and import of the settings, and the cloud arrows of their buttons:
+	Package: emoji('package', '📦'),
+	Export: emoji('export', '📤'),
+	Import: emoji('import', '📥'),
 	// The checkbox of a setting that is on or off:
 	Checked: emoji('checked', '☑️'),
 	Unchecked: emoji('unchecked', '⬜'),
