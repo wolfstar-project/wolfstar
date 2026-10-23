@@ -3,10 +3,10 @@ import { DiscordAPIError } from '@discordjs/rest';
 import { WebhookType, type Snowflake } from 'discord-api-types/v10';
 
 /**
- * The announcement channel of the support server of WolfStar, where the updates, the new features and the maintenance
- * notices are published. The `updates-channel` of a server follows it.
+ * The announcement channel of the support server of WolfStar (`830481105261821952`), where the updates, the new
+ * features and the maintenance notices are published. The `updates-channel` of a server follows it.
  */
-export const UpdatesAnnouncementChannelId: Snowflake = '1520758937807228998';
+export const UpdatesAnnouncementChannelId: Snowflake = '890648971712802906';
 
 /**
  * Makes the `updates-channel` of a server follow {@linkcode UpdatesAnnouncementChannelId}, so what is published there
