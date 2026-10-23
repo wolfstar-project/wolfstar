@@ -1,3 +1,4 @@
+import { getSentryIntegrations } from '#utils/sentry';
 import { envParseString } from '@wolfstar/env-utilities';
 import { initializeSentry, setInvite, setRepository } from '@wolfstar/shared-http-pieces';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
@@ -53,8 +54,6 @@ const InvitePermissions =
 export function initializeApp() {
 	setRepository('wolfstar');
 	setInvite(envParseString('CLIENT_ID'), InvitePermissions.toString());
-	// Reports the errors to Sentry when `SENTRY_DSN` is set. When Railway traces the service, the OpenTelemetry SDK of
-	// `instrumentation.mjs` owns the tracer provider, so Sentry does not set up its own:
-	const tracing = Boolean(process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT);
-	initializeSentry({ root: new URL('../../..', import.meta.url), enableOpenTelemetrySetup: !tracing });
+	// Reports the errors to Sentry when `SENTRY_DSN` is set, on the trace of the OpenTelemetry span they happen in:
+	initializeSentry({ root: new URL('../../..', import.meta.url), integrations: getSentryIntegrations() });
 }
