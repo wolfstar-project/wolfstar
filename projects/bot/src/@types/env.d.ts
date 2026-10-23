@@ -34,6 +34,14 @@ export type CoercedEnvSchema = {
   CLIENT_ID: string;
   
   /**
+   * **UPDATES_ANNOUNCEMENT_CHANNEL_ID**  
+   * Announcement channel of the support server the `updates-channel` of a server follows. Each bot follows its own:  
+   * `#dev-announcement` (the default) for the alpha, `#announcement` (`890648971712802906`) for the public one.  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  UPDATES_ANNOUNCEMENT_CHANNEL_ID: string;
+  
+  /**
    * **DISCORD_TOKEN** 🔐 _sensitive_  
    * Token of the bot user. Only the running bot needs it, the unit tests run without.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
@@ -356,11 +364,11 @@ export type CoercedEnvSchema = {
   
 };
 
-type _CoercedEnvSchema_5c782476 = CoercedEnvSchema;
+type _CoercedEnvSchema_9dfa3496 = CoercedEnvSchema;
 
 declare module 'varlock/env' {
-  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_5c782476> {}
-  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_5c782476, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'OAUTH_COOKIE' | 'OAUTH_REDIRECT_URI' | 'OAUTH_SCOPE' | 'OAUTH_DOMAIN_OVERWRITE' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'SHARDER_ENABLED' | 'SHARDER_CLUSTERS' | 'SHARDER_TOTAL_SHARDS' | 'WORKER_COUNT' | 'LOG_LEVEL' | 'WEBHOOK_ERROR_ID' | 'OTEL_EXPORTER_OTLP_ENDPOINT' | 'OTEL_EXPORTER_OTLP_TRACES_ENDPOINT' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_BUCKET' | 'NODE_ENV'>> {}
+  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_9dfa3496> {}
+  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_9dfa3496, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'UPDATES_ANNOUNCEMENT_CHANNEL_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'OAUTH_COOKIE' | 'OAUTH_REDIRECT_URI' | 'OAUTH_SCOPE' | 'OAUTH_DOMAIN_OVERWRITE' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'SHARDER_ENABLED' | 'SHARDER_CLUSTERS' | 'SHARDER_TOTAL_SHARDS' | 'WORKER_COUNT' | 'LOG_LEVEL' | 'WEBHOOK_ERROR_ID' | 'OTEL_EXPORTER_OTLP_ENDPOINT' | 'OTEL_EXPORTER_OTLP_TRACES_ENDPOINT' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_BUCKET' | 'NODE_ENV'>> {}
 }
 
 
@@ -370,17 +378,17 @@ export type EnvSchemaAsStrings = {
       : (NonNullable<CoercedEnvSchema[Property]> extends boolean ? ('true' | 'false') : string)
 };
 
-type _EnvSchemaAsStrings_5c782476 = EnvSchemaAsStrings;
+type _EnvSchemaAsStrings_9dfa3496 = EnvSchemaAsStrings;
 declare global {
 
   // add types for global import.meta.env
-  interface ImportMetaEnv extends _EnvSchemaAsStrings_5c782476 {}
+  interface ImportMetaEnv extends _EnvSchemaAsStrings_9dfa3496 {}
   interface ImportMeta {
     readonly env: ImportMetaEnv;
   }
 
   // add types for global process.env
   namespace NodeJS {
-    interface ProcessEnv extends _EnvSchemaAsStrings_5c782476 {}
+    interface ProcessEnv extends _EnvSchemaAsStrings_9dfa3496 {}
   }
 }

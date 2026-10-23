@@ -66,9 +66,9 @@ export function findPortableKey(name: string): SchemaKey | null {
 
 /**
  * The settings the bot no longer has, which a file exported before may still hold: an import leaves them out instead of
- * refusing the file. `modules.logs` and `modules.commands` turned off nothing, the logs and the commands are not modules.
+ * refusing the file. `modules.commands` turned off nothing, the commands are not a module.
  */
-export const RemovedSettings: ReadonlySet<string> = new Set(['modules.logs', 'modules.commands']);
+export const RemovedSettings: ReadonlySet<string> = new Set(['modules.commands']);
 
 /**
  * The fields of a rule of the file. What names something of the server (`ignoredRoles`, `ignoredChannels`) and what is
