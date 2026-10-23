@@ -6,6 +6,7 @@ import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
 import { getLogPrefix, getLogger, getStickyRoles, getUserMentionWithFlagsString } from '#utils/functions';
 import { getFullEmbedAuthor } from '#utils/util';
+import { getRestoredStickyRoles } from '#lib/roles/sticky';
 import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
 import { isNullish, type Nullish } from '@sapphire/utilities';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
@@ -71,7 +72,9 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 			return true;
 		}
 
-		void this.#handleStickyRolesAddRoles(member, stickyRoles);
+		// With the roles module off, only the roles of a restriction are given back:
+		const restored = getRestoredStickyRoles(settings, stickyRoles);
+		if (restored.length > 0) void this.#handleStickyRolesAddRoles(member, restored);
 
 		return false;
 	}

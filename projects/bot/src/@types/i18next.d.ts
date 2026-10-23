@@ -3683,6 +3683,7 @@ declare module "i18next" {
         administrator: "You need administrator privileges to run `{{command.name}}`!";
         disabledGlobal: "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>";
         disabledGuild: "This command has been disabled by an admin in this server!";
+        disabledModuleModeration: "The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.";
         restrictedChannel: "This command cannot be used in this channel!";
         restrictedRole: "Your roles do not let you use this command in this server!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
@@ -3879,9 +3880,9 @@ declare module "i18next" {
         validationMissingValue: "The value ``{{value}}`` was not set in the key **{{path}}**.";
         validationDuplicatedValue: "The value for the key `{{path}}` was already set to ``{{value}}``!";
         modulesAutomod: "Whether the auto-moderation module is enabled.";
-        modulesModeration: "Whether the moderation module is enabled.";
+        modulesModeration: "Whether the moderation commands (the actions, the cases, the prunes and the lockdowns) can be used.";
         modulesLogs: "Whether the logs of what happens in the server (`logs.*`) are sent.";
-        modulesRoles: "Whether the roles module is enabled.";
+        modulesRoles: "Whether the roles are given automatically: the initial roles, the role rules and the sticky roles (the ones of a mute or a restriction are always given back).";
         automodChannel: "The channel where the auto-moderation actions are reported.";
         automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
         moderationTrackBans: "Whether I should record the bans made without using my commands.";
