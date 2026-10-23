@@ -490,6 +490,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	}
 
 	/**
+	 * Throws when the server turned the moderation module (`modules.moderation`) off.
+	 */
+	protected async requireModerationModule(guildId: string): Promise<void> {
+		const settings = await readSettings(guildId);
+		if (!settings.modulesModeration) throw new UserError({ identifier: 'preconditions:disabledModuleModeration' });
+	}
+
+	/**
 	 * Reads the settings that control how the moderation commands respond.
 	 *
 	 * @remarks
@@ -501,14 +509,6 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 *
 	 * @param guildId - The ID of the guild.
 	 */
-	/**
-	 * Throws when the server turned the moderation module (`modules.moderation`) off.
-	 */
-	protected async requireModerationModule(guildId: string): Promise<void> {
-		const settings = await readSettings(guildId);
-		if (!settings.modulesModeration) throw new UserError({ identifier: 'preconditions:disabledModuleModeration' });
-	}
-
 	protected async readMessageSettings(guildId: string): Promise<ModerationCommand.MessageSettings> {
 		const settings: Partial<Record<string, unknown>> = await readSettings(guildId);
 		return {
