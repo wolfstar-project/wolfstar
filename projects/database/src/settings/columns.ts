@@ -94,6 +94,7 @@ export const Columns = {
 	...columns('Modules', {
 		modulesAutomod: ['automod', 'value'],
 		modulesModeration: ['moderation', 'value'],
+		modulesLogs: ['logs', 'value'],
 		modulesRoles: ['roles', 'value']
 	}),
 	...columns('GuildAutoModeration', {

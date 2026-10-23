@@ -167,6 +167,10 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 		let answer: ModerationCommand.Answer;
 		try {
+			// Asked again here, since a prompt answered after the module was turned off runs the command without the
+			// `commandsEnabled` precondition:
+			await this.requireModerationModule(interaction.guildId);
+
 			const parameters = this.resolveParameters(t, guild, moderator, target, args, interaction.channel.id);
 			// An alias of a predefined reason is written in the case as the reason it stands for:
 			parameters.reason = await resolveModerationReason(guild.id, parameters.reason);
@@ -483,6 +487,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	 */
 	protected fetchUserModerationDmEnabled(userId: string): Awaitable<boolean> {
 		return fetchUserReportEnabled(userId);
+	}
+
+	/**
+	 * Throws when the server turned the moderation module (`modules.moderation`) off.
+	 */
+	protected async requireModerationModule(guildId: string): Promise<void> {
+		const settings = await readSettings(guildId);
+		if (!settings.modulesModeration) throw new UserError({ identifier: 'preconditions:disabledModuleModeration' });
 	}
 
 	/**

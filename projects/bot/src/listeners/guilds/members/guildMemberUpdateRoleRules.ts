@@ -1,6 +1,7 @@
 import { getRoleRuleChanges, readRoleRules } from '#lib/roles/rules';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { getLogPrefix } from '#utils/functions';
+import { readSettings } from '#lib/database';
 import { toErrorCodeResult } from '#common';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
@@ -8,7 +9,8 @@ import { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 /**
  * Keeps the roles of the role rules (`/role-rules`) in sync with the other roles of a member: a rule's role is given
- * when the member meets it and taken when they no longer do, in one edit of the member.
+ * when the member meets it and taken when they no longer do, in one edit of the member. Nothing is done while the
+ * server has the roles module (`modules.roles`) turned off.
  *
  * @remarks
  *
@@ -21,6 +23,10 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 	public async run(previous: GuildMember | null, next: GuildMember) {
 		// Only a change of the roles can change what the rules say, the other updates of a member cost nothing:
 		if (previous !== null && !previous.partial && sameRoles(previous.roleIds, next.roleIds)) return;
+
+		// The role rules are of the roles module:
+		const settings = await readSettings(next.guildId);
+		if (!settings.modulesRoles) return;
 
 		const rules = await readRoleRules(next.guildId);
 		if (rules.length === 0) return;

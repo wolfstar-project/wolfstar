@@ -17,8 +17,8 @@ function createChannel(type: ChannelType = ChannelType.GuildText) {
 	return { id: channelId, guildId, type, send: vi.fn(async () => ({ id: '1' })) };
 }
 
-function mockSettings(logsWebhooks: boolean) {
-	vi.mocked(readSettings).mockResolvedValue({ logsWebhooks } as never);
+function mockSettings(logsWebhooks: boolean, modulesLogs = true) {
+	vi.mocked(readSettings).mockResolvedValue({ logsWebhooks, modulesLogs } as never);
 }
 
 describe('sendLogMessage', () => {
@@ -101,4 +101,48 @@ describe('sendLogMessage', () => {
 		expect(sendThroughLogWebhook).not.toHaveBeenCalled();
 		expect(channel.send).toHaveBeenCalledWith(message);
 	});
+
+	test('GIVEN the Events module turned off THEN a log of the events of the server is not sent', async () => {
+		mockSettings(true, false);
+		const channel = createChannel();
+
+		await sendLogMessage(channel as never, 'logsMemberAdd', message);
+
+		expect(sendThroughLogWebhook).not.toHaveBeenCalled();
+		expect(channel.send).not.toHaveBeenCalled();
+	});
+
+	// The two logs below have no webhook to go through, so only the kind of their key keeps them from being sent:
+	test('GIVEN the Events module turned off THEN the logsImage forward, which no webhook can send, is not sent', async () => {
+		mockSettings(true, false);
+		const channel = createChannel();
+		const forward = { forward: { message: '1', channel: '2' } };
+
+		await sendLogMessage(channel as never, 'logsImage', forward);
+
+		expect(sendThroughLogWebhook).not.toHaveBeenCalled();
+		expect(channel.send).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN the Events module turned off THEN a log of a channel that is not text, which has no webhook, is not sent', async () => {
+		mockSettings(true, false);
+		const channel = createChannel(ChannelType.GuildForum);
+
+		await sendLogMessage(channel as never, 'logsMemberAdd', message);
+
+		expect(sendThroughLogWebhook).not.toHaveBeenCalled();
+		expect(channel.send).not.toHaveBeenCalled();
+	});
+
+	test.each(['moderationChannel', 'reportsChannel', 'honeypotLogChannel'])(
+		'GIVEN the Events module turned off THEN %s, of another module, is still sent',
+		async (key) => {
+			mockSettings(false, false);
+			const channel = createChannel();
+
+			await sendLogMessage(channel as never, key, message);
+
+			expect(channel.send).toHaveBeenCalledWith(message);
+		}
+	);
 });

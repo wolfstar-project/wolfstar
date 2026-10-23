@@ -117,6 +117,7 @@ describe('configuration file', () => {
 				'timezone',
 				'modules.automod',
 				'modules.moderation',
+				'modules.logs',
 				'modules.roles',
 				'automod.track-native',
 				'commands.disabled',
@@ -212,7 +213,7 @@ describe('configuration file', () => {
 		});
 
 		test('GIVEN a file exported with a setting the bot no longer has THEN it is left out', async () => {
-			const parsed = await parseOk({ ...valid, settings: { ...valid.settings, 'modules.logs': false, 'modules.commands': true } });
+			const parsed = await parseOk({ ...valid, settings: { ...valid.settings, 'modules.commands': true } });
 
 			expect(parsed.settings).toEqual([{ key: findPortableKey('modules.moderation'), value: false }]);
 		});

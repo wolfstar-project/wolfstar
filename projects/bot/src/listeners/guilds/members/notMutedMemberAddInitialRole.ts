@@ -16,6 +16,9 @@ export class UserListener extends Listener {
 
 		const user = member.user ?? (await member.fetchUser());
 		const settings = await readSettings(member);
+		// The initial roles are of the roles module:
+		if (!settings.modulesRoles) return;
+
 		const initial = settings.rolesInitial;
 		const initialHumans = settings.rolesInitialHumans;
 		const initialRobots = settings.rolesInitialRobots;
