@@ -3,14 +3,22 @@ import { DiscordAPIError } from '@discordjs/rest';
 import { WebhookType, type Snowflake } from 'discord-api-types/v10';
 
 /**
- * The announcement channel of the support server of WolfStar, where the updates, the new features and the maintenance
- * notices are published. The `updates-channel` of a server follows it.
+ * Reads the announcement channel of the support server of WolfStar, where the updates, the new features and the
+ * maintenance notices are published. The `updates-channel` of a server follows it.
+ *
+ * @remarks
+ *
+ * It is `UPDATES_ANNOUNCEMENT_CHANNEL_ID`, since each bot follows its own: the alpha `#dev-announcement`, the public
+ * one `#announcement`.
  */
-export const UpdatesAnnouncementChannelId: Snowflake = '1520758937807228998';
+export function getUpdatesAnnouncementChannelId(): Snowflake {
+	return process.env.UPDATES_ANNOUNCEMENT_CHANNEL_ID;
+}
 
 /**
- * Makes the `updates-channel` of a server follow {@linkcode UpdatesAnnouncementChannelId}, so what is published there
- * is posted in the server too, and stops the channel it had before from following it.
+ * Makes the `updates-channel` of a server follow the announcement channel of the updates
+ * ({@linkcode getUpdatesAnnouncementChannelId}), so what is published there is posted in the server too, and stops the
+ * channel it had before from following it.
  *
  * @remarks
  *
@@ -41,18 +49,20 @@ export async function syncUpdatesChannelFollow(previous: Snowflake | null, next:
 }
 
 /**
- * Reads the webhooks of a channel that follow {@linkcode UpdatesAnnouncementChannelId}.
+ * Reads the webhooks of a channel that follow the announcement channel of the updates.
  */
 async function fetchUpdatesFollowers(channelId: Snowflake) {
 	const webhooks = await container.gatewayClient.api.channels.getWebhooks(channelId);
-	return webhooks.filter((webhook) => webhook.type === WebhookType.ChannelFollower && webhook.source_channel?.id === UpdatesAnnouncementChannelId);
+	return webhooks.filter(
+		(webhook) => webhook.type === WebhookType.ChannelFollower && webhook.source_channel?.id === getUpdatesAnnouncementChannelId()
+	);
 }
 
 async function followUpdates(channelId: Snowflake) {
 	// A channel that already follows the updates, which an administrator may have done by hand, is not given a second one:
 	if ((await fetchUpdatesFollowers(channelId)).length > 0) return;
 
-	await container.gatewayClient.api.channels.followAnnouncements(UpdatesAnnouncementChannelId, channelId, {
+	await container.gatewayClient.api.channels.followAnnouncements(getUpdatesAnnouncementChannelId(), channelId, {
 		reason: 'Set as the updates channel of WolfStar'
 	});
 }
