@@ -22,7 +22,7 @@
 		"typecheck": "stars typecheck",
 		"dev": "stars dev",
 		"clean": "node scripts/clean.mjs",
-		"start": "node --enable-source-maps dist/main.mjs",
+		"start": "node --enable-source-maps --import ./instrumentation.mjs dist/main.mjs",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"stars:info": "stars info"
@@ -34,6 +34,9 @@
 		"@discordjs/formatters": "^0.6.2",
 		"@discordjs/rest": "^2.6.3",
 		"@influxdata/influxdb-client": "^1.35.0",
+		"@opentelemetry/api": "^1.10.0",
+		"@opentelemetry/auto-instrumentations-node": "^0.82.0",
+		"@opentelemetry/instrumentation": "^0.300.0",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/bitfield": "^1.2.4",
 		"@sapphire/pieces": "^4.4.1",

@@ -256,6 +256,24 @@ export type CoercedEnvSchema = {
   WEBHOOK_ERROR_TOKEN?: string;
   
   /**
+   * **OTEL_EXPORTER_OTLP_ENDPOINT**  
+   * Where the traces are exported. Railway sets it, with the protocol, the headers, the name and the version of the  
+   * service, when tracing is on for the service; `instrumentation.mjs` only starts the SDK when one of the two is set, and  
+   * Sentry then leaves the tracer provider to it. Do not set it to send the traces elsewhere on Railway: it adds none of  
+   * its variables when one is already set.  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M24%2021V9h-2v14h8v-2zm-4-6v-4c0-1.103-.897-2-2-2h-6v14h2v-6h1.48l2.335%206h2.145l-2.333-6H18c1.103%200%202-.897%202-2m-6-4h4v4h-4zM8%2023H4c-1.103%200-2-.897-2-2V9h2v12h4V9h2v12c0%201.103-.897%202-2%202%22%2F%3E%3C%2Fsvg%3E)   
+   *   
+   * 📚 {@link https://docs.railway.com/observability/tracing/nodejs}  
+   */
+  OTEL_EXPORTER_OTLP_ENDPOINT?: string;
+  
+  /**
+   * **OTEL_EXPORTER_OTLP_TRACES_ENDPOINT**  
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M24%2021V9h-2v14h8v-2zm-4-6v-4c0-1.103-.897-2-2-2h-6v14h2v-6h1.48l2.335%206h2.145l-2.333-6H18c1.103%200%202-.897%202-2m-6-4h4v4h-4zM8%2023H4c-1.103%200-2-.897-2-2V9h2v12h4V9h2v12c0%201.103-.897%202-2%202%22%2F%3E%3C%2Fsvg%3E)   
+   */
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT?: string;
+  
+  /**
    * **INFLUX_ENABLED**  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M23%2023a7%207%200%201%201%207-7a7.01%207.01%200%200%201-7%207m0-12a5%205%200%201%200%205%205a5.006%205.006%200%200%200-5-5%22%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%2216%22%20r%3D%227%22%20fill%3D%22%23808080%22%2F%3E%3C%2Fsvg%3E)   
    */
@@ -330,19 +348,19 @@ export type CoercedEnvSchema = {
   
   /**
    * **DATABASE_URL** 🔐 _sensitive_  
-   * Local development defaults shared by every package: the PostgreSQL container of `compose.dev.yaml`.  
-   * Only throw-away local credentials belong here. Real ones go in `.env.development.local` (git-ignored).  
+   * Test defaults shared by every package. The unit tests only build the Prisma client, they do not need a live  
+   * database, but the client refuses to be created without a connection string.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
   DATABASE_URL: string;
   
 };
 
-type _CoercedEnvSchema_1698fd34 = CoercedEnvSchema;
+type _CoercedEnvSchema_5c782476 = CoercedEnvSchema;
 
 declare module 'varlock/env' {
-  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_1698fd34> {}
-  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_1698fd34, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'OAUTH_COOKIE' | 'OAUTH_REDIRECT_URI' | 'OAUTH_SCOPE' | 'OAUTH_DOMAIN_OVERWRITE' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'SHARDER_ENABLED' | 'SHARDER_CLUSTERS' | 'SHARDER_TOTAL_SHARDS' | 'WORKER_COUNT' | 'LOG_LEVEL' | 'WEBHOOK_ERROR_ID' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_BUCKET' | 'NODE_ENV'>> {}
+  export interface TypedEnvSchema extends Readonly<_CoercedEnvSchema_5c782476> {}
+  export interface PublicTypedEnvSchema extends Readonly<Pick<_CoercedEnvSchema_5c782476, 'CLIENT_NAME' | 'CLIENT_VERSION' | 'CLIENT_OWNERS' | 'CLIENT_ID' | 'DISCORD_PUBLIC_KEY' | 'HTTP_ADDRESS' | 'HTTP_PORT' | 'API_ENABLED' | 'API_HOST' | 'API_PORT' | 'API_ORIGIN' | 'API_PREFIX' | 'OAUTH_COOKIE' | 'OAUTH_REDIRECT_URI' | 'OAUTH_SCOPE' | 'OAUTH_DOMAIN_OVERWRITE' | 'REDIS_HOST' | 'REDIS_PORT' | 'REDIS_DB' | 'BROKER_ENABLED' | 'BROKER_STREAM' | 'BROKER_MAX_LENGTH' | 'BOT_MODE' | 'BROKER_GROUP' | 'BROKER_CONSUMER' | 'SHARDER_ENABLED' | 'SHARDER_CLUSTERS' | 'SHARDER_TOTAL_SHARDS' | 'WORKER_COUNT' | 'LOG_LEVEL' | 'WEBHOOK_ERROR_ID' | 'OTEL_EXPORTER_OTLP_ENDPOINT' | 'OTEL_EXPORTER_OTLP_TRACES_ENDPOINT' | 'INFLUX_ENABLED' | 'INFLUX_URL' | 'INFLUX_ORG' | 'INFLUX_BUCKET' | 'NODE_ENV'>> {}
 }
 
 
@@ -352,17 +370,17 @@ export type EnvSchemaAsStrings = {
       : (NonNullable<CoercedEnvSchema[Property]> extends boolean ? ('true' | 'false') : string)
 };
 
-type _EnvSchemaAsStrings_1698fd34 = EnvSchemaAsStrings;
+type _EnvSchemaAsStrings_5c782476 = EnvSchemaAsStrings;
 declare global {
 
   // add types for global import.meta.env
-  interface ImportMetaEnv extends _EnvSchemaAsStrings_1698fd34 {}
+  interface ImportMetaEnv extends _EnvSchemaAsStrings_5c782476 {}
   interface ImportMeta {
     readonly env: ImportMetaEnv;
   }
 
   // add types for global process.env
   namespace NodeJS {
-    interface ProcessEnv extends _EnvSchemaAsStrings_1698fd34 {}
+    interface ProcessEnv extends _EnvSchemaAsStrings_5c782476 {}
   }
 }

@@ -29,6 +29,8 @@ export default {
 				'src/lib/moderation/workers/worker.mts',
 				// The drain of the logger module in `stars.config.ts`, which names it by its path:
 				'src/evlog-drain.ts',
+				// Loaded with `--import` by the `start` script:
+				'instrumentation.mjs',
 				'scripts/*.{ts,mjs}',
 				'stars.config.ts',
 				'tests/**/*.ts'
@@ -37,8 +39,10 @@ export default {
 			// Kept although nothing imports them yet: the barrels of `src/lib`.
 			// `env.d.ts` is written by Varlock and only declares globals, so nothing imports it either.
 			ignore: ['src/lib/**/index.ts', 'src/@types/env.d.ts'],
-			// The Stars CLI injects `import '@wolfstar/plugin-*/register'` into `main.ts` for every plugin in `dependencies`:
-			ignoreDependencies: ['@wolfstar/plugin-.+']
+			// The Stars CLI injects `import '@wolfstar/plugin-*/register'` into `main.ts` for every plugin in `dependencies`.
+			// `instrumentation.mjs` gives the loader hook of `@opentelemetry/instrumentation` to `module.register` by its
+			// name, and `@opentelemetry/api` is the peer of the instrumentations, which nothing of the bot imports:
+			ignoreDependencies: ['@wolfstar/plugin-.+', '@opentelemetry/instrumentation', '@opentelemetry/api']
 		},
 		'projects/shared': {
 			entry: ['tests/**/*.ts'],
