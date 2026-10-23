@@ -3880,6 +3880,7 @@ declare module "i18next" {
         validationDuplicatedValue: "The value for the key `{{path}}` was already set to ``{{value}}``!";
         modulesAutomod: "Whether the auto-moderation module is enabled.";
         modulesModeration: "Whether the moderation module is enabled.";
+        modulesLogs: "Whether the logs of what happens in the server (`logs.*`) are sent.";
         modulesRoles: "Whether the roles module is enabled.";
         automodChannel: "The channel where the auto-moderation actions are reported.";
         automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
@@ -3901,6 +3902,7 @@ declare module "i18next" {
           updatesChannel: "Updates Channel";
           modulesAutomod: "Auto-moderation Module";
           modulesModeration: "Moderation Module";
+          modulesLogs: "Events Module";
           modulesRoles: "Roles Module";
           automodChannel: "Auto-moderation Channel";
           automodTrackNative: "Track Native Auto-moderation";
