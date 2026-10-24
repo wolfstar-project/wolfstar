@@ -10,6 +10,7 @@ import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
 import {
 	countPlannedRules,
 	findOversizedRuleLists,
+	findStaleTimeoutRules,
 	getPlannedRules,
 	getPlannedSettings,
 	planConfigurationImport
@@ -440,6 +441,27 @@ describe('configuration file', () => {
 
 				const parsed = await parseOk(file, rules);
 				expect(planConfigurationImport(settings, rules, parsed).isEmpty).toBe(true);
+			});
+
+			// The import is written up to five minutes after its preview, from what the database has by then:
+			test('GIVEN the import of a Timeout with no duration WHEN the rule of the server gained a duration, changed its action or was deleted before it is written THEN it is stale', async () => {
+				const saved = createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: null });
+				const parsed = await parseOk(createConfigurationFile(createSettings(), [saved]), [saved]);
+
+				expect(findStaleTimeoutRules([saved], parsed)).toEqual([]);
+				expect(findStaleTimeoutRules([{ ...saved, hardActionDuration: 60_000 }], parsed)).toEqual(['No links']);
+				expect(findStaleTimeoutRules([{ ...saved, hardAction: 'Ban' }], parsed)).toEqual(['No links']);
+				expect(findStaleTimeoutRules([], parsed)).toEqual(['No links']);
+			});
+
+			test('GIVEN the import of rules that are not a Timeout with no duration THEN none of them is stale', async () => {
+				const rules = [
+					createRule('Links', 'Links', '1', { hardAction: 'Timeout', hardActionDuration: 60_000 }),
+					createRule('Words', 'Words', '2')
+				];
+				const parsed = await parseOk(createConfigurationFile(createSettings(), rules), rules);
+
+				expect(findStaleTimeoutRules([], parsed)).toEqual([]);
 			});
 
 			test('GIVEN a file that writes no duration as zero over a rule that is a Timeout with none THEN it is accepted', async () => {
