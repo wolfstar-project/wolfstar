@@ -23,7 +23,7 @@ export class UserRoute extends Route {
 
 		// The body is read once, and checked against the rule as it is cached to answer a bad one with a 400:
 		const body = await request.readBodyJson();
-		const { errors } = parseAutoModerationRulePatch(rule.type, body, rule.options);
+		const { errors } = parseAutoModerationRulePatch(rule.type, body, rule);
 		if (errors) return response.status(HttpCodes.BadRequest).json(errors);
 
 		try {
@@ -32,7 +32,7 @@ export class UserRoute extends Route {
 			// The rule the database has may be ahead of the cached one, and refuse a body the cached one accepted:
 			let queuedErrors: string[] | undefined;
 			const updated = await updateAutoModerationRule(guildId, rule.id, (current) => {
-				const parsed = parseAutoModerationRulePatch(rule.type, body, current.options);
+				const parsed = parseAutoModerationRulePatch(rule.type, body, current);
 				queuedErrors = parsed.errors;
 				return parsed.data ?? null;
 			});

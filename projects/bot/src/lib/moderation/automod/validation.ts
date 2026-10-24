@@ -1,10 +1,11 @@
-import { isObject } from '@sapphire/utilities';
+import { isNullishOrZero, isObject } from '@sapphire/utilities';
 import { remove as removeConfusables } from 'confusables';
 import {
 	AutoModerationHardActions,
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
 	AutoModerationRuleWordLength,
+	getDefaultAutoModerationRule,
 	getDefaultAutoModerationRuleOptions,
 	isAutoModerationRuleWord,
 	MaximumAutoModerationRuleEscalationSteps,
@@ -40,23 +41,31 @@ export type AutoModerationRulePatch = Partial<Omit<AutoModerationRuleData, 'type
  * Reads what a rule is created or edited with from data that is not trusted, the body of a request.
  *
  * @remarks Only the fields that are given are read, so the result is a patch. The options are read with
- * `normalizeAutoModerationRuleOptions`, on top of `currentOptions`, so a request can give only the ones that change.
+ * `normalizeAutoModerationRuleOptions`, on top of the ones of `current`, so a request can give only the ones that
+ * change.
+ *
+ * A Timeout needs a duration, since Discord does not take one with no end and the rule would never act. The action and
+ * the duration the rule ends up with are checked when the request changes one of them (gives it a value `current` does
+ * not have), on top of what `current` has and, for a rule that does not exist yet, on the defaults of the type. A rule
+ * that was saved with a Timeout and no duration can still be renamed or turned off.
  *
  * @param type - The type of the rule, which its options depend on.
  * @param input - The data to read.
- * @param currentOptions - The options the rule has, when it exists.
+ * @param current - What the rule has, when it exists.
  * @returns The patch, or what is wrong with the data, one message per field.
  */
 export function parseAutoModerationRulePatch(
 	type: AutoModerationRuleType,
 	input: unknown,
-	currentOptions: object = {}
+	current: Partial<Pick<AutoModerationRuleData, 'hardAction' | 'hardActionDuration' | 'options'>> = {}
 ): { data: AutoModerationRulePatch; errors?: undefined } | { data?: undefined; errors: string[] } {
 	if (!isObject(input)) return { errors: ['Invalid body.'] };
 
 	const body = input as Record<string, unknown>;
 	const data: AutoModerationRulePatch = {};
 	const errors: string[] = [];
+	// A field that is given and not valid has its own error, the Timeout is not checked on top of it:
+	let hardActionValid = true;
 
 	if (body.name !== undefined) {
 		if (typeof body.name === 'string' && body.name.trim().length > 0 && body.name.trim().length <= MaximumAutoModerationRuleNameLength) {
@@ -80,6 +89,7 @@ export function parseAutoModerationRulePatch(
 		if (AutoModerationHardActions.includes(body.hardAction as AutoModerationHardAction)) {
 			data.hardAction = body.hardAction as AutoModerationHardAction;
 		} else {
+			hardActionValid = false;
 			errors.push(`hardAction: Expected one of ${AutoModerationHardActions.join(', ')}.`);
 		}
 	}
@@ -89,7 +99,27 @@ export function parseAutoModerationRulePatch(
 		// Zero and `null` both make the hard action permanent:
 		if (body.hardActionDuration === null || body.hardActionDuration === 0) data.hardActionDuration = null;
 		else if (isInteger(body.hardActionDuration, minimum, maximum)) data.hardActionDuration = body.hardActionDuration;
-		else errors.push(`hardActionDuration: Expected null or an integer between ${minimum} and ${maximum}.`);
+		else {
+			hardActionValid = false;
+			errors.push(`hardActionDuration: Expected null or an integer between ${minimum} and ${maximum}.`);
+		}
+	}
+
+	// Only a request that changes the action or the duration is checked, so a rule already saved that way (the menu asks for
+	// the duration after the action) can still be renamed, turned off, or sent back whole with the same values:
+	const changesAction = data.hardAction !== undefined && data.hardAction !== current.hardAction;
+	const changesDuration =
+		data.hardActionDuration !== undefined &&
+		(current.hardActionDuration === undefined || (data.hardActionDuration || null) !== (current.hardActionDuration || null));
+	if (hardActionValid && (changesAction || changesDuration)) {
+		const defaults = getDefaultAutoModerationRule(type);
+		const action = data.hardAction ?? current.hardAction ?? defaults.hardAction;
+		const duration =
+			data.hardActionDuration !== undefined ? data.hardActionDuration : (current.hardActionDuration ?? defaults.hardActionDuration);
+		if (action === 'Timeout' && isNullishOrZero(duration)) {
+			const { maximum } = AutoModerationRuleLimits.hardActionDuration;
+			errors.push(`hardActionDuration: Expected an integer between 1 and ${maximum}, which a Timeout requires.`);
+		}
 	}
 
 	for (const key of ['thresholdMaximum', 'thresholdDuration'] as const) {
@@ -133,16 +163,16 @@ export function parseAutoModerationRulePatch(
 
 	if (body.options !== undefined) {
 		if (isObject(body.options)) {
-			const options = { ...currentOptions, ...body.options } as Record<string, unknown>;
+			const options = { ...current.options, ...body.options } as Record<string, unknown>;
 			if (type === 'Words' && Array.isArray(options.words)) {
 				options.words = options.words.map((word) => (typeof word === 'string' ? normalizeAutoModerationRuleWord(word) : word));
 			}
 			const normalized = normalizeAutoModerationRuleOptions(type, options);
 			// A list longer than the cap that the rule already had is kept, but it cannot grow:
-			const current = currentOptions as Record<string, unknown>;
+			const currentOptions = (current.options ?? {}) as Record<string, unknown>;
 			for (const [key, value] of Object.entries(normalized)) {
 				if (!Array.isArray(value) || value.length <= MaximumAutoModerationRuleListLength) continue;
-				const previous = Array.isArray(current[key]) ? current[key].length : 0;
+				const previous = Array.isArray(currentOptions[key]) ? currentOptions[key].length : 0;
 				if (value.length > previous) {
 					errors.push(`options.${key}: Expected at most ${MaximumAutoModerationRuleListLength} entries.`);
 				}

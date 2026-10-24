@@ -206,6 +206,32 @@ export function findOversizedRuleLists(rules: readonly AutoModerationRule[], par
 }
 
 /**
+ * Finds the rules of a file that are a Timeout with no duration while the rule of the server with the same name and
+ * type is not one.
+ *
+ * @remarks `parseConfigurationFile` only lets such a rule through when the rule of the server already is one (a Timeout
+ * the menu saved before it asked for the duration), so its backup imports back. This is the same check against the
+ * rules the server has when the import is written, which may be later: a rule that gained a duration, changed its action
+ * or was deleted meanwhile would be made a Timeout that never acts.
+ *
+ * @param rules - The rules of the server, as the database has them.
+ * @param parsed - What the file holds, see `parseConfigurationFile`.
+ * @returns The names of those rules, as the file has them.
+ */
+export function findStaleTimeoutRules(rules: readonly AutoModerationRule[], parsed: ParsedConfiguration): string[] {
+	const stale: string[] = [];
+	for (const data of parsed.rules ?? []) {
+		if (data.hardAction !== 'Timeout' || data.hardActionDuration) continue;
+
+		const lower = data.name.toLowerCase();
+		const current = rules.find((rule) => rule.type === data.type && rule.name.toLowerCase() === lower);
+		if (current?.hardAction !== 'Timeout' || current.hardActionDuration) stale.push(data.name);
+	}
+
+	return stale;
+}
+
+/**
  * The changes of a plan to the settings, as `writeSettings` takes them.
  */
 export function getPlannedSettings(plan: ConfigurationPlan): Partial<GuildData> {

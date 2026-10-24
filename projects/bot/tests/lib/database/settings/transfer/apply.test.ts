@@ -86,4 +86,13 @@ describe('applyConfigurationImport', () => {
 		await expect(applyConfigurationImport(guildId, parsed, '1')).rejects.toBeInstanceOf(ConfigurationImportStaleError);
 		expect(mocks.events).toEqual(['settings locked', 'rules locked', 'rules unlocked', 'settings unlocked']);
 	});
+
+	test('GIVEN a Timeout with no duration the server no longer has THEN nothing is written and the locks are released', async () => {
+		const { ignoredRoles: _roles, ignoredChannels: _channels, ...rule } = getDefaultAutoModerationRule('Links');
+		const parsed: ParsedConfiguration = { settings: [], rules: [{ ...rule, name: 'No links', hardAction: 'Timeout', hardActionDuration: null }] };
+
+		// The file was let through for a rule of the server that was a Timeout with no duration, and is gone by now:
+		await expect(applyConfigurationImport(guildId, parsed, '1')).rejects.toBeInstanceOf(ConfigurationImportStaleError);
+		expect(mocks.events).toEqual(['settings locked', 'rules locked', 'rules unlocked', 'settings unlocked']);
+	});
 });
