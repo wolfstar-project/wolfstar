@@ -1,4 +1,5 @@
-import { closeLogger } from '#utils/shutdown';
+import { closeLogger, flushTraces } from '#utils/shutdown';
+import { trace } from '@opentelemetry/api';
 import { container } from '@wolfstar/http-framework';
 import { Logger } from '@wolfstar/plugin-logger';
 
@@ -37,5 +38,30 @@ describe('shutdown', () => {
 		};
 
 		await expect(closeLogger()).resolves.toBeUndefined();
+	});
+
+	describe('flushTraces', () => {
+		afterEach(() => {
+			trace.disable();
+		});
+
+		test('GIVEN no OpenTelemetry SDK THEN there is nothing to flush', async () => {
+			await expect(flushTraces()).resolves.toBeUndefined();
+		});
+
+		test('GIVEN the tracer provider of the SDK THEN its spans are exported', async () => {
+			const forceFlush = vi.fn().mockResolvedValue(undefined);
+			trace.setGlobalTracerProvider({ getTracer: vi.fn(), forceFlush } as never);
+
+			await flushTraces();
+
+			expect(forceFlush).toHaveBeenCalledOnce();
+		});
+
+		test('GIVEN spans that cannot be exported THEN flushing does not throw', async () => {
+			trace.setGlobalTracerProvider({ getTracer: vi.fn(), forceFlush: vi.fn().mockRejectedValue(new Error('offline')) } as never);
+
+			await expect(flushTraces()).resolves.toBeUndefined();
+		});
 	});
 });

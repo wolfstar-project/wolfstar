@@ -1,5 +1,5 @@
 import { dispatchShardMessage, type ShardMessage } from '#lib/sharder/messages';
-import { closeLogger } from '#utils/shutdown';
+import { closeTelemetry } from '#utils/shutdown';
 import { container } from '@wolfstar/http-framework';
 import type { GatewayClient } from '@wolfstar/plugin-gateway';
 import { ShardClient } from '@wolfstar/plugin-sharder';
@@ -40,7 +40,7 @@ export function bindShardClient(shard: ShardClient, client: GatewayClient) {
 
 	shard.setCloseHandler(async () => {
 		await client.destroy();
-		await closeLogger();
+		await closeTelemetry();
 	});
 }
 

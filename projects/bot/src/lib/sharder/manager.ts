@@ -1,6 +1,6 @@
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { getLoggerOptions } from '#utils/logger';
-import { closeLogger } from '#utils/shutdown';
+import { closeTelemetry } from '#utils/shutdown';
 import { isWorker } from '#utils/worker';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { Client, container } from '@wolfstar/http-framework';
@@ -56,7 +56,7 @@ export async function startShardManager() {
 			() =>
 				void manager
 					.destroy()
-					.finally(closeLogger)
+					.finally(closeTelemetry)
 					.finally(() => process.exit(0))
 		);
 	}

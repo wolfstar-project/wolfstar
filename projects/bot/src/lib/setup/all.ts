@@ -1,3 +1,4 @@
+import { getSentryIntegrations } from '#utils/sentry';
 import { envParseString } from '@wolfstar/env-utilities';
 import { initializeSentry, setInvite, setRepository } from '@wolfstar/shared-http-pieces';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
@@ -53,6 +54,6 @@ const InvitePermissions =
 export function initializeApp() {
 	setRepository('wolfstar');
 	setInvite(envParseString('CLIENT_ID'), InvitePermissions.toString());
-	// Reports the errors to Sentry when `SENTRY_DSN` is set:
-	initializeSentry({ root: new URL('../../..', import.meta.url) });
+	// Reports the errors to Sentry when `SENTRY_DSN` is set, on the trace of the OpenTelemetry span they happen in:
+	initializeSentry({ root: new URL('../../..', import.meta.url), integrations: getSentryIntegrations() });
 }
