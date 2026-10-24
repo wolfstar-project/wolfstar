@@ -81,7 +81,7 @@ export function getInstrumentationConfig(dsn) {
 
 /**
  * Whether a request of `http` or `https` is one the transport of Sentry sends an event with: to the host of the DSN,
- * on the path of an envelope (`/api/<project>/envelope/`).
+ * on the path of an envelope of its project (`[/<path>]/api/<project>/envelope/`, the path of a Sentry hosted under one).
  *
  * @param request - The options of the request, as `http.request` is given them.
  * @param dsn - The DSN of Sentry.
@@ -89,15 +89,21 @@ export function getInstrumentationConfig(dsn) {
 export function isSentryEnvelopeRequest(request, dsn) {
 	if (!dsn) return false;
 
-	let hostname;
+	let url;
 	try {
-		({ hostname } = new URL(dsn));
+		url = new URL(dsn);
 	} catch {
 		return false;
 	}
 
+	// The project is the last segment of the path of the DSN, and a Sentry hosted under a path keeps the rest in front:
+	const segments = url.pathname.split('/').filter(Boolean);
+	const project = segments.pop();
+	if (!project) return false;
+
+	const prefix = segments.length > 0 ? `/${segments.join('/')}` : '';
 	const host = request.hostname ?? request.host?.replace(/:\d+$/, '');
-	return host === hostname && /^\/api\/\d+\/envelope\//.test(request.path ?? '');
+	return host === url.hostname && (request.path ?? '').startsWith(`${prefix}/api/${project}/envelope/`);
 }
 
 /**

@@ -219,6 +219,17 @@ describe('isSentryEnvelopeRequest', () => {
 		expect(isSentryEnvelopeRequest(request, dsn)).toBe(expected);
 	});
 
+	test('GIVEN a DSN with a path, as a Sentry hosted under one THEN only the envelope of its project is one of Sentry', () => {
+		const hosted = 'https://publickey@sentry.example.com/sentry/42';
+		expect(isSentryEnvelopeRequest({ hostname: 'sentry.example.com', path: '/sentry/api/42/envelope/?sentry_key=publickey' }, hosted)).toBe(true);
+		expect(isSentryEnvelopeRequest({ hostname: 'sentry.example.com', path: '/api/42/envelope/' }, hosted)).toBe(false);
+		expect(isSentryEnvelopeRequest({ hostname: 'sentry.example.com', path: '/sentry/api/7/envelope/' }, hosted)).toBe(false);
+	});
+
+	test('GIVEN the envelope of another project on the same host THEN it is not the one of the DSN', () => {
+		expect(isSentryEnvelopeRequest({ hostname: 'o0.ingest.sentry.io', path: '/api/7/envelope/' }, dsn)).toBe(false);
+	});
+
 	test('GIVEN no DSN, or one that cannot be read THEN no request is one of Sentry', () => {
 		const request = { hostname: 'o0.ingest.sentry.io', path: '/api/42/envelope/' };
 		expect(isSentryEnvelopeRequest(request, undefined)).toBe(false);
