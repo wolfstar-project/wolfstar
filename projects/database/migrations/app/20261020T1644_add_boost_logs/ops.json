@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.GuildLogs.boosts",
+		"label": "Add the channel of the boosts log",
+		"summary": "Adds column \"boosts\" to \"GuildLogs\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildLogs"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the nullable column, so the guilds that are there have no channel for it",
+				"sql": "ALTER TABLE \"public\".\"GuildLogs\" ADD COLUMN IF NOT EXISTS \"boosts\" int8",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"boosts\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildLogs' AND column_name = 'boosts') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

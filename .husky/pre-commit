@@ -1,3 +1,5 @@
 #!/bin/sh
 
-pnpm lint-staged
+# Refuse to commit a resolved secret in plaintext (https://varlock.dev/guides/secrets/)
+pnpm exec varlock scan --staged
+pnpm exec nano-staged

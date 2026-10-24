@@ -1,0 +1,105 @@
+[
+	{
+		"id": "table.GuildRoleRule",
+		"label": "Create table \"GuildRoleRule\"",
+		"summary": "Creates table \"GuildRoleRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildRoleRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildRoleRule\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildRoleRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildRoleRule\"",
+				"sql": "CREATE TABLE \"public\".\"GuildRoleRule\" (\n  \"any_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"forbidden_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"required_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"role_id\" int8 NOT NULL,\n  CONSTRAINT \"GuildRoleRule_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildRoleRule\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildRoleRule\""]
+			}
+		]
+	},
+	{
+		"id": "unique.GuildRoleRule.GuildRoleRule_guild_id_role_id_key",
+		"label": "Add unique constraint on \"GuildRoleRule\" (guild_id, role_id)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "GuildRoleRule_guild_id_role_id_key",
+				"table": "GuildRoleRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildRoleRule_guild_id_role_id_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleRule_guild_id_role_id_key", "public", "\"public\".\"GuildRoleRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"GuildRoleRule_guild_id_role_id_key\"",
+				"sql": "ALTER TABLE \"public\".\"GuildRoleRule\" ADD CONSTRAINT \"GuildRoleRule_guild_id_role_id_key\" UNIQUE (\"guild_id\", \"role_id\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildRoleRule_guild_id_role_id_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleRule_guild_id_role_id_key", "public", "\"public\".\"GuildRoleRule\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildRoleRule.GuildRoleRule_guild_id_fkey",
+		"label": "Add foreign key \"GuildRoleRule_guild_id_fkey\" on \"GuildRoleRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildRoleRule_guild_id_fkey",
+				"table": "GuildRoleRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildRoleRule_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleRule_guild_id_fkey", "public", "\"public\".\"GuildRoleRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildRoleRule_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildRoleRule\"\nADD CONSTRAINT \"GuildRoleRule_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildRoleRule_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleRule_guild_id_fkey", "public", "\"public\".\"GuildRoleRule\""]
+			}
+		]
+	}
+]
