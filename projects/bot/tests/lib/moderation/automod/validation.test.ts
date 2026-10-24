@@ -155,6 +155,20 @@ describe('auto-moderation rules', () => {
 				});
 			});
 
+			// The dashboard sends the whole rule back when one field changes:
+			test('GIVEN a rule that is a Timeout with no duration WHEN the request gives back the same action and duration THEN it is accepted', () => {
+				const current = { hardAction: 'Timeout', hardActionDuration: null } as const;
+
+				expect(
+					parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: null, enabled: false }, current).data
+				).toEqual({
+					hardAction: 'Timeout',
+					hardActionDuration: null,
+					enabled: false
+				});
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: 0 }, current).errors).toBeUndefined();
+			});
+
 			test('GIVEN a hard action that is not valid THEN it only has its own error', () => {
 				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Explode' }).errors).toEqual([
 					expect.stringMatching(/^hardAction: Expected one of /)

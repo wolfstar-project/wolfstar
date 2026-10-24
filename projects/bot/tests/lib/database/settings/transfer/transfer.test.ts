@@ -432,6 +432,33 @@ describe('configuration file', () => {
 				await expect(parseOk({ version: 1, automod: { rules: [{ ...rule, hardActionDuration: 60_000 }] } }, rules)).resolves.toBeDefined();
 			});
 
+			// The menu saves the action before it asks for the duration, so a rule can be a Timeout with none, and its backup has to come back:
+			test('GIVEN the export of a rule that is a Timeout with no duration WHEN it is imported back THEN it is accepted and changes nothing', async () => {
+				const settings = createSettings();
+				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: null })];
+				const file = createConfigurationFile(settings, rules);
+
+				const parsed = await parseOk(file, rules);
+				expect(planConfigurationImport(settings, rules, parsed).isEmpty).toBe(true);
+			});
+
+			test('GIVEN a file that writes no duration as zero over a rule that is a Timeout with none THEN it is accepted', async () => {
+				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: null })];
+				const rule = { name: 'No links', type: 'Links', hardAction: 'Timeout', hardActionDuration: 0 };
+
+				await expect(parseOk({ version: 1, automod: { rules: [rule] } }, rules)).resolves.toBeDefined();
+			});
+
+			test('GIVEN a file that turns a rule into a Timeout with no duration THEN it is refused', async () => {
+				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Ban', hardActionDuration: null })];
+
+				const issues = await parseIssues(
+					{ version: 1, automod: { rules: [{ name: 'No links', type: 'Links', hardAction: 'Timeout' }] } },
+					rules
+				);
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].hardActionDuration']);
+			});
+
 			describe('lists longer than the limit', () => {
 				const words = (length: number) => Array.from({ length }, (_, index) => `word${index}`);
 				const over = MaximumAutoModerationRuleListLength + 1;

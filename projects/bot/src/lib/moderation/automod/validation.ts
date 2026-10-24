@@ -45,9 +45,9 @@ export type AutoModerationRulePatch = Partial<Omit<AutoModerationRuleData, 'type
  * change.
  *
  * A Timeout needs a duration, since Discord does not take one with no end and the rule would never act. The action and
- * the duration the rule ends up with are checked when the request changes one of them, on top of what `current` has and,
- * for a rule that does not exist yet, on the defaults of the type. A rule that was saved with a Timeout and no duration
- * can still be renamed or turned off.
+ * the duration the rule ends up with are checked when the request changes one of them (gives it a value `current` does
+ * not have), on top of what `current` has and, for a rule that does not exist yet, on the defaults of the type. A rule
+ * that was saved with a Timeout and no duration can still be renamed or turned off.
  *
  * @param type - The type of the rule, which its options depend on.
  * @param input - The data to read.
@@ -105,7 +105,13 @@ export function parseAutoModerationRulePatch(
 		}
 	}
 
-	if (hardActionValid && (data.hardAction !== undefined || data.hardActionDuration !== undefined)) {
+	// Only a request that changes the action or the duration is checked, so a rule already saved that way (the menu asks for
+	// the duration after the action) can still be renamed, turned off, or sent back whole with the same values:
+	const changesAction = data.hardAction !== undefined && data.hardAction !== current.hardAction;
+	const changesDuration =
+		data.hardActionDuration !== undefined &&
+		(current.hardActionDuration === undefined || (data.hardActionDuration || null) !== (current.hardActionDuration || null));
+	if (hardActionValid && (changesAction || changesDuration)) {
 		const defaults = getDefaultAutoModerationRule(type);
 		const action = data.hardAction ?? current.hardAction ?? defaults.hardAction;
 		const duration =
