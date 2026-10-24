@@ -5,7 +5,12 @@
 // protocol, the headers, the name and the version of the service): the exporter of Railway reads all of it from the
 // environment, and nothing here names an endpoint. Without one, as when the bot runs locally, the SDK would export to
 // localhost.
-if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT) {
+//
+// A worker thread inherits `--import` too: the regular expression workers of the moderation would each start an SDK,
+// take seconds to answer their first message and hold hundreds of megabytes, so the SDK only starts on the main thread.
+import { isMainThread } from 'node:worker_threads';
+
+if (isMainThread && (process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT)) {
 	// The bot is ES modules: without the loader hook of `import-in-the-middle`, the libraries it imports (`pg` under
 	// Prisma, `ioredis`, `undici`) stay unpatched and only the spans of the `http` server appear.
 	const { register } = await import('node:module');
@@ -32,13 +37,44 @@ export async function startTracing() {
 	const sentry = await createSentrySpanExporter(process.env.SENTRY_DSN);
 	if (sentry) spanProcessors.push(new BatchSpanProcessor({ exporter: sentry }));
 
-	const sdk = new NodeSDK({ instrumentations: getNodeAutoInstrumentations(), resourceDetectors: getResourceDetectors(), spanProcessors });
+	const sdk = new NodeSDK({
+		instrumentations: getNodeAutoInstrumentations(getInstrumentationConfig()),
+		resourceDetectors: getResourceDetectors(),
+		spanProcessors
+	});
 	sdk.start();
 
 	const shutdown = () => sdk.shutdown().catch(() => undefined);
 	process.on('SIGTERM', shutdown);
 	process.once('beforeExit', shutdown);
 	return sdk;
+}
+
+/**
+ * The configuration of the automatic instrumentations that differs from their defaults.
+ *
+ * @remarks The URL of a request to a webhook of Discord holds its token, and so does the answer to an interaction: the
+ * logs sent through the webhook of their channel, and the follow-ups of a command, would put a token that lets anybody
+ * post there in every span of `undici`, which go to Railway and to Sentry. The token is replaced before the span starts.
+ */
+export function getInstrumentationConfig() {
+	return {
+		'@opentelemetry/instrumentation-undici': {
+			startSpanHook: (request) => {
+				const url = new URL(request.path, request.origin);
+				url.pathname = redactDiscordTokens(url.pathname);
+				return { 'url.full': url.toString(), 'url.path': url.pathname };
+			}
+		}
+	};
+}
+
+/**
+ * Replaces the token in the path of a request to a webhook or an interaction of Discord
+ * (`/webhooks/<id>/<token>`, `/interactions/<id>/<token>`) with `REDACTED`.
+ */
+export function redactDiscordTokens(path) {
+	return path.replace(/\/(webhooks|interactions)\/(\d+)\/[^/?#]+/g, '/$1/$2/REDACTED');
 }
 
 /**
@@ -56,8 +92,8 @@ export async function createEnvironmentSpanExporter() {
 		case 'http/protobuf':
 			return new (await import('@opentelemetry/exporter-trace-otlp-proto')).OTLPTraceExporter();
 		default: {
-			const { diag } = await import('@opentelemetry/api');
-			diag.warn(`Unsupported OTLP traces protocol: ${protocol}. Using http/protobuf.`);
+			// The SDK has no logger yet, so `diag` would print nothing:
+			console.warn(`Unsupported OTLP traces protocol: ${protocol}. Using http/protobuf.`);
 			return new (await import('@opentelemetry/exporter-trace-otlp-proto')).OTLPTraceExporter();
 		}
 	}

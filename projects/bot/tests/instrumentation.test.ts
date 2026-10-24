@@ -1,7 +1,9 @@
-import { createEnvironmentSpanExporter, createSentrySpanExporter } from '../instrumentation.mjs';
+import { createEnvironmentSpanExporter, createSentrySpanExporter, getInstrumentationConfig, redactDiscordTokens } from '../instrumentation.mjs';
+import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
+import { Worker } from 'node:worker_threads';
 import { OTLPTraceExporter as GrpcTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import type { SpanExporter } from '@opentelemetry/sdk-trace';
-import { SimpleSpanProcessor, TracerProvider } from '@opentelemetry/sdk-trace';
+import { InMemorySpanExporter, SimpleSpanProcessor, TracerProvider } from '@opentelemetry/sdk-trace';
 import { createServer, type IncomingHttpHeaders, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
@@ -144,5 +146,74 @@ describe('createEnvironmentSpanExporter', () => {
 		const exporter = await createEnvironmentSpanExporter();
 		expect(exporter).toBeInstanceOf(GrpcTraceExporter);
 		await exporter.shutdown();
+	});
+});
+
+describe('redactDiscordTokens', () => {
+	test.each([
+		['/api/v10/webhooks/1/secret-token', '/api/v10/webhooks/1/REDACTED'],
+		['/api/v10/webhooks/1/secret-token/messages/2', '/api/v10/webhooks/1/REDACTED/messages/2'],
+		['/api/v10/webhooks/1/secret-token/messages/@original', '/api/v10/webhooks/1/REDACTED/messages/@original'],
+		['/api/v10/interactions/1/secret-token/callback', '/api/v10/interactions/1/REDACTED/callback'],
+		['/api/v10/channels/1/webhooks', '/api/v10/channels/1/webhooks'],
+		['/api/v10/webhooks/1', '/api/v10/webhooks/1'],
+		['/api/v10/channels/1/messages', '/api/v10/channels/1/messages']
+	])('GIVEN %s THEN it becomes %s', (path, expected) => {
+		expect(redactDiscordTokens(path)).toBe(expected);
+	});
+});
+
+describe('the instrumentation of undici', () => {
+	const exporter = new InMemorySpanExporter();
+	const provider = new TracerProvider({ spanProcessors: [new SimpleSpanProcessor({ exporter })] });
+	const instrumentation = new UndiciInstrumentation(getInstrumentationConfig()['@opentelemetry/instrumentation-undici']);
+	let server: Server;
+	let port: number;
+
+	beforeAll(async () => {
+		instrumentation.setTracerProvider(provider);
+		instrumentation.enable();
+		server = createServer((request, response) => {
+			request.resume();
+			request.on('end', () => response.writeHead(204).end());
+		});
+		await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+		({ port } = server.address() as AddressInfo);
+	});
+
+	afterAll(async () => {
+		instrumentation.disable();
+		await provider.shutdown();
+		await new Promise((resolve) => server.close(resolve));
+	});
+
+	// A log sent through the webhook of its channel, and the answer to an interaction, carry their token in the URL:
+	test('GIVEN a request to a webhook of Discord THEN its span does not hold the token', async () => {
+		await fetch(`http://127.0.0.1:${port}/api/v10/webhooks/1/secret-token?wait=true`, { method: 'POST' });
+		await provider.forceFlush();
+
+		const spans = exporter.getFinishedSpans();
+		expect(spans).toHaveLength(1);
+		expect(JSON.stringify(spans[0].attributes)).not.toContain('secret-token');
+		expect(spans[0].attributes['url.path']).toBe('/api/v10/webhooks/1/REDACTED');
+		expect(spans[0].attributes['url.full']).toBe(`http://127.0.0.1:${port}/api/v10/webhooks/1/REDACTED?wait=true`);
+	});
+});
+
+describe('the preload in a worker thread', () => {
+	// The regular expression workers of the moderation inherit `--import`, and must not start an SDK each:
+	test('GIVEN a worker thread THEN the SDK does not start in it', async () => {
+		const worker = new Worker(new URL('mocks/tracerProviderWorker.mjs', import.meta.url), {
+			execArgv: ['--import', new URL('../instrumentation.mjs', import.meta.url).href],
+			env: { ...process.env, OTEL_EXPORTER_OTLP_ENDPOINT: 'http://127.0.0.1:1', SENTRY_DSN: '' }
+		});
+
+		const started = await new Promise<boolean>((resolve, reject) => {
+			worker.once('message', resolve);
+			worker.once('error', reject);
+		});
+		await worker.terminate();
+
+		expect(started).toBe(false);
 	});
 });

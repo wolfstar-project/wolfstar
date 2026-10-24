@@ -81,6 +81,7 @@
 		"wolfstar-shared": "workspace:^"
 	},
 	"devDependencies": {
+		"@opentelemetry/instrumentation-undici": "^0.34.0",
 		"@rollup/plugin-alias": "6.0.0",
 		"@wolfstar/i18next-type-generator": "^3.1.6",
 		"typescript": "^7.0.2",
