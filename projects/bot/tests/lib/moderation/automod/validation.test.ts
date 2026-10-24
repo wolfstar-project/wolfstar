@@ -101,14 +101,77 @@ describe('auto-moderation rules', () => {
 			const words = Array.from({ length: 250 }, (_, index) => `word${index}`);
 
 			expect(parseAutoModerationRulePatch('Words', { options: { words } }).errors).toEqual(['options.words: Expected at most 200 entries.']);
-			expect(parseAutoModerationRulePatch('Words', { options: { words } }, { words }).errors).toBeUndefined();
-			expect(parseAutoModerationRulePatch('Words', { options: { words: [...words, 'more'] } }, { words }).errors).toHaveLength(1);
-			expect(parseAutoModerationRulePatch('Words', { options: { words: words.slice(1) } }, { words }).errors).toBeUndefined();
+			expect(parseAutoModerationRulePatch('Words', { options: { words } }, { options: { words } }).errors).toBeUndefined();
+			expect(parseAutoModerationRulePatch('Words', { options: { words: [...words, 'more'] } }, { options: { words } }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Words', { options: { words: words.slice(1) } }, { options: { words } }).errors).toBeUndefined();
 		});
 
 		test('GIVEN some options THEN the others keep the value the rule has', () => {
-			const { data } = parseAutoModerationRulePatch('Capitals', { options: { maximum: 80 } }, { minimum: 30, maximum: 50 });
+			const { data } = parseAutoModerationRulePatch('Capitals', { options: { maximum: 80 } }, { options: { minimum: 30, maximum: 50 } });
 			expect(data?.options).toEqual({ minimum: 30, maximum: 80 });
+		});
+
+		describe('a Timeout', () => {
+			// Discord does not take a timeout with no end, so a rule like that would never act:
+			const message = 'hardActionDuration: Expected an integer between 1 and 2147483647, which a Timeout requires.';
+
+			test.each([
+				['a new rule that is a Timeout with no duration', { hardAction: 'Timeout' }, undefined],
+				['a new rule that is a Timeout with a duration of zero', { hardAction: 'Timeout', hardActionDuration: 0 }, undefined],
+				['a rule that becomes a Timeout and has no duration', { hardAction: 'Timeout' }, { hardAction: 'Ban', hardActionDuration: null }],
+				['a Timeout that loses its duration', { hardActionDuration: null }, { hardAction: 'Timeout', hardActionDuration: 60_000 } as const],
+				['a Timeout whose duration is set to zero', { hardActionDuration: 0 }, { hardAction: 'Timeout', hardActionDuration: 60_000 } as const]
+			] as const)('GIVEN %s THEN it is refused with one error about the duration', (_name, input, current) => {
+				const { data, errors } = parseAutoModerationRulePatch('Links', input, current);
+
+				expect(data).toBeUndefined();
+				expect(errors).toEqual([message]);
+			});
+
+			test('GIVEN a Timeout with a duration THEN it is accepted, given in the request or kept by the rule', () => {
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: 60_000 }).data).toEqual({
+					hardAction: 'Timeout',
+					hardActionDuration: 60_000
+				});
+				expect(
+					parseAutoModerationRulePatch('Links', { hardAction: 'Timeout' }, { hardAction: 'Ban', hardActionDuration: 60_000 }).data
+				).toEqual({
+					hardAction: 'Timeout'
+				});
+				expect(
+					parseAutoModerationRulePatch('Links', { hardActionDuration: 30_000 }, { hardAction: 'Timeout', hardActionDuration: 60_000 }).data
+				).toEqual({
+					hardActionDuration: 30_000
+				});
+			});
+
+			test('GIVEN a rule that is a Timeout with no duration WHEN it is edited in another way THEN it can be, as it can be saved', () => {
+				const current = { hardAction: 'Timeout', hardActionDuration: null } as const;
+
+				expect(parseAutoModerationRulePatch('Links', { enabled: false }, current).data).toEqual({ enabled: false });
+				expect(parseAutoModerationRulePatch('Links', { name: 'Renamed', softAction: 2 }, current).data).toEqual({
+					name: 'Renamed',
+					softAction: 2
+				});
+			});
+
+			test('GIVEN a hard action that is not valid THEN it only has its own error', () => {
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Explode' }).errors).toEqual([
+					expect.stringMatching(/^hardAction: Expected one of /)
+				]);
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: -5 }).errors).toEqual([
+					expect.stringMatching(/^hardActionDuration: Expected null or an integer/)
+				]);
+			});
+
+			test('GIVEN a hard action that is not a Timeout THEN it needs no duration', () => {
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Ban' }).data).toEqual({ hardAction: 'Ban' });
+				expect(
+					parseAutoModerationRulePatch('Links', { hardActionDuration: null }, { hardAction: 'Kick', hardActionDuration: 60_000 }).data
+				).toEqual({
+					hardActionDuration: null
+				});
+			});
 		});
 	});
 
