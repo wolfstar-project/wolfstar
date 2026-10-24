@@ -21,15 +21,14 @@ if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.OTEL_EXPORTER_OTLP_TR
  * @returns The SDK, which is shut down on `SIGTERM` to export the last spans.
  */
 export async function startTracing() {
-	const [{ NodeSDK }, { getNodeAutoInstrumentations, getResourceDetectors }, { BatchSpanProcessor }, { OTLPTraceExporter }] = await Promise.all([
+	const [{ NodeSDK }, { getNodeAutoInstrumentations, getResourceDetectors }, { BatchSpanProcessor }] = await Promise.all([
 		import('@opentelemetry/sdk-node'),
 		import('@opentelemetry/auto-instrumentations-node'),
-		import('@opentelemetry/sdk-trace'),
-		import('@opentelemetry/exporter-trace-otlp-proto')
+		import('@opentelemetry/sdk-trace')
 	]);
 
 	// The SDK only builds the exporter of the environment when it is given no span processor, so it is built here:
-	const spanProcessors = [new BatchSpanProcessor({ exporter: new OTLPTraceExporter() })];
+	const spanProcessors = [new BatchSpanProcessor({ exporter: await createEnvironmentSpanExporter() })];
 	const sentry = await createSentrySpanExporter(process.env.SENTRY_DSN);
 	if (sentry) spanProcessors.push(new BatchSpanProcessor({ exporter: sentry }));
 
@@ -40,6 +39,28 @@ export async function startTracing() {
 	process.on('SIGTERM', shutdown);
 	process.once('beforeExit', shutdown);
 	return sdk;
+}
+
+/**
+ * Creates the exporter the environment configures, Railway's: the endpoint, the headers and the protocol are read from
+ * the `OTEL_EXPORTER_OTLP_*` variables, and the protocol picks the exporter as the SDK does (`http/protobuf`, which
+ * Railway sets, when none is given, and with a warning when it is not one of the three).
+ */
+export async function createEnvironmentSpanExporter() {
+	const protocol = process.env.OTEL_EXPORTER_OTLP_TRACES_PROTOCOL || process.env.OTEL_EXPORTER_OTLP_PROTOCOL || 'http/protobuf';
+	switch (protocol) {
+		case 'grpc':
+			return new (await import('@opentelemetry/exporter-trace-otlp-grpc')).OTLPTraceExporter();
+		case 'http/json':
+			return new (await import('@opentelemetry/exporter-trace-otlp-http')).OTLPTraceExporter();
+		case 'http/protobuf':
+			return new (await import('@opentelemetry/exporter-trace-otlp-proto')).OTLPTraceExporter();
+		default: {
+			const { diag } = await import('@opentelemetry/api');
+			diag.warn(`Unsupported OTLP traces protocol: ${protocol}. Using http/protobuf.`);
+			return new (await import('@opentelemetry/exporter-trace-otlp-proto')).OTLPTraceExporter();
+		}
+	}
 }
 
 /**
