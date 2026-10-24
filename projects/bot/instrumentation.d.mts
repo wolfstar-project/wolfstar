@@ -4,12 +4,18 @@ import type { SpanExporter } from '@opentelemetry/sdk-trace';
 export declare function startTracing(): Promise<NodeSDK>;
 export declare function getInstrumentationConfig(dsn: string | undefined): {
 	'@opentelemetry/instrumentation-http': {
-		ignoreOutgoingRequestHook: (request: { hostname?: string | null; host?: string | null; path?: string | null }) => boolean;
+		ignoreOutgoingRequestHook: (request: {
+			hostname?: string | null;
+			host?: string | null;
+			path?: string | null;
+			headers?: Record<string, unknown> | null;
+		}) => boolean;
 	};
 	'@opentelemetry/instrumentation-undici': {
 		startSpanHook: (request: { origin: string; path: string }) => Record<string, string>;
 	};
 };
+export declare function isWebSocketHandshake(request: { headers?: Record<string, unknown> | null }): boolean;
 export declare function isSentryEnvelopeRequest(
 	request: { hostname?: string | null; host?: string | null; path?: string | null },
 	dsn: string | undefined

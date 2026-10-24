@@ -3,6 +3,7 @@ import {
 	createSentrySpanExporter,
 	getInstrumentationConfig,
 	isSentryEnvelopeRequest,
+	isWebSocketHandshake,
 	redactDiscordTokens
 } from '../instrumentation.mjs';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
@@ -305,4 +306,70 @@ describe('the preload on SIGTERM', () => {
 	test('GIVEN a process with no other handler THEN it ends as the signal ends it, once the spans are exported', async () => {
 		await expect(terminate('alone')).resolves.toBe('SIGTERM');
 	}, 10_000);
+});
+
+describe('the preload on a WebSocket', () => {
+	// The connection of the gateway lasts for hours, and the dispatches handled meanwhile ran in its context: every span of
+	// the bot ended up in one trace that never closed.
+	test('GIVEN the handshake of a WebSocket THEN it is not traced, and a regular request is', async () => {
+		const urls: string[] = [];
+		const receiver = createServer((request, response) => {
+			let body = '';
+			request.on('data', (chunk: Buffer) => (body += chunk.toString()));
+			request.on('end', () => {
+				const { resourceSpans } = JSON.parse(body) as {
+					resourceSpans: { scopeSpans: { spans: { attributes: { key: string; value: { stringValue?: string } }[] }[] }[] }[];
+				};
+				for (const span of resourceSpans.flatMap((resource) => resource.scopeSpans.flatMap((scope) => scope.spans))) {
+					const url = span.attributes.find((attribute) => attribute.key === 'url.full')?.value.stringValue;
+					if (url) urls.push(new URL(url).pathname + new URL(url).search);
+				}
+				response.writeHead(200, { 'Content-Type': 'application/json' }).end('{}');
+			});
+		});
+		await new Promise<void>((resolve) => receiver.listen(0, '127.0.0.1', resolve));
+		const { port } = receiver.address() as AddressInfo;
+
+		const child = spawn(
+			process.execPath,
+			['--import', new URL('../instrumentation.mjs', import.meta.url).href, new URL('mocks/websocketHandshake.mjs', import.meta.url).pathname],
+			{
+				env: {
+					...process.env,
+					OTEL_EXPORTER_OTLP_ENDPOINT: `http://127.0.0.1:${port}`,
+					OTEL_EXPORTER_OTLP_PROTOCOL: 'http/json',
+					OTEL_METRICS_EXPORTER: 'none',
+					OTEL_LOGS_EXPORTER: 'none',
+					OTEL_NODE_RESOURCE_DETECTORS: 'none',
+					OTEL_NODE_DISABLED_INSTRUMENTATIONS: 'net,dns',
+					SENTRY_DSN: ''
+				},
+				stdio: 'ignore'
+			}
+		);
+		// The child and the receiver are stopped whatever happens, before the timeout of the test:
+		const deadline = setTimeout(() => child.kill('SIGKILL'), 10_000);
+		let code: number | null;
+		try {
+			code = await new Promise<number | null>((resolve) => child.once('exit', resolve));
+		} finally {
+			clearTimeout(deadline);
+			await new Promise((resolve) => receiver.close(resolve));
+		}
+
+		expect(code).toBe(0);
+		expect(urls).toContain('/api/v10/gateway/bot');
+		expect(urls).not.toContain('/?v=10&encoding=json');
+	}, 15_000);
+});
+
+describe('isWebSocketHandshake', () => {
+	test.each([
+		['the handshake of `ws`', { headers: { Connection: 'Upgrade', Upgrade: 'websocket' } }, true],
+		['an upgrade header in lower case', { headers: { upgrade: 'WebSocket' } }, true],
+		['a regular request', { headers: { 'Content-Type': 'application/json' } }, false],
+		['a request with no headers', {}, false]
+	])('GIVEN %s THEN it is told apart from the other requests', (_name, request, expected) => {
+		expect(isWebSocketHandshake(request)).toBe(expected);
+	});
 });

@@ -70,12 +70,16 @@ export async function startTracing() {
  * The transport of Sentry sends each event with `https.request` and the key of the DSN in the query, so its requests
  * are not traced at all (`isSentryEnvelopeRequest`): their spans would hold the key and add a span to every error.
  *
+ * Nor is the handshake of a WebSocket (`isWebSocketHandshake`): the gateway of Discord opens its connection with one,
+ * through `ws`, and the connection lasts for hours. What the bot does with the dispatches it receives runs in the
+ * context of that request, so every span of the gateway ended up in one trace that never closed.
+ *
  * @param dsn - The DSN of Sentry, `SENTRY_DSN`.
  */
 export function getInstrumentationConfig(dsn) {
 	return {
 		'@opentelemetry/instrumentation-http': {
-			ignoreOutgoingRequestHook: (request) => isSentryEnvelopeRequest(request, dsn)
+			ignoreOutgoingRequestHook: (request) => isWebSocketHandshake(request) || isSentryEnvelopeRequest(request, dsn)
 		},
 		'@opentelemetry/instrumentation-undici': {
 			startSpanHook: (request) => {
@@ -85,6 +89,16 @@ export function getInstrumentationConfig(dsn) {
 			}
 		}
 	};
+}
+
+/**
+ * Whether a request of `http` or `https` opens a WebSocket: its `Upgrade` header asks for one, whatever its case.
+ *
+ * @param request - The options of the request, as `http.request` is given them.
+ */
+export function isWebSocketHandshake(request) {
+	const headers = request.headers ?? {};
+	return Object.entries(headers).some(([name, value]) => name.toLowerCase() === 'upgrade' && String(value).toLowerCase() === 'websocket');
 }
 
 /**
