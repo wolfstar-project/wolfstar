@@ -22,7 +22,7 @@
 		"typecheck": "stars typecheck",
 		"dev": "stars dev",
 		"clean": "node scripts/clean.mjs",
-		"start": "node --enable-source-maps --import ./instrumentation.mjs dist/main.mjs",
+		"start": "node --enable-source-maps --import @wolfstar/plugin-opentelemetry/preload dist/main.mjs",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"stars:info": "stars info"
@@ -35,13 +35,6 @@
 		"@discordjs/rest": "^2.6.3",
 		"@influxdata/influxdb-client": "^1.35.0",
 		"@opentelemetry/api": "^1.10.0",
-		"@opentelemetry/auto-instrumentations-node": "^0.82.0",
-		"@opentelemetry/exporter-trace-otlp-grpc": "^0.300.0",
-		"@opentelemetry/exporter-trace-otlp-http": "^0.300.0",
-		"@opentelemetry/exporter-trace-otlp-proto": "^0.300.0",
-		"@opentelemetry/instrumentation": "^0.300.0",
-		"@opentelemetry/sdk-node": "^0.300.0",
-		"@opentelemetry/sdk-trace": "^3.0.0",
 		"@sapphire/async-queue": "^1.5.5",
 		"@sapphire/bitfield": "^1.2.4",
 		"@sapphire/pieces": "^4.4.1",
@@ -62,6 +55,7 @@
 		"@wolfstar/plugin-gateway": "^0.16.0",
 		"@wolfstar/plugin-i18next": "^2.3.0",
 		"@wolfstar/plugin-logger": "^0.5.0",
+		"@wolfstar/plugin-opentelemetry": "^0.1.0",
 		"@wolfstar/plugin-scheduled-tasks": "^0.3.0",
 		"@wolfstar/plugin-sharder": "^0.3.0",
 		"@wolfstar/plugin-subcommands-advanced": "^2.3.0",
@@ -81,7 +75,6 @@
 		"wolfstar-shared": "workspace:^"
 	},
 	"devDependencies": {
-		"@opentelemetry/instrumentation-undici": "^0.34.0",
 		"@rollup/plugin-alias": "6.0.0",
 		"@wolfstar/i18next-type-generator": "^3.1.6",
 		"typescript": "^7.0.2",

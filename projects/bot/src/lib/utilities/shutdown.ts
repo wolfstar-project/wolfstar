@@ -1,6 +1,6 @@
-import { trace } from '@opentelemetry/api';
 import { container } from '@wolfstar/http-framework';
 import { Logger } from '@wolfstar/plugin-logger';
+import { flushTraces as flushPendingSpans } from '@wolfstar/plugin-opentelemetry';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 /**
@@ -27,21 +27,17 @@ export async function closeLogger() {
 }
 
 /**
- * Exports the spans the OpenTelemetry SDK (`instrumentation.mjs`) still holds: it sends them in batches, and the SDK
- * shuts down on `SIGTERM` by itself, but the process exits before that is done.
+ * Exports the spans the OpenTelemetry SDK still holds (`flushTraces` of `@wolfstar/plugin-opentelemetry`, whose preload
+ * the `start` script loads): it sends them in batches, and the SDK shuts down on `SIGTERM` by itself, but the process
+ * exits before that is done.
  *
  * @remarks
  *
- * It does nothing when the SDK did not start, since the tracer provider is then the no-op one, and it never throws.
+ * It does nothing when the SDK did not start, it never throws, and it waits {@linkcode TraceFlushTimeout} at most.
  */
 export async function flushTraces() {
-	// The global provider is a proxy, whose delegate is the one of the SDK:
-	const proxy = trace.getTracerProvider() as { getDelegate?: () => object };
-	const provider = (proxy.getDelegate?.() ?? proxy) as { forceFlush?: () => Promise<void> };
-	if (typeof provider.forceFlush !== 'function') return;
-
 	try {
-		await Promise.race([provider.forceFlush(), sleep(TraceFlushTimeout, undefined, { ref: false })]);
+		await Promise.race([flushPendingSpans(), sleep(TraceFlushTimeout, undefined, { ref: false })]);
 	} catch {
 		// Nothing to do about a span that cannot be exported while exiting.
 	}

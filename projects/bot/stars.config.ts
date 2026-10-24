@@ -30,7 +30,10 @@ export default defineConfig({
 		// The shared commands, listeners and locales, which `lib/setup/all.ts` used to import through `/register`:
 		'@wolfstar/shared-http-pieces/module',
 		// Creates `container.influx` and loads the shared Influx listeners when `INFLUX_ENABLED` is on and the credentials are set:
-		'@wolfstar/shared-influx-pieces/module'
+		'@wolfstar/shared-influx-pieces/module',
+		// A span for every command and handler (not autocomplete), the parent of the spans of what it runs. The SDK is
+		// started by the preload the `start` script loads, and without it the spans cost nothing:
+		'@wolfstar/plugin-opentelemetry/module'
 	],
 	tsdown: {
 		plugins: [alias({ entries: aliasEntries })],

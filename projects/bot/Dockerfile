@@ -84,11 +84,11 @@ FROM base AS runner
 ENV NODE_ENV="production"
 ENV NODE_OPTIONS="--enable-source-maps --max_old_space_size=4096"
 
-# The OpenTelemetry SDK (`projects/bot/instrumentation.mjs`) only starts when Railway sets an OTLP endpoint. Its receiver
-# takes traces only, so the metrics and the logs are not exported, and the cloud resource detectors (AWS, GCP, Azure,
-# Alibaba) are left out: each one asks a metadata endpoint that is not there. So are the spans of every TCP connection and
-# DNS lookup (`net`, `dns`), which the spans of the clients (`pg`, `ioredis`, `undici`) already cover. A variable of the
-# service overrides these.
+# The OpenTelemetry SDK (the preload of `@wolfstar/plugin-opentelemetry`) only starts when Railway sets an OTLP endpoint.
+# Its receiver takes traces only, so the metrics and the logs are not exported, and the cloud resource detectors (AWS,
+# GCP, Azure, Alibaba) are left out: each one asks a metadata endpoint that is not there. So are the spans of every TCP
+# connection and DNS lookup (`net`, `dns`), which the spans of the clients (`pg`, `ioredis`, `undici`) already cover. A
+# variable of the service overrides these.
 ENV OTEL_METRICS_EXPORTER="none"
 ENV OTEL_LOGS_EXPORTER="none"
 ENV OTEL_NODE_RESOURCE_DETECTORS="env,host,os,process,serviceinstance,container"
@@ -99,7 +99,6 @@ ENV OTEL_NODE_DISABLED_INSTRUMENTATIONS="net,dns"
 COPY --chown=node:node .env.schema .env.schema
 COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
-COPY --chown=node:node projects/bot/instrumentation.mjs projects/bot/instrumentation.mjs
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/shared/dist projects/shared/dist
 
