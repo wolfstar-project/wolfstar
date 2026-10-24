@@ -264,27 +264,6 @@ importers:
       '@opentelemetry/api':
         specifier: ^1.10.0
         version: 1.10.0
-      '@opentelemetry/auto-instrumentations-node':
-        specifier: ^0.82.0
-        version: 0.82.0(@opentelemetry/api@1.10.0)(@opentelemetry/core@3.0.0)(supports-color@7.2.0)
-      '@opentelemetry/exporter-trace-otlp-grpc':
-        specifier: ^0.300.0
-        version: 0.300.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/exporter-trace-otlp-http':
-        specifier: ^0.300.0
-        version: 0.300.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/exporter-trace-otlp-proto':
-        specifier: ^0.300.0
-        version: 0.300.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation':
-        specifier: ^0.300.0
-        version: 0.300.0(@opentelemetry/api@1.10.0)(supports-color@7.2.0)
-      '@opentelemetry/sdk-node':
-        specifier: ^0.300.0
-        version: 0.300.0(@opentelemetry/api@1.10.0)(supports-color@7.2.0)
-      '@opentelemetry/sdk-trace':
-        specifier: ^3.0.0
-        version: 3.0.0(@opentelemetry/api@1.10.0)
       '@sapphire/async-queue':
         specifier: ^1.5.5
         version: 1.5.5
@@ -345,6 +324,9 @@ importers:
       '@wolfstar/plugin-logger':
         specifier: ^0.5.0
         version: 0.5.0(@wolfstar/http-framework@6.5.1)(@wolfstar/kit@0.3.1)(consola@3.4.2)(evlog@2.33.0)
+      '@wolfstar/plugin-opentelemetry':
+        specifier: ^0.1.0
+        version: 0.1.0(@opentelemetry/api@1.10.0)(@opentelemetry/core@3.0.0)(@wolfstar/http-framework@6.5.1)(@wolfstar/kit@0.3.1)(supports-color@7.2.0)
       '@wolfstar/plugin-scheduled-tasks':
         specifier: ^0.3.0
         version: 0.3.0(@wolfstar/http-framework@6.5.1)(@wolfstar/kit@0.3.1)(ioredis@6.0.0)(pg@8.23.1)
@@ -397,9 +379,6 @@ importers:
         specifier: workspace:^
         version: link:../shared
     devDependencies:
-      '@opentelemetry/instrumentation-undici':
-        specifier: ^0.34.0
-        version: 0.34.0(@opentelemetry/api@1.10.0)(supports-color@7.2.0)
       '@rollup/plugin-alias':
         specifier: 6.0.0
         version: 6.0.0
@@ -3879,6 +3858,20 @@ packages:
       evlog:
         optional: true
       winston:
+        optional: true
+
+  '@wolfstar/plugin-opentelemetry@0.1.0':
+    resolution: {integrity: sha512-ia67uZBWevRS9ZHKp37xHroED04sfpS1UoWz6/zSyguonGk96stcATb6oyu6TigiN4Jd9WDfLqnHBMC/WXqX7g==}
+    engines: {node: '>=22.15.0'}
+    peerDependencies:
+      '@opentelemetry/api': ^1.10.0
+      '@wolfstar/http-framework': ^6.1.0
+      '@wolfstar/kit': ^0.2.0
+      '@wolfstar/schema': ^0.9.0
+    peerDependenciesMeta:
+      '@wolfstar/kit':
+        optional: true
+      '@wolfstar/schema':
         optional: true
 
   '@wolfstar/plugin-scheduled-tasks@0.3.0':
@@ -9435,7 +9428,7 @@ snapshots:
 
   '@types/pg-pool@2.0.7':
     dependencies:
-      '@types/pg': 8.20.4
+      '@types/pg': 8.15.6
 
   '@types/pg@8.15.6':
     dependencies:
@@ -9783,6 +9776,23 @@ snapshots:
       '@wolfstar/kit': 0.3.1(magicast@0.5.5)
       consola: 3.4.2
       evlog: 2.33.0(ofetch@1.5.1)(react@19.3.0)(vite@8.3.4)
+
+  '@wolfstar/plugin-opentelemetry@0.1.0(@opentelemetry/api@1.10.0)(@opentelemetry/core@3.0.0)(@wolfstar/http-framework@6.5.1)(@wolfstar/kit@0.3.1)(supports-color@7.2.0)':
+    dependencies:
+      '@opentelemetry/api': 1.10.0
+      '@opentelemetry/auto-instrumentations-node': 0.82.0(@opentelemetry/api@1.10.0)(@opentelemetry/core@3.0.0)(supports-color@7.2.0)
+      '@opentelemetry/exporter-trace-otlp-grpc': 0.300.0(@opentelemetry/api@1.10.0)
+      '@opentelemetry/exporter-trace-otlp-http': 0.300.0(@opentelemetry/api@1.10.0)
+      '@opentelemetry/exporter-trace-otlp-proto': 0.300.0(@opentelemetry/api@1.10.0)
+      '@opentelemetry/instrumentation': 0.300.0(@opentelemetry/api@1.10.0)(supports-color@7.2.0)
+      '@opentelemetry/sdk-node': 0.300.0(@opentelemetry/api@1.10.0)(supports-color@7.2.0)
+      '@opentelemetry/sdk-trace': 3.0.0(@opentelemetry/api@1.10.0)
+      '@wolfstar/http-framework': 6.5.1(acorn@8.18.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(vite@8.3.4)
+    optionalDependencies:
+      '@wolfstar/kit': 0.3.1(magicast@0.5.5)
+    transitivePeerDependencies:
+      - '@opentelemetry/core'
+      - supports-color
 
   '@wolfstar/plugin-scheduled-tasks@0.3.0(@wolfstar/http-framework@6.5.1)(@wolfstar/kit@0.3.1)(ioredis@6.0.0)(pg@8.23.1)':
     dependencies:
