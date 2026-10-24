@@ -6,6 +6,7 @@ import {
 	redactDiscordTokens
 } from '../instrumentation.mjs';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
+import { spawn } from 'node:child_process';
 import { Worker } from 'node:worker_threads';
 import { OTLPTraceExporter as GrpcTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import type { SpanExporter } from '@opentelemetry/sdk-trace';
@@ -259,4 +260,49 @@ describe('the preload in a worker thread', () => {
 
 		expect(started).toBe(false);
 	});
+});
+
+describe('the preload on SIGTERM', () => {
+	// The OTLP endpoint does not answer: the export fails at once, and nothing else keeps the process up.
+	const env = {
+		...process.env,
+		OTEL_EXPORTER_OTLP_ENDPOINT: 'http://127.0.0.1:1',
+		OTEL_METRICS_EXPORTER: 'none',
+		OTEL_LOGS_EXPORTER: 'none',
+		OTEL_NODE_RESOURCE_DETECTORS: 'none',
+		SENTRY_DSN: ''
+	};
+
+	function terminate(mode: string) {
+		const child = spawn(
+			process.execPath,
+			[
+				'--import',
+				new URL('../instrumentation.mjs', import.meta.url).href,
+				new URL('mocks/sigtermProcess.mjs', import.meta.url).pathname,
+				mode
+			],
+			{ env, stdio: ['ignore', 'pipe', 'ignore'] }
+		);
+
+		return new Promise<NodeJS.Signals | null>((resolve, reject) => {
+			const timer = setTimeout(() => {
+				child.kill('SIGKILL');
+				reject(new Error('The process is still running after SIGTERM.'));
+			}, 8000);
+			child.stdout.once('data', () => child.kill('SIGTERM'));
+			child.once('exit', (_code, signal) => {
+				clearTimeout(timer);
+				resolve(signal);
+			});
+		});
+	}
+
+	test('GIVEN a process whose other handler raises the signal again once nothing listens (the broker consumer of a worker) THEN it still ends', async () => {
+		await expect(terminate('broker')).resolves.toBe('SIGTERM');
+	}, 10_000);
+
+	test('GIVEN a process with no other handler THEN it ends as the signal ends it, once the spans are exported', async () => {
+		await expect(terminate('alone')).resolves.toBe('SIGTERM');
+	}, 10_000);
 });

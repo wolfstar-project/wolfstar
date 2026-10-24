@@ -23,7 +23,7 @@ if (isMainThread && (process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.OTEL
  * Starts the SDK with the automatic instrumentations, the W3C trace context propagator and an exporter for each place
  * the spans go to: Railway, configured by the environment, and Sentry, when `SENTRY_DSN` is set.
  *
- * @returns The SDK, which is shut down on `SIGTERM` to export the last spans.
+ * @returns The SDK, which is shut down on `SIGTERM` to export the last spans, without keeping the process from ending.
  */
 export async function startTracing() {
 	const [{ NodeSDK }, { getNodeAutoInstrumentations, getResourceDetectors }, { BatchSpanProcessor }] = await Promise.all([
@@ -45,8 +45,16 @@ export async function startTracing() {
 	sdk.start();
 
 	const shutdown = () => sdk.shutdown().catch(() => undefined);
-	process.on('SIGTERM', shutdown);
 	process.once('beforeExit', shutdown);
+	// A listener of `SIGTERM` keeps the process from ending on it, so this one is not left behind: the other handlers end
+	// the process (the gateway exits once it flushed, the broker consumer of a worker raises the signal again once
+	// nothing listens), and a process that has none ends as the signal would end it, once the spans are exported.
+	process.once('SIGTERM', () => {
+		const alone = process.listenerCount('SIGTERM') === 0;
+		void shutdown().finally(() => {
+			if (alone) process.kill(process.pid, 'SIGTERM');
+		});
+	});
 	return sdk;
 }
 
