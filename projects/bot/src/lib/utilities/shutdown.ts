@@ -36,7 +36,11 @@ export async function closeLogger() {
  * It does nothing when the SDK did not start, it never throws, and it waits {@linkcode TraceFlushTimeout} at most.
  */
 export async function flushTraces() {
-	await Promise.race([flushPendingSpans(), sleep(TraceFlushTimeout, undefined, { ref: false })]);
+	try {
+		await Promise.race([flushPendingSpans(), sleep(TraceFlushTimeout, undefined, { ref: false })]);
+	} catch {
+		// Nothing to do about a span that cannot be exported while exiting.
+	}
 }
 
 /**
