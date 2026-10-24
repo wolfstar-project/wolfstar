@@ -347,8 +347,15 @@ describe('the preload on a WebSocket', () => {
 				stdio: 'ignore'
 			}
 		);
-		const code = await new Promise<number | null>((resolve) => child.once('exit', resolve));
-		await new Promise((resolve) => receiver.close(resolve));
+		// The child and the receiver are stopped whatever happens, before the timeout of the test:
+		const deadline = setTimeout(() => child.kill('SIGKILL'), 10_000);
+		let code: number | null;
+		try {
+			code = await new Promise<number | null>((resolve) => child.once('exit', resolve));
+		} finally {
+			clearTimeout(deadline);
+			await new Promise((resolve) => receiver.close(resolve));
+		}
 
 		expect(code).toBe(0);
 		expect(urls).toContain('/api/v10/gateway/bot');
