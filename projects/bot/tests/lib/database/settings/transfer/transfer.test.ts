@@ -421,6 +421,17 @@ describe('configuration file', () => {
 				]);
 			});
 
+			test('GIVEN a Timeout with no duration THEN it is refused, even over a rule of the server that has one', async () => {
+				// The file replaces the rule with the defaults and its own fields, so the duration the rule has does not carry over:
+				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: 60_000 })];
+				const rule = { name: 'No links', type: 'Links', hardAction: 'Timeout' };
+
+				const issues = await parseIssues({ version: 1, automod: { rules: [rule] } }, rules);
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].hardActionDuration']);
+
+				await expect(parseOk({ version: 1, automod: { rules: [{ ...rule, hardActionDuration: 60_000 }] } }, rules)).resolves.toBeDefined();
+			});
+
 			describe('lists longer than the limit', () => {
 				const words = (length: number) => Array.from({ length }, (_, index) => `word${index}`);
 				const over = MaximumAutoModerationRuleListLength + 1;

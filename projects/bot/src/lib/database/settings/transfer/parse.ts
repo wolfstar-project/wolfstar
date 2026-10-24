@@ -288,12 +288,13 @@ function parseRule(entry: unknown, path: string, context: ParseConfigurationCont
 
 	// The patch reads the options on top of the ones it is given, and lets a list be as long as the one they have. The
 	// rule of the server is only there for that: an option the file leaves out takes its default, not the one of the
-	// server, so the options are given whole.
+	// server, so the options are given whole. The action is not given: the file replaces the rule with the defaults plus
+	// its own fields, so a Timeout is checked against the defaults and not against the action the rule of the server has.
 	const lower = trimmed.toLowerCase();
 	const current = context.rules.find((rule) => rule.type === type && rule.name.toLowerCase() === lower);
 	if (isRecord(entry.options)) fields.options = { ...getDefaultAutoModerationRuleOptions(type), ...entry.options };
 
-	const parsed = parseAutoModerationRulePatch(type, fields, current?.options);
+	const parsed = parseAutoModerationRulePatch(type, fields, { options: current?.options });
 	if (parsed.errors) {
 		report(parsed.errors);
 		return null;
