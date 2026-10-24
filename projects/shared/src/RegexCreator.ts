@@ -5,7 +5,9 @@ export const kWordEndBoundary = String.raw`(?=$|\W)`;
 export const kWordBoundaryWildcard = '*';
 export const kWordReplacer = /.(?=(.)?)/g;
 export const kRegExpSymbols = /[-/\\^$*+?.()|[\]{}]/;
-export const kPatternGroupReplacer = /\[([^\]]+)\](?=(.)?)/g;
+// A group holds no `[`, so a match that fails stops at the next one: with `[^\]]+`, a word of brackets that never close
+// was read again from each of them, which takes the square of its length.
+export const kPatternGroupReplacer = /\[([^\][]+)\](?=(.)?)/g;
 export const kGroupRangeReplacer = /(.)-(.)/g;
 
 export enum WordBoundary {

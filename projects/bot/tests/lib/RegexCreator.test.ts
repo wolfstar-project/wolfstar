@@ -88,6 +88,22 @@ describe('RegexCreator', () => {
 	});
 
 	describe('processWordPatternsWithGroups', () => {
+		// The words of a rule come from the members of a server and the API: a group that never closes must cost what its
+		// length costs, not its square.
+		test('GIVEN brackets that never close THEN it takes linear time', () => {
+			const word = '['.repeat(100_000);
+
+			const start = performance.now();
+			const pattern = processWordPatternsWithGroups(word);
+
+			expect(performance.now() - start).toBeLessThan(1000);
+			expect(pattern.startsWith('\\[+')).toBe(true);
+		});
+
+		test('GIVEN a bracket inside a group THEN the group starts at the last one', () => {
+			expect(processWordPatternsWithGroups('[a[bc]')).toStrictEqual(`${processWordPattern('[a')}\\W*[bc]+`);
+		});
+
 		test('GIVEN a THEN returns a+', () => {
 			expect(processWordPatternsWithGroups('a')).toStrictEqual('a+');
 		});
