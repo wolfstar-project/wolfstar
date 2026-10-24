@@ -38,7 +38,7 @@ export async function startTracing() {
 	if (sentry) spanProcessors.push(new BatchSpanProcessor({ exporter: sentry }));
 
 	const sdk = new NodeSDK({
-		instrumentations: getNodeAutoInstrumentations(getInstrumentationConfig()),
+		instrumentations: getNodeAutoInstrumentations(getInstrumentationConfig(process.env.SENTRY_DSN)),
 		resourceDetectors: getResourceDetectors(),
 		spanProcessors
 	});
@@ -53,12 +53,22 @@ export async function startTracing() {
 /**
  * The configuration of the automatic instrumentations that differs from their defaults.
  *
- * @remarks The URL of a request to a webhook of Discord holds its token, and so does the answer to an interaction: the
- * logs sent through the webhook of their channel, and the follow-ups of a command, would put a token that lets anybody
- * post there in every span of `undici`, which go to Railway and to Sentry. The token is replaced before the span starts.
+ * @remarks
+ *
+ * The URL of a request to a webhook of Discord holds its token, and so does the answer to an interaction: the logs sent
+ * through the webhook of their channel, and the follow-ups of a command, would put a token that lets anybody post there
+ * in every span of `undici`, which go to Railway and to Sentry. The token is replaced before the span starts.
+ *
+ * The transport of Sentry sends each event with `https.request` and the key of the DSN in the query, so its requests
+ * are not traced at all (`isSentryEnvelopeRequest`): their spans would hold the key and add a span to every error.
+ *
+ * @param dsn - The DSN of Sentry, `SENTRY_DSN`.
  */
-export function getInstrumentationConfig() {
+export function getInstrumentationConfig(dsn) {
 	return {
+		'@opentelemetry/instrumentation-http': {
+			ignoreOutgoingRequestHook: (request) => isSentryEnvelopeRequest(request, dsn)
+		},
 		'@opentelemetry/instrumentation-undici': {
 			startSpanHook: (request) => {
 				const url = new URL(request.path, request.origin);
@@ -67,6 +77,27 @@ export function getInstrumentationConfig() {
 			}
 		}
 	};
+}
+
+/**
+ * Whether a request of `http` or `https` is one the transport of Sentry sends an event with: to the host of the DSN,
+ * on the path of an envelope (`/api/<project>/envelope/`).
+ *
+ * @param request - The options of the request, as `http.request` is given them.
+ * @param dsn - The DSN of Sentry.
+ */
+export function isSentryEnvelopeRequest(request, dsn) {
+	if (!dsn) return false;
+
+	let hostname;
+	try {
+		({ hostname } = new URL(dsn));
+	} catch {
+		return false;
+	}
+
+	const host = request.hostname ?? request.host?.replace(/:\d+$/, '');
+	return host === hostname && /^\/api\/\d+\/envelope\//.test(request.path ?? '');
 }
 
 /**

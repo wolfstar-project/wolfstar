@@ -1,4 +1,10 @@
-import { createEnvironmentSpanExporter, createSentrySpanExporter, getInstrumentationConfig, redactDiscordTokens } from '../instrumentation.mjs';
+import {
+	createEnvironmentSpanExporter,
+	createSentrySpanExporter,
+	getInstrumentationConfig,
+	isSentryEnvelopeRequest,
+	redactDiscordTokens
+} from '../instrumentation.mjs';
 import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
 import { Worker } from 'node:worker_threads';
 import { OTLPTraceExporter as GrpcTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
@@ -166,7 +172,7 @@ describe('redactDiscordTokens', () => {
 describe('the instrumentation of undici', () => {
 	const exporter = new InMemorySpanExporter();
 	const provider = new TracerProvider({ spanProcessors: [new SimpleSpanProcessor({ exporter })] });
-	const instrumentation = new UndiciInstrumentation(getInstrumentationConfig()['@opentelemetry/instrumentation-undici']);
+	const instrumentation = new UndiciInstrumentation(getInstrumentationConfig(undefined)['@opentelemetry/instrumentation-undici']);
 	let server: Server;
 	let port: number;
 
@@ -197,6 +203,32 @@ describe('the instrumentation of undici', () => {
 		expect(JSON.stringify(spans[0].attributes)).not.toContain('secret-token');
 		expect(spans[0].attributes['url.path']).toBe('/api/v10/webhooks/1/REDACTED');
 		expect(spans[0].attributes['url.full']).toBe(`http://127.0.0.1:${port}/api/v10/webhooks/1/REDACTED?wait=true`);
+	});
+});
+
+describe('isSentryEnvelopeRequest', () => {
+	const dsn = 'https://publickey@o0.ingest.sentry.io/42';
+
+	// What the transport of Sentry gives `https.request`, its key in the query:
+	test.each([
+		['the envelope of Sentry', { hostname: 'o0.ingest.sentry.io', path: '/api/42/envelope/?sentry_version=7&sentry_key=publickey' }, true],
+		['the envelope with the port in the host', { host: 'o0.ingest.sentry.io:443', path: '/api/42/envelope/?sentry_key=publickey' }, true],
+		['another request to the host of Sentry', { hostname: 'o0.ingest.sentry.io', path: '/api/42/security/' }, false],
+		['another host with the same path', { hostname: 'influx.example.com', path: '/api/42/envelope/' }, false]
+	])('GIVEN %s THEN it is told apart from the other requests', (_name, request, expected) => {
+		expect(isSentryEnvelopeRequest(request, dsn)).toBe(expected);
+	});
+
+	test('GIVEN no DSN, or one that cannot be read THEN no request is one of Sentry', () => {
+		const request = { hostname: 'o0.ingest.sentry.io', path: '/api/42/envelope/' };
+		expect(isSentryEnvelopeRequest(request, undefined)).toBe(false);
+		expect(isSentryEnvelopeRequest(request, 'not a dsn')).toBe(false);
+	});
+
+	test('GIVEN the configuration of the instrumentations THEN the http one leaves the transport of Sentry out', () => {
+		const { ignoreOutgoingRequestHook } = getInstrumentationConfig(dsn)['@opentelemetry/instrumentation-http'];
+		expect(ignoreOutgoingRequestHook({ hostname: 'o0.ingest.sentry.io', path: '/api/42/envelope/?sentry_key=publickey' })).toBe(true);
+		expect(ignoreOutgoingRequestHook({ hostname: 'influx.example.com', path: '/api/v2/write' })).toBe(false);
 	});
 });
 
