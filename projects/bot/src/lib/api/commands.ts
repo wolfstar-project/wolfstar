@@ -191,8 +191,10 @@ function getEntryExamples(examples: readonly string[], path: CommandPath): strin
 }
 
 /**
- * Reads the preconditions the piece of a subcommand requires besides the ones of its command: the ones of its
- * `preconditions` option, and the level `RequiresCommandPermissionLevel` requires to run it.
+ * Reads the preconditions the piece of a subcommand requires besides the ones of its command: the level
+ * `RequiresCommandPermissionLevel` requires to run it. The `preconditions` option of the piece is not listed:
+ * `@wolfstar/plugin-subcommands-advanced` runs its `chatInputRun` for the command and never checks it, only the option of
+ * the command is.
  *
  * @param parent - The name of the command, by which `@wolfstar/plugin-subcommands-advanced` registers its subcommands.
  * @param names - The names of the subcommand under the command, none for the command itself.
@@ -204,10 +206,8 @@ function getSubcommandPreconditions(parent: string, names: readonly string[]): r
 		names.length === 1 ? subCommandsRegistry.get(parent)?.get(names[0]) : subCommandsGroupRegistry.get(parent)?.get(names[0])?.get(names[1]);
 	if (entry === undefined) return [];
 
-	const piece = entry.commandPiece;
-	const level = getRequiredCommandPermissionLevel(piece);
-	const own = getPreconditionEntries(piece.options.preconditions);
-	return level === null ? own : [...own, CommandPermissionLevelPreconditions[level]];
+	const level = getRequiredCommandPermissionLevel(entry.commandPiece);
+	return level === null ? [] : [CommandPermissionLevelPreconditions[level]];
 }
 
 function appendPreconditions(

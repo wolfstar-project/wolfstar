@@ -215,8 +215,17 @@ describe('getCommandEntries', () => {
 		]);
 	});
 
-	test('GIVEN the piece of a grouped subcommand with preconditions THEN its entry adds them to the ones of the command', () => {
-		const piece = { options: { preconditions: [{ name: 'cooldown', context: { delay: 5000 } }] } };
+	test('GIVEN the piece of a grouped subcommand that requires a level THEN its entry adds it, and not the option nothing checks', () => {
+		// The plugin runs `chatInputRun` of the piece for the command, so its own `preconditions` option is never checked:
+		class RuleEdit {
+			public readonly options = { preconditions: [{ name: 'cooldown', context: { delay: 5000 } }] };
+			public chatInputRun() {
+				return null;
+			}
+		}
+		const descriptor = Object.getOwnPropertyDescriptor(RuleEdit.prototype, 'chatInputRun')!;
+		RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)(RuleEdit.prototype, 'chatInputRun', descriptor);
+		const piece = new RuleEdit();
 		subCommandsGroupRegistry.set(
 			'automod',
 			new Collection([['rule', new Collection([['edit', { commandPiece: piece, methodName: 'edit', slashCommand: null }]])]]) as never
@@ -243,7 +252,7 @@ describe('getCommandEntries', () => {
 		expect(entry.preconditions).toEqual({
 			entries: [
 				{ name: 'administrator', context: {} },
-				{ name: 'cooldown', context: { delay: 5000 } }
+				{ name: 'moderator', context: {} }
 			],
 			mode: 1,
 			runCondition: 0
