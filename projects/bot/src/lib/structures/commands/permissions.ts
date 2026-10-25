@@ -87,6 +87,11 @@ export async function getCommandPermissionDenial(interaction: GuildChatInputInte
 }
 
 /**
+ * The levels {@linkcode RequiresCommandPermissionLevel} requires to run `chatInputRun`, by the prototype it decorates.
+ */
+const ChatInputPermissionLevels = new WeakMap<object, CommandPermissionLevel>();
+
+/**
  * Decorator that only runs the decorated method when the author of the interaction is allowed to run a command of the
  * given level, see {@linkcode hasCommandPermissionLevel}. Otherwise, the author gets an ephemeral reply with the
  * localized reason and the method is skipped.
@@ -111,9 +116,32 @@ export async function getCommandPermissionDenial(interaction: GuildChatInputInte
  * ```
  */
 export function RequiresCommandPermissionLevel(level: CommandPermissionLevel): MethodDecorator {
-	return createFunctionPrecondition(
+	const decorator = createFunctionPrecondition(
 		(interaction: GuildChatInputInteraction) => hasCommandPermissionLevel(interaction, level),
 		(interaction: GuildChatInputInteraction) =>
 			interaction.reply({ content: getCommandPermissionDenialMessage(interaction, level), flags: MessageFlags.Ephemeral })
 	);
+
+	return (target, propertyKey, descriptor) => {
+		if (propertyKey === 'chatInputRun') ChatInputPermissionLevels.set(target, level);
+		return decorator(target, propertyKey, descriptor);
+	};
+}
+
+/**
+ * Reads the level {@linkcode RequiresCommandPermissionLevel} requires to run the chat input method of a command piece,
+ * which `GET /commands` lists for a subcommand.
+ *
+ * @param piece - The command piece, of a command or of a subcommand.
+ * @returns The level, `null` when its `chatInputRun` requires none.
+ */
+export function getRequiredCommandPermissionLevel(piece: object): CommandPermissionLevel | null {
+	for (let prototype: object | null = Object.getPrototypeOf(piece); prototype !== null; prototype = Object.getPrototypeOf(prototype)) {
+		const level = ChatInputPermissionLevels.get(prototype);
+		if (level !== undefined) return level;
+		// A `chatInputRun` that is not decorated replaces the one of the class it extends:
+		if (Object.hasOwn(prototype, 'chatInputRun')) return null;
+	}
+
+	return null;
 }
