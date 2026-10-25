@@ -1,0 +1,199 @@
+{
+	"/archive": {
+		"extendedHelp": "Saves the messages a member sent in the last 14 days in a history the moderators can read again later, as a text file. I read the latest messages of the 50 channels with the newest messages I can see, and keep up to 200 messages of the member, with the links of their attachments.\nA history can be saved for a case, and `/ban add`, `/softban` and `/kick` save one before the messages are deleted when their `archive` option is on.",
+		"examples": ["create user:@Pete", "create user:@Pete case:42", "list user:@Pete"],
+		"reminder": "A history is kept for two years, and a server keeps up to 100 of them: the oldest one goes when another one is saved."
+	},
+	"/autodelete": {
+		"extendedHelp": "Deletes the messages sent in a channel, as soon as they are sent or a delay after, so the channel only keeps what it is for. The options choose what stays: the messages with links, invites, images, mentions or embeds, or the ones that are only text.\nThe messages of bots and webhooks stay unless `bots` is on, and so does a message that is pinned before its delay ends. Up to 25 channels of a server can have their messages deleted.",
+		"examples": ["enable channel:#selfies images:true", "enable channel:#counting delay:10m", "disable channel:#selfies"],
+		"reminder": "The delay is 24 hours at most. Running `enable` again in a channel replaces what it was set to."
+	},
+	"/automessage": {
+		"extendedHelp": "Sends a message in a channel again and again, every interval from 10 minutes to 14 days, such as the rules or a reminder. After `enable` you write the message in a form, which opens with the message the channel already gets, so running it again edits it.\nWhen the last message of the channel is still the one I sent, I skip it, so a quiet channel does not fill up with it. A server can have up to 10 of them, one per channel.",
+		"examples": ["enable channel:#general interval:6h", "enable channel:#events interval:1d mentions:true", "disable channel:#general"],
+		"reminder": "The mentions of the message do not ping anybody unless `mentions` is on."
+	},
+	"/automod": {
+		"extendedHelp": "Manages the auto-moderation rules of the server: up to 25 named rules, several of the same type if you want, each with its own options, actions, threshold and exempt roles and channels. A rule looks for something in the messages (spam, mentions, invites, links, words, capitals and more), and a message that infringes it can be deleted, alerted in the channel and logged.\nA member who reaches the threshold of a rule gets its punishment, which can grow each time they reach it again. `list` and `show` open a panel that edits all of it with buttons.",
+		"examples": [
+			"create name:No invites type:Invites",
+			"add rule:Bad words value:example",
+			"edit rule:No invites punishment:Timeout punishment-duration:1h threshold:3",
+			"ignore rule:No invites channel:#partners"
+		],
+		"reminder": "A message is held to the first enabled rule of each type it infringes, so the order of the rules of a type decides the punishment. `add` and `remove` edit the list of a rule: its words, or the links and the invites it allows."
+	},
+	"/autopurge": {
+		"extendedHelp": "Purges a channel every interval, from 5 minutes to 14 days, of every message or of the ones a filter looks for: the messages of a user, of bots or of humans, the ones with links, invites, images, mentions or embeds, the ones that are only text, or the ones that contain, do not contain, start or end with a text.\nThe pinned messages are never deleted, and neither are the ones older than 14 days, which Discord does not delete in bulk. Up to 10 channels of a server can be purged.",
+		"examples": [
+			"enable channel:#memes interval:1d",
+			"enable channel:#bot-commands interval:6h filter:Messages of bots",
+			"enable channel:#trades interval:12h filter:Messages that contain a text value:WTS"
+		],
+		"reminder": "The filters of a user or of a text need `value`. Running `enable` again in a channel replaces its purge, and the first purge is one interval after it."
+	},
+	"/ban": {
+		"extendedHelp": "Bans a member, or unbans a user, as a case of the moderation log. A ban can last a `duration` and be lifted by itself when it ends, delete up to 7 days of the messages of the member (`delete-days`) and save them first (`archive`).\nThis needs **{{BanMembers, permissions}}**, and I only ban the members whose highest role is below mine, never the owner of the server.",
+		"examples": [
+			"add user:@Pete reason:Spamming in every channel",
+			"add user:@Pete duration:7d delete-days:1",
+			"remove user:@Pete reason:The appeal was accepted"
+		],
+		"reminder": "The `reason` can be the alias of a predefined reason of `/reasons`."
+	},
+	"/case": {
+		"extendedHelp": "Reads and edits the cases of the moderation log. `view` shows a case, `list` lists them (of a user, of a type, only the ones in course, or as an overview), and `edit` changes the reason or the duration of a case.\n`archive` keeps a case but stops counting it, as a warning or as a recent case, and `delete` removes it for good, with the end that was scheduled for it.",
+		"examples": ["view case:42", "list user:@Pete type:Warning", "edit case:42 reason:Spam in the help channel duration:2d"]
+	},
+	"/commands": {
+		"extendedHelp": "Opens the commands menu: every command and subcommand you can run, five to a page, with a search and their categories. The administrators edit a command from there: they disable it in the server, or choose the channels and the roles it runs in or ignores.\n`/settings` and `/commands` can never be disabled, so the commands can always be turned back on.",
+		"examples": ["", "command:ban"],
+		"reminder": "The administrators are not held to the channels and the roles a command is restricted to."
+	},
+	"/dehoist": {
+		"extendedHelp": "Cleans the names of every member who hoists themselves to the top of the member list with a character such as `!` or `.` at the start of their nickname, by replacing it. The progress is shown as it goes, only to you.",
+		"reminder": "This needs **{{ManageNicknames, permissions}}**, and I only rename the members whose highest role is below mine. To clean the names as the members join or rename themselves, turn `moderation.dehoist` on in `/settings server`."
+	},
+	"/honeypot": {
+		"extendedHelp": "Sets up a honeypot: a channel no member has a reason to write in, so whoever writes there is a spam bot or a hacked account. Their message is deleted and they are kicked, softbanned (the default) or banned, as a case of the moderation log, which for the last two deletes what they sent in the last hour; every catch is reported to the `logs` channel.\n`setup` creates the channel at the top of the list when you do not give one, and I can keep a warning in it, rename it every day and post in it so it does not look abandoned.",
+		"examples": ["setup", "setup channel:#do-not-post action:Ban logs:#mod-logs", "edit random-name:true keep-active:true"],
+		"reminder": "The moderators are never caught, and the messages a spam bot sends in a row make one case."
+	},
+	"/kick": {
+		"extendedHelp": "Kicks a member out of the server, as a case of the moderation log: they can join again with an invite. Their recent messages can be saved first with `archive`.\nThis needs **{{KickMembers, permissions}}**, and I only kick the members whose highest role is below mine, never the owner of the server.",
+		"examples": ["user:@Pete reason:Rude to the other members", "user:@Pete archive:true"],
+		"reminder": "The `reason` can be the alias of a predefined reason of `/reasons`."
+	},
+	"/lockdown": {
+		"extendedHelp": "Locks a channel, a thread or the whole server for a role, `@everyone` unless you choose one, so it cannot write there (nor create threads, nor connect to a voice channel), and unlocks it. Unlocking gives the role back the permissions it had in the channel before.\nA lockdown can last a `duration`, from 30 seconds to a month, and lift itself when it ends, even after I restart.",
+		"examples": ["action:lock", "action:lock channel:#general duration:10m", "action:unlock channel:#general", "action:lock global:true"],
+		"reminder": "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel."
+	},
+	"/mute": {
+		"extendedHelp": "Mutes a member: they lose their roles and get the muted role, which keeps them from writing in the channels and from joining the voice channels, and they get their roles back when they are unmuted. A mute can last a `duration` and be lifted by itself when it ends, and the muted role is given back when they leave and join the server again.\n`create` prepares the mute system: it creates the muted role, or uses the one you give, and sets it up in every channel.",
+		"examples": ["add user:@Pete duration:1h reason:Spamming", "remove user:@Pete", "create"],
+		"reminder": "This needs **{{ManageRoles, permissions}}**. When the muted role is not set up yet, an administrator who runs the command is asked to pick or create one, and the mute is made once it is ready."
+	},
+	"/note": {
+		"extendedHelp": "Adds a note to a member: a case of the moderation log that is not a punishment. The member is never told about it, whatever the settings of the direct messages say, and it does not count as a warning.\nIt has nothing to undo, but it can be edited and archived like any other case.",
+		"examples": ["user:@Pete reason:Was told in the chat to stop spamming"]
+	},
+	"/permission-nodes": {
+		"extendedHelp": "Manages the permission nodes of the server: overrides that allow or deny a command to a member or to a role. The command is one command, a category (`Moderation.*`), a sub-category (`Moderation.Utilities.*`) or `*` for every command, and the node of a member is read before the ones of their roles.\n`show` lists all of them, or the ones of a member or of a role.",
+		"examples": [
+			"add target:@Helpers type:allow command:warn",
+			"add target:@Pete type:deny command:Moderation.*",
+			"show target:@Helpers",
+			"reset target:@Pete"
+		]
+	},
+	"/permissions": {
+		"extendedHelp": "Lists the permissions a member has in the server, which tells what a set of roles gives. It lists the permissions of the moderation, and every other one with `list-all`, while `list-missing` adds the ones they do not have.\nIt is also in the Apps menu of a member, as `Inspect Permissions`.",
+		"examples": ["user:@Pete", "user:@Pete list-all:true list-missing:true"]
+	},
+	"/prune": {
+		"extendedHelp": "Deletes the latest messages of the channel, up to `amount`: all of them with `any`, or the ones a subcommand looks for (the ones of a user, of bots or of humans, with attachments, images, links, invites, mentions or embeds, the pinned ones, mine, the ones newer than an `age`, or the ones that include, start or end with a text or match a regular expression).\n`any` takes the options of every other subcommand, to combine their filters, and every subcommand can stop at the messages `before` or `after` another one.",
+		"examples": ["any amount:50", "bots amount:20", "author amount:100 user:@Pete", "any amount:200 links:true invites:true"],
+		"reminder": "Discord does not let bots delete the messages older than 14 days. The pinned messages stay, but with the `pins` subcommand or the `pins` option of `any`, and `silent` skips the message that tells how many were deleted."
+	},
+	"/reasons": {
+		"extendedHelp": "Manages the predefined reasons of the server: up to 25 reasons, each with a short alias. The `reason` option of every moderation command suggests them as you write, and takes an alias, in any case, in place of the reason it stands for.",
+		"examples": ["add alias:r1 reason:Spamming or flooding the channels", "remove alias:r1", "list"]
+	},
+	"/report": {
+		"extendedHelp": "Reports a member to the moderators of the server, with what they did. The report is sent to the channel of the reports, where the moderators can warn, time out, kick, mute, softban or ban the member, delete the message, or dismiss the report.\nIt is also in the Apps menu, as `Report Message` and `Report User`, which ask for the reason in a form.",
+		"examples": ["user:@Pete reason:Sent me scam links in direct messages"],
+		"reminder": "You can send a report once a minute, and a message can be reported once a day. When the server wants it, you are told in a direct message when your report is closed."
+	},
+	"/reports": {
+		"extendedHelp": "Manages the reports of the server: `history` lists the latest ones, of everybody or about a user, and `block` stops a member from sending reports, which `unblock` undoes.",
+		"examples": ["history", "history user:@Pete", "block user:@Pete"]
+	},
+	"/restrict": {
+		"extendedHelp": "Restricts a member from a feature in every channel: sending attachments, sending embeds, using external emojis, reacting, or joining the voice channels. Each restriction is a role I set up in every channel, which is given back when they leave and join the server again.\nA restriction can last a `duration` and be lifted by itself when it ends, and `/unrestrict` lifts it before.",
+		"examples": ["attachment user:@Pete duration:1d reason:Posting unsafe images", "reaction user:@Pete"],
+		"reminder": "This needs **{{ManageRoles, permissions}}**. The emoji restriction only stops the external emojis: the ones of the server and the standard ones can still be used."
+	},
+	"/role": {
+		"extendedHelp": "Gives a role to a member, or takes it away, as a case of the moderation log. With a `duration`, the change is undone by itself when it ends.",
+		"examples": ["add user:@Pete role:@Verified", "add user:@Pete role:@Event duration:1d", "remove user:@Pete role:@Verified"],
+		"reminder": "This needs **{{ManageRoles, permissions}}**, and the role has to be below my highest role."
+	},
+	"/role-rules": {
+		"extendedHelp": "Keeps a role in sync with the other roles of the members: the role is given to a member who has every `requires` role, one of the `any-of` ones when there are some, and none of the `without` ones, and it is taken away when they stop meeting the rule. A server can have up to 10 rules, and I only give and take the roles I can manage.",
+		"examples": [
+			"add role:@Gamer requires:@Verified any-of:@Minecraft any-of-2:@Fortnite",
+			"add role:@Newcomer without:@Verified",
+			"remove role:@Newcomer"
+		],
+		"reminder": "A rule applies the next time the roles of a member change: the members are not checked when it is added. A rule cannot ask for its own role, nor for the role of another rule."
+	},
+	"/roles": {
+		"extendedHelp": "Lists the public roles of the server, the ones every member can give themselves, and claims or gives up one of them. `browse` opens a menu of every role of the server, to see what each one is and what it can do.",
+		"examples": ["list", "claim role:@Announcements", "unclaim role:@Announcements"],
+		"reminder": "The administrators choose the public roles with `roles.public` in `/settings server`."
+	},
+	"/setnickname": {
+		"extendedHelp": "Changes the nickname of a member, or removes it when you leave `nickname` empty, as a case of the moderation log. A nickname can last a `duration` and be undone by itself when it ends.\nWith `sticky`, the nickname is set again when they leave and join the server back, until a moderator changes it without `sticky` or removes it.",
+		"examples": ["user:@Pete nickname:Pete", "user:@Pete nickname:Read the rules sticky:true", "user:@Pete"],
+		"reminder": "This needs **{{ManageNicknames, permissions}}**, and I only rename the members whose highest role is below mine, never the owner of the server."
+	},
+	"/settings": {
+		"extendedHelp": "Opens a settings menu. `server` is the menu of the settings of the server, for the administrators and a quick alternative to the [dashboard](https://wolfstar.rocks): the logs, the moderation, the roles, the auto-moderation and the rest, with an export and an import of the settings as a file.\n`user` is your own settings, the same in every server, such as whether I send you the direct messages of the moderation.",
+		"examples": ["server", "user"],
+		"reminder": "A menu closes 15 minutes after it was last used: run the command again to open it."
+	},
+	"/slowmode": {
+		"extendedHelp": "Sets the slowmode of the channel: how long each member waits between two messages, from 0 to 6 hours. `0` or `reset` turns it off.",
+		"examples": ["duration:10s", "duration:5m", "duration:reset"],
+		"reminder": "This needs **{{ManageChannels, permissions}}**."
+	},
+	"/softban": {
+		"extendedHelp": "Bans a member and unbans them at once, which deletes their messages of the last days (`delete-days`, up to 7) in every channel: it is a kick that also cleans up after them. Their messages can be saved first with `archive`.",
+		"examples": ["user:@Pete delete-days:1 reason:Spam bot", "user:@Pete archive:true"],
+		"reminder": "This needs **{{BanMembers, permissions}}**, and I only softban the members whose highest role is below mine, never the owner of the server."
+	},
+	"/sticky-nickname": {
+		"extendedHelp": "Shows the sticky nickname of a member: the nickname `/setnickname` set with `sticky`, which is set again when they leave and join the server back.",
+		"examples": ["user:@Pete"]
+	},
+	"/sticky-roles": {
+		"extendedHelp": "Manages the sticky roles of a member: the roles they get back when they leave and join the server again. `show` lists them, `add` and `remove` change them, and `reset` removes all of them.",
+		"examples": ["add user:@Pete role:@Veteran", "show user:@Pete", "reset user:@Pete"],
+		"reminder": "The muted role and the roles of a restriction are given back by themselves while the action is in course."
+	},
+	"/timeout": {
+		"extendedHelp": "Times out a member with the timeout of Discord, as a case of the moderation log: they cannot write, react nor talk until it ends, 28 days later at most. `remove` lifts it before.",
+		"examples": ["add user:@Pete duration:10m reason:Flooding the chat", "remove user:@Pete"],
+		"reminder": "This needs **{{ModerateMembers, permissions}}**, and I only time out the members whose highest role is below mine. With `moderation.track-timeouts`, the timeouts given from Discord are cases too."
+	},
+	"/unrestrict": {
+		"extendedHelp": "Lifts a restriction of `/restrict` from a member before it ends: the attachments, the embeds, the external emojis, the reactions or the voice channels are theirs again.",
+		"examples": ["attachment user:@Pete", "voice user:@Pete reason:The restriction was a mistake"]
+	},
+	"/vmute": {
+		"extendedHelp": "Mutes the microphone of a member in every voice channel, with the server mute of Discord, as a case of the moderation log. A voice mute can last a `duration` and be lifted by itself when it ends.\nIt is given back when the member leaves and joins the server again, as soon as they connect to a voice channel.",
+		"examples": ["add user:@Pete duration:30m reason:Playing loud noises", "remove user:@Pete"],
+		"reminder": "This needs **{{MuteMembers, permissions}}**."
+	},
+	"/voicekick": {
+		"extendedHelp": "Disconnects a member from the voice channel they are in, as a case of the moderation log. They can connect again right after.",
+		"examples": ["user:@Pete reason:Playing loud music"],
+		"reminder": "This needs **{{MoveMembers, permissions}}**."
+	},
+	"/warn": {
+		"extendedHelp": "Files a formal warning to a member, as a case of the moderation log, or removes the last one they got. The warnings of a member are what the thresholds of `/warn-thresholds` count, so a warning can be followed by the action of a threshold.",
+		"examples": ["add user:@Pete reason:Off-topic in the help channel", "remove user:@Pete reason:It was a mistake"],
+		"reminder": "It is good practice to warn a member informally before filing a warning."
+	},
+	"/warn-thresholds": {
+		"extendedHelp": "Sets what happens to a member who reaches a number of active warnings: a timeout, a mute, a kick, a softban, a ban or a voice kick, for a `duration` or for good. The warnings can be counted over a `period` only, such as the last 30 days.\nA server can have up to 10 thresholds, and a member reaches each one once, when their count is exactly its number.",
+		"examples": ["add count:3 action:Timeout duration:1h", "add count:5 action:Ban period:30d", "remove count:3"],
+		"reminder": "The action is taken by me, as a case of the moderation log, with no direct message. When several thresholds are reached at once, the one with the highest number is taken."
+	},
+	"/whois": {
+		"extendedHelp": "Shows information about a user, a role, a channel, an emoji or the server, such as when an account was created and when it joined the server, the roles of a member and their badges, or what a role can do.",
+		"examples": ["user", "user user:@Pete", "role role:@Moderator", "server"]
+	}
+}

@@ -597,27 +597,6 @@ declare module "i18next" {
         nochange: "The value for **{{key}}** was already that value.";
         server: "Settings{{key}}:\n{{list}}";
         serverDescription: "Define per-server settings.";
-        serverExtended: {
-          usages: [
-            "set NameOfKey Value for Key",
-            "show",
-            "show NameOfKey",
-            "remove NameOfKey Value for Key",
-            "reset NameOfKey",
-            "menu",
-          ];
-          extendedHelp: "Allows you to configure WolfStar from Discord, as a quick alternative to the [web dashboard](https://wolfstar.rocks).";
-          examples: [
-            "set language en-GB",
-            "set channels.moderation-logs #moderation-logs",
-            "show",
-            "show channels",
-            "remove roles.moderator Moderator",
-            "reset roles.moderator",
-            "menu",
-          ];
-          reminder: "There are keys and groups, keys that are within a group are named by `GroupName.KeyName`.";
-        };
         menuRenderAtFolder: "Currently at: 📁 {{path}}";
         menuRenderAtPiece: "Currently at: ⚙️ {{path}}";
         menuRenderNokeys: "There are no configurable keys for this folder";
@@ -736,6 +715,256 @@ declare module "i18next" {
         transferErrorRuleType: "A rule needs a `type`, one of: {{types}}.";
         transferErrorRuleName: "A rule needs a `name` of up to {{maximum}} characters that is not only digits.";
         transferErrorRuleNameTaken: "Two rules are named **{{name}}**.";
+      };
+      "commands/help": {
+        "/archive": {
+          extendedHelp: "Saves the messages a member sent in the last 14 days in a history the moderators can read again later, as a text file. I read the latest messages of the 50 channels with the newest messages I can see, and keep up to 200 messages of the member, with the links of their attachments.\nA history can be saved for a case, and `/ban add`, `/softban` and `/kick` save one before the messages are deleted when their `archive` option is on.";
+          examples: ["create user:@Pete", "create user:@Pete case:42", "list user:@Pete"];
+          reminder: "A history is kept for two years, and a server keeps up to 100 of them: the oldest one goes when another one is saved.";
+        };
+        "/autodelete": {
+          extendedHelp: "Deletes the messages sent in a channel, as soon as they are sent or a delay after, so the channel only keeps what it is for. The options choose what stays: the messages with links, invites, images, mentions or embeds, or the ones that are only text.\nThe messages of bots and webhooks stay unless `bots` is on, and so does a message that is pinned before its delay ends. Up to 25 channels of a server can have their messages deleted.";
+          examples: [
+            "enable channel:#selfies images:true",
+            "enable channel:#counting delay:10m",
+            "disable channel:#selfies",
+          ];
+          reminder: "The delay is 24 hours at most. Running `enable` again in a channel replaces what it was set to.";
+        };
+        "/automessage": {
+          extendedHelp: "Sends a message in a channel again and again, every interval from 10 minutes to 14 days, such as the rules or a reminder. After `enable` you write the message in a form, which opens with the message the channel already gets, so running it again edits it.\nWhen the last message of the channel is still the one I sent, I skip it, so a quiet channel does not fill up with it. A server can have up to 10 of them, one per channel.";
+          examples: [
+            "enable channel:#general interval:6h",
+            "enable channel:#events interval:1d mentions:true",
+            "disable channel:#general",
+          ];
+          reminder: "The mentions of the message do not ping anybody unless `mentions` is on.";
+        };
+        "/automod": {
+          extendedHelp: "Manages the auto-moderation rules of the server: up to 25 named rules, several of the same type if you want, each with its own options, actions, threshold and exempt roles and channels. A rule looks for something in the messages (spam, mentions, invites, links, words, capitals and more), and a message that infringes it can be deleted, alerted in the channel and logged.\nA member who reaches the threshold of a rule gets its punishment, which can grow each time they reach it again. `list` and `show` open a panel that edits all of it with buttons.";
+          examples: [
+            "create name:No invites type:Invites",
+            "add rule:Bad words value:example",
+            "edit rule:No invites punishment:Timeout punishment-duration:1h threshold:3",
+            "ignore rule:No invites channel:#partners",
+          ];
+          reminder: "A message is held to the first enabled rule of each type it infringes, so the order of the rules of a type decides the punishment. `add` and `remove` edit the list of a rule: its words, or the links and the invites it allows.";
+        };
+        "/autopurge": {
+          extendedHelp: "Purges a channel every interval, from 5 minutes to 14 days, of every message or of the ones a filter looks for: the messages of a user, of bots or of humans, the ones with links, invites, images, mentions or embeds, the ones that are only text, or the ones that contain, do not contain, start or end with a text.\nThe pinned messages are never deleted, and neither are the ones older than 14 days, which Discord does not delete in bulk. Up to 10 channels of a server can be purged.";
+          examples: [
+            "enable channel:#memes interval:1d",
+            "enable channel:#bot-commands interval:6h filter:Messages of bots",
+            "enable channel:#trades interval:12h filter:Messages that contain a text value:WTS",
+          ];
+          reminder: "The filters of a user or of a text need `value`. Running `enable` again in a channel replaces its purge, and the first purge is one interval after it.";
+        };
+        "/ban": {
+          extendedHelp: "Bans a member, or unbans a user, as a case of the moderation log. A ban can last a `duration` and be lifted by itself when it ends, delete up to 7 days of the messages of the member (`delete-days`) and save them first (`archive`).\nThis needs **{{BanMembers, permissions}}**, and I only ban the members whose highest role is below mine, never the owner of the server.";
+          examples: [
+            "add user:@Pete reason:Spamming in every channel",
+            "add user:@Pete duration:7d delete-days:1",
+            "remove user:@Pete reason:The appeal was accepted",
+          ];
+          reminder: "The `reason` can be the alias of a predefined reason of `/reasons`.";
+        };
+        "/case": {
+          extendedHelp: "Reads and edits the cases of the moderation log. `view` shows a case, `list` lists them (of a user, of a type, only the ones in course, or as an overview), and `edit` changes the reason or the duration of a case.\n`archive` keeps a case but stops counting it, as a warning or as a recent case, and `delete` removes it for good, with the end that was scheduled for it.";
+          examples: [
+            "view case:42",
+            "list user:@Pete type:Warning",
+            "edit case:42 reason:Spam in the help channel duration:2d",
+          ];
+        };
+        "/commands": {
+          extendedHelp: "Opens the commands menu: every command and subcommand you can run, five to a page, with a search and their categories. The administrators edit a command from there: they disable it in the server, or choose the channels and the roles it runs in or ignores.\n`/settings` and `/commands` can never be disabled, so the commands can always be turned back on.";
+          examples: ["", "command:ban"];
+          reminder: "The administrators are not held to the channels and the roles a command is restricted to.";
+        };
+        "/dehoist": {
+          extendedHelp: "Cleans the names of every member who hoists themselves to the top of the member list with a character such as `!` or `.` at the start of their nickname, by replacing it. The progress is shown as it goes, only to you.";
+          reminder: "This needs **{{ManageNicknames, permissions}}**, and I only rename the members whose highest role is below mine. To clean the names as the members join or rename themselves, turn `moderation.dehoist` on in `/settings server`.";
+        };
+        "/honeypot": {
+          extendedHelp: "Sets up a honeypot: a channel no member has a reason to write in, so whoever writes there is a spam bot or a hacked account. Their message is deleted and they are kicked, softbanned (the default) or banned, as a case of the moderation log, which for the last two deletes what they sent in the last hour; every catch is reported to the `logs` channel.\n`setup` creates the channel at the top of the list when you do not give one, and I can keep a warning in it, rename it every day and post in it so it does not look abandoned.";
+          examples: [
+            "setup",
+            "setup channel:#do-not-post action:Ban logs:#mod-logs",
+            "edit random-name:true keep-active:true",
+          ];
+          reminder: "The moderators are never caught, and the messages a spam bot sends in a row make one case.";
+        };
+        "/kick": {
+          extendedHelp: "Kicks a member out of the server, as a case of the moderation log: they can join again with an invite. Their recent messages can be saved first with `archive`.\nThis needs **{{KickMembers, permissions}}**, and I only kick the members whose highest role is below mine, never the owner of the server.";
+          examples: ["user:@Pete reason:Rude to the other members", "user:@Pete archive:true"];
+          reminder: "The `reason` can be the alias of a predefined reason of `/reasons`.";
+        };
+        "/lockdown": {
+          extendedHelp: "Locks a channel, a thread or the whole server for a role, `@everyone` unless you choose one, so it cannot write there (nor create threads, nor connect to a voice channel), and unlocks it. Unlocking gives the role back the permissions it had in the channel before.\nA lockdown can last a `duration`, from 30 seconds to a month, and lift itself when it ends, even after I restart.";
+          examples: [
+            "action:lock",
+            "action:lock channel:#general duration:10m",
+            "action:unlock channel:#general",
+            "action:lock global:true",
+          ];
+          reminder: "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel.";
+        };
+        "/mute": {
+          extendedHelp: "Mutes a member: they lose their roles and get the muted role, which keeps them from writing in the channels and from joining the voice channels, and they get their roles back when they are unmuted. A mute can last a `duration` and be lifted by itself when it ends, and the muted role is given back when they leave and join the server again.\n`create` prepares the mute system: it creates the muted role, or uses the one you give, and sets it up in every channel.";
+          examples: ["add user:@Pete duration:1h reason:Spamming", "remove user:@Pete", "create"];
+          reminder: "This needs **{{ManageRoles, permissions}}**. When the muted role is not set up yet, an administrator who runs the command is asked to pick or create one, and the mute is made once it is ready.";
+        };
+        "/note": {
+          extendedHelp: "Adds a note to a member: a case of the moderation log that is not a punishment. The member is never told about it, whatever the settings of the direct messages say, and it does not count as a warning.\nIt has nothing to undo, but it can be edited and archived like any other case.";
+          examples: ["user:@Pete reason:Was told in the chat to stop spamming"];
+        };
+        "/permission-nodes": {
+          extendedHelp: "Manages the permission nodes of the server: overrides that allow or deny a command to a member or to a role. The command is one command, a category (`Moderation.*`), a sub-category (`Moderation.Utilities.*`) or `*` for every command, and the node of a member is read before the ones of their roles.\n`show` lists all of them, or the ones of a member or of a role.";
+          examples: [
+            "add target:@Helpers type:allow command:warn",
+            "add target:@Pete type:deny command:Moderation.*",
+            "show target:@Helpers",
+            "reset target:@Pete",
+          ];
+        };
+        "/permissions": {
+          extendedHelp: "Lists the permissions a member has in the server, which tells what a set of roles gives. It lists the permissions of the moderation, and every other one with `list-all`, while `list-missing` adds the ones they do not have.\nIt is also in the Apps menu of a member, as `Inspect Permissions`.";
+          examples: ["user:@Pete", "user:@Pete list-all:true list-missing:true"];
+        };
+        "/prune": {
+          extendedHelp: "Deletes the latest messages of the channel, up to `amount`: all of them with `any`, or the ones a subcommand looks for (the ones of a user, of bots or of humans, with attachments, images, links, invites, mentions or embeds, the pinned ones, mine, the ones newer than an `age`, or the ones that include, start or end with a text or match a regular expression).\n`any` takes the options of every other subcommand, to combine their filters, and every subcommand can stop at the messages `before` or `after` another one.";
+          examples: [
+            "any amount:50",
+            "bots amount:20",
+            "author amount:100 user:@Pete",
+            "any amount:200 links:true invites:true",
+          ];
+          reminder: "Discord does not let bots delete the messages older than 14 days. The pinned messages stay, but with the `pins` subcommand or the `pins` option of `any`, and `silent` skips the message that tells how many were deleted.";
+        };
+        "/reasons": {
+          extendedHelp: "Manages the predefined reasons of the server: up to 25 reasons, each with a short alias. The `reason` option of every moderation command suggests them as you write, and takes an alias, in any case, in place of the reason it stands for.";
+          examples: [
+            "add alias:r1 reason:Spamming or flooding the channels",
+            "remove alias:r1",
+            "list",
+          ];
+        };
+        "/report": {
+          extendedHelp: "Reports a member to the moderators of the server, with what they did. The report is sent to the channel of the reports, where the moderators can warn, time out, kick, mute, softban or ban the member, delete the message, or dismiss the report.\nIt is also in the Apps menu, as `Report Message` and `Report User`, which ask for the reason in a form.";
+          examples: ["user:@Pete reason:Sent me scam links in direct messages"];
+          reminder: "You can send a report once a minute, and a message can be reported once a day. When the server wants it, you are told in a direct message when your report is closed.";
+        };
+        "/reports": {
+          extendedHelp: "Manages the reports of the server: `history` lists the latest ones, of everybody or about a user, and `block` stops a member from sending reports, which `unblock` undoes.";
+          examples: ["history", "history user:@Pete", "block user:@Pete"];
+        };
+        "/restrict": {
+          extendedHelp: "Restricts a member from a feature in every channel: sending attachments, sending embeds, using external emojis, reacting, or joining the voice channels. Each restriction is a role I set up in every channel, which is given back when they leave and join the server again.\nA restriction can last a `duration` and be lifted by itself when it ends, and `/unrestrict` lifts it before.";
+          examples: [
+            "attachment user:@Pete duration:1d reason:Posting unsafe images",
+            "reaction user:@Pete",
+          ];
+          reminder: "This needs **{{ManageRoles, permissions}}**. The emoji restriction only stops the external emojis: the ones of the server and the standard ones can still be used.";
+        };
+        "/role": {
+          extendedHelp: "Gives a role to a member, or takes it away, as a case of the moderation log. With a `duration`, the change is undone by itself when it ends.";
+          examples: [
+            "add user:@Pete role:@Verified",
+            "add user:@Pete role:@Event duration:1d",
+            "remove user:@Pete role:@Verified",
+          ];
+          reminder: "This needs **{{ManageRoles, permissions}}**, and the role has to be below my highest role.";
+        };
+        "/role-rules": {
+          extendedHelp: "Keeps a role in sync with the other roles of the members: the role is given to a member who has every `requires` role, one of the `any-of` ones when there are some, and none of the `without` ones, and it is taken away when they stop meeting the rule. A server can have up to 10 rules, and I only give and take the roles I can manage.";
+          examples: [
+            "add role:@Gamer requires:@Verified any-of:@Minecraft any-of-2:@Fortnite",
+            "add role:@Newcomer without:@Verified",
+            "remove role:@Newcomer",
+          ];
+          reminder: "A rule applies the next time the roles of a member change: the members are not checked when it is added. A rule cannot ask for its own role, nor for the role of another rule.";
+        };
+        "/roles": {
+          extendedHelp: "Lists the public roles of the server, the ones every member can give themselves, and claims or gives up one of them. `browse` opens a menu of every role of the server, to see what each one is and what it can do.";
+          examples: ["list", "claim role:@Announcements", "unclaim role:@Announcements"];
+          reminder: "The administrators choose the public roles with `roles.public` in `/settings server`.";
+        };
+        "/setnickname": {
+          extendedHelp: "Changes the nickname of a member, or removes it when you leave `nickname` empty, as a case of the moderation log. A nickname can last a `duration` and be undone by itself when it ends.\nWith `sticky`, the nickname is set again when they leave and join the server back, until a moderator changes it without `sticky` or removes it.";
+          examples: [
+            "user:@Pete nickname:Pete",
+            "user:@Pete nickname:Read the rules sticky:true",
+            "user:@Pete",
+          ];
+          reminder: "This needs **{{ManageNicknames, permissions}}**, and I only rename the members whose highest role is below mine, never the owner of the server.";
+        };
+        "/settings": {
+          extendedHelp: "Opens a settings menu. `server` is the menu of the settings of the server, for the administrators and a quick alternative to the [dashboard](https://wolfstar.rocks): the logs, the moderation, the roles, the auto-moderation and the rest, with an export and an import of the settings as a file.\n`user` is your own settings, the same in every server, such as whether I send you the direct messages of the moderation.";
+          examples: ["server", "user"];
+          reminder: "A menu closes 15 minutes after it was last used: run the command again to open it.";
+        };
+        "/slowmode": {
+          extendedHelp: "Sets the slowmode of the channel: how long each member waits between two messages, from 0 to 6 hours. `0` or `reset` turns it off.";
+          examples: ["duration:10s", "duration:5m", "duration:reset"];
+          reminder: "This needs **{{ManageChannels, permissions}}**.";
+        };
+        "/softban": {
+          extendedHelp: "Bans a member and unbans them at once, which deletes their messages of the last days (`delete-days`, up to 7) in every channel: it is a kick that also cleans up after them. Their messages can be saved first with `archive`.";
+          examples: ["user:@Pete delete-days:1 reason:Spam bot", "user:@Pete archive:true"];
+          reminder: "This needs **{{BanMembers, permissions}}**, and I only softban the members whose highest role is below mine, never the owner of the server.";
+        };
+        "/sticky-nickname": {
+          extendedHelp: "Shows the sticky nickname of a member: the nickname `/setnickname` set with `sticky`, which is set again when they leave and join the server back.";
+          examples: ["user:@Pete"];
+        };
+        "/sticky-roles": {
+          extendedHelp: "Manages the sticky roles of a member: the roles they get back when they leave and join the server again. `show` lists them, `add` and `remove` change them, and `reset` removes all of them.";
+          examples: ["add user:@Pete role:@Veteran", "show user:@Pete", "reset user:@Pete"];
+          reminder: "The muted role and the roles of a restriction are given back by themselves while the action is in course.";
+        };
+        "/timeout": {
+          extendedHelp: "Times out a member with the timeout of Discord, as a case of the moderation log: they cannot write, react nor talk until it ends, 28 days later at most. `remove` lifts it before.";
+          examples: ["add user:@Pete duration:10m reason:Flooding the chat", "remove user:@Pete"];
+          reminder: "This needs **{{ModerateMembers, permissions}}**, and I only time out the members whose highest role is below mine. With `moderation.track-timeouts`, the timeouts given from Discord are cases too.";
+        };
+        "/unrestrict": {
+          extendedHelp: "Lifts a restriction of `/restrict` from a member before it ends: the attachments, the embeds, the external emojis, the reactions or the voice channels are theirs again.";
+          examples: [
+            "attachment user:@Pete",
+            "voice user:@Pete reason:The restriction was a mistake",
+          ];
+        };
+        "/vmute": {
+          extendedHelp: "Mutes the microphone of a member in every voice channel, with the server mute of Discord, as a case of the moderation log. A voice mute can last a `duration` and be lifted by itself when it ends.\nIt is given back when the member leaves and joins the server again, as soon as they connect to a voice channel.";
+          examples: ["add user:@Pete duration:30m reason:Playing loud noises", "remove user:@Pete"];
+          reminder: "This needs **{{MuteMembers, permissions}}**.";
+        };
+        "/voicekick": {
+          extendedHelp: "Disconnects a member from the voice channel they are in, as a case of the moderation log. They can connect again right after.";
+          examples: ["user:@Pete reason:Playing loud music"];
+          reminder: "This needs **{{MoveMembers, permissions}}**.";
+        };
+        "/warn": {
+          extendedHelp: "Files a formal warning to a member, as a case of the moderation log, or removes the last one they got. The warnings of a member are what the thresholds of `/warn-thresholds` count, so a warning can be followed by the action of a threshold.";
+          examples: [
+            "add user:@Pete reason:Off-topic in the help channel",
+            "remove user:@Pete reason:It was a mistake",
+          ];
+          reminder: "It is good practice to warn a member informally before filing a warning.";
+        };
+        "/warn-thresholds": {
+          extendedHelp: "Sets what happens to a member who reaches a number of active warnings: a timeout, a mute, a kick, a softban, a ban or a voice kick, for a `duration` or for good. The warnings can be counted over a `period` only, such as the last 30 days.\nA server can have up to 10 thresholds, and a member reaches each one once, when their count is exactly its number.";
+          examples: [
+            "add count:3 action:Timeout duration:1h",
+            "add count:5 action:Ban period:30d",
+            "remove count:3",
+          ];
+          reminder: "The action is taken by me, as a case of the moderation log, with no direct message. When several thresholds are reached at once, the one with the highest number is taken.";
+        };
+        "/whois": {
+          extendedHelp: "Shows information about a user, a role, a channel, an emoji or the server, such as when an account was created and when it joined the server, the roles of a member and their badges, or what a role can do.";
+          examples: ["user", "user user:@Pete", "role role:@Moderator", "server"];
+        };
       };
       "commands/honeypot": {
         honeypotName: "honeypot";
@@ -896,65 +1125,8 @@ declare module "i18next" {
         stickyRolesShowSingle: "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.";
         stickyNicknameEmpty: "**{{user}}** has no sticky nickname.";
         stickyNicknameSingle: "Sticky nickname of **{{user}}**: {{nickname}}";
-        createMuteExtended: {
-          extendedHelp: "This command prepares the mute system by creating a role called `muted`, and configuring it to the server settings. This command also modifies all channels (where possible) permissions and disables the permission **{{SEND_MESSAGES, permissions}}** in text channels and **{{CONNECT, permissions}}** in voice channels for said role.";
-        };
         permissionNodesDescription: "Configure the permission nodes for this server.";
-        permissionNodesExtended: {
-          usages: [
-            "add Role/Member allow/deny Command",
-            "remove Role/Member allow/deny Command",
-            "reset Role/Member",
-            "show Role/Member",
-            "show",
-            "Role/Member",
-          ];
-          extendedHelp: "Permission nodes are per-user and per-role overrides. They are used when the built-in permissions system is not enough.\nFor example, in some servers they want to give a staff role the permissions to use mute and warn, but not ban and others (reserved to moderators), and only warn is available for the configurable staff-level permission, so you can tell me to allow the mute command for the staff role now.";
-          explainedUsage: [
-            ["Action", "Either `add`, `remove`, `reset`, or `show`. Defaults to `show`."],
-            ["Target", "Either a role name or a user name, allowing IDs and mentions for either."],
-            ["Type", "Either `allow` or `deny`."],
-            ["Command", "The name of the command to allow or deny."],
-          ];
-          examples: [
-            "add staff allow warn",
-            "add moderators deny ban",
-            "remove staff allow warn",
-            "reset staff",
-            "show staff",
-          ];
-          reminder: "The server owner cannot have any actions, nor the `everyone` role can have allowed commands.";
-        };
         manageReactionRolesDescription: "Manage the reaction roles for this server.";
-        manageReactionRolesExtended: {
-          usages: [
-            "add Role",
-            "add Role TextChannel Emoji",
-            "remove Role Message",
-            "reset",
-            "show",
-          ];
-          extendedHelp: "Seamlessly set up reaction roles in your server! When adding reaction roles, I listen to your reactions for 5 minutes and I bind the first reaction from you alongside the channel and the message, with the specified role.\nOtherwise, if a channel is specified, a prompt will not be created, and the reaction role will be bound to all of the channel's messages.\n\nThe best way to add new reaction roles is by using `add @role`. If you prefer not binding the reaction to a specific message then use `add @role #channel emoji`";
-          explainedUsage: [
-            ["show", "Retrieve the list of all reaction roles."],
-            [
-              "add <role>",
-              "Adds a reaction role binding the first reacted message since the execution with the role.",
-            ],
-            [
-              "remove <role> <message>",
-              "Removes a reaction role, use `show` to get a list of them.",
-            ],
-            ["reset", "Removes all reaction roles."],
-          ];
-          examples: [
-            "add @role",
-            "add @role #channel emoji",
-            "remove @role 123456789012345678",
-            "reset",
-            "show",
-          ];
-        };
         rolesAdded: "The following roles have been added to your profile: `{{roles}}`";
         rolesAuditlog: "Authorized: Public Role Management | 'Roles' Command.";
         rolesListEmpty: "This server does not have a role listed as a public role.";
@@ -962,351 +1134,18 @@ declare module "i18next" {
         rolesNotManageable: "The following roles cannot be given by me due to their hierarchy role position: `{{roles}}`";
         rolesNotPublic: "The following roles are not public: `{{roles}}`";
         rolesRemoved: "The following roles have been removed from your profile: `{{roles}}`";
-        guildInfoExtended: {
-          extendedHelp: "The serverinfo command displays information for the server the message got sent.\nIt shows the amount of channels, with the count for each category, the amount of members (given from the API), the owner with their user id, the amount of roles, region, creation date, verification level... between others.";
-        };
-        roleInfoExtended: {
-          usages: ["Role", ""];
-          extendedHelp: "The roleinfo command displays information for a role, such as its id, name, color, whether it's hoisted (displays separately) or not, it's role hierarchy position, whether it's mentionable or not, how many members have said role, and its permissions.\nIt sends an embedded message with the color of the role.";
-          explainedUsage: [["Role", "The role name, name, mention or id."]];
-          examples: ["Administrator", "Moderator", ""];
-        };
         stickyRolesDescription: "Manage sticky roles for users.";
         stickyNicknameDescription: "Show the sticky nickname of a user.";
-        stickyRolesExtended: {
-          usages: ["add User Role", "remove User Role", "reset User", "show User", "User"];
-          extendedHelp: "The stickyRoles command allows you to manage per-member's sticky roles, they are roles that are kept even when you leave, and are applied back as soon as they join.";
-          explainedUsage: [
-            [
-              "Action",
-              "Either you want to check the sticky roles, add one, remove one, or remove all of them.",
-            ],
-            ["User", "The user target for all the actions."],
-            ["Role", "The role to add or remove."],
-          ];
-          examples: [
-            "add WolfStar Goddess",
-            "show WolfStar",
-            "remove WolfStar Goddess",
-            "reset WolfStar",
-          ];
-          reminder: "The member's roles will not be modified by this command, you need to add or remove them.";
-        };
         attachmentsModeDescription: "Manage this server's flags for the attachments filter.";
-        attachmentsModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The attachmentsMode command manages the behavior of the attachments system.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         capitalsModeDescription: "Manage this server's flags for the caps filter.";
-        capitalsModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The capitalsMode command manages the behavior of the caps system.\nThe minimum amount of characters before filtering can be set with `Skyra, settings set automod.capitals.minimum <number>`.\nThe percentage of uppercase letters can be set with `Skyra, settings set automod.capitals.maximum <number>`.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         filterDescription: "Manage this server's list of blocked words.";
-        filterExtended: {
-          usages: ["add Word", "remove Word", "reset", "show", ""];
-          extendedHelp: "The filter command manages the list of blocked words for this server and must have a filter mode set up (see: `Skyra, help filterMode`).\n\nSkyra's word filter can find matches even with special characters or spaces between the letters of a blocked word, as well as duplicated characters for enhanced filtering.";
-          examples: ["add darn", "remove darn", "reset", "show", ""];
-        };
         filterModeDescription: "Manage this server's word filter modes.";
-        filterModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The filterMode command manages the behavior of the word filter system. Run `Skyra, help filter` for how to add words.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         inviteModeDescription: "Manage the behavior for the invite link filter.";
-        inviteModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The inviteMode command manages the behavior of the invite filter system.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         linkModeDescription: "Manage the behavior for the link filter.";
-        linkModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The linkMode command manages the behavior of the link system.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         messageModeDescription: "Manage the behavior for the message filter system.";
-        messageModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The messageMode command manages the behavior of the message filter system.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         newlineModeDescription: "Manage the behavior for the new line filter system.";
-        newlineModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The newLineMode command manages the behavior of the new line filter system.\nThe maximum amount of lines allowed can be set with `Skyra, settings set automod.newlines.maximum <number>`";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         reactionModeDescription: "Manage the behavior for the reaction filter system.";
-        reactionModeExtended: {
-          usages: [
-            "on/e/enable",
-            "off/d/disable",
-            "action/soft-action alert/log/delete",
-            "punish/punishment none/warn/mute/kick/softban/ban",
-            "pd/punish-duration/punishment-duration Timespan",
-            "tm/threshold-maximum Integer",
-            "td/threshold-duration Timespan",
-            "sh/show",
-            "",
-          ];
-          extendedHelp: "The reactionMode command manages the behavior of the reaction filter system.";
-          explainedUsage: [
-            ["Enable", "$t(commands/management:commandModeEnable)"],
-            ["Disable", "$t(commands/management:commandModeDisable)"],
-            ["Action Alert", "$t(commands/management:commandModeActionAlert)"],
-            ["Action Log", "$t(commands/management:commandModeActionLog)"],
-            ["Action Delete", "$t(commands/management:commandModeActionDelete)"],
-            ["Punishment", "$t(commands/management:commandModePunishment)"],
-            ["Punishment-Duration", "$t(commands/management:commandModePunishmentDuration)"],
-            ["Threshold-Maximum", "$t(commands/management:commandModeThreshold)"],
-            ["Threshold-Duration", "$t(commands/management:commandModeThresholdDuration)"],
-          ];
-          reminder: "$t(commands/management:commandModeReminder)";
-          examples: [
-            "enable",
-            "disable",
-            "action alert",
-            "punishment ban",
-            "punishment mute",
-            "punishment-duration 1m",
-            "threshold-maximum 5",
-            "threshold-duration 30s",
-          ];
-        };
         rolesDescription: "List, claim or unclaim public roles in this server.";
-        rolesExtended: {
-          usages: ["Role", ""];
-          extendedHelp: "Public roles are roles that are available for everyone.\nAn administrator must configure them with the configuration command.";
-          explainedUsage: [
-            [
-              "roles",
-              "The list of roles to claim or unclaim. Leave this empty to get a list of available roles.",
-            ],
-          ];
-          reminder: "When claiming or unclaiming roles you can provide a single or multiple role(s).\nTo claim multiple roles, you must separate them by a comma, for example `red,green`.\nYou can specify which roles you want by providing the role ID, name, or a sub-section of the name.\n\nAdministrators can add public roles by setting `roles.public` in the server configuration.";
-          examples: ["Designer Programmer", "Designer"];
-        };
         permissionNodesName: "permission-nodes";
         manageReactionRolesName: "reaction-roles";
         stickyRolesName: "sticky-roles";
@@ -1390,16 +1229,6 @@ declare module "i18next" {
         slowmodeSet: "The cooldown for this channel has been set to {{cooldown, duration}}.";
         slowmodeReset: "The cooldown for this channel has been reset.";
         timeDescription: "Set the timer.";
-        timeExtended: {
-          usages: ["Case Duration", "cancel Case Duration"];
-          extendedHelp: "Updates the timer for a moderation case..";
-          explainedUsage: [
-            ["Cancel", 'Whether or not you want to cancel the timer. Defaults to "no".'],
-            ["Case", "The case you want to update"],
-            ["Duration", "The timer, ignored if `cancel` was defined."],
-          ];
-          examples: ["cancel 1234", "1234 6h"];
-        };
         banNotBannable: "The target is not bannable for me.";
         dehoistStarting: "I will start dehoisting {{count}} members...";
         dehoistProgress: "Dehoisted {{count}} members so far! ({{percentage}}%)";
@@ -1448,18 +1277,6 @@ declare module "i18next" {
         moderationDmDescriptionWithDuration: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Duration**: {{duration, duration}}\n**❯ Reason**: None specified";
         moderationDmDescriptionWithReasonWithDuration: "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Duration**: {{duration, duration}}\n**❯ Reason**: {{reason}}";
         historyDescription: "Display the count of moderation cases from this server or from a user.";
-        historyExtended: {
-          usages: ["", "details", "details User", "overview User"];
-          extendedHelp: "This command shows the amount of bans, mutes, kicks, and warnings, including temporary, that have not been appealed.";
-          explainedUsage: [
-            [
-              "details/overview",
-              'Whether to get a detailed view or just a summary. Defaults to "overview".',
-            ],
-            ["User", "The user for whom to get the information. Defaults to you yourself."],
-          ];
-          examples: ["", "overview", "details", "@Pete", "details @Pete", "overview Pete"];
-        };
         historyFooterNew: "This user has {{warnings}} {{warningsText}}, {{mutes}} {{mutesText}}, {{kicks}} {{kicksText}}, and {{bans}} {{bansText}}";
         historyFooterWarning_one: "warning";
         historyFooterWarning_other: "warnings";
@@ -1470,656 +1287,50 @@ declare module "i18next" {
         historyFooterBans_one: "ban";
         historyFooterBans_other: "bans";
         moderationsDescription: "List all running moderation logs from this server.";
-        moderationsExtended: {
-          usages: ["", "mutes/warnings/all", "User", "mutes/warnings/all User"];
-          extendedHelp: "This command shows you all the temporary moderation actions that are still running. This command uses a reaction-based menu and requires the permission **{{MANAGE_MESSAGES, permissions}}** to execute correctly.";
-          explainedUsage: [
-            [
-              "mutes/warnings/all",
-              "Whether to get just the mutes, just the warnings or everything. When providing either `mutes` or `warnings` then all moderations of that type are shown, not just the temporary ones.",
-            ],
-            ["User", "The user for whom to get the information. Defaults to all users."],
-          ];
-          examples: ["", "@Pete", "mutes @Pete", "warnings"];
-        };
         moderationsAmount_one: "There is 1 entry.";
         moderationsAmount_other: "There are {{count}} entries.";
         mutesDescription: "List all mutes from this server or from a user.";
-        mutesExtended: {
-          usages: ["", "User"];
-          extendedHelp: "This command shows either all mutes filed in this server, or all mutes filed in this server for a specific user.\nThis command uses a reaction-based menu and requires the permission **{{MANAGE_MESSAGES, permissions}}** to execute correctly.";
-          examples: ["", "@Pete"];
-        };
         warningsDescription: "List all warnings from this server or from a user.";
-        warningsExtended: {
-          usages: ["", "User"];
-          extendedHelp: "This command shows either all warnings filed in this server, or all warnings filed in this server for a specific user.\nThis command uses a reaction-based menu and requires the permission **{{MANAGE_MESSAGES, permissions}}** to execute correctly.";
-          examples: ["", "@Pete"];
-        };
         slowmodeDescription: "Set the channel's slowmode value in seconds.";
-        slowmodeExtended: {
-          usages: ["reset/Seconds/Duration"];
-          extendedHelp: "This command requires **{{MANAGE_CHANNELS, permissions}}** and will modify the channel's ratelimit per user to any value between 0 and 6 hours.";
-          examples: ["0", "reset", "4m"];
-          reminder: "To reset a channel's ratelimit per user, you can use either 0 or 'reset'.";
-        };
         banDescription: "Ban or unban a user.";
         banAddDescription: "Hit somebody with the ban hammer.";
-        banExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-            "User --seconds=S --minutes=M --hours=H --days=D",
-          ];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to ban. Can be up to a total of 10 users."],
-            [
-              "Duration",
-              "The amount of time this ban should last. For example 24h for 24 hours. The user(s) will be automatically unbanned after this time.",
-            ],
-            ["Reason", "The reason for the ban. This will also show in the server's audit logs."],
-            [
-              "--seconds=S --minutes=M --hours=H --days=D",
-              "The amount of time worth of messages to delete, each flag is optional and can be combined. Up to 7 days.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThis action can be optionally timed to create a temporary ban.";
-          examples: ["@Pete", "@Pete Spamming all channels.", "@Pete @Jack @John 24h Raiding"];
-        };
         dehoistDescription: "Shoot everyone with the Dehoistinator 3000";
-        dehoistExtended: {
-          extendedHelp: "The act of hoisting involves adding special characters in front of your nickname in order to appear higher in the members list.\nThis command replaces any member's nickname that includes those special characters with a special character that drags them to the bottom of the list.";
-          reminder: "This command requires **{{ManageNicknames, permissions}}**, and only members with lower role hierarchy position can be dehoisted.";
-        };
         kickDescription: "Hit somebody with the 👢.";
-        kickExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User Reason"];
-          extendedHelp: "This command requires **{{KickMembers, permissions}}**, and only members with lower role hierarchy position can be kicked by me. No, the server's owner cannot be kicked.";
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to kick. Can be up to a total of 10 users."],
-            ["Reason", "The reason for the kick. This will also show in the server's audit logs."],
-          ];
-          examples: ["@Sarah", "@Sarah Spamming general chat."];
-        };
         noteDescription: "Add a note to a member, which they are never told about.";
-        noteExtended: {
-          usages: ["User", "User Reason", "User Reason Message"];
-          explainedUsage: [
-            ["User", "The member to add the note to."],
-            [
-              "Reason",
-              "The note itself, which is shown in the history of the member and in the moderation log.",
-            ],
-            ["Message", "The link or the ID of a message to attach to the note."],
-          ];
-          extendedHelp: "This command requires **{{ModerateMembers, permissions}}**.\nA note is a case that is not a punishment: the member is never told about it, whatever the settings of the moderation direct messages say, and it does not count as a warning.\nIt has no duration and there is nothing to undo, but it can be edited and archived like any other case.";
-          examples: ["@Sarah", "@Sarah Was told to keep the voice chat clean."];
-        };
         muteDescription: "Mute or unmute a user, or prepare the mute system.";
         muteAddDescription: "Mute a user in all text and voice channels.";
-        muteExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to mute. Can be up to a total of 10 users."],
-            [
-              "Duration",
-              "The amount of time this mute should last. For example 24h for 24 hours. The user(s) will be automatically unmuted after this time.",
-            ],
-            ["Reason", "The reason for the mute. This will also show in the server's audit logs."],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be muted.\nThis action can be optionally timed to create a temporary mute. This action saves a member's roles temporarily and will be granted to the user after the unmute.\nThe muted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.";
-          examples: [
-            "@Alphonse",
-            "@Alphonse Spamming all channels",
-            "@Alphonse 24h Spamming all channels",
-          ];
-        };
         setNicknameDescription: "Change the nickname of a user.";
-        setNicknameExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Nickname",
-            "User1 Duration",
-            "User1 User2 Nickname Duration Reason",
-          ];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to nickname. Can be up to a total of 10 users."],
-            [
-              "Nickname",
-              "The new nickname to set. Not including this will make this command default to the user's username.",
-            ],
-            [
-              "Duration",
-              "The amount of time this nickname change should last. For example 24h for 24 hours. The user(s) will automatically get their current name back after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for this nickname change. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_NICKNAMES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner nickname cannot be changed.";
-          examples: ["@Pete peeehteeerrr", "@ꓑ𝗲੮ẻ Pete Unmentionable name"];
-          reminder: "Leaving out the new nickname will reset it back to the user's username";
-        };
         roleDescription: "Add or remove a role of a user.";
         roleAddDescription: "Adds a role to a user.";
-        addRoleExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Role",
-            "User1 Duration",
-            "User1 User2 role Duration Reason",
-          ];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to add a role to. Can be up to a total of 10 users."],
-            ["Role", "The new role to assign"],
-            [
-              "Duration",
-              "The amount of time this role should be on this user. For example 24h for 24 hours. The user(s) will automatically have the role removed after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this role. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner roles cannot be changed.";
-          examples: ["@John member", "@John member Make John a member"];
-        };
         roleRemoveDescription: "Removes a role from a user";
-        removeroleExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Role",
-            "User1 Duration",
-            "User1 User2 role Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to remove a role from. Can be up to a total of 10 users.",
-            ],
-            ["Role", "The role to remove"],
-            [
-              "Duration",
-              "The amount of time this role should be removed from this user. For example 24h for 24 hours. The user(s) will automatically regain the role after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for removing this role. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner roles cannot be changed.";
-          examples: ["@Paula member", "@Paula member Remove member permissions from Paula"];
-        };
         pruneDescription: "Delete a number of the latest messages of this channel, with or without filters.";
-        pruneExtended: {
-          usages: [
-            "Amount Flags User",
-            "Amount Flags after/before Message",
-            "Amount User",
-            "Amount User after/before Message",
-            "Amount --silent",
-          ];
-          extendedHelp: "This command deletes the given amount of messages given a filter within the last 100 messages sent in the channel the command has been run.\nOptionally, you can add `--silent` to tell WolfStar not to send a response message.";
-          explainedUsage: [
-            ["Amount", "The amount of messages to delete."],
-            ["--f/file/files", "Deletes messages with attachments."],
-            ["--a/author", "Deletes your messages."],
-            ["--b/bot/bots", "Deletes messages sent by bots."],
-            ["--h/human/humans", "Deletes messages sent by users."],
-            ["--i/invite/invites", "Deletes messages that contain invite links."],
-            ["--l/link/links", "Deletes messages that contain any link."],
-            ["--y/you", "Deletes my messages."],
-            ["--age=Duration", "Deletes any message newer than Duration."],
-            ["--include/contain=Word", "Deletes messages that contain Word."],
-            [
-              "--p/pin/pins",
-              "Deletes pinned messages, unless specified, no other filter deletes pins.",
-            ],
-            ["User", "Deletes messages sent by the specified user."],
-            ["Position: after", "Deletes messages sent after the specified message."],
-            ["Position: before", "Deletes messages sent before the specified message."],
-            [
-              "--s/silent",
-              "Whether or not a response message should be sent, this will also delete your command message if there were less than 100 messages filtered.",
-            ],
-          ];
-          examples: [
-            "50 --a",
-            "75 @kyra",
-            "20 --bots",
-            "60 --humans --files before 629992398700675082",
-            "30 --age=5m --contain=lol",
-            "100 --silent",
-          ];
-          reminder: "Due to a Discord limitation, bots cannot delete messages older than 14 days.";
-        };
         caseDescription: "Get the information from a case by its index.";
-        caseExtended: {
-          usages: ["Case", "Show Case", "Delete Case"];
-          extendedHelp: "You can also get the latest moderation case by specifying the case ID as `latest`";
-          explainedUsage: [
-            ["Show/Delete", "Whether to show or delete a case. Defaults to show."],
-            [
-              "Case",
-              "Number of the case ID to show or delete, or `latest` for the latest created case.",
-            ],
-          ];
-          examples: ["5", "latest", "delete 6", "delete latest"];
-        };
         caseDeleted: "{{GREENTICK}} Case {{case}} has been successfully deleted.";
         permissionsDescription: "Check the permission for a member, or yours.";
-        permissionsExtended: {
-          usages: ["", "User"];
-          explainedUsage: [
-            [
-              "User",
-              "The user for whom you want to check the permissions. Defaults to you yourself.",
-            ],
-          ];
-          extendedHelp: "Ideal if you want to know the what permissions are granted to a member when they have a certain set of roles.";
-        };
         reasonDescription: "Edit the reason field from a moderation log case.";
-        reasonExtended: {
-          usages: ["Case/Range Reason"];
-          extendedHelp: "This command allows moderation log case management, it allows moderators to update the reason.\nIf you want to modify multiple cases at once you provide a range.\nFor example `1..3` for the `<range>` will edit cases 1, 2, and 3.\nAlternatively you can also give ranges with commas:\n`1,3..6` will result in cases 1, 3, 4, 5, and 6\n`1,2,3` will result in cases 1, 2, and 3";
-          examples: [
-            "420 Spamming all channels",
-            "419..421 Bad memes",
-            "1..3,4,7..9 Posting NSFW",
-            "latest Woops, I did a mistake!",
-          ];
-        };
         restrictAttachmentDescription: "Restrict a user from sending attachments in all channels.";
-        restrictAttachmentExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to restrict attachments for. Can be up to a total of 10 users.",
-            ],
-            [
-              "Duration",
-              "The amount of time this restriction should be on this user. For example 24h for 24 hours. The user(s) will automatically have the restriction lifted after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.";
-          examples: ["@Pete", "@Pete Sending weird images", "@Pete 24h Sending NSFW images"];
-        };
         restrictEmbedDescription: "Restrict a user from attaching embeds in all channels.";
-        restrictEmbedExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to restrict embeds for. Can be up to a total of 10 users.",
-            ],
-            [
-              "Duration",
-              "The amount of time this restriction should be on this user. For example 24h for 24 hours. The user(s) will automatically have the restriction lifted after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.";
-          examples: ["@Pete", "@Pete Sending weird links", "@Pete 24h Posted a spam link"];
-          reminder: "Embeds are, for example, when a user sends a video it gets embedded in the chat.";
-        };
         restrictEmojiDescription: "Restrict a user from using external emojis in all channels.";
-        restrictEmojiExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to restrict external emojis for. Can be up to a total of 10 users.",
-            ],
-            [
-              "Duration",
-              "The amount of time this restriction should be on this user. For example 24h for 24 hours. The user(s) will automatically have the restriction lifted after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.";
-          examples: ["@Pete", "@Pete Spamming external emojis", "@Pete 24h Posted cringe"];
-          reminder: "This will only prevent the usage of external emojis and so will have no effect for non-nitro users, your own server's emojis and regular build in twemojis can still be used by members with this role.";
-        };
         restrictReactionDescription: "Restrict a user from reacting to messages in all channels.";
-        restrictReactionExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to restrict reacting to messages for. Can be up to a total of 10 users.",
-            ],
-            [
-              "Duration",
-              "The amount of time this restriction should be on this user. For example 24h for 24 hours. The user(s) will automatically have the restriction lifted after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.";
-          examples: ["@Pete", "@Pete Spamming reactions", "@Pete 24h Posting weird reactions"];
-        };
         restrictVoiceDescription: "Restrict a user from joining any voice channel.";
-        restrictVoiceExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to restrict voice channel interaction for. Can be up to a total of 10 users.",
-            ],
-            [
-              "Duration",
-              "The amount of time this restriction should be on this user. For example 24h for 24 hours. The user(s) will automatically have the restriction lifted after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}**, and only members with lower role hierarchy position can be managed by me.\nNo, the server's owner cannot be restricted.\nThis action can be optionally timed to create a temporary restriction.\nThe restricted role is **sticky**, if the user tries to remove it by rejoining the server, it will be added back.";
-          examples: [
-            "@Pete",
-            "@Pete Earraping in general voice channels",
-            "@Pete 24h Making weird noises",
-          ];
-        };
         softBanDescription: "Hit somebody with the ban hammer, destroying all their messages for some days, and unban it.";
-        softBanExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Reason",
-            "User --seconds=S --minutes=M --hours=H --days=D",
-          ];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to softban. Can be up to a total of 10 users."],
-            [
-              "Reason",
-              "The reason for the softban. This will also show in the server's audit logs.",
-            ],
-            [
-              "--seconds=S --minutes=M --hours=H --days=D",
-              "The amount of time worth of messages to delete, each flag is optional and can be combined. Up to 7 days.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{BanMembers, permissions}}**, and only members with lower role hierarchy position can be banned by me.\nNo, the server's owner cannot be banned.\nThe ban feature from Discord has a feature that allows the moderator to remove all messages from all channels that have been sent in the last 'x' days, being a number between 0 (no days) and 7.\nThe user gets unbanned right after the ban, so it is like a kick, but that can prune many many messages.";
-          examples: [
-            "@Pete",
-            "@Pete Spamming all channels",
-            "@Pete 7 All messages sent in 7 are gone now, YEE HAH!",
-          ];
-        };
         banRemoveDescription: "Unban somebody from this server.";
-        unbanExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to unban. Can be up to a total of 10 users."],
-            [
-              "Reason",
-              "The reason for the ban removal. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{BanMembers, permissions}}**. It literally gets somebody from the rubbish bin, cleans them up, and allows the pass to this server's gates.";
-          examples: ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"];
-        };
         muteRemoveDescription: "Remove the scotch tape from a user.";
         muteCreateDescription: "Prepare the mute system.";
-        unmuteExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to unmute. Can be up to a total of 10 users."],
-            [
-              "Reason",
-              "The reason for the mute removal. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the muted people's list, and gives the old roles back if the user had them.";
-          examples: ["@Pete", "@Pete (Insert random joke here)."];
-        };
         unrestrictAttachmentDescription: "Remove the attachment restriction from one or more users.";
-        unrestrictAttachmentExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to remove attachment restrictions from. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for the removal of the attachment restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the restricted people's list.";
-          examples: ["@Pete"];
-        };
         unrestrictEmbedDescription: "Remove the embed restriction from one or more users.";
-        unrestrictEmbedExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to remove embed restrictions from. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for the removal of the embed restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the restricted people's list.";
-          examples: ["@Pete"];
-        };
         unrestrictEmojiDescription: "Remove the external emoji restriction from one or more users.";
-        unrestrictEmojiExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to remove emoji restrictions from. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for the removal of the emoji restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the restricted people's list.";
-          examples: ["@Pete"];
-        };
         unrestrictReactionDescription: "Remove the reaction restriction from one or more users.";
-        unrestrictReactionExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to remove reaction restrictions from. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for the removal of the reaction restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the restricted people's list.";
-          examples: ["@Pete"];
-        };
         unrestrictVoiceDescription: "Remove the voice restriction from one or more users.";
-        unrestrictVoiceExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to remove voice restrictions from. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for the removal of the voice restriction. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MANAGE_ROLES, permissions}}** and removes a user from the restricted people's list.";
-          examples: ["@Pete"];
-        };
         unwarnDescription: "Appeal a warning moderation log case.";
-        unwarnExtended: {
-          usages: ["Case", "Case Reason"];
-          explainedUsage: [
-            [
-              "Case",
-              "The case number to modify. You can find the case numbers through the `history` command or by looking in your moderation logs channel",
-            ],
-            ["Reason", "The reason for removing this warning."],
-          ];
-          extendedHelp: "This command appeals a warning, it requires no permissions, you only give me the moderation log case to appeal and the reason.";
-          examples: ["0 Whoops, wrong dude.", "42 Turns out this was the definition of life."];
-        };
         vmuteDescription: "Mute or unmute a user's microphone in voice channels.";
         vmuteAddDescription: "Throw somebody's microphone out the window.";
-        vmuteExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to mute in voice channels. Can be up to a total of 10 users.",
-            ],
-            [
-              "Duration",
-              "The amount of time this voice mute should apply for. For example 24h for 24 hours. The user(s) will automatically have the voice mute lifted after this time.",
-            ],
-            [
-              "Reason",
-              "The reason for adding this voice mute. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MUTE_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be silenced by me.\nNo, the server's owner cannot be silenced.\nThis action can be optionally timed to create a temporary voice mute.";
-          examples: ["@Pete", "@Pete Singing too loud", "@Pete 24h Literally sang ear rape"];
-        };
         voiceKickDescription: "Hit somebody with the 👢 for singing so bad and loud.";
-        voiceKickExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason", "User1 User2 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to kick from their current voice channel. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for kicking the user(s) from the voice channel. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires the permissions **{{MANAGE_CHANNELS, permissions}}** to create a temporary (hidden) voice channel, and **{{MOVE_MEMBERS, permissions}}** to move the user to the temporary channel.\nAfter this, the channel is quickly deleted, making the user leave the voice channel.\nFor scared moderators, this command has almost no impact in the average user, as the channel is created in a way only me and the selected user can see and join, then quickly deleted.";
-          examples: ["@Pete", "@Pete Spamming all channels"];
-        };
         vmuteRemoveDescription: "Get somebody's microphone back so they can talk.";
-        vunmuteExtended: {
-          usages: ["User", "User1 User2 User3...User10", "User1 Reason"];
-          explainedUsage: [
-            [
-              "User/User1/User2",
-              "The user(s) to unmute in voice channels. Can be up to a total of 10 users.",
-            ],
-            [
-              "Reason",
-              "The reason for removing the voice mute. This will also show in the server's audit logs.",
-            ],
-          ];
-          extendedHelp: "This command requires **{{MUTE_MEMBERS, permissions}}**, and only members with lower role hierarchy position can be un-silenced by me.\nNo, the server's owner cannot be un-silenced.";
-          examples: ["@Pete", "@Pete Appealed his times signing hear rape."];
-        };
         warnDescription: "File a warning to somebody, or remove one.";
-        warnExtended: {
-          usages: [
-            "User",
-            "User1 User2 User3...User10",
-            "User1 Duration",
-            "User1 User2 Duration Reason",
-          ];
-          explainedUsage: [
-            ["User/User1/User2", "The user(s) to warn. Can be up to a total of 10 users."],
-            [
-              "Duration",
-              "The amount of time this warn apply for. For example 24h for 24 hours. The user(s) will automatically have the warning removed after this time.",
-            ],
-            ["Reason", "The reason for this warning."],
-          ];
-          extendedHelp: "This command files a warning to a user.\nThis kind of warning is meant to be **formal warnings**, as they will be shown in the 'warnings' command.\nIt is a good practise to do an informal warning before using this command.";
-          examples: ["@Pete Attempted to mention everyone."];
-        };
         timeoutDescription: "Time out a user, or remove a time out.";
         timeoutAddDescription: "Time out a user.";
-        timeoutApplyExtended: {
-          usages: ["Duration User", "Duration User Reason"];
-          explainedUsage: [
-            ["Duration", "The duration of the timeout. For example 24h for 24 hours."],
-            ["User", "The user to time out."],
-            [
-              "Reason",
-              "The reason for the timeout. This will also show in the server's audit logs.",
-            ],
-          ];
-          examples: ["30s @Pete", "2h @Pete Spamming all channels"];
-        };
         timeoutRemoveDescription: "Remove a time out from a user.";
-        timeoutUndoExtended: {
-          usages: ["User", "User Reason"];
-          explainedUsage: [
-            ["User", "The user to time out."],
-            [
-              "Reason",
-              "The reason for the timeout. This will also show in the server's audit logs.",
-            ],
-          ];
-          examples: ["@Pete", "@Pete Turns out he was not the one who spammed all channels 🤷"];
-        };
         timeoutNotModeratable: "The target cannot be timed out by me.";
         banName: "ban";
         banAddName: "add";
@@ -2492,106 +1703,30 @@ declare module "i18next" {
       };
       "commands/system": {
         evalDescription: "Evaluates arbitrary Javascript.";
-        evalExtended: {
-          usages: ["Expression"];
-          extendedHelp: "The eval command evaluates code as-in, any error thrown from it will be handled.\nIt also uses the flags feature. Write --silent, --depth=number or --async to customize the output.\nThe --wait flag changes the time the eval will run. Defaults to 60 seconds. Accepts time in milliseconds.\nThe --silent flag will make it output nothing.\nThe --depth flag accepts a number, for example, --depth=2, to customize util.inspect's depth.\nThe --async flag will wrap the code into an async function where you can enjoy the use of await, however, if you want to return something, you will need the return keyword\nThe --showHidden flag will enable the showHidden option in util.inspect.\nThe --lang and --language flags allow different syntax highlight for the output.\nThe --json flag converts the output to json\nThe --no-timeout flag disables the timeout\nIf the output is too large, it'll send the output as a file.";
-          explainedUsage: [["Expression", "The expression to evaluate"]];
-          examples: ["msg.author.username;", "1 + 1;"];
-          reminder: "Reserved for bot owners.";
-        };
         donateDescription: "Get information about how to donate to keep Skyra alive longer.";
-        donateExtended: {
-          extendedHelp: "Skyra Project started on 24th October 2016, if you are reading this, you are using version {{VERSION}}. The development team improves a lot in every iteration of Skyra.\n\nHowever, not everything is free and we need your help to keep Skyra alive.\nWe will be very thankful if you help us.\nWe have been working on a lot of things, and Skyra is precious to us. Take care of her ❤\n\nDo you want to support this amazing project? Feel free to do so! https://donate.skyra.pw/patreon or https://donate.skyra.pw/kofi";
-        };
         evalTimeout: "TIMEOUT: Took longer than {{seconds}} seconds.";
         evalError: "**Error**:{{output}}\n**Type**:{{type}}\n{{time}}";
         disable: "+ Successfully disabled {{type}}: {{name}}";
         disableDescription: "Re-disables or temporarily disables a command/preconditions/event. Default state restored on reboot.";
-        disableExtended: {
-          usages: ["Piece"];
-          extendedHelp: "Disable a piece that was previously enabled";
-          explainedUsage: [["Piece", "The piece to disable"]];
-          reminder: "Reserved for bot owners.";
-        };
         disableWarn: "You probably don't want to disable that, since you wouldn't be able to run any command to enable it again";
         dmNotSent: "I cannot send you a message in DMs, did you block me?";
         dmSent: "I have sent you the message in DMs.";
         enable: "+ Successfully enabled {{type}}: {{name}}";
         enableDescription: "Re-enables or temporarily enables a command/preconditions. Default state restored on reboot.";
-        enableExtended: {
-          usages: ["Piece"];
-          extendedHelp: "Enables a piece that was previously disabled";
-          explainedUsage: [["Piece", "The piece to enable"]];
-          reminder: "Reserved for bot owners.";
-        };
         reboot: "{{LOADING}} Rebooting...";
         rebootDescription: "Reboots the bot.";
-        rebootExtended: {
-          extendedHelp: "The bot goes boom, then the bot goes revive.";
-          reminder: "Reserved for bot owners.";
-        };
         supportDescription: "Show support instructions";
         supportEmbedDescription: "Then you should probably join [Skyra's Lounge](https://join.skyra.pw)! There, you can receive support by the developers and other members of the community!";
         supportEmbedTitle: "Looking for help, {{username}}?";
-        supportExtended: {
-          extendedHelp: "This command gives you a link to *Skyra's Lounge*, the best place for everything related to me.";
-        };
       };
       "commands/tools": {
         avatarDescription: "View somebody's avatar in full size.";
-        avatarExtended: {
-          usages: ["", "User"];
-          extendedHelp: "As this command's name says, it shows somebody's avatar.";
-          explainedUsage: [["User", "The user to get the avatar for. Defaults to you yourself."]];
-          reminder: "Use the --size flag to change the avatar's size.";
-        };
         avatarNone: "The user does not have an avatar set.";
         color: "HEX: **{{hex}}**\nRGB: **{{rgb}}**\nHSL: **{{hsl}}**";
         colorDescription: "Display some awesome colours.";
-        colorExtended: {
-          usages: ["Color", "Color Difference"];
-          extendedHelp: "The color command displays a set of colours with nearest tones given a difference between 1 and 255.";
-          explainedUsage: [
-            ["Color", "The color to check. Can be in the RGB, HSL, B10 (Base 10) or HEX format."],
-            [
-              "Difference",
-              "A numeric difference between each shade of the color. Defaults to 10. If you don't know what this is, then you probably don't need it.",
-            ],
-          ];
-          examples: ["#dfdfdf 25", "rgb(200, 130, 75)"];
-          possibleFormats: [
-            ["HEX", "#dfdfdf"],
-            ["RGB", "rgb(200, 200, 200)"],
-            ["HSL", "hsl(350, 100, 100)"],
-            ["B10", "14671839"],
-          ];
-        };
         contentDescription: "Get messages' raw content.";
-        contentExtended: {
-          usages: ["Message", "Channel Message", "Channel Message --all/--format"];
-          extendedHelp: "Raw content will help you better copy-paste message content as you will not have to reproduce all the formatting.";
-          explainedUsage: [
-            [
-              "Channel",
-              "The channel in which the message is to get the content from. Defaults to the current channel",
-            ],
-            ["Message", "ID of the message to get the content from."],
-            ["--all", "Gets all content including embeds and formats them separated by lines."],
-            [
-              "--format",
-              "Gets all content including embeds and formats them in a more readable format.",
-            ],
-          ];
-          examples: ["810103450544767026", "#announcement 810103450544767026"];
-        };
         contentEmpty: "The message does not contain any content I can source.";
         countryDescription: "Shows information about a country.";
-        countryExtended: {
-          usages: ["Country"];
-          extendedHelp: "This command uses https://restcountries.eu to get information on the provided country.";
-          explainedUsage: [["Country", "The name of the country."]];
-          examples: ["United Kingdom"];
-        };
         countryFields: {
           other: {
             area: "Area";
@@ -2612,45 +1747,20 @@ declare module "i18next" {
           OVERVIEW: "Overview";
         };
         createEmojiDescription: "Adds a custom emoji to your Discord server.";
-        createEmojiExtended: {
-          usages: ["Emoji"];
-          extendedHelp: "Using a custom emoji on another server, I can re-upload that emoji to the current server.";
-          explainedUsage: [["Emoji", "A custom emoji on Discord."]];
-          examples: ["<:Skyra:638508279357767680>", "<a:SkyraHappy:735068843407573043>"];
-          reminder: "Make sure the bot has {{MANAGE_EMOJIS_AND_STICKERS, permissions}} permissions in this server!";
-        };
         createEmojiInvalidDiscordEmoji: "I could not resolve `{{parameter}}` to a valid Discord emoji. Make sure it is from a Discord server, and not a default emoji.";
         createEmojiDuplicate: "An emoji named `{{name}}` already exists!";
         createEmojiInvalidEmoji: "{{REDCROSS}} Failed to download that emoji.";
         createEmojiSuccess: "{{GREENTICK}} Success: {{emoji}} was created";
         defineDescription: "Check the definition of a word.";
-        defineExtended: {
-          usages: ["Word"];
-          extendedHelp: 'What does "heel" mean?';
-          explainedUsage: [["Word", "The word or phrase you want to get the definition from."]];
-          examples: ["heel"];
-        };
         defineNotfound: "I could not find a definition for this word.";
         definePronounciation: "Pronunciation";
         defineUnknown: "Unknown";
         emojiCustom: "→ `Emoji ::` **{{emoji}}**\n→ `Type  ::` **Custom**\n→ `ID    ::` **{{id}}**";
         emojiDescription: "Get info on an emoji.";
-        emojiExtended: {
-          usages: ["Emoji"];
-          extendedHelp: "I'll give you the emoji name, whether it is a custom emoji or not, the emoji ID and a large image preview of the emoji.";
-          explainedUsage: [["Emoji", "The emoji to get information about"]];
-          reminder: "It doesn't matter whether I share a server with a custom emoji or not!";
-        };
         emojiInvalid: "The argument you provided is not a valid emoji.";
         emojiTooLarge: "'{{emoji}}' is so heavy the hamsters couldn't keep with its size. Maybe try one that is smaller?";
         emojiTwemoji: "→ `Emoji ::` `{{emoji}}`\n→ `Type  ::` **Twemoji**\n→ `ID    ::` **{{id}}**";
         eshopDescription: "Request information for any American Nintendo Digital Store";
-        eshopExtended: {
-          usages: ["Query"];
-          extendedHelp: "This command queries Nintendo of America to show data for the game you request.";
-          explainedUsage: [["Query", "The name of the game you're looking for."]];
-          examples: ["Breath of the Wild", "Pokemon", "Splatoon"];
-        };
         eshopNotInDatabase: "None available";
         eshopPriceFree: "Free";
         eshopPricePaid: "${{price}} USD";
@@ -2666,18 +1776,6 @@ declare module "i18next" {
           releaseDate: "Release Date";
         };
         horoscopeDescription: "Get your latest horoscope";
-        horoscopeExtended: {
-          usages: ["Sunsign", "Sunsign today/tomorrow/yesterday"];
-          extendedHelp: "Gets the horoscope for a given sun sign from Kelli Fox's The Astrologer.";
-          explainedUsage: [
-            ["Sunsign", "The sun sign you want to get the horoscope for"],
-            [
-              "today/tomorrow/yesterday",
-              'If you want to get the horoscope of another day you can specify that Defaults to "today".',
-            ],
-          ];
-          examples: ["pisces", "virgo tomorrow", "gemini yesterday", "aries today"];
-        };
         horoscopeInvalidSunsign: "I was not able to resolve `{{parameter}}` to a valid sign, maybe try `{{maybe}}`?";
         horoscopeTitles: {
           dailyHoroscope: "Daily horoscope for {{sign}}";
@@ -2699,12 +1797,6 @@ declare module "i18next" {
           noSummary: "No game summary available";
         };
         igdbDescription: "Searches IGDB (Internet Game Database) for your favourite games";
-        igdbExtended: {
-          usages: ["Query"];
-          extendedHelp: "This command queries the IGDB API to show data on your favourite games.";
-          explainedUsage: [["Query", "The name of the game to look up"]];
-          examples: ["Breath of the Wild", "Borderlands 3"];
-        };
         igdbTitles: {
           ageRating: "Age rating(s)";
           developers: "Developer(s)";
@@ -2714,12 +1806,6 @@ declare module "i18next" {
           userScore: "User score";
         };
         itunesDescription: "Searches iTunes API for music tracks";
-        itunesExtended: {
-          usages: ["Query"];
-          extendedHelp: "This command queries the Apple iTunes API to show data on a music you request.";
-          explainedUsage: [["Query", "The name of the song to look up"]];
-          examples: ["Apocalyptica feat. Brent Smith", "You're Gonna Go Far, Kid"];
-        };
         itunesTitles: {
           artist: "Artist";
           collection: "Collection";
@@ -2740,12 +1826,6 @@ declare module "i18next" {
           variableRuntime: "Variable";
         };
         moviesDescription: "Searches TheMovieDatabase for any movie";
-        moviesExtended: {
-          usages: ["Query"];
-          extendedHelp: "This command queries TheMovieDatabase API for data on your favourite movies.\nTip: You can use the 'y:' filter to narrow your results by year. Example: \"star wars y:1977\".";
-          explainedUsage: [["Query", "The name of the movie to look up"]];
-          examples: ["Ocean's Eleven y:2001", "Star Wars Revenge of the Sith", "Spirited Away"];
-        };
         moviesTitles: {
           collection: "Collection";
           genres: "Genres";
@@ -2757,51 +1837,16 @@ declare module "i18next" {
           userScore: "User score";
         };
         pollDescription: "Simplifies reaction-based polls.";
-        pollExtended: {
-          usages: ["Option1 Option2", "Option1 Option2 Option3...Option20"];
-          extendedHelp: "Separate your options using commas.";
-          explainedUsage: [
-            [
-              "Option1/Option2/Option3/Option20",
-              "The options to poll. Minimum of 2, maximum of 20",
-            ],
-          ];
-          examples: [
-            "Make an anime channel, Make a gaming channel, Make a serious-discussion channel",
-          ];
-        };
         pollReactionLimit: "Please don't add emojis while I am reacting!";
         priceCurrency: "**{{fromAmount}}** {{fromCurrency}} is worth {{worths, andList}}.";
         priceCurrencyNotFound: "There was an error, please make sure you specified an appropriate coin and currency.";
         priceDescription: "Convert between currencies with this command.";
-        priceExtended: {
-          usages: [
-            "Amount FromCurrency ToCurrency",
-            "Amount FromCurrency ToCurrency1 ToCurrency2 ToCurrency3...ToCurrencyX",
-          ];
-          extendedHelp: "Convert between any two currencies, even if they are cryptocurrencies.";
-          explainedUsage: [
-            ["Amount", "The amount to convert. Default is 1."],
-            ["FromCurrency", "The currency to convert from"],
-            [
-              "ToCurrency",
-              "The currency to convert to, you can give multiple currencies to get results in each.",
-            ],
-          ];
-          examples: ["EUR USD", "5 USD EUR", "10 USD BAT"];
-        };
         showsData: {
           noGenres: "None on TheMovieDB";
           unknownUserScore: "No user score";
           variableRuntime: "Variable";
         };
         showsDescription: "Searches The Movie Database for any show";
-        showsExtended: {
-          usages: ["Query"];
-          extendedHelp: "This command queries TheMovieDatabase for data on your favorite shows";
-          explainedUsage: [["Query", "The name of the show to search"]];
-          examples: ["Final Space", "Gravity Falls", "Rick and Morty"];
-        };
         showsTitles: {
           episodeRuntime: "Episode runtime";
           firstAirDate: "First air date";
@@ -2811,22 +1856,8 @@ declare module "i18next" {
         };
         systemTextTruncated: "{{definition}}... [continue reading]({{url}})";
         urbanDescription: "Check the definition of a word on UrbanDictionary.";
-        urbanExtended: {
-          usages: ["Word", "Word Page"];
-          extendedHelp: 'What does "spam" mean?';
-          explainedUsage: [
-            ["Word", "The word or phrase you want to get the definition for."],
-            ["Page", "The page you wish to read. Defaults to 1."],
-          ];
-          examples: ["spam"];
-        };
         urbanNoDefinition: "There are no definitions for the query `{{parameter}}`!";
         voteDescription: "Simplified reaction-based vote.";
-        voteExtended: {
-          usages: ["Question"];
-          examples: ["Should I implement the #anime channel?"];
-          explainedUsage: [["Question", "The question to vote on."]];
-        };
         voteContentNeeded: "{{REDCROSS}} You must give a topic for the poll.";
         voteReactionBlocked: "{{REDCROSS}} I was not able to add the reactions necessary for this command to work because you have me blocked! 😢";
         whoisName: "whois";
@@ -2841,13 +1872,6 @@ declare module "i18next" {
         whoisOptionsUserDescription: "The user to get information about, defaults to you.";
         whoisOptionsRoleName: "role";
         whoisOptionsRoleDescription: "The role to get information about, defaults to your highest role.";
-        whoisExtended: {
-          usages: ["", "User"];
-          extendedHelp: "Gets information on any server member. Also known as `userinfo` in many other bots.";
-          explainedUsage: [
-            ["User", "The user to get information about. Defaults to you yourself."],
-          ];
-        };
         whoisMemberFields: {
           createdAt: "{{memberCreatedAt}}\n{{memberCreatedAtOffset}}";
           footer: "ID: {{member.id}}";
@@ -2871,19 +1895,8 @@ declare module "i18next" {
           createdAt: "Created At";
         };
         wikipediaDescription: "Search something through Wikipedia.";
-        wikipediaExtended: {
-          usages: ["Page"];
-          extendedHelp: "In NSFW channels I will also add the page image, if available. This restriction is in place because Wikipedia has NSFW images for NSFW pages as they have to be accurate (i.e. diseases or human body parts).";
-          explainedUsage: [["Page", "The Wikipedia page to view"]];
-          reminder: "Most Wikipedia page titles are case sensitive. Some celebrities will have lowercase redirects, but not many.";
-        };
         wikipediaNotfound: "I am sorry, I could not find something that could match your input in Wikipedia.";
         youtubeDescription: "Search something through YouTube.";
-        youtubeExtended: {
-          usages: ["Query"];
-          extendedHelp: "If I have the {{MANAGE_MESSAGES, permissions}} {{ADD_REACTIONS, permissions}} permissions then I will provide the option to navigate through the top 10 results.";
-          explainedUsage: [["Query", "The video(s) to look up through YouTube"]];
-        };
         youtubeNotfound: "I am sorry, I could not find something that could match your input in YouTube.";
         whoisSubcommandChannelName: "channel";
         whoisSubcommandChannelDescription: "Get information about a channel.";
