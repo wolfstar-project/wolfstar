@@ -332,7 +332,7 @@ function readCommandHelpTexts(t: TFunction, name: string): CommandHelpTexts {
 	const texts = value as Record<keyof CommandHelpTexts, unknown>;
 	return {
 		extendedHelp: isText(texts.extendedHelp) ? texts.extendedHelp : undefined,
-		examples: isTextArray(texts.examples) ? texts.examples : undefined,
+		examples: isExampleArray(texts.examples) ? texts.examples : undefined,
 		possibleFormats: isPairArray(texts.possibleFormats) ? texts.possibleFormats : undefined,
 		reminder: isText(texts.reminder) ? texts.reminder : undefined
 	};
@@ -342,8 +342,11 @@ function isText(value: unknown): value is string {
 	return typeof value === 'string' && value.length > 0;
 }
 
-function isTextArray(value: unknown): value is string[] {
-	return Array.isArray(value) && value.length > 0 && value.every(isText);
+/**
+ * Whether a value is a list of examples. An example can be empty: it is the command run with no options (`/commands`).
+ */
+function isExampleArray(value: unknown): value is string[] {
+	return Array.isArray(value) && value.length > 0 && value.every((example) => typeof example === 'string');
 }
 
 function isPairArray(value: unknown): value is [string, string][] {

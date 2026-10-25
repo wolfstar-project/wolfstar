@@ -275,6 +275,11 @@ describe('getCommandHelp', () => {
 		const t = createTranslator({ 'commands/help:/dehoist': { extendedHelp: 5, examples: ['fine', 3], reminder: '', possibleFormats: [['a']] } });
 		expect(getCommandHelp(t as never, createCommand({ name: 'dehoist' }), null)).toEqual({ usages: [''] });
 	});
+
+	test('GIVEN an empty example THEN it is kept, as the command run with no options', () => {
+		const t = createTranslator({ 'commands/help:/commands': { examples: ['', 'command:ban'] } });
+		expect(getCommandHelp(t as never, createCommand({ name: 'commands' }), null)).toEqual({ usages: [''], examples: ['', 'command:ban'] });
+	});
 });
 
 describe('flattenCommand', () => {
