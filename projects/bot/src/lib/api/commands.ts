@@ -1,9 +1,11 @@
 import { getCategory, getSubCategory } from '#lib/database/utils/matchers/Command';
 import { ProtectedCommands } from '#lib/structures/commands-menu/disabled';
+import { CommandPermissionLevel, getRequiredCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { PermissionLevels } from '#lib/types';
 import { PreconditionRunCondition, PreconditionRunMode } from '@wolfstar/http-framework';
 import type { Command, PreconditionArrayResolvable, PreconditionEntryResolvable } from '@wolfstar/http-framework';
 import type { TFunction } from '@wolfstar/plugin-i18next';
+import { subCommandsGroupRegistry, subCommandsRegistry } from '@wolfstar/plugin-subcommands-advanced';
 import {
 	ApplicationCommandOptionType,
 	InteractionContextType,
@@ -38,12 +40,13 @@ export interface FlattenedCommandPreconditions {
 }
 
 /**
- * The help of a command, the `extendedHelp` of `GET /commands`.
+ * The help of an entry of `GET /commands`, its `extendedHelp`.
  *
  * @remarks `usages` and `explainedUsage` are read from what the command registers with Discord, so they are always
- * right; the other ones are the texts of `commands/help` written for the command, see {@linkcode CommandHelpTexts}.
+ * right: the options of the entry, after its name. The other ones are the texts of `commands/help` written for its
+ * command, see {@linkcode CommandHelpTexts}, which every subcommand of the command shares but for the examples.
  */
-export interface FlattenedCommandHelp {
+interface FlattenedCommandHelp {
 	usages?: string[];
 	extendedHelp?: string;
 	explainedUsage?: [string, string][];
@@ -57,6 +60,7 @@ export interface FlattenedCommandHelp {
  *
  * - `extendedHelp`: what the command does, beyond its description.
  * - `examples`: ways to run it, as a member writes them after the name of the command (`add user:@Pete reason:Spam`).
+ *   A subcommand gets the ones that start with its name, without it.
  * - `possibleFormats`: the formats a value can be written in, with what each one means.
  * - `reminder`: what is easy to miss.
  *
@@ -67,10 +71,15 @@ export interface FlattenedCommandHelp {
 type CommandHelpTexts = Pick<FlattenedCommandHelp, 'extendedHelp' | 'examples' | 'possibleFormats' | 'reminder'>;
 
 /**
- * A command as `GET /commands` lists it.
+ * An entry of `GET /commands`: a chat input command with no subcommands, or one of the subcommands of a command, as
+ * the message commands of the original bot were each an entry.
  *
- * @remarks The fields are the ones the message commands of the original bot had, which the website reads:
+ * @remarks The fields are the ones the message commands had, which the website reads, and `command`:
  *
+ * - `name` is what is written after the slash, `ban add` for a subcommand.
+ * - `command` is the name of the piece of the command, which the settings take: `commands.disabled`, the restrictions
+ *   of `/commands` and the permission nodes disable a command, not one of its subcommands, and they write the piece
+ *   (`warnThresholds`) where Discord writes `warn-thresholds`.
  * - `alias` is always empty, a chat input command has no aliases.
  * - `guarded` is whether a server cannot disable the command, see {@linkcode ProtectedCommands}.
  */
@@ -78,6 +87,7 @@ export interface FlattenedCommand {
 	category: string | null;
 	subCategory: string | null;
 	alias: string[];
+	command: string;
 	description: string;
 	extendedHelp: FlattenedCommandHelp;
 	guarded: boolean;
@@ -101,102 +111,112 @@ const PermissionLevelPreconditions: ReadonlyMap<string, PermissionLevels> = new 
 ]);
 
 /**
- * Reads a command for `GET /commands`.
+ * The precondition pieces that check the levels `RequiresCommandPermissionLevel` requires, which a subcommand lists.
+ */
+const CommandPermissionLevelPreconditions: Readonly<Record<CommandPermissionLevel, string>> = {
+	[CommandPermissionLevel.Moderator]: 'moderator',
+	[CommandPermissionLevel.Administrator]: 'administrator'
+};
+
+/**
+ * Lists the entries of a command for `GET /commands`: the command itself when it has no subcommands, else each of its
+ * subcommands, as the commands menu does (`listCatalogEntries`).
+ *
+ * @remarks Every entry of a command has its category, its help texts and what the settings take it by. A subcommand has
+ * its own description, usage and examples, and the level and the preconditions of its command plus the ones its own piece
+ * requires (`RequiresCommandPermissionLevel`, `/settings server`).
  *
  * @param command - The command piece.
  * @param data - What the command registers with Discord.
  * @param locale - The locale to write the texts in, `null` for the default ones.
  * @param t - The function to read `commands/help` with, fixed to the same locale.
  */
-export function flattenCommand(command: Command, data: ChatInputCommandData, locale: string | null, t: TFunction): FlattenedCommand {
-	const { preconditions } = command.options;
-	return {
-		category: getCategory(command),
-		subCategory: getSubCategory(command),
-		alias: [],
-		description: localize(data.description, data.description_localizations, locale),
-		extendedHelp: getCommandHelp(t, data, locale),
-		guarded: ProtectedCommands.has(command.name),
-		name: data.name,
-		permissionLevel: getCommandPermissionLevel(preconditions, data.default_member_permissions),
-		preconditions: getCommandPreconditions(preconditions, data.contexts)
-	};
+export function getCommandEntries(command: Command, data: ChatInputCommandData, locale: string | null, t: TFunction): FlattenedCommand[] {
+	const texts = readCommandHelpTexts(t, data.name);
+	return getCommandPaths(data, locale).map((path) => {
+		const preconditions = appendPreconditions(command.options.preconditions, getSubcommandPreconditions(data.name, path.names));
+		return {
+			category: getCategory(command),
+			subCategory: getSubCategory(command),
+			alias: [],
+			command: command.name,
+			description: path.description,
+			extendedHelp: getEntryHelp(texts, path, locale),
+			guarded: ProtectedCommands.has(command.name),
+			name: [data.name, ...path.names].join(' '),
+			permissionLevel: getCommandPermissionLevel(preconditions, data.default_member_permissions),
+			preconditions: getCommandPreconditions(preconditions, data.contexts)
+		};
+	});
 }
 
 /**
- * Builds the help of a command: its usages and their explanation, and the texts written for it in `commands/help`.
+ * Builds the help of an entry: its usage, its options explained, and the texts of its command.
  *
  * @remarks A text that is missing, or that is not of the shape {@linkcode CommandHelpTexts} gives it, is left out.
- *
- * @param t - The function to translate with.
- * @param data - What the command registers with Discord.
- * @param locale - The locale to write the usages in, `null` for the default names and descriptions.
  */
-export function getCommandHelp(t: TFunction, data: ChatInputCommandData, locale: string | null): FlattenedCommandHelp {
-	const texts = readCommandHelpTexts(t, data.name);
-	const help: FlattenedCommandHelp = { usages: getCommandUsages(data, locale) };
+function getEntryHelp(texts: CommandHelpTexts, path: CommandPath, locale: string | null): FlattenedCommandHelp {
+	const help: FlattenedCommandHelp = { usages: [path.options.map((option) => formatOption(option, locale)).join(' ')] };
 	if (texts.extendedHelp) help.extendedHelp = texts.extendedHelp;
+	if (path.options.length > 0) {
+		help.explainedUsage = path.options.map((option) => [
+			localize(option.name, option.name_localizations, locale),
+			localize(option.description, option.description_localizations, locale)
+		]);
+	}
 
-	const explainedUsage = getCommandExplainedUsage(data, locale);
-	if (explainedUsage.length > 0) help.explainedUsage = explainedUsage;
 	if (texts.possibleFormats) help.possibleFormats = texts.possibleFormats;
-	if (texts.examples) help.examples = texts.examples;
+	const examples = getEntryExamples(texts.examples ?? [], path);
+	if (examples.length > 0) help.examples = examples;
 	if (texts.reminder) help.reminder = texts.reminder;
 	return help;
 }
 
 /**
- * Writes the ways a command can be run: one for each subcommand, or the command itself when it has none, with its
- * options after it (`add <user> [reason]`, a required one in angle brackets).
- *
- * @param data - What the command registers with Discord.
- * @param locale - The locale to write the names in, `null` for the default ones.
+ * Picks the examples of a command that run an entry, and writes them after its name: `add user:@Pete` is
+ * `user:@Pete` for `ban add`, and `add` alone the subcommand with no options.
  */
-export function getCommandUsages(data: ChatInputCommandData, locale: string | null): string[] {
-	return getCommandPaths(data, locale).map(({ path, options }) =>
-		[path, ...options.map((option) => formatOption(option, locale))].filter((part) => part.length > 0).join(' ')
-	);
+function getEntryExamples(examples: readonly string[], path: CommandPath): string[] {
+	if (path.names.length === 0) return [...examples];
+
+	// The subcommand is written as it is registered, or as the locale names it:
+	const prefixes = [...new Set([path.names.join(' '), path.path])];
+	const picked: string[] = [];
+	for (const example of examples) {
+		const prefix = prefixes.find((candidate) => example === candidate || example.startsWith(`${candidate} `));
+		if (prefix !== undefined) picked.push(example.slice(prefix.length).trimStart());
+	}
+
+	return picked;
 }
 
 /**
- * Explains the usages of a command: each subcommand with its description, then each option once with its own.
+ * Reads the preconditions the piece of a subcommand requires besides the ones of its command: the level
+ * `RequiresCommandPermissionLevel` requires to run it. The `preconditions` option of the piece is not listed:
+ * `@wolfstar/plugin-subcommands-advanced` runs its `chatInputRun` for the command and never checks it, only the option of
+ * the command is.
  *
- * @remarks An option is written with its subcommand (`list [user]`) when its name is the one of a subcommand, or when
- * two subcommands describe it differently, so every explanation says what it is about.
- *
- * @param data - What the command registers with Discord.
- * @param locale - The locale to write the names and the descriptions in, `null` for the default ones.
+ * @param parent - The name of the command, by which `@wolfstar/plugin-subcommands-advanced` registers its subcommands.
+ * @param names - The names of the subcommand under the command, none for the command itself.
  */
-export function getCommandExplainedUsage(data: ChatInputCommandData, locale: string | null): [string, string][] {
-	const paths = getCommandPaths(data, locale);
-	const entries: [string, string][] = paths.filter(({ path }) => path.length > 0).map(({ path, description }) => [path, description]);
+function getSubcommandPreconditions(parent: string, names: readonly string[]): readonly PreconditionEntryResolvable[] {
+	if (names.length === 0) return [];
 
-	// The names an option cannot be written alone with: the ones of the subcommands, and the ones described twice.
-	const descriptions = new Map<string, Set<string>>();
-	for (const { options } of paths) {
-		for (const option of options) {
-			const name = localize(option.name, option.name_localizations, locale);
-			const description = localize(option.description, option.description_localizations, locale);
-			descriptions.set(name, (descriptions.get(name) ?? new Set()).add(description));
-		}
-	}
+	const entry =
+		names.length === 1 ? subCommandsRegistry.get(parent)?.get(names[0]) : subCommandsGroupRegistry.get(parent)?.get(names[0])?.get(names[1]);
+	if (entry === undefined) return [];
 
-	const subcommands = new Set(entries.map(([path]) => path));
-	const written = new Set<string>();
-	for (const { path, options } of paths) {
-		for (const option of options) {
-			const name = localize(option.name, option.name_localizations, locale);
-			const description = localize(option.description, option.description_localizations, locale);
-			const label = subcommands.has(name) || descriptions.get(name)!.size > 1 ? `${path} ${formatOption(option, locale)}` : name;
+	const level = getRequiredCommandPermissionLevel(entry.commandPiece);
+	return level === null ? [] : [CommandPermissionLevelPreconditions[level]];
+}
 
-			const key = `${label}\n${description}`;
-			if (written.has(key)) continue;
-			written.add(key);
-			entries.push([label, description]);
-		}
-	}
-
-	return entries;
+function appendPreconditions(
+	preconditions: PreconditionArrayResolvable | undefined,
+	entries: readonly PreconditionEntryResolvable[]
+): PreconditionArrayResolvable | undefined {
+	if (entries.length === 0) return preconditions;
+	if (preconditions === undefined || isPreconditionArray(preconditions)) return [...(preconditions ?? []), ...entries];
+	return { entries: [...preconditions.entries, ...entries], mode: preconditions.mode };
 }
 
 /**
@@ -281,10 +301,18 @@ function getPreconditionName(entry: PreconditionEntryResolvable): string | null 
 }
 
 /**
- * A way to run a command: a subcommand by its path under the command (`add`, `rule add`), or the command itself (an
- * empty path), with its options.
+ * A way to run a command: a subcommand under the command (`add`, `rule add`), or the command itself, with its
+ * description and its options.
  */
 interface CommandPath {
+	/**
+	 * The names of the subcommand, as they are registered: `['add']`, `['rule', 'add']`, none for the command itself.
+	 */
+	names: readonly string[];
+
+	/**
+	 * The same names in the requested locale, written as one path.
+	 */
 	path: string;
 	description: string;
 	options: readonly APIApplicationCommandBasicOption[];
@@ -292,22 +320,27 @@ interface CommandPath {
 
 function getCommandPaths(data: ChatInputCommandData, locale: string | null): CommandPath[] {
 	const options = data.options ?? [];
-	const paths = getSubcommandPaths(options, locale, '');
+	const paths = getSubcommandPaths(options, locale, null);
 	if (paths.length > 0) return paths;
 
 	const description = localize(data.description, data.description_localizations, locale);
-	return [{ path: '', description, options: options as readonly APIApplicationCommandBasicOption[] }];
+	return [{ names: [], path: '', description, options: options as readonly APIApplicationCommandBasicOption[] }];
 }
 
-function getSubcommandPaths(options: readonly APIApplicationCommandOption[], locale: string | null, prefix: string): CommandPath[] {
+function getSubcommandPaths(
+	options: readonly APIApplicationCommandOption[],
+	locale: string | null,
+	group: Pick<CommandPath, 'names' | 'path'> | null
+): CommandPath[] {
 	const paths: CommandPath[] = [];
 	for (const option of options) {
-		const path = `${prefix}${localize(option.name, option.name_localizations, locale)}`;
+		const names = [...(group?.names ?? []), option.name];
+		const path = [group?.path, localize(option.name, option.name_localizations, locale)].filter(Boolean).join(' ');
 		if (option.type === ApplicationCommandOptionType.SubcommandGroup) {
-			paths.push(...getSubcommandPaths(option.options ?? [], locale, `${path} `));
+			paths.push(...getSubcommandPaths(option.options ?? [], locale, { names, path }));
 		} else if (option.type === ApplicationCommandOptionType.Subcommand) {
 			const description = localize(option.description, option.description_localizations, locale);
-			paths.push({ path, description, options: option.options ?? [] });
+			paths.push({ names, path, description, options: option.options ?? [] });
 		}
 	}
 

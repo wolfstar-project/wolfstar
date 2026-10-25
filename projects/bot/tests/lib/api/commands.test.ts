@@ -1,45 +1,121 @@
-import {
-	flattenCommand,
-	getCommandExplainedUsage,
-	getCommandHelp,
-	getCommandPermissionLevel,
-	getCommandPreconditions,
-	getCommandUsages,
-	type ChatInputCommandData
-} from '#lib/api/commands';
+import { getCommandEntries, getCommandPermissionLevel, getCommandPreconditions, type ChatInputCommandData } from '#lib/api/commands';
+import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { PermissionLevels } from '#lib/types';
+import { Collection } from '@discordjs/collection';
 import type { Command } from '@wolfstar/http-framework';
+import { clearSubcommandRegistries, subCommandsGroupRegistry, subCommandsRegistry } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationCommandOptionType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
 function createCommand(overrides: Partial<ChatInputCommandData> = {}): ChatInputCommandData {
 	return { name: 'ban', description: 'Ban or unban a user.', ...overrides };
 }
 
+function createPiece(name: string, directories: string[], preconditions?: Command.Options['preconditions']) {
+	return { name, location: { directories }, options: { preconditions } } as unknown as Command;
+}
+
+/**
+ * A translation function that answers `commands/help:/<name>` with the texts given for it, and anything else with the
+ * key, as i18next does for a key it does not have.
+ */
+function createTranslator(entries: Record<string, unknown> = {}) {
+	return vi.fn((key: string) => entries[key] ?? key.slice(key.indexOf(':') + 1)) as never;
+}
+
 const user = { type: ApplicationCommandOptionType.User, name: 'user', description: 'The user to target.', required: true } as const;
 const reason = { type: ApplicationCommandOptionType.String, name: 'reason', description: 'The reason, recorded in the moderation log.' } as const;
 
 const ban = createCommand({
+	contexts: [InteractionContextType.Guild],
+	default_member_permissions: PermissionFlagsBits.BanMembers.toString(),
 	options: [
 		{ type: ApplicationCommandOptionType.Subcommand, name: 'add', description: 'Hit somebody with the ban hammer.', options: [user, reason] },
-		{ type: ApplicationCommandOptionType.Subcommand, name: 'remove', description: 'Unban somebody from this server.', options: [user, reason] }
+		{ type: ApplicationCommandOptionType.Subcommand, name: 'remove', description: 'Unban somebody from this server.', options: [user] }
 	]
 });
 
-describe('getCommandUsages', () => {
-	test('GIVEN a command with options THEN it is one usage, with the required options in angle brackets', () => {
-		const slowmode = createCommand({ name: 'slowmode', options: [{ ...user, name: 'duration' }, reason] });
-		expect(getCommandUsages(slowmode, null)).toEqual(['<duration> [reason]']);
+describe('getCommandEntries', () => {
+	afterEach(() => clearSubcommandRegistries());
+
+	test('GIVEN a command with no subcommands THEN it is one entry, its options written after its name', () => {
+		const t = createTranslator({
+			'commands/help:/slowmode': { extendedHelp: 'Sets the slowmode.', examples: ['duration:5m'], reminder: 'Use reset.' }
+		});
+		const slowmode = createCommand({
+			name: 'slowmode',
+			description: 'Set the slowmode of the channel.',
+			contexts: [InteractionContextType.Guild],
+			options: [{ ...user, type: ApplicationCommandOptionType.String, name: 'duration', description: 'The new slowmode.' }, reason]
+		});
+
+		expect(getCommandEntries(createPiece('slowmode', ['Moderation', 'Utilities'], ['moderator']), slowmode, null, t)).toEqual([
+			{
+				category: 'Moderation',
+				subCategory: 'Utilities',
+				alias: [],
+				command: 'slowmode',
+				description: 'Set the slowmode of the channel.',
+				extendedHelp: {
+					usages: ['<duration> [reason]'],
+					extendedHelp: 'Sets the slowmode.',
+					explainedUsage: [
+						['duration', 'The new slowmode.'],
+						['reason', 'The reason, recorded in the moderation log.']
+					],
+					examples: ['duration:5m'],
+					reminder: 'Use reset.'
+				},
+				guarded: false,
+				name: 'slowmode',
+				permissionLevel: PermissionLevels.Moderator,
+				preconditions: {
+					entries: [
+						{ name: 'GuildOnly', context: {} },
+						{ name: 'moderator', context: {} }
+					],
+					mode: 0,
+					runCondition: 0
+				}
+			}
+		]);
+		expect(t).toHaveBeenCalledWith('commands/help:/slowmode', { returnObjects: true });
 	});
 
-	test('GIVEN a command with no options THEN its usage is empty', () => {
-		expect(getCommandUsages(createCommand({ name: 'dehoist' }), null)).toEqual(['']);
+	test('GIVEN a command with no options and no texts THEN its usage is empty', () => {
+		const [entry] = getCommandEntries(createPiece('dehoist', ['Moderation']), createCommand({ name: 'dehoist' }), null, createTranslator());
+		expect(entry.extendedHelp).toEqual({ usages: [''] });
 	});
 
-	test('GIVEN a command with subcommands THEN each subcommand is a usage', () => {
-		expect(getCommandUsages(ban, null)).toEqual(['add <user> [reason]', 'remove <user> [reason]']);
+	test('GIVEN a command with subcommands THEN each one is an entry, with the examples that run it', () => {
+		const t = createTranslator({
+			'commands/help:/ban': { extendedHelp: 'Bans a member.', examples: ['add user:@Pete reason:Spam', 'remove user:@Pete', 'add'] }
+		});
+		const entries = getCommandEntries(createPiece('ban', ['Moderation']), ban, null, t);
+
+		expect(entries.map(({ name, command, description }) => ({ name, command, description }))).toEqual([
+			{ name: 'ban add', command: 'ban', description: 'Hit somebody with the ban hammer.' },
+			{ name: 'ban remove', command: 'ban', description: 'Unban somebody from this server.' }
+		]);
+		expect(entries[0].extendedHelp).toEqual({
+			usages: ['<user> [reason]'],
+			extendedHelp: 'Bans a member.',
+			explainedUsage: [
+				['user', 'The user to target.'],
+				['reason', 'The reason, recorded in the moderation log.']
+			],
+			examples: ['user:@Pete reason:Spam', '']
+		});
+		expect(entries[1].extendedHelp).toEqual({
+			usages: ['<user>'],
+			extendedHelp: 'Bans a member.',
+			explainedUsage: [['user', 'The user to target.']],
+			examples: ['user:@Pete']
+		});
+		expect(entries.map(({ permissionLevel }) => permissionLevel)).toEqual([PermissionLevels.Moderator, PermissionLevels.Moderator]);
 	});
 
-	test('GIVEN a subcommand group THEN its subcommands are written after the name of the group', () => {
+	test('GIVEN a subcommand group THEN its subcommands are entries named after the group', () => {
+		const t = createTranslator({ 'commands/help:/automod': { examples: ['rule show rule:Invites', 'rule list'] } });
 		const automod = createCommand({
 			name: 'automod',
 			options: [
@@ -53,15 +129,22 @@ describe('getCommandUsages', () => {
 							name: 'show',
 							description: 'Show a rule.',
 							options: [{ ...reason, name: 'rule' }]
-						}
+						},
+						{ type: ApplicationCommandOptionType.Subcommand, name: 'list', description: 'List the rules.' }
 					]
 				}
 			]
 		});
-		expect(getCommandUsages(automod, null)).toEqual(['rule show [rule]']);
+
+		const entries = getCommandEntries(createPiece('automod', ['Management', 'AutoModeration']), automod, null, t);
+		expect(entries.map(({ name, extendedHelp }) => ({ name, usages: extendedHelp.usages, examples: extendedHelp.examples }))).toEqual([
+			{ name: 'automod rule show', usages: ['[rule]'], examples: ['rule:Invites'] },
+			{ name: 'automod rule list', usages: [''], examples: [''] }
+		]);
 	});
 
-	test('GIVEN a locale with localized names THEN the usages are written in it', () => {
+	test('GIVEN a locale THEN the descriptions, the options and the examples are written in it, and the names are kept', () => {
+		const t = createTranslator({ 'commands/help:/ban': { examples: ['aggiungi utente:@Pete', 'add user:@Jack'] } });
 		const localized = createCommand({
 			options: [
 				{
@@ -69,82 +152,135 @@ describe('getCommandUsages', () => {
 					name: 'add',
 					name_localizations: { it: 'aggiungi' },
 					description: 'Hit somebody with the ban hammer.',
-					options: [{ ...user, name_localizations: { it: 'utente' } }]
-				}
-			]
-		});
-		expect(getCommandUsages(localized, 'it')).toEqual(['aggiungi <utente>']);
-		expect(getCommandUsages(localized, 'fr')).toEqual(['add <user>']);
-	});
-});
-
-describe('getCommandExplainedUsage', () => {
-	test('GIVEN a command with subcommands THEN they are explained first, then each option once', () => {
-		expect(getCommandExplainedUsage(ban, null)).toEqual([
-			['add', 'Hit somebody with the ban hammer.'],
-			['remove', 'Unban somebody from this server.'],
-			['user', 'The user to target.'],
-			['reason', 'The reason, recorded in the moderation log.']
-		]);
-	});
-
-	test('GIVEN an option that is described differently in two subcommands THEN each is written with its subcommand', () => {
-		const archive = createCommand({
-			name: 'archive',
-			options: [
-				{ type: ApplicationCommandOptionType.Subcommand, name: 'create', description: 'Save the messages.', options: [user] },
-				{
-					type: ApplicationCommandOptionType.Subcommand,
-					name: 'list',
-					description: 'List the histories.',
-					options: [{ ...user, required: false, description: 'Only list the ones of this user.' }]
+					description_localizations: { it: 'Colpisci qualcuno con il martello del ban.' },
+					options: [{ ...user, name_localizations: { it: 'utente' }, description_localizations: { it: "L'utente." } }]
 				}
 			]
 		});
 
-		expect(getCommandExplainedUsage(archive, null)).toEqual([
-			['create', 'Save the messages.'],
-			['list', 'List the histories.'],
-			['create <user>', 'The user to target.'],
-			['list [user]', 'Only list the ones of this user.']
-		]);
+		const [entry] = getCommandEntries(createPiece('ban', ['Moderation']), localized, 'it', t);
+		expect(entry.name).toBe('ban add');
+		expect(entry.description).toBe('Colpisci qualcuno con il martello del ban.');
+		expect(entry.extendedHelp).toEqual({
+			usages: ['<utente>'],
+			explainedUsage: [['utente', "L'utente."]],
+			examples: ['utente:@Pete', 'user:@Jack']
+		});
 	});
 
-	test('GIVEN an option named as a subcommand THEN it is written with its subcommand', () => {
-		const whois = createCommand({
-			name: 'whois',
+	test('GIVEN the piece of a subcommand that requires a level THEN only its entry requires it', () => {
+		class SettingsServer {
+			public readonly options = {};
+			public chatInputRun() {
+				return null;
+			}
+		}
+		const descriptor = Object.getOwnPropertyDescriptor(SettingsServer.prototype, 'chatInputRun')!;
+		RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)(SettingsServer.prototype, 'chatInputRun', descriptor);
+		subCommandsRegistry.set(
+			'settings',
+			new Collection([['server', { commandPiece: new SettingsServer(), methodName: 'server', slashCommand: null }]]) as never
+		);
+
+		const settings = createCommand({
+			name: 'settings',
+			contexts: [InteractionContextType.Guild],
 			options: [
-				{
-					type: ApplicationCommandOptionType.Subcommand,
-					name: 'user',
-					description: 'Get information about a user.',
-					options: [{ ...user, required: false, description: 'The user to get information about.' }]
-				},
-				{ type: ApplicationCommandOptionType.Subcommand, name: 'server', description: 'Get information about this server.' }
+				{ type: ApplicationCommandOptionType.Subcommand, name: 'server', description: 'Open the settings menu of the server.' },
+				{ type: ApplicationCommandOptionType.Subcommand, name: 'user', description: 'Open your own settings.' }
 			]
 		});
 
-		expect(getCommandExplainedUsage(whois, null)).toEqual([
-			['user', 'Get information about a user.'],
-			['server', 'Get information about this server.'],
-			['user [user]', 'The user to get information about.']
+		const entries = getCommandEntries(createPiece('settings', ['Management']), settings, null, createTranslator());
+		expect(entries.map(({ name, guarded, permissionLevel, preconditions }) => ({ name, guarded, permissionLevel, preconditions }))).toEqual([
+			{
+				name: 'settings server',
+				guarded: true,
+				permissionLevel: PermissionLevels.Administrator,
+				preconditions: {
+					entries: [
+						{ name: 'GuildOnly', context: {} },
+						{ name: 'administrator', context: {} }
+					],
+					mode: 0,
+					runCondition: 0
+				}
+			},
+			{
+				name: 'settings user',
+				guarded: true,
+				permissionLevel: PermissionLevels.Everyone,
+				preconditions: { entries: [{ name: 'GuildOnly', context: {} }], mode: 0, runCondition: 0 }
+			}
 		]);
 	});
 
-	test('GIVEN a command with options THEN they are explained in their order', () => {
-		const slowmode = createCommand({ name: 'slowmode', options: [{ ...user, name: 'duration', description: 'The new slowmode.' }, reason] });
-		expect(getCommandExplainedUsage(slowmode, null)).toEqual([
-			['duration', 'The new slowmode.'],
-			['reason', 'The reason, recorded in the moderation log.']
-		]);
-	});
+	test('GIVEN the piece of a grouped subcommand that requires a level THEN its entry adds it, and not the option nothing checks', () => {
+		// The plugin runs `chatInputRun` of the piece for the command, so its own `preconditions` option is never checked:
+		class RuleEdit {
+			public readonly options = { preconditions: [{ name: 'cooldown', context: { delay: 5000 } }] };
+			public chatInputRun() {
+				return null;
+			}
+		}
+		const descriptor = Object.getOwnPropertyDescriptor(RuleEdit.prototype, 'chatInputRun')!;
+		RequiresCommandPermissionLevel(CommandPermissionLevel.Moderator)(RuleEdit.prototype, 'chatInputRun', descriptor);
+		const piece = new RuleEdit();
+		subCommandsGroupRegistry.set(
+			'automod',
+			new Collection([['rule', new Collection([['edit', { commandPiece: piece, methodName: 'edit', slashCommand: null }]])]]) as never
+		);
 
-	test('GIVEN a locale with localized descriptions THEN the explanations are written in it', () => {
-		const localized = createCommand({
-			name: 'slowmode',
-			options: [{ ...reason, description_localizations: { it: 'Il motivo, registrato nel log di moderazione.' } }]
+		const automod = createCommand({
+			name: 'automod',
+			options: [
+				{
+					type: ApplicationCommandOptionType.SubcommandGroup,
+					name: 'rule',
+					description: 'Manage the rules.',
+					options: [{ type: ApplicationCommandOptionType.Subcommand, name: 'edit', description: 'Edit a rule.' }]
+				}
+			]
 		});
-		expect(getCommandExplainedUsage(localized, 'it')).toEqual([['reason', 'Il motivo, registrato nel log di moderazione.']]);
+
+		const [entry] = getCommandEntries(
+			createPiece('automod', ['Management'], { entries: ['administrator'], mode: 1 }),
+			automod,
+			null,
+			createTranslator()
+		);
+		expect(entry.preconditions).toEqual({
+			entries: [
+				{ name: 'administrator', context: {} },
+				{ name: 'moderator', context: {} }
+			],
+			mode: 1,
+			runCondition: 0
+		});
+		expect(entry.permissionLevel).toBe(PermissionLevels.Administrator);
+	});
+
+	test('GIVEN a piece named apart from its command THEN the settings take it by the piece', () => {
+		const thresholds = createCommand({
+			name: 'warn-thresholds',
+			options: [{ type: ApplicationCommandOptionType.Subcommand, name: 'list', description: 'List the thresholds.' }]
+		});
+
+		const [entry] = getCommandEntries(createPiece('warnThresholds', ['Management']), thresholds, null, createTranslator());
+		expect(entry).toMatchObject({ name: 'warn-thresholds list', command: 'warnThresholds' });
+	});
+
+	test('GIVEN texts of the wrong shape THEN they are left out', () => {
+		const t = createTranslator({ 'commands/help:/dehoist': { extendedHelp: 5, examples: ['fine', 3], reminder: '', possibleFormats: [['a']] } });
+		const [entry] = getCommandEntries(createPiece('dehoist', ['Moderation']), createCommand({ name: 'dehoist' }), null, t);
+		expect(entry.extendedHelp).toEqual({ usages: [''] });
+	});
+
+	test('GIVEN an empty example THEN it is kept, as the command run with no options', () => {
+		const t = createTranslator({ 'commands/help:/commands': { examples: ['', 'command:ban'], possibleFormats: [['ban', 'A command']] } });
+		const [entry] = getCommandEntries(createPiece('commands', ['Tools']), createCommand({ name: 'commands' }), null, t);
+		expect(entry.extendedHelp).toEqual({ usages: [''], possibleFormats: [['ban', 'A command']], examples: ['', 'command:ban'] });
+		expect(entry.guarded).toBe(true);
 	});
 });
 
@@ -231,111 +367,6 @@ describe('getCommandPreconditions', () => {
 			],
 			mode: 1,
 			runCondition: 0
-		});
-	});
-});
-
-describe('getCommandHelp', () => {
-	function createTranslator(entries: Record<string, unknown>) {
-		return vi.fn((key: string) => entries[key] ?? key.slice(key.indexOf(':') + 1));
-	}
-
-	test('GIVEN the texts of a command THEN they are given with the usages', () => {
-		const t = createTranslator({
-			'commands/help:/ban': {
-				extendedHelp: 'Bans a member.',
-				examples: ['add user:@Pete reason:Spam'],
-				reminder: 'The owner cannot be banned.',
-				possibleFormats: [['1d', 'A day']]
-			}
-		});
-
-		expect(getCommandHelp(t as never, ban, null)).toEqual({
-			usages: ['add <user> [reason]', 'remove <user> [reason]'],
-			extendedHelp: 'Bans a member.',
-			explainedUsage: [
-				['add', 'Hit somebody with the ban hammer.'],
-				['remove', 'Unban somebody from this server.'],
-				['user', 'The user to target.'],
-				['reason', 'The reason, recorded in the moderation log.']
-			],
-			possibleFormats: [['1d', 'A day']],
-			examples: ['add user:@Pete reason:Spam'],
-			reminder: 'The owner cannot be banned.'
-		});
-		expect(t).toHaveBeenCalledWith('commands/help:/ban', { returnObjects: true });
-	});
-
-	test('GIVEN a command with no texts THEN it only has the usages', () => {
-		const dehoist = createCommand({ name: 'dehoist' });
-		expect(getCommandHelp(createTranslator({}) as never, dehoist, null)).toEqual({ usages: [''] });
-	});
-
-	test('GIVEN texts of the wrong shape THEN they are left out', () => {
-		const t = createTranslator({ 'commands/help:/dehoist': { extendedHelp: 5, examples: ['fine', 3], reminder: '', possibleFormats: [['a']] } });
-		expect(getCommandHelp(t as never, createCommand({ name: 'dehoist' }), null)).toEqual({ usages: [''] });
-	});
-
-	test('GIVEN an empty example THEN it is kept, as the command run with no options', () => {
-		const t = createTranslator({ 'commands/help:/commands': { examples: ['', 'command:ban'] } });
-		expect(getCommandHelp(t as never, createCommand({ name: 'commands' }), null)).toEqual({ usages: [''], examples: ['', 'command:ban'] });
-	});
-});
-
-describe('flattenCommand', () => {
-	function createPiece(name: string, directories: string[], preconditions?: Command.Options['preconditions']) {
-		return { name, location: { directories }, options: { preconditions } } as unknown as Command;
-	}
-
-	test('GIVEN a command THEN it is listed with the fields of the message commands, in the requested language', () => {
-		const t = vi.fn(() => ({ extendedHelp: 'Restricts a member from a feature.' }));
-		const restrict = createCommand({
-			name: 'restrict',
-			description: 'Restrict a user from using a feature in all channels.',
-			description_localizations: { it: 'Impedisci a un utente di usare una funzione in tutti i canali.' },
-			contexts: [InteractionContextType.Guild],
-			default_member_permissions: PermissionFlagsBits.BanMembers.toString(),
-			options: [
-				{
-					type: ApplicationCommandOptionType.Subcommand,
-					name: 'voice',
-					description: 'Restrict a user from joining any voice channel.',
-					options: [user]
-				}
-			]
-		});
-
-		expect(flattenCommand(createPiece('restrict', ['Moderation', 'Restriction']), restrict, 'it', t as never)).toEqual({
-			category: 'Moderation',
-			subCategory: 'Restriction',
-			alias: [],
-			description: 'Impedisci a un utente di usare una funzione in tutti i canali.',
-			extendedHelp: {
-				usages: ['voice <user>'],
-				extendedHelp: 'Restricts a member from a feature.',
-				explainedUsage: [
-					['voice', 'Restrict a user from joining any voice channel.'],
-					['user', 'The user to target.']
-				]
-			},
-			guarded: false,
-			name: 'restrict',
-			permissionLevel: PermissionLevels.Moderator,
-			preconditions: { entries: [{ name: 'GuildOnly', context: {} }], mode: 0, runCondition: 0 }
-		});
-		expect(t).toHaveBeenCalledWith('commands/help:/restrict', { returnObjects: true });
-	});
-
-	test('GIVEN a command a server cannot disable THEN it is guarded', () => {
-		const settings = createCommand({ name: 'settings', description: 'Open the settings menu of the server or your own.' });
-		expect(
-			flattenCommand(createPiece('settings', ['Management'], ['administrator']), settings, null, vi.fn(() => 'settings') as never)
-		).toMatchObject({
-			category: 'Management',
-			subCategory: null,
-			guarded: true,
-			permissionLevel: PermissionLevels.Administrator,
-			preconditions: { entries: [{ name: 'administrator', context: {} }], mode: 0, runCondition: 0 }
 		});
 	});
 });

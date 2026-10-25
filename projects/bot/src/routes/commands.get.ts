@@ -1,4 +1,4 @@
-import { flattenCommand, type FlattenedCommand } from '#lib/api/commands';
+import { getCommandEntries, type FlattenedCommand } from '#lib/api/commands';
 import { ratelimit } from '#lib/api/utils';
 import { getCategory } from '#lib/database/utils/matchers/Command';
 import { seconds } from 'wolfstar-shared';
@@ -10,10 +10,11 @@ import { Route } from '@wolfstar/plugin-api';
  * @remarks
  *
  * The original bot listed its message commands, and the entries keep their fields (`FlattenedCommand`), read from what
- * a slash command registers with Discord and from the texts of `commands/help`, see `flattenCommand`:
+ * a slash command registers with Discord and from the texts of `commands/help`, see `getCommandEntries`:
  *
- * - Only the top-level commands are listed: the subcommands live in their own pieces and are routed through their
- *   parent, whose usages list them.
+ * - A command with subcommands is an entry for each of them (`ban add`, `ban remove`), as the commands menu lists them,
+ *   and `command` names the command the settings disable.
+ * - The entries are sorted by name, so the subcommands of a command are listed together.
  * - The texts are written in the requested language (`lang`), the default one when the bot does not have it.
  */
 export class UserRoute extends Route {
@@ -29,9 +30,9 @@ export class UserRoute extends Route {
 		const entries: FlattenedCommand[] = [];
 		for (const command of filtered.values()) {
 			const data = command.registry?.chatInput?.toJSON();
-			if (data) entries.push(flattenCommand(command, data, locale, t));
+			if (data) entries.push(...getCommandEntries(command, data, locale, t));
 		}
 
-		return response.json(entries);
+		return response.json(entries.sort((a, b) => a.name.localeCompare(b.name)));
 	}
 }
