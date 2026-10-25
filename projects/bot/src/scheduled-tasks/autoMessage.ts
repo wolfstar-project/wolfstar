@@ -1,4 +1,5 @@
 import { runAutoMessage } from '#lib/automessages/send';
+import { readSettings } from '#lib/database';
 import { withAutoMessageLock } from '#lib/automessages/store';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -17,7 +18,9 @@ const MessagesPerRun = 25;
  *
  * A message is given its next time before it is sent, so one that fails is not tried again every minute, a restart
  * does not send it twice, and a second run that starts meanwhile does not take it too. Each one is read again under
- * the lock `/automessage` writes with, so one that was disabled or edited after the batch was read is skipped.
+ * the lock `/automessage` writes with, so one that was disabled or edited after the batch was read is skipped. While
+ * `modules.automessage` is off it is given its next time and not sent, so the messages do not all go at once when the
+ * module is turned on again.
  */
 export class UserTask extends ScheduledTask<'autoMessage'> {
 	public constructor(context: ScheduledTask.LoaderContext) {
@@ -45,6 +48,8 @@ export class UserTask extends ScheduledTask<'autoMessage'> {
 		if (message === null || message.id !== due.id || message.nextRunAt > now) return;
 
 		await setAutoMessageNextRun(prisma, message.id, now + message.interval);
+		if (!(await readSettings(message.guildId)).modulesAutomessage) return;
+
 		const result = await runAutoMessage(message);
 		// A channel that was deleted gets no message anymore:
 		if (result === 'gone') await deleteAutoMessage(prisma, message.guildId, message.channelId);

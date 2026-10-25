@@ -40,6 +40,9 @@ export function getConfiguration() {
 		modulesModeration: { type: 'boolean', name: 'modules.moderation', description: 'settings:modulesModeration', default: true },
 		modulesLogs: { type: 'boolean', name: 'modules.logs', description: 'settings:modulesLogs', default: true },
 		modulesRoles: { type: 'boolean', name: 'modules.roles', description: 'settings:modulesRoles', default: true },
+		modulesAutodelete: { type: 'boolean', name: 'modules.autodelete', description: 'settings:modulesAutodelete', default: true },
+		modulesAutopurge: { type: 'boolean', name: 'modules.autopurge', description: 'settings:modulesAutopurge', default: true },
+		modulesAutomessage: { type: 'boolean', name: 'modules.automessage', description: 'settings:modulesAutomessage', default: true },
 
 		// Auto-moderation
 		automodChannel: { type: 'guildTextChannel', name: 'automod.channel', description: 'settings:automodChannel' },
