@@ -95,7 +95,10 @@ export const Columns = {
 		modulesAutomod: ['automod', 'value'],
 		modulesModeration: ['moderation', 'value'],
 		modulesLogs: ['logs', 'value'],
-		modulesRoles: ['roles', 'value']
+		modulesRoles: ['roles', 'value'],
+		modulesAutodelete: ['autodelete', 'value'],
+		modulesAutopurge: ['autopurge', 'value'],
+		modulesAutomessage: ['automessage', 'value']
 	}),
 	...columns('GuildAutoModeration', {
 		automodChannel: ['channelId', 'snowflake'],

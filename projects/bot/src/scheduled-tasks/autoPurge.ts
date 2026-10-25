@@ -1,3 +1,4 @@
+import { readSettings } from '#lib/database';
 import { runAutoPurge } from '#lib/moderation/cleanup/purge';
 import { ScheduledTask } from '@wolfstar/plugin-scheduled-tasks';
 import { deleteAutoPurge, fetchDueAutoPurges, setAutoPurgeNextRun } from 'wolfstar-database';
@@ -11,7 +12,8 @@ const PurgesPerRun = 10;
  * Runs, every minute, the purges that are due, see `/autopurge` and `lib/moderation/cleanup`.
  *
  * @remarks A purge is given its next time before it runs, so one that fails is not tried again every minute, and so a
- * second run that starts meanwhile does not take it too.
+ * second run that starts meanwhile does not take it too. While `modules.autopurge` is off it is given its next time and
+ * not run, so it does not purge every channel at once when the module is turned on again.
  */
 export class UserTask extends ScheduledTask<'autoPurge'> {
 	public constructor(context: ScheduledTask.LoaderContext) {
@@ -27,6 +29,8 @@ export class UserTask extends ScheduledTask<'autoPurge'> {
 		for (const purge of await fetchDueAutoPurges(prisma.orm, now, PurgesPerRun)) {
 			try {
 				await setAutoPurgeNextRun(prisma, purge.id, now + purge.interval);
+				if (!(await readSettings(purge.guildId)).modulesAutopurge) continue;
+
 				// A channel that was deleted is not purged anymore:
 				if ((await runAutoPurge(purge)) === 'gone') await deleteAutoPurge(prisma, purge.guildId, purge.channelId);
 			} catch (error) {

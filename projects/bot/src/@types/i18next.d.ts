@@ -2896,6 +2896,9 @@ declare module "i18next" {
         modulesModeration: "Whether the moderation commands (the actions, the cases, the prunes and the lockdowns) can be used.";
         modulesLogs: "Whether the logs of what happens in the server (`logs.*`) are sent.";
         modulesRoles: "Whether the roles are given automatically: the initial roles, the role rules and the sticky roles (the ones of a mute or a restriction are always given back).";
+        modulesAutodelete: "Whether the messages of the channels set up with `/autodelete` are deleted. When it is off they are kept, and what the channels are set up with stays.";
+        modulesAutopurge: "Whether the channels set up with `/autopurge` are purged. When it is off they are not, and each one is purged again at its next time once it is on.";
+        modulesAutomessage: "Whether the messages set up with `/automessage` are sent. When it is off they are not, and each one is sent again at its next time once it is on.";
         automodChannel: "The channel where the auto-moderation actions are reported.";
         automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
         moderationTrackBans: "Whether I should record the bans made without using my commands.";
@@ -2918,6 +2921,9 @@ declare module "i18next" {
           modulesModeration: "Moderation Module";
           modulesLogs: "Events Module";
           modulesRoles: "Roles Module";
+          modulesAutodelete: "Auto-delete Module";
+          modulesAutopurge: "Auto-purge Module";
+          modulesAutomessage: "Auto-message Module";
           automodChannel: "Auto-moderation Channel";
           automodTrackNative: "Track Native Auto-moderation";
           commandsDisabled: "Disabled Commands";
