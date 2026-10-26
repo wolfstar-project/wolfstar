@@ -1,5 +1,5 @@
 import { ApplyOptions } from '@wolfstar/decorators';
-import { readSettings, writeSettings } from '#lib/database';
+import { writeSettings } from '#lib/database';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
 	AutoModerationRuleError,
@@ -132,12 +132,11 @@ export class UserInteractionHandler extends InteractionHandler {
 		notice?: string
 	) {
 		const rules = await readAutoModerationRules(guildId);
-		const settings = await readSettings(guildId);
-		return interaction.update(renderAutoModerationRules(context, rules, { settings, notice }));
+		return interaction.update(renderAutoModerationRules(context, rules, { notice }));
 	}
 
 	/**
-	 * Changes a setting of the auto-moderation of the server, then shows the rules again.
+	 * Handles settings buttons in menus sent before settings moved to their own page, then shows the rules again.
 	 *
 	 * @param channelId - The channel picked in the select menu of the log channel, `undefined` when it was emptied.
 	 */
