@@ -2855,7 +2855,7 @@ declare module "i18next" {
         honeypotAction: "What I do to who writes in the honeypot channel: `Kick`, `Softban` (a ban and an unban, which also deletes what they sent in the other channels in the last hour) or `Ban`.";
         honeypotDirectMessage: "Whether I tell the members the honeypot catches why, in a direct message. A hacked account that is softbanned can come back once its owner has it again.";
         honeypotWarning: "Whether I keep a message in the honeypot channel that warns the members not to write there. Without it the channel says nothing, which is harder for a bot to learn to avoid, and for a member too.";
-        honeypotRandomName: "Whether I give the honeypot channel another name every day, so the bots cannot avoid it by its name.";
+        honeypotRandomName: "Whether I give the honeypot channel another name once a day, so the bots cannot avoid it by its name. Turning this on does not rename the channel immediately.";
         honeypotKeepActive: "Whether I send a message to the honeypot channel every day, so it does not look abandoned.";
         language: "The language I will use for your server. It may not be available in the language you want.";
         timezone: "The time zone of your server, by its name in the IANA database, such as `Europe/Rome` or `America/New_York`. It is `UTC` until you set one.";
@@ -2934,7 +2934,7 @@ declare module "i18next" {
           honeypotAction: "Honeypot Action";
           honeypotDirectMessage: "Tell Who Is Caught";
           honeypotWarning: "Warning in the Channel";
-          honeypotRandomName: "Random Channel Name";
+          honeypotRandomName: "Random Channel Name (Once a Day)";
           honeypotKeepActive: "Keep the Channel Active";
           logsMemberAdd: "Member Join Logs";
           logsMemberRemove: "Member Leave Logs";
