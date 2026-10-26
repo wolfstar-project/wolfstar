@@ -17,25 +17,33 @@ export * from '#lib/structures/commands-menu/restrictions';
  *
  * @param interaction - The interaction the menu answers.
  * @param ownerId - The user who opened the menu.
+ * @param options.legacy - Whether to look for the permission nodes a server still stores, for the notice of a page of
+ * the menu. It reads the settings and the level of the member, so only what renders a page asks for it, not the
+ * autocomplete nor a modal.
  */
 export async function createCommandsMenuContext(
 	interaction: Target & { locale: string; guildId?: string | null; member?: GuildChatInputInteraction['member'] },
-	ownerId: Snowflake
+	ownerId: Snowflake,
+	options: { legacy?: boolean } = {}
 ): Promise<CommandsMenuContext> {
-	const guildInteraction = interaction;
-	const showLegacy =
-		guildInteraction.guildId && guildInteraction.member
-			? hasLegacyPermissions(await readSettings(guildInteraction.guildId)) &&
-				(await hasCommandPermissionLevel(
-					{ guildId: guildInteraction.guildId, member: guildInteraction.member },
-					CommandPermissionLevel.Administrator
-				))
-			: false;
 	return {
-		hasLegacyPermissions: Boolean(showLegacy),
+		hasLegacyPermissions: options.legacy === true && (await showsLegacyPermissions(interaction)),
 		t: createTranslator(getSupportedUserLanguageT(interaction)),
 		ownerId,
 		commands: getCommandCatalog(interaction.locale),
 		ids: await fetchCommandIds()
 	};
+}
+
+/**
+ * Whether the notice of the permission nodes is shown: the server still stores some, and the member is an administrator.
+ */
+async function showsLegacyPermissions(interaction: { guildId?: string | null; member?: GuildChatInputInteraction['member'] }): Promise<boolean> {
+	const { guildId, member } = interaction;
+	if (!guildId || !member) return false;
+
+	const settings = await readSettings(guildId);
+	if (!hasLegacyPermissions(settings)) return false;
+
+	return hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator);
 }

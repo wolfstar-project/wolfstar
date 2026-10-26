@@ -27,7 +27,7 @@ import { ApplicationIntegrationType, InteractionContextType } from 'discord-api-
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: Command.ChatInputInteraction, args: Command.OptionsOf<'commands'>) {
-		const context = await createCommandsMenuContext(interaction, interaction.user.id);
+		const context = await createCommandsMenuContext(interaction, interaction.user.id, { legacy: true });
 		const query = normalizeCommandQuery((args.command ?? '').replace(/^\//, ''));
 		if (query.length === 0) return interaction.reply(renderCommandsList(context, '', 0));
 

@@ -561,7 +561,10 @@ export function renderCommandSettings(context: CommandsMenuContext, command: Cat
 }
 
 /** Removing legacy rules is an explicit owner action, after downloading their backup. */
-export function renderClearLegacyModal(context: CommandsMenuContext, revision: number): APIModalInteractionResponseCallbackData {
+export function renderClearLegacyModal(
+	context: Pick<CommandsMenuContext, 't' | 'ownerId'>,
+	revision: number
+): APIModalInteractionResponseCallbackData {
 	return {
 		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'confirmLegacy', target: '', page: revision }),
 		title: context.t('commands/commands:legacyRemove'),
@@ -583,7 +586,10 @@ export function renderClearLegacyModal(context: CommandsMenuContext, revision: n
 	};
 }
 
-export function renderLegacyPermissionButtons(context: CommandsMenuContext, revision: number): APIActionRowComponent<APIButtonComponentWithCustomId> {
+export function renderLegacyPermissionButtons(
+	context: Pick<CommandsMenuContext, 't' | 'ownerId'>,
+	revision: number
+): APIActionRowComponent<APIButtonComponentWithCustomId> {
 	return row([
 		button(encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'clearLegacy', target: '', page: revision }), {
 			label: context.t('commands/commands:legacyRemove'),

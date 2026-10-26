@@ -61,9 +61,9 @@ export class UserInteractionHandler extends InteractionHandler {
 		// Only the modals are submitted, everything else is a click:
 		if (interaction instanceof ModalSubmitInteraction) {
 			const modal = interaction as ModalInteraction;
-			const context = await createCommandsMenuContext(modal, action.ownerId);
 
 			if (action.verb === 'query') {
+				const context = await createCommandsMenuContext(modal, action.ownerId, { legacy: true });
 				const query = normalizeCommandQuery(getModalValue(modal.data.components, CommandsSearchInputId) ?? '');
 				return modal.update(renderCommandsResults(context, query, 0));
 			}
@@ -71,6 +71,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			if (action.verb === 'goto') {
 				const page = Number.parseInt(getModalValue(modal.data.components, CommandsPageInputId) ?? '', 10);
 				if (!Number.isSafeInteger(page) || page < 1) return fail(t('commands/commands:gotoInvalid'));
+				const context = await createCommandsMenuContext(modal, action.ownerId, { legacy: true });
 
 				// A page past the last one is the last one, the pages are numbered from 1 for the user:
 				const [kind, ...rest] = action.target.split('/');
@@ -103,8 +104,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'clearLegacy': {
 				const denial = await this.getLegacyOwnerDenial(component, t);
 				if (denial !== null) return fail(denial);
-				const context = await createCommandsMenuContext(component, action.ownerId);
-				return component.showModal(renderClearLegacyModal(context, action.page));
+				return component.showModal(renderClearLegacyModal({ t, ownerId: action.ownerId }, action.page));
 			}
 			case 'list':
 			case 'category':
@@ -114,7 +114,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				return fail(getDefaultExpiredReply());
 		}
 
-		const context = await createCommandsMenuContext(component, action.ownerId);
+		const context = await createCommandsMenuContext(component, action.ownerId, { legacy: true });
 		switch (action.verb) {
 			case 'list':
 				return component.update(renderCommandsList(context, action.target, action.page));
@@ -241,9 +241,9 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async legacy(interaction: ComponentInteraction, t: ReturnType<typeof createTranslator>) {
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
-		const settings = await readSettings(interaction.guildId!);
-		const context = await createCommandsMenuContext(interaction, interaction.user.id);
+		// The nodes and their file can take a moment, which the three seconds of the first answer may not have:
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+		const settings = await readSettings(interaction.guildId!);
 		return deferred.update({
 			content: t('commands/commands:legacyExplanation'),
 			allowed_mentions: { parse: [] },
@@ -254,7 +254,7 @@ export class UserInteractionHandler extends InteractionHandler {
 					contentType: 'application/json'
 				}
 			],
-			components: [renderLegacyPermissionButtons(context, getLegacyPermissionRevision(settings))]
+			components: [renderLegacyPermissionButtons({ t, ownerId: interaction.user.id }, getLegacyPermissionRevision(settings))]
 		});
 	}
 

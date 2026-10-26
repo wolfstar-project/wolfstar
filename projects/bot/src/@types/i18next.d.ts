@@ -1077,17 +1077,8 @@ declare module "i18next" {
         commandModeThresholdDuration: "The time in which infractions will accumulate before taking action, instantly if unset.";
         commandModeReminder: "`Action Log` requires `channel.moderation-logs` to be set up.";
         commandHandlerAborted: "Aborted";
-        permissionNodesHigher: "{{REDCROSS}} You cannot modify nor preview the permission nodes for this target.";
-        permissionNodesCannotAllowEveryone: "{{REDCROSS}} You cannot allow commands for the `@everyone` role.";
-        permissionNodesInvalidType: "{{REDCROSS}} Invalid type, expected either of `allow` or `deny`.";
-        permissionNodesAdd: "{{GREENTICK}} Successfully added the command to the permission node.";
         permissionNodesNodeNotExists: "{{REDCROSS}} The selected permission node does not exist.";
         permissionNodesCommandNotExists: "{{REDCROSS}} The selected command does not exist in the permision node.";
-        permissionNodesRemove: "{{GREENTICK}} Successfully removed the command from the permission node.";
-        permissionNodesReset: "{{GREENTICK}} Successfully removed all commands from the permission node.";
-        permissionNodesShowName: "Permissions for: __{{name}}__";
-        permissionNodesShowAllow: "**Allow**: {{allow}}";
-        permissionNodesShowDeny: "**Deny**: {{deny}}";
         guildInfoTitles: {
           CHANNELS: "Channels";
           MEMBERS: "Members";
@@ -1133,7 +1124,6 @@ declare module "i18next" {
         stickyRolesShowSingle: "Sticky Role(s) for **{{user}}**: {{roles, list(conjunction)}}.";
         stickyNicknameEmpty: "**{{user}}** has no sticky nickname.";
         stickyNicknameSingle: "Sticky nickname of **{{user}}**: {{nickname}}";
-        permissionNodesDescription: "Configure the permission nodes for this server.";
         manageReactionRolesDescription: "Manage the reaction roles for this server.";
         rolesAdded: "The following roles have been added to your profile: `{{roles}}`";
         rolesAuditlog: "Authorized: Public Role Management | 'Roles' Command.";
@@ -1154,19 +1144,10 @@ declare module "i18next" {
         newlineModeDescription: "Manage the behavior for the new line filter system.";
         reactionModeDescription: "Manage the behavior for the reaction filter system.";
         rolesDescription: "List, claim or unclaim public roles in this server.";
-        permissionNodesName: "permission-nodes";
         manageReactionRolesName: "reaction-roles";
         stickyRolesName: "sticky-roles";
         stickyNicknameName: "sticky-nickname";
         rolesName: "roles";
-        permissionNodesSubcommandAddName: "add";
-        permissionNodesSubcommandAddDescription: "Add a command to a permission node.";
-        permissionNodesSubcommandRemoveName: "remove";
-        permissionNodesSubcommandRemoveDescription: "Remove a command from a permission node.";
-        permissionNodesSubcommandResetName: "reset";
-        permissionNodesSubcommandResetDescription: "Remove every command from a permission node.";
-        permissionNodesSubcommandShowName: "show";
-        permissionNodesSubcommandShowDescription: "Show the permission nodes.";
         manageReactionRolesSubcommandAddName: "add";
         manageReactionRolesSubcommandAddDescription: "Add a reaction role.";
         manageReactionRolesSubcommandRemoveName: "remove";
@@ -1183,10 +1164,6 @@ declare module "i18next" {
         stickyRolesSubcommandResetDescription: "Remove every sticky role from a user.";
         stickyRolesSubcommandShowName: "show";
         stickyRolesSubcommandShowDescription: "Show the sticky roles of a user.";
-        permissionNodesOptionsTypeName: "type";
-        permissionNodesOptionsTypeDescription: "Whether the command is allowed or denied.";
-        permissionNodesOptionsTypeChoiceAllow: "allow";
-        permissionNodesOptionsTypeChoiceDeny: "deny";
         manageReactionRolesOptionsMessageName: "message";
         manageReactionRolesOptionsMessageDescription: "The ID of the message to attach the reaction role to, leave empty to apply it to any message.";
         manageReactionRolesOptionsChannelName: "channel";
@@ -1224,7 +1201,6 @@ declare module "i18next" {
         rolesNotClaimed: "You do not have the following roles: `{{roles}}`";
         createMuteOptionsRoleName: "role";
         createMuteOptionsRoleDescription: "The role to use as the muted role, leave empty to create a new one.";
-        permissionNodesCommandInvalid: "{{REDCROSS}} I could not match `{{command}}` to a command, use the autocomplete suggestions, or `*` to match every command.";
       };
       "commands/moderation": {
         permissions: "Permissions for {{username}} ({{id}})";
@@ -2708,7 +2684,6 @@ declare module "i18next" {
         restrictedChannel: "This command cannot be used in this channel!";
         restrictedRole: "Your roles do not let you use this command in this server!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
-        permissionNodes: "{{REDCROSS}} You do not have permission to use this command!";
         serverOwner: "You need to be the server's owner to run `{{command.name}}`!";
         subCommandGuildOnly: 'This subcommand can only be used in server channels due to Discord limitations. We will likely make this command available in DMs when we implement the new "buttons" feature.';
         clientPermissionsNoClient: "This should never happen, I don't know who I am.";
