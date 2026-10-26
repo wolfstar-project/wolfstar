@@ -550,11 +550,9 @@ declare module "i18next" {
         editIgnoredChannelsLabel: "Ignored channels";
         editIgnoredChannelsDescription: "The command does not run in them";
         editAllowedRolesLabel: "Allowed roles";
-        editAllowedRolesDescription: "When any is picked, only the members with one of them run the command";
+        editAllowedRolesDescription: "Members with one of these roles or an allowed user can use the command";
         editIgnoredRolesLabel: "Ignored roles";
         editIgnoredRolesDescription: "The members with one of them do not run the command";
-        editRestricted: "Where it runs and who runs it was saved. The administrators are not restricted.";
-        editUnrestricted: "It runs in every channel, for every role.";
         editProtectedRestricted: "`/{{name}}` cannot be restricted: it is how the commands are turned back on.";
         editStale: "`/{{name}}` was changed since this form was opened, so nothing was saved. Open it again to see what it has now.";
         editEnabled: "Enabled";
@@ -574,6 +572,25 @@ declare module "i18next" {
         viewContextMenus: "**In the Apps menu:** {{names}}";
         viewSubcommands_one: "{{count, number}} subcommand";
         viewSubcommands_other: "{{count, number}} subcommands";
+        editChannels: "Status and channels";
+        editAccess: "Roles and users";
+        editAccessHelp: "These settings apply to the whole command, including every subcommand. An allowed role or user grants access within the channel rules; any exclusion wins. Discord permissions and moderator or administrator requirements still apply. Administrators bypass these restrictions.";
+        editAllowedUsersLabel: "Allowed users";
+        editAllowedUsersDescription: "These users can use the command without an allowed role; exclusions still apply";
+        editIgnoredUsersLabel: "Ignored users";
+        editIgnoredUsersDescription: "These users cannot use the command, even with an allowed role";
+        editAccessSaved: "Roles and users saved. Exclusions win; base command permissions still apply. Administrators bypass these restrictions.";
+        editChannelsSaved: "Channel rules saved. Roles and users were kept.";
+        legacyNotice: "Legacy permission nodes are still stored. Review them before replacing them with command rules.";
+        legacyReview: "Review legacy rules";
+        legacyExplanation: "The attached file contains the legacy permission nodes. They still apply to dashboard access, but do not control slash commands. Wildcards, role priorities and user overrides cannot be converted without changing their meaning. Recreate the rules you need through /commands. Once reviewed, the server owner can remove the legacy rules; this also removes their dashboard access overrides.";
+        legacyRemove: "Remove legacy rules";
+        legacyConfirmLabel: "Type REMOVE to confirm";
+        legacyConfirmDescription: "Removes all legacy nodes and dashboard overrides. New command rules stay as they are.";
+        legacyOwnerOnly: "Only the server owner can remove legacy rules, because they also control dashboard access.";
+        legacyConfirmationInvalid: "Nothing was removed. Type REMOVE exactly to confirm.";
+        legacyStale: "The legacy rules changed since you downloaded them. Review them again before removing them.";
+        legacyRemoved: "Legacy permission nodes removed. The rules configured through /commands were kept.";
       };
       "commands/conf": {
         menuName: "menu";
@@ -777,9 +794,9 @@ declare module "i18next" {
           ];
         };
         "/commands": {
-          extendedHelp: "Opens the commands menu: every command and subcommand you can run, five to a page, with a search and their categories. The administrators edit a command from there: they disable it in the server, or choose the channels and the roles it runs in or ignores.\n`/settings` and `/commands` can never be disabled, so the commands can always be turned back on.";
+          extendedHelp: "Opens the commands menu: every command and subcommand, five to a page, with a search and their categories. Administrators edit a command from there: its status and channels, or the roles and users that can use it or are excluded. An allowed role or user is sufficient; an exclusion wins. Discord permissions and moderator or administrator requirements still apply.\nThe rules apply to the whole command, including its subcommands. `/settings` and `/commands` cannot be disabled or restricted. Stored legacy permission nodes can be downloaded for review; only the server owner can remove them.";
           examples: ["", "command:ban"];
-          reminder: "The administrators are not held to the channels and the roles a command is restricted to.";
+          reminder: "Administrators bypass channel, role and user restrictions. Legacy nodes still affect dashboard access until the server owner removes them.";
         };
         "/dehoist": {
           extendedHelp: "Cleans the names of every member who hoists themselves to the top of the member list with a character such as `!` or `.` at the start of their nickname, by replacing it. The progress is shown as it goes, only to you.";
@@ -817,15 +834,6 @@ declare module "i18next" {
         "/note": {
           extendedHelp: "Adds a note to a member: a case of the moderation log that is not a punishment. The member is never told about it, whatever the settings of the direct messages say, and it does not count as a warning.\nIt has nothing to undo, but it can be edited and archived like any other case.";
           examples: ["user:@Pete reason:Was told in the chat to stop spamming"];
-        };
-        "/permission-nodes": {
-          extendedHelp: "Manages the permission nodes of the server: overrides that allow or deny a command to a member or to a role. The command is one command, a category (`Moderation.*`), a sub-category (`Moderation.Utilities.*`) or `*` for every command, and the node of a member is read before the ones of their roles.\n`show` lists all of them, or the ones of a member or of a role.";
-          examples: [
-            "add target:@Helpers type:allow command:warn",
-            "add target:@Pete type:deny command:Moderation.*",
-            "show target:@Helpers",
-            "reset target:@Pete",
-          ];
         };
         "/permissions": {
           extendedHelp: "Lists the permissions a member has in the server, which tells what a set of roles gives. It lists the permissions of the moderation, and every other one with `list-all`, while `list-missing` adds the ones they do not have.\nIt is also in the Apps menu of a member, as `Inspect Permissions`.";
@@ -2711,6 +2719,7 @@ declare module "i18next" {
         missingMessageHandler: "This should never happen, one of the preconditions this command requires is missing a message handler.";
         missingChatInputHandler: "This should never happen, one of the preconditions this command requires is missing a slash command handler.";
         missingContextMenuHandler: "This should never happen, one of the preconditions this command requires is missing a context menu handler.";
+        restrictedUser: "{{REDCROSS}} You cannot use this command with the user rules configured for this server.";
       };
       promptList: {
         aborted: "Successfully aborted the prompt.";

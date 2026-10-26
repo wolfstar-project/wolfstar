@@ -28,5 +28,6 @@
 	"unavailable": "This should never happen, I could not find a required precondition for this command.",
 	"missingMessageHandler": "This should never happen, one of the preconditions this command requires is missing a message handler.",
 	"missingChatInputHandler": "This should never happen, one of the preconditions this command requires is missing a slash command handler.",
-	"missingContextMenuHandler": "This should never happen, one of the preconditions this command requires is missing a context menu handler."
+	"missingContextMenuHandler": "This should never happen, one of the preconditions this command requires is missing a context menu handler.",
+	"restrictedUser": "{{REDCROSS}} You cannot use this command with the user rules configured for this server."
 }

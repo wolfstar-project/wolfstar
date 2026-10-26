@@ -32,7 +32,7 @@ export enum CommandPermissionLevel {
  *
  * The guild owner always passes.
  *
- * The `permissionNodes` of the guild, managed by `PermissionNodeManager` (the `permission-nodes` command), are matched
+ * The `permissionNodes` of the guild, managed by `PermissionNodeManager` (legacy rules reviewed through `/commands`), are matched
  * against the name and the category of the http-framework command pieces (see `lib/database/utils/matchers/Command.ts`),
  * but they are not consulted here: this function only applies the Discord permissions and the role configuration.
  *

@@ -1,3 +1,7 @@
+import { readSettings } from '#lib/database';
+import { hasLegacyPermissions } from '#lib/structures/commands-menu/legacy';
+import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { fetchCommandIds, getCommandCatalog } from '#lib/structures/commands-menu/catalog';
 import type { CommandsMenuContext } from '#lib/structures/commands-menu/render';
 import { createTranslator } from '#lib/structures/commands/utils';
@@ -14,8 +18,21 @@ export * from '#lib/structures/commands-menu/restrictions';
  * @param interaction - The interaction the menu answers.
  * @param ownerId - The user who opened the menu.
  */
-export async function createCommandsMenuContext(interaction: Target & { locale: string }, ownerId: Snowflake): Promise<CommandsMenuContext> {
+export async function createCommandsMenuContext(
+	interaction: Target & { locale: string; guildId?: string | null; member?: GuildChatInputInteraction['member'] },
+	ownerId: Snowflake
+): Promise<CommandsMenuContext> {
+	const guildInteraction = interaction;
+	const showLegacy =
+		guildInteraction.guildId && guildInteraction.member
+			? hasLegacyPermissions(await readSettings(guildInteraction.guildId)) &&
+				(await hasCommandPermissionLevel(
+					{ guildId: guildInteraction.guildId, member: guildInteraction.member },
+					CommandPermissionLevel.Administrator
+				))
+			: false;
 	return {
+		hasLegacyPermissions: Boolean(showLegacy),
 		t: createTranslator(getSupportedUserLanguageT(interaction)),
 		ownerId,
 		commands: getCommandCatalog(interaction.locale),
