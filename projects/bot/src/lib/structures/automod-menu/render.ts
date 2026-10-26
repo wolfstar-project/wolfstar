@@ -1,4 +1,4 @@
-import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
+import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
 import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList } from '#lib/moderation/automod/commands';
 import { MaximumAutoModerationRuleIgnored } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -26,7 +26,6 @@ import { cutText, isNullishOrZero } from '@sapphire/utilities';
 import type { TFunction } from '@wolfstar/plugin-i18next';
 import {
 	ButtonStyle,
-	ChannelType,
 	ComponentType,
 	MessageFlags,
 	SelectMenuDefaultValueType,
@@ -50,11 +49,35 @@ import {
 	MaximumAutoModerationRuleNameLength,
 	MaximumAutoModerationRules,
 	type AutoModerationRule,
-	type AutoModerationRuleType,
-	type ReadonlyGuildData
+	type AutoModerationRuleType
 } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
+
+const AutoModerationRuleEmojis = {
+	Attachments: 'AutoModAttachments',
+	Capitals: 'AutoModCapitals',
+	Characters: 'AutoModCharacters',
+	Duplicates: 'AutoModDuplicates',
+	Emojis: 'AutoModEmojis',
+	ImageSpam: 'AutoModImageSpam',
+	Invites: 'AutoModInvites',
+	Links: 'AutoModLinks',
+	LinksCooldown: 'AutoModLinksCooldown',
+	MaskedLinks: 'AutoModMaskedLinks',
+	MassMentions: 'AutoModMassMentions',
+	MentionsCooldown: 'AutoModMentionsCooldown',
+	MessageSpam: 'AutoModMessageSpam',
+	Newlines: 'AutoModNewlines',
+	NoMentionSpam: 'AutoModNoMentionSpam',
+	Phishing: 'AutoModPhishing',
+	Polls: 'AutoModPolls',
+	Spoilers: 'AutoModSpoilers',
+	Stickers: 'AutoModStickers',
+	StickersCooldown: 'AutoModStickersCooldown',
+	Words: 'AutoModWords',
+	Zalgo: 'AutoModZalgo'
+} as const satisfies Record<AutoModerationRuleType, EmojiKey>;
 const AccentColor = 0x5865f2;
 
 /**
@@ -93,17 +116,7 @@ export interface AutoModerationMenuContext {
  */
 export type AutoModerationMenuMessage = Pick<APIInteractionResponseCallbackData, 'components' | 'flags' | 'allowed_mentions'>;
 
-/**
- * The settings of the auto-moderation of a server the menu shows next to its rules.
- */
-export type AutoModerationMenuSettings = Pick<ReadonlyGuildData, 'modulesAutomod' | 'automodChannel' | 'automodTrackNative'>;
-
 export interface RenderAutoModerationRulesOptions {
-	/**
-	 * The settings of the auto-moderation of the server.
-	 */
-	settings: AutoModerationMenuSettings;
-
 	/**
 	 * What to tell the user above the rules, for example that the rule they were on is gone.
 	 */
@@ -111,8 +124,8 @@ export interface RenderAutoModerationRulesOptions {
 }
 
 /**
- * Renders the auto-moderation of a server: its rules with the select menu that opens one, and its settings (whether
- * the module is on, the channel it logs to, whether it reports what the AutoMod of Discord does).
+ * Renders the rules of a server with the select menus that open and create them. Server settings are edited on the
+ * settings page the footer links to, so the log channel and native AutoMod are not shown in two menus.
  *
  * @param context - The context of the menu.
  * @param rules - The rules of the server.
@@ -120,7 +133,7 @@ export interface RenderAutoModerationRulesOptions {
 export function renderAutoModerationRules(
 	context: AutoModerationMenuContext,
 	rules: readonly AutoModerationRule[],
-	{ settings, notice }: RenderAutoModerationRulesOptions
+	{ notice }: RenderAutoModerationRulesOptions = {}
 ): AutoModerationMenuMessage {
 	const { t, ownerId } = context;
 	const body: APIComponentInContainer[] = [
@@ -149,7 +162,7 @@ export function renderAutoModerationRules(
 						label: cutText(rule.name, 100),
 						description: cutText(translateKey(t, AutoModerationRuleTypeKeys[rule.type]), 100),
 						value: rule.id,
-						emoji: getEmojiComponent(rule.enabled ? 'Checked' : 'Unchecked')
+						emoji: getEmojiComponent(AutoModerationRuleEmojis[rule.type])
 					}))
 				}
 			])
@@ -174,45 +187,13 @@ export function renderAutoModerationRules(
 							),
 							100
 						),
-						value: type
+						value: type,
+						emoji: getEmojiComponent(AutoModerationRuleEmojis[type])
 					}))
 				}
 			])
 		);
 	}
-
-	const setting = (argument: string) => encodeAutoModerationMenuId({ ownerId, verb: 'setting', argument });
-	const channel = settings.automodChannel;
-	body.push(
-		{ type: ComponentType.Separator },
-		text(`### ${Emojis.ModuleGeneral} ${translateKey(t, `${Root}:menuGuildTitle`)}`),
-		renderSwitch(
-			translateKey(t, `${Root}:menuGuildModule`),
-			translateKey(t, 'settings:modulesAutomod'),
-			settings.modulesAutomod,
-			setting('module')
-		),
-		renderSwitch(
-			translateKey(t, `${Root}:menuGuildNative`),
-			translateKey(t, 'settings:automodTrackNative'),
-			settings.automodTrackNative,
-			setting('native')
-		),
-		text(
-			`**${translateKey(t, `${Root}:menuGuildChannel`)}**\n${channel ? channelMention(channel) : translateKey(t, `${Root}:menuGuildChannelNone`)}\n-# ${translateKey(t, 'settings:automodChannel')}`
-		),
-		row([
-			{
-				type: ComponentType.ChannelSelect,
-				custom_id: setting('channel'),
-				placeholder: cutText(translateKey(t, `${Root}:menuGuildChannelPlaceholder`), 150),
-				channel_types: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
-				min_values: 0,
-				max_values: 1,
-				default_values: channel ? [{ id: channel, type: SelectMenuDefaultValueType.Channel }] : []
-			}
-		])
-	);
 
 	body.push(
 		{ type: ComponentType.Separator },

@@ -1,0 +1,138 @@
+{
+	"file": "https://www.figma.com/design/mENlr6NioJQolUsV3FI7eX/Icons--Brand-WolfStar-?node-id=2097-2",
+	"discordSymbols": "https://www.figma.com/design/Z3PFMvgHo95bNq2IdAZNNr?node-id=1-448",
+	"icons": [
+		{
+			"type": "Attachments",
+			"nodeId": "2097:2",
+			"file": "attachments.png",
+			"emojiName": "automod_attachments"
+		},
+		{
+			"type": "Capitals",
+			"nodeId": "2097:7",
+			"file": "capitals.png",
+			"emojiName": "automod_capitals"
+		},
+		{
+			"type": "Characters",
+			"nodeId": "2097:12",
+			"file": "characters.png",
+			"emojiName": "automod_characters"
+		},
+		{
+			"type": "Duplicates",
+			"nodeId": "2097:17",
+			"file": "duplicates.png",
+			"emojiName": "automod_duplicates"
+		},
+		{
+			"type": "Emojis",
+			"nodeId": "2097:23",
+			"file": "emojis.png",
+			"emojiName": "automod_emojis"
+		},
+		{
+			"type": "ImageSpam",
+			"nodeId": "2097:26",
+			"file": "imageSpam.png",
+			"emojiName": "automod_image_spam"
+		},
+		{
+			"type": "Invites",
+			"nodeId": "2097:30",
+			"file": "invites.png",
+			"emojiName": "automod_invites"
+		},
+		{
+			"type": "Links",
+			"nodeId": "2097:39",
+			"file": "links.png",
+			"emojiName": "automod_links"
+		},
+		{
+			"type": "LinksCooldown",
+			"nodeId": "2097:45",
+			"file": "linksCooldown.png",
+			"emojiName": "automod_links_cooldown"
+		},
+		{
+			"type": "MaskedLinks",
+			"nodeId": "2097:53",
+			"file": "maskedLinks.png",
+			"emojiName": "automod_masked_links"
+		},
+		{
+			"type": "MassMentions",
+			"nodeId": "2097:64",
+			"file": "massMentions.png",
+			"emojiName": "automod_mass_mentions"
+		},
+		{
+			"type": "MentionsCooldown",
+			"nodeId": "2097:69",
+			"file": "mentionsCooldown.png",
+			"emojiName": "automod_mentions_cooldown"
+		},
+		{
+			"type": "MessageSpam",
+			"nodeId": "2097:76",
+			"file": "messageSpam.png",
+			"emojiName": "automod_message_spam"
+		},
+		{
+			"type": "Newlines",
+			"nodeId": "2097:80",
+			"file": "newlines.png",
+			"emojiName": "automod_newlines"
+		},
+		{
+			"type": "NoMentionSpam",
+			"nodeId": "2097:85",
+			"file": "noMentionSpam.png",
+			"emojiName": "automod_no_mention_spam"
+		},
+		{
+			"type": "Phishing",
+			"nodeId": "2097:91",
+			"file": "phishing.png",
+			"emojiName": "automod_phishing"
+		},
+		{
+			"type": "Polls",
+			"nodeId": "2097:96",
+			"file": "polls.png",
+			"emojiName": "automod_polls"
+		},
+		{
+			"type": "Spoilers",
+			"nodeId": "2097:101",
+			"file": "spoilers.png",
+			"emojiName": "automod_spoilers"
+		},
+		{
+			"type": "Stickers",
+			"nodeId": "2097:108",
+			"file": "stickers.png",
+			"emojiName": "automod_stickers"
+		},
+		{
+			"type": "StickersCooldown",
+			"nodeId": "2097:114",
+			"file": "stickersCooldown.png",
+			"emojiName": "automod_stickers_cooldown"
+		},
+		{
+			"type": "Words",
+			"nodeId": "2097:122",
+			"file": "words.png",
+			"emojiName": "automod_words"
+		},
+		{
+			"type": "Zalgo",
+			"nodeId": "2097:127",
+			"file": "zalgo.png",
+			"emojiName": "automod_zalgo"
+		}
+	]
+}
