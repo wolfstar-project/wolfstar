@@ -7,10 +7,13 @@ Discord emoji name.
 The editable icons are in the `Normal` grid on the `Emoji` page of
 [Icons (Brand WolfStar)](https://www.figma.com/design/mENlr6NioJQolUsV3FI7eX/Icons--Brand-WolfStar-?node-id=2097-2).
 They reuse WolfStar glyphs and symbols from the
-[Discord icon sheet](https://www.figma.com/design/Z3PFMvgHo95bNq2IdAZNNr?node-id=1-448),
-with matching grey glyphs and dark circular backgrounds. Attachments, capitals,
-duplicates, phishing and zalgo have purpose-drawn glyphs; cooldown rules add a
-clock.
+[Discord icon sheet](https://www.figma.com/design/Z3PFMvgHo95bNq2IdAZNNr?node-id=1-448).
+Attachments, capitals, duplicates, phishing and zalgo have purpose-drawn glyphs;
+cooldown rules add a clock.
+
+The dark circle behind each glyph is only there in Figma, to see the grey glyph
+on something. The PNGs are exported without it, as a transparent image with the
+glyph in `#80848E`, the grey of the other emojis of the bot.
 
 Upload each PNG under its `emojiName` to the staging, beta and production
 applications. `loadApplicationEmojis` resolves the application-specific IDs at
