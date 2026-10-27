@@ -41,6 +41,7 @@ export async function readModerationReasons(guildId: Snowflake): Promise<readonl
 
 // The reasons are cached by every shard process, so a change in one of them makes the copies of the others stale.
 onShardMessage('moderationReasonsUpdate', ({ guildId }) => cache.delete(guildId));
+onShardMessage('settingsInvalidateAll', () => cache.clear());
 
 function changed(guildId: Snowflake) {
 	cache.delete(guildId);

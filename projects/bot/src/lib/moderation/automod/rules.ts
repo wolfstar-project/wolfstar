@@ -80,6 +80,9 @@ export function deleteAutoModerationRulesCached(guildId: Snowflake) {
 
 // The rules are cached by every shard process, so a change in one of them makes the copies of the others stale.
 onShardMessage('automodRulesUpdate', ({ guildId }) => deleteAutoModerationRulesCached(guildId));
+onShardMessage('settingsInvalidateAll', () => {
+	for (const guildId of new Set([...cache.keys(), ...queue.keys()])) deleteAutoModerationRulesCached(guildId);
+});
 
 function changed(guildId: Snowflake) {
 	deleteAutoModerationRulesCached(guildId);

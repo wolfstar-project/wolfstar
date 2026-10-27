@@ -71,6 +71,9 @@ export function deleteJoinGuardConfigCached(guildId: Snowflake) {
 
 // The configuration is cached by every shard process, so a change in one of them makes the copies of the others stale:
 onShardMessage('joinGuardUpdate', ({ guildId }) => deleteJoinGuardConfigCached(guildId));
+onShardMessage('settingsInvalidateAll', () => {
+	for (const guildId of new Set([...cache.keys(), ...queue.keys()])) deleteJoinGuardConfigCached(guildId);
+});
 
 /**
  * Tells this process and the other shards that the bot changed the settings or the rules of the join guard of a guild.

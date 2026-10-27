@@ -10,9 +10,17 @@ const header = bold(magenta('[SHARDER]'));
  */
 export interface ShardMessages {
 	/**
-	 * The settings of a guild were written by a shard, the others drop their cached copy.
+	 * The settings of a guild were written: by a shard, which the others drop their cached copy for, or by the dashboard,
+	 * which the process that listens to the database tells every shard of, with the keys it changed. Only a write of the
+	 * dashboard has `keys`.
 	 */
-	settingsUpdate: { guildId: string };
+	settingsUpdate: { guildId: string; keys?: readonly string[] };
+
+	/**
+	 * Every shard drops every cached copy of the settings and of what derives from them: the connection that hears the
+	 * dashboard was down, and what it wrote meanwhile is not known.
+	 */
+	settingsInvalidateAll: Record<never, never>;
 	/**
 	 * The auto-moderation rules of a guild were changed by a shard, the others drop their cached copy.
 	 */
@@ -42,6 +50,11 @@ export interface ShardMessages {
 	 * The bot changed the settings or the rules of the join guard of a guild, the others drop their cached copy.
 	 */
 	joinGuardUpdate: { guildId: string };
+
+	/**
+	 * The website asked the join guard for something, which the shard manager hears and hands to the first shard.
+	 */
+	joinGuardRequest: { requestId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;
