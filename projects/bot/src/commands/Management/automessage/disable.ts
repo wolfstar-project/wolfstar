@@ -1,3 +1,4 @@
+import { GuildTextChannelTypes } from '#utils/channelTypes';
 import { AutoMessageRoot } from '#lib/automessages/render';
 import { disableAutoMessage } from '#lib/automessages/store';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
@@ -13,7 +14,9 @@ const Root = AutoMessageRoot;
  */
 @RegisterAsSubcommand('automessage', (builder) =>
 	applyLocalizedBuilder(builder, `${Root}:automessageDisable`).addChannelOption((option) =>
-		applyLocalizedBuilder(option, `${Root}:optionsChannel`).setRequired(true)
+		applyLocalizedBuilder(option, `${Root}:optionsChannel`)
+			.addChannelTypes(...GuildTextChannelTypes)
+			.setRequired(true)
 	)
 )
 export class UserCommand extends Command {

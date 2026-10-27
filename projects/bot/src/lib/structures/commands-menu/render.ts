@@ -1,4 +1,5 @@
 import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
+import { GuildMessageChannelTypes } from '#utils/channelTypes';
 import type { Translator } from '#lib/structures/commands/utils';
 import {
 	CommandQueryMaximumLength,
@@ -21,6 +22,7 @@ import { cutText } from '@sapphire/utilities';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
 import {
 	ButtonStyle,
+	ChannelType,
 	ComponentType,
 	SelectMenuDefaultValueType,
 	MessageFlags,
@@ -489,6 +491,8 @@ export function renderCommandEditModal(
 			...common,
 			custom_id: list,
 			type: ComponentType.ChannelSelect,
+			// Restrictions also match a thread's parent, including forum and media posts. Categories are not inherited recursively.
+			channel_types: [...GuildMessageChannelTypes, ChannelType.GuildForum, ChannelType.GuildMedia],
 			default_values: restriction[list]
 				.slice(0, MaximumCommandRestrictionEntries)
 				.map((id) => ({ id, type: SelectMenuDefaultValueType.Channel }))

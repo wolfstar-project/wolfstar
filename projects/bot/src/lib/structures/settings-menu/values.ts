@@ -1,4 +1,5 @@
 import { Emojis } from '#utils/emojis';
+import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelTypes';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getSettingName, isSchemaGroup, type Serializer } from '#lib/database';
@@ -7,7 +8,7 @@ import type { TranslationKey, Translator } from '#lib/structures/commands/utils'
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
-import { ChannelType } from 'discord-api-types/v10';
+import type { ChannelType } from 'discord-api-types/v10';
 
 /**
  * How a key is displayed and edited:
@@ -57,24 +58,7 @@ export function getSettingKind(key: SchemaKey): SettingKind {
  * The types of channel a key accepts, for the channel select menu.
  */
 export function getSettingChannelTypes(key: SchemaKey): ChannelType[] {
-	switch (key.type) {
-		case 'guildVoiceChannel':
-			return [ChannelType.GuildVoice];
-		case 'guildCategoryChannel':
-			return [ChannelType.GuildCategory];
-		case 'categoryOrTextChannel':
-			return [ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildCategory];
-		case 'guildLogChannel':
-			return [
-				ChannelType.GuildText,
-				ChannelType.GuildAnnouncement,
-				ChannelType.PublicThread,
-				ChannelType.PrivateThread,
-				ChannelType.AnnouncementThread
-			];
-		default:
-			return [ChannelType.GuildText, ChannelType.GuildAnnouncement];
-	}
+	return getSchemaChannelTypes(key.type);
 }
 
 /**

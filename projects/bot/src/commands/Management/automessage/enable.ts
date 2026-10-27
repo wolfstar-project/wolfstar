@@ -1,10 +1,11 @@
+import { GuildTextChannelTypes } from '#utils/channelTypes';
 import { readAutoMessage } from '#lib/automessages/store';
 import { AutoMessageRoot, renderAutoMessageModal } from '#lib/automessages/render';
 import { resolveDurationOption } from '#lib/moderation/automod/commands';
 import { createTranslator, translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { ChannelType, MessageFlags } from 'discord-api-types/v10';
+import { MessageFlags } from 'discord-api-types/v10';
 import { AutoMessageIntervalLimits } from 'wolfstar-database';
 
 const Root = AutoMessageRoot;
@@ -17,7 +18,7 @@ const Root = AutoMessageRoot;
 	applyLocalizedBuilder(builder, `${Root}:automessageEnable`)
 		.addChannelOption((option) =>
 			applyLocalizedBuilder(option, `${Root}:optionsChannel`)
-				.addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+				.addChannelTypes(...GuildTextChannelTypes)
 				.setRequired(true)
 		)
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsInterval`).setRequired(true).setMaxLength(32))

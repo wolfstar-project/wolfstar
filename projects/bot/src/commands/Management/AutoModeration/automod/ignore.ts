@@ -2,6 +2,7 @@ import { AutoModerationRoot, applyRuleOption, resolveCommandRule, translateRuleE
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { GuildMessageChannelTypes } from '#utils/channelTypes';
 import { channelMention, roleMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -18,7 +19,7 @@ const Root = AutoModerationRoot;
 @RegisterAsSubcommand('automod', (builder) =>
 	applyRuleOption(applyLocalizedBuilder(builder, `${Root}:ignore`))
 		.addRoleOption((option) => applyLocalizedBuilder(option, `${Root}:optionsRole`))
-		.addChannelOption((option) => applyLocalizedBuilder(option, `${Root}:optionsChannel`))
+		.addChannelOption((option) => applyLocalizedBuilder(option, `${Root}:optionsChannel`).addChannelTypes(...GuildMessageChannelTypes))
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod ignore'>) {

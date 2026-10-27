@@ -1,4 +1,5 @@
 import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
+import { GuildMessageChannelTypes } from '#utils/channelTypes';
 import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList } from '#lib/moderation/automod/commands';
 import { MaximumAutoModerationRuleIgnored } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -520,6 +521,8 @@ function renderExemptions({ t }: AutoModerationMenuContext, rule: AutoModeration
 		}),
 		...render('Channels', rule.ignoredChannels, channelMention, {
 			type: ComponentType.ChannelSelect,
+			// Exemptions match the message's channel ID, never a category or a forum containing it.
+			channel_types: [...GuildMessageChannelTypes],
 			custom_id: id('channels', getAutoModerationMenuRevision(rule.ignoredChannels)),
 			placeholder: cutText(translateKey(t, `${Root}:menuExemptChannelsPlaceholder`), 150),
 			min_values: 0,
