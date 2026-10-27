@@ -9,11 +9,12 @@ import {
 	type CatalogEntry
 } from '#lib/structures/commands-menu/catalog';
 import {
-	CommandAccessLists,
 	CommandChannelLists,
+	CommandMemberRules,
+	listCommandMembers,
 	MaximumCommandRestrictionEntries,
-	type CommandRestriction,
-	type CommandRestrictionList
+	type CommandMemberRule,
+	type CommandRestriction
 } from '#lib/structures/commands-menu/restrictions';
 import { chatInputApplicationCommandMention, inlineCode } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
@@ -48,7 +49,6 @@ export const CommandsMenuHandlerName = 'commands';
  * - `list`: shows a page of a category, the target is the category, empty for every command.
  * - `category`: the category select menu, the category is its selected value.
  * - `edit`: opens the editor of a command, the target is the path of its entry, `whois user`.
- * - `configure`, `access`: open the channel or member form; `save`, `saveAccess` save it.
  * - `legacy`: downloads preserved nodes; `clearLegacy`, `confirmLegacy` remove them with owner confirmation.
  * - `save`: the modal of a command, the target is its name.
  * - `search`: opens the modal of the search.
@@ -67,9 +67,6 @@ export type CommandsMenuVerb =
 	| 'results'
 	| 'jump'
 	| 'goto'
-	| 'configure'
-	| 'access'
-	| 'saveAccess'
 	| 'legacy'
 	| 'clearLegacy'
 	| 'confirmLegacy';
@@ -103,9 +100,6 @@ const Verbs = new Set<string>([
 	'results',
 	'jump',
 	'goto',
-	'configure',
-	'access',
-	'saveAccess',
 	'legacy',
 	'clearLegacy',
 	'confirmLegacy'
@@ -446,21 +440,27 @@ export const CommandEnabledValue = 'enabled';
 export const CommandDisabledValue = 'disabled';
 
 /**
- * The custom ID of the radio group of {@linkcode renderCommandEditModal}. The select menus of its lists have the name
- * of their list, see `CommandRestrictionLists`.
+ * The custom ID of the radio group of {@linkcode renderCommandEditModal}. The select menus of the channels have the name
+ * of their list, see `CommandChannelLists`, and the ones of the members `allowedMembers` and `ignoredMembers`, see
+ * {@linkcode getCommandMembersInputId}.
  */
 export const CommandStatusInputId = 'status';
 
 /**
- * The modal that edits a command of the server: whether it can be run, and the channels and the roles it is allowed
- * in, or ignores.
- *
- * @remarks Status and channels use three fields; roles and users use four. The forms save only their own lists.
+ * The custom ID of the select menu that holds the roles and the users of a rule.
+ */
+export function getCommandMembersInputId(rule: CommandMemberRule) {
+	return `${rule}Members` as const;
+}
+
+/**
+ * The modal that edits a command of the server: whether it can be run, the channels it is allowed in or ignores, and
+ * the roles and the users that are allowed or ignored, which fill the five fields a modal holds.
  *
  * @param context - The context of the menu.
  * @param command - The command to edit.
  * @param disabledBy - The name in `commands.disabled` that disables it, `null` when it is enabled.
- * @param restriction - The channels and the roles the server restricts the command to.
+ * @param restriction - The channels, the roles and the users the server restricts the command to.
  * @param revision - The revision of the command the modal is opened with, see `getCommandRestrictionRevision`.
  */
 export function renderCommandEditModal(
@@ -468,8 +468,7 @@ export function renderCommandEditModal(
 	command: CatalogCommand,
 	disabledBy: string | null,
 	restriction: CommandRestriction,
-	revision: number,
-	scope: 'channels' | 'access' = 'channels'
+	revision: number
 ): APIModalInteractionResponseCallbackData {
 	const { t } = context;
 	const disabled = disabledBy !== null;
@@ -481,83 +480,57 @@ export function renderCommandEditModal(
 				? t('commands/commands:editStatusSubcommands', { count: command.subcommands.length })
 				: t('commands/commands:editStatusDescription');
 
-	const select = (
-		list: CommandRestrictionList,
-		type: ComponentType.ChannelSelect | ComponentType.RoleSelect | ComponentType.UserSelect
-	): APILabelComponent => {
-		const entries = restriction[list].slice(0, MaximumCommandRestrictionEntries);
-		const common = { custom_id: list, required: false, min_values: 0, max_values: MaximumCommandRestrictionEntries };
-		return {
-			type: ComponentType.Label,
-			label: cutText(t(`commands/commands:edit${RestrictionKeys[list]}Label`), 45),
-			description: cutText(t(`commands/commands:edit${RestrictionKeys[list]}Description`), 100),
-			component:
-				type === ComponentType.ChannelSelect
-					? { ...common, type, default_values: entries.map((id) => ({ id, type: SelectMenuDefaultValueType.Channel })) }
-					: type === ComponentType.RoleSelect
-						? { ...common, type, default_values: entries.map((id) => ({ id, type: SelectMenuDefaultValueType.Role })) }
-						: { ...common, type, default_values: entries.map((id) => ({ id, type: SelectMenuDefaultValueType.User })) }
-		};
-	};
+	const common = { required: false, min_values: 0, max_values: MaximumCommandRestrictionEntries };
+	const channels = (list: (typeof CommandChannelLists)[number]): APILabelComponent => ({
+		type: ComponentType.Label,
+		label: cutText(t(`commands/commands:edit${RestrictionKeys[list]}Label`), 45),
+		description: cutText(t(`commands/commands:edit${RestrictionKeys[list]}Description`), 100),
+		component: {
+			...common,
+			custom_id: list,
+			type: ComponentType.ChannelSelect,
+			default_values: restriction[list]
+				.slice(0, MaximumCommandRestrictionEntries)
+				.map((id) => ({ id, type: SelectMenuDefaultValueType.Channel }))
+		}
+	});
+	const members = (rule: CommandMemberRule): APILabelComponent => ({
+		type: ComponentType.Label,
+		label: cutText(t(`commands/commands:edit${rule === 'allowed' ? 'Allowed' : 'Ignored'}MembersLabel`), 45),
+		description: cutText(t(`commands/commands:edit${rule === 'allowed' ? 'Allowed' : 'Ignored'}MembersDescription`), 100),
+		component: {
+			...common,
+			custom_id: getCommandMembersInputId(rule),
+			type: ComponentType.MentionableSelect,
+			default_values: listCommandMembers(restriction, rule)
+				.slice(0, MaximumCommandRestrictionEntries)
+				.map(({ id, type }) => ({ id, type: type === 'role' ? SelectMenuDefaultValueType.Role : SelectMenuDefaultValueType.User }))
+		}
+	});
 
 	return {
-		// The modal of `save` carries the revision where the other actions carry their page:
-		custom_id: encodeCommandsMenuId({
-			ownerId: context.ownerId,
-			verb: scope === 'channels' ? 'save' : 'saveAccess',
-			target: command.name,
-			page: revision
-		}),
+		// The modal carries the revision where the other actions carry their page:
+		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: revision }),
 		title: cutText(t('commands/commands:editTitle', { name: command.name }), 45),
-		components:
-			scope === 'access'
-				? CommandAccessLists.map((list) => select(list, list.endsWith('Users') ? ComponentType.UserSelect : ComponentType.RoleSelect))
-				: ([
-						{
-							type: ComponentType.Label,
-							label: cutText(t('commands/commands:editStatusLabel'), 45),
-							description: cutText(status, 100),
-							component: {
-								type: ComponentType.RadioGroup,
-								custom_id: CommandStatusInputId,
-								required: true,
-								options: [
-									{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !disabled },
-									{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: disabled }
-								]
-							}
-						},
-						...CommandChannelLists.map((list) => select(list, ComponentType.ChannelSelect))
-					] as APIModalInteractionResponseCallbackData['components'])
+		components: [
+			{
+				type: ComponentType.Label,
+				label: cutText(t('commands/commands:editStatusLabel'), 45),
+				description: cutText(status, 100),
+				component: {
+					type: ComponentType.RadioGroup,
+					custom_id: CommandStatusInputId,
+					required: true,
+					options: [
+						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !disabled },
+						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: disabled }
+					]
+				}
+			},
+			...CommandChannelLists.map(channels),
+			...CommandMemberRules.map(members)
+		]
 	};
-}
-
-/** The entry point for editing a command; each form stays within Discord's five-field limit. */
-export function renderCommandSettings(context: CommandsMenuContext, command: CatalogCommand): CommandsMenuMessage {
-	const { t, ownerId } = context;
-	const id = (verb: CommandsMenuVerb) => encodeCommandsMenuId({ ownerId, verb, target: command.name, page: 0 });
-	return toMessage([
-		{
-			type: ComponentType.Container,
-			accent_color: AccentColor,
-			components: [
-				{
-					type: ComponentType.TextDisplay,
-					content: `## ${t('commands/commands:editTitle', { name: command.name })}\n${t('commands/commands:editAccessHelp')}`
-				},
-				row([
-					button(id('configure'), { label: t('commands/commands:editChannels') }),
-					button(id('access'), { label: t('commands/commands:editAccess') })
-				]),
-				row([
-					button(encodeCommandsMenuId({ ownerId, verb: 'list', target: command.category, page: 0 }), {
-						label: t('commands/commands:menuBack'),
-						emoji: getEmojiComponent('Back')
-					})
-				])
-			]
-		}
-	]);
 }
 
 /** Removing legacy rules is an explicit owner action, after downloading their backup. */
@@ -599,16 +572,12 @@ export function renderLegacyPermissionButtons(
 }
 
 /**
- * The part of the keys of the texts of each list of a restriction.
+ * The part of the keys of the texts of each list of channels of a restriction.
  */
 const RestrictionKeys = {
 	allowedChannels: 'AllowedChannels',
-	ignoredChannels: 'IgnoredChannels',
-	allowedRoles: 'AllowedRoles',
-	ignoredRoles: 'IgnoredRoles',
-	allowedUsers: 'AllowedUsers',
-	ignoredUsers: 'IgnoredUsers'
-} as const satisfies Record<CommandRestrictionList, string>;
+	ignoredChannels: 'IgnoredChannels'
+} as const satisfies Record<(typeof CommandChannelLists)[number], string>;
 
 /**
  * The modal a user writes the page they want to go to in.

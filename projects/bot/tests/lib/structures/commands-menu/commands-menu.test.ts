@@ -298,7 +298,7 @@ describe('commands menu', () => {
 			ignoredUsers: []
 		};
 
-		test('GIVEN a command THEN its channel form edits status and channels without editing access', () => {
+		test('GIVEN a command THEN its form edits status, channels, roles and users', () => {
 			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted, 0);
 			const components = flatten(modal.components);
 			const radio = components.find((component) => component.type === ComponentType.RadioGroup)!;
@@ -306,7 +306,7 @@ describe('commands menu', () => {
 			expect(modal.title).toContain('commands/commands:editTitle');
 			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'save', target: 'automod', page: 0 });
 			// A modal holds five components at most:
-			expect(modal.components).toHaveLength(3);
+			expect(modal.components).toHaveLength(5);
 			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusSubcommands {\\"count\\":2}');
 			expect(radio.custom_id).toBe('status');
 			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
@@ -334,20 +334,21 @@ describe('commands menu', () => {
 				allowedChannels: ['111111111111111111'],
 				ignoredRoles: ['222222222222222222', '333333333333333333']
 			};
-			const modal = renderCommandEditModal(createContext(), commands[0], null, { ...restriction, allowedUsers: [ownerId] }, 0, 'access');
+			const modal = renderCommandEditModal(createContext(), commands[0], null, { ...restriction, allowedUsers: [ownerId] }, 0);
 			const picked = Object.fromEntries(
 				flatten(modal.components)
-					.filter((component) => component.type === ComponentType.UserSelect || component.type === ComponentType.RoleSelect)
+					.filter((component) => component.type === ComponentType.ChannelSelect || component.type === ComponentType.MentionableSelect)
 					.map((component) => [component.custom_id, (component as { default_values?: { id: string; type: string }[] }).default_values])
 			);
 
-			expect(modal.components.length).toBeLessThanOrEqual(5);
-			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))?.verb).toBe('saveAccess');
+			// The status and four select menus: the five fields a modal holds.
+			expect(modal.components).toHaveLength(5);
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))?.verb).toBe('save');
 			expect(picked).toEqual({
-				allowedUsers: [{ id: ownerId, type: 'user' }],
-				ignoredUsers: [],
-				allowedRoles: [],
-				ignoredRoles: [
+				allowedChannels: [{ id: '111111111111111111', type: 'channel' }],
+				ignoredChannels: [],
+				allowedMembers: [{ id: ownerId, type: 'user' }],
+				ignoredMembers: [
 					{ id: '222222222222222222', type: 'role' },
 					{ id: '333333333333333333', type: 'role' }
 				]
