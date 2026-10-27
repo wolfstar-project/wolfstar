@@ -210,6 +210,32 @@ export async function resolveJoinGuardCheckpoint(db: Database, checkpointId: str
 }
 
 /**
+ * Makes a member wait at the checkpoint again, which is only done when what they were resolved with could not be done
+ * (Discord refused the kick, or the roles): they were resolved first, so nothing else acted on them meanwhile.
+ * @param db The database to write through.
+ * @param checkpointId The ID of the row.
+ * @param status What the row was resolved as, so a row another change resolved since is left alone.
+ */
+export async function reopenJoinGuardCheckpoint(
+	db: Database,
+	checkpointId: string,
+	status: JoinGuardCheckpointResolveData['status']
+): Promise<boolean> {
+	if (!isRowId(checkpointId)) return false;
+
+	const count = await db.orm.public.JoinGuardCheckpoint.where({ id: BigInt(checkpointId), status }).updateAndCount({
+		status: 'Waiting',
+		resolution: null,
+		moderatorId: null,
+		caseId: null,
+		trust: null,
+		linkedAccounts: 0,
+		resolvedAt: null
+	});
+	return Number(count) > 0;
+}
+
+/**
  * Sets the case a row of the queue was resolved with, once the action that makes it was taken.
  */
 export async function setJoinGuardCheckpointCase(db: Database, checkpointId: string, caseId: number): Promise<void> {
@@ -305,5 +331,27 @@ export async function recordJoinGuardSharedBan(
 	await db.orm.public.JoinGuardSharedBan.createAndCount(
 		[{ guildId: BigInt(data.guildId), userId: BigInt(data.userId), caseId: data.caseId, source: data.source }],
 		{ onConflict: 'skip' }
+	);
+}
+
+/**
+ * Forgets a role that was deleted in the rules of the join guard of a guild that give it.
+ * @returns How many rules gave it.
+ */
+export async function clearJoinGuardRuleRole(db: Database, guildId: Snowflake, roleId: Snowflake): Promise<number> {
+	return Number(
+		await db.orm.public.GuildJoinGuardRule.where({ guildId: BigInt(guildId), roleId: BigInt(roleId) }).updateAndCount({ roleId: null })
+	);
+}
+
+/**
+ * Forgets a channel that was deleted in the rules of the join guard of a guild that alert in it.
+ * @returns How many rules alerted in it.
+ */
+export async function clearJoinGuardRuleAlertChannel(db: Database, guildId: Snowflake, channelId: Snowflake): Promise<number> {
+	return Number(
+		await db.orm.public.GuildJoinGuardRule.where({ guildId: BigInt(guildId), alertChannelId: BigInt(channelId) }).updateAndCount({
+			alertChannelId: null
+		})
 	);
 }

@@ -2,6 +2,7 @@ import { fetchUserReportEnabled } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { catchHoneypotMessage, HoneypotDeleteMessageSeconds } from '#lib/moderation/honeypot/catch';
 import { renderHoneypotLog } from '#lib/moderation/honeypot/log';
+import { recordSharedBan } from '#lib/moderation/joinguard/log';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
 import { isModerator } from '#utils/functions';
@@ -17,6 +18,7 @@ vi.mock('#lib/moderation/actions/index', () => ({
 vi.mock('#lib/moderation/common', () => ({ fetchGuildT: vi.fn(async () => (key: string) => key) }));
 vi.mock('#lib/moderation/honeypot/log', () => ({ renderHoneypotLog: vi.fn(() => 'log') }));
 vi.mock('#lib/database', () => ({ fetchUserReportEnabled: vi.fn() }));
+vi.mock('#lib/moderation/joinguard/log', () => ({ recordSharedBan: vi.fn(async () => undefined) }));
 vi.mock('#utils/functions', () => ({ isModerator: vi.fn(), getModeration: vi.fn(async () => ({ createLock: () => unlock })) }));
 
 const guildId = '254360814063058944';
@@ -122,6 +124,25 @@ describe('catchHoneypotMessage', () => {
 			context: HoneypotDeleteMessageSeconds
 		});
 		expect(ModerationActions.softban.apply).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a softban or a ban THEN the account goes on the shared ban list, a kick does not', async () => {
+		await catchHoneypotMessage(createMessage(), createSettings());
+		expect(recordSharedBan).toHaveBeenCalledWith({ guildId, userId, caseId: 7, source: 'Honeypot' });
+
+		vi.mocked(recordSharedBan).mockClear();
+		vi.setSystemTime((now += 61_000));
+		await catchHoneypotMessage(createMessage(), createSettings({ honeypotAction: 'Kick' }));
+		expect(recordSharedBan).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN an action that could not be taken THEN nothing goes on the shared ban list', async () => {
+		vi.mocked(ModerationActions.softban.apply).mockRejectedValue(new Error('boom'));
+		Object.assign(container, { logger: { error: vi.fn() } });
+
+		await catchHoneypotMessage(createMessage(), createSettings());
+
+		expect(recordSharedBan).not.toHaveBeenCalled();
 	});
 
 	test('GIVEN a moderator THEN nothing is done, not even to the message', async () => {

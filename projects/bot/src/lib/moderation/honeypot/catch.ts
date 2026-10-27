@@ -4,6 +4,7 @@ import { fetchUserReportEnabled } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { fetchGuildT } from '#lib/moderation/common';
 import { renderHoneypotLog } from '#lib/moderation/honeypot/log';
+import { recordSharedBan } from '#lib/moderation/joinguard/log';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
 import { getModeration, isModerator } from '#utils/functions';
@@ -69,6 +70,8 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 		const sendDirectMessage = settings.honeypotDirectMessage && (await fetchUserReportEnabled(message.author.id));
 		const entry = await applyHoneypotAction(guild, action, message.author, t('events/moderation:honeypot'), sendDirectMessage);
 		caseId = entry.id;
+		// Who writes in the trap is a spam bot or a hacked account, which the checkpoint of every guild then refuses:
+		if (action !== 'Kick') await recordSharedBan({ guildId: guild.id, userId: message.author.id, caseId, source: 'Honeypot' });
 	} catch (cause) {
 		// What Discord refuses (the member is above the bot, a missing permission) is what the moderators can fix:
 		if (cause instanceof DiscordAPIError) error = cause.message;

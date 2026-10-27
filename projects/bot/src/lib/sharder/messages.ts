@@ -37,6 +37,11 @@ export interface ShardMessages {
 	 * The role rules of a guild were changed by a shard, the others drop their cached copy.
 	 */
 	roleRulesUpdate: { guildId: string };
+
+	/**
+	 * The bot changed the settings or the rules of the join guard of a guild, the others drop their cached copy.
+	 */
+	joinGuardUpdate: { guildId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;
