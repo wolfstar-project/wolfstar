@@ -1072,6 +1072,7 @@ declare module "i18next" {
         alreadyEnabled: "The join guard is already on.";
         alreadyDisabled: "The join guard is already off.";
         logChannelMissingPermissions: "I cannot post the logs of the join guard in {{channel}}, I am missing: {{missing, list(conjunction)}}.";
+        logChannelUnknown: "I cannot find the log channel of the join guard, {{channel}}: set another one, or none, in `/settings server` or on the dashboard.";
         postButtonPosted: "{{GREENTICK}} I posted the checkpoint button in {{channel}}.";
         postButtonEdited: "{{GREENTICK}} I updated the checkpoint button in {{channel}}.";
         postButtonNoChannel: "The join guard has no checkpoint channel: set `join-guard.checkpoint-channel` in {{command}} or on the dashboard.";
@@ -2302,7 +2303,6 @@ declare module "i18next" {
         errorTarget: "I could not {{action}}: {{reason}}";
         errorRole: "I could not give {{role}}: {{reason}}";
         errorAlert: "I could not alert the moderators in {{channel}}: {{reason}}";
-        errorLogChannel: "I cannot post the logs of the join guard in {{channel}}, I am missing: {{missing, list(conjunction)}}.";
         actionBan: "ban them";
         actionKick: "kick them";
         actionCheckpoint: "send them to the checkpoint";

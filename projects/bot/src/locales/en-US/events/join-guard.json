@@ -28,7 +28,6 @@
 	"errorTarget": "I could not {{action}}: {{reason}}",
 	"errorRole": "I could not give {{role}}: {{reason}}",
 	"errorAlert": "I could not alert the moderators in {{channel}}: {{reason}}",
-	"errorLogChannel": "I cannot post the logs of the join guard in {{channel}}, I am missing: {{missing, list(conjunction)}}.",
 	"actionBan": "ban them",
 	"actionKick": "kick them",
 	"actionCheckpoint": "send them to the checkpoint",
