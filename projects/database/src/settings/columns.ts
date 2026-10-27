@@ -13,6 +13,7 @@ export const Tables = [
 	'GuildAutoModeration',
 	'GuildCommands',
 	'GuildHoneypot',
+	'GuildJoinGuard',
 	'GuildLogs',
 	'GuildLogsOptions',
 	'GuildModeration',
@@ -117,6 +118,25 @@ export const Columns = {
 		honeypotWarning: ['warning', 'value'],
 		honeypotRandomName: ['randomName', 'value'],
 		honeypotKeepActive: ['keepActive', 'value']
+	}),
+	...columns('GuildJoinGuard', {
+		joinGuardEnabled: ['enabled', 'value'],
+		joinGuardLogChannel: ['logChannelId', 'snowflake'],
+		joinGuardDirectMessage: ['directMessage', 'value'],
+		joinGuardDirectMessageContent: ['directMessageContent', 'value'],
+		joinGuardCheckpoint: ['checkpoint', 'value'],
+		joinGuardPendingRole: ['pendingRoleId', 'snowflake'],
+		joinGuardVerifiedRole: ['verifiedRoleId', 'snowflake'],
+		joinGuardCheckpointChannel: ['checkpointChannelId', 'snowflake'],
+		// The bot's own: the message of the checkpoint button it posted, which the website never writes.
+		joinGuardCheckpointMessage: ['checkpointMessageId', 'snowflake'],
+		joinGuardCheckpointTimeout: ['checkpointTimeout', 'value'],
+		joinGuardMinimumTrust: ['minimumTrust', 'value'],
+		joinGuardCaptcha: ['captcha', 'value'],
+		joinGuardConnections: ['connections', 'value'],
+		joinGuardSharedBans: ['sharedBans', 'value'],
+		joinGuardAllowedUsers: ['allowedUsers', 'snowflakes'],
+		joinGuardAllowedRoles: ['allowedRoles', 'snowflakes']
 	}),
 	...columns('GuildLogs', {
 		logsMemberAdd: ['memberAdd', 'snowflake'],

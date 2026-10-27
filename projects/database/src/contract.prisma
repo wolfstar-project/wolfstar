@@ -232,6 +232,113 @@ namespace public {
     modules       Modules                 @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildHoneypot_id_fkey")
   }
 
+  // The settings of the join guard, which stops the members whose account looks like a raid or a spam bot when they
+  // join, and of its checkpoint on wolfstar.rocks. The dashboard writes them too, with the same names.
+  model GuildJoinGuard {
+    id                   BigInt   @id(map: "GuildJoinGuard_pkey")
+    enabled              Boolean  @default(false)
+    logChannelId         BigInt?  @map("log_channel_id")
+    directMessage        Boolean  @default(true) @map("direct_message")
+    directMessageContent String?  @map("direct_message_content")
+    checkpoint           Boolean  @default(false)
+    pendingRoleId        BigInt?  @map("pending_role_id")
+    verifiedRoleId       BigInt?  @map("verified_role_id")
+    checkpointChannelId  BigInt?  @map("checkpoint_channel_id")
+    checkpointMessageId  BigInt?  @map("checkpoint_message_id")
+    checkpointTimeout    Int      @default(86400) @map("checkpoint_timeout")
+    minimumTrust         Int      @default(1) @map("minimum_trust")
+    captcha              Boolean  @default(true)
+    connections          Boolean  @default(true)
+    sharedBans           Boolean  @default(true) @map("shared_bans")
+    allowedUsers         BigInt[] @default([]) @noCheck(elementNotNull) @map("allowed_users")
+    allowedRoles         BigInt[] @default([]) @noCheck(elementNotNull) @map("allowed_roles")
+    modules              Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildJoinGuard_id_fkey")
+  }
+
+  // A rule of the join guard: every condition it sets must match, and then every action it sets is taken. The names
+  // are unique per guild whatever their case, by an index made by hand (`20261027T2001_add_join_guard`).
+  model GuildJoinGuardRule {
+    id               BigInt                        @id(map: "GuildJoinGuardRule_pkey") @default(autoincrement())
+    guildId          BigInt                        @map("guild_id")
+    name             String
+    enabled          Boolean                       @default(true)
+    accountAgeMax    Int?                          @map("account_age_max")
+    defaultAvatar    Boolean                       @default(false) @map("default_avatar")
+    generatedName    Boolean                       @default(false) @map("generated_name")
+    nameContains     String?                       @map("name_contains")
+    unverifiedBot    Boolean                       @default(false) @map("unverified_bot")
+    sendToCheckpoint Boolean                       @default(false) @map("send_to_checkpoint")
+    roleId           BigInt?                       @map("role_id")
+    directMessage    Boolean                       @default(false) @map("direct_message")
+    alertChannelId   BigInt?                       @map("alert_channel_id")
+    hardAction       pg.enum(JoinGuardHardAction)? @map("hard_action")
+    createdAt        TimestampString(3)            @default(now()) @map("created_at")
+    guild            Guild                         @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildJoinGuardRule_guild_id_fkey", index: false)
+
+    @@index([guildId], map: "GuildJoinGuardRule_guild_id_idx")
+  }
+
+  // A member the join guard stopped, the queue of the dashboard. A member has one `Waiting` row per guild at most, by a
+  // partial unique index made by hand (`20261027T2001_add_join_guard`).
+  model JoinGuardCheckpoint {
+    id               BigInt                              @id(map: "JoinGuardCheckpoint_pkey") @default(autoincrement())
+    guildId          BigInt                              @map("guild_id")
+    userId           BigInt                              @map("user_id")
+    ruleId           BigInt?                             @map("rule_id")
+    ruleName         String                              @map("rule_name")
+    status           pg.enum(JoinGuardCheckpointStatus)
+    resolution       pg.enum(JoinGuardResolution)?
+    moderatorId      BigInt?                             @map("moderator_id")
+    caseId           Int?                                @map("case_id")
+    accountCreatedAt TimestampString(3)                  @map("account_created_at")
+    defaultAvatar    Boolean                             @map("default_avatar")
+    generatedName    Boolean                             @map("generated_name")
+    trust            Int?
+    linkedAccounts   Int                                 @default(0) @map("linked_accounts")
+    createdAt        TimestampString(3)                  @default(now()) @map("created_at")
+    expiresAt        TimestampString(3)?                 @map("expires_at")
+    resolvedAt       TimestampString(3)?                 @map("resolved_at")
+    guild            Guild                               @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "JoinGuardCheckpoint_guild_id_fkey", index: false)
+    rule             GuildJoinGuardRule?                 @relation(fields:[ruleId], references:[id], onDelete: SetNull, onUpdate: Cascade, map: "JoinGuardCheckpoint_rule_id_fkey", index: false)
+
+    @@index([guildId, status, createdAt], map: "JoinGuardCheckpoint_guild_id_status_created_at_idx")
+    @@index([guildId, userId], map: "JoinGuardCheckpoint_guild_id_user_id_idx")
+    @@index([ruleId], map: "JoinGuardCheckpoint_rule_id_idx")
+  }
+
+  // What the website asks the bot to do, announced with `NOTIFY join_guard_request, '<id>'` in the transaction that
+  // inserts it. The ones not done yet are found by a partial index made by hand (`20261027T2001_add_join_guard`).
+  model JoinGuardRequest {
+    id             BigInt                        @id(map: "JoinGuardRequest_pkey") @default(autoincrement())
+    guildId        BigInt                        @map("guild_id")
+    kind           pg.enum(JoinGuardRequestKind)
+    userId         BigInt?                       @map("user_id")
+    checkpointId   BigInt?                       @map("checkpoint_id")
+    moderatorId    BigInt?                       @map("moderator_id")
+    trust          Int?
+    linkedAccounts Int?                          @map("linked_accounts")
+    reason         String?
+    createdAt      TimestampString(3)            @default(now()) @map("created_at")
+    processedAt    TimestampString(3)?           @map("processed_at")
+    error          String?
+    guild          Guild                         @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "JoinGuardRequest_guild_id_fkey", index: false)
+
+    @@index([guildId, createdAt], map: "JoinGuardRequest_guild_id_created_at_idx")
+  }
+
+  // The accounts a guild banned for raiding or scamming, by the join guard or by the honeypot, which the checkpoint of
+  // every guild reads. It outlives the guild that banned them, so it has no relation to it.
+  model JoinGuardSharedBan {
+    userId    BigInt                            @map("user_id")
+    guildId   BigInt                            @map("guild_id")
+    caseId    Int                               @map("case_id")
+    source    pg.enum(JoinGuardSharedBanSource)
+    createdAt TimestampString(3)                @default(now()) @map("created_at")
+
+    @@id([guildId, caseId], map: "JoinGuardSharedBan_pkey")
+    @@index([userId], map: "JoinGuardSharedBan_user_id_idx")
+  }
+
   model GuildLogs {
     id                     BigInt   @id(map: "GuildLogs_pkey")
     memberAdd              BigInt?  @map("member_add")
@@ -496,6 +603,38 @@ namespace public {
     Kick = "Kick"
     Softban = "Softban"
     Ban = "Ban"
+  }
+
+  native_enum JoinGuardHardAction {
+    Kick = "Kick"
+    Ban = "Ban"
+  }
+
+  native_enum JoinGuardCheckpointStatus {
+    Waiting = "Waiting"
+    Verified = "Verified"
+    Kicked = "Kicked"
+    Banned = "Banned"
+    Left = "Left"
+  }
+
+  native_enum JoinGuardResolution {
+    Rule = "Rule"
+    Checkpoint = "Checkpoint"
+    Timeout = "Timeout"
+    Moderator = "Moderator"
+  }
+
+  native_enum JoinGuardRequestKind {
+    Pass = "Pass"
+    Verify = "Verify"
+    Kick = "Kick"
+    PostButton = "PostButton"
+  }
+
+  native_enum JoinGuardSharedBanSource {
+    JoinGuard = "JoinGuard"
+    Honeypot = "Honeypot"
   }
 
   native_enum MessageUpdateStyle {

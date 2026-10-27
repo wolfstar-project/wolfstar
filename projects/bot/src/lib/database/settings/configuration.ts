@@ -1,6 +1,6 @@
 import { SchemaGroup, type NonEmptyArray } from '#lib/database/settings/schema/SchemaGroup';
 import { SchemaKey, type ConfigurableKeyValueOptions } from '#lib/database/settings/schema/SchemaKey';
-import type { GuildDataKey } from 'wolfstar-database';
+import { JoinGuardMinimumTrustLimits, MaximumJoinGuardDirectMessageLength, type GuildDataKey } from 'wolfstar-database';
 import type { TypedT } from '#lib/types';
 import { objectEntries } from '@sapphire/utilities';
 import { Collection } from '@discordjs/collection';
@@ -84,6 +84,62 @@ export function getConfiguration() {
 		honeypotWarning: { type: 'boolean', name: 'honeypot.warning', description: 'settings:honeypotWarning', default: true },
 		honeypotRandomName: { type: 'boolean', name: 'honeypot.random-name', description: 'settings:honeypotRandomName' },
 		honeypotKeepActive: { type: 'boolean', name: 'honeypot.keep-active', description: 'settings:honeypotKeepActive' },
+
+		// Join Guard. The rules are rows of their own, which the dashboard edits:
+		joinGuardEnabled: { type: 'boolean', name: 'join-guard.enabled', description: 'settings:joinGuardEnabled' },
+		joinGuardLogChannel: { type: 'guildTextChannel', name: 'join-guard.log-channel', description: 'settings:joinGuardLogChannel' },
+		joinGuardDirectMessage: {
+			type: 'boolean',
+			name: 'join-guard.direct-message',
+			description: 'settings:joinGuardDirectMessage',
+			default: true
+		},
+		joinGuardDirectMessageContent: {
+			type: 'string',
+			name: 'join-guard.direct-message-content',
+			description: 'settings:joinGuardDirectMessageContent',
+			minimum: 1,
+			maximum: MaximumJoinGuardDirectMessageLength
+		},
+		joinGuardCheckpoint: { type: 'boolean', name: 'join-guard.checkpoint', description: 'settings:joinGuardCheckpoint' },
+		joinGuardPendingRole: { type: 'manageableRole', name: 'join-guard.pending-role', description: 'settings:joinGuardPendingRole' },
+		joinGuardVerifiedRole: { type: 'manageableRole', name: 'join-guard.verified-role', description: 'settings:joinGuardVerifiedRole' },
+		joinGuardCheckpointChannel: {
+			type: 'guildTextChannel',
+			name: 'join-guard.checkpoint-channel',
+			description: 'settings:joinGuardCheckpointChannel'
+		},
+		// The message of the button the bot posted, which only the bot writes:
+		joinGuardCheckpointMessage: {
+			type: 'notAllowed',
+			name: 'join-guard.checkpoint-message',
+			description: 'settings:dashboardOnlyKey',
+			dashboardOnly: true
+		},
+		joinGuardCheckpointTimeout: {
+			type: 'joinGuardTimeout',
+			name: 'join-guard.checkpoint-timeout',
+			description: 'settings:joinGuardCheckpointTimeout',
+			default: 86_400
+		},
+		joinGuardMinimumTrust: {
+			type: 'integer',
+			name: 'join-guard.minimum-trust',
+			description: 'settings:joinGuardMinimumTrust',
+			minimum: JoinGuardMinimumTrustLimits.minimum,
+			maximum: JoinGuardMinimumTrustLimits.maximum,
+			default: 1
+		},
+		joinGuardCaptcha: { type: 'boolean', name: 'join-guard.captcha', description: 'settings:joinGuardCaptcha', default: true },
+		joinGuardConnections: { type: 'boolean', name: 'join-guard.connections', description: 'settings:joinGuardConnections', default: true },
+		joinGuardSharedBans: { type: 'boolean', name: 'join-guard.shared-bans', description: 'settings:joinGuardSharedBans', default: true },
+		joinGuardAllowedUsers: {
+			type: 'user',
+			name: 'join-guard.allowed-users',
+			description: 'settings:joinGuardAllowedUsers',
+			array: true
+		},
+		joinGuardAllowedRoles: { type: 'role', name: 'join-guard.allowed-roles', description: 'settings:joinGuardAllowedRoles', array: true },
 
 		// Appeals
 		appealsEnabled: { type: 'boolean', name: 'appeals.enabled', description: 'settings:appealsEnabled' },

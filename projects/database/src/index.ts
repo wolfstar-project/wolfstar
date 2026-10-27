@@ -36,6 +36,8 @@ export * from './settings/warnings/storage.js';
 export * from './settings/columns.js';
 export * from './settings/constants.js';
 export * from './settings/honeypot/storage.js';
+export * from './settings/joinguard/storage.js';
+export * from './settings/joinguard/types.js';
 export * from './settings/reports/storage.js';
 export * from './settings/reports/types.js';
 export * from './settings/storage.js';
