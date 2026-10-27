@@ -20,7 +20,7 @@ declare module '@wolfstar/http-framework' {
       id: string;
     };
     'autodelete disable': {
-      channel: TransformedArguments.Channel;
+      channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
     };
     'autodelete enable': {
       bots?: boolean;
@@ -35,7 +35,7 @@ declare module '@wolfstar/http-framework' {
     };
     'autodelete list': {};
     'automessage disable': {
-      channel: TransformedArguments.Channel;
+      channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
     };
     'automessage enable': {
       channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
@@ -73,7 +73,7 @@ declare module '@wolfstar/http-framework' {
       'whole-channel'?: boolean;
     };
     'automod ignore': {
-      channel?: TransformedArguments.Channel;
+      channel?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 2 | 5 | 10 | 11 | 12 | 13> };
       role?: TransformedArguments.Role;
       rule: string;
     };
@@ -86,7 +86,7 @@ declare module '@wolfstar/http-framework' {
       rule: string;
     };
     'autopurge disable': {
-      channel: TransformedArguments.Channel;
+      channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
     };
     'autopurge enable': {
       channel: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };

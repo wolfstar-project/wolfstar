@@ -15,7 +15,7 @@ import {
 	type CatalogCommand,
 	type CommandsMenuContext
 } from '#lib/structures/commands-menu';
-import { ApplicationCommandOptionType, ComponentType, MessageFlags } from 'discord-api-types/v10';
+import { ApplicationCommandOptionType, ChannelType, ComponentType, MessageFlags } from 'discord-api-types/v10';
 
 const ownerId = '266624760782258186';
 
@@ -54,6 +54,7 @@ interface AnyComponent {
 	components?: AnyComponent[];
 	accessory?: AnyComponent;
 	component?: AnyComponent;
+	channel_types?: ChannelType[];
 }
 
 function flatten(components: readonly unknown[]): AnyComponent[] {
@@ -318,6 +319,29 @@ describe('commands menu', () => {
 				'ignoredChannels'
 			]);
 			expect(components.filter((component) => component.type === ComponentType.RoleSelect).map((component) => component.custom_id)).toEqual([]);
+		});
+
+		test('GIVEN a command editor THEN channels and post containers are selectable, but categories and directories are not', () => {
+			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted, 0);
+			for (const list of ['allowedChannels', 'ignoredChannels']) {
+				const select = flatten(modal.components).find((component) => component.custom_id === list)!;
+				expect(select.channel_types).toEqual(
+					expect.arrayContaining([
+						ChannelType.GuildText,
+						ChannelType.GuildAnnouncement,
+						ChannelType.GuildVoice,
+						ChannelType.GuildStageVoice,
+						ChannelType.PublicThread,
+						ChannelType.PrivateThread,
+						ChannelType.AnnouncementThread,
+						ChannelType.GuildForum,
+						ChannelType.GuildMedia
+					])
+				);
+				for (const type of [ChannelType.GuildCategory, ChannelType.GuildDirectory, ChannelType.DM, ChannelType.GroupDM]) {
+					expect(select.channel_types).not.toContain(type);
+				}
+			}
 		});
 
 		test('GIVEN a command a server disabled by its category THEN its modal says by what and selects Disabled', () => {

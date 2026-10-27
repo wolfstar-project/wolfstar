@@ -1,4 +1,5 @@
 import { getConfigurableKeys, SerializerStore, type Serializer } from '#lib/database';
+import type { SchemaKeyType } from '#lib/database/settings/schema/SchemaKey';
 import { getSettingChannelTypes, getSettingExperimentalNote, getSettingKind } from '#lib/structures/settings-menu';
 import { UserSerializer } from '#root/serializers/channel';
 import { container } from '@wolfstar/http-framework';
@@ -38,6 +39,10 @@ describe('channel serializer', () => {
 		add(5, ChannelType.AnnouncementThread);
 		add(6, ChannelType.GuildForum);
 		add(7, ChannelType.GuildVoice);
+		add(9, ChannelType.GuildCategory);
+		add(10, ChannelType.GuildStageVoice);
+		add(11, ChannelType.GuildMedia);
+		add(12, ChannelType.GuildDirectory);
 		channels.set(id(8), { id: id(8), guildId: '999', type: ChannelType.PublicThread, name: 'elsewhere' });
 		(container as any).gatewayClient = {
 			channels: { fetch: vi.fn(async (id: string) => channels.get(id) ?? Promise.reject(new Error('Unknown Channel'))) }
@@ -85,4 +90,24 @@ describe('channel serializer', () => {
 		await expect(serializer.isValid(id(3), createContext('reportsChannel'))).resolves.toBe(false);
 		await expect(serializer.isValid(id(1), createContext('reportsChannel'))).resolves.toBe(true);
 	});
+
+	test.each([
+		['guildTextChannel', [1, 2]],
+		['guildLogChannel', [1, 2, 3, 4, 5]],
+		['guildVoiceChannel', [7]],
+		['guildCategoryChannel', [9]],
+		['categoryOrTextChannel', [1, 9]]
+	] satisfies [SchemaKeyType, number[]][])(
+		'GIVEN a %s setting THEN typing and selecting a channel accept the same supported types',
+		async (type, accepted) => {
+			const context = createContext('reportsChannel');
+			context.entry = { ...context.entry, type } as typeof context.entry;
+			const piece = container.stores.get('serializers').get(type)!;
+			for (const n of [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]) {
+				expect(await piece.isValid(id(n), context)).toBe(accepted.includes(n));
+				expect((await piece.parse(`<#${id(n)}>`, context)).isOk()).toBe(accepted.includes(n));
+				expect(getSettingChannelTypes(context.entry).includes(channels.get(id(n))!.type)).toBe(accepted.includes(n));
+			}
+		}
+	);
 });

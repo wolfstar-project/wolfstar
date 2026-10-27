@@ -19,7 +19,7 @@ import {
 	type AutoModerationMenuAction,
 	type AutoModerationMenuContext
 } from '#lib/structures/automod-menu';
-import { MessageFlags } from 'discord-api-types/v10';
+import { ChannelType, ComponentType, MessageFlags } from 'discord-api-types/v10';
 import { AutoModerationRuleTypes, getDefaultAutoModerationRule, type AutoModerationRule, type AutoModerationRuleType } from 'wolfstar-database';
 
 const ownerId = '266624760782258186';
@@ -117,6 +117,32 @@ describe('auto-moderation menu', () => {
 			);
 
 			expect(length).toBeLessThanOrEqual(4000);
+		});
+
+		test('GIVEN channel exemptions THEN only channels that can contain messages are selectable', () => {
+			const components = flatten(renderAutoModerationRule(context, createRule('Links'), 'exempt').components!);
+			const select = components.find((component) => component.type === ComponentType.ChannelSelect)!;
+			expect(select.channel_types).toEqual(
+				expect.arrayContaining([
+					ChannelType.GuildText,
+					ChannelType.GuildAnnouncement,
+					ChannelType.GuildVoice,
+					ChannelType.GuildStageVoice,
+					ChannelType.PublicThread,
+					ChannelType.PrivateThread,
+					ChannelType.AnnouncementThread
+				])
+			);
+			for (const type of [
+				ChannelType.GuildCategory,
+				ChannelType.GuildForum,
+				ChannelType.GuildMedia,
+				ChannelType.GuildDirectory,
+				ChannelType.DM,
+				ChannelType.GroupDM
+			]) {
+				expect(select.channel_types).not.toContain(type);
+			}
 		});
 
 		test('GIVEN more exemptions than a select menu holds THEN the select menu is left out', () => {

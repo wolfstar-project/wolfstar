@@ -1,3 +1,4 @@
+import { GuildTextChannelTypes } from '#utils/channelTypes';
 import { CleanupRoot } from '#lib/moderation/cleanup/commands';
 import { disableAutoPurge } from '#lib/moderation/cleanup/store';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
@@ -13,7 +14,9 @@ const Root = CleanupRoot;
  */
 @RegisterAsSubcommand('autopurge', (builder) =>
 	applyLocalizedBuilder(builder, `${Root}:autopurgeDisable`).addChannelOption((option) =>
-		applyLocalizedBuilder(option, `${Root}:optionsChannel`).setRequired(true)
+		applyLocalizedBuilder(option, `${Root}:optionsChannel`)
+			.addChannelTypes(...GuildTextChannelTypes)
+			.setRequired(true)
 	)
 )
 export class UserCommand extends Command {

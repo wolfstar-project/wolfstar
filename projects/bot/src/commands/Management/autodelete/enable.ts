@@ -1,3 +1,4 @@
+import { GuildTextChannelTypes } from '#utils/channelTypes';
 import { resolveDurationOption } from '#lib/moderation/automod/commands';
 import { CleanupFilterKeys, CleanupRoot, getMissingCleanupPermissions } from '#lib/moderation/cleanup/commands';
 import { CleanupLimitError, enableAutoDelete } from '#lib/moderation/cleanup/store';
@@ -5,7 +6,7 @@ import { translateKey, type GuildChatInputInteraction } from '#lib/structures/co
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { ChannelType, MessageFlags } from 'discord-api-types/v10';
+import { MessageFlags } from 'discord-api-types/v10';
 import { AutoDeleteAllowKinds, AutoDeleteDelayLimits } from 'wolfstar-database';
 
 const Root = CleanupRoot;
@@ -19,7 +20,7 @@ const Root = CleanupRoot;
 	const subcommand = applyLocalizedBuilder(builder, `${Root}:autodeleteEnable`)
 		.addChannelOption((option) =>
 			applyLocalizedBuilder(option, `${Root}:optionsChannel`)
-				.addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+				.addChannelTypes(...GuildTextChannelTypes)
 				.setRequired(true)
 		)
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsDelay`).setMaxLength(32));

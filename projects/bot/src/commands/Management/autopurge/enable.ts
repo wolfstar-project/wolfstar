@@ -1,3 +1,4 @@
+import { GuildTextChannelTypes } from '#utils/channelTypes';
 import { resolveDurationOption } from '#lib/moderation/automod/commands';
 import {
 	CleanupFilterKeys,
@@ -12,7 +13,7 @@ import { translateKey, type GuildChatInputInteraction } from '#lib/structures/co
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { ChannelType, MessageFlags } from 'discord-api-types/v10';
+import { MessageFlags } from 'discord-api-types/v10';
 import { AutoPurgeIntervalLimits, CleanupFilterKinds, MaximumCleanupValueLength } from 'wolfstar-database';
 
 const Root = CleanupRoot;
@@ -25,7 +26,7 @@ const Root = CleanupRoot;
 	applyLocalizedBuilder(builder, `${Root}:autopurgeEnable`)
 		.addChannelOption((option) =>
 			applyLocalizedBuilder(option, `${Root}:optionsChannel`)
-				.addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+				.addChannelTypes(...GuildTextChannelTypes)
 				.setRequired(true)
 		)
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsInterval`).setRequired(true).setMaxLength(32))
