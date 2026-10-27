@@ -34,7 +34,8 @@ export class UserCommand extends Command {
 		// The logs would be dropped without a word, the guard says what it does there only:
 		const logs = settings.joinGuardLogChannel;
 		const missing = logs === null ? [] : await getMissingJoinGuardChannelPermissions(guildId, logs);
-		if (logs !== null && missing !== null && missing.length > 0) {
+		if (logs !== null && missing === null) lines.push(translateKey(t, `${Root}:logChannelUnknown`, { channel: channelMention(logs) }));
+		else if (logs !== null && missing !== null && missing.length > 0) {
 			lines.push(translateKey(t, `${Root}:logChannelMissingPermissions`, { channel: channelMention(logs), missing }));
 		}
 

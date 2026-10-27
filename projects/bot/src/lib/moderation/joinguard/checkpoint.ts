@@ -72,6 +72,13 @@ function getJoinGuardTimeoutTaskId(checkpointId: string) {
 }
 
 /**
+ * How many times the timeout of a member is tried when the kick fails (the bot lost a permission, Discord refused),
+ * and how long the first retry waits, doubled after each: about five hours in all, the log telling each failure.
+ */
+const TimeoutAttempts = 6;
+const TimeoutRetryDelay = 600_000;
+
+/**
  * Schedules the timeout of a member sent to the checkpoint, see the `joinGuardCheckpointTimeout` task.
  *
  * @param checkpointId - The row of the member.
@@ -83,7 +90,14 @@ export async function scheduleJoinGuardTimeout(checkpointId: string, seconds: nu
 		{
 			repeated: false,
 			delay: seconds * 1000,
-			customJobOptions: { jobId: getJoinGuardTimeoutTaskId(checkpointId), removeOnComplete: true, removeOnFail: true }
+			customJobOptions: {
+				jobId: getJoinGuardTimeoutTaskId(checkpointId),
+				// A kick that failed leaves the member waiting, so the job throws and is tried again:
+				attempts: TimeoutAttempts,
+				backoff: { type: 'exponential', delay: TimeoutRetryDelay },
+				removeOnComplete: true,
+				removeOnFail: true
+			}
 		}
 	);
 }
