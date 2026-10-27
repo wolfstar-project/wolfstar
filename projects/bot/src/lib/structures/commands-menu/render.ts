@@ -67,8 +67,6 @@ export type CommandsMenuVerb =
 	| 'results'
 	| 'jump'
 	| 'goto'
-	| 'configure'
-	| 'access'
 	| 'legacy'
 	| 'clearLegacy'
 	| 'confirmLegacy';
