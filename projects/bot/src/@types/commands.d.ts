@@ -154,6 +154,10 @@ declare module '@wolfstar/http-framework' {
       logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
     };
     'honeypot show': {};
+    'joinguard disable': {};
+    'joinguard enable': {};
+    'joinguard post-button': {};
+    'joinguard show': {};
     'kick': {
       archive?: boolean;
       authored?: boolean;
@@ -528,6 +532,9 @@ declare module '@wolfstar/http-framework' {
       dm?: boolean;
       message?: string;
       reason?: string;
+      user: TransformedArguments.User;
+    };
+    'verify': {
       user: TransformedArguments.User;
     };
     'vmute add': {
