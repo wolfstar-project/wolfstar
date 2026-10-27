@@ -8,9 +8,9 @@ import {
 	CommandsSearchInputId,
 	createCommandsMenuContext,
 	decodeCommandsMenuId,
+	getCommandMembersInputId,
 	normalizeCommandQuery,
 	renderCommandEditModal,
-	renderCommandSettings,
 	renderClearLegacyModal,
 	renderLegacyPermissionButtons,
 	renderCommandsList,
@@ -21,15 +21,16 @@ import {
 import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
 import {
 	CommandChannelLists,
-	CommandAccessLists,
+	CommandMemberRules,
 	findCommandRestriction,
 	getCommandRestrictionRevision,
 	isCommandRestrictionEmpty,
 	keepHiddenRestrictionEntries,
 	readCommandRestrictions,
+	setCommandMembers,
 	setCommandRestriction,
-	type CommandRestriction,
-	type CommandRestrictionList
+	type CommandMemberRule,
+	type CommandRestriction
 } from '#lib/structures/commands-menu/restrictions';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
@@ -81,8 +82,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				);
 			}
 
-			if (action.verb === 'save' || action.verb === 'saveAccess')
-				return this.save(modal, action.target, action.page, t, action.verb === 'saveAccess');
+			if (action.verb === 'save') return this.save(modal, action.target, action.page, t);
 			if (action.verb === 'confirmLegacy') return this.clearLegacy(modal, action.page, t);
 
 			return fail(getDefaultExpiredReply());
@@ -96,9 +96,6 @@ export class UserInteractionHandler extends InteractionHandler {
 				return component.showModal(renderCommandsPageModal(t, action.ownerId, action.target));
 			case 'edit':
 				return this.edit(component, action.ownerId, action.target, t);
-			case 'configure':
-			case 'access':
-				return this.edit(component, action.ownerId, action.target, t, action.verb === 'access' ? 'access' : 'channels');
 			case 'legacy':
 				return this.legacy(component, t);
 			case 'clearLegacy': {
@@ -133,13 +130,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @param path - The path of the entry the button is of, `whois user`, of which the command is the first word.
 	 * @param t - The function to translate with.
 	 */
-	private async edit(
-		interaction: ComponentInteraction,
-		ownerId: string,
-		path: string,
-		t: ReturnType<typeof createTranslator>,
-		scope?: 'channels' | 'access'
-	) {
+	private async edit(interaction: ComponentInteraction, ownerId: string, path: string, t: ReturnType<typeof createTranslator>) {
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
@@ -150,13 +141,11 @@ export class UserInteractionHandler extends InteractionHandler {
 		// A command that was removed since the menu was opened:
 		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
-		if (scope === undefined) return interaction.update(renderCommandSettings(context, command));
-
 		const settings = await readSettings(interaction.guildId!);
 		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), piece.name);
 		const revision = getCommandRestrictionRevision(restriction, settings.commandsDisabled.includes(piece.name));
 		return interaction.showModal(
-			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision, scope)
+			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision)
 		);
 	}
 
@@ -169,7 +158,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @param revision - The revision of the command the modal was opened with, see `getCommandRestrictionRevision`.
 	 * @param t - The function to translate with.
 	 */
-	private async save(interaction: ModalInteraction, name: string, revision: number, t: ReturnType<typeof createTranslator>, access: boolean) {
+	private async save(interaction: ModalInteraction, name: string, revision: number, t: ReturnType<typeof createTranslator>) {
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return reply(denial);
@@ -178,22 +167,24 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (piece === null) return reply(getDefaultExpiredReply());
 
 		const selectedStatus = getModalValue(interaction.data.components, CommandStatusInputId);
-		if (!access && selectedStatus !== CommandDisabledValue && selectedStatus !== 'enabled') return reply(getDefaultExpiredReply());
-		const disable = access ? null : selectedStatus === CommandDisabledValue;
+		if (selectedStatus !== CommandDisabledValue && selectedStatus !== 'enabled') return reply(getDefaultExpiredReply());
+		const disable = selectedStatus === CommandDisabledValue;
 		if (disable && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtected', { name }));
 
-		const restriction = findCommandRestriction([], piece.name);
-		const lists = access ? CommandAccessLists : CommandChannelLists;
-		for (const list of lists) restriction[list] = getModalValues(interaction.data.components, list);
-		const restricted = !isCommandRestrictionEmpty(restriction);
-		if (restricted && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtectedRestricted', { name }));
+		const channels = findCommandRestriction([], piece.name);
+		for (const list of CommandChannelLists) channels[list] = getModalValues(interaction.data.components, list);
+		const members = this.readMembers(interaction);
+		let restriction = channels;
+		for (const rule of CommandMemberRules) restriction = setCommandMembers(restriction, rule, members[rule]);
+		if (!isCommandRestrictionEmpty(restriction) && ProtectedCommands.has(piece.name)) {
+			return reply(t('commands/commands:editProtectedRestricted', { name }));
+		}
 
 		const guildId = interaction.guildId!;
-		const saved = await this.write(guildId, piece.name, disable, restriction, revision, interaction.user.id, lists);
+		const saved = await this.write(guildId, piece.name, disable, channels, members, revision, interaction.user.id);
 		if (!saved) return reply(t('commands/commands:editStale', { name }));
 
-		if (access) return reply(t('commands/commands:editAccessSaved'));
-		const restrictions = t('commands/commands:editChannelsSaved');
+		const restrictions = t('commands/commands:editRestrictionsSaved');
 		if (disable) return reply(`${t('commands/commands:editDisabledDone', { name })}\n${restrictions}`);
 
 		// The command can still be disabled by its category or by `*`, which this does not take out:
@@ -201,6 +192,23 @@ export class UserInteractionHandler extends InteractionHandler {
 		const rule = findDisabledBy(settings.commandsDisabled, piece);
 		const status = rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule });
 		return reply(`${status}\n${restrictions}`);
+	}
+
+	/**
+	 * Reads the roles and the users each rule picked: a select menu of both returns their IDs, and the data of the
+	 * interaction says which is which. An ID it does not resolve is neither, and is left out.
+	 */
+	private readMembers(interaction: ModalInteraction) {
+		const { resolved } = interaction.data;
+		const members = {} as Record<CommandMemberRule, { roles: string[]; users: string[] }>;
+		for (const rule of CommandMemberRules) {
+			const ids = getModalValues(interaction.data.components, getCommandMembersInputId(rule));
+			members[rule] = {
+				roles: ids.filter((id) => resolved?.roles?.[id] !== undefined),
+				users: ids.filter((id) => resolved?.users?.[id] !== undefined)
+			};
+		}
+		return members;
 	}
 
 	/**
@@ -212,11 +220,11 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async write(
 		guildId: string,
 		command: string,
-		disable: boolean | null,
-		picked: CommandRestriction,
+		disable: boolean,
+		channels: CommandRestriction,
+		members: Record<CommandMemberRule, { roles: string[]; users: string[] }>,
 		revision: number,
-		actorId: string,
-		lists: readonly CommandRestrictionList[]
+		actorId: string
 	) {
 		using trx = await writeSettingsTransaction(guildId);
 		const { settings } = trx;
@@ -224,14 +232,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (getCommandRestrictionRevision(stored, settings.commandsDisabled.includes(command)) !== revision) return false;
 
 		const others = settings.commandsDisabled.filter((entry: string) => entry !== command);
-		const restrictions = setCommandRestriction(
-			readCommandRestrictions(settings.commandsRestrictions),
-			keepHiddenRestrictionEntries(picked, stored, lists)
-		);
+		let picked = keepHiddenRestrictionEntries(channels, stored, CommandChannelLists);
+		for (const rule of CommandMemberRules) picked = setCommandMembers(picked, rule, members[rule]);
+		const restrictions = setCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), picked);
 		// The restrictions are plain objects, which is what the JSON column holds:
 		await trx
 			.write({
-				commandsDisabled: disable === null ? settings.commandsDisabled : disable ? [...others, command] : others,
+				commandsDisabled: disable ? [...others, command] : others,
 				commandsRestrictions: restrictions as never
 			})
 			.submitWithAudit(actorId);

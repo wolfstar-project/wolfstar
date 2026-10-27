@@ -3,8 +3,10 @@ import {
 	getCommandRestrictionDenial,
 	getCommandRestrictionRevision,
 	keepHiddenRestrictionEntries,
+	listCommandMembers,
 	readCommandRestrictions,
 	removeFromCommandRestrictions,
+	setCommandMembers,
 	setCommandRestriction,
 	type CommandRestriction
 } from '#lib/structures/commands-menu';
@@ -78,6 +80,34 @@ describe('command restrictions', () => {
 			const kept = keepHiddenRestrictionEntries(restriction({ allowedRoles: [roleB] }), restriction({ allowedRoles: [roleA] }));
 
 			expect(kept).toEqual(restriction({ allowedRoles: [roleB] }));
+		});
+	});
+
+	describe('the members of a rule', () => {
+		const many = Array.from({ length: 30 }, (_, index) => `1000000000000000${String(index).padStart(2, '0')}`);
+
+		test('GIVEN roles and users THEN a rule lists the roles first', () => {
+			const listed = listCommandMembers(restriction({ allowedRoles: [roleA], allowedUsers: [roleB] }), 'allowed');
+
+			expect(listed).toEqual([
+				{ id: roleA, type: 'role' },
+				{ id: roleB, type: 'user' }
+			]);
+		});
+
+		test('GIVEN a pick THEN only the lists of that rule change', () => {
+			const next = setCommandMembers(restriction({ ignoredRoles: [roleA] }), 'allowed', { roles: [roleB], users: [] });
+
+			expect(next).toEqual(restriction({ ignoredRoles: [roleA], allowedRoles: [roleB] }));
+		});
+
+		test('GIVEN more members than the select menu shows THEN the ones it did not show are kept', () => {
+			const stored = restriction({ allowedRoles: many.slice(0, 20), allowedUsers: many.slice(20) });
+			const next = setCommandMembers(stored, 'allowed', { roles: [many[0]], users: [] });
+
+			// The menu showed the 20 roles and 5 users; the other 5 users stay:
+			expect(next.allowedRoles).toEqual([many[0]]);
+			expect(next.allowedUsers).toEqual(many.slice(25));
 		});
 	});
 

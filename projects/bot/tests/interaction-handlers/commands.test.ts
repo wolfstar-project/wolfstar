@@ -39,6 +39,10 @@ const handler = () =>
 		{}
 	);
 
+const roleId = '777777777777777777';
+// A select menu of roles and users returns IDs, and the interaction says which are roles and which users:
+const resolved = { users: { [userId]: { id: userId } }, roles: { [roleId]: { id: roleId } } };
+
 function submit(verb: CommandsMenuVerb, revision: number, values: Record<string, string | string[]>, actorId = ownerId) {
 	const answers: unknown[] = [];
 	const interaction = Object.assign(Object.create(ModalSubmitInteraction.prototype), {
@@ -46,6 +50,7 @@ function submit(verb: CommandsMenuVerb, revision: number, values: Record<string,
 		user: { id: actorId },
 		member: { user: { id: actorId }, roles: [], permissions: '0' },
 		data: {
+			resolved,
 			components: Object.entries(values).map(([custom_id, value]) => ({ custom_id, ...(Array.isArray(value) ? { values: value } : { value }) }))
 		},
 		reply: async (data: unknown) => void answers.push(data)
@@ -86,41 +91,48 @@ describe('commands editor', () => {
 		);
 	});
 
-	test('saving channels preserves users, and saving access preserves disabled status and channels', async () => {
-		const channels = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled', allowedChannels: [], ignoredChannels: [] });
-		await handler().run(channels.interaction, channels.content);
-		expect(written[0]).toMatchObject({ commandsDisabled: [], commandsRestrictions: [{ ...stored, ignoredChannels: [] }] });
-
-		const current = findCommandRestriction(settings.commandsRestrictions as never, 'ban');
-		settings.commandsDisabled = ['ban'];
-		const access = submit('saveAccess', getCommandRestrictionRevision(current, true), {
-			allowedUsers: [],
-			ignoredUsers: [userId],
-			allowedRoles: [],
-			ignoredRoles: []
+	test('saving splits the roles and the users of a rule and keeps the channels it picked', async () => {
+		const save = submit('save', getCommandRestrictionRevision(stored, true), {
+			status: 'enabled',
+			allowedChannels: [channelId],
+			ignoredChannels: [],
+			allowedMembers: [roleId, userId],
+			ignoredMembers: []
 		});
-		await handler().run(access.interaction, access.content);
-		expect(written[1]).toMatchObject({
+		await handler().run(save.interaction, save.content);
+		expect(written[0]).toMatchObject({
+			commandsDisabled: [],
+			commandsRestrictions: [{ ...stored, allowedChannels: [channelId], ignoredChannels: [], allowedRoles: [roleId], allowedUsers: [userId] }]
+		});
+	});
+
+	test('a member the interaction does not resolve is left out', async () => {
+		const save = submit('save', getCommandRestrictionRevision(stored, true), {
+			status: 'disabled',
+			allowedChannels: [],
+			ignoredChannels: [channelId],
+			allowedMembers: ['888888888888888888'],
+			ignoredMembers: [userId]
+		});
+		await handler().run(save.interaction, save.content);
+		expect(written[0]).toMatchObject({
 			commandsDisabled: ['ban'],
-			commandsRestrictions: [{ ...current, allowedUsers: [], ignoredUsers: [userId] }]
+			commandsRestrictions: [{ ...stored, allowedUsers: [], allowedRoles: [], ignoredUsers: [userId], ignoredRoles: [] }]
 		});
 	});
 
 	test('a form opened before another save cannot overwrite the new rules', async () => {
-		const stale = submit('saveAccess', getCommandRestrictionRevision({ ...stored, allowedUsers: [] }, true), {
-			allowedUsers: [],
-			ignoredUsers: []
-		});
+		const stale = submit('save', getCommandRestrictionRevision({ ...stored, allowedUsers: [] }, true), { status: 'enabled' });
 		await handler().run(stale.interaction, stale.content);
 		expect(written).toEqual([]);
 		expect(stale.answers).toMatchObject([{ content: 'commands/commands:editStale' }]);
 	});
 
-	test('a non-administrator or another menu user cannot save access', async () => {
+	test('a non-administrator or another menu user cannot save', async () => {
 		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(false);
-		const denied = submit('saveAccess', getCommandRestrictionRevision(stored, true), {});
+		const denied = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled' });
 		await handler().run(denied.interaction, denied.content);
-		const other = submit('saveAccess', getCommandRestrictionRevision(stored, true), {}, userId);
+		const other = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled' }, userId);
 		await handler().run(other.interaction, other.content);
 		expect(written).toEqual([]);
 		expect(denied.answers).toMatchObject([{ content: 'preconditions:administrator' }]);
@@ -129,7 +141,7 @@ describe('commands editor', () => {
 
 	test('protected commands cannot receive user restrictions', async () => {
 		vi.mocked(findCommandPiece).mockReturnValue({ name: 'commands' } as never);
-		const denied = submit('saveAccess', 0, { allowedUsers: [userId] });
+		const denied = submit('save', 0, { status: 'enabled', allowedMembers: [userId] });
 		await handler().run(denied.interaction, denied.content);
 		expect(written).toEqual([]);
 		expect(denied.answers).toMatchObject([{ content: 'commands/commands:editProtectedRestricted' }]);

@@ -36,8 +36,19 @@ export interface CommandRestriction {
  * The lists of a restriction.
  */
 export const CommandChannelLists = ['allowedChannels', 'ignoredChannels'] as const;
-export const CommandAccessLists = ['allowedRoles', 'ignoredRoles', 'allowedUsers', 'ignoredUsers'] as const;
-export const CommandRestrictionLists = [...CommandChannelLists, ...CommandAccessLists] as const;
+export const CommandRestrictionLists = [...CommandChannelLists, 'allowedRoles', 'ignoredRoles', 'allowedUsers', 'ignoredUsers'] as const;
+
+/**
+ * The two rules of the members of a restriction: each is one select menu of the modal that holds the roles and the users
+ * of both lists.
+ */
+export const CommandMemberRules = ['allowed', 'ignored'] as const;
+export type CommandMemberRule = (typeof CommandMemberRules)[number];
+
+export interface CommandMember {
+	id: Snowflake;
+	type: 'role' | 'user';
+}
 export type CommandRestrictionList = (typeof CommandRestrictionLists)[number];
 
 function createCommandRestriction(command: string): CommandRestriction {
@@ -143,6 +154,37 @@ export function keepHiddenRestrictionEntries(
 	const next = { ...stored };
 	for (const list of lists) next[list] = readList([...picked[list], ...stored[list].slice(MaximumCommandRestrictionEntries)]);
 	return next;
+}
+
+/**
+ * Lists the roles and then the users of a rule, which is the order the select menu of the modal shows them in.
+ */
+export function listCommandMembers(restriction: CommandRestriction, rule: CommandMemberRule): CommandMember[] {
+	const [roles, users] =
+		rule === 'allowed' ? [restriction.allowedRoles, restriction.allowedUsers] : [restriction.ignoredRoles, restriction.ignoredUsers];
+	return [...roles.map((id) => ({ id, type: 'role' as const })), ...users.map((id) => ({ id, type: 'user' as const }))];
+}
+
+/**
+ * Sets the roles and the users a rule picked, keeping the ones the select menu did not show (the entries past the
+ * {@linkcode MaximumCommandRestrictionEntries} of {@linkcode listCommandMembers}), so saving the modal does not drop them.
+ *
+ * @param restriction - The restriction to change, the one the modal was opened with.
+ * @param rule - The rule that was picked.
+ * @param picked - The roles and the users the select menu returned.
+ * @returns A restriction with the rule set.
+ */
+export function setCommandMembers(
+	restriction: CommandRestriction,
+	rule: CommandMemberRule,
+	picked: { roles: readonly Snowflake[]; users: readonly Snowflake[] }
+): CommandRestriction {
+	const hidden = listCommandMembers(restriction, rule).slice(MaximumCommandRestrictionEntries);
+	const roles = readList([...picked.roles, ...hidden.filter((member) => member.type === 'role').map((member) => member.id)]);
+	const users = readList([...picked.users, ...hidden.filter((member) => member.type === 'user').map((member) => member.id)]);
+	return rule === 'allowed'
+		? { ...restriction, allowedRoles: roles, allowedUsers: users }
+		: { ...restriction, ignoredRoles: roles, ignoredUsers: users };
 }
 
 /**
