@@ -11,10 +11,13 @@ export const MaximumCommandRestrictionEntries = 25;
  *
  * - `allowedChannels`: when it has any, the command only runs in them.
  * - `ignoredChannels`: the command does not run in them.
- * - `allowedRoles`: when it has any, only the members with one of them run the command.
+ * - `allowedRoles`: when it has any, members with one of them, or an allowed user, can run the command.
  * - `ignoredRoles`: the members with one of them do not run the command.
  *
- * An ignored channel or role wins over an allowed one.
+ * - `allowedUsers`: members allowed even without an allowed role.
+ * - `ignoredUsers`: members who cannot run the command, even with an allowed role.
+ *
+ * Any ignored entry wins. These restrictions never grant the base permissions of a command.
  */
 export interface CommandRestriction {
 	/**
@@ -25,16 +28,20 @@ export interface CommandRestriction {
 	ignoredChannels: Snowflake[];
 	allowedRoles: Snowflake[];
 	ignoredRoles: Snowflake[];
+	allowedUsers: Snowflake[];
+	ignoredUsers: Snowflake[];
 }
 
 /**
  * The lists of a restriction.
  */
-export const CommandRestrictionLists = ['allowedChannels', 'ignoredChannels', 'allowedRoles', 'ignoredRoles'] as const;
+export const CommandChannelLists = ['allowedChannels', 'ignoredChannels'] as const;
+export const CommandAccessLists = ['allowedRoles', 'ignoredRoles', 'allowedUsers', 'ignoredUsers'] as const;
+export const CommandRestrictionLists = [...CommandChannelLists, ...CommandAccessLists] as const;
 export type CommandRestrictionList = (typeof CommandRestrictionLists)[number];
 
 function createCommandRestriction(command: string): CommandRestriction {
-	return { command, allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [] };
+	return { command, allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [], allowedUsers: [], ignoredUsers: [] };
 }
 
 function isSnowflake(value: unknown): value is Snowflake {
@@ -128,9 +135,13 @@ export function setCommandRestriction(restrictions: readonly CommandRestriction[
  * @param stored - The restriction the modal was opened with.
  * @returns The restriction to save.
  */
-export function keepHiddenRestrictionEntries(picked: CommandRestriction, stored: CommandRestriction): CommandRestriction {
-	const next = createCommandRestriction(picked.command);
-	for (const list of CommandRestrictionLists) next[list] = readList([...picked[list], ...stored[list].slice(MaximumCommandRestrictionEntries)]);
+export function keepHiddenRestrictionEntries(
+	picked: CommandRestriction,
+	stored: CommandRestriction,
+	lists: readonly CommandRestrictionList[] = CommandRestrictionLists
+): CommandRestriction {
+	const next = { ...stored };
+	for (const list of lists) next[list] = readList([...picked[list], ...stored[list].slice(MaximumCommandRestrictionEntries)]);
 	return next;
 }
 
@@ -177,6 +188,8 @@ export function removeFromCommandRestrictions(restrictions: readonly CommandRest
  * Where a command is being run, and by whom.
  */
 export interface CommandRestrictionTarget {
+	userId: Snowflake;
+
 	/**
 	 * The channel, and its parent when it is a thread: a thread is restricted as the channel it is in.
 	 */
@@ -195,14 +208,17 @@ export interface CommandRestrictionTarget {
  * @param target - Where the command is being run, and by whom.
  * @returns `channel` or `role`, `null` when the command can be run.
  */
-export function getCommandRestrictionDenial(restriction: CommandRestriction, target: CommandRestrictionTarget): 'channel' | 'role' | null {
+export function getCommandRestrictionDenial(restriction: CommandRestriction, target: CommandRestrictionTarget): 'channel' | 'role' | 'user' | null {
 	const inChannels = (list: readonly Snowflake[]) => target.channelIds.some((id) => list.includes(id));
 	const hasRoles = (list: readonly Snowflake[]) => target.roleIds.some((id) => list.includes(id));
 
 	if (inChannels(restriction.ignoredChannels)) return 'channel';
 	if (restriction.allowedChannels.length > 0 && !inChannels(restriction.allowedChannels)) return 'channel';
+	if (restriction.ignoredUsers.includes(target.userId)) return 'user';
 	if (hasRoles(restriction.ignoredRoles)) return 'role';
-	if (restriction.allowedRoles.length > 0 && !hasRoles(restriction.allowedRoles)) return 'role';
+	const limited = restriction.allowedRoles.length > 0 || restriction.allowedUsers.length > 0;
+	if (limited && !hasRoles(restriction.allowedRoles) && !restriction.allowedUsers.includes(target.userId))
+		return restriction.allowedRoles.length > 0 ? 'role' : 'user';
 
 	return null;
 }

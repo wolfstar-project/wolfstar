@@ -18,7 +18,6 @@
 	"restrictedChannel": "This command cannot be used in this channel!",
 	"restrictedRole": "Your roles do not let you use this command in this server!",
 	"moderator": "You need moderator privileges to run `{{command.name}}`!",
-	"permissionNodes": "{{REDCROSS}} You do not have permission to use this command!",
 	"serverOwner": "You need to be the server's owner to run `{{command.name}}`!",
 	"subCommandGuildOnly": "This subcommand can only be used in server channels due to Discord limitations. We will likely make this command available in DMs when we implement the new \"buttons\" feature.",
 	"clientPermissionsNoClient": "This should never happen, I don't know who I am.",
@@ -28,5 +27,6 @@
 	"unavailable": "This should never happen, I could not find a required precondition for this command.",
 	"missingMessageHandler": "This should never happen, one of the preconditions this command requires is missing a message handler.",
 	"missingChatInputHandler": "This should never happen, one of the preconditions this command requires is missing a slash command handler.",
-	"missingContextMenuHandler": "This should never happen, one of the preconditions this command requires is missing a context menu handler."
+	"missingContextMenuHandler": "This should never happen, one of the preconditions this command requires is missing a context menu handler.",
+	"restrictedUser": "{{REDCROSS}} You cannot use this command with the user rules configured for this server."
 }

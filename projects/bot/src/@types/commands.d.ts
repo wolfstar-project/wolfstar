@@ -192,22 +192,6 @@ declare module '@wolfstar/http-framework' {
       reason?: string;
       user: TransformedArguments.User;
     };
-    'permission-nodes add': {
-      command: string;
-      target: TransformedArguments.Mentionable;
-      type: 'allow' | 'deny';
-    };
-    'permission-nodes remove': {
-      command: string;
-      target: TransformedArguments.Mentionable;
-      type: 'allow' | 'deny';
-    };
-    'permission-nodes reset': {
-      target: TransformedArguments.Mentionable;
-    };
-    'permission-nodes show': {
-      target?: TransformedArguments.Mentionable;
-    };
     'permissions': {
       'list-all'?: boolean;
       'list-missing'?: boolean;

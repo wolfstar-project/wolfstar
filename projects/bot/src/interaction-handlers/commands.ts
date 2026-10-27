@@ -1,3 +1,4 @@
+import { getLegacyPermissions, getLegacyPermissionRevision } from '#lib/structures/commands-menu/legacy';
 import { readSettings, writeSettingsTransaction } from '#lib/database';
 import {
 	AllCategoriesValue,
@@ -9,6 +10,9 @@ import {
 	decodeCommandsMenuId,
 	normalizeCommandQuery,
 	renderCommandEditModal,
+	renderCommandSettings,
+	renderClearLegacyModal,
+	renderLegacyPermissionButtons,
 	renderCommandsList,
 	renderCommandsPageModal,
 	renderCommandsResults,
@@ -16,14 +20,16 @@ import {
 } from '#lib/structures/commands-menu';
 import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
 import {
-	CommandRestrictionLists,
+	CommandChannelLists,
+	CommandAccessLists,
 	findCommandRestriction,
 	getCommandRestrictionRevision,
 	isCommandRestrictionEmpty,
 	keepHiddenRestrictionEntries,
 	readCommandRestrictions,
 	setCommandRestriction,
-	type CommandRestriction
+	type CommandRestriction,
+	type CommandRestrictionList
 } from '#lib/structures/commands-menu/restrictions';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
@@ -55,9 +61,9 @@ export class UserInteractionHandler extends InteractionHandler {
 		// Only the modals are submitted, everything else is a click:
 		if (interaction instanceof ModalSubmitInteraction) {
 			const modal = interaction as ModalInteraction;
-			const context = await createCommandsMenuContext(modal, action.ownerId);
 
 			if (action.verb === 'query') {
+				const context = await createCommandsMenuContext(modal, action.ownerId, { legacy: true });
 				const query = normalizeCommandQuery(getModalValue(modal.data.components, CommandsSearchInputId) ?? '');
 				return modal.update(renderCommandsResults(context, query, 0));
 			}
@@ -65,6 +71,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			if (action.verb === 'goto') {
 				const page = Number.parseInt(getModalValue(modal.data.components, CommandsPageInputId) ?? '', 10);
 				if (!Number.isSafeInteger(page) || page < 1) return fail(t('commands/commands:gotoInvalid'));
+				const context = await createCommandsMenuContext(modal, action.ownerId, { legacy: true });
 
 				// A page past the last one is the last one, the pages are numbered from 1 for the user:
 				const [kind, ...rest] = action.target.split('/');
@@ -74,7 +81,9 @@ export class UserInteractionHandler extends InteractionHandler {
 				);
 			}
 
-			if (action.verb === 'save') return this.save(modal, action.target, action.page, t);
+			if (action.verb === 'save' || action.verb === 'saveAccess')
+				return this.save(modal, action.target, action.page, t, action.verb === 'saveAccess');
+			if (action.verb === 'confirmLegacy') return this.clearLegacy(modal, action.page, t);
 
 			return fail(getDefaultExpiredReply());
 		}
@@ -87,6 +96,16 @@ export class UserInteractionHandler extends InteractionHandler {
 				return component.showModal(renderCommandsPageModal(t, action.ownerId, action.target));
 			case 'edit':
 				return this.edit(component, action.ownerId, action.target, t);
+			case 'configure':
+			case 'access':
+				return this.edit(component, action.ownerId, action.target, t, action.verb === 'access' ? 'access' : 'channels');
+			case 'legacy':
+				return this.legacy(component, t);
+			case 'clearLegacy': {
+				const denial = await this.getLegacyOwnerDenial(component, t);
+				if (denial !== null) return fail(denial);
+				return component.showModal(renderClearLegacyModal({ t, ownerId: action.ownerId }, action.page));
+			}
 			case 'list':
 			case 'category':
 			case 'results':
@@ -95,7 +114,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				return fail(getDefaultExpiredReply());
 		}
 
-		const context = await createCommandsMenuContext(component, action.ownerId);
+		const context = await createCommandsMenuContext(component, action.ownerId, { legacy: true });
 		switch (action.verb) {
 			case 'list':
 				return component.update(renderCommandsList(context, action.target, action.page));
@@ -114,7 +133,13 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @param path - The path of the entry the button is of, `whois user`, of which the command is the first word.
 	 * @param t - The function to translate with.
 	 */
-	private async edit(interaction: ComponentInteraction, ownerId: string, path: string, t: ReturnType<typeof createTranslator>) {
+	private async edit(
+		interaction: ComponentInteraction,
+		ownerId: string,
+		path: string,
+		t: ReturnType<typeof createTranslator>,
+		scope?: 'channels' | 'access'
+	) {
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
 
@@ -125,11 +150,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		// A command that was removed since the menu was opened:
 		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
+		if (scope === undefined) return interaction.update(renderCommandSettings(context, command));
+
 		const settings = await readSettings(interaction.guildId!);
 		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), piece.name);
 		const revision = getCommandRestrictionRevision(restriction, settings.commandsDisabled.includes(piece.name));
 		return interaction.showModal(
-			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision)
+			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision, scope)
 		);
 	}
 
@@ -142,7 +169,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @param revision - The revision of the command the modal was opened with, see `getCommandRestrictionRevision`.
 	 * @param t - The function to translate with.
 	 */
-	private async save(interaction: ModalInteraction, name: string, revision: number, t: ReturnType<typeof createTranslator>) {
+	private async save(interaction: ModalInteraction, name: string, revision: number, t: ReturnType<typeof createTranslator>, access: boolean) {
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return reply(denial);
@@ -150,19 +177,23 @@ export class UserInteractionHandler extends InteractionHandler {
 		const piece = findCommandPiece(name);
 		if (piece === null) return reply(getDefaultExpiredReply());
 
-		const disable = getModalValue(interaction.data.components, CommandStatusInputId) === CommandDisabledValue;
+		const selectedStatus = getModalValue(interaction.data.components, CommandStatusInputId);
+		if (!access && selectedStatus !== CommandDisabledValue && selectedStatus !== 'enabled') return reply(getDefaultExpiredReply());
+		const disable = access ? null : selectedStatus === CommandDisabledValue;
 		if (disable && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtected', { name }));
 
-		const restriction: CommandRestriction = { command: piece.name, allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [] };
-		for (const list of CommandRestrictionLists) restriction[list] = getModalValues(interaction.data.components, list);
+		const restriction = findCommandRestriction([], piece.name);
+		const lists = access ? CommandAccessLists : CommandChannelLists;
+		for (const list of lists) restriction[list] = getModalValues(interaction.data.components, list);
 		const restricted = !isCommandRestrictionEmpty(restriction);
 		if (restricted && ProtectedCommands.has(piece.name)) return reply(t('commands/commands:editProtectedRestricted', { name }));
 
 		const guildId = interaction.guildId!;
-		const saved = await this.write(guildId, piece.name, disable, restriction, revision, interaction.user.id);
+		const saved = await this.write(guildId, piece.name, disable, restriction, revision, interaction.user.id, lists);
 		if (!saved) return reply(t('commands/commands:editStale', { name }));
 
-		const restrictions = t(restricted ? 'commands/commands:editRestricted' : 'commands/commands:editUnrestricted');
+		if (access) return reply(t('commands/commands:editAccessSaved'));
+		const restrictions = t('commands/commands:editChannelsSaved');
 		if (disable) return reply(`${t('commands/commands:editDisabledDone', { name })}\n${restrictions}`);
 
 		// The command can still be disabled by its category or by `*`, which this does not take out:
@@ -178,7 +209,15 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @returns Whether it was written: not when another administrator saved the command since the modal was opened,
 	 * since the modal would undo what they saved.
 	 */
-	private async write(guildId: string, command: string, disable: boolean, picked: CommandRestriction, revision: number, actorId: string) {
+	private async write(
+		guildId: string,
+		command: string,
+		disable: boolean | null,
+		picked: CommandRestriction,
+		revision: number,
+		actorId: string,
+		lists: readonly CommandRestrictionList[]
+	) {
 		using trx = await writeSettingsTransaction(guildId);
 		const { settings } = trx;
 		const stored = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), command);
@@ -187,13 +226,54 @@ export class UserInteractionHandler extends InteractionHandler {
 		const others = settings.commandsDisabled.filter((entry: string) => entry !== command);
 		const restrictions = setCommandRestriction(
 			readCommandRestrictions(settings.commandsRestrictions),
-			keepHiddenRestrictionEntries(picked, stored)
+			keepHiddenRestrictionEntries(picked, stored, lists)
 		);
 		// The restrictions are plain objects, which is what the JSON column holds:
 		await trx
-			.write({ commandsDisabled: disable ? [...others, command] : others, commandsRestrictions: restrictions as never })
+			.write({
+				commandsDisabled: disable === null ? settings.commandsDisabled : disable ? [...others, command] : others,
+				commandsRestrictions: restrictions as never
+			})
 			.submitWithAudit(actorId);
 		return true;
+	}
+
+	private async legacy(interaction: ComponentInteraction, t: ReturnType<typeof createTranslator>) {
+		const denial = await this.getDenial(interaction, t);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		// The nodes and their file can take a moment, which the three seconds of the first answer may not have:
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+		const settings = await readSettings(interaction.guildId!);
+		return deferred.update({
+			content: t('commands/commands:legacyExplanation'),
+			allowed_mentions: { parse: [] },
+			files: [
+				{
+					name: 'legacy-permission-nodes.json',
+					data: Buffer.from(JSON.stringify(getLegacyPermissions(settings), null, 2)),
+					contentType: 'application/json'
+				}
+			],
+			components: [renderLegacyPermissionButtons({ t, ownerId: interaction.user.id }, getLegacyPermissionRevision(settings))]
+		});
+	}
+
+	private async getLegacyOwnerDenial(interaction: InteractionHandler.Interaction, t: ReturnType<typeof createTranslator>) {
+		const denial = await this.getDenial(interaction, t);
+		if (denial !== null) return denial;
+		const guild = await this.container.gatewayClient.guilds.fetch(interaction.guildId!);
+		return guild.ownerId === interaction.user.id ? null : t('commands/commands:legacyOwnerOnly');
+	}
+
+	private async clearLegacy(interaction: ModalInteraction, revision: number, t: ReturnType<typeof createTranslator>) {
+		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const denial = await this.getLegacyOwnerDenial(interaction, t);
+		if (denial !== null) return reply(denial);
+		if (getModalValue(interaction.data.components, 'confirmation') !== 'REMOVE') return reply(t('commands/commands:legacyConfirmationInvalid'));
+		using trx = await writeSettingsTransaction(interaction.guildId!);
+		if (getLegacyPermissionRevision(trx.settings) !== revision) return reply(t('commands/commands:legacyStale'));
+		await trx.write({ permissionsUsers: [], permissionsRoles: [] }).submitWithAudit(interaction.user.id);
+		return reply(t('commands/commands:legacyRemoved'));
 	}
 
 	/**

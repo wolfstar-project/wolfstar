@@ -16,7 +16,16 @@ const roleB = '444444444444444444';
 const guildId = '254360814063058944';
 
 function restriction(overrides: Partial<CommandRestriction> = {}): CommandRestriction {
-	return { command: 'ban', allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [], ...overrides };
+	return {
+		command: 'ban',
+		allowedChannels: [],
+		ignoredChannels: [],
+		allowedRoles: [],
+		ignoredRoles: [],
+		allowedUsers: [],
+		ignoredUsers: [],
+		...overrides
+	};
 }
 
 describe('command restrictions', () => {
@@ -118,8 +127,45 @@ describe('command restrictions', () => {
 		});
 	});
 
+	test('GIVEN one form saved THEN lists belonging to the other form are retained', () => {
+		const stored = restriction({ allowedUsers: ['666666666666666666'], ignoredChannels: [channelA], ignoredRoles: [roleA] });
+		expect(keepHiddenRestrictionEntries(restriction({ allowedChannels: [channelB] }), stored, ['allowedChannels', 'ignoredChannels'])).toEqual({
+			...stored,
+			allowedChannels: [channelB],
+			ignoredChannels: []
+		});
+	});
+
 	describe('getCommandRestrictionDenial', () => {
-		const everyone = { channelIds: [channelA], roleIds: [guildId] };
+		const everyone = { userId: '666666666666666666', channelIds: [channelA], roleIds: [guildId] };
+
+		test('GIVEN users and roles allowed THEN either is sufficient, but a denial from either wins', () => {
+			const rules = restriction({
+				allowedRoles: [roleA],
+				allowedUsers: [everyone.userId],
+				ignoredRoles: [roleB],
+				ignoredUsers: ['777777777777777777']
+			});
+			expect(getCommandRestrictionDenial(rules, everyone)).toBeNull();
+			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888', roleIds: [roleA] })).toBeNull();
+			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888' })).toBe('role');
+			expect(getCommandRestrictionDenial(rules, { ...everyone, roleIds: [roleB] })).toBe('role');
+			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '777777777777777777', roleIds: [roleA] })).toBe('user');
+		});
+
+		test('GIVEN only allowed users THEN another member is denied, even with an unrelated role', () => {
+			const rules = restriction({ allowedUsers: [everyone.userId] });
+			expect(getCommandRestrictionDenial(rules, everyone)).toBeNull();
+			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888', roleIds: [roleA] })).toBe('user');
+			expect(readCommandRestrictions([{ command: 'ban', allowedUsers: [everyone.userId, everyone.userId, 'bad'] }])).toEqual([rules]);
+			expect(getCommandRestrictionRevision(rules, false)).not.toBe(getCommandRestrictionRevision(restriction(), false));
+		});
+
+		test('GIVEN an allowed user in an ignored channel THEN the channel restriction still wins', () => {
+			expect(getCommandRestrictionDenial(restriction({ allowedUsers: [everyone.userId], ignoredChannels: [channelA] }), everyone)).toBe(
+				'channel'
+			);
+		});
 
 		test('GIVEN no restriction THEN the command runs', () => {
 			expect(getCommandRestrictionDenial(restriction(), everyone)).toBeNull();
@@ -156,7 +202,7 @@ describe('command restrictions', () => {
 		test('GIVEN a channel and a role that both deny THEN the channel is what is told', () => {
 			const both = restriction({ ignoredChannels: [channelA], ignoredRoles: [roleA] });
 
-			expect(getCommandRestrictionDenial(both, { channelIds: [channelA], roleIds: [roleA] })).toBe('channel');
+			expect(getCommandRestrictionDenial(both, { ...everyone, channelIds: [channelA], roleIds: [roleA] })).toBe('channel');
 		});
 	});
 });

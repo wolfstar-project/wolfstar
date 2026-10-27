@@ -288,9 +288,17 @@ describe('commands menu', () => {
 			expect(input).toMatchObject({ custom_id: 'page', required: true });
 		});
 
-		const unrestricted = { command: 'automod', allowedChannels: [], ignoredChannels: [], allowedRoles: [], ignoredRoles: [] };
+		const unrestricted = {
+			command: 'automod',
+			allowedChannels: [],
+			ignoredChannels: [],
+			allowedRoles: [],
+			ignoredRoles: [],
+			allowedUsers: [],
+			ignoredUsers: []
+		};
 
-		test('GIVEN a command THEN its modal asks whether it is enabled, and the channels and roles it is restricted to', () => {
+		test('GIVEN a command THEN its channel form edits status and channels without editing access', () => {
 			const modal = renderCommandEditModal(createContext(), commands[0], null, unrestricted, 0);
 			const components = flatten(modal.components);
 			const radio = components.find((component) => component.type === ComponentType.RadioGroup)!;
@@ -298,7 +306,7 @@ describe('commands menu', () => {
 			expect(modal.title).toContain('commands/commands:editTitle');
 			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'save', target: 'automod', page: 0 });
 			// A modal holds five components at most:
-			expect(modal.components).toHaveLength(5);
+			expect(modal.components).toHaveLength(3);
 			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusSubcommands {\\"count\\":2}');
 			expect(radio.custom_id).toBe('status');
 			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
@@ -309,10 +317,7 @@ describe('commands menu', () => {
 				'allowedChannels',
 				'ignoredChannels'
 			]);
-			expect(components.filter((component) => component.type === ComponentType.RoleSelect).map((component) => component.custom_id)).toEqual([
-				'allowedRoles',
-				'ignoredRoles'
-			]);
+			expect(components.filter((component) => component.type === ComponentType.RoleSelect).map((component) => component.custom_id)).toEqual([]);
 		});
 
 		test('GIVEN a command a server disabled by its category THEN its modal says by what and selects Disabled', () => {
@@ -329,16 +334,18 @@ describe('commands menu', () => {
 				allowedChannels: ['111111111111111111'],
 				ignoredRoles: ['222222222222222222', '333333333333333333']
 			};
-			const modal = renderCommandEditModal(createContext(), commands[0], null, restriction, 0);
+			const modal = renderCommandEditModal(createContext(), commands[0], null, { ...restriction, allowedUsers: [ownerId] }, 0, 'access');
 			const picked = Object.fromEntries(
 				flatten(modal.components)
-					.filter((component) => component.type === ComponentType.ChannelSelect || component.type === ComponentType.RoleSelect)
+					.filter((component) => component.type === ComponentType.UserSelect || component.type === ComponentType.RoleSelect)
 					.map((component) => [component.custom_id, (component as { default_values?: { id: string; type: string }[] }).default_values])
 			);
 
+			expect(modal.components.length).toBeLessThanOrEqual(5);
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))?.verb).toBe('saveAccess');
 			expect(picked).toEqual({
-				allowedChannels: [{ id: '111111111111111111', type: 'channel' }],
-				ignoredChannels: [],
+				allowedUsers: [{ id: ownerId, type: 'user' }],
+				ignoredUsers: [],
 				allowedRoles: [],
 				ignoredRoles: [
 					{ id: '222222222222222222', type: 'role' },

@@ -58,10 +58,17 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		// A thread is restricted as the channel it is in, and everybody has the role of the guild:
 		const { channel } = interaction;
 		const channelIds = [channel?.id, channel?.parent_id].filter((id): id is string => typeof id === 'string');
-		const denial = getCommandRestrictionDenial(restriction, { channelIds, roleIds: [guildId, ...member.roles] });
+		const denial = getCommandRestrictionDenial(restriction, { userId: member.user.id, channelIds, roleIds: [guildId, ...member.roles] });
 		if (denial === null) return this.ok();
 		if (await hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator)) return this.ok();
 
-		return this.error({ identifier: denial === 'channel' ? 'preconditions:restrictedChannel' : 'preconditions:restrictedRole' });
+		return this.error({
+			identifier:
+				denial === 'channel'
+					? 'preconditions:restrictedChannel'
+					: denial === 'user'
+						? 'preconditions:restrictedUser'
+						: 'preconditions:restrictedRole'
+		});
 	}
 }
