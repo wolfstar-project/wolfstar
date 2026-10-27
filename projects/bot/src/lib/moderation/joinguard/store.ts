@@ -1,7 +1,6 @@
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { withSharedLock } from '#utils/locks';
 import { Collection } from '@discordjs/collection';
-import { AsyncQueue } from '@sapphire/async-queue';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 import { fetchJoinGuardRules, fetchTableSettings, type JoinGuardRule, type JoinGuardSettings } from 'wolfstar-database';
@@ -79,28 +78,6 @@ onShardMessage('joinGuardUpdate', ({ guildId }) => deleteJoinGuardConfigCached(g
 export function announceJoinGuardChange(guildId: Snowflake) {
 	deleteJoinGuardConfigCached(guildId);
 	broadcastShardMessage({ type: 'joinGuardUpdate', guildId });
-}
-
-const ruleLocks = new Collection<Snowflake, AsyncQueue>();
-
-/**
- * Runs the writes the bot makes to the rules of the join guard of a guild one after the other, each on the rules the
- * database has at that time, under the lock every process respects (`joinguard:<guildId>`), the way the dashboard is
- * expected to write them too. The rules are dropped from the cache afterwards.
- *
- * @param guildId - The guild.
- * @param callback - What reads the rules and writes them.
- */
-export async function writeJoinGuardRules<T>(guildId: Snowflake, callback: (rules: readonly JoinGuardRule[]) => Promise<T>): Promise<T> {
-	const lock = ruleLocks.ensure(guildId, () => new AsyncQueue());
-	await lock.wait();
-	try {
-		return await withSharedLock(`joinguard:${guildId}`, async () => callback(await fetchJoinGuardRules(container.prisma.orm, guildId)));
-	} finally {
-		lock.shift();
-		if (lock.remaining === 0) ruleLocks.delete(guildId);
-		announceJoinGuardChange(guildId);
-	}
 }
 
 /**

@@ -1,4 +1,7 @@
 import { resolveOnErrorCodes } from '#common';
+import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
+import type { Guild } from '@wolfstar/plugin-gateway';
+import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import { container } from '@wolfstar/http-framework';
 import { computePermissionsIn } from '@wolfstar/plugin-gateway';
 import { PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
@@ -93,4 +96,30 @@ export async function getMissingJoinGuardPermissions(guildId: Snowflake, actions
 	}
 
 	return [...missing];
+}
+
+/**
+ * Why a member cannot be removed in the name of someone, with the checks of the moderation commands: nobody acts on
+ * themselves, on the owner or on the bot, nor on a member whose highest role is not below the bot's and theirs.
+ *
+ * @param t - The function to translate the reason with.
+ * @param guild - The guild.
+ * @param targetId - The member to act on.
+ * @param moderatorId - Who acts: the bot for what the guard does, the user of the dashboard for a kick they asked for.
+ * @returns The reason, `null` when the member can be acted on.
+ */
+export async function getJoinGuardTargetProblem(
+	t: TFunction<AnyNamespace>,
+	guild: Guild,
+	targetId: Snowflake,
+	moderatorId: Snowflake
+): Promise<string | null> {
+	try {
+		await checkTargetCanBeModerated({ t: (key, options) => t(key, options), guild, targetId, moderatorId, requiredMember: true });
+		return null;
+	} catch (error) {
+		// The checks throw their reason, translated; anything else is not a refusal:
+		if (typeof error === 'string') return error;
+		throw error;
+	}
 }

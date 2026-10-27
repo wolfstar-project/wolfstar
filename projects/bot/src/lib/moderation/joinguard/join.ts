@@ -19,6 +19,7 @@ import {
 } from '#lib/moderation/joinguard/log';
 import {
 	getJoinGuardRoleProblem,
+	getJoinGuardTargetProblem,
 	getMissingJoinGuardChannelPermissions,
 	getMissingJoinGuardPermissions
 } from '#lib/moderation/joinguard/permissions';
@@ -152,6 +153,15 @@ async function removeMember(
 	const missing = await getMissingJoinGuardPermissions(guild.id, [kind === 'Ban' ? 'ban' : 'kick']);
 	if (missing.length > 0) {
 		errors.push(describeJoinGuardMissingPermissions(t, kind, missing));
+		await tell('None');
+		return { kind: 'None' };
+	}
+
+	// The member is told what is done to them only when the bot can do it: the owner, and a member at or above the bot,
+	// are refused before anything is sent.
+	const problem = await getJoinGuardTargetProblem(t, guild, user.id, container.gatewayClient.user!.id);
+	if (problem !== null) {
+		errors.push(t(`${Root}:errorTarget`, { action: t(`${Root}:action${kind}`), reason: problem }));
 		await tell('None');
 		return { kind: 'None' };
 	}

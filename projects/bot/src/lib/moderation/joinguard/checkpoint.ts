@@ -8,7 +8,7 @@ import {
 	describeJoinGuardRoleProblem,
 	sendJoinGuardLog
 } from '#lib/moderation/joinguard/log';
-import { getJoinGuardRoleProblem, getMissingJoinGuardPermissions } from '#lib/moderation/joinguard/permissions';
+import { getJoinGuardRoleProblem, getJoinGuardTargetProblem, getMissingJoinGuardPermissions } from '#lib/moderation/joinguard/permissions';
 import type { JoinGuardLogEntry } from '#lib/moderation/joinguard/render';
 import { withJoinGuardMemberLock } from '#lib/moderation/joinguard/store';
 import { getModeration } from '#utils/functions';
@@ -40,6 +40,7 @@ export const JoinGuardFailureCodes = [
 	'NotWaiting',
 	'NotMember',
 	'MissingPermissions',
+	'NotAllowed',
 	'RoleNotManageable',
 	'NoChannel',
 	'UnknownChannel',
@@ -233,6 +234,10 @@ async function changeAdmittedRoles(t: TFunction<AnyNamespace>, member: GuildMemb
  * Kicks a member as a moderator of the dashboard asked, as a case in their name, and resolves the row of the member
  * who waits as `Kicked`.
  *
+ * @remarks The website decides who may ask (the users who can manage the guild); the bot then applies the checks of
+ * the moderation commands to the target: not the moderator themselves, the owner nor the bot, and below the highest
+ * role of the moderator and of the bot.
+ *
  * @param guildId - The guild.
  * @param userId - The member.
  * @param moderatorId - The user of the dashboard who asked.
@@ -254,6 +259,10 @@ export function kickJoinGuardMember(
 
 		const missing = await getMissingJoinGuardPermissions(guildId, ['kick']);
 		if (missing.length > 0) return joinGuardErr('MissingPermissions', describeJoinGuardMissingPermissions(t, 'Kick', missing));
+
+		// The dashboard checked that the user may manage the guild; the target is checked here, as `/kick` does:
+		const problem = await getJoinGuardTargetProblem(t, guild, userId, moderatorId);
+		if (problem !== null) return joinGuardErr('NotAllowed', problem);
 
 		const settings = await readSettings(guildId);
 		const waiting = await fetchWaitingJoinGuardCheckpoint(container.prisma.orm, guildId, userId);

@@ -5,7 +5,7 @@ import { RoleActions } from '#lib/moderation/actions';
 import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
-import { writeJoinGuardRules } from '#lib/moderation/joinguard/store';
+import { announceJoinGuardChange } from '#lib/moderation/joinguard/store';
 import { getLogPrefix } from '#utils/functions';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Guild, Role } from '@wolfstar/plugin-gateway';
@@ -72,12 +72,9 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 			await updateAutoModerationRule(guild.id, rule.id, (current) => ({ ignoredRoles: current.ignoredRoles.filter((id) => id !== roleId) }));
 		}
 
-		// The rules of the join guard that gave the role forget it:
-		await writeJoinGuardRules(guild.id, async (rules) => {
-			if (rules.some((rule) => rule.roleId === roleId)) await clearJoinGuardRuleRole(this.container.prisma, guild.id, roleId);
-		});
-
 		for (const action of actions) await this.#restoreActionRole(action, guild);
+
+		await this.#forgetJoinGuardRole(guild.id, roleId);
 	}
 
 	/**
@@ -114,5 +111,20 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		return roles
 			.map((entry): UniqueRoleSet => ({ name: entry.name, roles: entry.roles.filter((urs) => urs !== roleId) }))
 			.filter((entry) => entry.roles.length > 0);
+	}
+
+	/**
+	 * The rules of the join guard that gave the role forget it. It is one update, which most guilds match no row of, and
+	 * the other processes are only told when a rule changed.
+	 */
+	async #forgetJoinGuardRole(guildId: Snowflake, roleId: Snowflake) {
+		try {
+			if ((await clearJoinGuardRuleRole(this.container.prisma, guildId, roleId)) > 0) announceJoinGuardChange(guildId);
+		} catch (error) {
+			this.container.logger.error(
+				`${getLogPrefix(this)} Could not remove the deleted role ${roleId} from the join guard rules of ${guildId}:`,
+				error
+			);
+		}
 	}
 }

@@ -1,7 +1,7 @@
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { admitJoinGuardMember, kickJoinGuardMember, leaveJoinGuardMember, runJoinGuardTimeout } from '#lib/moderation/joinguard/checkpoint';
 import { sendJoinGuardLog } from '#lib/moderation/joinguard/log';
-import { getJoinGuardRoleProblem } from '#lib/moderation/joinguard/permissions';
+import { getJoinGuardRoleProblem, getJoinGuardTargetProblem } from '#lib/moderation/joinguard/permissions';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
@@ -53,7 +53,8 @@ vi.mock('#lib/database', () => ({ fetchUserReportEnabled: vi.fn(async () => true
 vi.mock('#utils/functions', () => ({ getModeration: vi.fn(async () => ({ createLock: () => () => undefined })) }));
 vi.mock('#lib/moderation/joinguard/permissions', () => ({
 	getMissingJoinGuardPermissions: vi.fn(async () => []),
-	getJoinGuardRoleProblem: vi.fn(async () => null)
+	getJoinGuardRoleProblem: vi.fn(async () => null),
+	getJoinGuardTargetProblem: vi.fn(async () => null)
 }));
 vi.mock('#lib/moderation/joinguard/log', async (importOriginal) => ({
 	...(await importOriginal<typeof import('#lib/moderation/joinguard/log')>()),
@@ -266,6 +267,18 @@ describe('kickJoinGuardMember', () => {
 			expect.anything()
 		);
 		expect(table.get(row.id)).toMatchObject({ status: 'Kicked', resolution: 'Moderator', moderatorId: '77', caseId: 42 });
+	});
+
+	test('GIVEN a member above the moderator who asked THEN they are not kicked, and still wait', async () => {
+		const row = addRow();
+		vi.mocked(getJoinGuardTargetProblem).mockResolvedValueOnce('moderation:actionTargetHigherHierarchyAuthor');
+
+		expect(await kickJoinGuardMember(guildId, userId, '77', null)).toEqual({
+			ok: false,
+			error: { code: 'NotAllowed', detail: 'moderation:actionTargetHigherHierarchyAuthor' }
+		});
+		expect(ModerationActions.kick.apply).not.toHaveBeenCalled();
+		expect(table.get(row.id)!.status).toBe('Waiting');
 	});
 
 	test('GIVEN a member who left THEN nothing is done and the request says so', async () => {

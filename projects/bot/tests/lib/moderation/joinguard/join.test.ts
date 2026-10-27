@@ -2,7 +2,7 @@ import { ModerationActions } from '#lib/moderation/actions/index';
 import { scheduleJoinGuardTimeout } from '#lib/moderation/joinguard/checkpoint';
 import { guardJoiningMember } from '#lib/moderation/joinguard/join';
 import { recordSharedBan, sendJoinGuardLog } from '#lib/moderation/joinguard/log';
-import { getMissingJoinGuardPermissions } from '#lib/moderation/joinguard/permissions';
+import { getJoinGuardTargetProblem, getMissingJoinGuardPermissions } from '#lib/moderation/joinguard/permissions';
 import { readJoinGuardConfig } from '#lib/moderation/joinguard/store';
 import type { JoinGuardLogEntry } from '#lib/moderation/joinguard/render';
 import { DiscordSnowflake } from '@sapphire/snowflake';
@@ -31,7 +31,8 @@ vi.mock('#utils/functions', () => ({
 vi.mock('#lib/moderation/joinguard/permissions', () => ({
 	getMissingJoinGuardPermissions: vi.fn(async () => []),
 	getMissingJoinGuardChannelPermissions: vi.fn(async () => []),
-	getJoinGuardRoleProblem: vi.fn(async () => null)
+	getJoinGuardRoleProblem: vi.fn(async () => null),
+	getJoinGuardTargetProblem: vi.fn(async () => null)
 }));
 vi.mock('#lib/moderation/joinguard/log', async (importOriginal) => ({
 	...(await importOriginal<typeof import('#lib/moderation/joinguard/log')>()),
@@ -86,7 +87,7 @@ beforeEach(() => {
 	Object.assign(container, {
 		prisma: {},
 		logger: { error: vi.fn() },
-		gatewayClient: { api: { channels: { createMessage } } }
+		gatewayClient: { user: { id: '1' }, api: { channels: { createMessage } } }
 	});
 });
 
@@ -117,6 +118,18 @@ describe('guardJoiningMember', () => {
 
 		expect(ModerationActions.kick.apply).not.toHaveBeenCalled();
 		expect(readLog()).toMatchObject({ outcome: { kind: 'None' }, errors: ['events/join-guard:errorMissingPermissions'] });
+	});
+
+	test('GIVEN a member the bot cannot act on THEN they are not told they are removed, and nothing is taken', async () => {
+		configure([createRule({ ...young, hardAction: 'Ban', directMessage: true })]);
+		vi.mocked(getJoinGuardTargetProblem).mockResolvedValueOnce('moderation:actionTargetHigherHierarchyWolf');
+
+		await guardJoiningMember(createMember(), now);
+
+		expect(ModerationActions.ban.apply).not.toHaveBeenCalled();
+		expect(recordSharedBan).not.toHaveBeenCalled();
+		expect(send).toHaveBeenCalledWith({ content: expect.not.stringContaining('directMessageBanned') });
+		expect(readLog()).toMatchObject({ outcome: { kind: 'None' }, errors: ['events/join-guard:errorTarget'] });
 	});
 
 	test('GIVEN a member sent to the checkpoint THEN they get the pending role, wait in the queue and their timeout is scheduled', async () => {
