@@ -58,11 +58,12 @@ jobs:
                     echo "No translation changes to commit"
                     # An open sync PR with nothing left to sync is stale: main already holds
                     # (or has since fixed) everything it carries, and merging it would only
-                    # revert work. Close it, but only when the bot itself opened it.
+                    # revert work. Close it, but only when the bot itself opened it, and leave the branch
+                    # alone: the next sync proves ownership of its tip before it reuses it.
                     STALE_PRS="$(gh pr list --head i18n --author wolfstarbot --state open --json number --jq '.[].number')";
                     for PR_NUMBER in $STALE_PRS; do
                       echo "Closing stale sync PR #$PR_NUMBER";
-                      gh pr close "$PR_NUMBER" --delete-branch --comment "Closing: main already contains every translation this sync carried, so there is nothing left to merge. The next sync with changes opens a fresh PR.";
+                      gh pr close "$PR_NUMBER" --comment "Closing: main already contains every translation this sync carried, so there is nothing left to merge. The next sync with changes opens a fresh PR.";
                     done
                     exit 0;
                   else
