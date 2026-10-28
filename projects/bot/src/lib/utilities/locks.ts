@@ -14,7 +14,7 @@ const LockInterval = 50;
  * Deletes a lock only when it still holds the token of who releases it: a lock that expired and was taken by another
  * process is theirs.
  */
-const ReleaseScript = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+export const SharedLockReleaseScript = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 
 /**
  * Takes a lock every process of the bot respects (the shards, the workers, the API), so what reads a row and writes it
@@ -54,7 +54,9 @@ export async function acquireSharedLock(key: string): Promise<() => Promise<void
 	return async () => {
 		if (released) return;
 		released = true;
-		await redis.eval(ReleaseScript, 1, name, token).catch((error: unknown) => container.logger.error(`[LOCKS] Could not release ${key}:`, error));
+		await redis
+			.eval(SharedLockReleaseScript, 1, name, token)
+			.catch((error: unknown) => container.logger.error(`[LOCKS] Could not release ${key}:`, error));
 	};
 }
 

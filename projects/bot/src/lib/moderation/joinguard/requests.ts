@@ -10,12 +10,14 @@ import {
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
+import { SharedLockReleaseScript } from '#utils/locks';
+import { randomUUID } from 'node:crypto';
 import {
-	claimJoinGuardRequest,
+	completeJoinGuardRequest,
 	fetchPendingJoinGuardRequestIds,
+	fetchUnprocessedJoinGuardRequest,
 	JoinGuardTrustLimits,
 	MaximumJoinGuardReasonLength,
-	setJoinGuardRequestError,
 	type JoinGuardRequestRecord
 } from 'wolfstar-database';
 
@@ -120,29 +122,81 @@ function formatJoinGuardFailure(failure: JoinGuardFailure): string {
 export type JoinGuardRequestOutcome = 'Claimed' | 'Done' | 'Failed';
 
 /**
- * Handles a request of the website: it is claimed first, so it is done once whatever brought it (its notification, a
- * sweep, another process), then done, and why it could not be is written to it.
- *
- * @param requestId - The ID of the request.
- * @returns `Claimed` when another handler had it already.
+ * How long a process holds a request it handles, in milliseconds: one that stops meanwhile leaves it to the sweep of
+ * another once this ran out.
  */
-export async function handleJoinGuardRequest(requestId: string): Promise<JoinGuardRequestOutcome> {
-	const record = await claimJoinGuardRequest(container.prisma, requestId);
-	if (record === null) return 'Claimed';
+const RequestLeaseDuration = 120_000;
 
-	let result: JoinGuardResult<unknown>;
-	try {
-		const parsed = parseJoinGuardRequest(record);
-		result = parsed.ok ? await runJoinGuardRequest(parsed.value) : parsed;
-	} catch (error) {
-		container.logger.error(`[JoinGuard] Could not handle the request ${requestId}:`, error);
-		result = joinGuardErr('Failed', 'Something went wrong, it was logged.');
+/**
+ * The requests this process holds while Redis cannot be asked, see {@linkcode leaseJoinGuardRequest}.
+ */
+const localLeases = new Set<string>();
+
+/**
+ * Takes a request for this process, so its notification, a sweep and another process do not handle it at once.
+ *
+ * @remarks The lease is in Redis and runs out on its own, so a process that stops while it holds one does not keep
+ * the request from being done: its `processed_at` is still not set. Without a connection, or when Redis fails, the
+ * process keeps the lease itself, which is all a single process needs.
+ *
+ * @returns What gives the request back, `null` when another handler holds it.
+ */
+async function leaseJoinGuardRequest(requestId: string): Promise<(() => Promise<void>) | null> {
+	const { redis } = container;
+	if (redis?.status === 'ready') {
+		const key = `wolfstar:joinguard:request:${requestId}`;
+		const token = randomUUID();
+		try {
+			if ((await redis.set(key, token, 'PX', RequestLeaseDuration, 'NX')) === null) return null;
+			return async () => {
+				await redis
+					.eval(SharedLockReleaseScript, 1, key, token)
+					.catch((error: unknown) => container.logger.error(`[JoinGuard] Could not give the request ${requestId} back:`, error));
+			};
+		} catch (error) {
+			container.logger.error(`[JoinGuard] Could not take the request ${requestId} in Redis:`, error);
+		}
 	}
 
-	if (result.ok) return 'Done';
+	if (localLeases.has(requestId)) return null;
+	localLeases.add(requestId);
+	return async () => {
+		localLeases.delete(requestId);
+	};
+}
 
-	await setJoinGuardRequestError(container.prisma, requestId, formatJoinGuardFailure(result.error));
-	return 'Failed';
+/**
+ * Handles a request of the website once, whatever brought it (its notification, a sweep, another process): it is
+ * leased, read again while it is not done, done, and then marked done with why it could not be, in one write.
+ *
+ * @remarks A request that was taken by a process that stopped before marking it is done again by a sweep: what it asks
+ * is safe to do twice, since every change of a member is made only while their row still waits.
+ *
+ * @param requestId - The ID of the request.
+ * @returns `Claimed` when another handler has it, or had it done.
+ */
+export async function handleJoinGuardRequest(requestId: string): Promise<JoinGuardRequestOutcome> {
+	const release = await leaseJoinGuardRequest(requestId);
+	if (release === null) return 'Claimed';
+
+	try {
+		const record = await fetchUnprocessedJoinGuardRequest(container.prisma.orm, requestId);
+		if (record === null) return 'Claimed';
+
+		let result: JoinGuardResult<unknown>;
+		try {
+			const parsed = parseJoinGuardRequest(record);
+			result = parsed.ok ? await runJoinGuardRequest(parsed.value) : parsed;
+		} catch (error) {
+			container.logger.error(`[JoinGuard] Could not handle the request ${requestId}:`, error);
+			result = joinGuardErr('Failed', 'Something went wrong, it was logged.');
+		}
+
+		await completeJoinGuardRequest(container.prisma, requestId, result.ok ? null : formatJoinGuardFailure(result.error));
+		return result.ok ? 'Done' : 'Failed';
+	} finally {
+		await release();
+	}
 }
 
 /**
