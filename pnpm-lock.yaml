@@ -369,6 +369,9 @@ importers:
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
+      pg:
+        specifier: ^8.23.1
+        version: 8.23.1
       varlock:
         specifier: ^1.23.0
         version: 1.23.0
@@ -382,6 +385,9 @@ importers:
       '@rollup/plugin-alias':
         specifier: 6.0.0
         version: 6.0.0
+      '@types/pg':
+        specifier: ^8.20.4
+        version: 8.20.4
       '@wolfstar/i18next-type-generator':
         specifier: ^3.1.6
         version: 3.1.6
@@ -9428,7 +9434,7 @@ snapshots:
 
   '@types/pg-pool@2.0.7':
     dependencies:
-      '@types/pg': 8.15.6
+      '@types/pg': 8.20.4
 
   '@types/pg@8.15.6':
     dependencies:
@@ -11546,7 +11552,6 @@ snapshots:
   pg-pool@3.14.0(pg@8.23.1):
     dependencies:
       pg: 8.23.1
-    optional: true
 
   pg-protocol@1.16.1: {}
 
@@ -11577,7 +11582,6 @@ snapshots:
       pgpass: 1.0.5
     optionalDependencies:
       pg-cloudflare: 1.4.1
-    optional: true
 
   pgpass@1.0.5:
     dependencies:

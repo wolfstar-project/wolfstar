@@ -66,6 +66,7 @@ const ModuleEmojis: Record<string, EmojiKey> = {
 	automod: 'ModuleAutomod',
 	commands: 'ModuleCommands',
 	honeypot: 'ModuleHoneypot',
+	'join-guard': 'ModuleJoinGuard',
 	logs: 'ModuleLogs',
 	moderation: 'ModuleModeration',
 	reports: 'ModuleReports',

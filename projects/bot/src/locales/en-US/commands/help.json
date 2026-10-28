@@ -60,6 +60,11 @@
 		"examples": ["setup", "setup channel:#do-not-post action:Ban logs:#mod-logs", "edit random-name:true keep-active:true"],
 		"reminder": "The moderators are never caught, and the messages a spam bot sends in a row make one case."
 	},
+	"/joinguard": {
+		"extendedHelp": "Shows and switches the join guard, which checks every member who joins against the rules of the server: an account made a few hours ago, with no avatar, a name that looks generated, a text in its name, or an app that is not verified. Each rule a member matches gives a role, alerts the moderators, sends a direct message, sends them to the checkpoint on wolfstar.rocks or kicks or bans them as a case, and everything is reported to the `join-guard.log-channel` channel.\nThe rules are edited on the dashboard. `post-button` posts the button of the checkpoint in `join-guard.checkpoint-channel`, and posting it again edits it.",
+		"examples": ["show", "enable", "post-button", "disable"],
+		"reminder": "A member who waits at the checkpoint is kicked when the time to verify runs out, unless they were let in meanwhile."
+	},
 	"/kick": {
 		"extendedHelp": "Kicks a member out of the server, as a case of the moderation log: they can join again with an invite. Their recent messages can be saved first with `archive`.\nThis needs **{{KickMembers, permissions}}**, and I only kick the members whose highest role is below mine, never the owner of the server.",
 		"examples": ["user:@Pete reason:Rude to the other members", "user:@Pete archive:true"],
@@ -162,6 +167,10 @@
 	"/unrestrict": {
 		"extendedHelp": "Lifts a restriction of `/restrict` from a member before it ends: the attachments, the embeds, the external emojis, the reactions or the voice channels are theirs again.",
 		"examples": ["attachment user:@Pete", "voice user:@Pete reason:The restriction was a mistake"]
+	},
+	"/verify": {
+		"extendedHelp": "Lets a member in past the join guard: I take the pending role, give the verified role, and the member stops waiting at the checkpoint, in your name. It works for a member the guard never stopped too.",
+		"examples": ["user:@Pete"]
 	},
 	"/vmute": {
 		"extendedHelp": "Mutes the microphone of a member in every voice channel, with the server mute of Discord, as a case of the moderation log. A voice mute can last a `duration` and be lifted by itself when it ends.\nIt is given back when the member leaves and joins the server again, as soon as they connect to a voice channel.",

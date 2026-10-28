@@ -31,6 +31,7 @@ const PortableTypes = new Set<SchemaKeyType>([
 	'float',
 	'honeypotAction',
 	'integer',
+	'joinGuardTimeout',
 	'language',
 	'messageUpdateStyle',
 	'number',

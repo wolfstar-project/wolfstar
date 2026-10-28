@@ -197,6 +197,7 @@ function getJsonType(key: SchemaKey) {
 		case 'integer':
 		case 'number':
 		case 'timespan':
+		case 'joinGuardTimeout':
 			return { name: 'number', matches: (value: unknown) => typeof value === 'number' };
 		default:
 			return { name: 'text', matches: (value: unknown) => typeof value === 'string' };

@@ -18,6 +18,7 @@ import {
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
 import { UserSerializer as HoneypotActionSerializer } from '#root/serializers/honeypotAction';
+import { UserSerializer as JoinGuardTimeoutSerializer } from '#root/serializers/joinGuardTimeout';
 import { UserSerializer as TimezoneSerializer } from '#root/serializers/timezone';
 import { UserSerializer as MessageUpdateStyleSerializer } from '#root/serializers/messageUpdateStyle';
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
@@ -99,6 +100,7 @@ beforeAll(async () => {
 		commandMatch: CommandMatchSerializer,
 		language: LanguageSerializer,
 		honeypotAction: HoneypotActionSerializer,
+		joinGuardTimeout: JoinGuardTimeoutSerializer,
 		timezone: TimezoneSerializer,
 		messageUpdateStyle: MessageUpdateStyleSerializer
 	};
@@ -130,6 +132,15 @@ describe('configuration file', () => {
 				'honeypot.warning',
 				'honeypot.random-name',
 				'honeypot.keep-active',
+				'join-guard.enabled',
+				'join-guard.direct-message',
+				'join-guard.direct-message-content',
+				'join-guard.checkpoint',
+				'join-guard.checkpoint-timeout',
+				'join-guard.minimum-trust',
+				'join-guard.captcha',
+				'join-guard.connections',
+				'join-guard.shared-bans',
 				'appeals.enabled',
 				'appeals.bans',
 				'appeals.mutes',

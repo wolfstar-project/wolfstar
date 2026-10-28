@@ -84,6 +84,40 @@ export async function fetchGuildData(orm: Orm, id: Snowflake): Promise<GuildData
 }
 
 /**
+ * The settings stored in a table.
+ */
+export type TableSettingKey<Table extends TableName> = {
+	[Key in StoredKey]: (typeof Columns)[Key]['table'] extends Table ? Key : never;
+}[StoredKey];
+
+/**
+ * Reads the settings stored in one table of a guild, with one query and none of the others: what reads them on every
+ * event cannot wait on the tables it does not need, and must see what the dashboard wrote, which the cache of the bot
+ * does not hear of.
+ * @param orm The ORM surface to read through.
+ * @param name The table.
+ * @param id The guild's ID.
+ * @returns The settings, the defaults when the guild has no row in the table.
+ */
+export async function fetchTableSettings<const Table extends TableName>(
+	orm: Pick<Orm, 'public'>,
+	name: Table,
+	id: Snowflake
+): Promise<Pick<ReadonlyGuildData, TableSettingKey<Table>>> {
+	const row = await table(orm, name).first({ id: BigInt(id) });
+	// It is assigned on its first call, the type only says what the cache starts as:
+	const defaults = getDefaultGuildSettings()!;
+	const data = Object.create(null) as Record<string, unknown>;
+	for (const key of StoredKeys) {
+		const { table: tableName, column, kind } = ColumnsByKey[key];
+		if (tableName !== name) continue;
+		data[key] = row === null ? defaults[key] : toSetting(kind, row[column]);
+	}
+
+	return data as Pick<ReadonlyGuildData, TableSettingKey<Table>>;
+}
+
+/**
  * Writes changed settings into their tables, in one transaction. The rows a change needs are created with the rest of
  * {@link settings} when they do not exist yet, together with the rows they reference.
  * @param db The database to write through.

@@ -26,6 +26,7 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 		case 'boolean':
 			return 'boolean';
 		case 'role':
+		case 'manageableRole':
 			return 'role';
 		case 'guildTextChannel':
 		case 'guildLogChannel':
