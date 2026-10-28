@@ -123,7 +123,7 @@ describe('the roles module (modules.roles) in the listeners of the members', () 
 		const userId = '266624760782258193';
 		const member = createGuildMember({ user: createUserData(userId, 'Returning') });
 
-		async function rejoin(modulesRoles: boolean) {
+		async function rejoin(modulesRoles: boolean, expected: number) {
 			// The settings keep the roles they left with, one of their own and the one of a restriction of their reactions,
 			// and they are not muted:
 			mockSettings({
@@ -132,19 +132,25 @@ describe('the roles module (modules.roles) in the listeners of the members', () 
 				rolesRestrictedReaction: restrictionRole.id,
 				stickyRoles: [{ user: userId, roles: [otherRole.id, restrictionRole.id] }]
 			});
-			// `member.roles` is a new manager at each read, so the one of every member is spied on:
-			const add = vi.spyOn(GuildMemberRoleManager.prototype, 'add').mockResolvedValue(member);
+			// `member.roles` is a new manager at each read, so the one of every member is spied on: it must not be used, a
+			// list of roles replaces the ones the member has, which other listeners give at the same time (the pending role
+			// of the join guard):
+			const replace = vi.spyOn(GuildMemberRoleManager.prototype, 'add').mockResolvedValue(member);
+			const addRole = vi.spyOn(client.members, 'addRole').mockResolvedValue(undefined);
 
 			await listener.run(member);
-			return add;
+			// The roles are given back in the background of the join, one request after the other:
+			await vi.waitFor(() => expect(addRole).toHaveBeenCalledTimes(expected));
+			expect(replace).not.toHaveBeenCalled();
+			return addRole.mock.calls.map(([, , roleId]) => roleId);
 		}
 
 		test('GIVEN modules.roles off WHEN a restricted member joins again THEN only the restriction role is given back', async () => {
-			expect(await rejoin(false)).toHaveBeenCalledExactlyOnceWith([restrictionRole.id]);
+			expect(await rejoin(false, 1)).toEqual([restrictionRole.id]);
 		});
 
-		test('GIVEN modules.roles on WHEN a restricted member joins again THEN every sticky role is given back', async () => {
-			expect(await rejoin(true)).toHaveBeenCalledExactlyOnceWith([otherRole.id, restrictionRole.id]);
+		test('GIVEN modules.roles on WHEN a restricted member joins again THEN every sticky role is given back, one at a time', async () => {
+			expect(await rejoin(true, 2)).toEqual([otherRole.id, restrictionRole.id]);
 		});
 	});
 });

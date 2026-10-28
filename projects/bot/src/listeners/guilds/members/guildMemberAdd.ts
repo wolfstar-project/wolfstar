@@ -126,9 +126,17 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 	}
 
 	async #handleStickyRolesAddRoles(member: GuildMember, stickyRoles: readonly Snowflake[]) {
-		// The roles that no longer exist were already removed by `StickyRoleManager#fetch`:
-		const result = await toErrorCodeResult(member.roles.add(stickyRoles));
-		await result.inspectErrAsync((code) => this.#handleStickyRolesAddRolesErr(code));
+		// One role at a time: a list replaces the roles the member has with the ones of this snapshot, which drops what
+		// another listener gives at the same time, such as the pending role of the join guard. The roles that no longer
+		// exist were already removed by `StickyRoleManager#fetch`.
+		const userId = member.user?.id ?? (await member.fetchUser()).id;
+		for (const roleId of stickyRoles) {
+			const result = await toErrorCodeResult(this.container.gatewayClient.members.addRole(member.guildId, userId, roleId));
+			const unknownMember = result.isErrAnd((code) => code === RESTJSONErrorCodes.UnknownMember);
+			await result.inspectErrAsync((code) => this.#handleStickyRolesAddRolesErr(code));
+			// The member left the guild, the other roles cannot be given either:
+			if (unknownMember) return;
+		}
 	}
 
 	#handleStickyRolesAddRolesErr(code: RESTJSONErrorCodes) {

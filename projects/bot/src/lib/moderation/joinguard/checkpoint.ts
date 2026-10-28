@@ -210,6 +210,8 @@ export function admitJoinGuardMember(
 }
 
 async function findRoleProblem(t: TFunction<AnyNamespace>, guildId: Snowflake, settings: JoinGuardSettings): Promise<string | null> {
+	if (hasSameJoinGuardRoles(settings)) return t(`${Root}:errorSameRoles`);
+
 	for (const roleId of [settings.joinGuardPendingRole, settings.joinGuardVerifiedRole]) {
 		if (roleId === null) continue;
 
@@ -220,7 +222,10 @@ async function findRoleProblem(t: TFunction<AnyNamespace>, guildId: Snowflake, s
 }
 
 /**
- * Takes the pending role of a member who is let in and gives them the verified role.
+ * Gives a member who is let in the verified role, then takes the pending role.
+ *
+ * @remarks The verified role goes first, and is taken back when the pending role cannot be taken: a member is never
+ * left with neither role, which the timeout would read as let in by hand, nor with both.
  *
  * @returns Whether a role changed.
  */
@@ -228,19 +233,38 @@ async function changeAdmittedRoles(t: TFunction<AnyNamespace>, member: GuildMemb
 	const pending = settings.joinGuardPendingRole;
 	const verified = settings.joinGuardVerifiedRole;
 	const roleIds = member.roles.ids;
+	const reason = t(`${Root}:verifiedRoleReason`);
+
+	const giveVerified = verified !== null && !roleIds.includes(verified);
+	if (giveVerified) {
+		const given = await member.roles.add(verified, reason).then(
+			() => null,
+			(error: unknown) => error
+		);
+		if (given !== null) return joinGuardErr('Refused', describeJoinGuardError(t, 'Roles', given));
+	}
+
+	if (pending !== null && roleIds.includes(pending)) {
+		const taken = await member.roles.remove(pending, reason).then(
+			() => null,
+			(error: unknown) => error
+		);
+		if (taken !== null) {
+			if (giveVerified) await takeBackVerifiedRole(member, verified, reason);
+			return joinGuardErr('Refused', describeJoinGuardError(t, 'Roles', taken));
+		}
+		return joinGuardOk(true);
+	}
+
+	return joinGuardOk(giveVerified);
+}
+
+async function takeBackVerifiedRole(member: GuildMember, roleId: Snowflake, reason: string) {
 	try {
-		let changed = false;
-		if (pending !== null && roleIds.includes(pending)) {
-			await member.roles.remove(pending, t(`${Root}:verifiedRoleReason`));
-			changed = true;
-		}
-		if (verified !== null && !roleIds.includes(verified)) {
-			await member.roles.add(verified, t(`${Root}:verifiedRoleReason`));
-			changed = true;
-		}
-		return joinGuardOk(changed);
+		await member.roles.remove(roleId, reason);
 	} catch (error) {
-		return joinGuardErr('Refused', describeJoinGuardError(t, 'Roles', error));
+		// The member then has both roles, which the timeout reads as let in: the log of the error says what to fix.
+		container.logger.error(`[JoinGuard] Could not take back the verified role of ${member.user?.id ?? 'a member'}:`, error);
 	}
 }
 
@@ -412,7 +436,17 @@ export async function runJoinGuardTimeout(checkpointId: string): Promise<JoinGua
 function isLetIn(roleIds: readonly Snowflake[], settings: Pick<JoinGuardSettings, 'joinGuardPendingRole' | 'joinGuardVerifiedRole'>) {
 	const pending = settings.joinGuardPendingRole;
 	const verified = settings.joinGuardVerifiedRole;
+	// One role that is both is held by every member who waits, so only losing it says something:
+	if (hasSameJoinGuardRoles(settings)) return !roleIds.includes(pending!);
 	return (pending !== null && !roleIds.includes(pending)) || (verified !== null && roleIds.includes(verified));
+}
+
+/**
+ * Whether the pending and the verified roles are one role, which the settings refuse but may have been written so
+ * before, or by something else: the guard then neither sends to the checkpoint nor lets in by it.
+ */
+export function hasSameJoinGuardRoles(settings: Pick<JoinGuardSettings, 'joinGuardPendingRole' | 'joinGuardVerifiedRole'>): boolean {
+	return settings.joinGuardPendingRole !== null && settings.joinGuardPendingRole === settings.joinGuardVerifiedRole;
 }
 
 function failTimeout(

@@ -71,12 +71,27 @@ let member: { roleIds: string[] } | null;
 const fetchMember = vi.fn();
 const deleteTask = vi.fn(async () => undefined);
 
+// What Discord refuses, by the role call:
+let refuse: { add?: string; remove?: string } = {};
+
 function createMember(roleIds: string[]) {
 	const user = { id: userId, toJSON: () => ({ id: userId, username: 'raider', discriminator: '0', avatar: null, global_name: null }) };
+	const refused = () => new DiscordAPIError({ code: 50013, message: 'Missing Permissions' }, 50013, 403, 'PUT', 'https://discord.com', {});
+	// The member the API returns is a snapshot, the roles it changes are the ones of the member in the guild:
 	return {
 		user,
 		fetchUser: async () => user,
-		roles: { ids: roleIds, add: vi.fn(async () => undefined), remove: vi.fn(async () => undefined) }
+		roles: {
+			ids: [...roleIds],
+			add: vi.fn(async (roleId: string) => {
+				if (refuse.add === roleId) throw refused();
+				if (!member!.roleIds.includes(roleId)) member!.roleIds.push(roleId);
+			}),
+			remove: vi.fn(async (roleId: string) => {
+				if (refuse.remove === roleId) throw refused();
+				member!.roleIds = member!.roleIds.filter((id) => id !== roleId);
+			})
+		}
 	};
 }
 
@@ -115,6 +130,7 @@ beforeEach(() => {
 		joinGuardLogChannel: '900'
 	};
 	member = { roleIds: [pendingRole] };
+	refuse = {};
 	fetchMember.mockImplementation(async () => {
 		if (member === null) throw unknownMember();
 		return createMember(member.roleIds);
@@ -226,6 +242,42 @@ describe('admitJoinGuardMember', () => {
 
 		expect(admitted).toMatchObject({ ok: false, error: { code: 'NotWaiting' } });
 		expect(table.get(row.id)!.status).toBe('Kicked');
+	});
+
+	test('GIVEN the verified role cannot be given THEN the member keeps the pending role, waits, and the timeout kicks them', async () => {
+		const row = addRow();
+		refuse = { add: verifiedRole };
+
+		const admitted = await admitJoinGuardMember(guildId, userId, { kind: 'Checkpoint', trust: 2, linkedAccounts: 0, checkpointId: row.id });
+
+		expect(admitted).toMatchObject({ ok: false, error: { code: 'Refused' } });
+		expect(member!.roleIds).toEqual([pendingRole]);
+		expect(table.get(row.id)!.status).toBe('Waiting');
+		expect(await runJoinGuardTimeout(row.id)).toEqual({ kind: 'Kicked', caseId: 42 });
+	});
+
+	test('GIVEN the pending role cannot be taken THEN the verified role is taken back, and the member still waits', async () => {
+		const row = addRow();
+		refuse = { remove: pendingRole };
+
+		const admitted = await admitJoinGuardMember(guildId, userId, { kind: 'Moderator', moderatorId: '77' });
+
+		expect(admitted).toMatchObject({ ok: false, error: { code: 'Refused' } });
+		expect(member!.roleIds).toEqual([pendingRole]);
+		expect(table.get(row.id)!.status).toBe('Waiting');
+		expect(await runJoinGuardTimeout(row.id)).toEqual({ kind: 'Kicked', caseId: 42 });
+	});
+
+	test('GIVEN the same role is pending and verified THEN nobody is let in by it, and the timeout still kicks', async () => {
+		settings.current = { ...settings.current, joinGuardVerifiedRole: pendingRole };
+		const row = addRow();
+
+		expect(await admitJoinGuardMember(guildId, userId, { kind: 'Moderator', moderatorId: '77' })).toMatchObject({
+			ok: false,
+			error: { code: 'RoleNotManageable' }
+		});
+		expect(member!.roleIds).toEqual([pendingRole]);
+		expect(await runJoinGuardTimeout(row.id)).toEqual({ kind: 'Kicked', caseId: 42 });
 	});
 
 	test('GIVEN a moderator THEN a member the guard never stopped is let in too', async () => {

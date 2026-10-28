@@ -6,6 +6,7 @@ import { UserSerializer as NumberSerializer } from '#root/serializers/number';
 import { UserSerializer as StringSerializer } from '#root/serializers/string';
 import { container } from '@wolfstar/http-framework';
 import { getDefaultGuildSettings } from 'wolfstar-database';
+import { findJoinGuardSettingsConflict } from '#lib/moderation/joinguard/settings';
 
 vi.mock('#lib/moderation/joinguard/permissions', () => ({ getJoinGuardRoleProblem: vi.fn() }));
 
@@ -77,6 +78,17 @@ describe('join guard settings', () => {
 		expect(text.isValid('', ctx)).toBe(false);
 	});
 
+	test('GIVEN the role the other key already has THEN it is refused, one role cannot be both', async () => {
+		const role = store().get('manageableRole') as RoleSerializer;
+		const pending = { ...context('joinGuardPendingRole'), entity: { ...getDefaultGuildSettings(), id: guildId, joinGuardVerifiedRole: '300' } };
+		const verified = { ...context('joinGuardVerifiedRole'), entity: { ...getDefaultGuildSettings(), id: guildId, joinGuardPendingRole: '300' } };
+		vi.mocked(getJoinGuardRoleProblem).mockResolvedValue(null);
+
+		await expect(role.isValid('300', pending as Serializer.UpdateContext)).rejects.toBe('serializers:joinGuardSameRoles');
+		await expect(role.isValid('300', verified as Serializer.UpdateContext)).rejects.toBe('serializers:joinGuardSameRoles');
+		await expect(role.isValid('301', pending as Serializer.UpdateContext)).resolves.toBe(true);
+	});
+
 	test('GIVEN a pending or a verified role THEN it must be one the bot can manage', async () => {
 		const ctx = context('joinGuardPendingRole');
 		const role = store().get('manageableRole') as RoleSerializer;
@@ -89,5 +101,15 @@ describe('join guard settings', () => {
 
 		vi.mocked(getJoinGuardRoleProblem).mockResolvedValueOnce('unknown');
 		await expect(role.isValid('300', ctx)).rejects.toBe('serializers:invalidRole');
+	});
+
+	test('GIVEN a write of several keys THEN the roles are checked together, as they end up', () => {
+		const settings = { ...getDefaultGuildSettings()!, id: guildId };
+
+		expect(findJoinGuardSettingsConflict({ ...settings, joinGuardPendingRole: '300', joinGuardVerifiedRole: '300' })).toBe(
+			'serializers:joinGuardSameRoles'
+		);
+		expect(findJoinGuardSettingsConflict({ ...settings, joinGuardPendingRole: '300', joinGuardVerifiedRole: '301' })).toBeNull();
+		expect(findJoinGuardSettingsConflict(settings)).toBeNull();
 	});
 });

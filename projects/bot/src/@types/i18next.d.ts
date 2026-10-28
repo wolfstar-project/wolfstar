@@ -2301,6 +2301,8 @@ declare module "i18next" {
         errorFailed: "I could not {{action}}, something went wrong. It was logged.";
         errorTarget: "I could not {{action}}: {{reason}}";
         errorRole: "I could not give {{role}}: {{reason}}";
+        errorSameRoles: "the pending role and the verified role are the same role: set two different roles.";
+        errorCheckpointSetup: "I could not send them to the checkpoint: {{reason}}";
         errorAlert: "I could not alert the moderators in {{channel}}: {{reason}}";
         actionBan: "ban them";
         actionKick: "kick them";
@@ -2871,6 +2873,7 @@ declare module "i18next" {
         invalidTimezone: "{{name}} must be the name of a time zone of the IANA database, such as `Europe/Rome`, `America/New_York` or `UTC`.";
         invalidUrl: "{{name}} must be a valid url.";
         invalidUser: "{{name}} must be a mention or valid user id.";
+        joinGuardSameRoles: "{{name}} cannot be the same role as the other role of the checkpoint: the pending and the verified roles must be two roles.";
         joinGuardTimeoutNever: "Never";
         messageUpdateStyleDifference: "Difference";
         messageUpdateStyleSeparate: "Separate";
