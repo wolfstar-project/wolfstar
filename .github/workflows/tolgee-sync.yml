@@ -78,7 +78,8 @@ jobs:
                     if [ "$MODE" != "open-pr" ]; then
                       local MATCHES;
                       MATCHES="$(gh pr list --head "$BRANCH" --state closed --json author,headRefOid | jq -r --arg tip "$TIP" --arg bot "$BOT" '[.[] | select(.headRefOid == $tip and .author.login == $bot)] | length')";
-                      if [ "$MATCHES" != "0" ]; then
+                      # Fail closed: an API error leaves MATCHES empty, which must not count as proof.
+                      if [ "${MATCHES:-0}" -gt 0 ] 2>/dev/null; then
                         return 0;
                       fi
                     fi
@@ -86,7 +87,8 @@ jobs:
                     # produced the tip, performed by the bot.
                     local PUSHED;
                     PUSHED="$(gh api "repos/$GITHUB_REPOSITORY/activity?ref=refs/heads/$BRANCH&per_page=1" | jq -r --arg tip "$TIP" --arg bot "$BOT" '[.[] | select(.after == $tip and .actor.login == $bot)] | length')";
-                    [ "$PUSHED" != "0" ];
+                    # Same here: only a positive count proves ownership, never an empty answer.
+                    [ "${PUSHED:-0}" -gt 0 ] 2>/dev/null;
                   }
                   if git diff-index --quiet HEAD --; then
                     echo "No translation changes to commit"
