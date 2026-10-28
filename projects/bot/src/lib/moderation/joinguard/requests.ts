@@ -32,14 +32,22 @@ export type JoinGuardRequest =
 			readonly checkpointId: string | null;
 			readonly trust: number;
 			readonly linkedAccounts: number;
+			readonly requestedAt: number;
 	  }
-	| { readonly kind: 'Verify'; readonly guildId: Snowflake; readonly userId: Snowflake; readonly moderatorId: Snowflake }
+	| {
+			readonly kind: 'Verify';
+			readonly guildId: Snowflake;
+			readonly userId: Snowflake;
+			readonly moderatorId: Snowflake;
+			readonly requestedAt: number;
+	  }
 	| {
 			readonly kind: 'Kick';
 			readonly guildId: Snowflake;
 			readonly userId: Snowflake;
 			readonly moderatorId: Snowflake;
 			readonly reason: string | null;
+			readonly requestedAt: number;
 	  }
 	| { readonly kind: 'PostButton'; readonly guildId: Snowflake; readonly moderatorId: Snowflake | null };
 
@@ -54,7 +62,8 @@ function isCount(value: number | null): value is number {
  * @param record - The request as it is stored.
  */
 export function parseJoinGuardRequest(record: JoinGuardRequestRecord): JoinGuardResult<JoinGuardRequest> {
-	const { guildId, userId, moderatorId } = record;
+	// A request only acts on the stay of the member it was made for, see `joinedSince` of the checkpoint:
+	const { guildId, userId, moderatorId, createdAt: requestedAt } = record;
 	switch (record.kind) {
 		case 'Pass': {
 			if (userId === null) return joinGuardErr('InvalidRequest', 'A pass needs the member.');
@@ -66,13 +75,21 @@ export function parseJoinGuardRequest(record: JoinGuardRequestRecord): JoinGuard
 				);
 			}
 			if (linkedAccounts !== null && !isCount(linkedAccounts)) return joinGuardErr('InvalidRequest', 'The linked accounts are a count.');
-			return joinGuardOk({ kind: 'Pass', guildId, userId, checkpointId: record.checkpointId, trust, linkedAccounts: linkedAccounts ?? 0 });
+			return joinGuardOk({
+				kind: 'Pass',
+				guildId,
+				userId,
+				checkpointId: record.checkpointId,
+				trust,
+				linkedAccounts: linkedAccounts ?? 0,
+				requestedAt
+			});
 		}
 		case 'Verify':
 		case 'Kick': {
 			if (userId === null) return joinGuardErr('InvalidRequest', `A ${record.kind.toLowerCase()} needs the member.`);
 			if (moderatorId === null) return joinGuardErr('InvalidRequest', `A ${record.kind.toLowerCase()} needs the moderator.`);
-			if (record.kind === 'Verify') return joinGuardOk({ kind: 'Verify', guildId, userId, moderatorId });
+			if (record.kind === 'Verify') return joinGuardOk({ kind: 'Verify', guildId, userId, moderatorId, requestedAt });
 
 			const reason = record.reason?.trim() || null;
 			return joinGuardOk({
@@ -80,7 +97,8 @@ export function parseJoinGuardRequest(record: JoinGuardRequestRecord): JoinGuard
 				guildId,
 				userId,
 				moderatorId,
-				reason: reason === null ? null : cutText(reason, MaximumJoinGuardReasonLength)
+				reason: reason === null ? null : cutText(reason, MaximumJoinGuardReasonLength),
+				requestedAt
 			});
 		}
 		case 'PostButton':
@@ -94,16 +112,26 @@ export function parseJoinGuardRequest(record: JoinGuardRequestRecord): JoinGuard
 async function runJoinGuardRequest(request: JoinGuardRequest): Promise<JoinGuardResult<unknown>> {
 	switch (request.kind) {
 		case 'Pass':
-			return admitJoinGuardMember(request.guildId, request.userId, {
-				kind: 'Checkpoint',
-				trust: request.trust,
-				linkedAccounts: request.linkedAccounts,
-				checkpointId: request.checkpointId
-			});
+			return admitJoinGuardMember(
+				request.guildId,
+				request.userId,
+				{
+					kind: 'Checkpoint',
+					trust: request.trust,
+					linkedAccounts: request.linkedAccounts,
+					checkpointId: request.checkpointId
+				},
+				request.requestedAt
+			);
 		case 'Verify':
-			return admitJoinGuardMember(request.guildId, request.userId, { kind: 'Moderator', moderatorId: request.moderatorId });
+			return admitJoinGuardMember(
+				request.guildId,
+				request.userId,
+				{ kind: 'Moderator', moderatorId: request.moderatorId },
+				request.requestedAt
+			);
 		case 'Kick':
-			return kickJoinGuardMember(request.guildId, request.userId, request.moderatorId, request.reason);
+			return kickJoinGuardMember(request.guildId, request.userId, request.moderatorId, request.reason, request.requestedAt);
 		case 'PostButton':
 			return postJoinGuardButton(request.guildId, request.moderatorId ?? container.gatewayClient.user!.id);
 	}

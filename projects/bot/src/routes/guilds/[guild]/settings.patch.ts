@@ -1,10 +1,9 @@
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
-import { getConfigurableKeys, isSchemaKey, serializeSettings, writeSettingsTransaction, type SchemaDataKey, type Serializer } from '#lib/database';
-import { findJoinGuardSettingsConflict } from '#lib/moderation/joinguard/settings';
-import { createTranslator, type Translator } from '#lib/structures/commands/utils';
+import { serializeSettings, writeSettingsTransaction, type SchemaDataKey } from '#lib/database';
+import { validateSettingsChanges } from '#lib/database/settings/validation';
+import { createTranslator } from '#lib/structures/commands/utils';
 import { seconds } from 'wolfstar-shared';
-import { cast } from '#utils/util';
 import { HttpCodes, Route, type MimeType } from '@wolfstar/plugin-api';
 import type { GuildDataValue, ReadonlyGuildData } from 'wolfstar-database';
 
@@ -26,18 +25,13 @@ export class UserRoute extends Route {
 
 		if (!(await canManage(guild, member))) return response.error(HttpCodes.Forbidden);
 
-		const entries = requestBody.data;
 		try {
 			using trx = await writeSettingsTransaction(guild);
-			const data = await this.validateAll(trx.settings, entries);
-			const settingsData = Object.fromEntries(data);
+			const t = createTranslator(this.container.i18n.getT(trx.settings.language));
+			// Each value is checked on the settings as they end up, see `validateSettingsChanges`:
+			const data = await validateSettingsChanges(trx.settings, requestBody.data, t);
 
-			// Each value was checked on the settings as they are, the ones that depend on each other are checked as they end up:
-			const conflict = findJoinGuardSettingsConflict({ ...trx.settings, ...settingsData });
-			if (conflict !== null)
-				throw [createTranslator(this.container.i18n.getT(trx.settings.language))(conflict, { name: 'join-guard.pending-role' })];
-
-			await trx.write(settingsData).submitWithAudit(request.auth!.id);
+			await trx.write(Object.fromEntries(data)).submitWithAudit(request.auth!.id);
 
 			return this.sendSettings(response, trx.settings);
 		} catch (errors) {
@@ -50,51 +44,5 @@ export class UserRoute extends Route {
 			.status(HttpCodes.OK)
 			.setContentType('application/json' satisfies MimeType)
 			.end(serializeSettings(settings));
-	}
-
-	private async validate(key: SchemaDataKey, value: unknown, settings: ReadonlyGuildData, t: Translator) {
-		const entry = getConfigurableKeys().get(key);
-		if (!entry || !isSchemaKey(entry)) throw `${key}: The key ${key} does not exist in the current schema.`;
-		try {
-			// If null is passed, reset to default:
-			if (value === null) return [entry.property, entry.default];
-
-			const ctx = await entry.getContext(settings, t);
-			const result = await (entry.array ? this.validateArray(value, ctx) : entry.serializer.isValid(value as any, ctx));
-			if (!result) throw 'The value is not valid.';
-
-			return [entry.property, value] as const;
-		} catch (error) {
-			if (error instanceof Error) throw `${key}: ${error.message}`;
-			throw `${key}: ${error}`;
-		}
-	}
-
-	private async validateArray(value: any, ctx: Serializer.UpdateContext) {
-		if (!Array.isArray(value)) throw new Error('Expected an array.');
-
-		const { serializer } = ctx.entry;
-		// Every value has to be valid, an array of results is always truthy:
-		const results = await Promise.all(value.map((value) => serializer.isValid(value, ctx)));
-		return results.every(Boolean);
-	}
-
-	private async validateAll(entity: ReadonlyGuildData, pairs: readonly [SchemaDataKey, GuildDataValue][]) {
-		const t = createTranslator(this.container.i18n.getT(entity.language));
-
-		const errors: string[] = [];
-		const promises = pairs.map((pair) => {
-			if (!Array.isArray(pair) || pair.length !== 2) {
-				errors.push('Invalid input error.');
-				return null;
-			}
-
-			return this.validate(pair[0], pair[1], entity, t).catch((error) => errors.push(error));
-		});
-
-		const results = await Promise.all(promises);
-		if (errors.length === 0) return cast<readonly [SchemaDataKey, GuildDataValue][]>(results);
-
-		throw errors;
 	}
 }

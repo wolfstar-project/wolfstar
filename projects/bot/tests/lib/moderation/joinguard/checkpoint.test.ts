@@ -67,7 +67,7 @@ const verifiedRole = '400';
 const guild = { id: guildId, name: 'Server' } as unknown as Guild;
 const unknownMember = () => new DiscordAPIError({ code: 10007, message: 'Unknown Member' }, 10007, 404, 'GET', 'https://discord.com', {});
 
-let member: { roleIds: string[] } | null;
+let member: { roleIds: string[]; joinedTimestamp?: number } | null;
 const fetchMember = vi.fn();
 const deleteTask = vi.fn(async () => undefined);
 
@@ -81,6 +81,7 @@ function createMember(roleIds: string[]) {
 	return {
 		user,
 		fetchUser: async () => user,
+		joinedTimestamp: member?.joinedTimestamp ?? Date.UTC(2026, 9, 26),
 		roles: {
 			ids: [...roleIds],
 			add: vi.fn(async (roleId: string) => {
@@ -280,6 +281,18 @@ describe('admitJoinGuardMember', () => {
 		expect(await runJoinGuardTimeout(row.id)).toEqual({ kind: 'Kicked', caseId: 42 });
 	});
 
+	test('GIVEN a request made before the member left and joined again THEN this stay is not let in by it', async () => {
+		const requestedAt = Date.UTC(2026, 9, 27, 10);
+		member = { roleIds: [pendingRole], joinedTimestamp: requestedAt + 60_000 };
+		const row = addRow();
+
+		const admitted = await admitJoinGuardMember(guildId, userId, { kind: 'Moderator', moderatorId: '77' }, requestedAt);
+
+		expect(admitted).toMatchObject({ ok: false, error: { code: 'NotMember' } });
+		expect(member.roleIds).toEqual([pendingRole]);
+		expect(table.get(row.id)!.status).toBe('Waiting');
+	});
+
 	test('GIVEN a moderator THEN a member the guard never stopped is let in too', async () => {
 		member = { roleIds: [] };
 		const admitted = await admitJoinGuardMember(guildId, userId, { kind: 'Moderator', moderatorId: '77' });
@@ -329,6 +342,16 @@ describe('kickJoinGuardMember', () => {
 			ok: false,
 			error: { code: 'NotAllowed', detail: 'moderation:actionTargetHigherHierarchyAuthor' }
 		});
+		expect(ModerationActions.kick.apply).not.toHaveBeenCalled();
+		expect(table.get(row.id)!.status).toBe('Waiting');
+	});
+
+	test('GIVEN a request made before the member left and joined again THEN this stay is not kicked by it', async () => {
+		const requestedAt = Date.UTC(2026, 9, 27, 10);
+		member = { roleIds: [pendingRole], joinedTimestamp: requestedAt + 60_000 };
+		const row = addRow();
+
+		expect(await kickJoinGuardMember(guildId, userId, '77', null, requestedAt)).toMatchObject({ ok: false, error: { code: 'NotMember' } });
 		expect(ModerationActions.kick.apply).not.toHaveBeenCalled();
 		expect(table.get(row.id)!.status).toBe('Waiting');
 	});
