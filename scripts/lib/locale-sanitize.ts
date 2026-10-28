@@ -42,6 +42,13 @@ const WELL_FORMED_PLACEHOLDER = /\{\{[^{}]*\}\}/g;
 /** Positional placeholders used by the hunger games strings: `{1}`, `{2T}`. */
 const POSITIONAL_PLACEHOLDER = /\{\d+[A-Za-z]*\}/g;
 
+/**
+ * Discord's slash command name rule (`CHAT_INPUT`): 1-32 letters, digits, `-` or `_`, with
+ * every letter lowercase. `@discordjs/builders` rejects anything else in `setNameLocalizations`,
+ * which makes the whole command fail to register.
+ */
+const COMMAND_NAME = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;
+
 const ICU_SELECTOR = /^\{\s*[\w.]+\s*,\s*(?:plural|selectordinal|select)\s*,/;
 const ICU_BRANCH = /\{([^{}]*)\}/g;
 
@@ -64,6 +71,33 @@ export function isEmptyIcuSkeleton(value: string): boolean {
 	if (!ICU_SELECTOR.test(value)) return false;
 	const branches = [...value.matchAll(ICU_BRANCH)];
 	return branches.length > 0 && branches.every((branch) => branch[1].trim() === '');
+}
+
+/** Whether a string is acceptable as a (localized) slash command or option name on Discord. */
+export function isValidCommandName(value: string): boolean {
+	return COMMAND_NAME.test(value) && value === value.toLowerCase();
+}
+
+/**
+ * Whether a key holds a slash command or option name: `name`, `setName`, `optionsValueName`.
+ * Only meaningful together with a base value that is itself a valid command name, since
+ * `Name` also ends keys that hold display labels.
+ */
+export function isCommandNameKey(path: string): boolean {
+	const key = path.slice(path.lastIndexOf('.') + 1);
+	return key === 'name' || /[a-z]Name$/.test(key);
+}
+
+/**
+ * The command name a translation should be stored as: the value itself, its lowercase form
+ * (Tolgee holds `Avviso` where Discord needs `avviso`; lowercasing loses nothing), or
+ * `undefined` when no valid name can be derived (spaces, over 32 characters, symbols).
+ */
+export function normalizeCommandName(value: string): string | undefined {
+	const trimmed = value.trim();
+	if (isValidCommandName(trimmed)) return trimmed;
+	const lowered = trimmed.toLowerCase();
+	return isValidCommandName(lowered) ? lowered : undefined;
 }
 
 /** i18next and positional placeholders found in a string, as a set (repetitions are irrelevant). */
@@ -275,8 +309,8 @@ export function unflattenArrays(value: JsonValue, onDrop?: (path: string, reason
 export interface NamespaceReport {
 	/** Paths whose value actually changed. */
 	readonly updated: string[];
-	/** Translations rejected because their placeholders do not match en-US. */
-	readonly skipped: { path: string; base: string; translated: string }[];
+	/** Translations rejected: placeholders that do not match en-US, or an invalid command name. */
+	readonly skipped: { path: string; base: string; translated: string; reason?: 'command-name' }[];
 	/** Empty keys removed because en-US no longer defines them. */
 	readonly pruned: string[];
 	/** Keys en-US no longer defines that still hold a translation: kept, and reported. */
@@ -321,9 +355,26 @@ export function hasTranslation(value: JsonValue | undefined): boolean {
 	return false;
 }
 
-function mergeScalar(local: JsonValue | undefined, pulled: JsonValue | undefined, base: JsonValue | undefined, path: string, context: MergeContext) {
+function mergeScalar(
+	local: JsonValue | undefined,
+	pulledValue: JsonValue | undefined,
+	base: JsonValue | undefined,
+	path: string,
+	context: MergeContext
+) {
+	let pulled = pulledValue;
 	// Nothing usable came back: whatever the repository already had wins.
 	if (typeof pulled !== 'string' || isUntranslated(pulled)) return local;
+	if (typeof base === 'string' && isCommandNameKey(path) && isValidCommandName(base)) {
+		// A command name is not free text: Discord refuses the whole command if it is not
+		// lowercase, so what Tolgee holds is normalised rather than copied as-is.
+		const name = normalizeCommandName(pulled);
+		if (name === undefined) {
+			context.report.skipped.push({ path, base, translated: pulled, reason: 'command-name' });
+			return local;
+		}
+		pulled = name;
+	}
 	if (hasStrayBraces(pulled)) {
 		context.report.skipped.push({ path, base: typeof base === 'string' ? base : '', translated: pulled });
 		return local;

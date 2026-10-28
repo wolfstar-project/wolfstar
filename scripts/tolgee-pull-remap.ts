@@ -19,6 +19,10 @@
  *   - translations whose i18next placeholders do not match en-US are rejected and reported —
  *     machine translation occasionally translates the formatter itself
  *     (`{{value, duration}}` → `{{value, durata}}`), which breaks rendering;
+ *   - slash command and option names (`name`, `setName`, `optionsValueName`) are lowercased,
+ *     since Discord refuses to register a command whose localized name has an uppercase letter
+ *     (Tolgee holds `Avviso` where the repository needs `avviso`); a name that cannot be made
+ *     valid is rejected and reported;
  *   - keys en-US no longer defines are pruned (plural categories such as `_many` that only
  *     exist outside en-US are kept);
  *   - files are rewritten in the repository style (tabs, trailing newline) preserving the
@@ -314,7 +318,7 @@ function buildSummary(): string {
 			'',
 			`### ⚠️ ${rejected.length} translation${rejected.length === 1 ? '' : 's'} rejected`,
 			'',
-			`The placeholders do not match ${BASE_LOCALE}, so the value was left untranslated. Fix these on Tolgee:`,
+			`The placeholders do not match ${BASE_LOCALE} (or the value is not a valid slash command name), so the value was left untranslated. Fix these on Tolgee:`,
 			'',
 			'| File | Key | Expected | Got |',
 			'| --- | --- | --- | --- |'
