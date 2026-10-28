@@ -1,11 +1,19 @@
 import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
-import { refreshHoneypotNotice, removeHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
+import { isOwnGuild } from '#lib/database/settings/dashboard';
+import {
+	readHoneypotNotices,
+	refreshHoneypotNotice,
+	removeHoneypotNotice,
+	withHoneypotLock,
+	type HoneypotNotice
+} from '#lib/moderation/honeypot/channel';
+import { onShardMessage } from '#lib/sharder/messages';
 import { Events } from '#lib/types/Enums';
 import { channelMention } from '@discordjs/formatters';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
-import type { GuildDataKey, ReadonlyGuildData } from 'wolfstar-database';
+import { fetchHoneypotChannels, type GuildDataKey, type HoneypotChannel, type ReadonlyGuildData } from 'wolfstar-database';
 
 /**
  * The settings the warning of the honeypot depends on: where it is, whether there is one, and the action it tells
@@ -66,3 +74,46 @@ async function reportNoticeFailure(guildId: Snowflake, channelId: Snowflake, set
 		allowed_mentions: { parse: [] }
 	}));
 }
+
+/**
+ * What a warning of the honeypot needs: to be kept, sent again (it is missing, in another channel, or tells another
+ * action), or taken off (the honeypot is off, or wants none).
+ *
+ * @param honeypot - The honeypot as the settings have it, `null` when it has no channel.
+ * @param notice - The warning the bot keeps for it, `null` when there is none.
+ */
+export function planHoneypotNoticeReconcile(
+	honeypot: Pick<HoneypotChannel, 'channelId' | 'warning' | 'action'> | null,
+	notice: HoneypotNotice | null
+): 'Keep' | 'Refresh' | 'Remove' {
+	if (honeypot === null || !honeypot.warning) return notice === null ? 'Keep' : 'Remove';
+	if (notice === null || notice.channelId !== honeypot.channelId) return 'Refresh';
+	// A warning sent before its action was kept is taken to tell the right one, rather than sent again for nothing:
+	return notice.action !== null && notice.action !== honeypot.action ? 'Refresh' : 'Keep';
+}
+
+/**
+ * Puts in order the warnings of the honeypots of the guilds of this process, after the connection that hears the
+ * dashboard was down: what it changed meanwhile was not heard. A warning that is right is left as it is, so this costs
+ * nothing at every start; the others go through {@linkcode followHoneypotSettings}, under the lock and on the settings
+ * read then.
+ */
+export async function reconcileHoneypotNotices(): Promise<void> {
+	const [honeypots, notices] = await Promise.all([fetchHoneypotChannels(container.prisma.orm), readHoneypotNotices()]);
+	const byGuild = new Map(honeypots.map((honeypot) => [honeypot.guildId, honeypot]));
+
+	for (const guildId of new Set([...byGuild.keys(), ...notices.keys()])) {
+		if (!isOwnGuild(guildId)) continue;
+		if (planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null) === 'Keep') continue;
+
+		try {
+			await followHoneypotSettings(guildId, HoneypotNoticeKeys);
+		} catch (error) {
+			container.logger.error(`[Honeypot] Could not put the warning of the guild ${guildId} in order:`, error);
+		}
+	}
+}
+
+onShardMessage('settingsInvalidateAll', () => {
+	void reconcileHoneypotNotices().catch((error: unknown) => container.logger.error('[Honeypot] Could not put the warnings in order:', error));
+});
