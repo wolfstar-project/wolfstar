@@ -38,6 +38,7 @@ export async function readWarnThresholds(guildId: Snowflake): Promise<readonly W
 
 // The thresholds are cached by every shard process, so a change in one of them makes the copies of the others stale.
 onShardMessage('warnThresholdsUpdate', ({ guildId }) => cache.delete(guildId));
+onShardMessage('settingsInvalidateAll', () => cache.clear());
 
 function changed(guildId: Snowflake) {
 	cache.delete(guildId);

@@ -35,6 +35,7 @@ export async function readRoleRules(guildId: Snowflake): Promise<readonly RoleRu
 
 // The rules are cached by every shard process, so a change in one of them makes the copies of the others stale.
 onShardMessage('roleRulesUpdate', ({ guildId }) => cache.delete(guildId));
+onShardMessage('settingsInvalidateAll', () => cache.clear());
 
 function changed(guildId: Snowflake) {
 	cache.delete(guildId);

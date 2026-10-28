@@ -5,6 +5,10 @@ export const enum Events {
 	ArgumentError = 'argumentError',
 	CoreSettingsDelete = 'coreSettingsDelete',
 	CoreSettingsUpdate = 'coreSettingsUpdate',
+	/**
+	 * The dashboard wrote settings of a guild this process handles, `(guildId, keys)`: the keys it changed.
+	 */
+	DashboardSettingsUpdate = 'dashboardSettingsUpdate',
 	Disconnect = 'disconnect',
 	EventError = 'eventError',
 	GuildBanAdd = 'guildBanAdd',

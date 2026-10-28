@@ -1,4 +1,4 @@
-import { JoinGuardRequestChannel, JoinGuardRequestListener, type NotificationClient } from '#lib/moderation/joinguard/listener';
+import { DatabaseNotificationChannels, DatabaseNotificationListener, type NotificationClient } from '#lib/database/notifications';
 import { EventEmitter } from 'node:events';
 
 class FakeClient extends EventEmitter implements NotificationClient {
@@ -18,7 +18,9 @@ class FakeClient extends EventEmitter implements NotificationClient {
 	public async end() {}
 }
 
-describe('JoinGuardRequestListener', () => {
+const Listens = [`LISTEN ${DatabaseNotificationChannels.GuildSettingsUpdate}`, `LISTEN ${DatabaseNotificationChannels.JoinGuardRequest}`];
+
+describe('DatabaseNotificationListener', () => {
 	const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
 	let clients: FakeClient[];
 	let failures: number;
@@ -33,66 +35,58 @@ describe('JoinGuardRequestListener', () => {
 		vi.useRealTimers();
 	});
 
-	function create(handle = vi.fn(async () => undefined), sweep = vi.fn(async (): Promise<string[]> => [])) {
-		const listener = new JoinGuardRequestListener({
+	function create() {
+		const settings = vi.fn();
+		const requests = vi.fn();
+		const onListen = vi.fn();
+		const listener = new DatabaseNotificationListener({
 			createClient: () => {
 				const client = new FakeClient(failures-- > 0);
 				clients.push(client);
 				return client;
 			},
-			handle,
-			sweep,
+			channels: { [DatabaseNotificationChannels.GuildSettingsUpdate]: settings, [DatabaseNotificationChannels.JoinGuardRequest]: requests },
+			onListen,
 			logger,
-			sweepInterval: 30_000,
 			initialBackoff: 1000,
 			maximumBackoff: 4000
 		});
-		return { listener, handle, sweep };
+		return { listener, settings, requests, onListen };
 	}
 
-	test('GIVEN a notification THEN its request is handled', async () => {
-		const { listener, handle } = create();
+	test('GIVEN a notification THEN the handler of its channel gets the payload', async () => {
+		const { listener, settings, requests, onListen } = create();
 		listener.start();
 		await vi.advanceTimersByTimeAsync(0);
 
-		expect(clients[0].queries).toEqual([`LISTEN ${JoinGuardRequestChannel}`]);
-		clients[0].emit('notification', { channel: JoinGuardRequestChannel, payload: '12' });
+		expect(clients[0].queries).toEqual(Listens);
+		expect(onListen).toHaveBeenCalledTimes(1);
+		clients[0].emit('notification', { channel: DatabaseNotificationChannels.JoinGuardRequest, payload: '12' });
 		clients[0].emit('notification', { channel: 'other', payload: '13' });
-		await vi.advanceTimersByTimeAsync(0);
 
-		expect(handle).toHaveBeenCalledWith('12');
-		expect(handle).toHaveBeenCalledTimes(1);
+		expect(requests).toHaveBeenCalledWith('12');
+		expect(settings).not.toHaveBeenCalled();
 		await listener.stop();
 	});
 
-	test('GIVEN a request notified and swept at once THEN it is queued once', async () => {
-		const { listener, handle } = create();
-		await Promise.all([listener.enqueue('7'), listener.enqueue('7')]);
-
-		expect(handle).toHaveBeenCalledTimes(1);
-	});
-
-	test('GIVEN the start and the interval THEN the requests nobody claimed are swept', async () => {
-		const { listener, handle, sweep } = create(
-			undefined,
-			vi.fn(async () => ['1', '2'])
-		);
+	test('GIVEN a handler that throws THEN it is logged and the connection keeps listening', async () => {
+		const { listener, settings } = create();
+		settings.mockImplementation(() => {
+			throw new Error('boom');
+		});
 		listener.start();
 		await vi.advanceTimersByTimeAsync(0);
-		const atStart = sweep.mock.calls.length;
 
-		await vi.advanceTimersByTimeAsync(30_000);
+		clients[0].emit('notification', { channel: DatabaseNotificationChannels.GuildSettingsUpdate, payload: '{}' });
 
-		expect(atStart).toBeGreaterThanOrEqual(1);
-		expect(sweep.mock.calls.length).toBe(atStart + 1);
-		expect(handle).toHaveBeenCalledWith('1');
-		expect(handle).toHaveBeenCalledWith('2');
+		expect(logger.error).toHaveBeenCalled();
+		expect(clients).toHaveLength(1);
 		await listener.stop();
 	});
 
 	test('GIVEN a connection that fails THEN it connects again, waiting longer each time up to the most', async () => {
 		failures = 3;
-		const { listener } = create();
+		const { listener, onListen } = create();
 		listener.start();
 		await vi.advanceTimersByTimeAsync(0);
 		expect(clients).toHaveLength(1);
@@ -105,12 +99,13 @@ describe('JoinGuardRequestListener', () => {
 		expect(clients).toHaveLength(3);
 		await vi.advanceTimersByTimeAsync(4000);
 		expect(clients).toHaveLength(4);
-		expect(clients[3].queries).toEqual([`LISTEN ${JoinGuardRequestChannel}`]);
+		expect(clients[3].queries).toEqual(Listens);
+		expect(onListen).toHaveBeenCalledTimes(1);
 		await listener.stop();
 	});
 
-	test('GIVEN a connection lost after it listened THEN a new one listens', async () => {
-		const { listener } = create();
+	test('GIVEN a connection lost after it listened THEN a new one listens, and what was missed is caught up', async () => {
+		const { listener, onListen } = create();
 		listener.start();
 		await vi.advanceTimersByTimeAsync(0);
 
@@ -118,7 +113,8 @@ describe('JoinGuardRequestListener', () => {
 		await vi.advanceTimersByTimeAsync(1000);
 
 		expect(clients).toHaveLength(2);
-		expect(clients[1].queries).toEqual([`LISTEN ${JoinGuardRequestChannel}`]);
+		expect(clients[1].queries).toEqual(Listens);
+		expect(onListen).toHaveBeenCalledTimes(2);
 		await listener.stop();
 	});
 

@@ -91,8 +91,8 @@ describe('the warning of the honeypot', () => {
 
 			expect(createMessage).toHaveBeenCalledWith(channelId, renderHoneypotNotice(t, 'Softban'));
 			expect(deleteMessage).not.toHaveBeenCalled();
-			expect(redis.hset).toHaveBeenCalledWith('wolfstar:honeypot:notices', guildId, `${channelId}:20`);
-			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20' });
+			expect(redis.hset).toHaveBeenCalledWith('wolfstar:honeypot:notices', guildId, `${channelId}:20:Softban`);
+			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20', action: 'Softban' });
 		});
 
 		test('GIVEN a channel with other messages of the bot THEN only the warning is replaced, and the channel is never read', async () => {
@@ -102,7 +102,7 @@ describe('the warning of the honeypot', () => {
 
 			expect(list).not.toHaveBeenCalled();
 			expect(deleteMessage.mock.calls).toEqual([[channelId, '10', 'Honeypot']]);
-			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20' });
+			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20', action: 'Ban' });
 		});
 
 		test('GIVEN a warning THEN the new one is sent before the old one is deleted', async () => {
@@ -120,7 +120,7 @@ describe('the warning of the honeypot', () => {
 			expect(await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Kick' })).toBe(false);
 
 			expect(deleteMessage).not.toHaveBeenCalled();
-			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '10' });
+			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '10', action: null });
 		});
 
 		test('GIVEN a honeypot that moved THEN the warning of the channel it left is deleted', async () => {
@@ -129,7 +129,7 @@ describe('the warning of the honeypot', () => {
 			expect(await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Softban' })).toBe(true);
 
 			expect(deleteMessage.mock.calls).toEqual([[logChannelId, '10', 'Honeypot']]);
-			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20' });
+			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20', action: 'Softban' });
 		});
 
 		test('GIVEN a honeypot that moved to a channel the bot cannot write in THEN the channel it left still loses its warning', async () => {
@@ -157,7 +157,7 @@ describe('the warning of the honeypot', () => {
 			deleteMessage.mockRejectedValueOnce(createError(10008, 'Unknown Message'));
 
 			expect(await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Kick' })).toBe(true);
-			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20' });
+			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20', action: 'Kick' });
 		});
 	});
 
@@ -184,7 +184,7 @@ describe('the warning of the honeypot', () => {
 			const otherGuildId = '254360814063058999';
 
 			await refreshHoneypotNotice(otherGuildId, channelId, { warning: true, action: 'Kick' });
-			expect(await readHoneypotNotice(otherGuildId)).toEqual({ channelId, messageId: '20' });
+			expect(await readHoneypotNotice(otherGuildId)).toEqual({ channelId, messageId: '20', action: 'Kick' });
 
 			createMessage.mockResolvedValue({ id: '21' });
 			await refreshHoneypotNotice(otherGuildId, channelId, { warning: true, action: 'Ban' });

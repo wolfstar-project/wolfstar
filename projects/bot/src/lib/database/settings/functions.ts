@@ -35,6 +35,10 @@ export function deleteSettingsCached(guild: GuildResolvable) {
 // The settings are cached by every shard process, so a write in one of them makes the copies of the others stale. The
 // lock is kept: a transaction of this process may be holding it.
 onShardMessage('settingsUpdate', ({ guildId }) => invalidate(guildId));
+// What the dashboard wrote while nobody heard it is not known, so every copy goes:
+onShardMessage('settingsInvalidateAll', () => {
+	for (const id of new Set([...cache.keys(), ...queue.keys()])) invalidate(id);
+});
 
 export function readSettings(guild: GuildResolvable): Awaitable<ReadonlyGuildData> {
 	const id = resolveGuildId(guild);
@@ -223,6 +227,8 @@ const generations = new Collection<string, number>();
 function invalidate(id: string) {
 	generations.set(id, (generations.get(id) ?? 0) + 1);
 	cache.delete(id);
+	// A read that is still running started before the change: a read after it must not join it.
+	queue.delete(id);
 	deleteSettingsContext(id);
 }
 

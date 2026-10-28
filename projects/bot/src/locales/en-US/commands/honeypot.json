@@ -35,6 +35,7 @@
 	"setupDone": "{{GREENTICK}} {{channel}} is the honeypot channel now: I act on whoever writes there, but the moderators.",
 	"setupCreated": "{{GREENTICK}} I created {{channel}} and made it the honeypot channel: I act on whoever writes there, but the moderators. Move it where the bots will find it, the top of the list works best.",
 	"setupNoticeFailed": "I could not send the warning to the channel, so it says nothing for now.",
+	"dashboardNoticeFailed": "The honeypot settings were changed on the dashboard, but I could not send the warning to {{channel}}, so it says nothing for now. Check that I can see the channel and send messages in it.",
 	"editNothing": "Tell me what to change with at least one option.",
 	"editDone": "{{GREENTICK}} The honeypot was updated.",
 	"notSetUp": "The honeypot is not set up. Set it up with {{command}}.",

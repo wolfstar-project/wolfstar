@@ -66,6 +66,9 @@ function forget(guildId: Snowflake) {
 
 // The deletions are cached by every shard process, so a change in one of them makes the copies of the others stale.
 onShardMessage('cleanupUpdate', ({ guildId }) => forget(guildId));
+onShardMessage('settingsInvalidateAll', () => {
+	for (const guildId of new Set([...cache.keys(), ...queue.keys()])) forget(guildId);
+});
 
 function changed(guildId: Snowflake) {
 	forget(guildId);

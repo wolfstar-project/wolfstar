@@ -46,3 +46,22 @@ export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> 
 
 	return upkeeps;
 }
+
+/**
+ * A honeypot that is set up, with what its warning depends on.
+ */
+export interface HoneypotChannel {
+	guildId: Snowflake;
+	channelId: Snowflake;
+	warning: boolean;
+	action: HoneypotAction;
+}
+
+/**
+ * Reads the honeypots that are set up, of every guild: the ones with a channel.
+ * @param orm The ORM surface to read through.
+ */
+export async function fetchHoneypotChannels(orm: Orm): Promise<HoneypotChannel[]> {
+	const rows = await orm.public.GuildHoneypot.where((honeypot) => honeypot.channelId.isNotNull()).all();
+	return rows.map((row) => ({ guildId: String(row.id), channelId: String(row.channelId), warning: row.warning, action: row.action }));
+}

@@ -14,7 +14,7 @@ import {
 	type RESTPostAPIChannelMessageJSONBody,
 	type Snowflake
 } from 'discord-api-types/v10';
-import type { HoneypotAction } from 'wolfstar-database';
+import { HoneypotActions, type HoneypotAction } from 'wolfstar-database';
 
 /**
  * The Redis hash the warning of each honeypot is kept in, by the ID of its guild: `<channelId>:<messageId>`.
@@ -32,6 +32,10 @@ const localNotices = new Map<Snowflake, HoneypotNotice>();
 export interface HoneypotNotice {
 	channelId: Snowflake;
 	messageId: Snowflake;
+	/**
+	 * The action the warning tells about, `null` for a warning sent before it was kept.
+	 */
+	action: HoneypotAction | null;
 }
 
 /**
@@ -218,10 +222,28 @@ export async function readHoneypotNotice(guildId: Snowflake): Promise<HoneypotNo
 	if (redis?.status !== 'ready') return localNotices.get(guildId) ?? null;
 
 	const value = await redis.hget(NoticesHash, guildId);
-	if (value === null) return null;
+	return value === null ? null : parseHoneypotNotice(value);
+}
 
-	const [channelId, messageId] = value.split(':');
-	return { channelId, messageId };
+/**
+ * Reads the warning of every honeypot this process can know of: the ones of Redis, or the ones it sent itself without
+ * a ready connection, by the ID of their guild.
+ */
+export async function readHoneypotNotices(): Promise<Map<Snowflake, HoneypotNotice>> {
+	const { redis } = container;
+	if (redis?.status !== 'ready') return new Map(localNotices);
+
+	const values = await redis.hgetall(NoticesHash);
+	return new Map(Object.entries(values).map(([guildId, value]) => [guildId, parseHoneypotNotice(value)]));
+}
+
+/**
+ * Reads a warning as Redis keeps it: `<channelId>:<messageId>:<action>`, the action left out by the warnings sent
+ * before it was kept.
+ */
+function parseHoneypotNotice(value: string): HoneypotNotice {
+	const [channelId, messageId, action] = value.split(':');
+	return { channelId, messageId, action: (HoneypotActions as readonly string[]).includes(action) ? (action as HoneypotAction) : null };
 }
 
 async function writeHoneypotNotice(guildId: Snowflake, notice: HoneypotNotice | null): Promise<void> {
@@ -233,7 +255,7 @@ async function writeHoneypotNotice(guildId: Snowflake, notice: HoneypotNotice | 
 	}
 
 	if (notice === null) await redis.hdel(NoticesHash, guildId);
-	else await redis.hset(NoticesHash, guildId, `${notice.channelId}:${notice.messageId}`);
+	else await redis.hset(NoticesHash, guildId, `${notice.channelId}:${notice.messageId}:${notice.action ?? ''}`);
 }
 
 function deleteHoneypotNoticeMessage(notice: HoneypotNotice) {
@@ -294,7 +316,7 @@ export async function refreshHoneypotNotice(
 		return false;
 	}
 
-	await writeHoneypotNotice(guildId, { channelId, messageId: sent.id });
+	await writeHoneypotNotice(guildId, { channelId, messageId: sent.id, action: options.action });
 	if (previous !== null) await deleteHoneypotNoticeMessage(previous);
 	return true;
 }

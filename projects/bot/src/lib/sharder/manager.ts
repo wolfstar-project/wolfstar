@@ -1,3 +1,4 @@
+import { createShardManagerWebsiteTarget, createWebsiteClient, createWebsiteListener } from '#lib/database/website';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { getLoggerOptions } from '#utils/logger';
 import { closeTelemetry } from '#utils/shutdown';
@@ -50,18 +51,27 @@ export async function startShardManager() {
 	container.stores.get('listeners').registerPath(fileURLToPath(new URL('../../listeners/sharder', import.meta.url)));
 	await client.load({ baseUserDirectory: null });
 
+	// The one connection that hears the website: the writes of the dashboard go to every shard, the requests of the join
+	// guard to the first one, see `lib/database/website.ts`.
+	const website = createWebsiteListener(createShardManagerWebsiteTarget(manager, container.logger), {
+		createClient: createWebsiteClient,
+		logger: container.logger
+	});
+
 	for (const signal of ['SIGTERM', 'SIGINT'] as const) {
 		process.once(
 			signal,
 			() =>
-				void manager
-					.destroy()
+				void website
+					.stop()
+					.finally(() => manager.destroy())
 					.finally(closeTelemetry)
 					.finally(() => process.exit(0))
 		);
 	}
 
 	await manager.spawn();
+	website.start();
 	return manager;
 }
 
