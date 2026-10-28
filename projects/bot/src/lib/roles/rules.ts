@@ -1,5 +1,5 @@
+import { GuildCache } from '#utils/guildCache';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
-import { Collection } from '@discordjs/collection';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 import { deleteRoleRule, fetchRoleRules, MaximumRoleRules, setRoleRule, type RoleRule } from 'wolfstar-database';
@@ -7,7 +7,7 @@ import { deleteRoleRule, fetchRoleRules, MaximumRoleRules, setRoleRule, type Rol
 /**
  * The role rules of each guild, which every change of the roles of a member is checked against.
  */
-const cache = new Collection<Snowflake, readonly RoleRule[]>();
+const cache = new GuildCache<readonly RoleRule[]>((guildId) => fetchRoleRules(container.prisma, guildId));
 
 /**
  * Why a rule cannot be added: the guild has the most it can have, or the rule would make the rules feed each other.
@@ -24,21 +24,16 @@ export class RoleRuleError extends Error {
 /**
  * Reads the role rules of a guild, from the cache after the first time.
  */
-export async function readRoleRules(guildId: Snowflake): Promise<readonly RoleRule[]> {
-	const cached = cache.get(guildId);
-	if (cached) return cached;
-
-	const rules = await fetchRoleRules(container.prisma, guildId);
-	cache.set(guildId, rules);
-	return rules;
+export function readRoleRules(guildId: Snowflake): Promise<readonly RoleRule[]> {
+	return cache.read(guildId);
 }
 
 // The rules are cached by every shard process, so a change in one of them makes the copies of the others stale.
-onShardMessage('roleRulesUpdate', ({ guildId }) => cache.delete(guildId));
-onShardMessage('settingsInvalidateAll', () => cache.clear());
+onShardMessage('roleRulesUpdate', ({ guildId }) => cache.forget(guildId));
+onShardMessage('settingsInvalidateAll', () => cache.forgetAll());
 
 function changed(guildId: Snowflake) {
-	cache.delete(guildId);
+	cache.forget(guildId);
 	broadcastShardMessage({ type: 'roleRulesUpdate', guildId });
 }
 

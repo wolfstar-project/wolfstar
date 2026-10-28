@@ -1,5 +1,5 @@
+import { GuildCache } from '#utils/guildCache';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
-import { Collection } from '@discordjs/collection';
 import { container } from '@wolfstar/http-framework';
 import type { Command } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -14,7 +14,7 @@ import {
 /**
  * The predefined reasons of each guild, which every moderation command and its autocomplete read.
  */
-const cache = new Collection<Snowflake, readonly ModerationReason[]>();
+const cache = new GuildCache<readonly ModerationReason[]>((guildId) => fetchModerationReasons(container.prisma, guildId));
 
 /**
  * Thrown when a guild already has the most predefined reasons it can have.
@@ -30,21 +30,16 @@ export class ModerationReasonLimitError extends Error {
  *
  * @param guildId - The ID of the guild.
  */
-export async function readModerationReasons(guildId: Snowflake): Promise<readonly ModerationReason[]> {
-	const cached = cache.get(guildId);
-	if (cached) return cached;
-
-	const reasons = await fetchModerationReasons(container.prisma, guildId);
-	cache.set(guildId, reasons);
-	return reasons;
+export function readModerationReasons(guildId: Snowflake): Promise<readonly ModerationReason[]> {
+	return cache.read(guildId);
 }
 
 // The reasons are cached by every shard process, so a change in one of them makes the copies of the others stale.
-onShardMessage('moderationReasonsUpdate', ({ guildId }) => cache.delete(guildId));
-onShardMessage('settingsInvalidateAll', () => cache.clear());
+onShardMessage('moderationReasonsUpdate', ({ guildId }) => cache.forget(guildId));
+onShardMessage('settingsInvalidateAll', () => cache.forgetAll());
 
 function changed(guildId: Snowflake) {
-	cache.delete(guildId);
+	cache.forget(guildId);
 	broadcastShardMessage({ type: 'moderationReasonsUpdate', guildId });
 }
 

@@ -1,10 +1,10 @@
+import { GuildCache } from '#utils/guildCache';
 import { ModerationActions } from '#lib/moderation/actions';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { seconds } from 'wolfstar-shared';
-import { Collection } from '@discordjs/collection';
 import { container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -13,7 +13,7 @@ import { deleteWarnThreshold, fetchWarnThresholds, MaximumWarnThresholds, setWar
 /**
  * The thresholds of warnings of each guild, which every warning that is added is checked against.
  */
-const cache = new Collection<Snowflake, readonly WarnThreshold[]>();
+const cache = new GuildCache<readonly WarnThreshold[]>((guildId) => fetchWarnThresholds(container.prisma, guildId));
 
 /**
  * Thrown when a guild already has the most thresholds it can have.
@@ -27,21 +27,16 @@ export class WarnThresholdLimitError extends Error {
 /**
  * Reads the thresholds of warnings of a guild, from the cache after the first time.
  */
-export async function readWarnThresholds(guildId: Snowflake): Promise<readonly WarnThreshold[]> {
-	const cached = cache.get(guildId);
-	if (cached) return cached;
-
-	const thresholds = await fetchWarnThresholds(container.prisma, guildId);
-	cache.set(guildId, thresholds);
-	return thresholds;
+export function readWarnThresholds(guildId: Snowflake): Promise<readonly WarnThreshold[]> {
+	return cache.read(guildId);
 }
 
 // The thresholds are cached by every shard process, so a change in one of them makes the copies of the others stale.
-onShardMessage('warnThresholdsUpdate', ({ guildId }) => cache.delete(guildId));
-onShardMessage('settingsInvalidateAll', () => cache.clear());
+onShardMessage('warnThresholdsUpdate', ({ guildId }) => cache.forget(guildId));
+onShardMessage('settingsInvalidateAll', () => cache.forgetAll());
 
 function changed(guildId: Snowflake) {
-	cache.delete(guildId);
+	cache.forget(guildId);
 	broadcastShardMessage({ type: 'warnThresholdsUpdate', guildId });
 }
 
