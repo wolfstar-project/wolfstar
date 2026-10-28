@@ -279,20 +279,37 @@ export async function countJoinGuardCheckpoints(orm: Orm, guildId: Snowflake, si
 }
 
 /**
- * Claims a request of the website, so it is done once: by the process that marks it first, whether the notification or
- * the sweep brought it.
- * @param db The database to write through.
+ * Reads a request of the website that is not done yet.
+ * @param orm The ORM surface to read through.
  * @param requestId The ID of the request.
- * @returns The request, `null` when it was claimed already or does not exist.
+ * @returns The request, `null` when it was done already or does not exist.
  */
-export async function claimJoinGuardRequest(db: Database, requestId: string): Promise<JoinGuardRequestRecord | null> {
+export async function fetchUnprocessedJoinGuardRequest(orm: Orm, requestId: string): Promise<JoinGuardRequestRecord | null> {
 	if (!isRowId(requestId)) return null;
 
-	// One `UPDATE … WHERE processed_at IS NULL RETURNING`: `update()` reads the row first and would let two claim it.
-	const [row] = await db.orm.public.JoinGuardRequest.where((request) =>
+	const row = await orm.public.JoinGuardRequest.where((request) => and(request.id.eq(BigInt(requestId)), request.processedAt.isNull())).first();
+	return row === null ? null : toRequest(row);
+}
+
+/**
+ * Marks a request of the website as done, with why it could not be, once: `processed_at` is only set when the request
+ * was handled, so one a process took and could not finish (it stopped) is found again by the sweep.
+ * @param db The database to write through.
+ * @param requestId The ID of the request.
+ * @param error Why it could not be done, `null` when it was.
+ * @returns Whether the request was not done yet.
+ */
+export async function completeJoinGuardRequest(db: Database, requestId: string, error: string | null): Promise<boolean> {
+	if (!isRowId(requestId)) return false;
+
+	// One `UPDATE … WHERE processed_at IS NULL RETURNING`: `update()` reads the row first and would let two complete it.
+	const rows = await db.orm.public.JoinGuardRequest.where((request) =>
 		and(request.id.eq(BigInt(requestId)), request.processedAt.isNull())
-	).updateAll({ processedAt: toTimestamp(Date.now()) });
-	return row === undefined ? null : toRequest(row);
+	).updateAll({
+		processedAt: toTimestamp(Date.now()),
+		error
+	});
+	return rows.length > 0;
 }
 
 /**
@@ -308,15 +325,6 @@ export async function fetchPendingJoinGuardRequestIds(orm: Orm, before: number, 
 		.limit(limit)
 		.all();
 	return rows.map((row) => String(row.id));
-}
-
-/**
- * Writes why a request could not be done, which the dashboard shows.
- */
-export async function setJoinGuardRequestError(db: Database, requestId: string, error: string): Promise<void> {
-	if (!isRowId(requestId)) return;
-
-	await db.orm.public.JoinGuardRequest.where({ id: BigInt(requestId) }).updateAndCount({ error });
 }
 
 /**
@@ -354,4 +362,15 @@ export async function clearJoinGuardRuleAlertChannel(db: Database, guildId: Snow
 			alertChannelId: null
 		})
 	);
+}
+
+/**
+ * Deletes a row of the queue, which is only done to the one of a member whose checkpoint could not be set up whole
+ * (its timeout could not be scheduled): the member was not stopped after all.
+ * @returns Whether the row existed.
+ */
+export async function deleteJoinGuardCheckpoint(db: Database, checkpointId: string): Promise<boolean> {
+	if (!isRowId(checkpointId)) return false;
+
+	return Number(await db.orm.public.JoinGuardCheckpoint.where({ id: BigInt(checkpointId) }).deleteAndCount()) > 0;
 }

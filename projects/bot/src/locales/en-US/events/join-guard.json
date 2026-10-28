@@ -27,6 +27,8 @@
 	"errorFailed": "I could not {{action}}, something went wrong. It was logged.",
 	"errorTarget": "I could not {{action}}: {{reason}}",
 	"errorRole": "I could not give {{role}}: {{reason}}",
+	"errorSameRoles": "the pending role and the verified role are the same role: set two different roles.",
+	"errorCheckpointSetup": "I could not send them to the checkpoint: {{reason}}",
 	"errorAlert": "I could not alert the moderators in {{channel}}: {{reason}}",
 	"actionBan": "ban them",
 	"actionKick": "kick them",

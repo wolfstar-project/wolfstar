@@ -1,6 +1,7 @@
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, canManage, ratelimit } from '#lib/api/utils';
 import { getConfigurableKeys, isSchemaKey, serializeSettings, writeSettingsTransaction, type SchemaDataKey, type Serializer } from '#lib/database';
+import { findJoinGuardSettingsConflict } from '#lib/moderation/joinguard/settings';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { seconds } from 'wolfstar-shared';
 import { cast } from '#utils/util';
@@ -30,6 +31,11 @@ export class UserRoute extends Route {
 			using trx = await writeSettingsTransaction(guild);
 			const data = await this.validateAll(trx.settings, entries);
 			const settingsData = Object.fromEntries(data);
+
+			// Each value was checked on the settings as they are, the ones that depend on each other are checked as they end up:
+			const conflict = findJoinGuardSettingsConflict({ ...trx.settings, ...settingsData });
+			if (conflict !== null)
+				throw [createTranslator(this.container.i18n.getT(trx.settings.language))(conflict, { name: 'join-guard.pending-role' })];
 
 			await trx.write(settingsData).submitWithAudit(request.auth!.id);
 

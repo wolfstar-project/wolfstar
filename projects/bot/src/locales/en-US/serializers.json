@@ -26,6 +26,7 @@
 	"invalidTimezone": "{{name}} must be the name of a time zone of the IANA database, such as `Europe/Rome`, `America/New_York` or `UTC`.",
 	"invalidUrl": "{{name}} must be a valid url.",
 	"invalidUser": "{{name}} must be a mention or valid user id.",
+	"joinGuardSameRoles": "{{name}} cannot be the same role as the other role of the checkpoint: the pending and the verified roles must be two roles.",
 	"joinGuardTimeoutNever": "Never",
 	"messageUpdateStyleDifference": "Difference",
 	"messageUpdateStyleSeparate": "Separate",

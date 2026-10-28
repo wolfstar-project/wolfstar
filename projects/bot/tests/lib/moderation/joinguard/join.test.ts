@@ -2,24 +2,34 @@ import { ModerationActions } from '#lib/moderation/actions/index';
 import { scheduleJoinGuardTimeout } from '#lib/moderation/joinguard/checkpoint';
 import { guardJoiningMember } from '#lib/moderation/joinguard/join';
 import { recordSharedBan, sendJoinGuardLog } from '#lib/moderation/joinguard/log';
-import { getJoinGuardTargetProblem, getMissingJoinGuardPermissions } from '#lib/moderation/joinguard/permissions';
+import { getJoinGuardRoleProblem, getJoinGuardTargetProblem, getMissingJoinGuardPermissions } from '#lib/moderation/joinguard/permissions';
 import { readJoinGuardConfig } from '#lib/moderation/joinguard/store';
 import type { JoinGuardLogEntry } from '#lib/moderation/joinguard/render';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { container } from '@wolfstar/http-framework';
 import type { GuildMember } from '@wolfstar/plugin-gateway';
-import { createJoinGuardCheckpoint, getDefaultGuildSettings, type JoinGuardRule, type JoinGuardSettings } from 'wolfstar-database';
+import {
+	createJoinGuardCheckpoint,
+	deleteJoinGuardCheckpoint,
+	getDefaultGuildSettings,
+	type JoinGuardRule,
+	type JoinGuardSettings
+} from 'wolfstar-database';
 import { createRule, guildId } from './fixtures';
 
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
-	createJoinGuardCheckpoint: vi.fn(async (_db: unknown, _guild: string, data: { status: string }) => ({ id: '55', ...data }))
+	createJoinGuardCheckpoint: vi.fn(async (_db: unknown, _guild: string, data: { status: string }) => ({ id: '55', ...data })),
+	deleteJoinGuardCheckpoint: vi.fn(async () => true)
 }));
 vi.mock('#lib/moderation/joinguard/store', () => ({
 	readJoinGuardConfig: vi.fn(),
 	withJoinGuardMemberLock: (_guild: string, _user: string, callback: () => Promise<unknown>) => callback()
 }));
-vi.mock('#lib/moderation/joinguard/checkpoint', () => ({ scheduleJoinGuardTimeout: vi.fn(async () => undefined) }));
+vi.mock('#lib/moderation/joinguard/checkpoint', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/moderation/joinguard/checkpoint')>()),
+	scheduleJoinGuardTimeout: vi.fn(async () => undefined)
+}));
 vi.mock('#lib/moderation/actions/index', () => ({ ModerationActions: { kick: { apply: vi.fn() }, ban: { apply: vi.fn() } } }));
 vi.mock('#lib/moderation/common', () => ({ fetchGuildT: vi.fn(async () => (key: string) => key) }));
 vi.mock('#lib/moderation/appeals', () => ({ shouldLinkAppeal: vi.fn(async () => false), getAppealUrl: vi.fn() }));
@@ -63,8 +73,8 @@ function createMember(roleIds: string[] = []) {
 		user,
 		fetchUser: async () => user,
 		fetchGuild: async () => guild,
-		roles: { ids: roleIds, add: vi.fn(async () => undefined) }
-	} as unknown as GuildMember & { roles: { add: ReturnType<typeof vi.fn> } };
+		roles: { ids: roleIds, add: vi.fn(async () => undefined), remove: vi.fn(async () => undefined) }
+	} as unknown as GuildMember & { roles: { add: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> } };
 }
 
 function configure(rules: JoinGuardRule[], overrides: Partial<JoinGuardSettings> = {}) {
@@ -147,6 +157,75 @@ describe('guardJoiningMember', () => {
 		expect(scheduleJoinGuardTimeout).toHaveBeenCalledWith('55', 86_400);
 		expect(send).toHaveBeenCalledTimes(1);
 		expect(readLog()).toMatchObject({ outcome: { kind: 'Checkpoint', expiresAt: now + 86_400_000 } });
+	});
+
+	describe('a checkpoint that cannot be set up', () => {
+		const checkpoint = { joinGuardCheckpoint: true, joinGuardPendingRole: '300' } as const;
+		const refused = () => Object.assign(new Error('Missing Permissions'), { code: 50013 });
+
+		function expectNotStopped(member: ReturnType<typeof createMember>) {
+			expect(scheduleJoinGuardTimeout).not.toHaveBeenCalled();
+			expect(member.roles.ids).toEqual([]);
+			expect(readLog()).toMatchObject({ outcome: { kind: 'None' }, errors: [expect.any(String)] });
+			expect(send).toHaveBeenCalledWith({ content: expect.not.stringContaining('directMessageCheckpoint') });
+		}
+
+		test('GIVEN a pending role the bot cannot give THEN the member does not wait, the timeout would read them as let in', async () => {
+			configure([createRule({ ...young, sendToCheckpoint: true })], checkpoint);
+			vi.mocked(getJoinGuardRoleProblem).mockResolvedValueOnce('above');
+			const member = createMember();
+
+			await guardJoiningMember(member, now);
+
+			expect(member.roles.add).not.toHaveBeenCalled();
+			expect(createJoinGuardCheckpoint).not.toHaveBeenCalled();
+			expectNotStopped(member);
+		});
+
+		test('GIVEN a pending role Discord refuses THEN the member does not wait either', async () => {
+			configure([createRule({ ...young, sendToCheckpoint: true })], checkpoint);
+			const member = createMember();
+			member.roles.add.mockRejectedValueOnce(refused());
+
+			await guardJoiningMember(member, now);
+
+			expect(createJoinGuardCheckpoint).not.toHaveBeenCalled();
+			expectNotStopped(member);
+		});
+
+		test('GIVEN a row that cannot be written THEN the pending role is taken back', async () => {
+			configure([createRule({ ...young, sendToCheckpoint: true })], checkpoint);
+			vi.mocked(createJoinGuardCheckpoint).mockRejectedValueOnce(new Error('connection lost'));
+			const member = createMember();
+
+			await guardJoiningMember(member, now);
+
+			expect(member.roles.remove).toHaveBeenCalledWith('300', expect.any(String));
+			expectNotStopped(member);
+		});
+
+		test('GIVEN a timeout that cannot be scheduled THEN the row goes and the pending role is taken back', async () => {
+			configure([createRule({ ...young, sendToCheckpoint: true })], checkpoint);
+			vi.mocked(scheduleJoinGuardTimeout).mockRejectedValueOnce(new Error('Connection is closed.'));
+			const member = createMember();
+
+			await guardJoiningMember(member, now);
+
+			expect(deleteJoinGuardCheckpoint).toHaveBeenCalledWith({}, '55');
+			expect(member.roles.remove).toHaveBeenCalledWith('300', expect.any(String));
+			expect(readLog()).toMatchObject({ outcome: { kind: 'None' } });
+		});
+
+		test('GIVEN the same role as pending and verified THEN nobody is sent to the checkpoint', async () => {
+			configure([createRule({ ...young, sendToCheckpoint: true })], { ...checkpoint, joinGuardVerifiedRole: '300' });
+			const member = createMember();
+
+			await guardJoiningMember(member, now);
+
+			expect(member.roles.add).not.toHaveBeenCalled();
+			expect(createJoinGuardCheckpoint).not.toHaveBeenCalled();
+			expectNotStopped(member);
+		});
 	});
 
 	test('GIVEN a timeout of 0 THEN the member waits with no job', async () => {

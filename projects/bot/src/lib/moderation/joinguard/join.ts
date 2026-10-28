@@ -2,7 +2,7 @@ import { fetchUserReportEnabled } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions/index';
 import { getAppealUrl, shouldLinkAppeal } from '#lib/moderation/appeals';
 import { fetchGuildT } from '#lib/moderation/common';
-import { scheduleJoinGuardTimeout } from '#lib/moderation/joinguard/checkpoint';
+import { hasSameJoinGuardRoles, scheduleJoinGuardTimeout } from '#lib/moderation/joinguard/checkpoint';
 import {
 	isJoinGuardAllowed,
 	matchesJoinGuardRule,
@@ -40,7 +40,7 @@ import { container } from '@wolfstar/http-framework';
 import type { Guild, GuildMember, User } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
-import { createJoinGuardCheckpoint, type JoinGuardSettings } from 'wolfstar-database';
+import { createJoinGuardCheckpoint, deleteJoinGuardCheckpoint, type JoinGuardSettings } from 'wolfstar-database';
 
 const Root = 'events/join-guard';
 
@@ -191,33 +191,67 @@ async function removeMember(
 }
 
 /**
- * Sends a member a rule stopped to the checkpoint: they get the pending role, wait in the queue of the dashboard, and
- * are kicked when the time to verify runs out.
+ * Sends a member a rule stopped to the checkpoint: they get the pending role, wait in the queue and are kicked when the
+ * time to verify runs out.
+ *
+ * @remarks It is done whole or not at all. A member the pending role cannot be given to does not wait (the timeout
+ * would read the missing role as let in by hand), and a member whose row or timeout cannot be written gets the role
+ * taken back and their row deleted: a member never waits with nothing to let them in or kick them.
  */
 async function sendToCheckpoint(t: TFunction<AnyNamespace>, run: JoinGuardRun, errors: string[]): Promise<JoinGuardOutcome> {
 	const { guild, member, settings, now } = run;
+	const fail = (reason: string): JoinGuardOutcome => {
+		errors.push(t(`${Root}:errorCheckpointSetup`, { reason }));
+		return { kind: 'None' };
+	};
+
+	if (hasSameJoinGuardRoles(settings)) return fail(t(`${Root}:errorSameRoles`));
+
 	const pending = settings.joinGuardPendingRole;
 	if (pending !== null) {
 		const problem = await getJoinGuardRoleProblem(guild.id, pending);
-		if (problem === null) {
-			await member.roles.add(pending, t(`${Root}:pendingRoleReason`)).catch((error: unknown) => {
-				errors.push(describeJoinGuardError(t, 'Checkpoint', error));
-			});
-		} else {
-			errors.push(t(`${Root}:errorRole`, { role: roleMention(pending), reason: describeJoinGuardRoleProblem(t, problem) }));
-		}
+		if (problem !== null) return fail(t(`${Root}:errorRole`, { role: roleMention(pending), reason: describeJoinGuardRoleProblem(t, problem) }));
+
+		const refused = await member.roles.add(pending, t(`${Root}:pendingRoleReason`)).then(
+			() => null,
+			(error: unknown) => error
+		);
+		if (refused !== null) return fail(describeJoinGuardError(t, 'Checkpoint', refused));
 	}
 
 	const timeout = settings.joinGuardCheckpointTimeout;
 	const expiresAt = timeout === 0 ? null : now + timeout * 1000;
 	const checkpointId = await recordStop(run, 'Waiting', null, expiresAt, errors);
-	if (checkpointId !== null && expiresAt !== null) {
-		await scheduleJoinGuardTimeout(checkpointId, timeout).catch((error: unknown) => {
-			errors.push(describeJoinGuardError(t, 'Timeout', error));
-		});
+	if (checkpointId === null) {
+		await takeBackPendingRole(t, member, pending);
+		return { kind: 'None' };
+	}
+
+	if (expiresAt !== null) {
+		const unscheduled = await scheduleJoinGuardTimeout(checkpointId, timeout).then(
+			() => null,
+			(error: unknown) => error
+		);
+		if (unscheduled !== null) {
+			await deleteJoinGuardCheckpoint(container.prisma, checkpointId).catch((error: unknown) =>
+				container.logger.error(`[JoinGuard] Could not delete the row ${checkpointId} of a checkpoint that was not set up:`, error)
+			);
+			await takeBackPendingRole(t, member, pending);
+			return fail(describeJoinGuardError(t, 'Timeout', unscheduled));
+		}
 	}
 
 	return { kind: 'Checkpoint', expiresAt };
+}
+
+async function takeBackPendingRole(t: TFunction<AnyNamespace>, member: GuildMember, roleId: Snowflake | null) {
+	if (roleId === null) return;
+
+	try {
+		await member.roles.remove(roleId, t(`${Root}:pendingRoleReason`));
+	} catch (error) {
+		container.logger.error(`[JoinGuard] Could not take back the pending role of ${member.user?.id ?? 'a member'}:`, error);
+	}
 }
 
 /**
