@@ -1,32 +1,4 @@
 {
-	"confGetNoExt": "Кажется, ключа **{{key}}** не существует.",
-	"confGet": "Значение ключа **{{key}}**: `{{value}}`",
-	"confNochange": "Значение **{{key}}** уже соответствует этому значению.",
-	"confServerDescription": "Определить параметры для сервера.",
-	"confServerExtended": {
-		"usages": [
-			"",
-			"show",
-			"show НазваниеКлюча",
-			"",
-			"reset НазваниеКлюча",
-			"menu"
-		],
-		"extendedHelp": "",
-		"examples": [
-			"set language ru-RU",
-			"",
-			"show",
-			"show channels",
-			"remove roles.moderator Модератор",
-			"reset roles.moderator",
-			"menu"
-		],
-		"reminder": ""
-	},
-	"confServer": "**Настройки сервера {{key}}**\n{{list}}",
-	"confDashboardOnlyKey": "`{{key}}` можно настроить только через веб-панель инструментов (<https://wolfstar.rocks>)",
-	"confSettingNotSet": "Не задано",
 	"rolesetDescription": "Управляйте наборами уникальных ролей.",
 	"rolesetExtended": {
 		"usages": [
@@ -88,11 +60,5 @@
 	"rolesetResetNotExists": "{{REDCROSS}} На этом сервере не существует набора ролей `{{name}}`.",
 	"rolesetResetGroup": "{{GREENTICK}} Набор ролей `{{name}}` успешно удалён с этого сервера.",
 	"rolesetUpdated": "Набор уникальных ролей {{name}} обновлён.",
-	"rolesetNoRolesets": "У вас нет наборов ролей.",
-	"confMenuRenderUpdate": "• Обновить значение → `set <value>`",
-	"confMenuRenderRemove": "• Удалить значение → `remove <value>`",
-	"confMenuRenderReset": "• Сбросить значение → `reset`",
-	"confMenuRenderUndo": "• Отменить обновление → `undo`",
-	"confMenuRenderCvalue": "Текущее значение: **``{{value}}``**",
-	"confMenuSaved": "Все изменения успешно сохранены."
+	"rolesetNoRolesets": "У вас нет наборов ролей."
 }

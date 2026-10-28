@@ -1,0 +1,40 @@
+{
+	"getNoExt": "De sleutel **{{key}}** lijkt niet te bestaan.",
+	"get": "De waarde voor **{{key}}** is: `{{value}}`",
+	"resetSuccess": "**{{key}}** is gereset naar: `{{value}}`",
+	"nochange": "De waarde voor **{{key}}** is hetzelfde gebleven.",
+	"serverDescription": "Definieer instellingen per server.",
+	"serverExtended": {
+		"usages": [
+			"set NameOfKey ValueForKey",
+			"show",
+			"show NameOfKey",
+			"remove NameOfKey ValueForKey",
+			"reset NameOfKey",
+			"menu"
+		],
+		"extendedHelp": "",
+		"examples": [
+			"set language en-GB",
+			"set channel.moderation-logs #moderation-logs",
+			"show",
+			"show channels",
+			"remove roles.moderator Moderator",
+			"reset roles.moderator",
+			"menu"
+		],
+		"reminder": "Er zijn groepen en sleutels en sleutels die onderdeel zijn van een groep worden gerefereerd als `GroepNaam.SleutelNaam`."
+	},
+	"menuRenderAtFolder": "Momenteel in: 📁 {{path}}",
+	"menuRenderAtPiece": "Momenteel bij: ⚙️ {{path}}",
+	"menuRenderNokeys": "Er zijn geen configureerbare opties in deze map",
+	"menuRenderUpdate": "• Update Waarde → `set <value>`",
+	"menuRenderRemove": "• Verwijder Waarde → `remove <value>`",
+	"menuRenderReset": "• Reset Waarde → `reset`",
+	"menuRenderUndo": "• Update ongedaan maken → `undo`",
+	"menuRenderBack": "Druk op ◀ om terug te gaan",
+	"menuInvalidKey": "Ongeldige sleutel, probeer het opnieuw met een van de volgende opties:",
+	"menuInvalidAction": "Ongeldige actie, probeer het opnieuw met een van de volgende opties:",
+	"menuSaved": "Wijzigingen zijn succesvol opgeslagen.",
+	"settingNotSet": "Niet ingesteld"
+}

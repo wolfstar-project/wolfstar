@@ -1,0 +1,19 @@
+{
+	"getNoExt": "Cheia **{{key}}** nu pare să existe.",
+	"get": "Valoarea cheii **{{key}}** este: `{{value}}`",
+	"resetSuccess": "Cheia **{{key}}** a fost resetată la: `{{value}}`",
+	"nochange": "Cheia **{{key}}** are deja această valoare.",
+	"serverDescription": "Definiți setările per-server.",
+	"menuRenderAtFolder": "Momentan la: 📁 {{path}}",
+	"menuRenderAtPiece": "Momentan la: ⚙️ {{path}}",
+	"menuRenderNokeys": "Nu există chei configurabile pentru acest dosar",
+	"menuRenderUpdate": "• Actualizează Valoarea → `set <value>`",
+	"menuRenderRemove": "• Elimină Valoarea → `remove <value>`",
+	"menuRenderReset": "• Resetează Valoarea → `reset`",
+	"menuRenderUndo": "• Anulează Actualizarea → `undo`",
+	"menuRenderBack": "Apăsați ◀ pentru a merge înapoi",
+	"menuInvalidKey": "Cheie invalidă, te rugăm să încerci din nou cu oricare dintre următoarele opțiuni.",
+	"menuInvalidAction": "Acțiune invalidă, vă rugăm să încercați din nou cu oricare dintre următoarele opțiuni.",
+	"menuSaved": "Salvare reuşită a tuturor modificărilor.",
+	"settingNotSet": "Nu este setat"
+}

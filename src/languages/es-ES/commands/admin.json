@@ -1,34 +1,4 @@
 {
-	"confUpdated": "Se actualizó exitosamente la clave **{{key}}**: `{{response}}",
-	"confGetNoExt": "La clave **{{key}}** parece no existir.",
-	"confGet": "El valor para la clave **{{key}}** es: `{{value}}`",
-	"confReset": "La clave **{{key}}** ha sido restablecida a: `{{value}}`",
-	"confNochange": "El valor de **{{key}}** ya era de ese valor.",
-	"confServerDescription": "Define los ajustes por servidor.",
-	"confServerExtended": {
-		"usages": [
-			"set NombreDeClave Valor para la Clave",
-			"show",
-			"show NombreDeClave",
-			"remove NombreDeClave Valor para la Clave",
-			"reset NombreDeClave",
-			"menu"
-		],
-		"extendedHelp": "Te permite configurar WolfStar desde Discord, como una alternativa rápida al [panel de control web](https://wolfstar.rocks).",
-		"examples": [
-			"set language es-ES",
-			"set channels.moderation-logs #logs-de-moderacion",
-			"show",
-			"show channels",
-			"remove roles.moderator Moderador",
-			"reset roles.moderator",
-			"menu"
-		],
-		"reminder": "Hay claves y grupos, claves que están dentro de un grupo son nombradas por `GroupName.KeyName`."
-	},
-	"confServer": "**Configuración del servidor {{key}}**\n{{list}}",
-	"confDashboardOnlyKey": "`{{key}}` sólo puede configurarse a través del panel web (<https://wolfstar.rocks>)",
-	"confSettingNotSet": "No Establecido",
 	"rolesetDescription": "Administrar los conjuntos de roles únicos.",
 	"rolesetExtended": {
 		"usages": [
@@ -90,18 +60,5 @@
 	"rolesetResetNotExists": "{{REDCROSS}} The conjunto de roles `{{name}}` no existe en este servidor.",
 	"rolesetResetGroup": "{{GREENTICK}} Se eliminó correctamente el conjunto de roles `{{name}}` de este servidor.",
 	"rolesetUpdated": "El conjunto de roles único {{name}} ha sido actualizado.",
-	"rolesetNoRolesets": "No hay conjuntos de roles.",
-	"confMenuRenderAtFolder": "Actualmente en: 📁 {{path}}",
-	"confMenuRenderAtPiece": "Actualmente en: ⚙️ {{path}}",
-	"confMenuRenderNokeys": "No hay claves configurables para este grupo",
-	"confMenuRenderSelect": "Por favor ingrese cualquiera de los nombres de las siguientes entradas",
-	"confMenuRenderUpdate": "• Actualizar Valor → `set <value>`",
-	"confMenuRenderRemove": "• Eliminar valor → `remove <value>`",
-	"confMenuRenderReset": "• Restablecer valor → `reset`",
-	"confMenuRenderUndo": "• Deshacer actualización → `undo`",
-	"confMenuRenderCvalue": "Valor actual: **``{{value}}``**",
-	"confMenuRenderBack": "Pulsa ◀ para volver atrás",
-	"confMenuInvalidKey": "Clave no válida, por favor inténtalo de nuevo con cualquiera de las siguientes opciones.",
-	"confMenuInvalidAction": "Acción no válida, por favor inténtalo de nuevo con cualquiera de las siguientes opciones.",
-	"confMenuSaved": "Guardado todos los cambios con éxito."
+	"rolesetNoRolesets": "No hay conjuntos de roles."
 }

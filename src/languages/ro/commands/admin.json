@@ -1,12 +1,4 @@
 {
-	"confGetNoExt": "Cheia **{{key}}** nu pare să existe.",
-	"confGet": "Valoarea cheii **{{key}}** este: `{{value}}`",
-	"confReset": "Cheia **{{key}}** a fost resetată la: `{{value}}`",
-	"confNochange": "Cheia **{{key}}** are deja această valoare.",
-	"confServerDescription": "Definiți setările per-server.",
-	"confServer": "**Setarea {{key}} a server-ului**\n{{list}}",
-	"confDashboardOnlyKey": "`{{key}}` poate fi configurat doar prin intermediul panoului web (<https://wolfstar.rocks>)",
-	"confSettingNotSet": "Nu este setat",
 	"rolesetDescription": "Gestionați seturi de roluri unice.",
 	"rolesetExtended": {
 		"usages": [
@@ -68,18 +60,5 @@
 	"rolesetResetNotExists": "{{REDCROSS}} Roleset-ul `{{name}}` nu există pe acest server.",
 	"rolesetResetGroup": "{{GREENTICK}} Roleset-ul `{{name}}` a fost eliminat cu success de pe acest server.",
 	"rolesetUpdated": "Roleset-ul {{name}} a fost actualizat.",
-	"rolesetNoRolesets": "Nu aveți nici un roleset.",
-	"confMenuRenderAtFolder": "Momentan la: 📁 {{path}}",
-	"confMenuRenderAtPiece": "Momentan la: ⚙️ {{path}}",
-	"confMenuRenderNokeys": "Nu există chei configurabile pentru acest dosar",
-	"confMenuRenderSelect": "Vă rugăm să introduceți oricare dintre următoarele intrări",
-	"confMenuRenderUpdate": "• Actualizează Valoarea → `set <value>`",
-	"confMenuRenderRemove": "• Elimină Valoarea → `remove <value>`",
-	"confMenuRenderReset": "• Resetează Valoarea → `reset`",
-	"confMenuRenderUndo": "• Anulează Actualizarea → `undo`",
-	"confMenuRenderCvalue": "Valoarea actuală: **``{{value}}``**",
-	"confMenuRenderBack": "Apăsați ◀ pentru a merge înapoi",
-	"confMenuInvalidKey": "Cheie invalidă, te rugăm să încerci din nou cu oricare dintre următoarele opțiuni.",
-	"confMenuInvalidAction": "Acțiune invalidă, vă rugăm să încercați din nou cu oricare dintre următoarele opțiuni.",
-	"confMenuSaved": "Salvare reuşită a tuturor modificărilor."
+	"rolesetNoRolesets": "Nu aveți nici un roleset."
 }

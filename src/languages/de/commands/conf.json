@@ -1,0 +1,40 @@
+{
+	"getNoExt": "Der Schlüssel **{{key}}** scheint nicht zu existieren.",
+	"get": "Der Wert für den Schlüssel **{{key}}** ist: `{{value}}`",
+	"resetSuccess": "Der Schlüssel **{{key}}** wurde zurückgesetzt auf: `{{value}}`",
+	"nochange": "Der Wert für **{{key}}** war bereits dieser Wert.",
+	"serverDescription": "Einstellungen für jeden Server definieren.",
+	"serverExtended": {
+		"usages": [
+			"setze NameOfKey Wert für Schlüssel",
+			"Zeige",
+			"zeige NameOfKey",
+			"entferne NameOfKey Wert für Schlüssel",
+			"NameOfKey zurücksetzen",
+			"Menü"
+		],
+		"extendedHelp": "Erlaubt dir, WolfStar von Discord zu konfigurieren, als schnelle Alternative zum [Web-Dashboard](https://wolfstar.rocks).",
+		"examples": [
+			"wechsle Sprache auf en-GB",
+			"setze channels.moderation-logs #moderation-logs",
+			"Zeige",
+			"Channel anzeigen",
+			"roles.moderator Moderator entfernen",
+			"roles.moderator zurücksetzen",
+			"Menü"
+		],
+		"reminder": "Es gibt Schlüssel und Gruppen, Schlüssel, die innerhalb einer Gruppe sind, sind nach `GroupName.KeyName` benannt."
+	},
+	"menuRenderAtFolder": "Momentan bei: 📁 {{path}}",
+	"menuRenderAtPiece": "Momentan bei: ⚙️ {{path}}",
+	"menuRenderNokeys": "Es gibt keine konfigurierbaren Schlüssel für diesen Ordner",
+	"menuRenderUpdate": "• Aktualisiere Wert → `set <value>`",
+	"menuRenderRemove": "• Entferne Wert → `remove <value>`",
+	"menuRenderReset": "• Wert zurücksetzen → `reset`",
+	"menuRenderUndo": "• Update rückgängig → `undo`",
+	"menuRenderBack": "Drücke ◀ um zurückzugehen",
+	"menuInvalidKey": "Ungültiger Schlüssel, bitte versuche es erneut mit einer der folgenden Optionen.",
+	"menuInvalidAction": "Ungültige Aktion, bitte versuche es erneut mit einer der folgenden Optionen.",
+	"menuSaved": "Alle Änderungen erfolgreich gespeichert.",
+	"settingNotSet": "Nicht festgelegt"
+}
