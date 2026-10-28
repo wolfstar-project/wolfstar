@@ -55,7 +55,15 @@ jobs:
               run: |
                   git add src/languages;
                   if git diff-index --quiet HEAD --; then
-                    echo "No translation changes to commit, exiting with code 0"
+                    echo "No translation changes to commit"
+                    # An open sync PR with nothing left to sync is stale: main already holds
+                    # (or has since fixed) everything it carries, and merging it would only
+                    # revert work. Close it, but only when the bot itself opened it.
+                    STALE_PRS="$(gh pr list --head i18n --author wolfstarbot --state open --json number --jq '.[].number')";
+                    for PR_NUMBER in $STALE_PRS; do
+                      echo "Closing stale sync PR #$PR_NUMBER";
+                      gh pr close "$PR_NUMBER" --delete-branch --comment "Closing: main already contains every translation this sync carried, so there is nothing left to merge. The next sync with changes opens a fresh PR.";
+                    done
                     exit 0;
                   else
                     git remote set-url origin "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${GITHUB_REPOSITORY}.git";

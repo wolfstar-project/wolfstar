@@ -1,0 +1,8 @@
+{
+	"getNoExt": "The key **{{key}}** does not seem to exist.",
+	"get": "The value for the key **{{key}}** is: `{{value}}`",
+	"resetSuccess": "The key **{{key}}** has been reset to: `{{value}}`",
+	"nochange": "The value for **{{key}}** was already that value.",
+	"serverDescription": "Define per-server settings.",
+	"settingNotSet": "Not Set"
+}

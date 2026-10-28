@@ -1,33 +1,4 @@
 {
-	"confGetNoExt": "{{key}} यह कुंजी मौजूद नहीं है।",
-	"confGet": "{{key}} इस कुंजी का मूल्य {{value}} के बराबर है।",
-	"confReset": "{{key}} कुंजी का मूल्य {{value}} के बराबर स्थापित किया गया है।",
-	"confNochange": "{{key}} कुंजी का मूल्य पहले से दिए गए मूल्य के अनुसार है।",
-	"confServerDescription": "सर्वर सेटिंग्स के अनुसार निश्चित करे।",
-	"confServerExtended": {
-		"usages": [
-			"",
-			"दिखाएँ",
-			"कुंजी का नाम दिखाएं",
-			"कुंजी के लिए कुंजी का नाम मूल्य निकालें",
-			"कुंजी का नाम पुन: प्रस्थापित करे",
-			"मेन्यू"
-		],
-		"extendedHelp": "",
-		"examples": [
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			""
-		],
-		"reminder": ""
-	},
-	"confServer": "**सर्वर सेटिंग्स {{key}}**\n{{list}}",
-	"confDashboardOnlyKey": "{{key}} केवल वेब डैशबोर्ड (<https://wolfstar.rocks>) माध्यम से ही इसे रूप दिया जा सकता हैं।",
-	"confSettingNotSet": "निर्धारित नहीं है",
 	"rolesetDescription": "विविध किरदार संच का प्रबंध करे।",
 	"rolesetExtended": {
 		"usages": [
@@ -89,14 +60,5 @@
 	"rolesetResetNotExists": "{{REDCROSS}} {{name}} यह किरदार संच इस सर्वर मे मौजूद नहीं है।",
 	"rolesetResetGroup": "{{GREENTICK}} सफला पूर्वक {{name}} किरदार संच हटाया गया है।",
 	"rolesetUpdated": "{{name}} इस किरदार को सफलता पूर्वक अद्यतन किया गया है।",
-	"rolesetNoRolesets": "आपके पास कोई भी किरदार संच नहीं है।",
-	"confMenuRenderAtFolder": "अभी फिलाल {{path}} में है।",
-	"confMenuRenderAtPiece": "अभी फिलाल ⚙️ {{path}} में है।",
-	"confMenuRenderNokeys": "इस फोल्डर के लिए कोई भी परिभाषित की नहीं है।",
-	"confMenuRenderSelect": "कृपया कोई भी प्रविष्टियो का नाम लिखे।",
-	"confMenuRenderCvalue": "वर्तमान मूल्य: **``{{value}}``**",
-	"confMenuRenderBack": "पिछे जाने के लिए ◀ दबाए।",
-	"confMenuInvalidKey": "अवैध की, कृपया दिए गए पर्याय से पुन: प्रयास करें।",
-	"confMenuInvalidAction": "अवैध कृती, कृपया दिए गए पर्याय से पुन: प्रयास करें।",
-	"confMenuSaved": "सफलतापूर्वक सभी बदलाव किए जा चुके है।"
+	"rolesetNoRolesets": "आपके पास कोई भी किरदार संच नहीं है।"
 }

@@ -1,33 +1,4 @@
 {
-	"confGetNoExt": "De sleutel **{{key}}** lijkt niet te bestaan.",
-	"confGet": "De waarde voor **{{key}}** is: `{{value}}`",
-	"confReset": "**{{key}}** is gereset naar: `{{value}}`",
-	"confNochange": "De waarde voor **{{key}}** is hetzelfde gebleven.",
-	"confServerDescription": "Definieer instellingen per server.",
-	"confServerExtended": {
-		"usages": [
-			"set NameOfKey ValueForKey",
-			"show",
-			"show NameOfKey",
-			"remove NameOfKey ValueForKey",
-			"reset NameOfKey",
-			"menu"
-		],
-		"extendedHelp": "",
-		"examples": [
-			"set language en-GB",
-			"set channel.moderation-logs #moderation-logs",
-			"show",
-			"show channels",
-			"remove roles.moderator Moderator",
-			"reset roles.moderator",
-			"menu"
-		],
-		"reminder": "Er zijn groepen en sleutels en sleutels die onderdeel zijn van een groep worden gerefereerd als `GroepNaam.SleutelNaam`."
-	},
-	"confServer": "**Server Instelling {{key}}**\n{{list}}",
-	"confDashboardOnlyKey": "`{{key}}` kan alleen worden geconfigureerd via het web dashboard (<https://wolfstar.rocks>)",
-	"confSettingNotSet": "Niet ingesteld",
 	"rolesetDescription": "Beheer unieke rolesets.",
 	"rolesetExtended": {
 		"usages": [
@@ -89,18 +60,5 @@
 	"rolesetResetNotExists": "{{REDCROSS}} De set van rollen met de naam `{{name}}` bestaat niet in deze server.",
 	"rolesetResetGroup": "{{GREENTICK}} De set van rollen met de naam `{{name}}` is succesvol verwijderd van de server.",
 	"rolesetUpdated": "De set van rollen met de naam {{name}} is bijgewerkt.",
-	"rolesetNoRolesets": "Je hebt geen rolesets.",
-	"confMenuRenderAtFolder": "Momenteel in: 📁 {{path}}",
-	"confMenuRenderAtPiece": "Momenteel bij: ⚙️ {{path}}",
-	"confMenuRenderNokeys": "Er zijn geen configureerbare opties in deze map",
-	"confMenuRenderSelect": "Typ een van de volgende invoernamen in",
-	"confMenuRenderUpdate": "• Update Waarde → `set <value>`",
-	"confMenuRenderRemove": "• Verwijder Waarde → `remove <value>`",
-	"confMenuRenderReset": "• Reset Waarde → `reset`",
-	"confMenuRenderUndo": "• Update ongedaan maken → `undo`",
-	"confMenuRenderCvalue": "Huidige waarde: **``{{value}}``**",
-	"confMenuRenderBack": "Druk op ◀ om terug te gaan",
-	"confMenuInvalidKey": "Ongeldige sleutel, probeer het opnieuw met een van de volgende opties:",
-	"confMenuInvalidAction": "Ongeldige actie, probeer het opnieuw met een van de volgende opties:",
-	"confMenuSaved": "Wijzigingen zijn succesvol opgeslagen."
+	"rolesetNoRolesets": "Je hebt geen rolesets."
 }

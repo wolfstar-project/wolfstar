@@ -3,13 +3,18 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
 	collectFormatters,
+	createReport,
 	extractPlaceholders,
 	findBracketKeys,
 	flattenLocale,
 	hasStrayBraces,
 	hasTranslation,
+	isCommandNameKey,
 	isEmptyIcuSkeleton,
 	isPlainObject,
+	isValidCommandName,
+	mergeNamespace,
+	normalizeCommandName,
 	placeholdersMatch,
 	pluralStem,
 	type JsonValue
@@ -125,7 +130,71 @@ describe('locale files', () => {
 	});
 });
 
+describe('slash command names', () => {
+	test.each(locales.filter((locale) => locale !== BASE_LOCALE))('%s only holds names Discord accepts', (locale) => {
+		const invalid: string[] = [];
+
+		for (const namespace of collectNamespaces(join(languagesRoot, locale))) {
+			const base = baseValues.get(namespace);
+			if (base === undefined) continue;
+
+			for (const [path, value] of flattenLocale(readNamespace(locale, namespace))) {
+				if (typeof value !== 'string' || value === '' || !isCommandNameKey(path)) continue;
+				const baseValue = base.get(path);
+				if (typeof baseValue !== 'string' || !isValidCommandName(baseValue)) continue;
+				if (!isValidCommandName(value)) invalid.push(`${namespace}:${path} = ${value}`);
+			}
+		}
+
+		// An uppercase letter in a localized name makes `setNameLocalizations` throw, and the
+		// whole command then fails to register for every language.
+		expect(invalid).toStrictEqual([]);
+	});
+});
+
 describe('locale sanitizing helpers', () => {
+	test('GIVEN a command name key THEN tells it apart from a display label', () => {
+		expect(isCommandNameKey('name')).toBe(true);
+		expect(isCommandNameKey('setName')).toBe(true);
+		expect(isCommandNameKey('optionsValueName')).toBe(true);
+		expect(isCommandNameKey('group.setName')).toBe(true);
+		expect(isCommandNameKey('setDescription')).toBe(false);
+		expect(isCommandNameKey('username')).toBe(false);
+	});
+
+	test('GIVEN a command name THEN normalises what Discord would reject', () => {
+		expect(isValidCommandName('imposta')).toBe(true);
+		expect(isValidCommandName('Imposta')).toBe(false);
+		expect(isValidCommandName('solo-in-attesa')).toBe(true);
+		expect(isValidCommandName('due parole')).toBe(false);
+		expect(normalizeCommandName('Avviso')).toBe('avviso');
+		expect(normalizeCommandName(' Valore ')).toBe('valore');
+		expect(normalizeCommandName('due parole')).toBeUndefined();
+		expect(normalizeCommandName('a'.repeat(33))).toBeUndefined();
+	});
+
+	test('GIVEN Tolgee holding an uppercase command name THEN the merge keeps it lowercase', () => {
+		const context = { report: createReport(), knownFormatters };
+		const base = { setName: 'set', setDescription: 'Set a value', displayName: 'Display Name' };
+		const local = { setName: 'imposta', setDescription: 'Imposta un valore', displayName: '' };
+		const pulled = { setName: 'Imposta', setDescription: 'Imposta un valore', displayName: 'Nome Visualizzato' };
+
+		const merged = mergeNamespace(local, pulled, base, context);
+
+		expect(merged).toStrictEqual({ setName: 'imposta', setDescription: 'Imposta un valore', displayName: 'Nome Visualizzato' });
+		expect(context.report.updated).toStrictEqual(['displayName']);
+		expect(context.report.skipped).toStrictEqual([]);
+	});
+
+	test('GIVEN a command name that cannot be made valid THEN rejects it and keeps the local value', () => {
+		const context = { report: createReport(), knownFormatters };
+
+		const merged = mergeNamespace({ setName: 'imposta' }, { setName: 'Imposta valore' }, { setName: 'set' }, context);
+
+		expect(merged).toStrictEqual({ setName: 'imposta' });
+		expect(context.report.skipped).toStrictEqual([{ path: 'setName', base: 'set', translated: 'Imposta valore', reason: 'command-name' }]);
+	});
+
 	test('GIVEN empty ICU plural shells THEN recognises them as untranslated', () => {
 		expect(isEmptyIcuSkeleton('{count, plural,\none {}\nother {}\n}')).toBe(true);
 		expect(isEmptyIcuSkeleton('{count, plural, one {1 apple} other {# apples}}')).toBe(false);
