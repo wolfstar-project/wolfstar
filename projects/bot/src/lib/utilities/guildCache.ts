@@ -12,7 +12,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  * running when the write was announced. Forgetting drops the running query, so it no longer finds itself when it
  * settles. Reads running at the same time share one query.
  */
-export class GuildCache<T> {
+class GuildCache<T> {
 	readonly #entries = new Collection<Snowflake, T>();
 	readonly #queries = new Collection<Snowflake, Promise<T>>();
 
@@ -62,3 +62,6 @@ export class GuildCache<T> {
 		this.#queries.clear();
 	}
 }
+
+// Apart from its declaration: the auto-import scanner misreads the type parameters of an exported generic class.
+export { GuildCache };
