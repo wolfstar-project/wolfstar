@@ -34,7 +34,7 @@ function record(overrides: Partial<JoinGuardRequestRecord> = {}): JoinGuardReque
 		trust: 2,
 		linkedAccounts: 1,
 		reason: null,
-		createdAt: 0,
+		createdAt: 1000,
 		...overrides
 	};
 }
@@ -43,7 +43,7 @@ describe('parseJoinGuardRequest', () => {
 	test('GIVEN a pass THEN it carries the member, the row and what the page measured', () => {
 		expect(parseJoinGuardRequest(record())).toEqual({
 			ok: true,
-			value: { kind: 'Pass', guildId, userId: '10', checkpointId: '3', trust: 2, linkedAccounts: 1 }
+			value: { kind: 'Pass', guildId, userId: '10', checkpointId: '3', trust: 2, linkedAccounts: 1, requestedAt: 1000 }
 		});
 	});
 
@@ -83,7 +83,12 @@ describe('handleJoinGuardRequest', () => {
 
 		expect((await Promise.all([handleJoinGuardRequest('5'), handleJoinGuardRequest('5')])).sort()).toEqual(['Claimed', 'Done']);
 		expect(admitJoinGuardMember).toHaveBeenCalledTimes(1);
-		expect(admitJoinGuardMember).toHaveBeenCalledWith(guildId, '10', { kind: 'Checkpoint', trust: 2, linkedAccounts: 1, checkpointId: '3' });
+		expect(admitJoinGuardMember).toHaveBeenCalledWith(
+			guildId,
+			'10',
+			{ kind: 'Checkpoint', trust: 2, linkedAccounts: 1, checkpointId: '3' },
+			1000
+		);
 		expect(processed.get('5')).toBeNull();
 	});
 

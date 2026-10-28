@@ -119,6 +119,19 @@ function readSettings(guildId: Snowflake) {
 	return fetchTableSettings(container.prisma.orm, 'GuildJoinGuard', guildId);
 }
 
+const JoinedAgainDetail = 'The member left and joined again since the request.';
+
+/**
+ * Whether a member joined after a request about them was made: the request was about the stay they left, and is done
+ * again by a sweep only when the process that took it stopped. A kick or a pass of that stay is not one of this one.
+ *
+ * @param member - The member as they are now.
+ * @param requestedAt - When the request was made, in milliseconds; none for what a command does now.
+ */
+function joinedSince(member: GuildMember, requestedAt: number | undefined) {
+	return requestedAt !== undefined && member.joinedTimestamp !== null && member.joinedTimestamp > requestedAt;
+}
+
 function fetchMember(guildId: Snowflake, userId: Snowflake) {
 	return resolveOnErrorCodes(container.gatewayClient.members.fetch(guildId, userId), RESTJSONErrorCodes.UnknownMember);
 }
@@ -162,7 +175,8 @@ export interface JoinGuardAdmitted {
 export function admitJoinGuardMember(
 	guildId: Snowflake,
 	userId: Snowflake,
-	admission: JoinGuardAdmission
+	admission: JoinGuardAdmission,
+	requestedAt?: number
 ): Promise<JoinGuardResult<JoinGuardAdmitted>> {
 	return withJoinGuardMemberLock(guildId, userId, async () => {
 		const guild = await container.gatewayClient.guilds.resolve(guildId);
@@ -177,6 +191,7 @@ export function admitJoinGuardMember(
 
 		const member = await fetchMember(guildId, userId);
 		if (member === null) return joinGuardErr('NotMember', 'The member is not in the guild.');
+		if (joinedSince(member, requestedAt)) return joinGuardErr('NotMember', JoinedAgainDetail);
 
 		const problem = await findRoleProblem(t, guildId, settings);
 		if (problem !== null) return joinGuardErr('RoleNotManageable', problem);
@@ -285,7 +300,8 @@ export function kickJoinGuardMember(
 	guildId: Snowflake,
 	userId: Snowflake,
 	moderatorId: Snowflake,
-	reason: string | null
+	reason: string | null,
+	requestedAt?: number
 ): Promise<JoinGuardResult<{ caseId: number }>> {
 	return withJoinGuardMemberLock(guildId, userId, async () => {
 		const guild = await container.gatewayClient.guilds.resolve(guildId);
@@ -294,6 +310,7 @@ export function kickJoinGuardMember(
 		const t = await fetchGuildT(guild);
 		const member = await fetchMember(guildId, userId);
 		if (member === null) return joinGuardErr('NotMember', 'The member is not in the guild.');
+		if (joinedSince(member, requestedAt)) return joinGuardErr('NotMember', JoinedAgainDetail);
 
 		const missing = await getMissingJoinGuardPermissions(guildId, ['kick']);
 		if (missing.length > 0) return joinGuardErr('MissingPermissions', describeJoinGuardMissingPermissions(t, 'Kick', missing));
