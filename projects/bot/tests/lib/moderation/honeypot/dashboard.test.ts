@@ -108,9 +108,31 @@ describe('planHoneypotNoticeReconcile', () => {
 describe('reconcileHoneypotNotices', () => {
 	const other = '266624760782258186';
 
+	// The guilds the bot is in, as the gateway caches them:
+	let joined = new Set<string>();
+
 	beforeEach(() => {
 		vi.clearAllMocks();
-		Object.assign(container, { shard: null, prisma: { orm: {} }, logger: { warn: vi.fn(), error: vi.fn() }, client: { emit: vi.fn() } });
+		joined = new Set([guildId, other, '242043489611808769']);
+		Object.assign(container, {
+			shard: null,
+			prisma: { orm: {} },
+			logger: { warn: vi.fn(), error: vi.fn() },
+			client: { emit: vi.fn() },
+			gatewayClient: { guilds: { resolveKey: (id: string) => id, cache: { get: async (id: string) => (joined.has(id) ? { id } : undefined) } } }
+		});
+	});
+
+	test('GIVEN a honeypot of a guild the bot left THEN it is not touched, Discord would refuse every request', async () => {
+		joined = new Set();
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: true, action: 'Softban' }]);
+		vi.mocked(readHoneypotNotices).mockResolvedValue(new Map([[other, { channelId: '9', messageId: '1', action: 'Ban' }]]));
+
+		await reconcileHoneypotNotices();
+
+		expect(readSettings).not.toHaveBeenCalled();
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+		expect(removeHoneypotNotice).not.toHaveBeenCalled();
 	});
 
 	test('GIVEN warnings out of step after the connection was down THEN each is put in order, the others are left alone', async () => {

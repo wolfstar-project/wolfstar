@@ -105,6 +105,8 @@ export async function reconcileHoneypotNotices(): Promise<void> {
 	for (const guildId of new Set([...byGuild.keys(), ...notices.keys()])) {
 		if (!isOwnGuild(guildId)) continue;
 		if (planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null) === 'Keep') continue;
+		// The rows of a guild the bot left stay, and every request for its channels would be refused:
+		if (!(await isGuildJoined(guildId))) continue;
 
 		try {
 			await followHoneypotSettings(guildId, HoneypotNoticeKeys);
@@ -112,6 +114,11 @@ export async function reconcileHoneypotNotices(): Promise<void> {
 			container.logger.error(`[Honeypot] Could not put the warning of the guild ${guildId} in order:`, error);
 		}
 	}
+}
+
+async function isGuildJoined(guildId: Snowflake) {
+	const { guilds } = container.gatewayClient;
+	return Boolean(await guilds.cache.get(guilds.resolveKey(guildId)));
 }
 
 onShardMessage('settingsInvalidateAll', () => {
