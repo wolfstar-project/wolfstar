@@ -1,6 +1,7 @@
 import { DatabaseNotificationChannels, DatabaseNotificationListener, type NotificationClient } from '#lib/database/notifications';
 import { parseDashboardSettingsUpdate, type DashboardSettingsUpdate } from '#lib/database/settings/dashboard';
 import { dispatchShardMessage, type ShardMessage } from '#lib/sharder/messages';
+import { Client } from 'pg';
 
 /**
  * Where what the website notifies goes: to the shards of the bot, or to this process when it is the only one.
@@ -18,6 +19,15 @@ interface Logger {
 	info(...values: readonly unknown[]): void;
 	warn(...values: readonly unknown[]): void;
 	error(...values: readonly unknown[]): void;
+}
+
+/**
+ * Makes a connection to the database for {@linkcode createWebsiteListener}. TCP keepalive is on: a connection a NAT or
+ * a load balancer drops without a word never ends nor fails on its own, and the bot would hear nothing until a restart,
+ * while the operating system finds it dead and the listener connects again.
+ */
+export function createWebsiteClient(): NotificationClient {
+	return new Client({ connectionString: process.env.DATABASE_URL, keepAlive: true, keepAliveInitialDelayMillis: 30_000 });
 }
 
 /**

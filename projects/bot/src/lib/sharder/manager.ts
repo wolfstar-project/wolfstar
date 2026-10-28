@@ -1,4 +1,4 @@
-import { createShardManagerWebsiteTarget, createWebsiteListener } from '#lib/database/website';
+import { createShardManagerWebsiteTarget, createWebsiteClient, createWebsiteListener } from '#lib/database/website';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { getLoggerOptions } from '#utils/logger';
 import { closeTelemetry } from '#utils/shutdown';
@@ -7,7 +7,6 @@ import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-
 import { Client, container } from '@wolfstar/http-framework';
 import { ShardClient, ShardManager } from '@wolfstar/plugin-sharder';
 import { fileURLToPath } from 'node:url';
-import { Client as DatabaseClient } from 'pg';
 
 /**
  * Whether this process is the shard manager: with `SHARDER_ENABLED`, the process that is started spawns the shards
@@ -55,7 +54,7 @@ export async function startShardManager() {
 	// The one connection that hears the website: the writes of the dashboard go to every shard, the requests of the join
 	// guard to the first one, see `lib/database/website.ts`.
 	const website = createWebsiteListener(createShardManagerWebsiteTarget(manager, container.logger), {
-		createClient: () => new DatabaseClient({ connectionString: process.env.DATABASE_URL }),
+		createClient: createWebsiteClient,
 		logger: container.logger
 	});
 

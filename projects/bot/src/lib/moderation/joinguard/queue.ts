@@ -16,8 +16,8 @@ const Header = '[JoinGuard]';
 
 /**
  * Handles the requests of the website to the join guard one after the other: the ones a notification brings, and the
- * ones a sweep finds, at the start, after each connection that listens again and every `sweepInterval`, so a lost
- * notification only delays its request.
+ * ones a sweep finds, at the start and every `sweepInterval`, so a notification that was lost, or sent while the
+ * connection was down, delays its request by that interval at most.
  *
  * @remarks A request that is already queued is not queued again. Each is claimed in the database before it is done,
  * so a notification and a sweep, or two processes, never do it twice.

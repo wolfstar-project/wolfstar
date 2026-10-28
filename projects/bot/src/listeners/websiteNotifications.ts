@@ -1,10 +1,9 @@
-import { createLocalWebsiteTarget, createWebsiteListener } from '#lib/database/website';
+import { createLocalWebsiteTarget, createWebsiteClient, createWebsiteListener } from '#lib/database/website';
 import { JoinGuardRequestQueue } from '#lib/moderation/joinguard/queue';
 import { fetchJoinGuardRequestsToSweep, handleJoinGuardRequest } from '#lib/moderation/joinguard/requests';
 import { onShardMessage } from '#lib/sharder/messages';
 import { isWorker } from '#utils/worker';
 import { EventGatewayListener, RegisterAsGatewayListener } from '@wolfstar/plugin-gateway';
-import { Client } from 'pg';
 
 /**
  * Starts what hears the website once the client is ready.
@@ -39,7 +38,7 @@ export class UserListener extends EventGatewayListener<'clientReady'> {
 		const listener = createWebsiteListener(
 			createLocalWebsiteTarget((requestId) => queue.enqueue(requestId)),
 			{
-				createClient: () => new Client({ connectionString: process.env.DATABASE_URL }),
+				createClient: createWebsiteClient,
 				logger
 			}
 		);
