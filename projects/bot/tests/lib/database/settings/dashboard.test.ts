@@ -64,7 +64,23 @@ describe('writes of the dashboard', () => {
 		expect(emit).toHaveBeenCalledWith(Events.DashboardSettingsUpdate, guildId, ['logsWebhooks']);
 	});
 
+	test('GIVEN a read that started before the write THEN a read after it does not join it', async () => {
+		let resolveOld!: (data: GuildData) => void;
+		vi.mocked(fetchGuildData).mockImplementationOnce(() => new Promise((resolve) => (resolveOld = resolve)));
+		const old = readSettings(guildId);
+
+		dispatchShardMessage({ type: 'settingsUpdate', guildId, keys: ['honeypotWarning'] });
+		const fresh = readSettings(guildId);
+		resolveOld({ ...getDefaultGuildSettings(), id: guildId, honeypotWarning: true } as GuildData);
+
+		expect(fetchGuildData).toHaveBeenCalledTimes(2);
+		expect(await fresh).not.toBe(await old);
+	});
+
 	test('GIVEN the connection was down THEN every cached guild is read again', async () => {
+		// From a cache of these two guilds only, what the tests before left aside:
+		dispatchShardMessage({ type: 'settingsInvalidateAll' });
+		vi.mocked(fetchGuildData).mockClear();
 		await readSettings(guildId);
 		await readSettings(otherId);
 

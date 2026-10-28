@@ -227,6 +227,8 @@ const generations = new Collection<string, number>();
 function invalidate(id: string) {
 	generations.set(id, (generations.get(id) ?? 0) + 1);
 	cache.delete(id);
+	// A read that is still running started before the change: a read after it must not join it.
+	queue.delete(id);
 	deleteSettingsContext(id);
 }
 
