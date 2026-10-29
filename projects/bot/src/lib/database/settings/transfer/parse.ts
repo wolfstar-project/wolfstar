@@ -8,6 +8,7 @@ import {
 } from '#lib/database/settings/transfer/format';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { checkAutoModerationRuleOptions, parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
+import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import type { Translator } from '#lib/structures/commands/utils';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import {
@@ -248,12 +249,14 @@ function parseRules(section: unknown, context: ParseConfigurationContext, issues
 	return rules;
 }
 
-function parseRule(entry: unknown, path: string, context: ParseConfigurationContext, issues: ConfigurationIssue[]): ConfigurationRule | null {
+function parseRule(input: unknown, path: string, context: ParseConfigurationContext, issues: ConfigurationIssue[]): ConfigurationRule | null {
 	const { t } = context;
-	if (!isRecord(entry)) {
+	if (!isRecord(input)) {
 		issues.push({ path, message: t('commands/conf:transferErrorRuleObject') });
 		return null;
 	}
+
+	const entry = upgradeRemovedRuleType(input);
 
 	const before = issues.length;
 	const known = new Set<string>(ConfigurationRuleFields);
@@ -318,6 +321,32 @@ function parseRule(entry: unknown, path: string, context: ParseConfigurationCont
 
 	// What the file leaves out takes the default of the type, as it does when a rule is created:
 	return toConfigurationRule({ ...getDefaultAutoModerationRule(type), ...parsed.data, name: trimmed, type });
+}
+
+/**
+ * A rule of a type the bot no longer has, as the migration that removed the type rewrote the ones of the database. A
+ * `NoMentionSpam` rule banned by itself: it is a `MentionsCooldown` rule that weighs the mentions, bans at the first
+ * infraction and tells it in the channel. What it had that is not a number is left as it is, for the checks to report.
+ */
+function upgradeRemovedRuleType(entry: Record<string, unknown>): Record<string, unknown> {
+	if (entry.type !== 'NoMentionSpam') return entry;
+
+	const options = isRecord(entry.options) ? entry.options : {};
+	const softAction = typeof entry.softAction === 'number' ? entry.softAction : 0;
+	return {
+		...entry,
+		type: 'MentionsCooldown',
+		options: {
+			...('mentionsAllowed' in options && { maximum: options.mentionsAllowed }),
+			...('timePeriod' in options && { timePeriod: options.timePeriod }),
+			weighted: true
+		},
+		softAction: softAction | AutoModerationOnInfraction.flags.Alert,
+		hardAction: 'Ban',
+		hardActionDuration: null,
+		thresholdMaximum: 0,
+		escalation: []
+	};
 }
 
 function failure(issues: ConfigurationIssue[]): ParseConfigurationResult {

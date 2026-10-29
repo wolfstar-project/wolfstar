@@ -30,16 +30,15 @@ const Root = AutoModerationRoot;
 const TypeOptions = [
 	['minimum', 'minimum'],
 	['maximum', 'maximum'],
-	['mentions', 'mentionsAllowed'],
 	['period', 'timePeriod'],
-	['warn', 'alerts'],
-	['whole-channel', 'perChannel']
+	['whole-channel', 'perChannel'],
+	['weighted', 'weighted']
 ] as const satisfies readonly (readonly [keyof Options, string])[];
 
 /**
  * `/automod edit`, see the `automod` parent command.
  *
- * @remarks The `minimum`, `maximum`, `mentions`, `period`, `warn` and `whole-channel` options set the options of the rule, which depend
+ * @remarks The `minimum`, `maximum`, `period`, `whole-channel` and `weighted` options set the options of the rule, which depend
  * on its type: a rule answers with an error when it is given one it does not have.
  */
 @RegisterAsSubcommand('automod', (builder) =>
@@ -69,10 +68,9 @@ const TypeOptions = [
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsThresholdPeriod`))
 		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsMinimum`))
 		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsMaximum`))
-		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsMentions`))
 		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsPeriod`))
-		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWarn`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWholeChannel`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWeighted`))
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod edit'>) {

@@ -340,7 +340,7 @@ describe('configuration file', () => {
 							rule('Words', { words: 'spam' }),
 							rule('Links', { allowed: { 0: 'example.com' } }),
 							rule('Capitals', { minimum: '30', maximum: null }),
-							rule('NoMentionSpam', { alerts: 'yes' }),
+							rule('MessageSpam', { perChannel: 'yes' }),
 							rule('Invites', 'none')
 						]
 					}
@@ -351,9 +351,47 @@ describe('configuration file', () => {
 					'automod.rules[1].options.allowed',
 					'automod.rules[2].options.minimum',
 					'automod.rules[2].options.maximum',
-					'automod.rules[3].options.alerts',
+					'automod.rules[3].options.perChannel',
 					'automod.rules[4].options'
 				]);
+			});
+
+			test('GIVEN a mention spam rule of an older file THEN it is imported as a mentions cooldown rule that bans', async () => {
+				const parsed = await parseOk({
+					version: 1,
+					automod: {
+						rules: [
+							{
+								name: 'Pings',
+								type: 'NoMentionSpam',
+								softAction: 0b010,
+								hardAction: 'Warning',
+								thresholdMaximum: 5,
+								options: { alerts: true, mentionsAllowed: 15, timePeriod: 1200 }
+							}
+						]
+					}
+				});
+
+				expect(parsed.rules?.[0]).toMatchObject({
+					name: 'Pings',
+					type: 'MentionsCooldown',
+					options: { maximum: 15, timePeriod: 1200, weighted: true },
+					softAction: 0b110,
+					hardAction: 'Ban',
+					hardActionDuration: null,
+					thresholdMaximum: 0,
+					escalation: []
+				});
+			});
+
+			test('GIVEN a mention spam rule with a wrong option THEN it is reported as the option it became', async () => {
+				const issues = await parseIssues({
+					version: 1,
+					automod: { rules: [{ name: 'Pings', type: 'NoMentionSpam', options: { mentionsAllowed: 'many' } }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options.maximum']);
 			});
 
 			test('GIVEN a number out of its limits THEN the file is refused instead of bringing it within them', async () => {

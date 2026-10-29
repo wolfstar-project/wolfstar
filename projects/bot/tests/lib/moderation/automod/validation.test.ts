@@ -192,14 +192,14 @@ describe('auto-moderation rules', () => {
 	describe('checkAutoModerationRuleOptions', () => {
 		test('GIVEN options as they are stored THEN nothing is wrong', () => {
 			expect(checkAutoModerationRuleOptions('Words', { words: ['spam', ' SCAM ', 'spam'] })).toEqual([]);
-			expect(checkAutoModerationRuleOptions('NoMentionSpam', { alerts: true, mentionsAllowed: 20, timePeriod: 8 })).toEqual([]);
+			expect(checkAutoModerationRuleOptions('MentionsCooldown', { maximum: 20, timePeriod: 3600, weighted: true })).toEqual([]);
 			expect(checkAutoModerationRuleOptions('Capitals', { minimum: 5 })).toEqual([]);
 			expect(checkAutoModerationRuleOptions('Attachments', {})).toEqual([]);
 		});
 
 		test('GIVEN a value of the wrong type THEN it is reported by its option', () => {
 			expect(checkAutoModerationRuleOptions('Words', { words: 'spam' })).toEqual(['options.words: Expected an array of strings.']);
-			expect(checkAutoModerationRuleOptions('NoMentionSpam', { alerts: 1 })).toEqual(['options.alerts: Expected a boolean.']);
+			expect(checkAutoModerationRuleOptions('MentionsCooldown', { weighted: 1 })).toEqual(['options.weighted: Expected a boolean.']);
 			expect(checkAutoModerationRuleOptions('Zalgo', { maximum: '4' })).toEqual(['options.maximum: Expected an integer between 1 and 20.']);
 		});
 

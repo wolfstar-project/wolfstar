@@ -49,7 +49,7 @@ declare module '@wolfstar/http-framework' {
     };
     'automod create': {
       name: string;
-      type: 'Attachments' | 'Capitals' | 'Characters' | 'Duplicates' | 'Emojis' | 'ImageSpam' | 'Invites' | 'Links' | 'LinksCooldown' | 'MaskedLinks' | 'MassMentions' | 'MentionsCooldown' | 'MessageSpam' | 'Newlines' | 'NoMentionSpam' | 'Phishing' | 'Polls' | 'Spoilers' | 'Stickers' | 'StickersCooldown' | 'Words' | 'Zalgo';
+      type: 'Attachments' | 'Capitals' | 'Characters' | 'Duplicates' | 'Emojis' | 'ImageSpam' | 'Invites' | 'Links' | 'LinksCooldown' | 'MaskedLinks' | 'MassMentions' | 'MentionsCooldown' | 'MessageSpam' | 'Newlines' | 'Phishing' | 'Polls' | 'Spoilers' | 'Stickers' | 'StickersCooldown' | 'Words' | 'Zalgo';
     };
     'automod delete': {
       rule: string;
@@ -60,7 +60,6 @@ declare module '@wolfstar/http-framework' {
       enabled?: boolean;
       log?: boolean;
       maximum?: number;
-      mentions?: number;
       minimum?: number;
       period?: number;
       punishment?: 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
@@ -69,7 +68,7 @@ declare module '@wolfstar/http-framework' {
       rule: string;
       threshold?: number;
       'threshold-period'?: string;
-      warn?: boolean;
+      weighted?: boolean;
       'whole-channel'?: boolean;
     };
     'automod ignore': {

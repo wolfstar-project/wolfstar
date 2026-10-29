@@ -1,0 +1,81 @@
+[
+	{
+		"id": "data.GuildAutoModerationRule.mergeMentionSpam",
+		"label": "Turn the mention spam rules into mentions cooldown rules",
+		"summary": "Rewrites the rules of type \"NoMentionSpam\" as \"MentionsCooldown\" rules that weigh the mentions and ban",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "rewrite the mention spam rules",
+				"sql": "UPDATE \"public\".\"GuildAutoModerationRule\"\nSET \"type\" = 'MentionsCooldown',\n  \"options\" = jsonb_build_object(\n    'maximum', CASE WHEN jsonb_typeof(\"options\"->'mentionsAllowed') = 'number' THEN LEAST(200, GREATEST(1, trunc((\"options\"->>'mentionsAllowed')::numeric)::int)) ELSE 20 END,\n    'timePeriod', CASE WHEN jsonb_typeof(\"options\"->'timePeriod') = 'number' THEN LEAST(3600, GREATEST(1, trunc((\"options\"->>'timePeriod')::numeric)::int)) ELSE 8 END,\n    'weighted', true\n  ),\n  \"soft_action\" = \"soft_action\" | 4,\n  \"hard_action\" = 'Ban',\n  \"hard_action_duration\" = NULL,\n  \"threshold_maximum\" = 0,\n  \"escalation\" = '[]'::jsonb\nWHERE \"type\"::text = 'NoMentionSpam'",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify no rule is a mention spam rule",
+				"sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"GuildAutoModerationRule\" WHERE \"type\"::text = 'NoMentionSpam') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "enum.GuildAutoModerationRuleType.dropNoMentionSpam",
+		"label": "Remove \"NoMentionSpam\" from the types of the rules",
+		"summary": "Makes \"GuildAutoModerationRuleType\" again without \"NoMentionSpam\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationRuleType"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure no rule is a mention spam rule",
+				"sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"GuildAutoModerationRule\" WHERE \"type\"::text = 'NoMentionSpam') AS \"result\"",
+				"params": []
+			}
+		],
+		"execute": [
+			{
+				"description": "rename the type that has the value",
+				"sql": "ALTER TYPE \"public\".\"GuildAutoModerationRuleType\" RENAME TO \"GuildAutoModerationRuleType_old\"",
+				"params": []
+			},
+			{
+				"description": "create the type without it",
+				"sql": "CREATE TYPE \"public\".\"GuildAutoModerationRuleType\" AS ENUM ('Attachments', 'Capitals', 'Invites', 'Links', 'Newlines', 'Words', 'Zalgo', 'Phishing', 'Stickers', 'Duplicates', 'Characters', 'Emojis', 'MessageSpam', 'ImageSpam', 'LinksCooldown', 'MassMentions', 'MentionsCooldown', 'Spoilers', 'MaskedLinks', 'StickersCooldown', 'Polls')",
+				"params": []
+			},
+			{
+				"description": "move the column to the new type",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationRule\" ALTER COLUMN \"type\" TYPE \"public\".\"GuildAutoModerationRuleType\" USING \"type\"::text::\"public\".\"GuildAutoModerationRuleType\"",
+				"params": []
+			},
+			{
+				"description": "drop the old type",
+				"sql": "DROP TYPE \"public\".\"GuildAutoModerationRuleType_old\"",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify the type has no \"NoMentionSpam\"",
+				"sql": "SELECT NOT EXISTS (SELECT 1 FROM pg_enum e JOIN pg_type t ON t.oid = e.enumtypid JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typname = 'GuildAutoModerationRuleType' AND e.enumlabel = 'NoMentionSpam') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]
