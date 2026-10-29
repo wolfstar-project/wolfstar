@@ -51,7 +51,7 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		if (findDisabledBy(settings.commandsDisabled, command) !== null) return this.error({ identifier: 'preconditions:disabledGuild' });
 		if (isCommandOfDisabledModule(settings, command.name)) return this.error({ identifier: 'preconditions:disabledModuleModeration' });
 
-		const restrictions = readCommandRestrictions(settings.commandsRestrictions);
+		const restrictions = readCommandRestrictions(settings.commandsRestrictions, guildId);
 		const restriction = findCommandRestriction(restrictions, command.name);
 		if (isCommandRestrictionEmpty(restriction) || !member) return this.ok();
 

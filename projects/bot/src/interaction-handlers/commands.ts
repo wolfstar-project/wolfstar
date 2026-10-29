@@ -29,6 +29,7 @@ import {
 	readCommandRestrictions,
 	setCommandMembers,
 	setCommandRestriction,
+	writeCommandRestrictions,
 	type CommandMemberRule,
 	type CommandRestriction
 } from '#lib/structures/commands-menu/restrictions';
@@ -142,7 +143,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
 		const settings = await readSettings(interaction.guildId!);
-		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), piece.name);
+		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions, interaction.guildId!), piece.name);
 		const revision = getCommandRestrictionRevision(restriction, settings.commandsDisabled.includes(piece.name));
 		return interaction.showModal(
 			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision)
@@ -228,18 +229,18 @@ export class UserInteractionHandler extends InteractionHandler {
 	) {
 		using trx = await writeSettingsTransaction(guildId);
 		const { settings } = trx;
-		const stored = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), command);
+		const stored = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions, guildId), command);
 		if (getCommandRestrictionRevision(stored, settings.commandsDisabled.includes(command)) !== revision) return false;
 
 		const others = settings.commandsDisabled.filter((entry: string) => entry !== command);
 		let picked = keepHiddenRestrictionEntries(channels, stored, CommandChannelLists);
 		for (const rule of CommandMemberRules) picked = setCommandMembers(picked, rule, members[rule]);
-		const restrictions = setCommandRestriction(readCommandRestrictions(settings.commandsRestrictions), picked);
+		const restrictions = setCommandRestriction(readCommandRestrictions(settings.commandsRestrictions, guildId), picked);
 		// The restrictions are plain objects, which is what the JSON column holds:
 		await trx
 			.write({
 				commandsDisabled: disable ? [...others, command] : others,
-				commandsRestrictions: restrictions as never
+				commandsRestrictions: writeCommandRestrictions(restrictions) as never
 			})
 			.submitWithAudit(actorId);
 		return true;

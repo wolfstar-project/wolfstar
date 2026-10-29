@@ -1,6 +1,8 @@
 import {
 	findCommandRestriction,
+	findMatchingRestrictions,
 	getCommandRestrictionDenial,
+	getCommandRuleSpecificity,
 	getCommandRestrictionRevision,
 	keepHiddenRestrictionEntries,
 	listCommandMembers,
@@ -8,8 +10,10 @@ import {
 	removeFromCommandRestrictions,
 	setCommandMembers,
 	setCommandRestriction,
+	writeCommandRestrictions,
 	type CommandRestriction
 } from '#lib/structures/commands-menu';
+import { createCommand } from '../../../mocks/MockInstances.js';
 
 const channelA = '111111111111111111';
 const channelB = '222222222222222222';
@@ -33,18 +37,18 @@ function restriction(overrides: Partial<CommandRestriction> = {}): CommandRestri
 describe('command restrictions', () => {
 	describe('readCommandRestrictions', () => {
 		test('GIVEN what is not a list THEN there are no restrictions', () => {
-			expect(readCommandRestrictions(null)).toEqual([]);
-			expect(readCommandRestrictions({ command: 'ban' })).toEqual([]);
+			expect(readCommandRestrictions(null, guildId)).toEqual([]);
+			expect(readCommandRestrictions({ command: 'ban' }, guildId)).toEqual([]);
 		});
 
 		test('GIVEN a restriction THEN it is read, without what is not an ID and without what is twice', () => {
 			const value = [{ command: 'ban', allowedChannels: [channelA, channelA, 'nope', 5], ignoredRoles: [roleA] }];
 
-			expect(readCommandRestrictions(value)).toEqual([restriction({ allowedChannels: [channelA], ignoredRoles: [roleA] })]);
+			expect(readCommandRestrictions(value, guildId)).toEqual([restriction({ allowedChannels: [channelA], ignoredRoles: [roleA] })]);
 		});
 
 		test('GIVEN a restriction that restricts nothing THEN it is dropped', () => {
-			expect(readCommandRestrictions([{ command: 'ban', allowedChannels: [] }, 'nope', null])).toEqual([]);
+			expect(readCommandRestrictions([{ command: 'ban', allowedChannels: [] }, 'nope', null], guildId)).toEqual([]);
 		});
 
 		test('GIVEN the commands a channel disabled, as the column held before THEN the channel is ignored by each', () => {
@@ -53,7 +57,7 @@ describe('command restrictions', () => {
 				{ channel: channelB, commands: ['ban'] }
 			];
 
-			expect(readCommandRestrictions(value)).toEqual([
+			expect(readCommandRestrictions(value, guildId)).toEqual([
 				restriction({ ignoredChannels: [channelA, channelB] }),
 				restriction({ command: 'kick', ignoredChannels: [channelA] })
 			]);
@@ -62,7 +66,52 @@ describe('command restrictions', () => {
 		test('GIVEN more entries than a select menu shows THEN every one is kept', () => {
 			const many = Array.from({ length: 30 }, (_, index) => `1000000000000000${String(index).padStart(2, '0')}`);
 
-			expect(readCommandRestrictions([{ command: 'ban', ignoredRoles: many }])[0].ignoredRoles).toEqual(many);
+			expect(readCommandRestrictions([{ command: 'ban', ignoredRoles: many }], guildId)[0].ignoredRoles).toEqual(many);
+		});
+	});
+
+	describe('the targets of a rule', () => {
+		test('GIVEN targets THEN their specificity is command 3, sub-category 2, category 1, every command 0', () => {
+			expect(['warn', 'Moderation.warn', 'Moderation.Management.warn'].map(getCommandRuleSpecificity)).toEqual([3, 3, 3]);
+			expect(getCommandRuleSpecificity('Moderation.Management.*')).toBe(2);
+			expect(getCommandRuleSpecificity('Moderation.*')).toBe(1);
+			expect(getCommandRuleSpecificity('*')).toBe(0);
+		});
+
+		test('GIVEN rules on a command, its category and every command THEN the matching ones come most specific first', () => {
+			const warn = createCommand('warn', 'Moderation');
+			const rules = ['*', 'warn', 'Moderation.*', 'Tools.*'].map((command) => restriction({ command, ignoredRoles: [roleA] }));
+
+			expect(findMatchingRestrictions(rules, warn).map((rule) => rule.command)).toEqual(['warn', 'Moderation.*', '*']);
+		});
+	});
+
+	describe('the stored format', () => {
+		const saved = [
+			{ command: 'warn', allowedRoles: [roleA] },
+			{ command: 'ban', ignoredRoles: [roleB] }
+		];
+
+		test('GIVEN rules saved before the format THEN the ones that allowed someone ignore @everyone', () => {
+			expect(readCommandRestrictions(saved, guildId)).toEqual([
+				restriction({ command: 'warn', allowedRoles: [roleA], ignoredRoles: [guildId] }),
+				restriction({ command: 'ban', ignoredRoles: [roleB] })
+			]);
+		});
+
+		test('GIVEN rules saved with the format THEN they are read as they are', () => {
+			expect(readCommandRestrictions([...saved, { format: 2 }], guildId)).toEqual([
+				restriction({ command: 'warn', allowedRoles: [roleA] }),
+				restriction({ command: 'ban', ignoredRoles: [roleB] })
+			]);
+		});
+
+		test('GIVEN rules to store THEN the format marker is written with them', () => {
+			const rules = [restriction({ command: 'warn', allowedRoles: [roleA] })];
+			const written = writeCommandRestrictions(rules);
+
+			expect(written.at(-1)).toEqual({ format: 2 });
+			expect(readCommandRestrictions(written, guildId)).toEqual(rules);
 		});
 	});
 
@@ -187,7 +236,9 @@ describe('command restrictions', () => {
 			const rules = restriction({ allowedUsers: [everyone.userId] });
 			expect(getCommandRestrictionDenial(rules, everyone)).toBeNull();
 			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888', roleIds: [roleA] })).toBe('user');
-			expect(readCommandRestrictions([{ command: 'ban', allowedUsers: [everyone.userId, everyone.userId, 'bad'] }])).toEqual([rules]);
+			expect(
+				readCommandRestrictions([{ command: 'ban', allowedUsers: [everyone.userId, everyone.userId, 'bad'] }, { format: 2 }], guildId)
+			).toEqual([rules]);
 			expect(getCommandRestrictionRevision(rules, false)).not.toBe(getCommandRestrictionRevision(restriction(), false));
 		});
 

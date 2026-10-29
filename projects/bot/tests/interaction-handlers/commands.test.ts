@@ -70,7 +70,7 @@ describe('commands editor', () => {
 		settings = {
 			...getDefaultGuildSettings()!,
 			id: guildId,
-			commandsRestrictions: [stored] as unknown as GuildData['commandsRestrictions'],
+			commandsRestrictions: [stored, { format: 2 }] as unknown as GuildData['commandsRestrictions'],
 			commandsDisabled: ['ban']
 		} as GuildData;
 		vi.mocked(readSettings).mockImplementation(async () => settings as never);
@@ -102,7 +102,10 @@ describe('commands editor', () => {
 		await handler().run(save.interaction, save.content);
 		expect(written[0]).toMatchObject({
 			commandsDisabled: [],
-			commandsRestrictions: [{ ...stored, allowedChannels: [channelId], ignoredChannels: [], allowedRoles: [roleId], allowedUsers: [userId] }]
+			commandsRestrictions: [
+				{ ...stored, allowedChannels: [channelId], ignoredChannels: [], allowedRoles: [roleId], allowedUsers: [userId] },
+				{ format: 2 }
+			]
 		});
 	});
 
@@ -117,7 +120,7 @@ describe('commands editor', () => {
 		await handler().run(save.interaction, save.content);
 		expect(written[0]).toMatchObject({
 			commandsDisabled: ['ban'],
-			commandsRestrictions: [{ ...stored, allowedUsers: [], allowedRoles: [], ignoredUsers: [userId], ignoredRoles: [] }]
+			commandsRestrictions: [{ ...stored, allowedUsers: [], allowedRoles: [], ignoredUsers: [userId], ignoredRoles: [] }, { format: 2 }]
 		});
 	});
 
@@ -175,6 +178,6 @@ describe('commands editor', () => {
 		const confirmed = submit('confirmLegacy', revision, { confirmation: 'REMOVE' });
 		await handler().run(confirmed.interaction, confirmed.content);
 		expect(written).toEqual([{ permissionsUsers: [ownRule], permissionsRoles: [roleRule] }]);
-		expect(settings.commandsRestrictions).toEqual([stored]);
+		expect(settings.commandsRestrictions).toEqual([stored, { format: 2 }]);
 	});
 });
