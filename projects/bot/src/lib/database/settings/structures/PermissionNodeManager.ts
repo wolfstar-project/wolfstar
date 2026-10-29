@@ -51,8 +51,12 @@ export class PermissionNodeManager {
 		return this.runUser(subject, command) ?? this.runRole(subject, command);
 	}
 
+	/**
+	 * Whether the column of the roles has an entry for a role, a legacy node or a dashboard access rule: the listeners of
+	 * the roles refresh the column when one of them is deleted or moved.
+	 */
 	public has(roleId: string) {
-		return this.sorted.has(roleId);
+		return this.#cachedRawPermissionRoles.some((entry) => entry.id === roleId);
 	}
 
 	public add(target: PermissionNodeValueResolvable, command: string, action: PermissionNodeAction): readonly PermissionsNode[] {

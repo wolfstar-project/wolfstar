@@ -97,11 +97,12 @@ export async function canManageServerSettings(manager: ServerSettingsManager): P
 	const roles: DashboardAccessRole[] = hasDashboardAccessEntries(entries.roles)
 		? (await container.gatewayClient.roles.fetchAll(manager.guildId)).map((role) => ({ id: role.id, position: role.position }))
 		: [];
-	const access = resolveDashboardAccess({ userId: manager.userId, roleIds: manager.roleIds }, entries, roles);
+	// Everybody holds `@everyone`, whose ID is the guild's: a rule or an administrator role can name it.
+	const roleIds = [manager.guildId, ...manager.roleIds];
+	const access = resolveDashboardAccess({ userId: manager.userId, roleIds }, entries, roles);
 	if (access !== null) return access === 'allow';
 
-	// `@everyone`, whose ID is the guild's, can be one of the administrator roles:
-	const held = new Set([manager.guildId, ...manager.roleIds]);
+	const held = new Set(roleIds);
 	const isAdministrator = settings.rolesAdmin.length === 0 ? manager.manageGuild : settings.rolesAdmin.some((id) => held.has(id));
 	if (!isAdministrator) return false;
 

@@ -67,6 +67,15 @@ describe('canManageServerSettings', () => {
 		await expect(canManageServerSettings(manager({ manageGuild: true }))).resolves.toBe(false);
 	});
 
+	test('GIVEN a rule that denies @everyone THEN an administrator with no rule of their own may not', async () => {
+		// `@everyone` has the ID of the guild, and the roles of a member never list it:
+		vi.mocked(container.gatewayClient.roles.fetchAll).mockResolvedValue([higher, lower, { id: guildId, position: 0 }] as never);
+		mockSettings({ roles: [createDashboardAccessEntry(guildId, 'deny')] });
+
+		await expect(canManageServerSettings(manager({ manageGuild: true }))).resolves.toBe(false);
+		await expect(canManageServerSettings(manager({ manageGuild: true, userId: ownerId }))).resolves.toBe(true);
+	});
+
 	test('GIVEN a rule that allows a member without Manage Server THEN they may', async () => {
 		mockSettings({ roles: [createDashboardAccessEntry(lower.id, 'allow')] });
 

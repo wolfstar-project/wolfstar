@@ -1,6 +1,5 @@
-import { ApplyOptions } from '@wolfstar/decorators';
 import { writeSettings } from '#lib/database';
-import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom, CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
 	AutoModerationRuleError,
@@ -58,10 +57,11 @@ interface Change {
  * @remarks
  *
  * What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the user who
- * opened the menu can use it, and the `administrator` precondition requires the administrator level every time, as it does for the `/automod` subcommands. Every
- * change is made on the rule the database has, the one the menu shows may be behind another change.
+ * opened the menu can use it, and every click is checked again: the rules require the administrator level, as the
+ * `/automod` subcommands do, and the settings of the auto-moderation (the `setting` verb) the rule of the dashboard,
+ * `canManageServerSettings`, which can let in a member without the level. Every change is made on the rule the
+ * database has, the one the menu shows may be behind another change.
  */
-@ApplyOptions<InteractionHandler.Options>({ preconditions: ['administrator'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
@@ -73,6 +73,14 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (interaction.user.id !== action.ownerId) {
 			return fail(translateKey(t, `${Root}:menuWrongUser`, { command: inlineCode('/automod list') }));
 		}
+
+		const { member } = interaction;
+		const allowed =
+			member !== undefined &&
+			(action.verb === 'setting' && !(interaction instanceof ModalSubmitInteraction)
+				? await canManageServerSettingsFrom({ guildId, member })
+				: await hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator));
+		if (!allowed) return fail(translateKey(t, 'preconditions:administrator', { command: { name: this.name } }));
 
 		const context: AutoModerationMenuContext = { t, ownerId: action.ownerId };
 
@@ -148,15 +156,6 @@ export class UserInteractionHandler extends InteractionHandler {
 		argument: string,
 		channelId: Snowflake | undefined
 	) {
-		// These are settings of the server, which the rule of the dashboard decides on, not the administrator level alone:
-		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
-			const t = getSupportedUserLanguageT(interaction);
-			return interaction.reply({
-				content: translateKey(t, 'preconditions:administrator', { command: { name: this.name } }),
-				flags: MessageFlags.Ephemeral
-			});
-		}
-
 		const actorId = interaction.user.id;
 		switch (argument) {
 			case 'module':

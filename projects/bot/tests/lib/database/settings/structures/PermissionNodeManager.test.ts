@@ -233,6 +233,14 @@ describe('PermissionNodeManager', () => {
 			expect(getSorted().size).toBe(0);
 		});
 
+		test('GIVEN a role with only a rule THEN it is one the listeners of the roles refresh the column for', async () => {
+			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
+			await apply(role, [createDashboardAccessEntry(role.id, 'allow')]);
+
+			expect(readSettingsPermissionNodes().has(role.id)).toBe(true);
+			expect(readSettingsPermissionNodes().has('1')).toBe(false);
+		});
+
 		test('GIVEN the role of a rule is gone THEN the refresh drops it with the nodes of that role', async () => {
 			const kept = createRole({ id: '541739191776575502', name: 'Developer', position: 27 }, guild);
 			const ruleKept = createDashboardAccessEntry(kept.id, 'allow');
