@@ -8,6 +8,10 @@ vi.mock('#lib/database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('#lib/database')>()),
 	readSettings: vi.fn()
 }));
+vi.mock('#lib/structures/commands/permissions', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/structures/commands/permissions')>()),
+	hasCommandPermissionLevel: vi.fn().mockResolvedValue(false)
+}));
 
 // The precondition is run directly, so it is given the least a piece is built with:
 const precondition = new CommandsEnabled(
@@ -68,5 +72,22 @@ describe('commandsEnabled precondition', () => {
 		mockSettings(true);
 
 		expect(await check(moderationCommands)).toEqual(Object.fromEntries(moderationCommands.map((command) => [command.name, null])));
+	});
+
+	test('GIVEN a rule on the category of a command THEN it applies to the command, and a rule on another category does not', async () => {
+		const ban = moderationCommands.at(-1)!;
+		const userId = '266624760782258186';
+		const member = { guildId: guild.id, member: { user: { id: userId }, roles: [], permissions: '0' }, channel: { id: '2' } } as never;
+		const rules = (command: string) => [{ command, ignoredUsers: [userId] }, { format: 2 }];
+
+		vi.mocked(readSettings).mockResolvedValue({
+			...getDefaultGuildSettings()!,
+			id: guild.id,
+			commandsRestrictions: rules('Moderation.*')
+		} as never);
+		expect((await precondition.chatInputRun(member, ban)).unwrapErr()).toMatchObject({ identifier: 'preconditions:restrictedUser' });
+
+		vi.mocked(readSettings).mockResolvedValue({ ...getDefaultGuildSettings()!, id: guild.id, commandsRestrictions: rules('Tools.*') } as never);
+		expect((await precondition.chatInputRun(member, ban)).isOk()).toBe(true);
 	});
 });
