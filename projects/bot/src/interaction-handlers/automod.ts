@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@wolfstar/decorators';
 import { writeSettings } from '#lib/database';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
 	AutoModerationRuleError,
@@ -147,6 +148,15 @@ export class UserInteractionHandler extends InteractionHandler {
 		argument: string,
 		channelId: Snowflake | undefined
 	) {
+		// These are settings of the server, which the rule of the dashboard decides on, not the administrator level alone:
+		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
+			const t = getSupportedUserLanguageT(interaction);
+			return interaction.reply({
+				content: translateKey(t, 'preconditions:administrator', { command: { name: this.name } }),
+				flags: MessageFlags.Ephemeral
+			});
+		}
+
 		const actorId = interaction.user.id;
 		switch (argument) {
 			case 'module':

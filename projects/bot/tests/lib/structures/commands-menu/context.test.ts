@@ -1,6 +1,6 @@
 import { readSettings } from '#lib/database';
 import { createCommandsMenuContext } from '#lib/structures/commands-menu';
-import { hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
 
 vi.mock('#lib/database', async (original) => ({
@@ -9,7 +9,7 @@ vi.mock('#lib/database', async (original) => ({
 }));
 vi.mock('#lib/structures/commands/permissions', async (original) => ({
 	...(await original<typeof import('#lib/structures/commands/permissions')>()),
-	hasCommandPermissionLevel: vi.fn()
+	canManageServerSettingsFrom: vi.fn()
 }));
 vi.mock('#lib/structures/commands-menu/catalog', async (original) => ({
 	...(await original<typeof import('#lib/structures/commands-menu/catalog')>()),
@@ -31,7 +31,7 @@ describe('createCommandsMenuContext', () => {
 		const permissionsUsers = [{ id: userId, allow: [], deny: ['*'] }] as unknown as GuildData['permissionsUsers'];
 		const settings = { ...getDefaultGuildSettings()!, id: guildId, permissionsUsers } as GuildData;
 		vi.mocked(readSettings).mockResolvedValue(settings as never);
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(true);
+		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(true);
 	});
 
 	test('does not read the settings unless a page of the menu asks for the legacy notice', async () => {
@@ -39,13 +39,13 @@ describe('createCommandsMenuContext', () => {
 
 		expect(context.hasLegacyPermissions).toBe(false);
 		expect(readSettings).not.toHaveBeenCalled();
-		expect(hasCommandPermissionLevel).not.toHaveBeenCalled();
+		expect(canManageServerSettingsFrom).not.toHaveBeenCalled();
 	});
 
 	test('shows the legacy notice to an administrator of a server that still stores nodes', async () => {
 		await expect(createCommandsMenuContext(interaction, userId, { legacy: true })).resolves.toMatchObject({ hasLegacyPermissions: true });
 
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(false);
+		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(false);
 		await expect(createCommandsMenuContext(interaction, userId, { legacy: true })).resolves.toMatchObject({ hasLegacyPermissions: false });
 	});
 });

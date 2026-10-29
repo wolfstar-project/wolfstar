@@ -18,10 +18,10 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionH
  * The menu keeps nothing in memory: what the file holds waits in Redis and the button says which import it answers,
  * so any process can handle the click, the shard that showed the preview or another one. The import is taken before it
  * is written, which only one click can do. What is written is worked out again from what the database has by then, see
- * `applyConfigurationImport`. Only the administrator who imports the file can answer, and the `administrator`
- * precondition checks the level again at the click.
+ * `applyConfigurationImport`. Only the member who imports the file can answer, and the `serverSettings`
+ * precondition checks again at the click that they may manage the settings of the server.
  */
-@ApplyOptions<InteractionHandler.Options>({ preconditions: ['administrator'] })
+@ApplyOptions<InteractionHandler.Options>({ preconditions: ['serverSettings'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;

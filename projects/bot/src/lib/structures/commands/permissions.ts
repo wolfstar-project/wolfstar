@@ -1,9 +1,10 @@
-import { readSettings } from '#lib/database';
+import { readSettings, readSettingsPermissionNodes } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { createFunctionPrecondition } from '@wolfstar/decorators';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { MessageFlags, PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
+import { hasDashboardAccessEntries, resolveDashboardAccess, type DashboardAccessRole } from 'wolfstar-database';
 
 /**
  * The permission levels a command can require.
@@ -60,6 +61,73 @@ export async function hasCommandPermissionLevel(
 	const moderatorRoles = settings.rolesModerator;
 	if (moderatorRoles.length === 0) return true;
 	return isAdministrator || moderatorRoles.some((id: string) => roles.has(id));
+}
+
+/**
+ * A member who asks to manage the settings of a server, from the dashboard or from Discord.
+ */
+export interface ServerSettingsManager {
+	guildId: Snowflake;
+	userId: Snowflake;
+	/** The roles the member holds, `@everyone` left out. */
+	roleIds: readonly Snowflake[];
+	/** Whether the member has `Manage Server`, or `Administrator`, which the caller reads the way its member allows. */
+	manageGuild: boolean;
+}
+
+/**
+ * Whether a member may manage the settings of a server: the dashboard and the API, the settings menu, the import of
+ * the settings and the editor of `/commands`. It is the rule wolfstar.rocks applies, in the same order:
+ *
+ * 1. the owner always may;
+ * 2. a dashboard access rule that names the member decides on its own, see `resolveDashboardAccess`: an `allow` lets
+ *    in a member without `Manage Server`, a `deny` keeps out an administrator;
+ * 3. with no rule, an administrator may (the `rolesAdmin` roles, or `Manage Server` when there are none), unless a
+ *    legacy permission node denies them the `settings` command.
+ *
+ * @param manager - The member who asks.
+ */
+export async function canManageServerSettings(manager: ServerSettingsManager): Promise<boolean> {
+	const guild = await container.gatewayClient.guilds.fetch(manager.guildId);
+	if (manager.userId === guild.ownerId) return true;
+
+	const settings = await readSettings(manager.guildId);
+	const entries = { users: settings.permissionsUsers, roles: settings.permissionsRoles };
+	// The roles of the guild are only read when a rule of a role could decide:
+	const roles: DashboardAccessRole[] = hasDashboardAccessEntries(entries.roles)
+		? (await container.gatewayClient.roles.fetchAll(manager.guildId)).map((role) => ({ id: role.id, position: role.position }))
+		: [];
+	const access = resolveDashboardAccess({ userId: manager.userId, roleIds: manager.roleIds }, entries, roles);
+	if (access !== null) return access === 'allow';
+
+	// `@everyone`, whose ID is the guild's, can be one of the administrator roles:
+	const held = new Set([manager.guildId, ...manager.roleIds]);
+	const isAdministrator = settings.rolesAdmin.length === 0 ? manager.manageGuild : settings.rolesAdmin.some((id) => held.has(id));
+	if (!isAdministrator) return false;
+
+	const command = container.stores.get('commands').get('settings');
+	if (command === undefined) return true;
+	return (await readSettingsPermissionNodes(settings).run({ id: manager.userId, roleIds: manager.roleIds }, command)) ?? true;
+}
+
+/**
+ * Runs {@linkcode canManageServerSettings} for the author of an interaction of a guild.
+ *
+ * @param interaction - The interaction, which has the member and the permissions Discord computed for them.
+ */
+export function canManageServerSettingsFrom(interaction: {
+	guildId: Snowflake;
+	member: { user: { id: Snowflake }; roles: readonly Snowflake[]; permissions: string };
+}) {
+	const { member } = interaction;
+	const permissions = BigInt(member.permissions);
+	const bits = PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator;
+	return canManageServerSettings({
+		guildId: interaction.guildId,
+		userId: member.user.id,
+		roleIds: member.roles,
+		manageGuild: (permissions & bits) !== 0n
+	});
 }
 
 /**
@@ -144,4 +212,25 @@ export function getRequiredCommandPermissionLevel(piece: object): CommandPermiss
 	}
 
 	return null;
+}
+
+/**
+ * Decorator that only runs the decorated method when the author of the interaction may manage the settings of the
+ * server, see {@linkcode canManageServerSettings}; otherwise they get the reply of the administrator level. It records
+ * the administrator level for `GET /commands`, as {@linkcode RequiresCommandPermissionLevel} does.
+ */
+export function RequiresServerSettingsManagement(): MethodDecorator {
+	const decorator = createFunctionPrecondition(
+		(interaction: GuildChatInputInteraction) => canManageServerSettingsFrom(interaction),
+		(interaction: GuildChatInputInteraction) =>
+			interaction.reply({
+				content: getCommandPermissionDenialMessage(interaction, CommandPermissionLevel.Administrator),
+				flags: MessageFlags.Ephemeral
+			})
+	);
+
+	return (target, propertyKey, descriptor) => {
+		if (propertyKey === 'chatInputRun') ChatInputPermissionLevels.set(target, CommandPermissionLevel.Administrator);
+		return decorator(target, propertyKey, descriptor);
+	};
 }

@@ -1,5 +1,5 @@
 import { getConfigurableGroups } from '#lib/database';
-import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { RequiresServerSettingsManagement } from '#lib/structures/commands/permissions';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { createSettingsMenuContext, renderSettingsGroup } from '#lib/structures/settings-menu';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
@@ -23,7 +23,7 @@ import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-adva
  */
 @RegisterAsSubcommand('settings', (builder) => applyLocalizedBuilder(builder, 'commands/conf:settingsServer'))
 export class UserCommand extends Command {
-	@RequiresCommandPermissionLevel(CommandPermissionLevel.Administrator)
+	@RequiresServerSettingsManagement()
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
 		const context = await createSettingsMenuContext(interaction, interaction.guildId, interaction.user.id);
 		return interaction.reply(renderSettingsGroup(context, getConfigurableGroups(), 0));

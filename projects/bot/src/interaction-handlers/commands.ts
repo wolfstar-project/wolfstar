@@ -1,4 +1,4 @@
-import { getLegacyPermissions, getLegacyPermissionRevision } from '#lib/structures/commands-menu/legacy';
+import { getLegacyPermissions, getLegacyPermissionRevision, keepDashboardAccessEntries } from '#lib/structures/commands-menu/legacy';
 import { readSettings, writeSettingsTransaction } from '#lib/database';
 import {
 	AllCategoriesValue,
@@ -32,7 +32,7 @@ import {
 	type CommandMemberRule,
 	type CommandRestriction
 } from '#lib/structures/commands-menu/restrictions';
-import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
 import { getModalValue, getModalValues } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
@@ -279,19 +279,25 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (getModalValue(interaction.data.components, 'confirmation') !== 'REMOVE') return reply(t('commands/commands:legacyConfirmationInvalid'));
 		using trx = await writeSettingsTransaction(interaction.guildId!);
 		if (getLegacyPermissionRevision(trx.settings) !== revision) return reply(t('commands/commands:legacyStale'));
-		await trx.write({ permissionsUsers: [], permissionsRoles: [] }).submitWithAudit(interaction.user.id);
+		// The dashboard access rules share the columns and are not legacy nodes: they stay.
+		await trx
+			.write({
+				permissionsUsers: keepDashboardAccessEntries(trx.settings.permissionsUsers),
+				permissionsRoles: keepDashboardAccessEntries(trx.settings.permissionsRoles)
+			})
+			.submitWithAudit(interaction.user.id);
 		return reply(t('commands/commands:legacyRemoved'));
 	}
 
 	/**
 	 * Reads whether the author of an interaction is not allowed to edit the commands of the server.
 	 *
-	 * @returns The reason, `null` when they are an administrator.
+	 * @returns The reason, `null` when they may manage the settings of the server, see `canManageServerSettings`.
 	 */
 	private async getDenial(interaction: InteractionHandler.Interaction, t: ReturnType<typeof createTranslator>) {
 		const { guildId, member } = interaction;
 		if (guildId === undefined || member === undefined) return getDefaultExpiredReply();
-		if (await hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator)) return null;
+		if (await canManageServerSettingsFrom({ guildId, member })) return null;
 
 		return t('preconditions:administrator', { command: { name: 'commands' } });
 	}
