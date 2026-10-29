@@ -194,7 +194,8 @@ export function findCommandRestriction(restrictions: readonly CommandRestriction
  */
 export function setCommandRestriction(restrictions: readonly CommandRestriction[], restriction: CommandRestriction): CommandRestriction[] {
 	const others = restrictions.filter((entry) => entry.command !== restriction.command);
-	const [next] = readCommandRestrictions([restriction]);
+	// A rule that is set is of the current format, so it is read as it is, without the upgrade of an older list:
+	const [next] = readCommandRestrictions(writeCommandRestrictions([restriction]), '');
 	return next === undefined ? others : [...others, next];
 }
 
