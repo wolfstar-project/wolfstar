@@ -21,7 +21,7 @@ import {
 	renderGroupRuleModal
 } from '#lib/structures/commands-menu';
 import { convertLegacyNodes } from '#lib/structures/commands-menu/conversion';
-import type { PermissionsNode } from 'wolfstar-database';
+import type { PermissionsNode, ReadonlyGuildData } from 'wolfstar-database';
 import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
 import {
 	CommandChannelLists,
@@ -345,12 +345,12 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * The legacy nodes a server still stores, each with why the conversion into command rules left it (see
 	 * `LegacyNodeSkip`); a node with no reason is one the conversion would convert, on a bot that has not run it.
 	 */
-	private async describeLegacyNodes(guildId: string, settings: Parameters<typeof getLegacyPermissions>[0]) {
+	private async describeLegacyNodes(guildId: string, settings: ReadonlyGuildData) {
 		const roles = await this.container.gatewayClient.roles.fetchAll(guildId);
 		const { skipped } = convertLegacyNodes({
 			users: settings.permissionsUsers,
 			roles: settings.permissionsRoles,
-			restrictions: [],
+			restrictions: readCommandRestrictions(settings.commandsRestrictions, guildId),
 			existingRoleIds: new Set(roles.map((role) => role.id))
 		});
 		const reasons = new Map(skipped.map((entry) => [entry.node, entry.reason]));

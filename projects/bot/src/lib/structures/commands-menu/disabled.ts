@@ -13,9 +13,10 @@ export const ProtectedCommands: ReadonlySet<string> = new Set(['settings', 'comm
  *
  * @param disabled - The names a server disabled: a command, `category.*`, or `*`.
  * @param command - The command to look for.
- * @returns The first name that matches the command, `null` when it is enabled.
+ * @returns The first name that matches the command, `null` when it is enabled, as a protected command always is.
  */
 export function findDisabledBy(disabled: readonly string[], command: Command): string | null {
+	if (ProtectedCommands.has(command.name)) return null;
 	return disabled.find((name) => CommandMatcher.match(name, command)) ?? null;
 }
 

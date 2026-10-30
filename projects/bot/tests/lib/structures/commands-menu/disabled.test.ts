@@ -25,6 +25,11 @@ describe('disabled commands', () => {
 		expect(findDisabledBy(['*'], ban)).toBe('*');
 	});
 
+	test('GIVEN a group that covers a protected command THEN it is not told as disabled', () => {
+		expect(findDisabledBy(['*', 'Management.*'], createCommand('settings', 'Management'))).toBeNull();
+		expect(findDisabledBy(['*'], createCommand('commands', 'Tools'))).toBeNull();
+	});
+
 	test('GIVEN the commands that edit the setting THEN a server cannot disable them', () => {
 		expect([...ProtectedCommands].sort()).toEqual(['commands', 'settings']);
 	});
