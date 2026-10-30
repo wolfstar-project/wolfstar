@@ -10,7 +10,8 @@ import type { Message } from '@wolfstar/plugin-gateway';
  * @remarks
  *
  * The honeypot is for the accounts of users that post spam, so the bots, the webhooks and the messages of the system
- * are not what it looks for: a bot that announces in the channel is one the server added.
+ * are not what it looks for: a bot that announces in the channel is one the server added. Nobody is caught while
+ * `modules.honeypot` is off: the message stays, and what the honeypot is set up with too.
  */
 @RegisterAsDispatchListener('messageCreate')
 export class UserListener extends EventGatewayListener<'messageCreate'> {
@@ -19,7 +20,7 @@ export class UserListener extends EventGatewayListener<'messageCreate'> {
 		if (guildId === null || message.system || message.webhookId !== null || message.author.bot) return;
 
 		const settings = await readSettings(guildId);
-		if (settings.honeypotChannel !== message.channelId || !isGuildMessage(message)) return;
+		if (settings.honeypotChannel !== message.channelId || !settings.modulesHoneypot || !isGuildMessage(message)) return;
 
 		await catchHoneypotMessage(message, settings);
 	}
