@@ -24,6 +24,16 @@ export function resolveMigrationUrl(env: Environment): string {
 }
 
 /**
+ * What a database needs before its migrations: the schema when it has no tables. Tables nothing signed were not made by
+ * this step (the migration of the website, when it went first) and the migrations cannot start from them.
+ */
+export function resolveSchemaStep({ hasGuild, hasMarker }: { hasGuild: boolean; hasMarker: boolean }): 'apply' | 'migrate' {
+	if (!hasGuild) return 'apply';
+	if (hasMarker) return 'migrate';
+	throw new Error('The database has a "Guild" table and no Prisma marker: check it against the contract, then run `prisma db sign`.');
+}
+
+/**
  * Applies `legacy/schema.sql` when the database has no `Guild` table, under a lock, so two processes do not do it twice.
  * The tables of the new schema have other names than the legacy ones, so they live side by side.
  */
@@ -35,8 +45,10 @@ async function applySchema(url: string) {
 	try {
 		await client.query('BEGIN');
 		await client.query(`SELECT pg_advisory_xact_lock(hashtextextended('deploy:schema', 0))`);
-		const { rows } = await client.query<{ table: string | null }>(`SELECT to_regclass('public."Guild"')::text AS "table"`);
-		if (rows[0].table === null) {
+		const { rows } = await client.query<{ guild: string | null; marker: string | null }>(
+			`SELECT to_regclass('public."Guild"')::text AS "guild", to_regclass('prisma_contract.marker')::text AS "marker"`
+		);
+		if (resolveSchemaStep({ hasGuild: rows[0].guild !== null, hasMarker: rows[0].marker !== null }) === 'apply') {
 			console.log('[deploy] The database has no schema, applying it.');
 			await client.query(await readFile(new URL('../legacy/schema.sql', import.meta.url), 'utf8'));
 		}

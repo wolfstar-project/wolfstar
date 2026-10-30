@@ -22,7 +22,7 @@
 		"typecheck": "stars typecheck",
 		"dev": "stars dev",
 		"clean": "node scripts/clean.mjs",
-		"start": "pnpm --filter wolfstar-database run migrate:deploy && exec node --enable-source-maps --import @wolfstar/plugin-opentelemetry/preload dist/main.mjs",
+		"start": "pnpm --filter wolfstar-database run migrate:deploy && node --enable-source-maps --import @wolfstar/plugin-opentelemetry/preload dist/main.mjs",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"stars:info": "stars info"

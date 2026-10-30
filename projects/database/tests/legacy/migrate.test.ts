@@ -32,6 +32,8 @@ class FakeDatabase implements LegacyClient {
 	public readonly queries: string[] = [];
 	public readonly inserted = new Map<string, LegacyRow[]>();
 	public readonly migrated = new Set<string>();
+	/** The IDs of the cases the new schema already has. */
+	public readonly takenCases = new Set<number>();
 	/** What a second process converts between the read of the record and the lock. */
 	public convertedMeanwhile: string | null = null;
 
@@ -64,10 +66,14 @@ class FakeDatabase implements LegacyClient {
 		if (insert && sql.includes('jsonb_populate_recordset')) {
 			const rows = JSON.parse(params[0] as string) as LegacyRow[];
 			const table = this.inserted.get(insert[1]) ?? [];
-			const fresh = rows.filter((row) => !table.some((other) => JSON.stringify(other) === JSON.stringify(row)));
+			const fresh = rows.filter(
+				(row) =>
+					!table.some((other) => JSON.stringify(other) === JSON.stringify(row)) &&
+					!(insert[1] === 'ModerationAction' && this.takenCases.has(row.id as number))
+			);
 			table.push(...fresh);
 			this.inserted.set(insert[1], table);
-			return { rows: [], rowCount: fresh.length };
+			return { rows: sql.includes('RETURNING') ? fresh : [], rowCount: fresh.length };
 		}
 
 		return { rows: [], rowCount: null };
@@ -181,6 +187,21 @@ describe('migrateLegacyDatabase', () => {
 		expect(report?.cases).toEqual({ converted: 0, skipped: 1 });
 		expect(report?.guilds.converted).toBe(1);
 		expect(log.warn).toHaveBeenCalledWith(expect.stringContaining('1 of 1 cases'));
+	});
+
+	test('GIVEN a case whose number is taken THEN it is told by its number, and its data does not go to the other case', async () => {
+		const client = new FakeDatabase({
+			guilds: [createLegacyGuild({ id: First })],
+			moderation: [createCase(First, { extra_data: { roles: ['1'] } }), createCase(First, { case_id: 2, extra_data: { roles: ['2'] } })]
+		});
+		client.takenCases.add(1);
+		const log = createLog();
+
+		const report = await migrateLegacyDatabase({ client, encodeCase, log });
+
+		expect(report?.cases).toEqual({ converted: 1, skipped: 1 });
+		expect(client.inserted.get('ModerationCaseData')).toEqual([expect.objectContaining({ case_id: 2 })]);
+		expect(log.warn).toHaveBeenCalledWith(expect.stringContaining('cases 1 were left out'));
 	});
 
 	test('GIVEN a new chain that holds events THEN its head is left alone', async () => {

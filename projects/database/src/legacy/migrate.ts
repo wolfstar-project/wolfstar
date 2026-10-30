@@ -3,7 +3,7 @@ import { convertLegacyGuild } from './guild.js';
 import { convertLegacyAuditEvent, convertLegacyCommandLog, convertLegacyUser } from './logs.js';
 import { findLegacyTables, readLegacyRows, type LegacyClient } from './source.js';
 import type { LegacyRow } from './types.js';
-import { insertMissing } from './write.js';
+import { insertMissing, insertMissingReturning } from './write.js';
 
 export type { LegacyCaseEncoder } from './cases.js';
 export type { LegacyClient } from './source.js';
@@ -84,17 +84,23 @@ async function convertGuild(
 
 		const convertedCases = cases.map((entry) => convertLegacyCase(entry, encodeCase));
 		const valid = convertedCases.filter((entry) => entry !== null);
-		casesConverted = await insertMissing(
-			client,
-			'ModerationAction',
-			valid.map((entry) => entry.case)
+		const inserted = new Set(
+			await insertMissingReturning(
+				client,
+				'ModerationAction',
+				valid.map((entry) => entry.case),
+				'id'
+			)
 		);
+		casesConverted = inserted.size;
 		casesSkipped = cases.length - casesConverted;
-		await insertMissing(
-			client,
-			'ModerationCaseData',
-			valid.flatMap((entry) => (entry.data === null ? [] : [entry.data]))
-		);
+
+		// What the row of a case has no column for stays with its case: a number that was taken is another case.
+		const data = valid.filter((entry) => inserted.has(entry.case.id)).flatMap((entry) => (entry.data === null ? [] : [entry.data]));
+		await insertMissing(client, 'ModerationCaseData', data);
+
+		const left = valid.filter((entry) => !inserted.has(entry.case.id)).map((entry) => entry.case.id);
+		if (left.length > 0) warnings.push(`The cases ${left.join(', ')} were left out, their numbers are taken.`);
 		warnings.push(...valid.flatMap((entry) => entry.warnings));
 
 		await client.query(`INSERT INTO "LegacyMigratedGuild" (guild_id) VALUES ($1)`, [guildId]);
