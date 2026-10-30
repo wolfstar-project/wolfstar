@@ -144,6 +144,13 @@ export function writeCommandRestrictions(restrictions: readonly CommandRestricti
 }
 
 /**
+ * Whether the target of a rule is a group of commands (`*`, `Category.*`, `Category.SubCategory.*`) and not a command.
+ */
+export function isCommandGroupTarget(target: string): boolean {
+	return target === '*' || target.endsWith('.*');
+}
+
+/**
  * How specific the target of a rule is: a command (`warn`, `Moderation.warn`, `Moderation.Management.warn`) is 3, a
  * sub-category (`Moderation.Management.*`) 2, a category (`Moderation.*`) 1 and every command (`*`) 0. Of the rules
  * that match a command for a member or a role, the most specific one decides.

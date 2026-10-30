@@ -16,14 +16,19 @@ import {
 	renderCommandsList,
 	renderCommandsPageModal,
 	renderCommandsResults,
-	renderCommandsSearchModal
+	renderCommandsSearchModal,
+	renderGroupRuleModal
 } from '#lib/structures/commands-menu';
+import { convertLegacyNodes } from '#lib/structures/commands-menu/conversion';
+import type { PermissionsNode } from 'wolfstar-database';
 import { findCommandPiece, findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
 import {
 	CommandChannelLists,
 	CommandMemberRules,
 	findCommandRestriction,
+	findMatchingRestrictions,
 	getCommandRestrictionRevision,
+	isCommandGroupTarget,
 	isCommandRestrictionEmpty,
 	keepHiddenRestrictionEntries,
 	readCommandRestrictions,
@@ -97,6 +102,8 @@ export class UserInteractionHandler extends InteractionHandler {
 				return component.showModal(renderCommandsPageModal(t, action.ownerId, action.target));
 			case 'edit':
 				return this.edit(component, action.ownerId, action.target, t);
+			case 'editGroup':
+				return this.editGroup(component, action.ownerId, action.target, t);
 			case 'legacy':
 				return this.legacy(component, t);
 			case 'clearLegacy': {
@@ -143,10 +150,41 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
 
 		const settings = await readSettings(interaction.guildId!);
-		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions, interaction.guildId!), piece.name);
+		const rules = readCommandRestrictions(settings.commandsRestrictions, interaction.guildId!);
+		const restriction = findCommandRestriction(rules, piece.name);
 		const revision = getCommandRestrictionRevision(restriction, settings.commandsDisabled.includes(piece.name));
+		// The rules of its category, of its sub-category and of every command apply to it too:
+		const inherited = findMatchingRestrictions(rules, piece)
+			.map((rule) => rule.command)
+			.filter((target) => isCommandGroupTarget(target));
 		return interaction.showModal(
-			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision)
+			renderCommandEditModal(context, command, findDisabledBy(settings.commandsDisabled, piece), restriction, revision, inherited)
+		);
+	}
+
+	/**
+	 * Opens the modal that edits the rules of a group of commands, to the members who may manage the settings.
+	 *
+	 * @param interaction - The click on the button of a list (the target is `*` or `Category.*`), or the pick in the
+	 * select menu of the sub-categories of a category (the target is the category, the value the sub-category).
+	 * @param ownerId - The user who opened the menu.
+	 * @param target - What the custom ID carries.
+	 * @param t - The function to translate with.
+	 */
+	private async editGroup(interaction: ComponentInteraction, ownerId: string, target: string, t: ReturnType<typeof createTranslator>) {
+		const denial = await this.getDenial(interaction, t);
+		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+
+		const subCategory = this.getCategory(interaction);
+		const group = isCommandGroupTarget(target) ? target : subCategory === '' ? null : `${target}.${subCategory}.*`;
+		if (group === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+
+		const settings = await readSettings(interaction.guildId!);
+		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions, interaction.guildId!), group);
+		const disabled = settings.commandsDisabled.includes(group);
+		const context = { t, ownerId, commands: [], ids: new Map() };
+		return interaction.showModal(
+			renderGroupRuleModal(context, group, disabled, restriction, getCommandRestrictionRevision(restriction, disabled))
 		);
 	}
 
@@ -163,6 +201,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return reply(denial);
+
+		if (isCommandGroupTarget(name)) return this.saveGroup(interaction, name, revision, t);
 
 		const piece = findCommandPiece(name);
 		if (piece === null) return reply(getDefaultExpiredReply());
@@ -193,6 +233,24 @@ export class UserInteractionHandler extends InteractionHandler {
 		const rule = findDisabledBy(settings.commandsDisabled, piece);
 		const status = rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule });
 		return reply(`${status}\n${restrictions}`);
+	}
+
+	/**
+	 * Saves the modal of a group of commands: whether `commands.disabled` has the group, and its rule. The commands that
+	 * edit the settings are never restricted nor disabled whatever names them, see `ProtectedCommands`.
+	 */
+	private async saveGroup(interaction: ModalInteraction, target: string, revision: number, t: ReturnType<typeof createTranslator>) {
+		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const selectedStatus = getModalValue(interaction.data.components, CommandStatusInputId);
+		if (selectedStatus !== CommandDisabledValue && selectedStatus !== 'enabled') return reply(getDefaultExpiredReply());
+
+		const channels = findCommandRestriction([], target);
+		for (const list of CommandChannelLists) channels[list] = getModalValues(interaction.data.components, list);
+		const disable = selectedStatus === CommandDisabledValue;
+		const saved = await this.write(interaction.guildId!, target, disable, channels, this.readMembers(interaction), revision, interaction.user.id);
+		if (!saved) return reply(t('commands/commands:editGroupStale', { target }));
+
+		return reply(t(disable ? 'commands/commands:editGroupDisabledDone' : 'commands/commands:editGroupSaved', { target }));
 	}
 
 	/**
@@ -252,18 +310,39 @@ export class UserInteractionHandler extends InteractionHandler {
 		// The nodes and their file can take a moment, which the three seconds of the first answer may not have:
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const settings = await readSettings(interaction.guildId!);
+		const nodes = await this.describeLegacyNodes(interaction.guildId!, settings);
 		return deferred.update({
 			content: t('commands/commands:legacyExplanation'),
 			allowed_mentions: { parse: [] },
 			files: [
 				{
 					name: 'legacy-permission-nodes.json',
-					data: Buffer.from(JSON.stringify(getLegacyPermissions(settings), null, 2)),
+					data: Buffer.from(JSON.stringify(nodes, null, 2)),
 					contentType: 'application/json'
 				}
 			],
 			components: [renderLegacyPermissionButtons({ t, ownerId: interaction.user.id }, getLegacyPermissionRevision(settings))]
 		});
+	}
+
+	/**
+	 * The legacy nodes a server still stores, each with why the conversion into command rules left it (see
+	 * `LegacyNodeSkip`); a node with no reason is one the conversion would convert, on a bot that has not run it.
+	 */
+	private async describeLegacyNodes(guildId: string, settings: Parameters<typeof getLegacyPermissions>[0]) {
+		const roles = await this.container.gatewayClient.roles.fetchAll(guildId);
+		const { skipped } = convertLegacyNodes({
+			users: settings.permissionsUsers,
+			roles: settings.permissionsRoles,
+			restrictions: [],
+			existingRoleIds: new Set(roles.map((role) => role.id))
+		});
+		const reasons = new Map(skipped.map((entry) => [entry.node, entry.reason]));
+		const describe = (nodes: readonly PermissionsNode[]) =>
+			nodes.map((node) => ({ ...node, ...(reasons.has(node) && { reason: reasons.get(node) }) }));
+
+		const legacy = getLegacyPermissions(settings);
+		return { users: describe(legacy.users), roles: describe(legacy.roles) };
 	}
 
 	private async getLegacyOwnerDenial(interaction: InteractionHandler.Interaction, t: ReturnType<typeof createTranslator>) {

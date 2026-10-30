@@ -1,5 +1,11 @@
 import { readSettings, writeSettingsTransaction } from '#lib/database';
-import { encodeCommandsMenuId, findCommandRestriction, getCommandRestrictionRevision, type CommandsMenuVerb } from '#lib/structures/commands-menu';
+import {
+	decodeCommandsMenuId,
+	encodeCommandsMenuId,
+	findCommandRestriction,
+	getCommandRestrictionRevision,
+	type CommandsMenuVerb
+} from '#lib/structures/commands-menu';
 import { getLegacyPermissionRevision } from '#lib/structures/commands-menu/legacy';
 import { findCommandPiece } from '#lib/structures/commands-menu/disabled';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
@@ -43,7 +49,7 @@ const roleId = '777777777777777777';
 // A select menu of roles and users returns IDs, and the interaction says which are roles and which users:
 const resolved = { users: { [userId]: { id: userId } }, roles: { [roleId]: { id: roleId } } };
 
-function submit(verb: CommandsMenuVerb, revision: number, values: Record<string, string | string[]>, actorId = ownerId) {
+function submit(verb: CommandsMenuVerb, revision: number, values: Record<string, string | string[]>, actorId = ownerId, target = 'ban') {
 	const answers: unknown[] = [];
 	const interaction = Object.assign(Object.create(ModalSubmitInteraction.prototype), {
 		guildId,
@@ -55,8 +61,29 @@ function submit(verb: CommandsMenuVerb, revision: number, values: Record<string,
 		},
 		reply: async (data: unknown) => void answers.push(data)
 	});
-	const content = encodeCommandsMenuId({ ownerId, verb, target: 'ban', page: revision }).split('.').slice(1);
+	const content = encodeCommandsMenuId({ ownerId, verb, target, page: revision }).split('.').slice(1);
 	return { interaction, content, answers };
+}
+
+/** A click on a component of the menu, a button or a select menu with its picked values. */
+function click(verb: CommandsMenuVerb, target: string, values?: string[]) {
+	const answers: unknown[] = [];
+	const modals: { custom_id: string; components: unknown[] }[] = [];
+	const interaction = {
+		guildId,
+		user: { id: ownerId },
+		member: { user: { id: ownerId }, roles: [], permissions: '0' },
+		data: values === undefined ? { component_type: 2 } : { component_type: 3, values },
+		reply: async (data: unknown) => void answers.push(data),
+		showModal: async (data: { custom_id: string; components: unknown[] }) => void modals.push(data),
+		defer: async () => ({ update: async (data: unknown) => void answers.push(data) })
+	};
+	const content = encodeCommandsMenuId({ ownerId, verb, target, page: 0 }).split('.').slice(1);
+	return { interaction: interaction as never, content, answers, modals };
+}
+
+function decodeTarget(customId: string) {
+	return decodeCommandsMenuId(customId.split('.').slice(1));
 }
 
 describe('commands editor', () => {
@@ -148,6 +175,67 @@ describe('commands editor', () => {
 		await handler().run(denied.interaction, denied.content);
 		expect(written).toEqual([]);
 		expect(denied.answers).toMatchObject([{ content: 'commands/commands:editProtectedRestricted' }]);
+	});
+
+	test('the rules of a category and of a sub-category open in a form of their own', async () => {
+		const group = click('editGroup', 'Moderation.*');
+		await handler().run(group.interaction, group.content);
+		expect(decodeTarget(group.modals[0].custom_id)).toMatchObject({ verb: 'save', target: 'Moderation.*' });
+
+		const subCategory = click('editGroup', 'Moderation', ['Management']);
+		await handler().run(subCategory.interaction, subCategory.content);
+		expect(decodeTarget(subCategory.modals[0].custom_id)).toMatchObject({ verb: 'save', target: 'Moderation.Management.*' });
+	});
+
+	test('saving the form of a category writes its rule and its status', async () => {
+		const save = submit(
+			'save',
+			getCommandRestrictionRevision(findCommandRestriction([], 'Moderation.*'), false),
+			{ status: 'disabled', allowedChannels: [], ignoredChannels: [], allowedMembers: [], ignoredMembers: [roleId] },
+			ownerId,
+			'Moderation.*'
+		);
+		await handler().run(save.interaction, save.content);
+
+		expect(written).toEqual([
+			{
+				commandsDisabled: ['ban', 'Moderation.*'],
+				commandsRestrictions: [stored, { ...findCommandRestriction([], 'Moderation.*'), ignoredRoles: [roleId] }, { format: 2 }]
+			}
+		]);
+	});
+
+	test('saving the form of a sub-category with nothing picked removes its rule', async () => {
+		const rule = { ...findCommandRestriction([], 'Moderation.Management.*'), ignoredUsers: [userId] };
+		settings.commandsRestrictions = [stored, rule, { format: 2 }] as never;
+		const save = submit(
+			'save',
+			getCommandRestrictionRevision(rule, false),
+			{ status: 'enabled', allowedChannels: [], ignoredChannels: [], allowedMembers: [], ignoredMembers: [] },
+			ownerId,
+			'Moderation.Management.*'
+		);
+		await handler().run(save.interaction, save.content);
+
+		expect(written).toMatchObject([{ commandsRestrictions: [stored, { format: 2 }] }]);
+	});
+
+	test('the file of the legacy nodes says why each one was left', async () => {
+		const gatewayClient = container.gatewayClient;
+		container.gatewayClient = { roles: { fetchAll: vi.fn().mockResolvedValue([]) } } as never;
+		onTestFinished(() => {
+			container.gatewayClient = gatewayClient;
+		});
+		settings.permissionsUsers = [{ id: userId, allow: [], deny: ['nosuchcommand'] }];
+
+		const legacy = click('legacy', '');
+		await handler().run(legacy.interaction, legacy.content);
+
+		const [answer] = legacy.answers as { files: { data: Buffer }[] }[];
+		expect(JSON.parse(answer.files[0].data.toString())).toEqual({
+			users: [{ id: userId, allow: [], deny: ['nosuchcommand'], reason: 'unknownCommand' }],
+			roles: []
+		});
 	});
 
 	test('legacy removal requires the owner, exact confirmation and the downloaded revision', async () => {

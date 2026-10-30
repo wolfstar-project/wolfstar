@@ -550,10 +550,10 @@ declare module "i18next" {
         editIgnoredChannelsLabel: "Ignored channels";
         editIgnoredChannelsDescription: "The command does not run in them";
         editAllowedMembersLabel: "Allowed roles and users";
-        editAllowedMembersDescription: "When any is picked, only they can use the command, within the channel rules";
+        editAllowedMembersDescription: "Run it over an ignored role below them. To keep it to them, ignore @everyone.";
         editIgnoredMembersLabel: "Ignored roles and users";
-        editIgnoredMembersDescription: "They cannot use the command, even with an allowed role";
-        editRestrictionsSaved: "Rules saved. Any exclusion wins; command permissions still apply, and administrators bypass these restrictions.";
+        editIgnoredMembersDescription: "They cannot use it, unless a higher role or their own rule allows them";
+        editRestrictionsSaved: "Rules saved. A member's own rule decides first, then their highest role, then the most specific target. Command permissions still apply, and administrators bypass these rules.";
         editProtectedRestricted: "`/{{name}}` cannot be restricted: it is how the commands are turned back on.";
         editStale: "`/{{name}}` was changed since this form was opened, so nothing was saved. Open it again to see what it has now.";
         editEnabled: "Enabled";
@@ -562,6 +562,15 @@ declare module "i18next" {
         editDisabledDone: "`/{{name}}` is disabled in this server, and whoever runs it is told so.";
         editStillDisabled: "`/{{name}}` is still disabled by `{{rule}}` in `commands.disabled`, take that out to enable it.";
         editProtected: "`/{{name}}` cannot be disabled: it is how the commands are turned back on.";
+        editGroupButton: "Edit the rules of this category";
+        editAllButton: "Edit the rules of every command";
+        editSubCategoryPlaceholder: "Edit the rules of a sub-category";
+        editGroupTitle: "Rules of {{target}}";
+        editGroupStatusDescription: "Enable or disable every command of the group in this server";
+        editStatusInherited: "The rules of {{targets}} apply too";
+        editGroupStale: "`{{target}}` was changed since this form was opened, so nothing was saved. Open it again to see what it has now.";
+        editGroupSaved: "The rules of `{{target}}` are saved.";
+        editGroupDisabledDone: "Every command of `{{target}}` is disabled in this server, and whoever runs one is told so.";
         gotoTitle: "Go To Page";
         gotoLabel: "Page number";
         gotoPlaceholder: "Enter a page number";
@@ -573,16 +582,16 @@ declare module "i18next" {
         viewContextMenus: "**In the Apps menu:** {{names}}";
         viewSubcommands_one: "{{count, number}} subcommand";
         viewSubcommands_other: "{{count, number}} subcommands";
-        legacyNotice: "Legacy permission nodes are still stored. Review them before replacing them with command rules.";
+        legacyNotice: "Legacy permission nodes are still stored. They were not converted into command rules; review them.";
         legacyReview: "Review legacy rules";
-        legacyExplanation: "The attached file contains the legacy permission nodes. They still apply to dashboard access, but do not control slash commands. Wildcards, role priorities and user overrides cannot be converted without changing their meaning. Recreate the rules you need through /commands. Once reviewed, the server owner can remove the legacy rules; this also removes their dashboard access overrides.";
+        legacyExplanation: "The attached file lists the legacy permission nodes that were not converted into command rules, each with why: a command the bot no longer has (`unknownCommand`), `/settings` or `/commands`, which cannot be restricted (`protectedCommand`), or an allowed name that covers a more specific denied one, which the command rules would read the other way (`meaningChanges`). A node with no reason has not been converted yet. Recreate the rules you need through /commands; once reviewed, the server owner can remove the nodes. The dashboard access rules stay.";
         legacyRemove: "Remove legacy rules";
         legacyConfirmLabel: "Type REMOVE to confirm";
-        legacyConfirmDescription: "Removes all legacy nodes and dashboard overrides. New command rules stay as they are.";
-        legacyOwnerOnly: "Only the server owner can remove legacy rules, because they also control dashboard access.";
+        legacyConfirmDescription: "Removes the legacy nodes. The command rules and the dashboard access rules stay.";
+        legacyOwnerOnly: "Only the server owner can remove the legacy permission nodes.";
         legacyConfirmationInvalid: "Nothing was removed. Type REMOVE exactly to confirm.";
         legacyStale: "The legacy rules changed since you downloaded them. Review them again before removing them.";
-        legacyRemoved: "Legacy permission nodes removed. The rules configured through /commands were kept.";
+        legacyRemoved: "Legacy permission nodes removed. The command rules and the dashboard access rules were kept.";
       };
       "commands/conf": {
         menuName: "menu";
@@ -786,9 +795,9 @@ declare module "i18next" {
           ];
         };
         "/commands": {
-          extendedHelp: "Opens the commands menu: every command and subcommand, five to a page, with a search and their categories. Administrators edit a command from there: its status and channels, or the roles and users that can use it or are excluded. An allowed role or user is sufficient; an exclusion wins. Discord permissions and moderator or administrator requirements still apply.\nThe rules apply to the whole command, including its subcommands. `/settings` and `/commands` cannot be disabled or restricted. Stored legacy permission nodes can be downloaded for review; only the server owner can remove them.";
+          extendedHelp: "Opens the commands menu: every command and subcommand, five to a page, with a search and their categories. Administrators edit the rules of a command, of a category (and its sub-categories) or of every command from there: the status and the channels, and the roles and users allowed or ignored.\nA member's own rule decides first, then the rule of their highest role, and of two rules the most specific target wins (a command over its category over every command). An allowed role or user is an exception that runs the command over an ignored role below it; to keep a command to some roles, ignore @everyone and allow them. Discord permissions and moderator or administrator requirements still apply: a rule never grants a command. `/settings` and `/commands` cannot be disabled or restricted.";
           examples: ["", "command:ban"];
-          reminder: "Administrators bypass channel, role and user restrictions. Legacy nodes still affect dashboard access until the server owner removes them.";
+          reminder: "Administrators bypass channel, role and user rules. Legacy permission nodes that were not converted can be downloaded for review, and only the server owner can remove them.";
         };
         "/dehoist": {
           extendedHelp: "Cleans the names of every member who hoists themselves to the top of the member list with a character such as `!` or `.` at the start of their nickname, by replacing it. The progress is shown as it goes, only to you.";

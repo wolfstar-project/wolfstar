@@ -47,9 +47,9 @@
 		"examples": ["view case:42", "list user:@Pete type:Warning", "edit case:42 reason:Spam in the help channel duration:2d"]
 	},
 	"/commands": {
-		"extendedHelp": "Opens the commands menu: every command and subcommand, five to a page, with a search and their categories. Administrators edit a command from there: its status and channels, or the roles and users that can use it or are excluded. An allowed role or user is sufficient; an exclusion wins. Discord permissions and moderator or administrator requirements still apply.\nThe rules apply to the whole command, including its subcommands. `/settings` and `/commands` cannot be disabled or restricted. Stored legacy permission nodes can be downloaded for review; only the server owner can remove them.",
+		"extendedHelp": "Opens the commands menu: every command and subcommand, five to a page, with a search and their categories. Administrators edit the rules of a command, of a category (and its sub-categories) or of every command from there: the status and the channels, and the roles and users allowed or ignored.\nA member's own rule decides first, then the rule of their highest role, and of two rules the most specific target wins (a command over its category over every command). An allowed role or user is an exception that runs the command over an ignored role below it; to keep a command to some roles, ignore @everyone and allow them. Discord permissions and moderator or administrator requirements still apply: a rule never grants a command. `/settings` and `/commands` cannot be disabled or restricted.",
 		"examples": ["", "command:ban"],
-		"reminder": "Administrators bypass channel, role and user restrictions. Legacy nodes still affect dashboard access until the server owner removes them."
+		"reminder": "Administrators bypass channel, role and user rules. Legacy permission nodes that were not converted can be downloaded for review, and only the server owner can remove them."
 	},
 	"/dehoist": {
 		"extendedHelp": "Cleans the names of every member who hoists themselves to the top of the member list with a character such as `!` or `.` at the start of their nickname, by replacing it. The progress is shown as it goes, only to you.",
