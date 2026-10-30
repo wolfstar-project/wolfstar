@@ -152,7 +152,7 @@ export function parseAutoModerationRulePatch(
 		} else {
 			const { maximum } = AutoModerationRuleLimits.hardActionDuration;
 			errors.push(
-				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationHardActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}, which a Timeout requires.`
+				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationEscalationActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}, which a Timeout requires.`
 			);
 		}
 	}

@@ -43,6 +43,9 @@ describe('auto-moderation escalation', () => {
 				errors: [expect.stringContaining('escalation')]
 			});
 			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'none', period: '1d' })).ok).toBe(false);
+
+			const { errors } = parseAutoModerationRulePatch('Links', { escalation: [{ action: 'None' }] }) as { errors: string[] };
+			expect(errors[0]).not.toContain('None');
 		});
 
 		test('GIVEN a rule with no hard action THEN the menu selects it', () => {

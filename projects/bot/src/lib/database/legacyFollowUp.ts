@@ -1,8 +1,9 @@
+import { resolveOnErrorCodes } from '#common';
 import { fromModerationRow } from '#lib/moderation/managers/ModerationRecord';
 import { isCaseInCourse, scheduleUndoTask } from '#lib/moderation/common/undoTasks';
 import { convertGuildCommandRules } from '#lib/structures/commands-menu/convertGuild';
 import { container } from '@wolfstar/http-framework';
-import type { Snowflake } from 'discord-api-types/v10';
+import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import { fetchModerationCasesData } from 'wolfstar-database';
 
 /**
@@ -18,7 +19,10 @@ export async function followUpLegacyGuild(guildId: Snowflake, actorId: Snowflake
 	const id = BigInt(guildId);
 
 	const permissions = await orm.public.GuildPermissions.where({ id }).first();
-	if (permissions && permissions.users.length + permissions.roles.length > 0) await convertGuildCommandRules(guildId, actorId);
+	if (permissions && permissions.users.length + permissions.roles.length > 0) {
+		// Discord refuses a guild the bot left, which would otherwise stay pending and fail at every start:
+		await resolveOnErrorCodes(convertGuildCommandRules(guildId, actorId), RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.UnknownGuild);
+	}
 
 	const rows = await orm.public.ModerationAction.where({ guildId: id }).all();
 	const cases = rows.map(fromModerationRow).filter((entry) => entry.duration !== null && isCaseInCourse(entry.metadata));
