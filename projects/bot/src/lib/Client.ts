@@ -1,6 +1,7 @@
 // Loads the `broker` client option and `container.broker` types, the Stars CLI injects the runtime import:
 /// <reference types="@wolfstar/plugin-broker/register" />
 
+import { runLegacyMigration } from '#lib/database/legacy';
 import { loadApplicationEmojis } from '#utils/emojis';
 import { getLoggerOptions } from '#utils/logger';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
@@ -124,6 +125,9 @@ async function ensureBrokerGroup() {
 }
 
 export async function loadAll() {
+	// The shards leave it to the shard manager, which does it before it spawns them:
+	if (!container.shard) await runLegacyMigration();
+
 	// The emojis are the ones of the application the bot runs as, which staging, beta and production each have:
 	await loadApplicationEmojis();
 	await container.redis.connect();
