@@ -27,8 +27,8 @@ export default class M extends Migration<Start, End> {
 						sql: `UPDATE "public"."GuildAutoModerationRule"
 SET "type" = 'MentionsCooldown',
   "options" = jsonb_build_object(
-    'maximum', CASE WHEN jsonb_typeof("options"->'mentionsAllowed') = 'number' THEN LEAST(200, GREATEST(1, trunc(("options"->>'mentionsAllowed')::numeric)::int)) ELSE 20 END,
-    'timePeriod', CASE WHEN jsonb_typeof("options"->'timePeriod') = 'number' THEN LEAST(3600, GREATEST(1, trunc(("options"->>'timePeriod')::numeric)::int)) ELSE 8 END,
+    'maximum', CASE WHEN jsonb_typeof("options"->'mentionsAllowed') = 'number' THEN LEAST(200, GREATEST(1, trunc(("options"->>'mentionsAllowed')::numeric)))::int ELSE 20 END,
+    'timePeriod', CASE WHEN jsonb_typeof("options"->'timePeriod') = 'number' THEN LEAST(3600, GREATEST(1, trunc(("options"->>'timePeriod')::numeric)))::int ELSE 8 END,
     'weighted', true
   ),
   "soft_action" = "soft_action" | 4,

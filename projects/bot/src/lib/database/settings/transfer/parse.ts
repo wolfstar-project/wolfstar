@@ -326,22 +326,18 @@ function parseRule(input: unknown, path: string, context: ParseConfigurationCont
 /**
  * A rule of a type the bot no longer has, as the migration that removed the type rewrote the ones of the database. A
  * `NoMentionSpam` rule banned by itself: it is a `MentionsCooldown` rule that weighs the mentions, bans at the first
- * infraction and tells it in the channel. What it had that is not a number is left as it is, for the checks to report.
+ * infraction and tells it in the channel. What it left out takes the default of the old rule, as the migration does,
+ * and what it has of the wrong type is left as it is, for the checks to report.
  */
 function upgradeRemovedRuleType(entry: Record<string, unknown>): Record<string, unknown> {
 	if (entry.type !== 'NoMentionSpam') return entry;
 
-	const options = isRecord(entry.options) ? entry.options : {};
-	const softAction = typeof entry.softAction === 'number' ? entry.softAction : 0;
+	const { options = {}, softAction = 0 } = entry;
 	return {
 		...entry,
 		type: 'MentionsCooldown',
-		options: {
-			...('mentionsAllowed' in options && { maximum: options.mentionsAllowed }),
-			...('timePeriod' in options && { timePeriod: options.timePeriod }),
-			weighted: true
-		},
-		softAction: softAction | AutoModerationOnInfraction.flags.Alert,
+		options: isRecord(options) ? { maximum: options.mentionsAllowed ?? 20, timePeriod: options.timePeriod ?? 8, weighted: true } : options,
+		softAction: typeof softAction === 'number' ? softAction | AutoModerationOnInfraction.flags.Alert : softAction,
 		hardAction: 'Ban',
 		hardActionDuration: null,
 		thresholdMaximum: 0,

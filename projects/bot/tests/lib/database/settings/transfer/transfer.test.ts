@@ -385,6 +385,27 @@ describe('configuration file', () => {
 				});
 			});
 
+			test('GIVEN a mention spam rule that left an option out THEN it takes the default of the old rule, as the migration does', async () => {
+				const parsed = await parseOk({ version: 1, automod: { rules: [{ name: 'Pings', type: 'NoMentionSpam' }] } });
+
+				expect(parsed.rules?.[0].options).toEqual({ maximum: 20, timePeriod: 8, weighted: true });
+				expect(parsed.rules?.[0].softAction).toBe(0b100);
+			});
+
+			test('GIVEN a mention spam rule that is broken THEN the file is refused instead of it being repaired', async () => {
+				const issues = await parseIssues({
+					version: 1,
+					automod: {
+						rules: [
+							{ name: 'Options', type: 'NoMentionSpam', options: 'broken' },
+							{ name: 'Soft', type: 'NoMentionSpam', softAction: 'bad' }
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options', 'automod.rules[1].softAction']);
+			});
+
 			test('GIVEN a mention spam rule with a wrong option THEN it is reported as the option it became', async () => {
 				const issues = await parseIssues({
 					version: 1,

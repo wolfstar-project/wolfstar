@@ -16,7 +16,7 @@
 		"execute": [
 			{
 				"description": "rewrite the mention spam rules",
-				"sql": "UPDATE \"public\".\"GuildAutoModerationRule\"\nSET \"type\" = 'MentionsCooldown',\n  \"options\" = jsonb_build_object(\n    'maximum', CASE WHEN jsonb_typeof(\"options\"->'mentionsAllowed') = 'number' THEN LEAST(200, GREATEST(1, trunc((\"options\"->>'mentionsAllowed')::numeric)::int)) ELSE 20 END,\n    'timePeriod', CASE WHEN jsonb_typeof(\"options\"->'timePeriod') = 'number' THEN LEAST(3600, GREATEST(1, trunc((\"options\"->>'timePeriod')::numeric)::int)) ELSE 8 END,\n    'weighted', true\n  ),\n  \"soft_action\" = \"soft_action\" | 4,\n  \"hard_action\" = 'Ban',\n  \"hard_action_duration\" = NULL,\n  \"threshold_maximum\" = 0,\n  \"escalation\" = '[]'::jsonb\nWHERE \"type\"::text = 'NoMentionSpam'",
+				"sql": "UPDATE \"public\".\"GuildAutoModerationRule\"\nSET \"type\" = 'MentionsCooldown',\n  \"options\" = jsonb_build_object(\n    'maximum', CASE WHEN jsonb_typeof(\"options\"->'mentionsAllowed') = 'number' THEN LEAST(200, GREATEST(1, trunc((\"options\"->>'mentionsAllowed')::numeric)))::int ELSE 20 END,\n    'timePeriod', CASE WHEN jsonb_typeof(\"options\"->'timePeriod') = 'number' THEN LEAST(3600, GREATEST(1, trunc((\"options\"->>'timePeriod')::numeric)))::int ELSE 8 END,\n    'weighted', true\n  ),\n  \"soft_action\" = \"soft_action\" | 4,\n  \"hard_action\" = 'Ban',\n  \"hard_action_duration\" = NULL,\n  \"threshold_maximum\" = 0,\n  \"escalation\" = '[]'::jsonb\nWHERE \"type\"::text = 'NoMentionSpam'",
 				"params": []
 			}
 		],
