@@ -1,5 +1,5 @@
 import { CommandMatcher, Serializer } from '#lib/database';
-import { isDashboardAccessEntry, type PermissionsNode } from 'wolfstar-database';
+import { isAccessEntry, type PermissionsNode } from 'wolfstar-database';
 import { isObject } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<PermissionsNode> {
@@ -16,7 +16,7 @@ export class UserSerializer extends Serializer<PermissionsNode> {
 		if (typeof value.id !== 'string') throw t('serializers:permissionNodeInvalid');
 		if (!Array.isArray(value.allow)) throw t('serializers:permissionNodeInvalid');
 		if (!Array.isArray(value.deny)) throw t('serializers:permissionNodeInvalid');
-		if (isRule && (!isDashboardAccessEntry(value) || value.allow.length !== 0 || value.deny.length !== 0)) {
+		if (isRule && (!isAccessEntry(value) || value.allow.length !== 0 || value.deny.length !== 0)) {
 			throw t('serializers:permissionNodeInvalid');
 		}
 
@@ -53,7 +53,7 @@ export class UserSerializer extends Serializer<PermissionsNode> {
 	}
 
 	public override stringify(value: PermissionsNode) {
-		if (isDashboardAccessEntry(value)) return `${value.id}(dashboard: ${value.dashboard})`;
+		if (isAccessEntry(value)) return `${value.id}(dashboard: ${value.dashboard})`;
 		return `${value.id}(${value.allow.join(', ')} | ${value.deny.join(', ')})`;
 	}
 }

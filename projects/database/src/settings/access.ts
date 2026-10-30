@@ -5,37 +5,37 @@ import type { PermissionsNode } from './types.js';
  * What a dashboard access rule does: `allow` lets a member manage the server without `Manage Server`, `deny` keeps them
  * out even when they are an administrator.
  */
-export type DashboardAccess = 'allow' | 'deny';
+export type Access = 'allow' | 'deny';
 
 /**
  * A dashboard access rule. It lives in the columns of the legacy permission nodes, `permissions.users` and
  * `permissions.roles`, and keeps two empty `allow` and `deny` lists, so code that reads every entry as a node finds no
  * command in it.
  */
-export interface DashboardAccessEntry extends PermissionsNode {
+export interface AccessEntry extends PermissionsNode {
 	allow: readonly [];
 	deny: readonly [];
-	dashboard: DashboardAccess;
+	dashboard: Access;
 }
 
 /**
  * Whether an entry of `permissions.users` or `permissions.roles` is a dashboard access rule and not a legacy node.
  */
-export function isDashboardAccessEntry(entry: PermissionsNode): entry is DashboardAccessEntry {
+export function isAccessEntry(entry: PermissionsNode): entry is AccessEntry {
 	return entry.dashboard === 'allow' || entry.dashboard === 'deny';
 }
 
 /**
  * Creates the dashboard access rule of a member or a role.
  */
-export function createDashboardAccessEntry(id: Snowflake, dashboard: DashboardAccess): DashboardAccessEntry {
+export function createAccessEntry(id: Snowflake, dashboard: Access): AccessEntry {
 	return { id, allow: [], deny: [], dashboard };
 }
 
 /**
  * Who the access is resolved for: a member, and the roles they hold.
  */
-export interface DashboardAccessSubject {
+export interface AccessSubject {
 	userId: Snowflake;
 	roleIds: readonly Snowflake[];
 }
@@ -43,7 +43,7 @@ export interface DashboardAccessSubject {
 /**
  * The two columns the rules are read from.
  */
-export interface DashboardAccessEntries {
+export interface AccessEntries {
 	users: readonly PermissionsNode[];
 	roles: readonly PermissionsNode[];
 }
@@ -51,7 +51,7 @@ export interface DashboardAccessEntries {
 /**
  * A role of the guild and its position, which decides which rule of a member's roles wins.
  */
-export interface DashboardAccessRole {
+export interface AccessRole {
 	id: Snowflake;
 	position: number;
 }
@@ -70,22 +70,18 @@ export interface DashboardAccessRole {
  * @returns The access of the rule that decides, `null` when no rule names the member nor one of their roles: the
  * administrator check and the legacy nodes decide then.
  */
-export function resolveDashboardAccess(
-	subject: DashboardAccessSubject,
-	entries: DashboardAccessEntries,
-	guildRoles: readonly DashboardAccessRole[]
-): DashboardAccess | null {
-	const own = entries.users.find((entry): entry is DashboardAccessEntry => isDashboardAccessEntry(entry) && entry.id === subject.userId);
+export function resolveAccess(subject: AccessSubject, entries: AccessEntries, guildRoles: readonly AccessRole[]): Access | null {
+	const own = entries.users.find((entry): entry is AccessEntry => isAccessEntry(entry) && entry.id === subject.userId);
 	if (own !== undefined) return own.dashboard;
 
-	const ruled = new Map<string, DashboardAccess>();
+	const ruled = new Map<string, Access>();
 	for (const entry of entries.roles) {
-		if (isDashboardAccessEntry(entry)) ruled.set(entry.id, entry.dashboard);
+		if (isAccessEntry(entry)) ruled.set(entry.id, entry.dashboard);
 	}
 	if (ruled.size === 0) return null;
 
 	const held = new Set(subject.roleIds);
-	let highest: DashboardAccessRole | null = null;
+	let highest: AccessRole | null = null;
 	for (const role of guildRoles) {
 		if (!held.has(role.id) || !ruled.has(role.id)) continue;
 		if (highest === null || role.position > highest.position || (role.position === highest.position && BigInt(role.id) > BigInt(highest.id))) {
@@ -99,6 +95,6 @@ export function resolveDashboardAccess(
 /**
  * Whether a column holds a dashboard access rule, so the roles of the guild are only fetched when one can decide.
  */
-export function hasDashboardAccessEntries(entries: readonly PermissionsNode[]): boolean {
-	return entries.some(isDashboardAccessEntry);
+export function hasAccessEntries(entries: readonly PermissionsNode[]): boolean {
+	return entries.some(isAccessEntry);
 }

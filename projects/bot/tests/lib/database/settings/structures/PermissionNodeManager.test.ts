@@ -1,5 +1,5 @@
 import { PermissionNodeAction, PermissionNodeManager } from '#lib/database';
-import { createDashboardAccessEntry, getDefaultGuildSettings, type GuildData, type PermissionsNode } from 'wolfstar-database';
+import { createAccessEntry, getDefaultGuildSettings, type GuildData, type PermissionsNode } from 'wolfstar-database';
 import { UserError } from '@wolfstar/http-framework';
 import type { Guild, GuildMember, Role, User } from '@wolfstar/plugin-gateway';
 
@@ -192,7 +192,7 @@ describe('PermissionNodeManager', () => {
 		const user = createUser();
 
 		test('GIVEN a node added, extended and removed THEN the rule of the same member stays', async () => {
-			const rule = createDashboardAccessEntry(user.id, 'deny');
+			const rule = createAccessEntry(user.id, 'deny');
 			await apply(user, [rule]);
 
 			const ctx = readSettingsPermissionNodes();
@@ -209,7 +209,7 @@ describe('PermissionNodeManager', () => {
 
 		test('GIVEN a node reset THEN the rule of the same role stays, and a rule alone is no node to reset', async () => {
 			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
-			const rule = createDashboardAccessEntry(role.id, 'allow');
+			const rule = createAccessEntry(role.id, 'allow');
 			await apply(role, [rule, { id: role.id, allow: ['ping'], deny: [] }]);
 
 			const ctx = readSettingsPermissionNodes();
@@ -222,8 +222,8 @@ describe('PermissionNodeManager', () => {
 			const command = commands.get('ping') ?? createCommand('ping', 'General');
 			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
 			Object.assign(entity, {
-				permissionsUsers: [createDashboardAccessEntry(user.id, 'allow')],
-				permissionsRoles: [createDashboardAccessEntry(role.id, 'deny')]
+				permissionsUsers: [createAccessEntry(user.id, 'allow')],
+				permissionsRoles: [createAccessEntry(role.id, 'deny')]
 			});
 
 			const ctx = readSettingsPermissionNodes();
@@ -235,7 +235,7 @@ describe('PermissionNodeManager', () => {
 
 		test('GIVEN a role with only a rule THEN it is one the listeners of the roles refresh the column for', async () => {
 			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
-			await apply(role, [createDashboardAccessEntry(role.id, 'allow')]);
+			await apply(role, [createAccessEntry(role.id, 'allow')]);
 
 			expect(readSettingsPermissionNodes().has(role.id)).toBe(true);
 			expect(readSettingsPermissionNodes().has('1')).toBe(false);
@@ -243,8 +243,8 @@ describe('PermissionNodeManager', () => {
 
 		test('GIVEN the role of a rule is gone THEN the refresh drops it with the nodes of that role', async () => {
 			const kept = createRole({ id: '541739191776575502', name: 'Developer', position: 27 }, guild);
-			const ruleKept = createDashboardAccessEntry(kept.id, 'allow');
-			entity.permissionsRoles = [ruleKept, createDashboardAccessEntry('1', 'deny'), { id: '1', allow: ['ping'], deny: [] }];
+			const ruleKept = createAccessEntry(kept.id, 'allow');
+			entity.permissionsRoles = [ruleKept, createAccessEntry('1', 'deny'), { id: '1', allow: ['ping'], deny: [] }];
 
 			const ctx = readSettingsPermissionNodes();
 			await expect(ctx.refresh(entity)).resolves.toEqual([ruleKept]);

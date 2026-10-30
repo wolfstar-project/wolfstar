@@ -1,4 +1,4 @@
-import { getLegacyPermissions, getLegacyPermissionRevision, keepDashboardAccessEntries } from '#lib/structures/commands-menu/legacy';
+import { getLegacyPermissions, getLegacyPermissionRevision, keepAccessEntries } from '#lib/structures/commands-menu/legacy';
 import { readSettings, writeSettingsTransaction } from '#lib/database';
 import {
 	AllCategoriesValue,
@@ -282,8 +282,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		// The dashboard access rules share the columns and are not legacy nodes: they stay.
 		await trx
 			.write({
-				permissionsUsers: keepDashboardAccessEntries(trx.settings.permissionsUsers),
-				permissionsRoles: keepDashboardAccessEntries(trx.settings.permissionsRoles)
+				permissionsUsers: keepAccessEntries(trx.settings.permissionsUsers),
+				permissionsRoles: keepAccessEntries(trx.settings.permissionsRoles)
 			})
 			.submitWithAudit(interaction.user.id);
 		return reply(t('commands/commands:legacyRemoved'));

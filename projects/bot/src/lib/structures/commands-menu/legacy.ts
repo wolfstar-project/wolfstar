@@ -1,16 +1,16 @@
 import { createHash } from 'node:crypto';
-import { isDashboardAccessEntry, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
+import { isAccessEntry, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
 
 export type LegacyPermissionSettings = Pick<ReadonlyGuildData, 'permissionsUsers' | 'permissionsRoles'>;
 
 /** The legacy nodes of a column, without the dashboard access rules of wolfstar.rocks that share it. */
 function legacyNodes(entries: readonly PermissionsNode[]): readonly PermissionsNode[] {
-	return entries.filter((entry) => !isDashboardAccessEntry(entry));
+	return entries.filter((entry) => !isAccessEntry(entry));
 }
 
 /** The dashboard access rules of a column, which removing the legacy nodes keeps. */
-export function keepDashboardAccessEntries(entries: readonly PermissionsNode[]): PermissionsNode[] {
-	return entries.filter((entry) => isDashboardAccessEntry(entry));
+export function keepAccessEntries(entries: readonly PermissionsNode[]): PermissionsNode[] {
+	return entries.filter((entry) => isAccessEntry(entry));
 }
 
 /** Keep the old policies intact: role order and wildcard exceptions cannot become flat allow/deny lists. */

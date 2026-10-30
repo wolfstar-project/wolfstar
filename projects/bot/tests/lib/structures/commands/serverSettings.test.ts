@@ -1,7 +1,7 @@
 import { deleteSettingsContext, readSettings } from '#lib/database';
 import { canManageServerSettings, canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { container } from '@wolfstar/http-framework';
-import { createDashboardAccessEntry, getDefaultGuildSettings, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
+import { createAccessEntry, getDefaultGuildSettings, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
 import { createCommand } from '../../../mocks/MockInstances.js';
 
 vi.mock('#lib/database', async (importOriginal) => ({
@@ -54,42 +54,42 @@ describe('canManageServerSettings', () => {
 	});
 
 	test('GIVEN the owner THEN they always may, a rule that denies them included', async () => {
-		mockSettings({ users: [createDashboardAccessEntry(ownerId, 'deny')], roles: [{ id: higher.id, allow: [], deny: ['settings'] }] });
+		mockSettings({ users: [createAccessEntry(ownerId, 'deny')], roles: [{ id: higher.id, allow: [], deny: ['settings'] }] });
 
 		await expect(canManageServerSettings(manager({ userId: ownerId }))).resolves.toBe(true);
 	});
 
 	test('GIVEN a rule that denies an administrator THEN they may not', async () => {
-		mockSettings({ users: [createDashboardAccessEntry(userId, 'deny')] });
+		mockSettings({ users: [createAccessEntry(userId, 'deny')] });
 		await expect(canManageServerSettings(manager({ manageGuild: true }))).resolves.toBe(false);
 
-		mockSettings({ roles: [createDashboardAccessEntry(higher.id, 'deny')] });
+		mockSettings({ roles: [createAccessEntry(higher.id, 'deny')] });
 		await expect(canManageServerSettings(manager({ manageGuild: true }))).resolves.toBe(false);
 	});
 
 	test('GIVEN a rule that denies @everyone THEN an administrator with no rule of their own may not', async () => {
 		// `@everyone` has the ID of the guild, and the roles of a member never list it:
 		vi.mocked(container.gatewayClient.roles.fetchAll).mockResolvedValue([higher, lower, { id: guildId, position: 0 }] as never);
-		mockSettings({ roles: [createDashboardAccessEntry(guildId, 'deny')] });
+		mockSettings({ roles: [createAccessEntry(guildId, 'deny')] });
 
 		await expect(canManageServerSettings(manager({ manageGuild: true }))).resolves.toBe(false);
 		await expect(canManageServerSettings(manager({ manageGuild: true, userId: ownerId }))).resolves.toBe(true);
 	});
 
 	test('GIVEN a rule that allows a member without Manage Server THEN they may', async () => {
-		mockSettings({ roles: [createDashboardAccessEntry(lower.id, 'allow')] });
+		mockSettings({ roles: [createAccessEntry(lower.id, 'allow')] });
 
 		await expect(canManageServerSettings(manager())).resolves.toBe(true);
 	});
 
 	test('GIVEN their own rule and a rule of their role THEN their own rule decides', async () => {
-		mockSettings({ users: [createDashboardAccessEntry(userId, 'allow')], roles: [createDashboardAccessEntry(higher.id, 'deny')] });
+		mockSettings({ users: [createAccessEntry(userId, 'allow')], roles: [createAccessEntry(higher.id, 'deny')] });
 
 		await expect(canManageServerSettings(manager())).resolves.toBe(true);
 	});
 
 	test('GIVEN rules on several of their roles THEN the highest role decides', async () => {
-		mockSettings({ roles: [createDashboardAccessEntry(lower.id, 'allow'), createDashboardAccessEntry(higher.id, 'deny')] });
+		mockSettings({ roles: [createAccessEntry(lower.id, 'allow'), createAccessEntry(higher.id, 'deny')] });
 
 		await expect(canManageServerSettings(manager())).resolves.toBe(false);
 		await expect(canManageServerSettings(manager({ roleIds: [lower.id] }))).resolves.toBe(true);

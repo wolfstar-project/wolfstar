@@ -1,6 +1,7 @@
 import { applyConfigurationImport, ConfigurationImportStaleError } from '#lib/database/settings/transfer/apply';
 import { decodeSettingsImportId, takePendingImport } from '#lib/database/settings/transfer/pending';
 import { countPlannedRules } from '#lib/database/settings/transfer/plan';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
@@ -18,10 +19,10 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionH
  * The menu keeps nothing in memory: what the file holds waits in Redis and the button says which import it answers,
  * so any process can handle the click, the shard that showed the preview or another one. The import is taken before it
  * is written, which only one click can do. What is written is worked out again from what the database has by then, see
- * `applyConfigurationImport`. Only the member who imports the file can answer, and the `serverSettings`
- * precondition checks again at the click that they may manage the settings of the server.
+ * `applyConfigurationImport`. Only the administrator who imports the file can answer: the `administrator` precondition
+ * checks the level again at the click, and `canManageServerSettings` that no dashboard access rule keeps them out.
  */
-@ApplyOptions<InteractionHandler.Options>({ preconditions: ['serverSettings'] })
+@ApplyOptions<InteractionHandler.Options>({ preconditions: ['administrator'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
@@ -31,6 +32,9 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/conf:menuWrongUser'));
+		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
+			return fail(t('preconditions:administrator', { command: { name: this.name } }));
+		}
 
 		const component = interaction as ComponentInteraction;
 		const close = (message: string) => ({ content: message, embeds: [], components: [] });

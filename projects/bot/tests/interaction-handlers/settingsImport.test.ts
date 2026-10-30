@@ -2,6 +2,7 @@ import { applyConfigurationImport, ConfigurationImportStaleError } from '#lib/da
 import type { ParsedConfiguration } from '#lib/database/settings/transfer/parse';
 import { encodeSettingsImportId, savePendingImport, type SettingsImportVerb } from '#lib/database/settings/transfer/pending';
 import type { ConfigurationPlan } from '#lib/database/settings/transfer/plan';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { UserInteractionHandler } from '#root/interaction-handlers/settingsImport';
 import { container } from '@wolfstar/http-framework';
 
@@ -11,6 +12,10 @@ vi.mock('#lib/database/settings/transfer/apply', async (importOriginal) => ({
 }));
 
 // Echoes the key and its options, the translations are not what is tested here:
+vi.mock('#lib/structures/commands/permissions', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/structures/commands/permissions')>()),
+	canManageServerSettingsFrom: vi.fn()
+}));
 vi.mock('@wolfstar/plugin-i18next', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@wolfstar/plugin-i18next')>()),
 	getSupportedUserLanguageT: () => (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)
@@ -36,6 +41,7 @@ function click(verb: SettingsImportVerb, userId = ownerId) {
 	const interaction = {
 		guildId,
 		user: { id: userId },
+		member: { user: { id: userId }, roles: [], permissions: '0' },
 		reply: async (data: unknown) => void answers.push(['reply', data]),
 		update: async (data: unknown) => void answers.push(['update', data]),
 		deferUpdate: async () => {
@@ -78,6 +84,7 @@ describe('settingsImport interaction handler', () => {
 	beforeEach(() => {
 		stored.clear();
 		vi.mocked(applyConfigurationImport).mockReset();
+		vi.mocked(canManageServerSettingsFrom).mockReset().mockResolvedValue(true);
 	});
 
 	test('GIVEN an import that waits THEN a handler that never saw the command writes it, for who confirmed', async () => {
@@ -144,6 +151,18 @@ describe('settingsImport interaction handler', () => {
 		await create().run(interaction, content);
 
 		expect(answers.at(-1)).toEqual(['edit', { content: 'commands/conf:transferImportStale', embeds: [], components: [] }]);
+	});
+
+	test('GIVEN an administrator a dashboard access rule keeps out THEN the import is left waiting', async () => {
+		await savePendingImport(guildId, ownerId, importId, parsed);
+		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(false);
+
+		const denied = click('confirm');
+		await create().run(denied.interaction, denied.content);
+
+		expect(denied.answers.map(([kind]) => kind)).toEqual(['reply']);
+		expect(applyConfigurationImport).not.toHaveBeenCalled();
+		expect(stored.size).toBe(1);
 	});
 
 	test('GIVEN another member, or an ID that is not of the preview, THEN the import is left waiting', async () => {
