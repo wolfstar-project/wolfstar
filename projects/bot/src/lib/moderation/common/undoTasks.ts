@@ -1,6 +1,7 @@
 import { UndoTaskJobOptions } from '#lib/moderation/common/constants';
 import { getUndoTaskId, getUndoTaskName } from '#lib/moderation/common/util';
-import { TypeMetadata, type TypeVariation } from '#utils/moderationConstants';
+import { TypeMetadata } from '#utils/moderationConstants';
+import type { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 
