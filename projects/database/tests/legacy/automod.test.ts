@@ -64,6 +64,35 @@ describe('convertLegacyAutomodRules', () => {
 		expect(warnings).toHaveLength(1);
 	});
 
+	test('GIVEN a limit the dashboard allowed THEN it stays as it was', () => {
+		const { rules, warnings } = convert({ 'selfmod.newlines.enabled': true, 'selfmod.newlines.maximum': 500 });
+		expect(rules[0]).toMatchObject({ options: { maximum: 500 } });
+		expect(warnings).toEqual([]);
+	});
+
+	test('GIVEN the threshold of production THEN it stays as it was', () => {
+		const { rules, warnings } = convert({ 'selfmod.links.enabled': true, 'selfmod.links.threshold-maximum': 900 });
+		expect(rules[0]).toMatchObject({ threshold_maximum: 900 });
+		expect(warnings).toEqual([]);
+	});
+
+	test('GIVEN a threshold V7 cannot hold THEN it changes and it is told', () => {
+		const { rules, warnings } = convert({ 'selfmod.links.enabled': true, 'selfmod.links.threshold-maximum': 5000 });
+		expect(rules[0]).toMatchObject({ threshold_maximum: 1000 });
+		expect(warnings).toEqual([expect.stringContaining('threshold')]);
+	});
+
+	test('GIVEN an option out of the limits of V7 THEN it changes and it is told', () => {
+		const { rules, warnings } = convert({ 'selfmod.messages.enabled': true, 'selfmod.messages.queue-size': 5 });
+		expect(rules[0]).toMatchObject({ options: { maximum: 5, queueSize: 10 } });
+		expect(warnings).toEqual([expect.stringContaining('queueSize')]);
+	});
+
+	test('GIVEN mention spam out of the limits of V7 THEN it changes and it is told', () => {
+		const { warnings } = convert({ 'no-mention-spam.enabled': true, 'no-mention-spam.mentions-allowed': 0 });
+		expect(warnings).toEqual([expect.stringContaining('maximum')]);
+	});
+
 	test('GIVEN a duration of zero THEN the punishment is permanent', () => {
 		expect(convert({ 'selfmod.attachments.enabled': true, 'selfmod.attachments.hard-action-duration': 0 }).rules[0]).toMatchObject({
 			hard_action_duration: null

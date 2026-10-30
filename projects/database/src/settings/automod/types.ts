@@ -164,7 +164,7 @@ const MaximumDuration = 2 ** 31 - 1;
 
 export const AutoModerationRuleLimits = {
 	hardActionDuration: { minimum: 0, maximum: MaximumDuration },
-	thresholdMaximum: { minimum: 0, maximum: 100 },
+	thresholdMaximum: { minimum: 0, maximum: 1000 },
 	thresholdDuration: { minimum: 0, maximum: MaximumDuration },
 	escalationDuration: { minimum: 60_000, maximum: MaximumDuration }
 } as const;
@@ -177,7 +177,7 @@ export const MaximumAutoModerationRuleEscalationSteps = 10;
  */
 export const AutoModerationRuleOptionLimits = {
 	Capitals: { minimum: { minimum: 5, maximum: 2000 }, maximum: { minimum: 10, maximum: 100 } },
-	Newlines: { maximum: { minimum: 1, maximum: 100 } },
+	Newlines: { maximum: { minimum: 1, maximum: 2000 } },
 	Zalgo: { maximum: { minimum: 1, maximum: 20 } },
 	Duplicates: { characters: { minimum: 3, maximum: 200 }, words: { minimum: 2, maximum: 100 } },
 	Characters: { maximum: { minimum: 50, maximum: 4000 } },

@@ -66,7 +66,7 @@ describe('auto-moderation rules', () => {
 				softAction: 8,
 				hardAction: 'Explode',
 				hardActionDuration: 2 ** 31,
-				thresholdMaximum: 101,
+				thresholdMaximum: 1001,
 				thresholdDuration: -1,
 				ignoredRoles: ['abc'],
 				ignoredChannels: 'none',

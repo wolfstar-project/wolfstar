@@ -54,6 +54,16 @@ function clamp(value: number, { minimum, maximum }: { minimum: number; maximum: 
 	return Math.min(maximum, Math.max(minimum, value));
 }
 
+/**
+ * Tells the numbers of the options the limits of V7 changed, which are a stricter or a looser rule than the guild had.
+ */
+function warnChangedOptions(name: string, given: Record<string, unknown>, options: object, warnings: string[]) {
+	for (const [key, value] of Object.entries(options)) {
+		if (typeof value !== 'number' || given[key] === value) continue;
+		warnings.push(`The option "${key}" of the rule "${name}" was changed from ${String(given[key])} to ${value}.`);
+	}
+}
+
 function convertRule(row: LegacyRow, guildId: string, ignoredEverywhere: readonly string[], source: LegacyRuleSource, warnings: string[]) {
 	const { key, name, type } = source;
 	const prefix = `selfmod.${key}`;
@@ -66,7 +76,8 @@ function convertRule(row: LegacyRow, guildId: string, ignoredEverywhere: readonl
 	const thresholdDuration = Number(row[`${prefix}.threshold-duration`] ?? DefaultThreshold.duration);
 	const ignoredRoles = readSnowflakes(row, `${prefix}.ignored-roles`);
 	const ignoredChannels = readSnowflakes(row, `${prefix}.ignored-channels`);
-	const options = normalizeAutoModerationRuleOptions(type, source.options(row, key));
+	const given = source.options(row, key);
+	const options = normalizeAutoModerationRuleOptions(type, given);
 
 	const customised =
 		enabled ||
@@ -82,6 +93,10 @@ function convertRule(row: LegacyRow, guildId: string, ignoredEverywhere: readonl
 
 	const { maximum } = AutoModerationRuleLimits.hardActionDuration;
 	if (duration > maximum) warnings.push(`The punishment of the rule "${name}" was cut to ${maximum} milliseconds.`);
+	warnChangedOptions(name, given, options, warnings);
+
+	const threshold = clamp(thresholdMaximum, AutoModerationRuleLimits.thresholdMaximum);
+	if (threshold !== thresholdMaximum) warnings.push(`The threshold of the rule "${name}" was changed from ${thresholdMaximum} to ${threshold}.`);
 
 	return {
 		guild_id: guildId,
@@ -91,7 +106,7 @@ function convertRule(row: LegacyRow, guildId: string, ignoredEverywhere: readonl
 		soft_action: softAction,
 		hard_action: HardActions[hardAction] ?? 'None',
 		hard_action_duration: duration === 0 ? null : Math.min(duration, maximum),
-		threshold_maximum: clamp(thresholdMaximum, AutoModerationRuleLimits.thresholdMaximum),
+		threshold_maximum: threshold,
 		threshold_duration: clamp(thresholdDuration, AutoModerationRuleLimits.thresholdDuration),
 		ignored_roles: ignoredRoles,
 		ignored_channels: [...new Set([...ignoredChannels, ...ignoredEverywhere])],
@@ -102,11 +117,14 @@ function convertRule(row: LegacyRow, guildId: string, ignoredEverywhere: readonl
 /**
  * The mention spam filter, as `20261029T1302_merge_mention_spam_rules` rewrote the rules that came from it.
  */
-function convertMentionSpam(row: LegacyRow, guildId: string, ignoredChannels: readonly string[]) {
+function convertMentionSpam(row: LegacyRow, guildId: string, ignoredChannels: readonly string[], warnings: string[]) {
 	const enabled = row['no-mention-spam.enabled'] === true;
 	const alerts = row['no-mention-spam.alerts'] === true;
 	const options = { maximum: row['no-mention-spam.mentions-allowed'], timePeriod: row['no-mention-spam.time-period'], weighted: true };
 	if (!enabled && !alerts && options.maximum === 20 && options.timePeriod === 8) return null;
+
+	const normalized = normalizeAutoModerationRuleOptions('MentionsCooldown', options);
+	warnChangedOptions('Mention spam', options, normalized, warnings);
 
 	return {
 		guild_id: guildId,
@@ -120,7 +138,7 @@ function convertMentionSpam(row: LegacyRow, guildId: string, ignoredChannels: re
 		threshold_duration: DefaultThreshold.duration,
 		ignored_roles: [],
 		ignored_channels: [...ignoredChannels],
-		options: normalizeAutoModerationRuleOptions('MentionsCooldown', options)
+		options: normalized
 	};
 }
 
@@ -136,7 +154,7 @@ export function convertLegacyAutomodRules(row: LegacyRow, guildId: string): { ru
 
 	const candidates = [
 		...LegacyRules.map((source) => convertRule(row, guildId, ignoredEverywhere, source, warnings)),
-		convertMentionSpam(row, guildId, ignoredEverywhere)
+		convertMentionSpam(row, guildId, ignoredEverywhere, warnings)
 	];
 
 	return { rules: candidates.filter((rule) => rule !== null), warnings };
