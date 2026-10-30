@@ -304,6 +304,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		for (const rule of CommandMemberRules) picked = setCommandMembers(picked, rule, members[rule]);
 		// `@everyone` is the status of the rule, and disabling a command leaves what it was kept to as it is:
 		const disable = status === CommandDisabledValue;
+		picked = withoutEveryone(picked, guildId);
 		if (status === CommandOnlyAllowedValue || (disable && stored.ignoredRoles.includes(guildId))) {
 			picked = { ...picked, ignoredRoles: [...picked.ignoredRoles, guildId] };
 		}

@@ -72,6 +72,16 @@ describe('convertGuildCommandRules', () => {
 		expect(submitWithAudit).toHaveBeenCalledWith(actorId);
 	});
 
+	test('GIVEN a slow answer of Discord THEN the roles are read before the settings are locked', async () => {
+		settings.permissionsRoles = [{ id: roleId, allow: [], deny: ['warn'] }];
+
+		await convertGuildCommandRules(guildId, actorId);
+
+		const [fetched] = vi.mocked(container.gatewayClient.roles.fetchAll).mock.invocationCallOrder;
+		const [locked] = vi.mocked(writeSettingsTransaction).mock.invocationCallOrder.slice(-1);
+		expect(fetched).toBeLessThan(locked);
+	});
+
 	test('GIVEN a guild with no legacy node THEN nothing is written', async () => {
 		settings.permissionsUsers = [createAccessEntry(actorId, 'deny')];
 

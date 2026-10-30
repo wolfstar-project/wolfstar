@@ -220,6 +220,14 @@ describe('commands editor', () => {
 		expect(written).toMatchObject([{ commandsRestrictions: [{ command: 'ban', allowedRoles: [roleId], ignoredRoles }, { format: 2 }] }]);
 	});
 
+	test('@everyone picked in the select menu does not outrun the status', async () => {
+		const save = submit('save', getCommandRestrictionRevision(stored, true), { ...form('enabled'), ignoredMembers: [guildId] });
+		save.interaction.data.resolved = { ...resolved, roles: { ...resolved.roles, [guildId]: { id: guildId } } };
+		await handler().run(save.interaction, save.content);
+
+		expect(written).toMatchObject([{ commandsRestrictions: [{ command: 'ban', ignoredRoles: [] }, { format: 2 }] }]);
+	});
+
 	test('a protected command cannot be kept to the allowed ones', async () => {
 		vi.mocked(findCommandPiece).mockReturnValue({ name: 'commands' } as never);
 		const save = submit('save', getCommandRestrictionRevision(findCommandRestriction([], 'commands'), false), {

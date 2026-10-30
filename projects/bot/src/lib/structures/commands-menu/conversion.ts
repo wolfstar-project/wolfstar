@@ -17,7 +17,8 @@ import { isAccessEntry, type PermissionsNode } from 'wolfstar-database';
  * - `protectedCommand`: a name of a command that cannot be restricted (`settings`, `commands`, and `conf`, which the
  *   matchers read as `settings`).
  * - `meaningChanges`: an allowed name covers a denied one that is as specific or more: the node let the member in,
- *   since a node ran its allowed names first, while the most specific rule would keep them out.
+ *   since a node ran its allowed names first, while the most specific rule would keep them out; or a rule of the server
+ *   already says the opposite of the node about the same member or role on the same target.
  * - `settingsAccess`: a name that reaches the `settings` command (`*`, `Management.*`). The legacy nodes still decide who
  *   manages the server, see `canManageServerSettings`, and no rule does: a rule is never applied to `settings`, so
  *   converting it would silently give that access back, or take it away.
@@ -79,6 +80,12 @@ export function convertLegacyNodes(input: LegacyNodeConversionInput): LegacyNode
 				continue;
 			}
 
+			if (contradictsRules(result.restrictions, targets, kind, node.id)) {
+				kept.push(node);
+				result.skipped.push({ kind, node, reason: 'meaningChanges' });
+				continue;
+			}
+
 			for (const [action, names] of [
 				['allow', targets.allow],
 				['deny', targets.deny]
@@ -130,6 +137,22 @@ function changesMeaning(allowed: readonly string[], denied: readonly string[]): 
 	);
 }
 
+function ruleList(kind: 'user' | 'role', action: 'allow' | 'deny') {
+	return `${action === 'allow' ? 'allowed' : 'ignored'}${kind === 'user' ? 'Users' : 'Roles'}` as const;
+}
+
+function contradictsRules(
+	restrictions: readonly CommandRestriction[],
+	targets: { allow: readonly string[]; deny: readonly string[] },
+	kind: 'user' | 'role',
+	id: Snowflake
+): boolean {
+	return (
+		targets.allow.some((target) => findCommandRestriction(restrictions, target)[ruleList(kind, 'deny')].includes(id)) ||
+		targets.deny.some((target) => findCommandRestriction(restrictions, target)[ruleList(kind, 'allow')].includes(id))
+	);
+}
+
 function addToRule(
 	restrictions: readonly CommandRestriction[],
 	target: string,
@@ -138,6 +161,6 @@ function addToRule(
 	id: Snowflake
 ): CommandRestriction[] {
 	const rule = findCommandRestriction(restrictions, target);
-	const list = `${action === 'allow' ? 'allowed' : 'ignored'}${kind === 'user' ? 'Users' : 'Roles'}` as const;
+	const list = ruleList(kind, action);
 	return setCommandRestriction(restrictions, { ...rule, [list]: [...rule[list], id] });
 }

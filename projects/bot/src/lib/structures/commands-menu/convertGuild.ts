@@ -15,12 +15,14 @@ import { isAccessEntry } from 'wolfstar-database';
  * @returns What was converted, `null` when nothing changed.
  */
 export async function convertGuildCommandRules(guildId: Snowflake, actorId: Snowflake): Promise<LegacyNodeConversion | null> {
+	// Before the lock, which runs out while a slow request to Discord waits:
+	const roles = await container.gatewayClient.roles.fetchAll(guildId);
+
 	using trx = await writeSettingsTransaction(guildId);
 	const { settings } = trx;
 	const hasNodes = [...settings.permissionsUsers, ...settings.permissionsRoles].some((entry) => !isAccessEntry(entry));
 	if (!hasNodes) return null;
 
-	const roles = await container.gatewayClient.roles.fetchAll(guildId);
 	const restrictions = readCommandRestrictions(settings.commandsRestrictions, guildId);
 	const result = convertLegacyNodes({
 		users: settings.permissionsUsers,

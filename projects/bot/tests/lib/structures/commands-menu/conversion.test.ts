@@ -115,6 +115,19 @@ describe('convertLegacyNodes', () => {
 		expect(result.restrictions).toEqual([rule('warn', { ignoredChannels: [channelId], allowedRoles: [roleId] })]);
 	});
 
+	test.each([
+		['ignores the role a node allows', { allow: ['warn'], deny: [] }, { ignoredRoles: [roleId] }],
+		['allows the role a node denies', { allow: [], deny: ['warn'] }, { allowedRoles: [roleId] }]
+	])('GIVEN a rule that %s THEN the node is left, the rule would win or lose in silence', (_, names, overrides) => {
+		const node = { id: roleId, ...names };
+		const restrictions = [rule('warn', overrides)];
+		const result = convert({ roles: [node], restrictions });
+
+		expect(result.skipped).toEqual([{ kind: 'role', node, reason: 'meaningChanges' }]);
+		expect(result.restrictions).toEqual(restrictions);
+		expect(result.roles).toEqual([node]);
+	});
+
 	test('GIVEN its own result THEN converting again changes nothing', () => {
 		const first = convert({
 			users: [{ id: userId, allow: [], deny: ['nosuchcommand'] }],
