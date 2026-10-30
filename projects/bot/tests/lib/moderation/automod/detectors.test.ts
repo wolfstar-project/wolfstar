@@ -6,7 +6,8 @@ import {
 	countRepeats,
 	hasMaskedLink,
 	hasSpoiler,
-	isSpoilerAttachment
+	isSpoilerAttachment,
+	pushMessageContent
 } from '#lib/moderation/automod/detectors';
 
 describe('auto-moderation detectors', () => {
@@ -111,6 +112,25 @@ describe('auto-moderation detectors', () => {
 		test('GIVEN a rule that counts the whole channel THEN its members are counted together, and the channels apart', () => {
 			expect(getMessageSpamCounterKey(true, '1', '10')).toBe(getMessageSpamCounterKey(true, '1', '11'));
 			expect(getMessageSpamCounterKey(true, '1', '10')).not.toBe(getMessageSpamCounterKey(true, '2', '10'));
+		});
+	});
+	describe('pushMessageContent', () => {
+		test('GIVEN repeated messages THEN each counts the ones the queue holds, itself included', () => {
+			const contents: string[] = [];
+			expect(['a', 'b', 'a', 'a'].map((content) => pushMessageContent(contents, content, 4))).toEqual([1, 1, 2, 3]);
+		});
+
+		test('GIVEN a full queue THEN the oldest message leaves it', () => {
+			const contents: string[] = [];
+			for (const content of ['a', 'a', 'c', 'c', 'c']) pushMessageContent(contents, content, 3);
+			expect(contents).toEqual(['c', 'c', 'c']);
+			expect(pushMessageContent(contents, 'a', 3)).toBe(1);
+		});
+
+		test('GIVEN another case THEN the messages are the same', () => {
+			const contents: string[] = [];
+			pushMessageContent(contents, 'Hello', 3);
+			expect(pushMessageContent(contents, 'HELLO', 3)).toBe(2);
 		});
 	});
 });

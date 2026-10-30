@@ -340,6 +340,7 @@ export declare namespace ModerationMessageListener {
 		| 'Duplicates'
 		| 'Characters'
 		| 'Emojis'
+		| 'MessageDuplicates'
 		| 'MessageSpam'
 		| 'ImageSpam'
 		| 'LinksCooldown'

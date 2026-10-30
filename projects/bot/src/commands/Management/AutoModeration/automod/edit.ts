@@ -33,7 +33,7 @@ const TypeOptions = [
 	['period', 'timePeriod'],
 	['whole-channel', 'perChannel'],
 	['weighted', 'weighted']
-] as const satisfies readonly (readonly [keyof Options, string])[];
+] as const satisfies readonly (readonly [keyof Command.OptionsOf<'automod edit'>, string])[];
 
 /**
  * `/automod edit`, see the `automod` parent command.

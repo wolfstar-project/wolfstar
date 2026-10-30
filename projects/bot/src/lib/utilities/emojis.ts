@@ -116,6 +116,7 @@ export const EmojiDefinitions = {
 	AutoModMassMentions: emoji('automod_mass_mentions', '📣'),
 	AutoModMentionsCooldown: emoji('automod_mentions_cooldown', '⏱️'),
 	AutoModMessageSpam: emoji('automod_message_spam', '💬'),
+	AutoModMessageDuplicates: emoji('automod_message_duplicates', '📑'),
 	AutoModNewlines: emoji('automod_newlines', '↩️'),
 	AutoModPhishing: emoji('automod_phishing', '🎣'),
 	AutoModPolls: emoji('automod_polls', '📊'),

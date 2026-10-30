@@ -596,6 +596,7 @@ namespace public {
     MaskedLinks = "MaskedLinks"
     StickersCooldown = "StickersCooldown"
     Polls = "Polls"
+    MessageDuplicates = "MessageDuplicates"
   }
 
   native_enum HoneypotAction {

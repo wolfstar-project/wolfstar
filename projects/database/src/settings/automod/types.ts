@@ -17,6 +17,7 @@ export const AutoModerationRuleTypes = [
 	'MaskedLinks',
 	'MassMentions',
 	'MentionsCooldown',
+	'MessageDuplicates',
 	'MessageSpam',
 	'Newlines',
 	'Phishing',
@@ -102,6 +103,8 @@ export interface AutoModerationRuleOptionsMap {
 	StickersCooldown: { maximum: number; timePeriod: number };
 	/** Every message with a native poll of Discord infringes the rule. */
 	Polls: Record<string, never>;
+	/** At least `maximum` identical messages among the last `queueSize` of a channel, whoever sent them. */
+	MessageDuplicates: { maximum: number; queueSize: number };
 }
 
 export type AutoModerationRuleOptions = AutoModerationRuleOptionsMap[AutoModerationRuleType];
@@ -184,7 +187,8 @@ export const AutoModerationRuleOptionLimits = {
 	LinksCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } },
 	MassMentions: { maximum: { minimum: 1, maximum: 100 } },
 	MentionsCooldown: { maximum: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 3600 } },
-	StickersCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } }
+	StickersCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } },
+	MessageDuplicates: { maximum: { minimum: 2, maximum: 100 }, queueSize: { minimum: 10, maximum: 100 } }
 } as const;
 
 /**
@@ -219,7 +223,8 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Spoilers: {},
 		MaskedLinks: {},
 		StickersCooldown: { maximum: 3, timePeriod: 60 },
-		Polls: {}
+		Polls: {},
+		MessageDuplicates: { maximum: 5, queueSize: 50 }
 	};
 	return structuredClone(defaults[type]);
 }
