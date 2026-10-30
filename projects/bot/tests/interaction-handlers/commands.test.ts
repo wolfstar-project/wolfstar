@@ -2,7 +2,7 @@ import { readSettings, writeSettingsTransaction } from '#lib/database';
 import { encodeCommandsMenuId, findCommandRestriction, getCommandRestrictionRevision, type CommandsMenuVerb } from '#lib/structures/commands-menu';
 import { getLegacyPermissionRevision } from '#lib/structures/commands-menu/legacy';
 import { findCommandPiece } from '#lib/structures/commands-menu/disabled';
-import { hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { UserInteractionHandler } from '#root/interaction-handlers/commands';
 import { ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
@@ -18,7 +18,7 @@ vi.mock('#lib/structures/commands-menu/disabled', async (original) => ({
 }));
 vi.mock('#lib/structures/commands/permissions', async (original) => ({
 	...(await original<typeof import('#lib/structures/commands/permissions')>()),
-	hasCommandPermissionLevel: vi.fn()
+	canManageServerSettingsFrom: vi.fn()
 }));
 vi.mock('@wolfstar/http-framework', async (original) => ({
 	...(await original<typeof import('@wolfstar/http-framework')>()),
@@ -74,7 +74,7 @@ describe('commands editor', () => {
 			commandsDisabled: ['ban']
 		} as GuildData;
 		vi.mocked(readSettings).mockImplementation(async () => settings as never);
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(true);
+		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(true);
 		vi.mocked(findCommandPiece).mockReturnValue({ name: 'ban' } as never);
 		vi.mocked(writeSettingsTransaction).mockImplementation(
 			async () =>
@@ -129,7 +129,7 @@ describe('commands editor', () => {
 	});
 
 	test('a non-administrator or another menu user cannot save', async () => {
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(false);
+		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(false);
 		const denied = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled' });
 		await handler().run(denied.interaction, denied.content);
 		const other = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled' }, userId);
@@ -155,7 +155,11 @@ describe('commands editor', () => {
 		onTestFinished(() => {
 			container.gatewayClient = gatewayClient;
 		});
-		settings.permissionsUsers = [{ id: userId, allow: [], deny: ['*'] }];
+		// The dashboard access rules share the columns, and removing the nodes keeps them:
+		const ownRule = { id: ownerId, allow: [], deny: [], dashboard: 'deny' } as const;
+		const roleRule = { id: '254360814063058945', allow: [], deny: [], dashboard: 'allow' } as const;
+		settings.permissionsUsers = [{ id: userId, allow: [], deny: ['*'] }, ownRule];
+		settings.permissionsRoles = [roleRule];
 		const revision = getLegacyPermissionRevision(settings);
 		const invalid = submit('confirmLegacy', revision, { confirmation: 'remove' });
 		await handler().run(invalid.interaction, invalid.content);
@@ -170,7 +174,7 @@ describe('commands editor', () => {
 		expect(written).toEqual([]);
 		const confirmed = submit('confirmLegacy', revision, { confirmation: 'REMOVE' });
 		await handler().run(confirmed.interaction, confirmed.content);
-		expect(written).toEqual([{ permissionsUsers: [], permissionsRoles: [] }]);
+		expect(written).toEqual([{ permissionsUsers: [ownRule], permissionsRoles: [roleRule] }]);
 		expect(settings.commandsRestrictions).toEqual([stored]);
 	});
 });

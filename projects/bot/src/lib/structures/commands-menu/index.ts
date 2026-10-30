@@ -1,6 +1,6 @@
 import { readSettings } from '#lib/database';
 import { hasLegacyPermissions } from '#lib/structures/commands-menu/legacy';
-import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { fetchCommandIds, getCommandCatalog } from '#lib/structures/commands-menu/catalog';
 import type { CommandsMenuContext } from '#lib/structures/commands-menu/render';
@@ -36,7 +36,8 @@ export async function createCommandsMenuContext(
 }
 
 /**
- * Whether the notice of the permission nodes is shown: the server still stores some, and the member is an administrator.
+ * Whether the notice of the permission nodes is shown: the server still stores some, and the member may manage its
+ * settings, see `canManageServerSettings`.
  */
 async function showsLegacyPermissions(interaction: { guildId?: string | null; member?: GuildChatInputInteraction['member'] }): Promise<boolean> {
 	const { guildId, member } = interaction;
@@ -45,5 +46,5 @@ async function showsLegacyPermissions(interaction: { guildId?: string | null; me
 	const settings = await readSettings(guildId);
 	if (!hasLegacyPermissions(settings)) return false;
 
-	return hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator);
+	return canManageServerSettingsFrom({ guildId, member });
 }

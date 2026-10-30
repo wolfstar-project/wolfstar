@@ -1,5 +1,5 @@
 import { CommandMatcher, Serializer } from '#lib/database';
-import { type PermissionsNode } from 'wolfstar-database';
+import { isAccessEntry, type PermissionsNode } from 'wolfstar-database';
 import { isObject } from '@sapphire/utilities';
 
 export class UserSerializer extends Serializer<PermissionsNode> {
@@ -10,10 +10,15 @@ export class UserSerializer extends Serializer<PermissionsNode> {
 	public async isValid(value: PermissionsNode, { t, entry, guild }: Serializer.UpdateContext): Promise<boolean> {
 		// Safe-guard checks against arbitrary data
 		if (!isObject(value)) throw t('serializers:permissionNodeInvalid');
-		if (Object.keys(value).length !== 3) throw t('serializers:permissionNodeInvalid');
+		// A dashboard access rule of wolfstar.rocks has a fourth key, `dashboard`, and names no command:
+		const isRule = 'dashboard' in value;
+		if (Object.keys(value).length !== (isRule ? 4 : 3)) throw t('serializers:permissionNodeInvalid');
 		if (typeof value.id !== 'string') throw t('serializers:permissionNodeInvalid');
 		if (!Array.isArray(value.allow)) throw t('serializers:permissionNodeInvalid');
 		if (!Array.isArray(value.deny)) throw t('serializers:permissionNodeInvalid');
+		if (isRule && (!isAccessEntry(value) || value.allow.length !== 0 || value.deny.length !== 0)) {
+			throw t('serializers:permissionNodeInvalid');
+		}
 
 		// Check for target validity
 		if (entry.property === 'permissionsRoles') {
@@ -24,8 +29,8 @@ export class UserSerializer extends Serializer<PermissionsNode> {
 			});
 		}
 
-		// The @everyone role should not have allows
-		if (value.id === guild.id && value.allow.length !== 0) {
+		// The @everyone role should not have allows, nor open the dashboard to everybody
+		if (value.id === guild.id && (value.allow.length !== 0 || value.dashboard === 'allow')) {
 			throw t('serializers:permissionNodeSecurityEveryoneAllows');
 		}
 
@@ -48,6 +53,7 @@ export class UserSerializer extends Serializer<PermissionsNode> {
 	}
 
 	public override stringify(value: PermissionsNode) {
+		if (isAccessEntry(value)) return `${value.id}(dashboard: ${value.dashboard})`;
 		return `${value.id}(${value.allow.join(', ')} | ${value.deny.join(', ')})`;
 	}
 }

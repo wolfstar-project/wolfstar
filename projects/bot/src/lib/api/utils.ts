@@ -1,7 +1,7 @@
 import { fetchFlattenedGuild, flattenGuild } from '#lib/api/ApiTransformers';
 import { Auth, resolveRequestAuth, type ApiAuthRequest, type LoginData } from '#lib/api/Auth';
 import type { OauthFlattenedGuild, PartialOauthFlattenedGuild, TransformedLoginData } from '#lib/api/types';
-import { readSettings, readSettingsPermissionNodes } from '#lib/database/settings';
+import { canManageServerSettings } from '#lib/structures/commands/permissions';
 import { PermissionsBits } from 'wolfstar-shared';
 import { RateLimitManager } from '@sapphire/ratelimits';
 import { createFunctionPrecondition } from '@wolfstar/decorators';
@@ -47,14 +47,6 @@ export function getAuth(): Auth | null {
 	return auth;
 }
 
-async function isAdmin(member: GuildMember, roles: readonly string[]): Promise<boolean> {
-	if (roles.length === 0) return (await member.permissions).has(PermissionFlagsBits.ManageGuild);
-
-	// `roles.ids` leaves `@everyone` out, whose ID is the guild's:
-	const memberRoles = new Set([member.guildId, ...member.roles.ids]);
-	return roles.some((role) => memberRoles.has(role));
-}
-
 export const authenticated = () =>
 	createFunctionPrecondition(
 		(request: ApiAuthRequest, response: ApiResponse) => Boolean(resolveRequestAuth(getAuth(), request, response)?.token),
@@ -96,12 +88,20 @@ export function ratelimit(time: number, limit = 1, auth = false) {
 	);
 }
 
+/**
+ * Whether a member may manage a server from the dashboard and the API, see `canManageServerSettings`.
+ */
 export async function canManage(guild: Guild, member: GuildMember): Promise<boolean> {
+	if (member.id === null) return false;
 	if (guild.ownerId === member.id) return true;
 
-	const settings = await readSettings(guild);
-	const nodes = readSettingsPermissionNodes(settings);
-	return (await isAdmin(member, settings.rolesAdmin)) && ((await nodes.run(member, container.stores.get('commands').get('settings')!)) ?? true);
+	const permissions = await member.permissions;
+	return canManageServerSettings({
+		guildId: guild.id,
+		userId: member.id,
+		roleIds: member.roles.ids,
+		manageGuild: permissions.has(PermissionFlagsBits.ManageGuild)
+	});
 }
 
 async function getManageable(id: string, oauthGuild: RESTAPIPartialCurrentUserGuild, guild: Guild | null): Promise<boolean> {

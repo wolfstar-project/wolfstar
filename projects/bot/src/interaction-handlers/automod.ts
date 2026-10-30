@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@wolfstar/decorators';
 import { writeSettings } from '#lib/database';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
 import {
 	AutoModerationRuleError,
@@ -57,8 +58,10 @@ interface Change {
  * @remarks
  *
  * What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the user who
- * opened the menu can use it, and the `administrator` precondition requires the administrator level every time, as it does for the `/automod` subcommands. Every
- * change is made on the rule the database has, the one the menu shows may be behind another change.
+ * opened the menu can use it, and the `administrator` precondition requires the administrator level every time, as it
+ * does for the `/automod` subcommands; the settings of the auto-moderation (the `setting` verb) also ask
+ * `canManageServerSettings`, which keeps out an administrator a dashboard access rule denies. Every change is made on
+ * the rule the database has, the one the menu shows may be behind another change.
  */
 @ApplyOptions<InteractionHandler.Options>({ preconditions: ['administrator'] })
 export class UserInteractionHandler extends InteractionHandler {
@@ -147,6 +150,15 @@ export class UserInteractionHandler extends InteractionHandler {
 		argument: string,
 		channelId: Snowflake | undefined
 	) {
+		// These are settings of the server, which a dashboard access rule can keep an administrator out of:
+		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
+			const t = getSupportedUserLanguageT(interaction);
+			return interaction.reply({
+				content: translateKey(t, 'preconditions:administrator', { command: { name: this.name } }),
+				flags: MessageFlags.Ephemeral
+			});
+		}
+
 		const actorId = interaction.user.id;
 		switch (argument) {
 			case 'module':

@@ -1,9 +1,19 @@
 import { PermissionNodeAction, PermissionNodeManager } from '#lib/database';
-import { getDefaultGuildSettings, type GuildData, type PermissionsNode } from 'wolfstar-database';
+import { createAccessEntry, getDefaultGuildSettings, type GuildData, type PermissionsNode } from 'wolfstar-database';
 import { UserError } from '@wolfstar/http-framework';
 import type { Guild, GuildMember, Role, User } from '@wolfstar/plugin-gateway';
 
-import { client, createGuild, getCache, createGuildMember, createRole, createUser, roleData } from '../../../../mocks/MockInstances.js';
+import {
+	client,
+	commands,
+	createCommand,
+	createGuild,
+	getCache,
+	createGuildMember,
+	createRole,
+	createUser,
+	roleData
+} from '../../../../mocks/MockInstances.js';
 
 describe('PermissionNodeManager', () => {
 	let guild: Guild;
@@ -174,6 +184,70 @@ describe('PermissionNodeManager', () => {
 				expect(casted.identifier).toBe('commands/management:permissionNodesNodeNotExists');
 				expect((casted.context as { target: typeof role }).target).toBe(role);
 			});
+		});
+	});
+
+	describe('dashboard access rules', () => {
+		// The rules of wolfstar.rocks share the columns of the nodes, for the same member or role:
+		const user = createUser();
+
+		test('GIVEN a node added, extended and removed THEN the rule of the same member stays', async () => {
+			const rule = createAccessEntry(user.id, 'deny');
+			await apply(user, [rule]);
+
+			const ctx = readSettingsPermissionNodes();
+			await apply(user, ctx.add(user, 'ping', PermissionNodeAction.Allow));
+			expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([rule, { id: user.id, allow: ['ping'], deny: [] }]);
+
+			await apply(user, ctx.add(user, 'balance', PermissionNodeAction.Deny));
+			expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([rule, { id: user.id, allow: ['ping'], deny: ['balance'] }]);
+
+			await apply(user, ctx.remove(user, 'balance', PermissionNodeAction.Deny));
+			await apply(user, ctx.remove(user, 'ping', PermissionNodeAction.Allow));
+			expect(entity.permissionsUsers).toEqual<PermissionsNode[]>([rule]);
+		});
+
+		test('GIVEN a node reset THEN the rule of the same role stays, and a rule alone is no node to reset', async () => {
+			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
+			const rule = createAccessEntry(role.id, 'allow');
+			await apply(role, [rule, { id: role.id, allow: ['ping'], deny: [] }]);
+
+			const ctx = readSettingsPermissionNodes();
+			await apply(role, ctx.reset(role));
+			expect(entity.permissionsRoles).toEqual<PermissionsNode[]>([rule]);
+			expect(() => ctx.reset(role)).toThrow(UserError);
+		});
+
+		test('GIVEN only rules THEN running the nodes decides nothing', async () => {
+			const command = commands.get('ping') ?? createCommand('ping', 'General');
+			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
+			Object.assign(entity, {
+				permissionsUsers: [createAccessEntry(user.id, 'allow')],
+				permissionsRoles: [createAccessEntry(role.id, 'deny')]
+			});
+
+			const ctx = readSettingsPermissionNodes();
+			await ctx.refresh(entity);
+
+			await expect(ctx.run({ id: user.id, roleIds: [role.id] }, command)).resolves.toBeNull();
+			expect(getSorted().size).toBe(0);
+		});
+
+		test('GIVEN a role with only a rule THEN it is one the listeners of the roles refresh the column for', async () => {
+			const role = getCache(client.roles).get(client.roles.resolveKey(guild.id, roleData.id))!;
+			await apply(role, [createAccessEntry(role.id, 'allow')]);
+
+			expect(readSettingsPermissionNodes().has(role.id)).toBe(true);
+			expect(readSettingsPermissionNodes().has('1')).toBe(false);
+		});
+
+		test('GIVEN the role of a rule is gone THEN the refresh drops it with the nodes of that role', async () => {
+			const kept = createRole({ id: '541739191776575502', name: 'Developer', position: 27 }, guild);
+			const ruleKept = createAccessEntry(kept.id, 'allow');
+			entity.permissionsRoles = [ruleKept, createAccessEntry('1', 'deny'), { id: '1', allow: ['ping'], deny: [] }];
+
+			const ctx = readSettingsPermissionNodes();
+			await expect(ctx.refresh(entity)).resolves.toEqual([ruleKept]);
 		});
 	});
 

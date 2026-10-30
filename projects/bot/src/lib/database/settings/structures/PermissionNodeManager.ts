@@ -1,9 +1,10 @@
 import type { Command } from '@wolfstar/http-framework';
-import type { PermissionsNode, ReadonlyGuildData } from 'wolfstar-database';
+import { isAccessEntry, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
 import { matchAny } from '#lib/database/utils/matchers/Command';
 import { Collection } from '@discordjs/collection';
 import { container, UserError } from '@wolfstar/http-framework';
 import { Role, type GuildMember, type User } from '@wolfstar/plugin-gateway';
+import type { Snowflake } from 'discord-api-types/v10';
 
 export const enum PermissionNodeAction {
 	Allow,
@@ -11,6 +12,22 @@ export const enum PermissionNodeAction {
 }
 
 type PermissionNodeValueResolvable = Role | GuildMember | User;
+
+/**
+ * Who the nodes are run for: a member and the roles they hold.
+ */
+export interface PermissionNodeSubject {
+	id: Snowflake;
+	roleIds: readonly Snowflake[];
+}
+
+/**
+ * Whether an entry is a legacy node. The columns also hold the dashboard access rules of wolfstar.rocks, which name no
+ * command, and which the nodes neither run nor change: `canManageServerSettings` reads them.
+ */
+function isLegacyNode(entry: PermissionsNode): boolean {
+	return !isAccessEntry(entry);
+}
 
 export class PermissionNodeManager {
 	private sorted = new Collection<string, PermissionsManagerNode>();
@@ -28,21 +45,25 @@ export class PermissionNodeManager {
 		return (target instanceof Role ? 'permissionsRoles' : 'permissionsUsers') satisfies keyof ReadonlyGuildData;
 	}
 
-	public async run(member: GuildMember, command: Command) {
+	public async run(subject: PermissionNodeSubject, command: Command) {
 		// The role order comes from the guild's roles, which are fetched asynchronously:
 		await this.#ready;
-		return this.runUser(member, command) ?? this.runRole(member, command);
+		return this.runUser(subject, command) ?? this.runRole(subject, command);
 	}
 
+	/**
+	 * Whether the column of the roles has an entry for a role, a legacy node or a dashboard access rule: the listeners of
+	 * the roles refresh the column when one of them is deleted or moved.
+	 */
 	public has(roleId: string) {
-		return this.sorted.has(roleId);
+		return this.#cachedRawPermissionRoles.some((entry) => entry.id === roleId);
 	}
 
 	public add(target: PermissionNodeValueResolvable, command: string, action: PermissionNodeAction): readonly PermissionsNode[] {
 		const nodes = this.#getPermissionNodes(target);
 		const id = this.#getId(target);
 
-		const nodeIndex = nodes.findIndex((n) => n.id === id);
+		const nodeIndex = nodes.findIndex((n) => n.id === id && isLegacyNode(n));
 		if (nodeIndex === -1) {
 			const node: PermissionsNode = {
 				id,
@@ -74,7 +95,7 @@ export class PermissionNodeManager {
 		const nodes = this.#getPermissionNodes(target);
 		const id = this.#getId(target);
 
-		const nodeIndex = nodes.findIndex((n) => n.id === id);
+		const nodeIndex = nodes.findIndex((n) => n.id === id && isLegacyNode(n));
 		if (nodeIndex === -1) {
 			throw new UserError({ identifier: 'commands/management:permissionNodesNodeNotExists' });
 		}
@@ -101,7 +122,7 @@ export class PermissionNodeManager {
 		const nodes = this.#getPermissionNodes(target);
 		const id = this.#getId(target);
 
-		const nodeIndex = nodes.findIndex((n) => n.id === id);
+		const nodeIndex = nodes.findIndex((n) => n.id === id && isLegacyNode(n));
 		if (nodeIndex === -1) {
 			throw new UserError({ identifier: 'commands/management:permissionNodesNodeNotExists', context: { target } });
 		}
@@ -150,26 +171,13 @@ export class PermissionNodeManager {
 			this.sorted = sorted;
 		}
 
-		let copy: PermissionsNode[] | null = null;
-
-		// Delete redundant entries
-		for (const removedItem of pendingToRemove) {
-			const removedIndex = nodes.findIndex((element) => element.id === removedItem);
-			if (removedIndex !== -1) {
-				copy ??= nodes.slice();
-				copy.splice(removedIndex, 1);
-			}
-		}
-
-		return copy ?? nodes;
+		// The entries of a role that is gone are dropped, its dashboard access rule too: it can no longer name anybody.
+		return pendingToRemove.size === 0 ? nodes : nodes.filter((entry) => !pendingToRemove.has(entry.id));
 	}
 
-	private runUser(member: GuildMember, command: Command) {
-		// Assume sorted data
-		const permissionNodeRoles = this.#cachedRawPermissionUsers;
-		const memberId = member.id;
-		for (const node of permissionNodeRoles) {
-			if (node.id !== memberId) continue;
+	private runUser(subject: PermissionNodeSubject, command: Command) {
+		for (const node of this.#cachedRawPermissionUsers) {
+			if (node.id !== subject.id || !isLegacyNode(node)) continue;
 			if (matchAny(node.allow, command)) return true;
 			if (matchAny(node.deny, command)) return false;
 		}
@@ -177,8 +185,8 @@ export class PermissionNodeManager {
 		return null;
 	}
 
-	private runRole(member: GuildMember, command: Command) {
-		const roles = new Set(member.roles.ids);
+	private runRole(subject: PermissionNodeSubject, command: Command) {
+		const roles = new Set(subject.roleIds);
 
 		// Assume sorted data
 		for (const [id, node] of this.sorted.entries()) {
@@ -195,7 +203,7 @@ export class PermissionNodeManager {
 
 		const sortedNodes: PermissionsNode[] = [];
 		for (const sortedRole of sortedRoles.values()) {
-			const node = nodes.find((node) => node.id === sortedRole.id);
+			const node = nodes.find((node) => node.id === sortedRole.id && isLegacyNode(node));
 			if (node === undefined) continue;
 
 			sortedNodes.push(node);

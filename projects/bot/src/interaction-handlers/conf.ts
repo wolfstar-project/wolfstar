@@ -3,7 +3,7 @@ import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getConfigurableKeys, reset, writeSettings, type SchemaDataKey, type Serializer } from '#lib/database';
 import { type ReadonlyGuildData } from 'wolfstar-database';
 import { fetchUserReportEnabled, toggleUserReportEnabled } from '#lib/database';
-import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { isHoneypotSettingsWrite, writeHoneypotSettings } from '#lib/moderation/honeypot/settings';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { downloadConfigurationFile } from '#lib/database/settings/transfer/attachment';
@@ -82,10 +82,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (action.verb === 'userToggle' && !(interaction instanceof ModalSubmitInteraction)) return this.toggleUser(interaction, action, t);
 
 		if (guildId === undefined) return fail(getDefaultExpiredReply());
-		if (
-			interaction.member === undefined ||
-			!(await hasCommandPermissionLevel({ guildId, member: interaction.member }, CommandPermissionLevel.Administrator))
-		) {
+		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
 			return fail(t('preconditions:administrator', { command: { name: this.name } }));
 		}
 
