@@ -1,15 +1,19 @@
 import {
 	findCommandRestriction,
-	getCommandRestrictionDenial,
+	findMatchingRestrictions,
+	getCommandRuleSpecificity,
 	getCommandRestrictionRevision,
+	getCommandRulesDenial,
 	keepHiddenRestrictionEntries,
 	listCommandMembers,
 	readCommandRestrictions,
 	removeFromCommandRestrictions,
 	setCommandMembers,
 	setCommandRestriction,
+	writeCommandRestrictions,
 	type CommandRestriction
 } from '#lib/structures/commands-menu';
+import { createCommand } from '../../../mocks/MockInstances.js';
 
 const channelA = '111111111111111111';
 const channelB = '222222222222222222';
@@ -33,18 +37,18 @@ function restriction(overrides: Partial<CommandRestriction> = {}): CommandRestri
 describe('command restrictions', () => {
 	describe('readCommandRestrictions', () => {
 		test('GIVEN what is not a list THEN there are no restrictions', () => {
-			expect(readCommandRestrictions(null)).toEqual([]);
-			expect(readCommandRestrictions({ command: 'ban' })).toEqual([]);
+			expect(readCommandRestrictions(null, guildId)).toEqual([]);
+			expect(readCommandRestrictions({ command: 'ban' }, guildId)).toEqual([]);
 		});
 
 		test('GIVEN a restriction THEN it is read, without what is not an ID and without what is twice', () => {
 			const value = [{ command: 'ban', allowedChannels: [channelA, channelA, 'nope', 5], ignoredRoles: [roleA] }];
 
-			expect(readCommandRestrictions(value)).toEqual([restriction({ allowedChannels: [channelA], ignoredRoles: [roleA] })]);
+			expect(readCommandRestrictions(value, guildId)).toEqual([restriction({ allowedChannels: [channelA], ignoredRoles: [roleA] })]);
 		});
 
 		test('GIVEN a restriction that restricts nothing THEN it is dropped', () => {
-			expect(readCommandRestrictions([{ command: 'ban', allowedChannels: [] }, 'nope', null])).toEqual([]);
+			expect(readCommandRestrictions([{ command: 'ban', allowedChannels: [] }, 'nope', null], guildId)).toEqual([]);
 		});
 
 		test('GIVEN the commands a channel disabled, as the column held before THEN the channel is ignored by each', () => {
@@ -53,7 +57,7 @@ describe('command restrictions', () => {
 				{ channel: channelB, commands: ['ban'] }
 			];
 
-			expect(readCommandRestrictions(value)).toEqual([
+			expect(readCommandRestrictions(value, guildId)).toEqual([
 				restriction({ ignoredChannels: [channelA, channelB] }),
 				restriction({ command: 'kick', ignoredChannels: [channelA] })
 			]);
@@ -62,7 +66,52 @@ describe('command restrictions', () => {
 		test('GIVEN more entries than a select menu shows THEN every one is kept', () => {
 			const many = Array.from({ length: 30 }, (_, index) => `1000000000000000${String(index).padStart(2, '0')}`);
 
-			expect(readCommandRestrictions([{ command: 'ban', ignoredRoles: many }])[0].ignoredRoles).toEqual(many);
+			expect(readCommandRestrictions([{ command: 'ban', ignoredRoles: many }], guildId)[0].ignoredRoles).toEqual(many);
+		});
+	});
+
+	describe('the targets of a rule', () => {
+		test('GIVEN targets THEN their specificity is command 3, sub-category 2, category 1, every command 0', () => {
+			expect(['warn', 'Moderation.warn', 'Moderation.Management.warn'].map(getCommandRuleSpecificity)).toEqual([3, 3, 3]);
+			expect(getCommandRuleSpecificity('Moderation.Management.*')).toBe(2);
+			expect(getCommandRuleSpecificity('Moderation.*')).toBe(1);
+			expect(getCommandRuleSpecificity('*')).toBe(0);
+		});
+
+		test('GIVEN rules on a command, its category and every command THEN the matching ones come most specific first', () => {
+			const warn = createCommand('warn', 'Moderation');
+			const rules = ['*', 'warn', 'Moderation.*', 'Tools.*'].map((command) => restriction({ command, ignoredRoles: [roleA] }));
+
+			expect(findMatchingRestrictions(rules, warn).map((rule) => rule.command)).toEqual(['warn', 'Moderation.*', '*']);
+		});
+	});
+
+	describe('the stored format', () => {
+		const saved = [
+			{ command: 'warn', allowedRoles: [roleA] },
+			{ command: 'ban', ignoredRoles: [roleB] }
+		];
+
+		test('GIVEN rules saved before the format THEN the ones that allowed someone ignore @everyone', () => {
+			expect(readCommandRestrictions(saved, guildId)).toEqual([
+				restriction({ command: 'warn', allowedRoles: [roleA], ignoredRoles: [guildId] }),
+				restriction({ command: 'ban', ignoredRoles: [roleB] })
+			]);
+		});
+
+		test('GIVEN rules saved with the format THEN they are read as they are', () => {
+			expect(readCommandRestrictions([...saved, { format: 2 }], guildId)).toEqual([
+				restriction({ command: 'warn', allowedRoles: [roleA] }),
+				restriction({ command: 'ban', ignoredRoles: [roleB] })
+			]);
+		});
+
+		test('GIVEN rules to store THEN the format marker is written with them', () => {
+			const rules = [restriction({ command: 'warn', allowedRoles: [roleA] })];
+			const written = writeCommandRestrictions(rules);
+
+			expect(written.at(-1)).toEqual({ format: 2 });
+			expect(readCommandRestrictions(written, guildId)).toEqual(rules);
 		});
 	});
 
@@ -166,73 +215,72 @@ describe('command restrictions', () => {
 		});
 	});
 
-	describe('getCommandRestrictionDenial', () => {
-		const everyone = { userId: '666666666666666666', channelIds: [channelA], roleIds: [guildId] };
+	describe('getCommandRulesDenial', () => {
+		// The roles of a member come highest first, and `@everyone`, the guild, last:
+		const high = roleA;
+		const low = roleB;
+		const userId = '666666666666666666';
+		const subject = (roleIds: string[], channelId = channelA, user = userId) => ({ userId: user, channelIds: [channelId], roleIds });
+		const rule = (command: string, overrides: Partial<CommandRestriction>) => restriction({ command, ...overrides });
 
-		test('GIVEN users and roles allowed THEN either is sufficient, but a denial from either wins', () => {
-			const rules = restriction({
-				allowedRoles: [roleA],
-				allowedUsers: [everyone.userId],
-				ignoredRoles: [roleB],
-				ignoredUsers: ['777777777777777777']
-			});
-			expect(getCommandRestrictionDenial(rules, everyone)).toBeNull();
-			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888', roleIds: [roleA] })).toBeNull();
-			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888' })).toBe('role');
-			expect(getCommandRestrictionDenial(rules, { ...everyone, roleIds: [roleB] })).toBe('role');
-			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '777777777777777777', roleIds: [roleA] })).toBe('user');
+		test('GIVEN an allowed high role and an ignored low one THEN the highest role decides', () => {
+			const rules = [rule('warn', { allowedRoles: [high], ignoredRoles: [low] })];
+
+			expect(getCommandRulesDenial(rules, subject([high, low, guildId]))).toBeNull();
+			expect(getCommandRulesDenial(rules, subject([low, guildId]))).toBe('role');
 		});
 
-		test('GIVEN only allowed users THEN another member is denied, even with an unrelated role', () => {
-			const rules = restriction({ allowedUsers: [everyone.userId] });
-			expect(getCommandRestrictionDenial(rules, everyone)).toBeNull();
-			expect(getCommandRestrictionDenial(rules, { ...everyone, userId: '888888888888888888', roleIds: [roleA] })).toBe('user');
-			expect(readCommandRestrictions([{ command: 'ban', allowedUsers: [everyone.userId, everyone.userId, 'bad'] }])).toEqual([rules]);
-			expect(getCommandRestrictionRevision(rules, false)).not.toBe(getCommandRestrictionRevision(restriction(), false));
+		test('GIVEN @everyone ignored and a role allowed THEN only that role runs it', () => {
+			const rules = [rule('warn', { ignoredRoles: [guildId], allowedRoles: [high] })];
+
+			expect(getCommandRulesDenial(rules, subject([guildId]))).toBe('role');
+			expect(getCommandRulesDenial(rules, subject([high, guildId]))).toBeNull();
 		});
 
-		test('GIVEN an allowed user in an ignored channel THEN the channel restriction still wins', () => {
-			expect(getCommandRestrictionDenial(restriction({ allowedUsers: [everyone.userId], ignoredChannels: [channelA] }), everyone)).toBe(
-				'channel'
-			);
+		test('GIVEN a role ignored on a category and allowed on a command of it THEN the most specific rule decides', () => {
+			const rules = [rule('warn', { allowedRoles: [low] }), rule('Moderation.*', { ignoredRoles: [low] })];
+
+			expect(getCommandRulesDenial(rules, subject([low, guildId]))).toBeNull();
 		});
 
-		test('GIVEN no restriction THEN the command runs', () => {
-			expect(getCommandRestrictionDenial(restriction(), everyone)).toBeNull();
+		test('GIVEN a rule that names the member THEN it decides before the rules of their roles', () => {
+			const allowedEverywhere = [rule('warn', { ignoredRoles: [high] }), rule('*', { allowedUsers: [userId] })];
+			expect(getCommandRulesDenial(allowedEverywhere, subject([high, guildId]))).toBeNull();
+
+			const ignored = [rule('warn', { ignoredUsers: [userId], allowedRoles: [high] })];
+			expect(getCommandRulesDenial(ignored, subject([high, guildId]))).toBe('user');
 		});
 
-		test('GIVEN allowed channels THEN the command only runs in them', () => {
-			const allowed = restriction({ allowedChannels: [channelA] });
+		test('GIVEN an ignored channel on every command and allowed channels on the command THEN both apply', () => {
+			const rules = [rule('warn', { allowedChannels: [channelB] }), rule('*', { ignoredChannels: [channelA] })];
 
-			expect(getCommandRestrictionDenial(allowed, everyone)).toBeNull();
-			expect(getCommandRestrictionDenial(allowed, { ...everyone, channelIds: [channelB] })).toBe('channel');
+			expect(getCommandRulesDenial(rules, subject([guildId], channelA))).toBe('channel');
+			expect(getCommandRulesDenial(rules, subject([guildId], '555555555555555555'))).toBe('channel');
+			expect(getCommandRulesDenial(rules, subject([guildId], channelB))).toBeNull();
 		});
 
-		test('GIVEN an ignored channel THEN the command does not run in it, nor in its threads', () => {
-			const ignored = restriction({ ignoredChannels: [channelA] });
+		test('GIVEN the allowed channels of a command and of its category THEN the most specific ones apply', () => {
+			const rules = [rule('warn', { allowedChannels: [channelB] }), rule('Moderation.*', { allowedChannels: [channelA] })];
 
-			expect(getCommandRestrictionDenial(ignored, everyone)).toBe('channel');
-			expect(getCommandRestrictionDenial(ignored, { ...everyone, channelIds: ['555555555555555555', channelA] })).toBe('channel');
-			expect(getCommandRestrictionDenial(ignored, { ...everyone, channelIds: [channelB] })).toBeNull();
+			expect(getCommandRulesDenial(rules, subject([guildId], channelB))).toBeNull();
+			expect(getCommandRulesDenial(rules, subject([guildId], channelA))).toBe('channel');
 		});
 
-		test('GIVEN allowed roles THEN only the members with one of them run the command', () => {
-			const allowed = restriction({ allowedRoles: [roleA] });
+		test('GIVEN a rule that only ignores a channel THEN the command runs anywhere else, whoever runs it', () => {
+			const rules = [rule('warn', { ignoredChannels: [channelA] })];
 
-			expect(getCommandRestrictionDenial(allowed, everyone)).toBe('role');
-			expect(getCommandRestrictionDenial(allowed, { ...everyone, roleIds: [guildId, roleA, roleB] })).toBeNull();
+			expect(getCommandRulesDenial(rules, subject([low, guildId], channelB))).toBeNull();
 		});
 
-		test('GIVEN an ignored role THEN it wins over an allowed one', () => {
-			const both = restriction({ allowedRoles: [roleA], ignoredRoles: [roleB] });
-
-			expect(getCommandRestrictionDenial(both, { ...everyone, roleIds: [guildId, roleA, roleB] })).toBe('role');
+		test('GIVEN no rule that names the member, their roles or a channel THEN the command runs', () => {
+			expect(getCommandRulesDenial([rule('warn', { allowedRoles: [high] })], subject([low, guildId]))).toBeNull();
+			expect(getCommandRulesDenial([], subject([guildId]))).toBeNull();
 		});
 
-		test('GIVEN a channel and a role that both deny THEN the channel is what is told', () => {
-			const both = restriction({ ignoredChannels: [channelA], ignoredRoles: [roleA] });
+		test('GIVEN a thread THEN it is restricted as the channel it is in', () => {
+			const rules = [rule('warn', { ignoredChannels: [channelA] })];
 
-			expect(getCommandRestrictionDenial(both, { ...everyone, channelIds: [channelA], roleIds: [roleA] })).toBe('channel');
+			expect(getCommandRulesDenial(rules, { userId, channelIds: ['555555555555555555', channelA], roleIds: [guildId] })).toBe('channel');
 		});
 	});
 });

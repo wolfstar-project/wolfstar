@@ -2,7 +2,7 @@ import { retryWithDelays } from '#common';
 import { seconds } from 'wolfstar-shared';
 import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } from '#lib/database';
 import { RoleActions } from '#lib/moderation/actions';
-import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
+import { readCommandRestrictions, removeFromCommandRestrictions, writeCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { announceJoinGuardChange } from '#lib/moderation/joinguard/store';
@@ -49,8 +49,8 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		trx.write({ joinGuardAllowedRoles: trx.settings.joinGuardAllowedRoles.filter((allowed) => allowed !== roleId) });
 
 		// The commands that were restricted to the role, or that ignored it, forget it:
-		const restrictions = removeFromCommandRestrictions(readCommandRestrictions(trx.settings.commandsRestrictions), roleId);
-		if (restrictions !== null) trx.write({ commandsRestrictions: restrictions as never });
+		const restrictions = removeFromCommandRestrictions(readCommandRestrictions(trx.settings.commandsRestrictions, guild.id), roleId);
+		if (restrictions !== null) trx.write({ commandsRestrictions: writeCommandRestrictions(restrictions) as never });
 
 		if (trx.settings.rolesMuted === roleId) trx.write({ rolesMuted: null });
 		if (trx.settings.rolesRestrictedReaction === roleId) trx.write({ rolesRestrictedReaction: null });

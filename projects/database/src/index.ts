@@ -35,6 +35,7 @@ export * from './settings/roles/storage.js';
 export * from './settings/warnings/storage.js';
 export * from './settings/columns.js';
 export * from './settings/access.js';
+export * from './settings/permissions.js';
 export * from './settings/constants.js';
 export * from './settings/honeypot/storage.js';
 export * from './settings/joinguard/storage.js';

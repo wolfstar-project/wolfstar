@@ -1,4 +1,4 @@
-import { getCategory } from '#lib/database/utils/matchers/Command';
+import { getCategory, getSubCategory } from '#lib/database/utils/matchers/Command';
 import { container } from '@wolfstar/http-framework';
 import {
 	ApplicationCommandOptionType,
@@ -29,6 +29,12 @@ export interface CatalogCommand {
 	 * The first directory of the file of the command under `commands/`, which the menu groups the commands by.
 	 */
 	category: string;
+
+	/**
+	 * The second directory of the file of the command, `null` when it has none: the menu edits the rules of its
+	 * sub-category (`Category.SubCategory.*`).
+	 */
+	subCategory: string | null;
 	subcommands: CatalogSubcommand[];
 
 	/**
@@ -72,6 +78,7 @@ export function getCommandCatalog(locale: string): CatalogCommand[] {
 		commands.push(
 			toCatalogCommand(data, locale, {
 				category: getCategory(piece) ?? DefaultCategory,
+				subCategory: getSubCategory(piece),
 				contextMenus: piece.router.contextMenuNames
 			})
 		);
@@ -86,12 +93,13 @@ export function getCommandCatalog(locale: string): CatalogCommand[] {
 export function toCatalogCommand(
 	data: RESTPostAPIChatInputApplicationCommandsJSONBody,
 	locale: string,
-	extra: Pick<CatalogCommand, 'category' | 'contextMenus'>
+	extra: Pick<CatalogCommand, 'category' | 'contextMenus'> & Partial<Pick<CatalogCommand, 'subCategory'>>
 ): CatalogCommand {
 	return {
 		name: data.name,
 		description: localize(data.description, data.description_localizations, locale),
 		category: extra.category,
+		subCategory: extra.subCategory ?? null,
 		subcommands: getSubcommands(data.options ?? [], locale),
 		contextMenus: [...extra.contextMenus],
 		permissions: data.default_member_permissions ? BigInt(data.default_member_permissions) : null

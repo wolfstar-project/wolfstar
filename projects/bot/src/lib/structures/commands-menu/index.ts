@@ -30,6 +30,7 @@ export async function createCommandsMenuContext(
 		hasLegacyPermissions: options.legacy === true && (await showsLegacyPermissions(interaction)),
 		t: createTranslator(getSupportedUserLanguageT(interaction)),
 		ownerId,
+		guildId: interaction.guildId ?? undefined,
 		commands: getCommandCatalog(interaction.locale),
 		ids: await fetchCommandIds()
 	};

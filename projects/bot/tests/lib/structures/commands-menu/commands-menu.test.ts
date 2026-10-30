@@ -10,6 +10,7 @@ import {
 	renderCommandsPageModal,
 	renderCommandsResults,
 	renderCommandsSearchModal,
+	renderGroupRuleModal,
 	searchCatalogEntries,
 	toCatalogCommand,
 	type CatalogCommand,
@@ -23,7 +24,16 @@ const ownerId = '266624760782258186';
 const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)) as never;
 
 function createCommand(name: string, category: string, overrides: Partial<CatalogCommand> = {}): CatalogCommand {
-	return { name, description: `Description of ${name}`, category, subcommands: [], contextMenus: [], permissions: null, ...overrides };
+	return {
+		name,
+		description: `Description of ${name}`,
+		category,
+		subCategory: null,
+		subcommands: [],
+		contextMenus: [],
+		permissions: null,
+		...overrides
+	};
 }
 
 const commands: CatalogCommand[] = [
@@ -137,6 +147,7 @@ describe('commands menu', () => {
 				name: 'settings',
 				description: 'Apri le impostazioni',
 				category: 'Management',
+				subCategory: null,
 				subcommands: [
 					{ name: 'server', description: 'The server' },
 					{ name: 'rule add', description: 'Aggiungi' }
@@ -208,6 +219,32 @@ describe('commands menu', () => {
 			}
 		});
 
+		test('GIVEN a category THEN its title edits the rules of the category, and every command the ones of every command', () => {
+			expect(getCustomIds(renderCommandsList(createContext(), 'Moderation', 0).components!)).toContain(
+				`commands.${ownerId}.editGroup:Moderation~*:0`
+			);
+			expect(getCustomIds(renderCommandsList(createContext(), '', 0).components!)).toContain(`commands.${ownerId}.editGroup:*:0`);
+		});
+
+		test('GIVEN a category with sub-categories THEN a select menu edits the rules of each, within the limits of Discord', () => {
+			const context = {
+				...createContext(),
+				commands: [
+					...commands,
+					createCommand('case', 'Moderation', { subCategory: 'Utilities' }),
+					createCommand('slowmode', 'Moderation', { subCategory: 'Utilities' }),
+					createCommand('mute', 'Moderation', { subCategory: 'Restriction' })
+				]
+			};
+			const message = renderCommandsList(context, 'Moderation', 0);
+			const selects = flatten(message.components!).filter((component) => component.type === ComponentType.StringSelect);
+			const subCategories = selects.find((component) => component.custom_id === `commands.${ownerId}.editGroup:Moderation:0`)!;
+
+			expect(subCategories.options!.map((option) => option.value)).toEqual(['Restriction', 'Utilities']);
+			expect(flatten(message.components!).length).toBeLessThanOrEqual(40);
+			expect(getCustomIds(renderCommandsList(createContext(), 'Tools', 0).components!)).not.toContain(`commands.${ownerId}.editGroup:Tools:0`);
+		});
+
 		test('GIVEN a category THEN only its commands are listed and it is the selected one', () => {
 			const message = renderCommandsList(createContext(), 'Moderation', 0);
 			const select = flatten(message.components!).find((component) => component.type === ComponentType.StringSelect)!;
@@ -258,7 +295,7 @@ describe('commands menu', () => {
 				(component) => component.type === ComponentType.Button && component.custom_id?.startsWith(`commands.${ownerId}.`)
 			);
 			const actions = buttons.map((button) => decodeCommandsMenuId(button.custom_id!.split('.').slice(1))).filter((action) => action !== null);
-			const navigation = actions.filter((action) => action.verb !== 'edit' && action.verb !== 'search');
+			const navigation = actions.filter((action) => !['edit', 'editGroup', 'search'].includes(action.verb));
 
 			expect(navigation.map((action) => [action.verb, action.page])).toEqual([
 				['list', 0],
@@ -312,6 +349,7 @@ describe('commands menu', () => {
 			expect(radio.custom_id).toBe('status');
 			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
 				['enabled', true],
+				['onlyAllowed', false],
 				['disabled', false]
 			]);
 			expect(components.filter((component) => component.type === ComponentType.ChannelSelect).map((component) => component.custom_id)).toEqual([
@@ -342,6 +380,35 @@ describe('commands menu', () => {
 					expect(select.channel_types).not.toContain(type);
 				}
 			}
+		});
+
+		test('GIVEN rules on the category of a command and on every command THEN its modal says they apply too', () => {
+			const modal = renderCommandEditModal(createContext(), commands[1], null, { ...unrestricted, command: 'ban' }, 0, ['Moderation.*', '*']);
+
+			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusInherited {\\"targets\\":\\"Moderation.*, *\\"}');
+		});
+
+		test('GIVEN a rule that ignores @everyone THEN the status says only the allowed ones, and the select menu does not hold it', () => {
+			const guildId = '254360814063058944';
+			const context = { ...createContext(), guildId };
+			const roleId = '333333333333333333';
+			const modal = renderCommandEditModal(context, commands[0], null, { ...unrestricted, ignoredRoles: [guildId, roleId] }, 0);
+			const components = flatten(modal.components);
+			const radio = components.find((component) => component.type === ComponentType.RadioGroup)!;
+
+			expect(radio.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['onlyAllowed']);
+			expect(JSON.stringify(components.find((component) => component.custom_id === 'ignoredMembers'))).not.toContain(guildId);
+			expect(JSON.stringify(components.find((component) => component.custom_id === 'ignoredMembers'))).toContain(roleId);
+		});
+
+		test('GIVEN a group of commands THEN its form edits the same five things, for the group', () => {
+			const modal = renderGroupRuleModal(createContext(), 'Moderation.*', true, { ...unrestricted, command: 'Moderation.*' }, 7);
+			const radio = flatten(modal.components).find((component) => component.type === ComponentType.RadioGroup)!;
+
+			expect(decodeCommandsMenuId(modal.custom_id.split('.').slice(1))).toEqual({ ownerId, verb: 'save', target: 'Moderation.*', page: 7 });
+			expect(modal.title).toContain('commands/commands:editGroupTitle');
+			expect(modal.components).toHaveLength(5);
+			expect(radio.options!.find((option) => option.default)?.value).toBe('disabled');
 		});
 
 		test('GIVEN a command a server disabled by its category THEN its modal says by what and selects Disabled', () => {

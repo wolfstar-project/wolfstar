@@ -14,6 +14,7 @@ import {
 	CommandMemberRules,
 	listCommandMembers,
 	MaximumCommandRestrictionEntries,
+	withoutEveryone,
 	type CommandMemberRule,
 	type CommandRestriction
 } from '#lib/structures/commands-menu/restrictions';
@@ -37,6 +38,7 @@ import {
 	type APIModalInteractionResponseCallbackData,
 	type APISelectMenuOption,
 	type APIStringSelectComponent,
+	type APITextDisplayComponent,
 	type Snowflake
 } from 'discord-api-types/v10';
 
@@ -51,8 +53,10 @@ export const CommandsMenuHandlerName = 'commands';
  * - `list`: shows a page of a category, the target is the category, empty for every command.
  * - `category`: the category select menu, the category is its selected value.
  * - `edit`: opens the editor of a command, the target is the path of its entry, `whois user`.
+ * - `editGroup`: opens the editor of the rules of a group of commands: the target is `*` or `Category.*` for the button
+ *   of a list, and the category for the select menu of its sub-categories, whose value is the sub-category.
  * - `legacy`: downloads preserved nodes; `clearLegacy`, `confirmLegacy` remove them with owner confirmation.
- * - `save`: the modal of a command, the target is its name.
+ * - `save`: the modal of a command or of a group, the target is its name or the group (`Category.*`).
  * - `search`: opens the modal of the search.
  * - `query`: the modal of the search.
  * - `results`: shows a page of the results of a search, the target is the query.
@@ -63,6 +67,7 @@ export type CommandsMenuVerb =
 	| 'list'
 	| 'category'
 	| 'edit'
+	| 'editGroup'
 	| 'save'
 	| 'search'
 	| 'query'
@@ -89,13 +94,16 @@ export interface CommandsMenuAction {
  * @remarks Everything a click needs is in the ID, so the menu keeps working after a restart and on any process.
  */
 export function encodeCommandsMenuId(action: CommandsMenuAction) {
-	return encodeCustomId(CommandsMenuHandlerName, action.ownerId, `${action.verb}:${action.target}:${action.page}`);
+	// A custom ID cannot hold the `.` of a group (`Moderation.*`), which no command, category nor query has a `~` for:
+	const target = action.target.replaceAll('.', '~');
+	return encodeCustomId(CommandsMenuHandlerName, action.ownerId, `${action.verb}:${target}:${action.page}`);
 }
 
 const Verbs = new Set<string>([
 	'list',
 	'category',
 	'edit',
+	'editGroup',
 	'save',
 	'search',
 	'query',
@@ -122,7 +130,7 @@ export function decodeCommandsMenuId(content: unknown): CommandsMenuAction | nul
 	const pageNumber = Number(page);
 	if (!Number.isSafeInteger(pageNumber) || pageNumber < 0) return null;
 
-	return { ownerId: decoded.sessionId, verb: verb as CommandsMenuVerb, target, page: pageNumber };
+	return { ownerId: decoded.sessionId, verb: verb as CommandsMenuVerb, target: target.replaceAll('~', '.'), page: pageNumber };
 }
 
 /**
@@ -193,6 +201,8 @@ export interface CommandsMenuContext {
 	 * The IDs Discord gave the commands, by name, see `fetchCommandIds`.
 	 */
 	ids: ReadonlyMap<string, Snowflake>;
+	/** The guild of the menu, whose ID is the one of `@everyone`, which is the status of a rule and not one of its entries. */
+	guildId?: Snowflake;
 	/** Only administrators see the notice about preserved legacy rules. */
 	hasLegacyPermissions?: boolean;
 }
@@ -241,6 +251,20 @@ export function renderCommandsList(context: CommandsMenuContext, category: strin
 		page,
 		verb: 'list',
 		target: current,
+		group: current === '' ? '*' : `${current}.*`,
+		subCategories:
+			current === ''
+				? undefined
+				: {
+						category: current,
+						names: [
+							...new Set(
+								context.commands
+									.filter((command) => command.category === current && command.subCategory !== null)
+									.map((command) => command.subCategory!)
+							)
+						].sort()
+					},
 		select: {
 			type: ComponentType.StringSelect,
 			custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'category', target: '', page: 0 }),
@@ -283,6 +307,10 @@ interface PageOptions {
 	select?: APIStringSelectComponent;
 	empty: string;
 	back?: boolean;
+	/** The group whose rules the title edits, `*` or `Category.*`; none for the results of a search. */
+	group?: string;
+	/** The sub-categories of the category of the list, which a select menu edits the rules of. */
+	subCategories?: { category: string; names: readonly string[] };
 }
 
 function renderPage(context: CommandsMenuContext, options: PageOptions): CommandsMenuMessage {
@@ -307,7 +335,32 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 	if (options.select !== undefined) header.push({ type: ComponentType.ActionRow, components: [options.select] });
 
 	const first = current * CommandsPerPage;
-	const body: APIComponentInContainer[] = [{ type: ComponentType.TextDisplay, content: `## ${options.title}` }, { type: ComponentType.Separator }];
+	const title: APITextDisplayComponent = { type: ComponentType.TextDisplay, content: `## ${options.title}` };
+	const body: APIComponentInContainer[] = [
+		options.group === undefined
+			? title
+			: {
+					type: ComponentType.Section,
+					components: [title],
+					accessory: button(id('editGroup', options.group, 0), {
+						label: t(options.group === '*' ? 'commands/commands:editAllButton' : 'commands/commands:editGroupButton')
+					})
+				}
+	];
+	if (options.subCategories !== undefined && options.subCategories.names.length > 0) {
+		body.push({
+			type: ComponentType.ActionRow,
+			components: [
+				{
+					type: ComponentType.StringSelect,
+					custom_id: id('editGroup', options.subCategories.category, 0),
+					placeholder: cutText(t('commands/commands:editSubCategoryPlaceholder'), 150),
+					options: options.subCategories.names.slice(0, 25).map((name) => ({ label: name, value: name }))
+				}
+			]
+		});
+	}
+	body.push({ type: ComponentType.Separator });
 	for (const [index, entry] of options.entries.slice(first, first + CommandsPerPage).entries()) {
 		body.push({
 			type: ComponentType.Section,
@@ -442,6 +495,11 @@ export const CommandEnabledValue = 'enabled';
 export const CommandDisabledValue = 'disabled';
 
 /**
+ * The value of the status of a rule that keeps the command to its allowed roles and users: `@everyone` is ignored.
+ */
+export const CommandOnlyAllowedValue = 'onlyAllowed';
+
+/**
  * The custom ID of the radio group of {@linkcode renderCommandEditModal}. The select menus of the channels have the name
  * of their list, see `CommandChannelLists`, and the ones of the members `allowedMembers` and `ignoredMembers`, see
  * {@linkcode getCommandMembersInputId}.
@@ -464,24 +522,79 @@ export function getCommandMembersInputId(rule: CommandMemberRule) {
  * @param disabledBy - The name in `commands.disabled` that disables it, `null` when it is enabled.
  * @param restriction - The channels, the roles and the users the server restricts the command to.
  * @param revision - The revision of the command the modal is opened with, see `getCommandRestrictionRevision`.
+ * @param inherited - The broader targets whose rules apply to the command too (`Moderation.*`, `*`), most specific first.
  */
 export function renderCommandEditModal(
 	context: CommandsMenuContext,
 	command: CatalogCommand,
 	disabledBy: string | null,
 	restriction: CommandRestriction,
-	revision: number
+	revision: number,
+	inherited: readonly string[] = []
 ): APIModalInteractionResponseCallbackData {
 	const { t } = context;
-	const disabled = disabledBy !== null;
-	// A command that is disabled by its category, or by `*`, says so, since enabling it here does not undo that:
+	// A command that is disabled by its category, or by `*`, says so, since enabling it here does not undo that; then
+	// the rules of a group that apply to it too, which this modal does not show:
 	const status =
 		disabledBy !== null && disabledBy !== command.name
 			? t('commands/commands:editStatusDisabledBy', { rule: disabledBy })
-			: command.subcommands.length > 0
-				? t('commands/commands:editStatusSubcommands', { count: command.subcommands.length })
-				: t('commands/commands:editStatusDescription');
+			: inherited.length > 0
+				? t('commands/commands:editStatusInherited', { targets: inherited.join(', ') })
+				: command.subcommands.length > 0
+					? t('commands/commands:editStatusSubcommands', { count: command.subcommands.length })
+					: t('commands/commands:editStatusDescription');
 
+	return renderRuleModal(context, {
+		target: command.name,
+		title: t('commands/commands:editTitle', { name: command.name }),
+		status,
+		disabled: disabledBy !== null,
+		restriction,
+		revision
+	});
+}
+
+/**
+ * The modal that edits the rules of a group of commands, every command (`*`), a category (`Category.*`) or a
+ * sub-category (`Category.SubCategory.*`), with the same five fields as the modal of a command.
+ *
+ * @param context - The context of the menu.
+ * @param target - The group.
+ * @param disabled - Whether `commands.disabled` has the group.
+ * @param restriction - The rule of the group.
+ * @param revision - The revision the modal is opened with, see `getCommandRestrictionRevision`.
+ */
+export function renderGroupRuleModal(
+	context: CommandsMenuContext,
+	target: string,
+	disabled: boolean,
+	restriction: CommandRestriction,
+	revision: number
+): APIModalInteractionResponseCallbackData {
+	const { t } = context;
+	return renderRuleModal(context, {
+		target,
+		title: t('commands/commands:editGroupTitle', { target }),
+		status: t('commands/commands:editGroupStatusDescription'),
+		disabled,
+		restriction,
+		revision
+	});
+}
+
+interface RuleModalOptions {
+	target: string;
+	title: string;
+	status: string;
+	disabled: boolean;
+	restriction: CommandRestriction;
+	revision: number;
+}
+
+function renderRuleModal(context: CommandsMenuContext, options: RuleModalOptions): APIModalInteractionResponseCallbackData {
+	const { t, guildId } = context;
+	const onlyAllowed = guildId !== undefined && options.restriction.ignoredRoles.includes(guildId);
+	const restriction = guildId === undefined ? options.restriction : withoutEveryone(options.restriction, guildId);
 	const common = { required: false, min_values: 0, max_values: MaximumCommandRestrictionEntries };
 	const channels = (list: (typeof CommandChannelLists)[number]): APILabelComponent => ({
 		type: ComponentType.Label,
@@ -514,20 +627,21 @@ export function renderCommandEditModal(
 
 	return {
 		// The modal carries the revision where the other actions carry their page:
-		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: command.name, page: revision }),
-		title: cutText(t('commands/commands:editTitle', { name: command.name }), 45),
+		custom_id: encodeCommandsMenuId({ ownerId: context.ownerId, verb: 'save', target: options.target, page: options.revision }),
+		title: cutText(options.title, 45),
 		components: [
 			{
 				type: ComponentType.Label,
 				label: cutText(t('commands/commands:editStatusLabel'), 45),
-				description: cutText(status, 100),
+				description: cutText(options.status, 100),
 				component: {
 					type: ComponentType.RadioGroup,
 					custom_id: CommandStatusInputId,
 					required: true,
 					options: [
-						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !disabled },
-						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: disabled }
+						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !options.disabled && !onlyAllowed },
+						{ value: CommandOnlyAllowedValue, label: t('commands/commands:editOnlyAllowed'), default: !options.disabled && onlyAllowed },
+						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: options.disabled }
 					]
 				}
 			},

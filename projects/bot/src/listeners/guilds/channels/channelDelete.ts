@@ -1,7 +1,7 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { announceJoinGuardChange } from '#lib/moderation/joinguard/store';
 import { getLogPrefix } from '#utils/functions';
-import { readCommandRestrictions, removeFromCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
+import { readCommandRestrictions, removeFromCommandRestrictions, writeCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import { isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
@@ -24,13 +24,16 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 	async #forgetCommandRestrictions(channel: GuildBasedChannel) {
 		// Most channels are in no restriction, and the settings are only written for the ones that are:
 		const settings = await readSettings(channel.guildId);
-		if (removeFromCommandRestrictions(readCommandRestrictions(settings.commandsRestrictions), channel.id) === null) return;
+		if (removeFromCommandRestrictions(readCommandRestrictions(settings.commandsRestrictions, channel.guildId), channel.id) === null) return;
 
 		await writeSettings(
 			channel.guildId,
 			(current) => {
-				const restrictions = removeFromCommandRestrictions(readCommandRestrictions(current.commandsRestrictions), channel.id);
-				return restrictions === null ? {} : { commandsRestrictions: restrictions as never };
+				const restrictions = removeFromCommandRestrictions(
+					readCommandRestrictions(current.commandsRestrictions, channel.guildId),
+					channel.id
+				);
+				return restrictions === null ? {} : { commandsRestrictions: writeCommandRestrictions(restrictions) as never };
 			},
 			this.container.gatewayClient.user!.id
 		);

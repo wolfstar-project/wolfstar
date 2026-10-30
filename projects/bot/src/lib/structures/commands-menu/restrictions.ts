@@ -1,3 +1,5 @@
+import { match } from '#lib/database/utils/matchers/Command';
+import type { Command } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
@@ -7,21 +9,19 @@ import type { Snowflake } from 'discord-api-types/v10';
 export const MaximumCommandRestrictionEntries = 25;
 
 /**
- * Where and by whom a server lets a command be run, which the modal of `/commands` edits.
+ * Where and by whom a server lets a command, or a group of commands, be run, which the modal of `/commands` edits.
  *
  * - `allowedChannels`: when it has any, the command only runs in them.
  * - `ignoredChannels`: the command does not run in them.
- * - `allowedRoles`: when it has any, members with one of them, or an allowed user, can run the command.
- * - `ignoredRoles`: the members with one of them do not run the command.
+ * - `allowedRoles`, `allowedUsers`: an exception, they run the command over an ignored entry that ranks below them.
+ * - `ignoredRoles`, `ignoredUsers`: they do not run the command. `@everyone` here keeps it to the allowed ones.
  *
- * - `allowedUsers`: members allowed even without an allowed role.
- * - `ignoredUsers`: members who cannot run the command, even with an allowed role.
- *
- * Any ignored entry wins. These restrictions never grant the base permissions of a command.
+ * See {@linkcode getCommandRulesDenial} for what decides. These rules never grant the base permissions of a command.
  */
 export interface CommandRestriction {
 	/**
-	 * The name of the command, the one of its piece: a subcommand is restricted with its parent.
+	 * The target of the rule: the name of a command, the one of its piece (a subcommand is restricted with its parent),
+	 * or a group of commands, `Category.SubCategory.*`, `Category.*` or `*`, see `getCommandRuleSpecificity`.
 	 */
 	command: string;
 	allowedChannels: Snowflake[];
@@ -73,9 +73,14 @@ function readList(value: unknown): Snowflake[] {
  * It used to hold the commands each channel disabled (`{ channel, commands }`): an entry of that shape is read as the
  * channel being ignored by each of its commands, so what a server set up before keeps doing what it did.
  *
+ * A list saved before {@linkcode CommandRestrictionsFormat} has no marker, and an allowed role or user meant "only
+ * these": its rules that allow someone also ignore `@everyone`, which is what "only these" is now that an allowed entry
+ * is an exception. The next write stores the marker, so a rule saved by the menu since is never read that way again.
+ *
  * @param value - The value of `commandsRestrictions`.
+ * @param guildId - The ID of the guild, which is the one of its `@everyone` role.
  */
-export function readCommandRestrictions(value: unknown): CommandRestriction[] {
+export function readCommandRestrictions(value: unknown, guildId: Snowflake): CommandRestriction[] {
 	if (!Array.isArray(value)) return [];
 
 	const restrictions = new Map<string, CommandRestriction>();
@@ -105,7 +110,77 @@ export function readCommandRestrictions(value: unknown): CommandRestriction[] {
 		}
 	}
 
-	return [...restrictions.values()].filter((restriction) => !isCommandRestrictionEmpty(restriction));
+	const read = [...restrictions.values()].filter((restriction) => !isCommandRestrictionEmpty(restriction));
+	if (hasFormatMarker(value)) return read;
+
+	return read.map((restriction) =>
+		restriction.allowedRoles.length > 0 || restriction.allowedUsers.length > 0
+			? { ...restriction, ignoredRoles: readList([...restriction.ignoredRoles, guildId]) }
+			: restriction
+	);
+}
+
+/**
+ * The format of the rules the bot writes: the rules can name a category or every command, an allowed entry is an
+ * exception, and the member's rule, then the one of their highest role, decide. It is stored as an entry of its own,
+ * `{ format: 2 }`, which is not a rule.
+ */
+export const CommandRestrictionsFormat = 2;
+
+function hasFormatMarker(value: readonly unknown[]): boolean {
+	return value.some((entry) => typeof entry === 'object' && entry !== null && (entry as { format?: unknown }).format === CommandRestrictionsFormat);
+}
+
+/**
+ * What the column holds for the rules of a server: the rules, and the marker of {@linkcode CommandRestrictionsFormat}.
+ *
+ * @param restrictions - The rules of the server.
+ */
+export function writeCommandRestrictions(restrictions: readonly CommandRestriction[]): unknown[] {
+	return [...restrictions, { format: CommandRestrictionsFormat }];
+}
+
+/**
+ * A rule without `@everyone` in its ignored roles, which is what the modal shows: it is the status of the rule and not
+ * an entry of a select menu, whose handling of `@everyone` is up to Discord and would lift the rule when it dropped it.
+ *
+ * @param restriction - The rule.
+ * @param guildId - The ID of the guild, which is the one of its `@everyone` role.
+ */
+export function withoutEveryone(restriction: CommandRestriction, guildId: Snowflake): CommandRestriction {
+	return { ...restriction, ignoredRoles: restriction.ignoredRoles.filter((id) => id !== guildId) };
+}
+
+/**
+ * Whether the target of a rule is a group of commands (`*`, `Category.*`, `Category.SubCategory.*`) and not a command.
+ */
+export function isCommandGroupTarget(target: string): boolean {
+	return target === '*' || target.endsWith('.*');
+}
+
+/**
+ * How specific the target of a rule is: a command (`warn`, `Moderation.warn`, `Moderation.Management.warn`) is 3, a
+ * sub-category (`Moderation.Management.*`) 2, a category (`Moderation.*`) 1 and every command (`*`) 0. Of the rules
+ * that match a command for a member or a role, the most specific one decides.
+ *
+ * @param target - The target, as `lib/database/utils/matchers/Command.ts` writes it.
+ */
+export function getCommandRuleSpecificity(target: string): 0 | 1 | 2 | 3 {
+	if (target === '*') return 0;
+	if (!target.endsWith('.*')) return 3;
+	return target.split('.').length === 2 ? 1 : 2;
+}
+
+/**
+ * The rules whose target matches a command, the most specific first.
+ *
+ * @param restrictions - The rules of the server.
+ * @param command - The command, the piece of the parent for a subcommand.
+ */
+export function findMatchingRestrictions(restrictions: readonly CommandRestriction[], command: Command): CommandRestriction[] {
+	return restrictions
+		.filter((restriction) => match(restriction.command, command))
+		.sort((a, b) => getCommandRuleSpecificity(b.command) - getCommandRuleSpecificity(a.command));
 }
 
 /**
@@ -134,7 +209,8 @@ export function findCommandRestriction(restrictions: readonly CommandRestriction
  */
 export function setCommandRestriction(restrictions: readonly CommandRestriction[], restriction: CommandRestriction): CommandRestriction[] {
 	const others = restrictions.filter((entry) => entry.command !== restriction.command);
-	const [next] = readCommandRestrictions([restriction]);
+	// A rule that is set is of the current format, so it is read as it is, without the upgrade of an older list:
+	const [next] = readCommandRestrictions(writeCommandRestrictions([restriction]), '');
 	return next === undefined ? others : [...others, next];
 }
 
@@ -229,7 +305,7 @@ export function removeFromCommandRestrictions(restrictions: readonly CommandRest
 /**
  * Where a command is being run, and by whom.
  */
-export interface CommandRestrictionTarget {
+export interface CommandRuleSubject {
 	userId: Snowflake;
 
 	/**
@@ -238,29 +314,46 @@ export interface CommandRestrictionTarget {
 	channelIds: readonly Snowflake[];
 
 	/**
-	 * The roles of the member, the one of everybody (the ID of the guild) included.
+	 * The roles of the member, highest first (by position, then the higher ID), ending with the one of everybody, the
+	 * ID of the guild: the highest role a rule names is the one that decides.
 	 */
 	roleIds: readonly Snowflake[];
 }
 
 /**
- * Says what of a restriction keeps a command from being run.
+ * Says what of the rules that match a command keeps a member from running it.
  *
- * @param restriction - The restriction of the command.
- * @param target - Where the command is being run, and by whom.
- * @returns `channel` or `role`, `null` when the command can be run.
+ * @remarks
+ *
+ * The channels come first: a channel ignored by any of the rules denies, and the allowed channels of the most specific
+ * rule that has some are the only ones it runs in. Then the member: the most specific rule that names them decides,
+ * and otherwise the one of their highest role that a rule names, with that role's most specific rule. An allowed
+ * entry is an exception to an ignored one that ranks below it, it limits nobody else; "only these" is `@everyone`
+ * ignored. A rule never grants: what decides before it (Discord, the level of the command) still applies.
+ *
+ * @param matching - The rules that match the command, see {@linkcode findMatchingRestrictions}.
+ * @param subject - Where the command is being run, and by whom.
+ * @returns `channel`, `user` or `role`, `null` when the command can be run.
  */
-export function getCommandRestrictionDenial(restriction: CommandRestriction, target: CommandRestrictionTarget): 'channel' | 'role' | 'user' | null {
-	const inChannels = (list: readonly Snowflake[]) => target.channelIds.some((id) => list.includes(id));
-	const hasRoles = (list: readonly Snowflake[]) => target.roleIds.some((id) => list.includes(id));
+export function getCommandRulesDenial(matching: readonly CommandRestriction[], subject: CommandRuleSubject): 'channel' | 'role' | 'user' | null {
+	const rules = [...matching].sort((a, b) => getCommandRuleSpecificity(b.command) - getCommandRuleSpecificity(a.command));
+	const inChannels = (list: readonly Snowflake[]) => subject.channelIds.some((id) => list.includes(id));
 
-	if (inChannels(restriction.ignoredChannels)) return 'channel';
-	if (restriction.allowedChannels.length > 0 && !inChannels(restriction.allowedChannels)) return 'channel';
-	if (restriction.ignoredUsers.includes(target.userId)) return 'user';
-	if (hasRoles(restriction.ignoredRoles)) return 'role';
-	const limited = restriction.allowedRoles.length > 0 || restriction.allowedUsers.length > 0;
-	if (limited && !hasRoles(restriction.allowedRoles) && !restriction.allowedUsers.includes(target.userId))
-		return restriction.allowedRoles.length > 0 ? 'role' : 'user';
+	if (rules.some((rule) => inChannels(rule.ignoredChannels))) return 'channel';
+	const allowedChannels = rules.find((rule) => rule.allowedChannels.length > 0)?.allowedChannels;
+	if (allowedChannels !== undefined && !inChannels(allowedChannels)) return 'channel';
+
+	for (const rule of rules) {
+		if (rule.ignoredUsers.includes(subject.userId)) return 'user';
+		if (rule.allowedUsers.includes(subject.userId)) return null;
+	}
+
+	for (const roleId of subject.roleIds) {
+		for (const rule of rules) {
+			if (rule.ignoredRoles.includes(roleId)) return 'role';
+			if (rule.allowedRoles.includes(roleId)) return null;
+		}
+	}
 
 	return null;
 }
