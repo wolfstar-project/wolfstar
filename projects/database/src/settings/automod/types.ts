@@ -19,7 +19,6 @@ export const AutoModerationRuleTypes = [
 	'MentionsCooldown',
 	'MessageSpam',
 	'Newlines',
-	'NoMentionSpam',
 	'Phishing',
 	'Polls',
 	'Spoilers',
@@ -57,8 +56,6 @@ export interface AutoModerationRuleOptionsMap {
 	Links: { allowed: string[] };
 	/** Messages of more than `maximum` lines. */
 	Newlines: { maximum: number };
-	/** More than `mentionsAllowed` points of mentions in `timePeriod` seconds, which bans; `alerts` warns before. */
-	NoMentionSpam: { alerts: boolean; mentionsAllowed: number; timePeriod: number };
 	/** Links to the hostnames of the list of known phishing links, but the `allowed` ones. */
 	Phishing: { allowed: string[] };
 	/** Every message with a sticker infringes the rule. */
@@ -84,8 +81,11 @@ export interface AutoModerationRuleOptionsMap {
 	LinksCooldown: { maximum: number; timePeriod: number };
 	/** Messages that mention more than `maximum` different users. */
 	MassMentions: { maximum: number };
-	/** More than `maximum` mentions of a member within `timePeriod` seconds. */
-	MentionsCooldown: { maximum: number; timePeriod: number };
+	/**
+	 * More than `maximum` mentions of a member within `timePeriod` seconds. With `weighted` a role mention counts as two
+	 * and `@everyone` as five, as the mention spam rules it took the place of did.
+	 */
+	MentionsCooldown: { maximum: number; timePeriod: number; weighted: boolean };
 	/** Messages with a spoiler, in their text or as an attachment. */
 	Spoilers: Record<string, never>;
 	/** Messages with a link that is shown as another text. */
@@ -167,7 +167,6 @@ export const MaximumAutoModerationRuleEscalationSteps = 10;
 export const AutoModerationRuleOptionLimits = {
 	Capitals: { minimum: { minimum: 5, maximum: 2000 }, maximum: { minimum: 10, maximum: 100 } },
 	Newlines: { maximum: { minimum: 1, maximum: 100 } },
-	NoMentionSpam: { mentionsAllowed: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 3600 } },
 	Zalgo: { maximum: { minimum: 1, maximum: 20 } },
 	Duplicates: { characters: { minimum: 3, maximum: 200 }, words: { minimum: 2, maximum: 100 } },
 	Characters: { maximum: { minimum: 50, maximum: 4000 } },
@@ -176,7 +175,7 @@ export const AutoModerationRuleOptionLimits = {
 	ImageSpam: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 120 } },
 	LinksCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } },
 	MassMentions: { maximum: { minimum: 1, maximum: 100 } },
-	MentionsCooldown: { maximum: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 600 } },
+	MentionsCooldown: { maximum: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 3600 } },
 	StickersCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } }
 } as const;
 
@@ -197,7 +196,6 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Invites: { allowedCodes: [], allowedGuilds: [] },
 		Links: { allowed: [] },
 		Newlines: { maximum: 20 },
-		NoMentionSpam: { alerts: false, mentionsAllowed: 20, timePeriod: 8 },
 		Phishing: { allowed: [] },
 		Stickers: {},
 		Words: { words: [] },
@@ -209,7 +207,7 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		ImageSpam: { maximum: 3, timePeriod: 10 },
 		LinksCooldown: { maximum: 3, timePeriod: 10 },
 		MassMentions: { maximum: 5 },
-		MentionsCooldown: { maximum: 5, timePeriod: 30 },
+		MentionsCooldown: { maximum: 5, timePeriod: 30, weighted: false },
 		Spoilers: {},
 		MaskedLinks: {},
 		StickersCooldown: { maximum: 3, timePeriod: 60 },

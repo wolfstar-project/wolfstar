@@ -130,7 +130,6 @@ describe('auto-moderation escalation', () => {
 			const modal = renderAutoModerationModal(context, createRule({ escalation: steps }), action)!;
 
 			expect(JSON.stringify(modal)).toContain('Timeout 1h\\nKick\\nBan');
-			expect(renderAutoModerationModal(context, { ...createRule(), type: 'NoMentionSpam' } as AutoModerationRule, action)).toBeNull();
 		});
 	});
 

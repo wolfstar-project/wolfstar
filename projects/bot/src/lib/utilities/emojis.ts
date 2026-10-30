@@ -117,7 +117,6 @@ export const EmojiDefinitions = {
 	AutoModMentionsCooldown: emoji('automod_mentions_cooldown', '⏱️'),
 	AutoModMessageSpam: emoji('automod_message_spam', '💬'),
 	AutoModNewlines: emoji('automod_newlines', '↩️'),
-	AutoModNoMentionSpam: emoji('automod_no_mention_spam', '🔕'),
 	AutoModPhishing: emoji('automod_phishing', '🎣'),
 	AutoModPolls: emoji('automod_polls', '📊'),
 	AutoModSpoilers: emoji('automod_spoilers', '🙈'),

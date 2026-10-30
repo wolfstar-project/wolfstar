@@ -19,10 +19,17 @@ import {
 	type AutoModerationMenuAction,
 	type AutoModerationMenuContext
 } from '#lib/structures/automod-menu';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ChannelType, ComponentType, MessageFlags } from 'discord-api-types/v10';
 import { AutoModerationRuleTypes, getDefaultAutoModerationRule, type AutoModerationRule, type AutoModerationRuleType } from 'wolfstar-database';
 
 const ownerId = '266624760782258186';
+
+// The texts of en-US, to read what the descriptions of the select menu say:
+const AutoModerationTexts = JSON.parse(
+	readFileSync(join(import.meta.dirname, '../../../../src/locales/en-US/commands/auto-moderation.json'), 'utf8')
+) as Record<string, string>;
 
 // Echoes the key, the translations are not what is tested here:
 const t = ((key: string) => key) as never;
@@ -181,6 +188,19 @@ describe('auto-moderation menu', () => {
 
 			expect(options.filter((option) => !option.emoji).map((option) => option.value)).toEqual([]);
 		});
+
+		test('GIVEN the rule creation menu THEN no type tells numbers, which would read as fixed', () => {
+			const components = flatten(renderAutoModerationRules(context, []).components!);
+			const create = components.find((entry) => decode(String(entry.custom_id))?.verb === 'create')!;
+			const options = create.options as { value: string; description: string }[];
+
+			const texts = options.map((option) => {
+				const [, key] = option.description.split(':');
+				return [option.value, AutoModerationTexts[key]] as const;
+			});
+
+			expect(texts.filter(([, text]) => text === undefined || text.includes('{{')).map(([type]) => type)).toEqual([]);
+		});
 	});
 
 	describe('modals', () => {
@@ -212,8 +232,6 @@ describe('auto-moderation menu', () => {
 		test('GIVEN a rule without what the modal edits THEN there is no modal', () => {
 			expect(renderAutoModerationModal(context, createRule('Attachments'), action('numbers'))).toBeNull();
 			expect(renderAutoModerationModal(context, createRule('Capitals'), action('add'))).toBeNull();
-			expect(renderAutoModerationModal(context, createRule('NoMentionSpam'), action('duration'))).toBeNull();
-			expect(renderAutoModerationModal(context, createRule('NoMentionSpam'), action('threshold'))).toBeNull();
 			expect(renderAutoModerationModal(context, createRule('Links'), action('nothing'))).toBeNull();
 		});
 	});
@@ -329,12 +347,11 @@ describe('auto-moderation menu', () => {
 
 	describe('switches', () => {
 		test('GIVEN a switch THEN it is flipped', () => {
-			const rule = createRule('NoMentionSpam', { softAction: 0b001 });
+			const rule = createRule('Links', { softAction: 0b001 });
 
 			expect(toggleAutoModerationMenuSwitch(rule, 'enabled')).toEqual({ enabled: false });
 			expect(toggleAutoModerationMenuSwitch(rule, 'delete')).toEqual({ softAction: 0b000 });
 			expect(toggleAutoModerationMenuSwitch(rule, 'alert')).toEqual({ softAction: 0b101 });
-			expect(toggleAutoModerationMenuSwitch(rule, 'alerts')).toMatchObject({ options: { alerts: true } });
 		});
 
 		test('GIVEN a fast message spam rule THEN whether it counts the whole channel is flipped', () => {
@@ -343,9 +360,15 @@ describe('auto-moderation menu', () => {
 			expect(toggleAutoModerationMenuSwitch(rule, 'perChannel')).toMatchObject({ options: { perChannel: true, maximum: 5, timePeriod: 5 } });
 		});
 
+		test('GIVEN a mentions cooldown rule THEN whether it weighs the mentions is flipped', () => {
+			const rule = createRule('MentionsCooldown');
+
+			expect(toggleAutoModerationMenuSwitch(rule, 'weighted')).toMatchObject({ options: { weighted: true, maximum: 5, timePeriod: 30 } });
+		});
+
 		test('GIVEN a switch the rule does not have THEN nothing changes', () => {
 			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'perChannel')).toBeNull();
-			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'alerts')).toBeNull();
+			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'weighted')).toBeNull();
 			expect(toggleAutoModerationMenuSwitch(createRule('Links'), 'everything')).toBeNull();
 		});
 	});

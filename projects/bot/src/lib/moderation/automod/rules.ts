@@ -5,7 +5,6 @@ import { withSharedLock } from '#utils/locks';
 import { create } from 'wolfstar-shared';
 import { Collection } from '@discordjs/collection';
 import { AsyncQueue } from '@sapphire/async-queue';
-import { RateLimitManager } from '@sapphire/ratelimits';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 import {
@@ -246,8 +245,6 @@ interface RuleState {
 	adder: Adder<string> | null;
 	/** The words of a `Words` rule as one expression, `null` when it has none. */
 	wordFilter: RegExp | null;
-	/** The mentions of each member, for a `NoMentionSpam` rule. */
-	mentions: RateLimitManager | null;
 	/** What each member sent lately, for the rules that count within a period (`maximum` in `timePeriod` seconds). */
 	counter: WindowCounter | null;
 }
@@ -260,14 +257,12 @@ function getState(rule: AutoModerationRule): RuleState {
 	if (existing?.signature === signature) return existing;
 
 	const words = rule.type === 'Words' ? (rule as AutoModerationRule<'Words'>).options.words : [];
-	const mentions = rule.type === 'NoMentionSpam' ? (rule as AutoModerationRule<'NoMentionSpam'>).options : null;
 	const { maximum, timePeriod } = rule.options as { maximum?: number; timePeriod?: number };
 	const state: RuleState = {
 		signature,
 		adder:
 			rule.thresholdMaximum > 0 && rule.thresholdDuration > 0 ? new Adder<string>(rule.thresholdMaximum, rule.thresholdDuration, true) : null,
 		wordFilter: words.length === 0 ? null : new RegExp(create(words), 'gi'),
-		mentions: mentions === null ? null : new RateLimitManager(mentions.timePeriod * 1000, mentions.mentionsAllowed),
 		counter: typeof maximum === 'number' && typeof timePeriod === 'number' ? new WindowCounter(timePeriod * 1000) : null
 	};
 	states.set(rule.id, state);
@@ -286,13 +281,6 @@ export function getAutoModerationRuleAdder(rule: AutoModerationRule): Adder<stri
  */
 export function getAutoModerationRuleWordFilter(rule: AutoModerationRule<'Words'>): RegExp | null {
 	return getState(rule).wordFilter;
-}
-
-/**
- * The mentions the members made lately, as a mention spam rule counts them.
- */
-export function getAutoModerationRuleMentions(rule: AutoModerationRule<'NoMentionSpam'>): RateLimitManager {
-	return getState(rule).mentions!;
 }
 
 /**

@@ -20,8 +20,6 @@ export const enum Events {
 	GuildMessageLog = 'guildMessageLog',
 	GuildMessageUpdate = 'guildMessageUpdate',
 	GuildUserMessage = 'guildUserMessage',
-	GuildUserMessageMentionSpamExceeded = 'guildUserMessageMentionSpamExceeded',
-	GuildUserMessageMentionSpamWarning = 'guildUserMessageMentionSpamWarning',
 	GuildUserMessageSocialPointsAddUser = 'guildUserMessageSocialPointsAddUser',
 	GuildUserMessageSocialPointsAddMember = 'guildUserMessageSocialPointsAddMember',
 	GuildUserMessageSocialPointsAddMemberReward = 'guildUserMessageSocialPointsAddMemberReward',

@@ -46,7 +46,6 @@ export const AutoModerationRuleTypeKeys = {
 	MentionsCooldown: `${Root}:typeMentionsCooldown`,
 	MessageSpam: `${Root}:typeMessageSpam`,
 	Newlines: `${Root}:typeNewlines`,
-	NoMentionSpam: `${Root}:typeNoMentionSpam`,
 	Phishing: `${Root}:typePhishing`,
 	Spoilers: `${Root}:typeSpoilers`,
 	Polls: `${Root}:typePolls`,
@@ -54,6 +53,34 @@ export const AutoModerationRuleTypeKeys = {
 	StickersCooldown: `${Root}:typeStickersCooldown`,
 	Words: `${Root}:typeWords`,
 	Zalgo: `${Root}:typeZalgo`
+} as const satisfies Record<AutoModerationRuleType, TranslationKey>;
+
+/**
+ * What each type of rule looks for, as the select menu that creates a rule tells it. The types with numbers have a
+ * summary without them: the description of a rule tells its own, and the defaults would read as fixed there.
+ */
+export const AutoModerationRuleTypeSummaryKeys = {
+	Attachments: `${Root}:typeAttachmentsDescription`,
+	Capitals: `${Root}:typeCapitalsSummary`,
+	Characters: `${Root}:typeCharactersSummary`,
+	Duplicates: `${Root}:typeDuplicatesSummary`,
+	Emojis: `${Root}:typeEmojisSummary`,
+	ImageSpam: `${Root}:typeImageSpamSummary`,
+	Invites: `${Root}:typeInvitesDescription`,
+	Links: `${Root}:typeLinksDescription`,
+	LinksCooldown: `${Root}:typeLinksCooldownSummary`,
+	MaskedLinks: `${Root}:typeMaskedLinksDescription`,
+	MassMentions: `${Root}:typeMassMentionsSummary`,
+	MentionsCooldown: `${Root}:typeMentionsCooldownSummary`,
+	MessageSpam: `${Root}:typeMessageSpamSummary`,
+	Newlines: `${Root}:typeNewlinesSummary`,
+	Phishing: `${Root}:typePhishingDescription`,
+	Spoilers: `${Root}:typeSpoilersDescription`,
+	Polls: `${Root}:typePollsDescription`,
+	Stickers: `${Root}:typeStickersDescription`,
+	StickersCooldown: `${Root}:typeStickersCooldownSummary`,
+	Words: `${Root}:typeWordsDescription`,
+	Zalgo: `${Root}:typeZalgoSummary`
 } as const satisfies Record<AutoModerationRuleType, TranslationKey>;
 
 /**

@@ -579,7 +579,6 @@ namespace public {
     Invites = "Invites"
     Links = "Links"
     Newlines = "Newlines"
-    NoMentionSpam = "NoMentionSpam"
     Words = "Words"
     Zalgo = "Zalgo"
     // A native enum only takes new values at its end:
