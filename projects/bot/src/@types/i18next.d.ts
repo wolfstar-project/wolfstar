@@ -354,6 +354,7 @@ declare module "i18next" {
         menuResponseLog: "Send to the logs";
         menuResponseLogDescription: "Posts the message in the auto-moderation log channel.";
         menuPunishment: "Punishment";
+        punishmentNone: "No punishment";
         menuPunishmentPlaceholder: "Select a punishment";
         menuDuration: "Punishment duration";
         menuDurationPermanent: "Permanent";

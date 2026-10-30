@@ -130,6 +130,8 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 
 		try {
 			switch (action) {
+				case 'None':
+					break;
 				case 'Warning':
 					await this.onWarning(message, language, points, maximum, duration);
 					break;

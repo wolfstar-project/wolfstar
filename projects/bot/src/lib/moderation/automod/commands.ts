@@ -252,6 +252,8 @@ export function getRuleList(rule: AutoModerationRule): readonly string[] | null 
 
 export function getPunishment(punishment: AutoModerationHardAction): { key: TranslationKey; emoji: string } {
 	switch (punishment) {
+		case 'None':
+			return { key: `${Root}:punishmentNone`, emoji: Emojis.Unchecked };
 		case 'Ban':
 			return { key: 'moderation:typeBan', emoji: Emojis.Ban };
 		case 'Kick':

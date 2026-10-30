@@ -8,7 +8,7 @@ import type { TFunction } from '@wolfstar/plugin-i18next';
 import {
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
-	AutoModerationHardActions,
+	AutoModerationEscalationActions,
 	MaximumAutoModerationRuleEscalationSteps,
 	MaximumAutoModerationRuleListLength,
 	type AutoModerationHardAction,
@@ -122,7 +122,7 @@ export function parseAutoModerationMenuTiming(t: TFunction, read: (key: string) 
 export const AutoModerationMenuEscalationInputs = { steps: 'steps', period: 'period' } as const;
 
 const EscalationActions = new Map<string, AutoModerationHardAction>([
-	...AutoModerationHardActions.map((action) => [action.toLowerCase(), action] as const),
+	...AutoModerationEscalationActions.map((action) => [action.toLowerCase(), action] as const),
 	['warn', 'Warning']
 ]);
 
@@ -153,7 +153,10 @@ export function parseAutoModerationMenuEscalation(t: TFunction, read: (key: stri
 		const [name, ...rest] = line.split(/\s+/);
 		const action = EscalationActions.get(name.toLowerCase());
 		if (action === undefined) {
-			return { ok: false, error: translateKey(t, `${Root}:menuEscalationInvalid`, { line, actions: AutoModerationHardActions.join(', ') }) };
+			return {
+				ok: false,
+				error: translateKey(t, `${Root}:menuEscalationInvalid`, { line, actions: AutoModerationEscalationActions.join(', ') })
+			};
 		}
 
 		const duration = resolveDurationOption(t, rest.join(' '), AutoModerationRuleLimits.hardActionDuration);

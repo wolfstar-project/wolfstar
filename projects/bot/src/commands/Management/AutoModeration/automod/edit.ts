@@ -50,6 +50,7 @@ const TypeOptions = [
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsActionDelete`))
 		.addStringOption((option) =>
 			applyLocalizedBuilder(option, `${Root}:optionsPunishment`).setChoices(
+				createLocalizedChoice(`${Root}:punishmentNone`, { value: 'None' }),
 				createLocalizedChoice('moderation:typeWarning', { value: 'Warning' }),
 				createLocalizedChoice('moderation:typeTimeout', { value: 'Timeout' }),
 				createLocalizedChoice('moderation:typeMute', { value: 'Mute' }),

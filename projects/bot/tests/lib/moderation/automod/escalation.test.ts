@@ -32,6 +32,26 @@ const steps: AutoModerationRuleEscalationStep[] = [
 ];
 
 describe('auto-moderation escalation', () => {
+	describe('no hard action', () => {
+		test('GIVEN a rule with no hard action THEN the patch keeps it', () => {
+			expect(parseAutoModerationRulePatch('Links', { hardAction: 'None' })).toMatchObject({ data: { hardAction: 'None' } });
+		});
+
+		test('GIVEN no hard action as a step THEN it is not a step of an escalation', () => {
+			expect(normalizeAutoModerationRuleEscalation([{ action: 'None', duration: null }])).toEqual([]);
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'None' }] })).toMatchObject({
+				errors: [expect.stringContaining('escalation')]
+			});
+			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'none', period: '1d' })).ok).toBe(false);
+		});
+
+		test('GIVEN a rule with no hard action THEN the menu selects it', () => {
+			const context = { t, ownerId: '1' };
+			const options = JSON.stringify(renderAutoModerationRule(context, createRule({ hardAction: 'None' }), 'response'));
+			expect(options).toContain('"value":"None","default":true');
+		});
+	});
+
 	describe('resolveAutoModerationRulePunishment', () => {
 		const rule = { hardAction: 'Warning', hardActionDuration: null, escalation: steps } as const;
 

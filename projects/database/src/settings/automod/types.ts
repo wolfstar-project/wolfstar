@@ -33,6 +33,7 @@ export type AutoModerationRuleType = (typeof AutoModerationRuleTypes)[number];
  * The hard actions a rule can take, as the `GuildAutoModerationHardAction` enum stores them.
  */
 export const AutoModerationHardActions = [
+	'None',
 	'Warning',
 	'Timeout',
 	'Mute',
@@ -41,6 +42,13 @@ export const AutoModerationHardActions = [
 	'Ban',
 	'VoiceKick'
 ] as const satisfies readonly AutoModerationHardAction[];
+
+/**
+ * The hard actions the escalation of a rule can step up to: every one, but taking none.
+ */
+export const AutoModerationEscalationActions = AutoModerationHardActions.filter((action) => action !== 'None');
+
+export type AutoModerationEscalationAction = (typeof AutoModerationEscalationActions)[number];
 
 /**
  * The options of a rule, by its type. They are stored as JSON in the `options` column.
@@ -251,7 +259,7 @@ export function normalizeAutoModerationRuleEscalation(value: unknown): AutoModer
 		if (typeof entry !== 'object' || entry === null) continue;
 
 		const { action, duration } = entry as { action?: unknown; duration?: unknown };
-		if (!AutoModerationHardActions.includes(action as AutoModerationHardAction)) continue;
+		if (!AutoModerationEscalationActions.includes(action as AutoModerationEscalationAction)) continue;
 
 		const { maximum } = AutoModerationRuleLimits.hardActionDuration;
 		const valid = typeof duration === 'number' && Number.isFinite(duration) && duration > 0;

@@ -62,7 +62,7 @@ declare module '@wolfstar/http-framework' {
       maximum?: number;
       minimum?: number;
       period?: number;
-      punishment?: 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
+      punishment?: 'None' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
       'punishment-duration'?: string;
       rename?: string;
       rule: string;
