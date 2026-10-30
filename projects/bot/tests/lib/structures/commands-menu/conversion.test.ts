@@ -46,9 +46,9 @@ describe('convertLegacyNodes', () => {
 	});
 
 	test('GIVEN the node of a member who left THEN it is converted all the same', () => {
-		const result = convert({ users: [{ id: userId, allow: [], deny: ['*'] }] });
+		const result = convert({ users: [{ id: userId, allow: [], deny: ['Moderation.*'] }] });
 
-		expect(result.restrictions).toEqual([rule('*', { ignoredUsers: [userId] })]);
+		expect(result.restrictions).toEqual([rule('Moderation.*', { ignoredUsers: [userId] })]);
 		expect(result.users).toEqual([]);
 	});
 
@@ -77,6 +77,20 @@ describe('convertLegacyNodes', () => {
 		const node = { id: userId, allow: [], deny: ['conf'] };
 
 		expect(convert({ users: [node] }).skipped).toEqual([{ kind: 'user', node, reason: 'protectedCommand' }]);
+	});
+
+	test.each([
+		['every command', { allow: [], deny: ['*'] }],
+		['the category of the settings', { allow: [], deny: ['Management.*'] }],
+		['an allow on every command', { allow: ['*'], deny: [] }],
+		['a command besides', { allow: ['ping'], deny: ['Management.*'] }]
+	])('GIVEN a node that reaches /settings through %s THEN it is left, it decides who manages the server', (_, names) => {
+		const node = { id: roleId, ...names };
+		const result = convert({ roles: [node] });
+
+		expect(result.skipped).toEqual([{ kind: 'role', node, reason: 'settingsAccess' }]);
+		expect(result.roles).toEqual([node]);
+		expect(result.restrictions).toEqual([]);
 	});
 
 	test('GIVEN the node of a role that is gone THEN it is dropped', () => {

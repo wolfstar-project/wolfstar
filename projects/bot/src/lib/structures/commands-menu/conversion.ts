@@ -18,8 +18,11 @@ import { isDashboardAccessEntry, type PermissionsNode } from 'wolfstar-database'
  *   matchers read as `settings`).
  * - `meaningChanges`: an allowed name covers a denied one that is as specific or more: the node let the member in,
  *   since a node ran its allowed names first, while the most specific rule would keep them out.
+ * - `settingsAccess`: a name that reaches the `settings` command (`*`, `Management.*`). The legacy nodes still decide who
+ *   manages the server, see `canManageServerSettings`, and no rule does: a rule is never applied to `settings`, so
+ *   converting it would silently give that access back, or take it away.
  */
-export type LegacyNodeSkip = 'unknownCommand' | 'protectedCommand' | 'meaningChanges';
+export type LegacyNodeSkip = 'unknownCommand' | 'protectedCommand' | 'meaningChanges' | 'settingsAccess';
 
 export interface LegacyNodeConversion {
 	/** The rules of the server, with the converted nodes in them. */
@@ -105,7 +108,13 @@ function resolveNodeTargets(node: PermissionsNode): { allow: string[]; deny: str
 		}
 	}
 
-	return changesMeaning(targets.allow, targets.deny) ? 'meaningChanges' : targets;
+	if (changesMeaning(targets.allow, targets.deny)) return 'meaningChanges';
+	return reachesSettings([...targets.allow, ...targets.deny]) ? 'settingsAccess' : targets;
+}
+
+function reachesSettings(targets: readonly string[]): boolean {
+	const settings = container.stores.get('commands').get('settings');
+	return settings !== undefined && targets.some((target) => match(target, settings));
 }
 
 function changesMeaning(allowed: readonly string[], denied: readonly string[]): boolean {

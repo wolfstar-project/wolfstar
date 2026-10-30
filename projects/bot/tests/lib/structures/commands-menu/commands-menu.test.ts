@@ -349,6 +349,7 @@ describe('commands menu', () => {
 			expect(radio.custom_id).toBe('status');
 			expect(radio.options!.map((option) => [option.value, option.default])).toEqual([
 				['enabled', true],
+				['onlyAllowed', false],
 				['disabled', false]
 			]);
 			expect(components.filter((component) => component.type === ComponentType.ChannelSelect).map((component) => component.custom_id)).toEqual([
@@ -385,6 +386,19 @@ describe('commands menu', () => {
 			const modal = renderCommandEditModal(createContext(), commands[1], null, { ...unrestricted, command: 'ban' }, 0, ['Moderation.*', '*']);
 
 			expect(JSON.stringify(modal.components[0])).toContain('commands/commands:editStatusInherited {\\"targets\\":\\"Moderation.*, *\\"}');
+		});
+
+		test('GIVEN a rule that ignores @everyone THEN the status says only the allowed ones, and the select menu does not hold it', () => {
+			const guildId = '254360814063058944';
+			const context = { ...createContext(), guildId };
+			const roleId = '333333333333333333';
+			const modal = renderCommandEditModal(context, commands[0], null, { ...unrestricted, ignoredRoles: [guildId, roleId] }, 0);
+			const components = flatten(modal.components);
+			const radio = components.find((component) => component.type === ComponentType.RadioGroup)!;
+
+			expect(radio.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['onlyAllowed']);
+			expect(JSON.stringify(components.find((component) => component.custom_id === 'ignoredMembers'))).not.toContain(guildId);
+			expect(JSON.stringify(components.find((component) => component.custom_id === 'ignoredMembers'))).toContain(roleId);
 		});
 
 		test('GIVEN a group of commands THEN its form edits the same five things, for the group', () => {

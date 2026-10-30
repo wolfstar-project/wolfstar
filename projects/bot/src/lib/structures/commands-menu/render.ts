@@ -14,6 +14,7 @@ import {
 	CommandMemberRules,
 	listCommandMembers,
 	MaximumCommandRestrictionEntries,
+	withoutEveryone,
 	type CommandMemberRule,
 	type CommandRestriction
 } from '#lib/structures/commands-menu/restrictions';
@@ -200,6 +201,8 @@ export interface CommandsMenuContext {
 	 * The IDs Discord gave the commands, by name, see `fetchCommandIds`.
 	 */
 	ids: ReadonlyMap<string, Snowflake>;
+	/** The guild of the menu, whose ID is the one of `@everyone`, which is the status of a rule and not one of its entries. */
+	guildId?: Snowflake;
 	/** Only administrators see the notice about preserved legacy rules. */
 	hasLegacyPermissions?: boolean;
 }
@@ -492,6 +495,11 @@ export const CommandEnabledValue = 'enabled';
 export const CommandDisabledValue = 'disabled';
 
 /**
+ * The value of the status of a rule that keeps the command to its allowed roles and users: `@everyone` is ignored.
+ */
+export const CommandOnlyAllowedValue = 'onlyAllowed';
+
+/**
  * The custom ID of the radio group of {@linkcode renderCommandEditModal}. The select menus of the channels have the name
  * of their list, see `CommandChannelLists`, and the ones of the members `allowedMembers` and `ignoredMembers`, see
  * {@linkcode getCommandMembersInputId}.
@@ -584,8 +592,9 @@ interface RuleModalOptions {
 }
 
 function renderRuleModal(context: CommandsMenuContext, options: RuleModalOptions): APIModalInteractionResponseCallbackData {
-	const { t } = context;
-	const { restriction } = options;
+	const { t, guildId } = context;
+	const onlyAllowed = guildId !== undefined && options.restriction.ignoredRoles.includes(guildId);
+	const restriction = guildId === undefined ? options.restriction : withoutEveryone(options.restriction, guildId);
 	const common = { required: false, min_values: 0, max_values: MaximumCommandRestrictionEntries };
 	const channels = (list: (typeof CommandChannelLists)[number]): APILabelComponent => ({
 		type: ComponentType.Label,
@@ -630,7 +639,8 @@ function renderRuleModal(context: CommandsMenuContext, options: RuleModalOptions
 					custom_id: CommandStatusInputId,
 					required: true,
 					options: [
-						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !options.disabled },
+						{ value: CommandEnabledValue, label: t('commands/commands:editEnabled'), default: !options.disabled && !onlyAllowed },
+						{ value: CommandOnlyAllowedValue, label: t('commands/commands:editOnlyAllowed'), default: !options.disabled && onlyAllowed },
 						{ value: CommandDisabledValue, label: t('commands/commands:editDisabled'), default: options.disabled }
 					]
 				}

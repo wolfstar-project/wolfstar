@@ -205,6 +205,36 @@ describe('commands editor', () => {
 		]);
 	});
 
+	const everyoneRule = { ...findCommandRestriction([], 'ban'), allowedRoles: [roleId], ignoredRoles: [guildId] };
+	const form = (status: string) => ({ status, allowedChannels: [], ignoredChannels: [], allowedMembers: [roleId], ignoredMembers: [] });
+
+	test.each([
+		['the allowed ones are kept to', 'onlyAllowed', [guildId]],
+		['the rule is opened again', 'enabled', []],
+		['it stays when the command is disabled', 'disabled', [guildId]]
+	])('@everyone in a rule is the status, whatever the select menu returns: %s', async (_, status, ignoredRoles) => {
+		settings.commandsRestrictions = [everyoneRule, { format: 2 }] as never;
+		const save = submit('save', getCommandRestrictionRevision(everyoneRule, true), form(status));
+		await handler().run(save.interaction, save.content);
+
+		expect(written).toMatchObject([{ commandsRestrictions: [{ command: 'ban', allowedRoles: [roleId], ignoredRoles }, { format: 2 }] }]);
+	});
+
+	test('a protected command cannot be kept to the allowed ones', async () => {
+		vi.mocked(findCommandPiece).mockReturnValue({ name: 'commands' } as never);
+		const save = submit('save', getCommandRestrictionRevision(findCommandRestriction([], 'commands'), false), {
+			status: 'onlyAllowed',
+			allowedChannels: [],
+			ignoredChannels: [],
+			allowedMembers: [],
+			ignoredMembers: []
+		});
+		await handler().run(save.interaction, save.content);
+
+		expect(written).toEqual([]);
+		expect(save.answers).toMatchObject([{ content: 'commands/commands:editProtectedRestricted' }]);
+	});
+
 	test('saving the form of a sub-category with nothing picked removes its rule', async () => {
 		const rule = { ...findCommandRestriction([], 'Moderation.Management.*'), ignoredUsers: [userId] };
 		settings.commandsRestrictions = [stored, rule, { format: 2 }] as never;

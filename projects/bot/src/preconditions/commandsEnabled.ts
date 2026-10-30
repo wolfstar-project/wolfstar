@@ -9,6 +9,7 @@ import {
 } from '#lib/structures/commands-menu/restrictions';
 import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { isNullish } from '@sapphire/utilities';
 import { AllFlowsPrecondition, container } from '@wolfstar/http-framework';
 import type { Command, Precondition } from '@wolfstar/http-framework';
 
@@ -73,17 +74,18 @@ export class UserPrecondition extends AllFlowsPrecondition {
 	}
 
 	/**
-	 * The roles of a member, highest first (by position, then the higher ID), since the highest one a rule names decides.
-	 * The roles of the guild are only read when one of the rules names a role.
+	 * The roles of a member that a rule names, highest first (by position, then the higher ID), since the highest one
+	 * decides. This runs before every command a rule covers, so a request to Discord is the last resort: one role has no
+	 * order to find, and the positions come from the cache.
 	 */
 	private async sortRoles(guildId: string, roleIds: readonly string[], rules: readonly CommandRestriction[]): Promise<string[]> {
-		if (!rules.some((rule) => rule.allowedRoles.length > 0 || rule.ignoredRoles.length > 0)) return [...roleIds];
+		const named = new Set(rules.flatMap((rule) => [...rule.allowedRoles, ...rule.ignoredRoles]));
+		const held = roleIds.filter((id) => named.has(id));
+		if (held.length < 2) return held;
 
-		const held = new Set(roleIds);
-		const roles = await container.gatewayClient.roles.fetchAll(guildId);
-		return roles
-			.filter((role) => held.has(role.id))
-			.sort((a, b) => b.position - a.position || (BigInt(b.id) > BigInt(a.id) ? 1 : -1))
-			.map((role) => role.id);
+		const { roles } = container.gatewayClient;
+		const cached = await Promise.all(held.map((id) => roles.cache.get(roles.resolveKey(guildId, id))));
+		const known = cached.every((role) => !isNullish(role)) ? cached : (await roles.fetchAll(guildId)).filter((role) => held.includes(role.id));
+		return known.sort((a, b) => b.position - a.position || (BigInt(b.id) > BigInt(a.id) ? 1 : -1)).map((role) => role.id);
 	}
 }

@@ -58,8 +58,9 @@ in `/commands`, a rule for a command, a category or every command, with the prec
 - The stored shape of a rule (`{ command, allowedChannels, ignoredChannels, allowedRoles, ignoredRoles,
   allowedUsers, ignoredUsers }` in the JSON column `GuildCommands.disabledInChannels`) stays readable by the
   website, which reads it with its own copy of `readCommandRestrictions` (`shared/utils/command-rules` of
-  wolfstar.rocks) and shows it read only. No field is added: what changes is what `allowed` means and the
-  targets a rule can name (see below), which the website has to learn.
+  wolfstar.rocks) and shows it read only. No field is added to a rule: what changes is what `allowed` means and
+  the targets a rule can name (see below), and the array gains a `{ format: 2 }` entry that is not a rule, which marks
+  the rules saved with the new meaning. The website has to learn all three.
 - `readCommandRestrictions` still reads the oldest shape (`{ channel, commands }`) as ignored channels.
 - The denials keep their messages (`preconditions:restrictedChannel`, `restrictedRole`, `restrictedUser`).
 - What a select menu of the modal cannot show (past 25 entries) is kept on save.
@@ -77,6 +78,9 @@ For a member running command C in channel H:
 4. **The roles.** Otherwise, among the member's roles (`@everyone` included), the highest one that a matching
    rule lists decides, with that role's most specific rule: allowed runs, ignored denies (`role`).
 5. Otherwise the command runs.
+
+The status of the modal writes `@everyone`: "Only the allowed roles and users" ignores it, without going through the
+select menu, whose handling of `@everyone` is up to Discord.
 
 **"Allowed" is always an exception, never "only these"** (owner's decision). An allowed role or member runs the
 command over an ignored entry that ranks below it (a lower role, a broader target); it limits nobody else.
@@ -129,6 +133,8 @@ script run against the staging database is the other). It must be safe to run ag
 - Non-goal: Discord's integration permissions. The website edits those; the bot does not write them.
 - Non-goal: the dashboard access rules (#347).
 - Non-goal: running the conversion on the beta or the production bot.
+- Non-goal: dashboard access. A node that reaches `settings` (`*`, `Management.*`) still decides who manages the
+  server, which no command rule does, so it is not converted: it stays, with its reason.
 - Anti-goal: a server whose members lose a command they could run, or gain one they could not, only because
   of the conversion. When in doubt, a node is left for an administrator rather than guessed.
 

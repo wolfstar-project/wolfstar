@@ -9,17 +9,14 @@ import type { Snowflake } from 'discord-api-types/v10';
 export const MaximumCommandRestrictionEntries = 25;
 
 /**
- * Where and by whom a server lets a command be run, which the modal of `/commands` edits.
+ * Where and by whom a server lets a command, or a group of commands, be run, which the modal of `/commands` edits.
  *
  * - `allowedChannels`: when it has any, the command only runs in them.
  * - `ignoredChannels`: the command does not run in them.
- * - `allowedRoles`: when it has any, members with one of them, or an allowed user, can run the command.
- * - `ignoredRoles`: the members with one of them do not run the command.
+ * - `allowedRoles`, `allowedUsers`: an exception, they run the command over an ignored entry that ranks below them.
+ * - `ignoredRoles`, `ignoredUsers`: they do not run the command. `@everyone` here keeps it to the allowed ones.
  *
- * - `allowedUsers`: members allowed even without an allowed role.
- * - `ignoredUsers`: members who cannot run the command, even with an allowed role.
- *
- * Any ignored entry wins. These restrictions never grant the base permissions of a command.
+ * See {@linkcode getCommandRulesDenial} for what decides. These rules never grant the base permissions of a command.
  */
 export interface CommandRestriction {
 	/**
@@ -141,6 +138,17 @@ function hasFormatMarker(value: readonly unknown[]): boolean {
  */
 export function writeCommandRestrictions(restrictions: readonly CommandRestriction[]): unknown[] {
 	return [...restrictions, { format: CommandRestrictionsFormat }];
+}
+
+/**
+ * A rule without `@everyone` in its ignored roles, which is what the modal shows: it is the status of the rule and not
+ * an entry of a select menu, whose handling of `@everyone` is up to Discord and would lift the rule when it dropped it.
+ *
+ * @param restriction - The rule.
+ * @param guildId - The ID of the guild, which is the one of its `@everyone` role.
+ */
+export function withoutEveryone(restriction: CommandRestriction, guildId: Snowflake): CommandRestriction {
+	return { ...restriction, ignoredRoles: restriction.ignoredRoles.filter((id) => id !== guildId) };
 }
 
 /**
