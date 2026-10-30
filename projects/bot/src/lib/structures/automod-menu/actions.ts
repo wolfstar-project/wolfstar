@@ -267,8 +267,8 @@ export const AutoModerationMenuSoftActions = {
 /**
  * What flipping a switch of a rule changes.
  *
- * @param argument - The switch: `enabled`, a soft action, the `alerts` of a mention spam rule, or the `perChannel` of a
- * fast message spam one.
+ * @param argument - The switch: `enabled`, a soft action, the `perChannel` of a fast message spam rule, or the `weighted`
+ * of a mentions cooldown one.
  * @returns `null` when the rule has no such switch.
  */
 export function toggleAutoModerationMenuSwitch(rule: AutoModerationRule, argument: string): AutoModerationRuleUpdate | null {
@@ -277,14 +277,14 @@ export function toggleAutoModerationMenuSwitch(rule: AutoModerationRule, argumen
 		return { softAction: rule.softAction ^ AutoModerationMenuSoftActions[argument as keyof typeof AutoModerationMenuSoftActions] };
 	}
 
-	if (argument === 'alerts' && rule.type === 'NoMentionSpam') {
-		const { options } = rule as AutoModerationRule<'NoMentionSpam'>;
-		return { options: { ...options, alerts: !options.alerts } };
-	}
-
 	if (argument === 'perChannel' && rule.type === 'MessageSpam') {
 		const { options } = rule as AutoModerationRule<'MessageSpam'>;
 		return { options: { ...options, perChannel: !options.perChannel } };
+	}
+
+	if (argument === 'weighted' && rule.type === 'MentionsCooldown') {
+		const { options } = rule as AutoModerationRule<'MentionsCooldown'>;
+		return { options: { ...options, weighted: !options.weighted } };
 	}
 
 	return null;

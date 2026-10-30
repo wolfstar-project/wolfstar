@@ -113,11 +113,10 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'clear':
 				return this.change(component, guildId, context, action, (rule) => ({ update: clearAutoModerationMenuList(rule) }));
 			case 'punishment':
-				return this.change(component, guildId, context, action, (rule) => ({
-					update:
-						rule.type !== 'NoMentionSpam' && AutoModerationHardActions.includes(value as AutoModerationHardAction)
-							? { hardAction: value as AutoModerationHardAction }
-							: null
+				return this.change(component, guildId, context, action, () => ({
+					update: AutoModerationHardActions.includes(value as AutoModerationHardAction)
+						? { hardAction: value as AutoModerationHardAction }
+						: null
 				}));
 			case 'roles':
 				return this.exempt(component, guildId, context, action, 'ignoredRoles');
@@ -231,15 +230,13 @@ export class UserInteractionHandler extends InteractionHandler {
 					return { update: parsed.value };
 				}
 				case 'escalation': {
-					const parsed = rule.type === 'NoMentionSpam' ? null : parseAutoModerationMenuEscalation(t, read);
-					if (parsed === null) return { update: null };
+					const parsed = parseAutoModerationMenuEscalation(t, read);
 					if (!parsed.ok) throw new InvalidInput(parsed.error);
 					return { update: parsed.value };
 				}
 				case 'duration':
 				case 'threshold': {
-					const parsed = rule.type === 'NoMentionSpam' ? null : parseAutoModerationMenuTiming(t, read);
-					if (parsed === null) return { update: null };
+					const parsed = parseAutoModerationMenuTiming(t, read);
 					if (!parsed.ok) throw new InvalidInput(parsed.error);
 					return { update: parsed.value };
 				}

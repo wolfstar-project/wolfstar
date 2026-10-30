@@ -87,12 +87,6 @@
 			"emojiName": "automod_newlines"
 		},
 		{
-			"type": "NoMentionSpam",
-			"nodeId": "2097:85",
-			"file": "noMentionSpam.png",
-			"emojiName": "automod_no_mention_spam"
-		},
-		{
 			"type": "Phishing",
 			"nodeId": "2097:91",
 			"file": "phishing.png",

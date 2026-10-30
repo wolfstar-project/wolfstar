@@ -1,6 +1,12 @@
 import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
 import { GuildMessageChannelTypes } from '#utils/channelTypes';
-import { AutoModerationRoot, AutoModerationRuleTypeKeys, getPunishment, getRuleList } from '#lib/moderation/automod/commands';
+import {
+	AutoModerationRoot,
+	AutoModerationRuleTypeKeys,
+	AutoModerationRuleTypeSummaryKeys,
+	getPunishment,
+	getRuleList
+} from '#lib/moderation/automod/commands';
 import { MaximumAutoModerationRuleIgnored } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import {
@@ -45,7 +51,6 @@ import {
 import {
 	AutoModerationHardActions,
 	AutoModerationRuleTypes,
-	getDefaultAutoModerationRuleOptions,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
 	MaximumAutoModerationRules,
@@ -70,7 +75,6 @@ const AutoModerationRuleEmojis = {
 	MentionsCooldown: 'AutoModMentionsCooldown',
 	MessageSpam: 'AutoModMessageSpam',
 	Newlines: 'AutoModNewlines',
-	NoMentionSpam: 'AutoModNoMentionSpam',
 	Phishing: 'AutoModPhishing',
 	Polls: 'AutoModPolls',
 	Spoilers: 'AutoModSpoilers',
@@ -180,14 +184,7 @@ export function renderAutoModerationRules(
 					placeholder: cutText(`➕ ${translateKey(t, `${Root}:menuCreatePlaceholder`)}`, 150),
 					options: AutoModerationRuleTypes.map((type) => ({
 						label: cutText(translateKey(t, AutoModerationRuleTypeKeys[type]), 100),
-						description: cutText(
-							translateKey(
-								t,
-								`${AutoModerationRuleTypeKeys[type]}Description` as TranslationKey,
-								getDefaultAutoModerationRuleOptions(type)
-							),
-							100
-						),
+						description: cutText(translateKey(t, AutoModerationRuleTypeSummaryKeys[type]), 100),
 						value: type,
 						emoji: getEmojiComponent(AutoModerationRuleEmojis[type])
 					}))
@@ -366,14 +363,14 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 		);
 	}
 
-	if (rule.type === 'NoMentionSpam') {
-		const { alerts } = (rule as AutoModerationRule<'NoMentionSpam'>).options;
-		body.push(renderKeySwitch(t, `${Root}:menuOptionAlerts`, alerts, id('toggle', 'alerts')));
-	}
-
 	if (rule.type === 'MessageSpam') {
 		const { perChannel } = (rule as AutoModerationRule<'MessageSpam'>).options;
 		body.push(renderKeySwitch(t, `${Root}:menuOptionPerChannel`, perChannel, id('toggle', 'perChannel')));
+	}
+
+	if (rule.type === 'MentionsCooldown') {
+		const { weighted } = (rule as AutoModerationRule<'MentionsCooldown'>).options;
+		body.push(renderKeySwitch(t, `${Root}:menuOptionWeighted`, weighted, id('toggle', 'weighted')));
 	}
 
 	if (body.length === 0) body.push(text(translateKey(t, `${Root}:menuNoOptions`)));
@@ -409,12 +406,6 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 		renderKeySwitch(t, `${Root}:menuResponseLog`, has(AutoModerationMenuSoftActions.log), id('toggle', 'log')),
 		{ type: ComponentType.Separator }
 	];
-
-	// The mention spam rule bans by itself, it has no punishment to configure:
-	if (rule.type === 'NoMentionSpam') {
-		body.push(text(`**${translateKey(t, `${Root}:menuPunishment`)}**\n${translateKey(t, `${Root}:menuPunishmentAutomatic`)}`));
-		return body;
-	}
 
 	body.push(
 		text(`**${translateKey(t, `${Root}:menuPunishment`)}**`),
@@ -599,7 +590,6 @@ export function renderAutoModerationModal(
 			);
 		}
 		case 'duration':
-			if (rule.type === 'NoMentionSpam') return null;
 			return modal(`${Root}:menuDuration`, [
 				input(AutoModerationMenuTimingInputs.duration, translateKey(t, `${Root}:menuTimingDuration`), {
 					value: formatAutoModerationMenuDuration(rule.hardActionDuration),
@@ -609,7 +599,6 @@ export function renderAutoModerationModal(
 				})
 			]);
 		case 'escalation':
-			if (rule.type === 'NoMentionSpam') return null;
 			return modal(`${Root}:menuEscalation`, [
 				input(AutoModerationMenuEscalationInputs.steps, translateKey(t, `${Root}:menuEscalationSteps`), {
 					style: TextInputStyle.Paragraph,
@@ -626,7 +615,6 @@ export function renderAutoModerationModal(
 				})
 			]);
 		case 'threshold':
-			if (rule.type === 'NoMentionSpam') return null;
 			return modal(`${Root}:menuThreshold`, [
 				input(AutoModerationMenuTimingInputs.threshold, translateKey(t, `${Root}:menuTimingThreshold`), {
 					value: String(rule.thresholdMaximum),
