@@ -66,7 +66,7 @@ one that is done is never read again, so a backup restored later adds only the g
 
 ### Schema first
 
-`prisma db migrate` cannot make the new tables: the fourteen `@@control(external)` models are created by no migration of
+`prisma db migrate` cannot make the new tables: the fifteen `@@control(external)` models are created by no migration of
 the bot, `prisma db init` fails on them (`relation "public.Guild" does not exist`), and the SQL of the website does not
 match the contract (no `Mute` in the hard actions, columns of `GuildLogs` missing). So a schema dump of the staging
 database, which is at the current contract, goes into `projects/database/legacy/schema.sql`. The step that runs at every
@@ -110,23 +110,26 @@ restart of the service only when the schema is already there, and a deploy when 
 - **`audit_event`** becomes `AuditEvent` with every field unchanged, `hash` and `prev_hash` first of all, since they are a
   chain, the timestamps truncated to milliseconds. An `actor_id` that is not a number becomes `0`, with the original in
   `context.legacyActorId`. `AuditChainHead` takes the legacy head only when the new chain is empty; otherwise it is left alone.
+- **`messagesModerationDm`, `messagesModerationReasonDisplay`, `messagesModerationMessageDisplay` and
+  `messagesModeratorNameDisplay`** keep their key, in four new columns of `GuildModeration` added by hand as the one of the
+  time zone. `ModerationCommand#readMessageSettings`, `ModerationTask` and the `report` handler already read those keys, but
+  no table stores them, so today they are always the default and no server can turn the direct messages on. They get a key
+  of `configuration.ts` each, whose descriptions `i18next.d.ts` already has.
 - **`command_log`** becomes `CommandLog`.
-- **`user.moderation_dm`** becomes `User.report`.
+- **`user.moderation_dm`** becomes `User.report`, the one preference of a user in V7. Production has no rows.
 
 ## Not carried
 
 `prefix`, `disableNaturalPrefix`, `channelsMediaOnly`, `commandAutoDelete`, `reactionRoles`, `channelsLogsCommand`,
-`channelsLogsSettings`, `channelsLogsVoiceChannel`, `eventsTwemojiReactions`, `eventsUnknownMessages`,
+`channelsLogsSettings`, `channelsLogsVoiceChannel`, `eventsUnknownMessages`,
 `eventsIncludeBots`, `messagesAutoDelete*`, `messagesIgnoreChannels`, `selfmodReactions*`, `channelsLogsMemberRolesUpdate`,
-`channelsIgnoreVoiceActivity`, `messagesModerationDm`, `messagesModerationReasonDisplay`,
-`messagesModerationMessageDisplay`, `messagesModerationAutoDelete`, `messagesModeratorNameDisplay`, and `schedule`, which V7 makes
+`channelsIgnoreVoiceActivity`, `messagesModerationAutoDelete`, and `schedule`, which V7 makes
 again by itself as BullMQ jobs. A column of the legacy `guilds` table that is neither mapped nor listed here makes a test
 fail, so nothing is dropped by accident. The builder reports any value production holds in these columns.
 
 ## Where it lives
 
-- **`projects/database/src/legacy/`:** reading the legacy tables and the pure mapping, a guild in and its rows out. The
-  website takes this package as a submodule, so one conversion exists.
+- **`projects/database/src/legacy/`:** reading the legacy tables and the pure mapping, a guild in and its rows out.
 - **`projects/bot`:** runs it at the start and converts the nodes, which needs the loaded commands.
 - **Website:** nothing but going out with the bot. Its `ArchiveLegacyTables` step can stay, since the conversion reads both
   names; its schema statements find the tables there and do nothing.
@@ -134,7 +137,9 @@ fail, so nothing is dropped by accident. The builder reports any value productio
 ## Order of the cutover
 
 The website on `main` writes `guilds`. What it writes after the conversion never reaches the new tables, since a migrated
-guild is skipped, so the bot and #451 go out together. Production is backed up first.
+guild is skipped, so the dashboard is stopped for the cutover. The bot goes first: the migration of #451 creates `Guild` from
+a SQL that differs from the contract, and the schema of the bot is only applied when `Guild` does not exist. Once the bot
+made the tables, the statements of #451 find them and do nothing. Production is backed up first.
 
 ## Proof
 
@@ -151,8 +156,10 @@ not hash the same. The bot starts on it.
 
 ## Calls made while writing this (not decided by the owner)
 
-- The moderation display settings (`messagesModerationDm` on 2 guilds, the others on 1) are not carried: they have no
-  column in V7, and adding them is a feature of its own. Those servers go back to the defaults.
+- The four moderation settings the code reads with no column behind them get their columns (`messagesModerationDm` is on in
+  2 guilds, `messagesModerationMessageDisplay` is off in 1). `messagesModerationAutoDelete` (1 guild) has no reader in V7 and
+  stays out.
+- The dashboard is stopped for the cutover, and the bot goes before #451.
 - The ignored channels of edited and deleted messages are intersected, so a log that was sent stays sent.
 - The schema of the new tables comes from staging and not from the SQL of the website, which differs from the contract.
 - The skip key is the record alone, and rows are inserted when their key is free.
