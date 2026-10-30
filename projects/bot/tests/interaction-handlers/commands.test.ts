@@ -9,6 +9,7 @@ import {
 import { getLegacyPermissionRevision } from '#lib/structures/commands-menu/legacy';
 import { findCommandPiece } from '#lib/structures/commands-menu/disabled';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
+import { createCommand } from '#mocks/MockInstances';
 import { UserInteractionHandler } from '#root/interaction-handlers/commands';
 import { ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
@@ -274,6 +275,22 @@ describe('commands editor', () => {
 			users: [{ id: userId, allow: [], deny: ['nosuchcommand'], reason: 'unknownCommand' }],
 			roles: []
 		});
+	});
+
+	test('the file of the legacy nodes says why a node a rule contradicts was left', async () => {
+		createCommand('ban', 'Moderation');
+		const gatewayClient = container.gatewayClient;
+		container.gatewayClient = { roles: { fetchAll: vi.fn().mockResolvedValue([]) } } as never;
+		onTestFinished(() => {
+			container.gatewayClient = gatewayClient;
+		});
+		settings.permissionsUsers = [{ id: userId, allow: [], deny: ['ban'] }];
+
+		const legacy = click('legacy', '');
+		await handler().run(legacy.interaction, legacy.content);
+
+		const [answer] = legacy.answers as { files: { data: Buffer }[] }[];
+		expect(JSON.parse(answer.files[0].data.toString()).users).toEqual([{ id: userId, allow: [], deny: ['ban'], reason: 'meaningChanges' }]);
 	});
 
 	test('legacy removal requires the owner, exact confirmation and the downloaded revision', async () => {
