@@ -21,18 +21,21 @@
 		"watch": "tsdown --watch",
 		"prisma:generate": "pnpm prisma8:emit",
 		"prisma8:infer": "prisma contract infer --output src/contract.prisma",
-		"prisma8:emit": "prisma contract emit"
+		"prisma8:emit": "prisma contract emit",
+		"migrate:deploy": "node scripts/deploy.ts"
 	},
 	"dependencies": {
 		"@prisma/orm-postgres": "8.0.0-rc.13",
 		"@sapphire/utilities": "^3.18.3",
 		"discord-api-types": "^0.38.56",
+		"pg": "^8.23.1",
+		"prisma": "8.0.0-rc.19",
 		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
 		"varlock": "^1.23.0"
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.0",
-		"prisma": "8.0.0-rc.19",
+		"@types/pg": "^8.20.4",
 		"tsdown": "0.23.1",
 		"typescript": "^7.0.2"
 	}

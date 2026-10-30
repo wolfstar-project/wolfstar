@@ -17,6 +17,7 @@ export const AutoModerationRuleTypes = [
 	'MaskedLinks',
 	'MassMentions',
 	'MentionsCooldown',
+	'MessageDuplicates',
 	'MessageSpam',
 	'Newlines',
 	'Phishing',
@@ -33,6 +34,7 @@ export type AutoModerationRuleType = (typeof AutoModerationRuleTypes)[number];
  * The hard actions a rule can take, as the `GuildAutoModerationHardAction` enum stores them.
  */
 export const AutoModerationHardActions = [
+	'None',
 	'Warning',
 	'Timeout',
 	'Mute',
@@ -41,6 +43,13 @@ export const AutoModerationHardActions = [
 	'Ban',
 	'VoiceKick'
 ] as const satisfies readonly AutoModerationHardAction[];
+
+/**
+ * The hard actions the escalation of a rule can step up to: every one, but taking none.
+ */
+export const AutoModerationEscalationActions = AutoModerationHardActions.filter((action) => action !== 'None');
+
+export type AutoModerationEscalationAction = (typeof AutoModerationEscalationActions)[number];
 
 /**
  * The options of a rule, by its type. They are stored as JSON in the `options` column.
@@ -94,6 +103,8 @@ export interface AutoModerationRuleOptionsMap {
 	StickersCooldown: { maximum: number; timePeriod: number };
 	/** Every message with a native poll of Discord infringes the rule. */
 	Polls: Record<string, never>;
+	/** At least `maximum` identical messages among the last `queueSize` of a channel, whoever sent them. */
+	MessageDuplicates: { maximum: number; queueSize: number };
 }
 
 export type AutoModerationRuleOptions = AutoModerationRuleOptionsMap[AutoModerationRuleType];
@@ -153,7 +164,7 @@ const MaximumDuration = 2 ** 31 - 1;
 
 export const AutoModerationRuleLimits = {
 	hardActionDuration: { minimum: 0, maximum: MaximumDuration },
-	thresholdMaximum: { minimum: 0, maximum: 100 },
+	thresholdMaximum: { minimum: 0, maximum: 1000 },
 	thresholdDuration: { minimum: 0, maximum: MaximumDuration },
 	escalationDuration: { minimum: 60_000, maximum: MaximumDuration }
 } as const;
@@ -166,7 +177,7 @@ export const MaximumAutoModerationRuleEscalationSteps = 10;
  */
 export const AutoModerationRuleOptionLimits = {
 	Capitals: { minimum: { minimum: 5, maximum: 2000 }, maximum: { minimum: 10, maximum: 100 } },
-	Newlines: { maximum: { minimum: 1, maximum: 100 } },
+	Newlines: { maximum: { minimum: 1, maximum: 2000 } },
 	Zalgo: { maximum: { minimum: 1, maximum: 20 } },
 	Duplicates: { characters: { minimum: 3, maximum: 200 }, words: { minimum: 2, maximum: 100 } },
 	Characters: { maximum: { minimum: 50, maximum: 4000 } },
@@ -176,7 +187,8 @@ export const AutoModerationRuleOptionLimits = {
 	LinksCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } },
 	MassMentions: { maximum: { minimum: 1, maximum: 100 } },
 	MentionsCooldown: { maximum: { minimum: 1, maximum: 200 }, timePeriod: { minimum: 1, maximum: 3600 } },
-	StickersCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } }
+	StickersCooldown: { maximum: { minimum: 1, maximum: 50 }, timePeriod: { minimum: 1, maximum: 600 } },
+	MessageDuplicates: { maximum: { minimum: 2, maximum: 100 }, queueSize: { minimum: 10, maximum: 100 } }
 } as const;
 
 /**
@@ -211,7 +223,8 @@ export function getDefaultAutoModerationRuleOptions<Type extends AutoModerationR
 		Spoilers: {},
 		MaskedLinks: {},
 		StickersCooldown: { maximum: 3, timePeriod: 60 },
-		Polls: {}
+		Polls: {},
+		MessageDuplicates: { maximum: 5, queueSize: 50 }
 	};
 	return structuredClone(defaults[type]);
 }
@@ -251,7 +264,7 @@ export function normalizeAutoModerationRuleEscalation(value: unknown): AutoModer
 		if (typeof entry !== 'object' || entry === null) continue;
 
 		const { action, duration } = entry as { action?: unknown; duration?: unknown };
-		if (!AutoModerationHardActions.includes(action as AutoModerationHardAction)) continue;
+		if (!AutoModerationEscalationActions.includes(action as AutoModerationEscalationAction)) continue;
 
 		const { maximum } = AutoModerationRuleLimits.hardActionDuration;
 		const valid = typeof duration === 'number' && Number.isFinite(duration) && duration > 0;

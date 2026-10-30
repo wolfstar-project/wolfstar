@@ -1,0 +1,13 @@
+{
+	"extends": "../../../tsconfig.base.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"incremental": false,
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"types": ["node", "vitest/globals"]
+	},
+	"include": [".", "../scripts/**/*"]
+}

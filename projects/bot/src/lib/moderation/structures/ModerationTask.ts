@@ -106,10 +106,10 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		targetId: Snowflake,
 		context?: ContextType
 	): Promise<ModerationAction.Data<ContextType>> {
-		const settings: Partial<Record<string, unknown>> = await readSettings(guild);
+		const settings = await readSettings(guild);
 		return {
 			moderator: null,
-			sendDirectMessage: settings.messagesModerationDm === true && (await fetchUserReportEnabled(targetId)),
+			sendDirectMessage: settings.messagesModerationDm && (await fetchUserReportEnabled(targetId)),
 			context
 		};
 	}

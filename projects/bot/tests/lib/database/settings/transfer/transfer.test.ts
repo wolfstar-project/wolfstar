@@ -155,6 +155,10 @@ describe('configuration file', () => {
 				'moderation.track-kicks',
 				'moderation.confirm-recent',
 				'moderation.dehoist',
+				'moderation.direct-message',
+				'moderation.display-reason',
+				'moderation.display-message',
+				'moderation.display-moderator',
 				'reports.anonymous',
 				'reports.notify',
 				'roles.remove-initial'
@@ -481,7 +485,7 @@ describe('configuration file', () => {
 							{ name: 'No type' },
 							{ name: '12345', type: 'Links' },
 							{ name: 'Bad action', type: 'Links', hardAction: 'Explode' },
-							{ name: 'Bad threshold', type: 'Links', thresholdMaximum: 1000 }
+							{ name: 'Bad threshold', type: 'Links', thresholdMaximum: 1001 }
 						]
 					}
 				});

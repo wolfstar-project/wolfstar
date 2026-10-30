@@ -1,6 +1,7 @@
 import { isNullishOrZero, isObject } from '@sapphire/utilities';
 import { remove as removeConfusables } from 'confusables';
 import {
+	AutoModerationEscalationActions,
 	AutoModerationHardActions,
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
@@ -13,6 +14,7 @@ import {
 	MaximumAutoModerationRuleNameLength,
 	normalizeAutoModerationRuleEscalation,
 	normalizeAutoModerationRuleOptions,
+	type AutoModerationEscalationAction,
 	type AutoModerationHardAction,
 	type AutoModerationRuleData,
 	type AutoModerationRuleType
@@ -150,7 +152,7 @@ export function parseAutoModerationRulePatch(
 		} else {
 			const { maximum } = AutoModerationRuleLimits.hardActionDuration;
 			errors.push(
-				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationHardActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}, which a Timeout requires.`
+				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationEscalationActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}, which a Timeout requires.`
 			);
 		}
 	}
@@ -249,7 +251,7 @@ function isEscalationStep(value: unknown): boolean {
 	if (!isObject(value)) return false;
 
 	const { action, duration } = value as { action?: unknown; duration?: unknown };
-	if (!AutoModerationHardActions.includes(action as AutoModerationHardAction)) return false;
+	if (!AutoModerationEscalationActions.includes(action as AutoModerationEscalationAction)) return false;
 	if (duration === null || duration === undefined) return action !== 'Timeout';
 	return isInteger(duration, 1, AutoModerationRuleLimits.hardActionDuration.maximum);
 }

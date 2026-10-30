@@ -500,22 +500,15 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 	/**
 	 * Reads the settings that control how the moderation commands respond.
 	 *
-	 * @remarks
-	 *
-	 * The keys (`messagesModerationDm`, `messagesModerationReasonDisplay`, `messagesModerationMessageDisplay` and
-	 * `messagesModeratorNameDisplay`) are not part of the flattened `GuildData` anymore, since the normalized contract
-	 * has no table for them. They are read when a guild has them, and default to: the DM is opt-in, and
-	 * everything else is displayed.
-	 *
 	 * @param guildId - The ID of the guild.
 	 */
 	protected async readMessageSettings(guildId: string): Promise<ModerationCommand.MessageSettings> {
-		const settings: Partial<Record<string, unknown>> = await readSettings(guildId);
+		const settings = await readSettings(guildId);
 		return {
-			moderationDm: settings.messagesModerationDm === true,
-			reasonDisplay: settings.messagesModerationReasonDisplay !== false,
-			messageDisplay: settings.messagesModerationMessageDisplay !== false,
-			moderatorNameDisplay: settings.messagesModeratorNameDisplay !== false
+			moderationDm: settings.messagesModerationDm,
+			reasonDisplay: settings.messagesModerationReasonDisplay,
+			messageDisplay: settings.messagesModerationMessageDisplay,
+			moderatorNameDisplay: settings.messagesModeratorNameDisplay
 		};
 	}
 

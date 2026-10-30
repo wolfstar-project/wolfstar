@@ -49,7 +49,7 @@ declare module '@wolfstar/http-framework' {
     };
     'automod create': {
       name: string;
-      type: 'Attachments' | 'Capitals' | 'Characters' | 'Duplicates' | 'Emojis' | 'ImageSpam' | 'Invites' | 'Links' | 'LinksCooldown' | 'MaskedLinks' | 'MassMentions' | 'MentionsCooldown' | 'MessageSpam' | 'Newlines' | 'Phishing' | 'Polls' | 'Spoilers' | 'Stickers' | 'StickersCooldown' | 'Words' | 'Zalgo';
+      type: 'Attachments' | 'Capitals' | 'Characters' | 'Duplicates' | 'Emojis' | 'ImageSpam' | 'Invites' | 'Links' | 'LinksCooldown' | 'MaskedLinks' | 'MassMentions' | 'MentionsCooldown' | 'MessageDuplicates' | 'MessageSpam' | 'Newlines' | 'Phishing' | 'Polls' | 'Spoilers' | 'Stickers' | 'StickersCooldown' | 'Words' | 'Zalgo';
     };
     'automod delete': {
       rule: string;
@@ -62,7 +62,7 @@ declare module '@wolfstar/http-framework' {
       maximum?: number;
       minimum?: number;
       period?: number;
-      punishment?: 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
+      punishment?: 'None' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
       'punishment-duration'?: string;
       rename?: string;
       rule: string;

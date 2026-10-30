@@ -389,6 +389,10 @@ namespace public {
     trackKicks    Boolean @default(false) @map("track_kicks")
     confirmRecentMinutes Int @default(0) @map("confirm_recent_minutes")
     dehoist       Boolean @default(false)
+    directMessage Boolean @default(false) @map("direct_message")
+    displayReason Boolean @default(true) @map("display_reason")
+    displayMessage Boolean @default(true) @map("display_message")
+    displayModerator Boolean @default(true) @map("display_moderator")
     modules       Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
 
     @@control(external)
@@ -535,6 +539,14 @@ namespace public {
   }
 
   // What a case holds that the externally owned `ModerationAction` has no column for.
+  // The guilds the conversion of the legacy tables is done with, read at the start so a backup only adds the ones it did
+  // not have. `followedUpAt` is set once what needs Discord was done too: the permission nodes, the jobs of the cases.
+  model LegacyMigratedGuild {
+    guildId      BigInt              @id(map: "LegacyMigratedGuild_pkey") @map("guild_id")
+    migratedAt   TimestampString(3)  @default(now()) @map("migrated_at")
+    followedUpAt TimestampString(3)? @map("followed_up_at")
+  }
+
   model ModerationCaseData {
     caseId    Int     @map("case_id")
     guildId   BigInt  @map("guild_id")
@@ -596,6 +608,7 @@ namespace public {
     MaskedLinks = "MaskedLinks"
     StickersCooldown = "StickersCooldown"
     Polls = "Polls"
+    MessageDuplicates = "MessageDuplicates"
   }
 
   native_enum HoneypotAction {
@@ -655,6 +668,8 @@ namespace public {
     Kick = "Kick"
     Softban = "Softban"
     Ban = "Ban"
+    // A native enum only takes new values at its end:
+    None = "None"
   }
 
   native_enum ModerationActionType {

@@ -208,13 +208,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (await moderationAction.isActive(guild, report.targetId, undefined as never)) throw t('moderation:actionIsActive');
 
 		const [target, moderator] = await Promise.all([gatewayClient.users.fetch(report.targetId), gatewayClient.users.fetch(interaction.user.id)]);
-		const settings: Partial<Record<string, unknown>> = await readSettings(report.guildId);
+		const settings = await readSettings(report.guildId);
 		const entry = await moderationAction.apply(
 			guild,
 			{ user: target, moderator, reason: isNullishOrEmpty(reason) ? null : reason, duration },
 			{
-				moderator: settings.messagesModeratorNameDisplay === false ? null : moderator,
-				sendDirectMessage: settings.messagesModerationDm === true && (await fetchUserReportEnabled(target.id))
+				moderator: settings.messagesModeratorNameDisplay ? moderator : null,
+				sendDirectMessage: settings.messagesModerationDm && (await fetchUserReportEnabled(target.id))
 			}
 		);
 		return entry.id;

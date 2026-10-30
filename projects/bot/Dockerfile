@@ -101,6 +101,15 @@ COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/shared/dist projects/shared/dist
+# `pnpm start` brings the schema up to date before the bot starts, here and with the start command of a Railway service: `prisma db migrate` reads the contract and
+# the migrations, and `legacy/schema.sql` is the starting point of a database that has no schema.
+COPY --chown=node:node projects/database/.env.schema projects/database/.env.schema
+COPY --chown=node:node projects/database/prisma.config.ts projects/database/prisma.config.ts
+COPY --chown=node:node projects/database/legacy/ projects/database/legacy/
+COPY --chown=node:node projects/database/migrations/ projects/database/migrations/
+COPY --chown=node:node projects/database/scripts/ projects/database/scripts/
+COPY --chown=node:node projects/database/src/contract.prisma projects/database/src/contract.prisma
+COPY --chown=node:node --from=builder /usr/src/app/projects/database/src/generated/prisma projects/database/src/generated/prisma
 
 RUN --mount=type=cache,id=pnpm-store,target=/var/cache/pnpm \
     pnpm install --prod --frozen-lockfile
