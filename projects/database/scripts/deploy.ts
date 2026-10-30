@@ -5,11 +5,12 @@ import { pathToFileURL } from 'node:url';
 type Environment = Record<string, string | undefined>;
 
 /**
- * Whether a process brings the schema up to date before it starts: all of them but a worker of the broker, whose
+ * Whether a process brings the schema up to date before it starts: the ones of an image, which sets `NODE_ENV`, so a
+ * local `pnpm start` leaves a database that was not made by these migrations alone, but a worker of the broker, whose
  * gateway does it.
  */
 export function shouldDeploy(env: Environment): boolean {
-	return env.BOT_MODE !== 'worker';
+	return env.NODE_ENV === 'production' && env.BOT_MODE !== 'worker';
 }
 
 /**

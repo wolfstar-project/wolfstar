@@ -17,12 +17,17 @@ describe('deploy step', () => {
 
 	describe('shouldDeploy', () => {
 		test('GIVEN a worker THEN it leaves the schema to the gateway', () => {
-			expect(shouldDeploy({ BOT_MODE: 'worker' })).toBe(false);
+			expect(shouldDeploy({ NODE_ENV: 'production', BOT_MODE: 'worker' })).toBe(false);
 		});
 
-		test('GIVEN the gateway THEN it applies the schema', () => {
-			expect(shouldDeploy({})).toBe(true);
-			expect(shouldDeploy({ BOT_MODE: 'gateway' })).toBe(true);
+		test('GIVEN the gateway of an image THEN it applies the schema', () => {
+			expect(shouldDeploy({ NODE_ENV: 'production' })).toBe(true);
+			expect(shouldDeploy({ NODE_ENV: 'production', BOT_MODE: 'gateway' })).toBe(true);
+		});
+
+		test('GIVEN a process out of an image THEN `pnpm start` leaves the schema alone', () => {
+			expect(shouldDeploy({})).toBe(false);
+			expect(shouldDeploy({ NODE_ENV: 'development' })).toBe(false);
 		});
 	});
 });

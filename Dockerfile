@@ -102,7 +102,7 @@ COPY --chown=node:node projects/bot/src/.env.schema projects/bot/src/.env.schema
 COPY --chown=node:node --from=builder /usr/src/app/projects/bot/dist projects/bot/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/database/dist projects/database/dist
 COPY --chown=node:node --from=builder /usr/src/app/projects/shared/dist projects/shared/dist
-# The deploy step of `CMD` brings the schema up to date before the bot starts: `prisma db migrate` reads the contract and
+# `pnpm start` brings the schema up to date before the bot starts, here and with the start command of a Railway service: `prisma db migrate` reads the contract and
 # the migrations, and `legacy/schema.sql` is the starting point of a database that has no schema.
 COPY --chown=node:node projects/database/.env.schema projects/database/.env.schema
 COPY --chown=node:node projects/database/prisma.config.ts projects/database/prisma.config.ts
@@ -120,4 +120,4 @@ USER node
 
 WORKDIR /usr/src/app/projects/bot
 
-CMD [ "sh", "-c", "pnpm --filter wolfstar-database run migrate:deploy && exec pnpm start" ]
+CMD [ "pnpm", "start" ]

@@ -1,7 +1,7 @@
 # Automatic migration from the legacy database
 
 Date: 2026-10-30
-Status: proposed
+Status: implemented
 
 ## Purpose
 
