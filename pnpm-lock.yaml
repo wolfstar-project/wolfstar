@@ -409,6 +409,12 @@ importers:
       discord-api-types:
         specifier: ^0.38.56
         version: 0.38.56
+      pg:
+        specifier: ^8.23.1
+        version: 8.23.1
+      prisma:
+        specifier: 8.0.0-rc.19
+        version: 8.0.0-rc.19(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
       prisma-orm-extension-typed-json:
         specifier: 8.0.0-rc.5
         version: 8.0.0-rc.5(patch_hash=0d3a5a0b92c2c9f5ec59df4645d5355dd5751077a9322d29179f9e493a4c240a)(@prisma/cli-engine@0.6.1)(@prisma/orm-target-postgres@8.0.0-rc.13)(magicast@0.5.5)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.4)
@@ -419,9 +425,9 @@ importers:
       '@rollup/plugin-alias':
         specifier: 6.0.0
         version: 6.0.0
-      prisma:
-        specifier: 8.0.0-rc.19
-        version: 8.0.0-rc.19(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
+      '@types/pg':
+        specifier: ^8.20.4
+        version: 8.20.4
       tsdown:
         specifier: 0.23.1
         version: 0.23.1(oxc-resolver@11.24.2)(typescript@7.0.2)
@@ -8780,11 +8786,11 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@prisma/composer-cli@0.25.0(@prisma/cli-engine@0.6.2)(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)':
+  '@prisma/composer-cli@0.25.0(@prisma/cli-engine@0.6.2)(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)':
     dependencies:
       '@prisma/cli-engine': 0.6.2(@prisma/management-api-sdk@1.80.0)(magicast@0.5.5)
-      '@prisma/composer': 0.25.0(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
-      alchemy: 2.0.0-beta.78(@types/node@24.19.2)(@vercel/nft@1.11.0)(effect@4.0.0-rc.115)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
+      '@prisma/composer': 0.25.0(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
+      alchemy: 2.0.0-beta.78(@types/node@24.19.2)(@vercel/nft@1.11.0)(effect@4.0.0-rc.115)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
       c12: 3.3.4(magicast@0.5.5)
       cross-spawn: 7.0.6
       effect: 4.0.0-rc.115
@@ -8814,14 +8820,14 @@ snapshots:
       - vitest
       - ws
 
-  '@prisma/composer@0.25.0(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)':
+  '@prisma/composer@0.25.0(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)':
     dependencies:
       '@effect/sql-d1': 4.0.0-rc.115(effect@4.0.0-rc.115)
       '@effect/sql-sqlite-do': 4.0.0-rc.115(effect@4.0.0-rc.115)
       '@effect/vitest': 4.0.0-rc.115(effect@4.0.0-rc.115)(vitest@5.0.5)
       '@prisma/management-api-sdk': 1.80.0
       '@standard-schema/spec': 1.1.0
-      alchemy: 2.0.0-beta.78(@types/node@24.19.2)(@vercel/nft@1.11.0)(effect@4.0.0-rc.115)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
+      alchemy: 2.0.0-beta.78(@types/node@24.19.2)(@vercel/nft@1.11.0)(effect@4.0.0-rc.115)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
       arktype: 2.2.7
       c12: 3.3.4(magicast@0.5.5)
       cross-spawn: 7.0.6
@@ -9980,7 +9986,7 @@ snapshots:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
-  alchemy@2.0.0-beta.78(@types/node@24.19.2)(@vercel/nft@1.11.0)(effect@4.0.0-rc.115)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0):
+  alchemy@2.0.0-beta.78(@types/node@24.19.2)(@vercel/nft@1.11.0)(effect@4.0.0-rc.115)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0):
     dependencies:
       '@alchemy.run/cloudflare-runtime': 2.0.0-beta.78(@distilled.cloud/cloudflare@1.0.0-rc.12)(@types/node@24.19.2)(effect@4.0.0-rc.115)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.4)
       '@alchemy.run/floci': 2.0.0-beta.78(effect@4.0.0-rc.115)
@@ -10019,7 +10025,7 @@ snapshots:
       yaml: 2.9.1
     optionalDependencies:
       '@vercel/nft': 1.11.0(supports-color@7.2.0)
-      pg: 8.22.0
+      pg: 8.23.1
       vite: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
       ws: 8.22.0
     transitivePeerDependencies:
@@ -11649,11 +11655,11 @@ snapshots:
       - typanion
       - vite
 
-  prisma@8.0.0-rc.19(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0):
+  prisma@8.0.0-rc.19(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(supports-color@7.2.0)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0):
     dependencies:
       '@manypkg/tools': 2.1.2
       '@prisma/cli-engine': 0.6.2(@prisma/management-api-sdk@1.80.0)(magicast@0.5.5)
-      '@prisma/composer-cli': 0.25.0(@prisma/cli-engine@0.6.2)(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.22.0)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
+      '@prisma/composer-cli': 0.25.0(@prisma/cli-engine@0.6.2)(@types/node@24.19.2)(@vercel/nft@1.11.0)(magicast@0.5.5)(pg@8.23.1)(typescript@7.0.2)(vite@8.3.4)(vitest@5.0.5)(ws@8.22.0)
       '@prisma/compute-sdk': 0.43.0(@prisma/management-api-sdk@1.80.0)(supports-color@7.2.0)
       '@prisma/management-api-sdk': 1.80.0
       '@prisma/orm-toolchain': 8.0.0-rc.13(@prisma/cli-engine@0.6.2)(magicast@0.5.5)(typanion@3.14.0)(typescript@7.0.2)(vite@8.3.4)

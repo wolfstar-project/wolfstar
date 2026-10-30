@@ -42,6 +42,7 @@ export default defineConfig({
 		include: [
 			fromRoot('projects/bot/tests/**/*.test.ts'),
 			fromRoot('projects/shared/tests/**/*.test.ts'),
+			fromRoot('projects/database/tests/**/*.test.ts'),
 			// The locale structural gate lives here. vitest 5 no longer discovers a
 			// config in parent directories, so it has to be in the root include set
 			// for `vitest run tests/languages` to match anything.
