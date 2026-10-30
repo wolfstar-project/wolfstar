@@ -8,7 +8,7 @@ import {
 } from '#lib/structures/commands-menu/restrictions';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
-import { isDashboardAccessEntry, type PermissionsNode } from 'wolfstar-database';
+import { isAccessEntry, type PermissionsNode } from 'wolfstar-database';
 
 /**
  * Why a legacy node was not converted, and stays for an administrator to decide.
@@ -65,7 +65,7 @@ export function convertLegacyNodes(input: LegacyNodeConversionInput): LegacyNode
 		const kept = kind === 'user' ? result.users : result.roles;
 
 		for (const node of column) {
-			if (isDashboardAccessEntry(node)) {
+			if (isAccessEntry(node)) {
 				kept.push(node);
 				continue;
 			}

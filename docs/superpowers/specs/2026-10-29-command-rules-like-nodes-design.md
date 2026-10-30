@@ -3,7 +3,7 @@
 Date: 2026-10-29
 Status: proposed
 Depends on: wolfstar#347 (dashboard access rules), which this builds on: the conversion leaves the dashboard
-access rules in `permissions.users` and `permissions.roles` and uses its `isDashboardAccessEntry`.
+access rules in `permissions.users` and `permissions.roles` and uses its `isAccessEntry`.
 
 ## Purpose
 

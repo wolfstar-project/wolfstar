@@ -3,7 +3,7 @@ import { convertLegacyNodes, type LegacyNodeConversion } from '#lib/structures/c
 import { readCommandRestrictions, writeCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
-import { isDashboardAccessEntry } from 'wolfstar-database';
+import { isAccessEntry } from 'wolfstar-database';
 
 /**
  * Converts the legacy permission nodes of a guild into command rules, see `convertLegacyNodes`: the rules and the two
@@ -17,7 +17,7 @@ import { isDashboardAccessEntry } from 'wolfstar-database';
 export async function convertGuildCommandRules(guildId: Snowflake, actorId: Snowflake): Promise<LegacyNodeConversion | null> {
 	using trx = await writeSettingsTransaction(guildId);
 	const { settings } = trx;
-	const hasNodes = [...settings.permissionsUsers, ...settings.permissionsRoles].some((entry) => !isDashboardAccessEntry(entry));
+	const hasNodes = [...settings.permissionsUsers, ...settings.permissionsRoles].some((entry) => !isAccessEntry(entry));
 	if (!hasNodes) return null;
 
 	const roles = await container.gatewayClient.roles.fetchAll(guildId);

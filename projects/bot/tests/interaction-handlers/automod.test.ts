@@ -1,7 +1,7 @@
 import { writeSettings } from '#lib/database';
 import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import { encodeAutoModerationMenuId, type AutoModerationMenuVerb } from '#lib/structures/automod-menu';
-import { canManageServerSettingsFrom, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
+import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { UserInteractionHandler } from '#root/interaction-handlers/automod';
 
 vi.mock('#lib/database', async (original) => ({
@@ -14,8 +14,7 @@ vi.mock('#lib/moderation/automod/rules', async (original) => ({
 }));
 vi.mock('#lib/structures/commands/permissions', async (original) => ({
 	...(await original<typeof import('#lib/structures/commands/permissions')>()),
-	canManageServerSettingsFrom: vi.fn(),
-	hasCommandPermissionLevel: vi.fn()
+	canManageServerSettingsFrom: vi.fn()
 }));
 vi.mock('@wolfstar/plugin-i18next', async (original) => ({
 	...(await original<typeof import('@wolfstar/plugin-i18next')>()),
@@ -50,9 +49,8 @@ describe('auto-moderation menu', () => {
 		vi.mocked(readAutoModerationRules).mockResolvedValue([]);
 	});
 
-	test('GIVEN a member the dashboard lets in without the administrator level THEN they change the settings', async () => {
+	test('GIVEN an administrator the dashboard lets in THEN they change the settings', async () => {
 		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(true);
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(false);
 
 		const { interaction, content, answers } = click('setting', 'module');
 		await handler().run(interaction, content);
@@ -64,27 +62,11 @@ describe('auto-moderation menu', () => {
 
 	test('GIVEN an administrator the dashboard keeps out THEN they cannot change the settings', async () => {
 		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(false);
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(true);
 
 		const { interaction, content, answers } = click('setting', 'module');
 		await handler().run(interaction, content);
 
 		expect(writeSettings).not.toHaveBeenCalled();
 		expect(answers.reply).toMatchObject([{ content: 'preconditions:administrator' }]);
-	});
-
-	test('GIVEN the rules THEN the administrator level decides, not the dashboard', async () => {
-		vi.mocked(canManageServerSettingsFrom).mockResolvedValue(true);
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(false);
-
-		const denied = click('list');
-		await handler().run(denied.interaction, denied.content);
-		expect(denied.answers.reply).toMatchObject([{ content: 'preconditions:administrator' }]);
-
-		vi.mocked(hasCommandPermissionLevel).mockResolvedValue(true);
-		const allowed = click('list');
-		await handler().run(allowed.interaction, allowed.content);
-		expect(allowed.answers.update).toHaveLength(1);
-		expect(canManageServerSettingsFrom).not.toHaveBeenCalled();
 	});
 });

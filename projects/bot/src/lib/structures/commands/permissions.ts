@@ -4,7 +4,7 @@ import { createFunctionPrecondition } from '@wolfstar/decorators';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
-import { hasDashboardAccessEntries, resolveDashboardAccess, type DashboardAccessRole } from 'wolfstar-database';
+import { hasAccessEntries, resolveAccess, type AccessRole } from 'wolfstar-database';
 
 /**
  * The permission levels a command can require.
@@ -80,7 +80,7 @@ export interface ServerSettingsManager {
  * the settings and the editor of `/commands`. It is the rule wolfstar.rocks applies, in the same order:
  *
  * 1. the owner always may;
- * 2. a dashboard access rule that names the member decides on its own, see `resolveDashboardAccess`: an `allow` lets
+ * 2. a dashboard access rule that names the member decides on its own, see `resolveAccess`: an `allow` lets
  *    in a member without `Manage Server`, a `deny` keeps out an administrator;
  * 3. with no rule, an administrator may (the `rolesAdmin` roles, or `Manage Server` when there are none), unless a
  *    legacy permission node denies them the `settings` command.
@@ -94,12 +94,12 @@ export async function canManageServerSettings(manager: ServerSettingsManager): P
 	const settings = await readSettings(manager.guildId);
 	const entries = { users: settings.permissionsUsers, roles: settings.permissionsRoles };
 	// The roles of the guild are only read when a rule of a role could decide:
-	const roles: DashboardAccessRole[] = hasDashboardAccessEntries(entries.roles)
+	const roles: AccessRole[] = hasAccessEntries(entries.roles)
 		? (await container.gatewayClient.roles.fetchAll(manager.guildId)).map((role) => ({ id: role.id, position: role.position }))
 		: [];
 	// Everybody holds `@everyone`, whose ID is the guild's: a rule or an administrator role can name it.
 	const roleIds = [manager.guildId, ...manager.roleIds];
-	const access = resolveDashboardAccess({ userId: manager.userId, roleIds }, entries, roles);
+	const access = resolveAccess({ userId: manager.userId, roleIds }, entries, roles);
 	if (access !== null) return access === 'allow';
 
 	const held = new Set(roleIds);

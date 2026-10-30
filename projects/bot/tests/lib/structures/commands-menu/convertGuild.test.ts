@@ -2,7 +2,7 @@ import { writeSettingsTransaction } from '#lib/database';
 import { convertGuildCommandRules } from '#lib/structures/commands-menu/convertGuild';
 import { createCommand } from '#mocks/MockInstances';
 import { container } from '@wolfstar/http-framework';
-import { createDashboardAccessEntry, getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
+import { createAccessEntry, getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
 
 vi.mock('#lib/database', async (original) => ({
 	...(await original<typeof import('#lib/database')>()),
@@ -45,7 +45,7 @@ describe('convertGuildCommandRules', () => {
 	});
 
 	test('GIVEN legacy nodes THEN the rules and the two columns are written together, and audited', async () => {
-		const rule = createDashboardAccessEntry(roleId, 'allow');
+		const rule = createAccessEntry(roleId, 'allow');
 		settings.permissionsRoles = [{ id: roleId, allow: [], deny: ['warn'] }, rule];
 
 		const result = await convertGuildCommandRules(guildId, actorId);
@@ -73,7 +73,7 @@ describe('convertGuildCommandRules', () => {
 	});
 
 	test('GIVEN a guild with no legacy node THEN nothing is written', async () => {
-		settings.permissionsUsers = [createDashboardAccessEntry(actorId, 'deny')];
+		settings.permissionsUsers = [createAccessEntry(actorId, 'deny')];
 
 		await expect(convertGuildCommandRules(guildId, actorId)).resolves.toBeNull();
 		expect(written).toEqual([]);

@@ -1,7 +1,7 @@
 import { convertLegacyNodes } from '#lib/structures/commands-menu/conversion';
 import type { CommandRestriction } from '#lib/structures/commands-menu/restrictions';
 import { createCommand } from '#mocks/MockInstances';
-import { createDashboardAccessEntry, type PermissionsNode } from 'wolfstar-database';
+import { createAccessEntry, type PermissionsNode } from 'wolfstar-database';
 
 createCommand('warn', 'Moderation');
 createCommand('ban', 'Moderation');
@@ -100,8 +100,8 @@ describe('convertLegacyNodes', () => {
 	});
 
 	test('GIVEN dashboard access rules THEN they stay as they are', () => {
-		const users = [createDashboardAccessEntry(userId, 'deny')];
-		const roles = [createDashboardAccessEntry(roleId, 'allow')];
+		const users = [createAccessEntry(userId, 'deny')];
+		const roles = [createAccessEntry(roleId, 'allow')];
 
 		expect(convert({ users, roles })).toMatchObject({ users, roles, restrictions: [] });
 	});

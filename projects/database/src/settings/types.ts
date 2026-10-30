@@ -3,7 +3,7 @@ import type { APIGuildMember } from 'discord-api-types/v10';
 import type { Snowflake } from 'discord-api-types/v10';
 import type { Models } from '../index.js';
 import type { StoredGuildData } from './columns.js';
-import type { DashboardAccess } from './dashboardAccess.js';
+import type { Access } from './access.js';
 
 /** A Twemoji or a custom emoji, serialized the way the settings store it. */
 export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
@@ -95,14 +95,14 @@ export interface DashboardAuditEntry {
 
 /**
  * An entry of `permissions.users` or `permissions.roles`: a legacy permission node, the commands a member or a role is
- * allowed or denied, or a dashboard access rule, told apart by its `dashboard` key (see `dashboardAccess.ts`).
+ * allowed or denied, or a dashboard access rule, told apart by its `dashboard` key (see `access.ts`).
  */
 export interface PermissionsNode {
 	allow: readonly Snowflake[];
 	deny: readonly Snowflake[];
 	id: Snowflake;
 	/** Set on a dashboard access rule only, whose `allow` and `deny` are empty. */
-	dashboard?: DashboardAccess;
+	dashboard?: Access;
 }
 
 /**

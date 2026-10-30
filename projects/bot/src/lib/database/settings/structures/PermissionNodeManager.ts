@@ -1,5 +1,5 @@
 import type { Command } from '@wolfstar/http-framework';
-import { isDashboardAccessEntry, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
+import { isAccessEntry, type PermissionsNode, type ReadonlyGuildData } from 'wolfstar-database';
 import { matchAny } from '#lib/database/utils/matchers/Command';
 import { Collection } from '@discordjs/collection';
 import { container, UserError } from '@wolfstar/http-framework';
@@ -26,7 +26,7 @@ export interface PermissionNodeSubject {
  * command, and which the nodes neither run nor change: `canManageServerSettings` reads them.
  */
 function isLegacyNode(entry: PermissionsNode): boolean {
-	return !isDashboardAccessEntry(entry);
+	return !isAccessEntry(entry);
 }
 
 export class PermissionNodeManager {
