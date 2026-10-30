@@ -3136,6 +3136,10 @@ declare module "i18next" {
           moderationTrackKicks: "Track Kicks";
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
           moderationDehoist: "Dehoist Names";
+          messagesModerationDm: "Direct Message the Members";
+          messagesModerationReasonDisplay: "Show the Reason";
+          messagesModerationMessageDisplay: "Answer in the Channel";
+          messagesModeratorNameDisplay: "Show the Moderator";
           permissionsUsers: "User Permissions";
           permissionsRoles: "Role Permissions";
           reportsChannel: "Reports Channel";

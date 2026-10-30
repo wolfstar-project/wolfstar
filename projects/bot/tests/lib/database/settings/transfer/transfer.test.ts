@@ -155,6 +155,10 @@ describe('configuration file', () => {
 				'moderation.track-kicks',
 				'moderation.confirm-recent',
 				'moderation.dehoist',
+				'moderation.direct-message',
+				'moderation.display-reason',
+				'moderation.display-message',
+				'moderation.display-moderator',
 				'reports.anonymous',
 				'reports.notify',
 				'roles.remove-initial'

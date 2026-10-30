@@ -389,6 +389,10 @@ namespace public {
     trackKicks    Boolean @default(false) @map("track_kicks")
     confirmRecentMinutes Int @default(0) @map("confirm_recent_minutes")
     dehoist       Boolean @default(false)
+    directMessage Boolean @default(false) @map("direct_message")
+    displayReason Boolean @default(true) @map("display_reason")
+    displayMessage Boolean @default(true) @map("display_message")
+    displayModerator Boolean @default(true) @map("display_moderator")
     modules       Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
 
     @@control(external)
