@@ -1211,10 +1211,10 @@
 							"automod": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"autopurge": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"commands": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
-							"honeypot": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"logs": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"moderation": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"reports": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"roles": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } }
 						},
 						"relations": {
@@ -1232,10 +1232,10 @@
 								"automod": { "column": "automod" },
 								"autopurge": { "column": "autopurge" },
 								"commands": { "column": "commands" },
-								"honeypot": { "column": "honeypot" },
 								"id": { "column": "id" },
 								"logs": { "column": "logs" },
 								"moderation": { "column": "moderation" },
+								"reports": { "column": "reports" },
 								"roles": { "column": "roles" }
 							},
 							"namespaceId": "public",
@@ -3057,12 +3057,6 @@
 									"nativeType": "bool",
 									"nullable": false
 								},
-								"honeypot": {
-									"codecId": "pg/bool@1",
-									"default": { "kind": "literal", "value": true },
-									"nativeType": "bool",
-									"nullable": false
-								},
 								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
 								"logs": {
 									"codecId": "pg/bool@1",
@@ -3071,6 +3065,12 @@
 									"nullable": false
 								},
 								"moderation": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"reports": {
 									"codecId": "pg/bool@1",
 									"default": { "kind": "literal", "value": true },
 									"nativeType": "bool",
@@ -3290,7 +3290,7 @@
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "5705c33adf24f6f303b2947edf616bbfc85e74ff6479808ae295f7c5eb4b6929",
+		"storageHash": "4e53a2b98e6ec369f4d6c099418afe9a8bd4628b40a1e483497e4c417ed39fb4",
 		"types": {
 			"AuditEventChanges": {
 				"codecId": "typed/json@1",

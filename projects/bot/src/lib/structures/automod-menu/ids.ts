@@ -107,3 +107,8 @@ export function decodeAutoModerationMenuId(content: unknown): AutoModerationMenu
 
 	return { ownerId: decoded.sessionId, verb: verb as AutoModerationMenuVerb, ruleId, section, argument };
 }
+
+/**
+ * The value of the option the select menu of the new rules shows when it is closed, which is no type of rule.
+ */
+export const AutoModerationCreatePromptValue = '::create::';

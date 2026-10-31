@@ -11,6 +11,7 @@ import {
 	type AutoModerationRuleUpdate
 } from '#lib/moderation/automod/rules';
 import {
+	AutoModerationCreatePromptValue,
 	AutoModerationMenuInputId,
 	clearAutoModerationMenuList,
 	decodeAutoModerationMenuId,
@@ -92,6 +93,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'setting':
 				return this.setting(component, guildId, context, action.argument, value);
 			case 'create':
+				if (value === AutoModerationCreatePromptValue) return component.deferUpdate();
 				if (!isAutoModerationRuleType(value)) return fail(getDefaultExpiredReply());
 				return component.showModal(renderAutoModerationCreateModal(context, value));
 			case 'pick':

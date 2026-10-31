@@ -15,6 +15,7 @@
 	"disabledGlobal": "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>",
 	"disabledGuild": "This command has been disabled by an admin in this server!",
 	"disabledModuleModeration": "The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.",
+	"disabledModuleReports": "The reports module is turned off in this server, an admin can turn it back on with `/settings server`.",
 	"restrictedChannel": "This command cannot be used in this channel!",
 	"restrictedRole": "Your roles do not let you use this command in this server!",
 	"moderator": "You need moderator privileges to run `{{command.name}}`!",

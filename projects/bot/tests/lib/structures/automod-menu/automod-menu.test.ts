@@ -3,6 +3,7 @@ import {
 	clearAutoModerationMenuList,
 	decodeAutoModerationMenuId,
 	editAutoModerationMenuList,
+	AutoModerationCreatePromptValue,
 	encodeAutoModerationMenuId,
 	formatAutoModerationMenuDuration,
 	getAutoModerationMenuNumberFields,
@@ -19,6 +20,7 @@ import {
 	type AutoModerationMenuAction,
 	type AutoModerationMenuContext
 } from '#lib/structures/automod-menu';
+import { getEmojiComponent } from '#utils/emojis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ChannelType, ComponentType, MessageFlags } from 'discord-api-types/v10';
@@ -189,10 +191,22 @@ describe('auto-moderation menu', () => {
 			expect(options.filter((option) => !option.emoji).map((option) => option.value)).toEqual([]);
 		});
 
+		test('GIVEN the rule creation menu THEN it shows the plus, and leaves room for every type', () => {
+			const components = flatten(renderAutoModerationRules(context, []).components!);
+			const create = components.find((entry) => decode(String(entry.custom_id))?.verb === 'create')!;
+			const options = create.options as { value: string; default?: boolean; emoji?: { name: string } }[];
+
+			expect(create.placeholder).toBeUndefined();
+			expect(options.filter((option) => option.default)).toMatchObject([
+				{ value: AutoModerationCreatePromptValue, emoji: getEmojiComponent('Add') }
+			]);
+			expect(options.length).toBeLessThanOrEqual(25);
+		});
+
 		test('GIVEN the rule creation menu THEN no type tells numbers, which would read as fixed', () => {
 			const components = flatten(renderAutoModerationRules(context, []).components!);
 			const create = components.find((entry) => decode(String(entry.custom_id))?.verb === 'create')!;
-			const options = create.options as { value: string; description: string }[];
+			const options = (create.options as { value: string; description: string; default?: boolean }[]).filter((option) => !option.default);
 
 			const texts = options.map((option) => {
 				const [, key] = option.description.split(':');

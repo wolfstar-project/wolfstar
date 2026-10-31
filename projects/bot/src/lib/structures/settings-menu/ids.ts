@@ -14,6 +14,7 @@ export const SettingsMenuHandlerName = 'conf';
  * - `refresh`: shows the same page again, with the current values.
  * - `module`: the module select menu, the group is its selected value.
  * - `toggle`: flips a boolean key.
+ * - `moduleToggle`: flips a key the page of the modules lists from another group, then shows that page again.
  * - `edit`: opens the editor of a key, a view or a modal depending on its kind.
  * - `pick`: the select menu of the editor of a key.
  * - `submit`: the modal of the editor of a key.
@@ -30,6 +31,7 @@ export type SettingsMenuVerb =
 	| 'refresh'
 	| 'module'
 	| 'toggle'
+	| 'moduleToggle'
 	| 'edit'
 	| 'pick'
 	| 'submit'

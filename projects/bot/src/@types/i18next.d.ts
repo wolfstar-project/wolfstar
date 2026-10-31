@@ -2815,6 +2815,7 @@ declare module "i18next" {
         disabledGlobal: "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>";
         disabledGuild: "This command has been disabled by an admin in this server!";
         disabledModuleModeration: "The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.";
+        disabledModuleReports: "The reports module is turned off in this server, an admin can turn it back on with `/settings server`.";
         restrictedChannel: "This command cannot be used in this channel!";
         restrictedRole: "Your roles do not let you use this command in this server!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
@@ -3036,6 +3037,7 @@ declare module "i18next" {
         modulesAutodelete: "Whether the messages of the channels set up with `/autodelete` are deleted. When it is off they are kept, and what the channels are set up with stays.";
         modulesAutopurge: "Whether the channels set up with `/autopurge` are purged. When it is off they are not, and each one is purged again at its next time once it is on.";
         modulesAutomessage: "Whether the messages set up with `/automessage` are sent. When it is off they are not, and each one is sent again at its next time once it is on.";
+        modulesReports: "Whether the members can report with `/report` and the Apps menu. When it is off they cannot, the reports already sent can still be handled, and what the reports are set up with stays.";
         modulesHoneypot: "Whether the members who write in the channel of `/honeypot` are caught. When it is off nothing is done to them, the channel is not kept up, and what the honeypot is set up with stays.";
         automodChannel: "The channel where the auto-moderation actions are reported.";
         automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
@@ -3062,6 +3064,7 @@ declare module "i18next" {
           modulesAutodelete: "Auto-delete Module";
           modulesAutopurge: "Auto-purge Module";
           modulesAutomessage: "Auto-message Module";
+          modulesReports: "Reports Module";
           modulesHoneypot: "Honeypot Module";
           automodChannel: "Auto-moderation Channel";
           automodTrackNative: "Track Native Auto-moderation";
@@ -3075,7 +3078,7 @@ declare module "i18next" {
           honeypotWarning: "Warning in the Channel";
           honeypotRandomName: "Random Channel Name (Once a Day)";
           honeypotKeepActive: "Keep the Channel Active";
-          joinGuardEnabled: "Join Guard";
+          joinGuardEnabled: "Join Guard Module";
           joinGuardLogChannel: "Join Guard Logs Channel";
           joinGuardDirectMessage: "Tell Who Is Stopped";
           joinGuardDirectMessageContent: "Direct Message";
@@ -3107,7 +3110,7 @@ declare module "i18next" {
           logsImage: "Image Logs";
           logsRoleCreate: "Role Create Logs";
           logsInvites: "Invite Logs";
-          appealsEnabled: "Appeals";
+          appealsEnabled: "Appeals Module";
           appealsChannel: "Appeals Channel";
           appealsBans: "Appeal Bans";
           appealsMutes: "Appeal Mutes";

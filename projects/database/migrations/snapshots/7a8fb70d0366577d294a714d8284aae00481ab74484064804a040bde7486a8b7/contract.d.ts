@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'5705c33adf24f6f303b2947edf616bbfc85e74ff6479808ae295f7c5eb4b6929'>;
+export type StorageHash = StorageHashBase<'7a8fb70d0366577d294a714d8284aae00481ab74484064804a040bde7486a8b7'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -629,6 +629,7 @@ export type FieldOutputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly logs: CodecTypes['pg/bool@1']['output'];
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
+			readonly reports: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
 		};
 		readonly Report: {
@@ -1057,6 +1058,7 @@ export type FieldInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly logs: CodecTypes['pg/bool@1']['input'];
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
+			readonly reports: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
 		};
 		readonly Report: {
@@ -1485,6 +1487,7 @@ export type StorageColumnTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly logs: CodecTypes['pg/bool@1']['output'];
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
+			readonly reports: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
 		};
 		readonly Report: {
@@ -1913,6 +1916,7 @@ export type StorageColumnInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly logs: CodecTypes['pg/bool@1']['input'];
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
+			readonly reports: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
 		};
 		readonly Report: {
@@ -2400,6 +2404,7 @@ export namespace Models {
 		id: CodecTypes['pg/int8@1']['output'];
 		logs: CodecTypes['pg/bool@1']['output'];
 		moderation: CodecTypes['pg/bool@1']['output'];
+		reports: CodecTypes['pg/bool@1']['output'];
 		roles: CodecTypes['pg/bool@1']['output'];
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
@@ -5264,6 +5269,15 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
 									};
 								};
+								readonly reports: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
 								readonly roles: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
@@ -8093,6 +8107,10 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
+							readonly reports: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly roles: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -8125,6 +8143,7 @@ type ContractBase = Omit<
 								readonly id: { readonly column: 'id' };
 								readonly logs: { readonly column: 'logs' };
 								readonly moderation: { readonly column: 'moderation' };
+								readonly reports: { readonly column: 'reports' };
 								readonly roles: { readonly column: 'roles' };
 							};
 						};

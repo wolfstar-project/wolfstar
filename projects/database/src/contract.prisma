@@ -108,6 +108,7 @@ namespace public {
     autodelete  Boolean @default(true)
     autopurge   Boolean @default(true)
     automessage Boolean @default(true)
+    reports     Boolean @default(true)
     honeypot    Boolean @default(true)
     guild      Guild   @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "Modules_id_fkey")
 

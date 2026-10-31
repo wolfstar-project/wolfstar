@@ -100,6 +100,7 @@ export const Columns = {
 		modulesAutodelete: ['autodelete', 'value'],
 		modulesAutopurge: ['autopurge', 'value'],
 		modulesAutomessage: ['automessage', 'value'],
+		modulesReports: ['reports', 'value'],
 		modulesHoneypot: ['honeypot', 'value']
 	}),
 	...columns('GuildAutoModeration', {
