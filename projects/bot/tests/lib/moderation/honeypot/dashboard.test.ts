@@ -135,6 +135,27 @@ describe('reconcileHoneypotNotices', () => {
 		expect(removeHoneypotNotice).not.toHaveBeenCalled();
 	});
 
+	test('GIVEN a honeypot whose module is off, with no warning THEN none is sent to its channel', async () => {
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: true, action: 'Softban' }]);
+		vi.mocked(readHoneypotNotices).mockResolvedValue(new Map());
+		settings({ modulesHoneypot: false });
+
+		await reconcileHoneypotNotices();
+
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+		expect(removeHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a honeypot whose module is off, with a warning it no longer wants THEN it is taken off', async () => {
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: false, action: 'Softban' }]);
+		vi.mocked(readHoneypotNotices).mockResolvedValue(new Map([[guildId, { channelId, messageId: '1', action: 'Softban' }]]));
+		settings({ modulesHoneypot: false, honeypotWarning: false });
+
+		await reconcileHoneypotNotices();
+
+		expect(refreshHoneypotNotice).toHaveBeenCalledExactlyOnceWith(guildId, channelId, expect.objectContaining({ warning: false }));
+	});
+
 	test('GIVEN warnings out of step after the connection was down THEN each is put in order, the others are left alone', async () => {
 		vi.mocked(fetchHoneypotChannels).mockResolvedValue([
 			{ guildId, channelId, warning: true, action: 'Softban' },

@@ -96,7 +96,8 @@ export function planHoneypotNoticeReconcile(
  * Puts in order the warnings of the honeypots of the guilds of this process, after the connection that hears the
  * dashboard was down: what it changed meanwhile was not heard. A warning that is right is left as it is, so this costs
  * nothing at every start; the others go through {@linkcode followHoneypotSettings}, under the lock and on the settings
- * read then.
+ * read then. While `modules.honeypot` is off nothing is sent to the channel, as in `runHoneypotUpkeep`: a warning that
+ * is out of step waits for the module, and only one the settings no longer want is taken off.
  */
 export async function reconcileHoneypotNotices(): Promise<void> {
 	const [honeypots, notices] = await Promise.all([fetchHoneypotChannels(container.prisma.orm), readHoneypotNotices()]);
@@ -104,11 +105,13 @@ export async function reconcileHoneypotNotices(): Promise<void> {
 
 	for (const guildId of new Set([...byGuild.keys(), ...notices.keys()])) {
 		if (!isOwnGuild(guildId)) continue;
-		if (planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null) === 'Keep') continue;
+		const plan = planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null);
+		if (plan === 'Keep') continue;
 		// The rows of a guild the bot left stay, and every request for its channels would be refused:
 		if (!(await isGuildJoined(guildId))) continue;
 
 		try {
+			if (plan === 'Refresh' && !(await readSettings(guildId)).modulesHoneypot) continue;
 			await followHoneypotSettings(guildId, HoneypotNoticeKeys);
 		} catch (error) {
 			container.logger.error(`[Honeypot] Could not put the warning of the guild ${guildId} in order:`, error);
