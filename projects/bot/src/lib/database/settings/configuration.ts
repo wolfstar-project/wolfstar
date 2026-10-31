@@ -44,6 +44,7 @@ export function getConfiguration() {
 		modulesAutopurge: { type: 'boolean', name: 'modules.autopurge', description: 'settings:modulesAutopurge', default: true },
 		modulesAutomessage: { type: 'boolean', name: 'modules.automessage', description: 'settings:modulesAutomessage', default: true },
 		modulesReports: { type: 'boolean', name: 'modules.reports', description: 'settings:modulesReports', default: true },
+		modulesHoneypot: { type: 'boolean', name: 'modules.honeypot', description: 'settings:modulesHoneypot', default: true },
 
 		// Auto-moderation
 		automodChannel: { type: 'guildTextChannel', name: 'automod.channel', description: 'settings:automodChannel' },

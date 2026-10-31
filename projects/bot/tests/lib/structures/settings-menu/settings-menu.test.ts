@@ -151,8 +151,8 @@ describe('settings menu', () => {
 	});
 
 	describe('page of the modules', () => {
-		// `commands` turns nothing off (`RemovedSettings`), `modules` is this page, and the switch of `honeypot` is #352:
-		const ModulesWithoutSwitch = ['commands', 'modules', 'honeypot'];
+		// `commands` turns nothing off (`RemovedSettings`), and `modules` is this page:
+		const ModulesWithoutSwitch = ['commands', 'modules'];
 		const switches = () => [
 			...getVisibleKeys(resolveSettingGroup(ModulesGroupPath)!).map((key) => key.name),
 			...OwnTableModuleSwitches.map((property) => getConfigurableKeys().get(property)!.name)
