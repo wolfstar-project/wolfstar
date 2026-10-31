@@ -1,0 +1,208 @@
+import { formatEmoji } from '@discordjs/builders';
+import { container } from '@wolfstar/http-framework';
+import { isNullish } from '@sapphire/utilities';
+import type { SerializedEmoji } from 'wolfstar-database';
+
+/**
+ * Matches a formatted custom emoji, exposing the `animated`, `name` and `id` groups, same as `FormattedCustomEmojiWithGroups`
+ * from `@sapphire/discord-utilities`.
+ */
+const FormattedCustomEmojiWithGroups = /(?<animated>a?):(?<name>[^:]+):(?<id>\d{17,20})/;
+
+// Based on the identifiers at https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/72x72/
+export type EncodedTwemoji = `${1 | 2 | 3}${string}` | 'a9' | 'ae' | 'e50a';
+
+// Hacky workaround for codes Discord and Windows use that don't exist on Twemoji's CDN.
+const TwemojiExceptions = {
+	'\u2764\uFE0F': '2764' // (❤️)
+} as Record<string, EncodedTwemoji>;
+
+/**
+ * Transforms the given emoji to a code point string that can be used for the CDN.
+ * @param emoji The emoji to encode
+ * @example
+ * ```typescript
+ * twemoji('😃');
+ * // → '1f603'
+ * ```
+ */
+export function getEncodedTwemoji(emoji: string): EncodedTwemoji {
+	return TwemojiExceptions[emoji] ?? [...emoji].map((point) => point.codePointAt(0)!.toString(16)).join('-');
+}
+
+/**
+ * Gets the CDN URL for a Twemoji.
+ * @param emoji The encoded Twemoji to use.
+ */
+export function getTwemojiUrl<E extends EncodedTwemoji>(emoji: E) {
+	return `https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/72x72/${emoji}.png` as const;
+}
+
+export function getCustomEmojiUrl(id: string, animated: boolean) {
+	return container.rest.cdn.emoji(id, { extension: animated ? 'gif' : 'png', size: 64 });
+}
+
+interface EmojiObjectPartial {
+	name: string | null;
+	id: string | null;
+}
+
+export interface EmojiObject extends EmojiObjectPartial {
+	animated?: boolean;
+}
+
+const customEmojiRegExp = /^[as]\d{17,19}$/;
+const allowedTwemojiRanges: ReadonlyArray<[number, number]> = [
+	[0x1f000, 0x1ffff], // Most emoji blocks including symbols & pictographs
+	[0x2600, 0x27bf], // Misc symbols / dingbats
+	[0x2300, 0x23ff] // Misc technical
+];
+
+function matchesTwemoji(emoji: string) {
+	const codepoints = [...emoji];
+
+	if (codepoints.length !== 1) return false;
+
+	const code = emoji.codePointAt(0);
+	if (code === undefined) return false;
+
+	return allowedTwemojiRanges.some(([start, end]) => code >= start && code <= end);
+}
+
+/**
+ * Checks whether or not the emoji is a valid twemoji.
+ * @param emoji The emoji to validate.
+ */
+export function isValidTwemoji(emoji: string) {
+	if (emoji.includes('%')) return false;
+
+	if (customEmojiRegExp.test(emoji)) return false;
+	if (FormattedCustomEmojiWithGroups.test(emoji)) return false;
+
+	return matchesTwemoji(emoji);
+}
+
+export type ParsedEmoji = { kind: 'custom'; id: string; name: string | null; animated: boolean | null } | { kind: 'unicode'; emoji: string };
+
+/**
+ * Reads the emoji a user wrote: a custom emoji as it is mentioned (`<:name:id>`, `<a:name:id>`) or as it is written
+ * without the angle brackets, its ID alone, or a unicode emoji.
+ *
+ * @remarks The ID alone has neither a name nor whether it is animated, which only Discord knows.
+ *
+ * @param input - What the user wrote.
+ * @returns The emoji, or `null` when it is none of them.
+ */
+export function parseEmoji(input: string): ParsedEmoji | null {
+	const text = input.trim();
+
+	const custom = /^<?(?<animated>a?):(?<name>[^:<>\s]+):(?<id>\d{17,20})>?$/.exec(text);
+	if (custom?.groups) return { kind: 'custom', id: custom.groups.id, name: custom.groups.name, animated: custom.groups.animated === 'a' };
+
+	if (/^\d{17,20}$/.test(text)) return { kind: 'custom', id: text, name: null, animated: null };
+
+	// A variation selector only asks for the picture of the emoji, the twemoji of the character is the same:
+	const unicode = text.replaceAll('\uFE0F', '');
+	return isValidTwemoji(unicode) ? { kind: 'unicode', emoji: text } : null;
+}
+
+export function isValidCustomEmoji(emoji: string) {
+	return FormattedCustomEmojiWithGroups.test(emoji);
+}
+
+/**
+ * Checks whether or not the emoji is a valid serialized twemoji. This method is an alias of {@link isValidTwemoji} with
+ * {@link decodeURIComponent}.
+ * @param emoji The emoji to validate.
+ */
+export function isValidSerializedTwemoji(emoji: string): emoji is SerializedEmoji {
+	if (!emoji.includes('%')) return false;
+
+	try {
+		return matchesTwemoji(decodeURIComponent(emoji));
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Checks whether or not the emoji is a valid serialized custom emoji. Checks whether it starts with either `a` or `s`,
+ * followed by 17 to 19 numeric digits.
+ * @param emoji The emoji to validate.
+ */
+export function isValidSerializedCustomEmoji(emoji: string): emoji is SerializedEmoji {
+	return customEmojiRegExp.test(emoji);
+}
+
+export function isValidSerializedEmoji(emoji: string): emoji is SerializedEmoji {
+	return isSerializedTwemoji(emoji as SerializedEmoji) ? isValidSerializedTwemoji(emoji) : isValidSerializedCustomEmoji(emoji);
+}
+
+/**
+ * Checks whether a serialized emoji is a serialized twemoji.
+ * @param emoji Checks whether or not the serialized emoji is a serialized twemoji.
+ */
+export function isSerializedTwemoji(emoji: SerializedEmoji) {
+	return emoji.includes('%');
+}
+
+/**
+ * Gets the ID of the emoji.
+ * This is the input for URL encoded Twemojis or the ID of the emoji for custom ones
+ */
+export function getEmojiId(emoji: SerializedEmoji): string {
+	return isSerializedTwemoji(emoji) ? emoji : emoji.slice(1);
+}
+
+/**
+ * Formats an emoji so it can be displayed in a Discord message.
+ */
+export function getEmojiTextFormat(emoji: SerializedEmoji): string {
+	return isSerializedTwemoji(emoji) ? decodeURIComponent(emoji) : formatEmoji(emoji.slice(1), emoji.startsWith('a') as true | undefined);
+}
+
+/**
+ * Formats an emoji in the format that we can use to for reactions on Discord messages.
+ */
+export function getEmojiReactionFormat(emoji: SerializedEmoji): string {
+	return isSerializedTwemoji(emoji) ? decodeURIComponent(emoji) : `emoji:${emoji.slice(1)}`;
+}
+
+/**
+ * Formats an emoji in the format that we can store in the database.
+ */
+export function getEmojiString(emoji: EmojiObject): SerializedEmoji {
+	if (emoji.id) return `${emoji.animated ? 'a' : 's'}${emoji.id}` as SerializedEmoji;
+	return encodeURIComponent(emoji.name!) as SerializedEmoji;
+}
+
+/**
+ * Formats an emoji into an {@link EmojiObject}.
+ */
+export function getEmojiObject(emoji: string): EmojiObject | null {
+	if (isValidTwemoji(emoji)) {
+		return {
+			name: emoji,
+			id: null
+		};
+	}
+
+	const emojiProperties = FormattedCustomEmojiWithGroups.exec(emoji)!;
+
+	if (isNullish(emojiProperties?.groups)) return null;
+
+	return {
+		name: emojiProperties.groups.name,
+		id: emojiProperties.groups.id,
+		animated: Boolean(emojiProperties.groups.animated)
+	};
+}
+
+/**
+ * Resolves an emoji either from a database emoji, or a Discord {@link EmojiObject}.
+ */
+export function resolveEmojiId(emoji: EmojiObject | SerializedEmoji): string {
+	if (isNullish(emoji)) return '';
+
+	return typeof emoji === 'string' ? getEmojiId(emoji) : (emoji.id ?? encodeURIComponent(emoji.name!));
+}

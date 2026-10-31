@@ -1,0 +1,775 @@
+[
+	{
+		"id": "createNativeEnumType.JoinGuardCheckpointStatus",
+		"label": "Create enum type \"JoinGuardCheckpointStatus\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "JoinGuardCheckpointStatus"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"JoinGuardCheckpointStatus\"",
+				"sql": "CREATE TYPE \"public\".\"JoinGuardCheckpointStatus\" AS ENUM ('Waiting', 'Verified', 'Kicked', 'Banned', 'Left')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.JoinGuardHardAction",
+		"label": "Create enum type \"JoinGuardHardAction\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "JoinGuardHardAction"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"JoinGuardHardAction\"",
+				"sql": "CREATE TYPE \"public\".\"JoinGuardHardAction\" AS ENUM ('Kick', 'Ban')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.JoinGuardRequestKind",
+		"label": "Create enum type \"JoinGuardRequestKind\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "JoinGuardRequestKind"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"JoinGuardRequestKind\"",
+				"sql": "CREATE TYPE \"public\".\"JoinGuardRequestKind\" AS ENUM ('Pass', 'Verify', 'Kick', 'PostButton')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.JoinGuardResolution",
+		"label": "Create enum type \"JoinGuardResolution\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "JoinGuardResolution"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"JoinGuardResolution\"",
+				"sql": "CREATE TYPE \"public\".\"JoinGuardResolution\" AS ENUM ('Rule', 'Checkpoint', 'Timeout', 'Moderator')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.JoinGuardSharedBanSource",
+		"label": "Create enum type \"JoinGuardSharedBanSource\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "JoinGuardSharedBanSource"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"JoinGuardSharedBanSource\"",
+				"sql": "CREATE TYPE \"public\".\"JoinGuardSharedBanSource\" AS ENUM ('JoinGuard', 'Honeypot')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "table.GuildJoinGuard",
+		"label": "Create table \"GuildJoinGuard\"",
+		"summary": "Creates table \"GuildJoinGuard\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildJoinGuard"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildJoinGuard\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuard\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildJoinGuard\"",
+				"sql": "CREATE TABLE \"public\".\"GuildJoinGuard\" (\n  \"allowed_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"allowed_users\" int8[] DEFAULT '{}' NOT NULL,\n  \"captcha\" bool DEFAULT true NOT NULL,\n  \"checkpoint\" bool DEFAULT false NOT NULL,\n  \"checkpoint_channel_id\" int8,\n  \"checkpoint_message_id\" int8,\n  \"checkpoint_timeout\" int4 DEFAULT 86400 NOT NULL,\n  \"connections\" bool DEFAULT true NOT NULL,\n  \"direct_message\" bool DEFAULT true NOT NULL,\n  \"direct_message_content\" text,\n  \"enabled\" bool DEFAULT false NOT NULL,\n  \"id\" int8 NOT NULL,\n  \"log_channel_id\" int8,\n  \"minimum_trust\" int4 DEFAULT 1 NOT NULL,\n  \"pending_role_id\" int8,\n  \"shared_bans\" bool DEFAULT true NOT NULL,\n  \"verified_role_id\" int8,\n  CONSTRAINT \"GuildJoinGuard_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildJoinGuard\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuard\""]
+			}
+		]
+	},
+	{
+		"id": "table.GuildJoinGuardRule",
+		"label": "Create table \"GuildJoinGuardRule\"",
+		"summary": "Creates table \"GuildJoinGuardRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildJoinGuardRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildJoinGuardRule\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuardRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildJoinGuardRule\"",
+				"sql": "CREATE TABLE \"public\".\"GuildJoinGuardRule\" (\n  \"account_age_max\" int4,\n  \"alert_channel_id\" int8,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"default_avatar\" bool DEFAULT false NOT NULL,\n  \"direct_message\" bool DEFAULT false NOT NULL,\n  \"enabled\" bool DEFAULT true NOT NULL,\n  \"generated_name\" bool DEFAULT false NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"hard_action\" \"JoinGuardHardAction\",\n  \"id\" BIGSERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"name_contains\" text,\n  \"role_id\" int8,\n  \"send_to_checkpoint\" bool DEFAULT false NOT NULL,\n  \"unverified_bot\" bool DEFAULT false NOT NULL,\n  CONSTRAINT \"GuildJoinGuardRule_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildJoinGuardRule\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuardRule\""]
+			}
+		]
+	},
+	{
+		"id": "table.JoinGuardCheckpoint",
+		"label": "Create table \"JoinGuardCheckpoint\"",
+		"summary": "Creates table \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"JoinGuardCheckpoint\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"JoinGuardCheckpoint\"",
+				"sql": "CREATE TABLE \"public\".\"JoinGuardCheckpoint\" (\n  \"account_created_at\" timestamp(3) NOT NULL,\n  \"case_id\" int4,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"default_avatar\" bool NOT NULL,\n  \"expires_at\" timestamp(3),\n  \"generated_name\" bool NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"linked_accounts\" int4 DEFAULT 0 NOT NULL,\n  \"moderator_id\" int8,\n  \"resolution\" \"JoinGuardResolution\",\n  \"resolved_at\" timestamp(3),\n  \"rule_id\" int8,\n  \"rule_name\" text NOT NULL,\n  \"status\" \"JoinGuardCheckpointStatus\" NOT NULL,\n  \"trust\" int4,\n  \"user_id\" int8 NOT NULL,\n  CONSTRAINT \"JoinGuardCheckpoint_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"JoinGuardCheckpoint\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint\""]
+			}
+		]
+	},
+	{
+		"id": "table.JoinGuardRequest",
+		"label": "Create table \"JoinGuardRequest\"",
+		"summary": "Creates table \"JoinGuardRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "JoinGuardRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"JoinGuardRequest\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardRequest\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"JoinGuardRequest\"",
+				"sql": "CREATE TABLE \"public\".\"JoinGuardRequest\" (\n  \"checkpoint_id\" int8,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"error\" text,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"kind\" \"JoinGuardRequestKind\" NOT NULL,\n  \"linked_accounts\" int4,\n  \"moderator_id\" int8,\n  \"processed_at\" timestamp(3),\n  \"reason\" text,\n  \"trust\" int4,\n  \"user_id\" int8,\n  CONSTRAINT \"JoinGuardRequest_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"JoinGuardRequest\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardRequest\""]
+			}
+		]
+	},
+	{
+		"id": "table.JoinGuardSharedBan",
+		"label": "Create table \"JoinGuardSharedBan\"",
+		"summary": "Creates table \"JoinGuardSharedBan\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "JoinGuardSharedBan"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"JoinGuardSharedBan\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardSharedBan\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"JoinGuardSharedBan\"",
+				"sql": "CREATE TABLE \"public\".\"JoinGuardSharedBan\" (\n  \"case_id\" int4 NOT NULL,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"source\" \"JoinGuardSharedBanSource\" NOT NULL,\n  \"user_id\" int8 NOT NULL,\n  CONSTRAINT \"JoinGuardSharedBan_pkey\" PRIMARY KEY (\"guild_id\", \"case_id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"JoinGuardSharedBan\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardSharedBan\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildJoinGuardRule.GuildJoinGuardRule_guild_id_idx",
+		"label": "Create index \"GuildJoinGuardRule_guild_id_idx\" on \"GuildJoinGuardRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildJoinGuardRule_guild_id_idx",
+				"table": "GuildJoinGuardRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildJoinGuardRule_guild_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuardRule_guild_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildJoinGuardRule_guild_id_idx\"",
+				"sql": "CREATE INDEX \"GuildJoinGuardRule_guild_id_idx\" ON \"public\".\"GuildJoinGuardRule\" (\"guild_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildJoinGuardRule_guild_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuardRule_guild_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardCheckpoint.JoinGuardCheckpoint_guild_id_status_created_at_idx",
+		"label": "Create index \"JoinGuardCheckpoint_guild_id_status_created_at_idx\" on \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardCheckpoint_guild_id_status_created_at_idx",
+				"table": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardCheckpoint_guild_id_status_created_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_guild_id_status_created_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardCheckpoint_guild_id_status_created_at_idx\"",
+				"sql": "CREATE INDEX \"JoinGuardCheckpoint_guild_id_status_created_at_idx\" ON \"public\".\"JoinGuardCheckpoint\" (\"guild_id\", \"status\", \"created_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardCheckpoint_guild_id_status_created_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_guild_id_status_created_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardCheckpoint.JoinGuardCheckpoint_guild_id_user_id_idx",
+		"label": "Create index \"JoinGuardCheckpoint_guild_id_user_id_idx\" on \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardCheckpoint_guild_id_user_id_idx",
+				"table": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardCheckpoint_guild_id_user_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_guild_id_user_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardCheckpoint_guild_id_user_id_idx\"",
+				"sql": "CREATE INDEX \"JoinGuardCheckpoint_guild_id_user_id_idx\" ON \"public\".\"JoinGuardCheckpoint\" (\"guild_id\", \"user_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardCheckpoint_guild_id_user_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_guild_id_user_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardCheckpoint.JoinGuardCheckpoint_rule_id_idx",
+		"label": "Create index \"JoinGuardCheckpoint_rule_id_idx\" on \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardCheckpoint_rule_id_idx",
+				"table": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardCheckpoint_rule_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_rule_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardCheckpoint_rule_id_idx\"",
+				"sql": "CREATE INDEX \"JoinGuardCheckpoint_rule_id_idx\" ON \"public\".\"JoinGuardCheckpoint\" (\"rule_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardCheckpoint_rule_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_rule_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardRequest.JoinGuardRequest_guild_id_created_at_idx",
+		"label": "Create index \"JoinGuardRequest_guild_id_created_at_idx\" on \"JoinGuardRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardRequest_guild_id_created_at_idx",
+				"table": "JoinGuardRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardRequest_guild_id_created_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardRequest_guild_id_created_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardRequest_guild_id_created_at_idx\"",
+				"sql": "CREATE INDEX \"JoinGuardRequest_guild_id_created_at_idx\" ON \"public\".\"JoinGuardRequest\" (\"guild_id\", \"created_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardRequest_guild_id_created_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardRequest_guild_id_created_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardSharedBan.JoinGuardSharedBan_user_id_idx",
+		"label": "Create index \"JoinGuardSharedBan_user_id_idx\" on \"JoinGuardSharedBan\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardSharedBan_user_id_idx",
+				"table": "JoinGuardSharedBan"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardSharedBan_user_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardSharedBan_user_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardSharedBan_user_id_idx\"",
+				"sql": "CREATE INDEX \"JoinGuardSharedBan_user_id_idx\" ON \"public\".\"JoinGuardSharedBan\" (\"user_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardSharedBan_user_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardSharedBan_user_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildJoinGuard.GuildJoinGuard_id_fkey",
+		"label": "Add foreign key \"GuildJoinGuard_id_fkey\" on \"GuildJoinGuard\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildJoinGuard_id_fkey",
+				"table": "GuildJoinGuard"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildJoinGuard_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildJoinGuard_id_fkey", "public", "\"public\".\"GuildJoinGuard\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildJoinGuard_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildJoinGuard\"\nADD CONSTRAINT \"GuildJoinGuard_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"Modules\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildJoinGuard_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildJoinGuard_id_fkey", "public", "\"public\".\"GuildJoinGuard\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildJoinGuardRule.GuildJoinGuardRule_guild_id_fkey",
+		"label": "Add foreign key \"GuildJoinGuardRule_guild_id_fkey\" on \"GuildJoinGuardRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildJoinGuardRule_guild_id_fkey",
+				"table": "GuildJoinGuardRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildJoinGuardRule_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildJoinGuardRule_guild_id_fkey", "public", "\"public\".\"GuildJoinGuardRule\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildJoinGuardRule_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildJoinGuardRule\"\nADD CONSTRAINT \"GuildJoinGuardRule_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildJoinGuardRule_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildJoinGuardRule_guild_id_fkey", "public", "\"public\".\"GuildJoinGuardRule\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.JoinGuardCheckpoint.JoinGuardCheckpoint_guild_id_fkey",
+		"label": "Add foreign key \"JoinGuardCheckpoint_guild_id_fkey\" on \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "JoinGuardCheckpoint_guild_id_fkey",
+				"table": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"JoinGuardCheckpoint_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["JoinGuardCheckpoint_guild_id_fkey", "public", "\"public\".\"JoinGuardCheckpoint\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"JoinGuardCheckpoint_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"JoinGuardCheckpoint\"\nADD CONSTRAINT \"JoinGuardCheckpoint_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"JoinGuardCheckpoint_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["JoinGuardCheckpoint_guild_id_fkey", "public", "\"public\".\"JoinGuardCheckpoint\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.JoinGuardCheckpoint.JoinGuardCheckpoint_rule_id_fkey",
+		"label": "Add foreign key \"JoinGuardCheckpoint_rule_id_fkey\" on \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "JoinGuardCheckpoint_rule_id_fkey",
+				"table": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"JoinGuardCheckpoint_rule_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["JoinGuardCheckpoint_rule_id_fkey", "public", "\"public\".\"JoinGuardCheckpoint\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"JoinGuardCheckpoint_rule_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"JoinGuardCheckpoint\"\nADD CONSTRAINT \"JoinGuardCheckpoint_rule_id_fkey\"\nFOREIGN KEY (\"rule_id\")\nREFERENCES \"public\".\"GuildJoinGuardRule\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"JoinGuardCheckpoint_rule_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["JoinGuardCheckpoint_rule_id_fkey", "public", "\"public\".\"JoinGuardCheckpoint\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.JoinGuardRequest.JoinGuardRequest_guild_id_fkey",
+		"label": "Add foreign key \"JoinGuardRequest_guild_id_fkey\" on \"JoinGuardRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "JoinGuardRequest_guild_id_fkey",
+				"table": "JoinGuardRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"JoinGuardRequest_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["JoinGuardRequest_guild_id_fkey", "public", "\"public\".\"JoinGuardRequest\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"JoinGuardRequest_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"JoinGuardRequest\"\nADD CONSTRAINT \"JoinGuardRequest_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"JoinGuardRequest_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["JoinGuardRequest_guild_id_fkey", "public", "\"public\".\"JoinGuardRequest\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildJoinGuardRule.GuildJoinGuardRule_guild_id_name_key",
+		"label": "Create the unique index on the lowercase name of a rule",
+		"summary": "Creates index \"GuildJoinGuardRule_guild_id_name_key\" on \"GuildJoinGuardRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildJoinGuardRule_guild_id_name_key",
+				"table": "GuildJoinGuardRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildJoinGuardRule_guild_id_name_key\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuardRule_guild_id_name_key\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildJoinGuardRule_guild_id_name_key\"",
+				"sql": "CREATE UNIQUE INDEX \"GuildJoinGuardRule_guild_id_name_key\" ON \"public\".\"GuildJoinGuardRule\" (\"guild_id\", lower(\"name\"))",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildJoinGuardRule_guild_id_name_key\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildJoinGuardRule_guild_id_name_key\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardCheckpoint.JoinGuardCheckpoint_guild_id_user_id_waiting_key",
+		"label": "Create the partial unique index on the waiting member of a guild",
+		"summary": "Creates index \"JoinGuardCheckpoint_guild_id_user_id_waiting_key\" on \"JoinGuardCheckpoint\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardCheckpoint_guild_id_user_id_waiting_key",
+				"table": "JoinGuardCheckpoint"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardCheckpoint_guild_id_user_id_waiting_key\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_guild_id_user_id_waiting_key\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardCheckpoint_guild_id_user_id_waiting_key\"",
+				"sql": "CREATE UNIQUE INDEX \"JoinGuardCheckpoint_guild_id_user_id_waiting_key\" ON \"public\".\"JoinGuardCheckpoint\" (\"guild_id\", \"user_id\") WHERE \"status\" = 'Waiting'",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardCheckpoint_guild_id_user_id_waiting_key\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardCheckpoint_guild_id_user_id_waiting_key\""]
+			}
+		]
+	},
+	{
+		"id": "index.JoinGuardRequest.JoinGuardRequest_created_at_pending_idx",
+		"label": "Create the partial index on the requests that are not handled yet",
+		"summary": "Creates index \"JoinGuardRequest_created_at_pending_idx\" on \"JoinGuardRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "JoinGuardRequest_created_at_pending_idx",
+				"table": "JoinGuardRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"JoinGuardRequest_created_at_pending_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardRequest_created_at_pending_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"JoinGuardRequest_created_at_pending_idx\"",
+				"sql": "CREATE INDEX \"JoinGuardRequest_created_at_pending_idx\" ON \"public\".\"JoinGuardRequest\" (\"created_at\") WHERE \"processed_at\" IS NULL",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"JoinGuardRequest_created_at_pending_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"JoinGuardRequest_created_at_pending_idx\""]
+			}
+		]
+	}
+]

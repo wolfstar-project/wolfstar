@@ -1,0 +1,313 @@
+[
+	{
+		"id": "table.GuildAutoDelete",
+		"label": "Create table \"GuildAutoDelete\"",
+		"summary": "Creates table \"GuildAutoDelete\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoDelete"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoDelete\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoDelete\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildAutoDelete\"",
+				"sql": "CREATE TABLE \"public\".\"GuildAutoDelete\" (\n  \"allow\" text[] DEFAULT '{}' NOT NULL,\n  \"bots\" bool DEFAULT false NOT NULL,\n  \"channel_id\" int8 NOT NULL,\n  \"delay\" int4 DEFAULT 0 NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  CONSTRAINT \"GuildAutoDelete_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoDelete\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoDelete\""]
+			}
+		]
+	},
+	{
+		"id": "table.GuildAutoPurge",
+		"label": "Create table \"GuildAutoPurge\"",
+		"summary": "Creates table \"GuildAutoPurge\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoPurge"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoPurge\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoPurge\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildAutoPurge\"",
+				"sql": "CREATE TABLE \"public\".\"GuildAutoPurge\" (\n  \"channel_id\" int8 NOT NULL,\n  \"filter\" text DEFAULT 'any' NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"interval\" int4 NOT NULL,\n  \"next_run_at\" timestamp(3) NOT NULL,\n  \"value\" text,\n  CONSTRAINT \"GuildAutoPurge_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoPurge\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoPurge\""]
+			}
+		]
+	},
+	{
+		"id": "unique.GuildAutoDelete.GuildAutoDelete_channel_id_key",
+		"label": "Add unique constraint on \"GuildAutoDelete\" (channel_id)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "GuildAutoDelete_channel_id_key",
+				"table": "GuildAutoDelete"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildAutoDelete_channel_id_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoDelete_channel_id_key", "public", "\"public\".\"GuildAutoDelete\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"GuildAutoDelete_channel_id_key\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoDelete\" ADD CONSTRAINT \"GuildAutoDelete_channel_id_key\" UNIQUE (\"channel_id\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildAutoDelete_channel_id_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoDelete_channel_id_key", "public", "\"public\".\"GuildAutoDelete\""]
+			}
+		]
+	},
+	{
+		"id": "unique.GuildAutoPurge.GuildAutoPurge_channel_id_key",
+		"label": "Add unique constraint on \"GuildAutoPurge\" (channel_id)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "GuildAutoPurge_channel_id_key",
+				"table": "GuildAutoPurge"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildAutoPurge_channel_id_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoPurge_channel_id_key", "public", "\"public\".\"GuildAutoPurge\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"GuildAutoPurge_channel_id_key\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoPurge\" ADD CONSTRAINT \"GuildAutoPurge_channel_id_key\" UNIQUE (\"channel_id\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildAutoPurge_channel_id_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoPurge_channel_id_key", "public", "\"public\".\"GuildAutoPurge\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildAutoDelete.GuildAutoDelete_guild_id_idx",
+		"label": "Create index \"GuildAutoDelete_guild_id_idx\" on \"GuildAutoDelete\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoDelete_guild_id_idx",
+				"table": "GuildAutoDelete"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoDelete_guild_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoDelete_guild_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildAutoDelete_guild_id_idx\"",
+				"sql": "CREATE INDEX \"GuildAutoDelete_guild_id_idx\" ON \"public\".\"GuildAutoDelete\" (\"guild_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoDelete_guild_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoDelete_guild_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildAutoPurge.GuildAutoPurge_guild_id_idx",
+		"label": "Create index \"GuildAutoPurge_guild_id_idx\" on \"GuildAutoPurge\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoPurge_guild_id_idx",
+				"table": "GuildAutoPurge"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoPurge_guild_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoPurge_guild_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildAutoPurge_guild_id_idx\"",
+				"sql": "CREATE INDEX \"GuildAutoPurge_guild_id_idx\" ON \"public\".\"GuildAutoPurge\" (\"guild_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoPurge_guild_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoPurge_guild_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildAutoPurge.GuildAutoPurge_next_run_at_idx",
+		"label": "Create index \"GuildAutoPurge_next_run_at_idx\" on \"GuildAutoPurge\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoPurge_next_run_at_idx",
+				"table": "GuildAutoPurge"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoPurge_next_run_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoPurge_next_run_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildAutoPurge_next_run_at_idx\"",
+				"sql": "CREATE INDEX \"GuildAutoPurge_next_run_at_idx\" ON \"public\".\"GuildAutoPurge\" (\"next_run_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoPurge_next_run_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoPurge_next_run_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildAutoDelete.GuildAutoDelete_guild_id_fkey",
+		"label": "Add foreign key \"GuildAutoDelete_guild_id_fkey\" on \"GuildAutoDelete\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildAutoDelete_guild_id_fkey",
+				"table": "GuildAutoDelete"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildAutoDelete_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoDelete_guild_id_fkey", "public", "\"public\".\"GuildAutoDelete\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildAutoDelete_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoDelete\"\nADD CONSTRAINT \"GuildAutoDelete_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildAutoDelete_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoDelete_guild_id_fkey", "public", "\"public\".\"GuildAutoDelete\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildAutoPurge.GuildAutoPurge_guild_id_fkey",
+		"label": "Add foreign key \"GuildAutoPurge_guild_id_fkey\" on \"GuildAutoPurge\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildAutoPurge_guild_id_fkey",
+				"table": "GuildAutoPurge"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildAutoPurge_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoPurge_guild_id_fkey", "public", "\"public\".\"GuildAutoPurge\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildAutoPurge_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoPurge\"\nADD CONSTRAINT \"GuildAutoPurge_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildAutoPurge_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoPurge_guild_id_fkey", "public", "\"public\".\"GuildAutoPurge\""]
+			}
+		]
+	}
+]

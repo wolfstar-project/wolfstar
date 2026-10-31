@@ -1,0 +1,89 @@
+[
+	{
+		"id": "column.Modules.autodelete",
+		"label": "Add the switch of the module of the automatic deletions",
+		"summary": "Adds column \"autodelete\" to \"Modules\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Modules"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, on for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"Modules\" ADD COLUMN IF NOT EXISTS \"autodelete\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"autodelete\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Modules' AND column_name = 'autodelete') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.Modules.autopurge",
+		"label": "Add the switch of the module of the automatic purges",
+		"summary": "Adds column \"autopurge\" to \"Modules\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Modules"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, on for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"Modules\" ADD COLUMN IF NOT EXISTS \"autopurge\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"autopurge\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Modules' AND column_name = 'autopurge') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.Modules.automessage",
+		"label": "Add the switch of the module of the automatic messages",
+		"summary": "Adds column \"automessage\" to \"Modules\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Modules"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, on for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"Modules\" ADD COLUMN IF NOT EXISTS \"automessage\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"automessage\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Modules' AND column_name = 'automessage') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

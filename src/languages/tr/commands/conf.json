@@ -1,8 +1,0 @@
-{
-	"getNoExt": "**{{key}}** anahtarı mevcut görünmüyor.",
-	"get": "**{{key}}** anahtarının değeri: `{{value}}`",
-	"resetSuccess": "**{{key}}** anahtarı şuna sıfırlandı: `{{value}}`",
-	"nochange": "**{{key}}** değeri zaten buydu.",
-	"serverDescription": "Sunucuların ayarlarını düzenleyin.",
-	"settingNotSet": "Ayarlanmamış"
-}
