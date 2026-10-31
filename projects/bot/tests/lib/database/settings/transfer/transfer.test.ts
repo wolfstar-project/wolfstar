@@ -125,6 +125,7 @@ describe('configuration file', () => {
 				'modules.autodelete',
 				'modules.autopurge',
 				'modules.automessage',
+				'modules.reports',
 				'automod.track-native',
 				'commands.disabled',
 				'honeypot.action',

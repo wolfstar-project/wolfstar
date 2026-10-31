@@ -20,7 +20,9 @@ import {
 	getSettingMaximumValues,
 	getSettingTitle,
 	getVisibleGroups,
+	getOwnTableModuleSwitches,
 	getVisibleKeys,
+	ModulesGroupPath,
 	MaximumSelectValues
 } from '#lib/structures/settings-menu/values';
 import { chatInputApplicationCommandMention, inlineCode, time, TimestampStyles } from '@discordjs/formatters';
@@ -122,7 +124,11 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 	const isRoot = group.parent === null;
 
 	// The groups of the root are the modules, which the select menu lists, so its page only holds its own keys:
-	const entries: (SchemaGroup | SchemaKey)[] = [...(isRoot ? [] : getVisibleGroups(group)), ...getVisibleKeys(group)];
+	const entries: (SchemaGroup | SchemaKey)[] = [
+		...(isRoot ? [] : getVisibleGroups(group)),
+		...getVisibleKeys(group),
+		...(path === ModulesGroupPath ? getOwnTableModuleSwitches() : [])
+	];
 	const pages = Math.max(1, Math.ceil(entries.length / EntriesPerPage));
 	const current = Math.min(page, pages - 1);
 	const id = (verb: SettingsMenuVerb, target: string, targetPage = current) =>
@@ -146,7 +152,7 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 		body.push(
 			section(
 				`**${getSettingKeyTitle(t, entry)}${getSettingExperimentalNote(entry) === null ? '' : ` ${Emojis.Experimental}`}**\n${displaySettingValue(t, entry, context.settings)}`,
-				renderKeyButton(context, entry, current)
+				renderKeyButton(context, entry, current, entry.parent === group ? 'toggle' : 'moduleToggle')
 			)
 		);
 	}
@@ -438,13 +444,18 @@ function renderHeader(context: SettingsMenuContext, group: SchemaGroup, refreshI
  */
 export const RootModuleValue = '::root::';
 
-function renderKeyButton(context: SettingsMenuContext, key: SchemaKey, page: number): APIButtonComponentWithCustomId {
+function renderKeyButton(
+	context: SettingsMenuContext,
+	key: SchemaKey,
+	page: number,
+	toggle: Extract<SettingsMenuVerb, 'toggle' | 'moduleToggle'>
+): APIButtonComponentWithCustomId {
 	const id = (verb: SettingsMenuVerb) => encodeSettingsMenuId({ ownerId: context.ownerId, verb, target: key.property, page });
 
 	switch (getSettingKind(key)) {
 		case 'boolean': {
 			const enabled = context.settings[key.property] === true;
-			return button(id('toggle'), {
+			return button(id(toggle), {
 				// The checkbox says it all, the button has no label:
 				emoji: getEmojiComponent(enabled ? 'Checked' : 'Unchecked'),
 				style: ButtonStyle.Secondary

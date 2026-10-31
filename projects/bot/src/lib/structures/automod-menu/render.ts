@@ -21,6 +21,7 @@ import {
 } from '#lib/structures/automod-menu/actions';
 import {
 	AutoModerationMenuSections,
+	AutoModerationCreatePromptValue,
 	encodeAutoModerationMenuId,
 	type AutoModerationMenuAction,
 	type AutoModerationMenuSection,
@@ -175,20 +176,28 @@ export function renderAutoModerationRules(
 		);
 	}
 
-	// The type of the rule to create is picked here, and its name is asked for in a modal:
+	// The type of the rule to create is picked here, and its name is asked for in a modal. A placeholder is plain text, so
+	// what the closed menu shows is an option selected by default, the only way to show an application emoji there:
 	if (rules.length < MaximumAutoModerationRules) {
 		body.push(
 			row([
 				{
 					type: ComponentType.StringSelect,
 					custom_id: encodeAutoModerationMenuId({ ownerId, verb: 'create' }),
-					placeholder: cutText(`➕ ${translateKey(t, `${Root}:menuCreatePlaceholder`)}`, 150),
-					options: AutoModerationRuleTypes.map((type) => ({
-						label: cutText(translateKey(t, AutoModerationRuleTypeKeys[type]), 100),
-						description: cutText(translateKey(t, AutoModerationRuleTypeSummaryKeys[type]), 100),
-						value: type,
-						emoji: getEmojiComponent(AutoModerationRuleEmojis[type])
-					}))
+					options: [
+						{
+							label: cutText(translateKey(t, `${Root}:menuCreatePlaceholder`), 100),
+							value: AutoModerationCreatePromptValue,
+							emoji: getEmojiComponent('Add'),
+							default: true
+						},
+						...AutoModerationRuleTypes.map((type) => ({
+							label: cutText(translateKey(t, AutoModerationRuleTypeKeys[type]), 100),
+							description: cutText(translateKey(t, AutoModerationRuleTypeSummaryKeys[type]), 100),
+							value: type,
+							emoji: getEmojiComponent(AutoModerationRuleEmojis[type])
+						}))
+					]
 				}
 			])
 		);
