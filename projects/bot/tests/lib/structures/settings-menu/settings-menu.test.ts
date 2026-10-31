@@ -12,6 +12,8 @@ import {
 	getSettingKind,
 	getVisibleGroups,
 	getVisibleKeys,
+	ModulesGroupPath,
+	OwnTableModuleSwitches,
 	parseSettingInput,
 	renderSettingsEditor,
 	renderSettingsGroup,
@@ -145,6 +147,46 @@ describe('settings menu', () => {
 			expect(getVisibleGroups(root).map((group) => group.key)).not.toContain('no-mention-spam');
 			expect(getVisibleKeys(automod).map((key) => key.name)).toEqual(['automod.channel', 'automod.track-native']);
 			expect(getVisibleGroups(automod)).toEqual([]);
+		});
+	});
+
+	describe('page of the modules', () => {
+		// `commands` turns nothing off (`RemovedSettings`), `modules` is this page, and the switch of `honeypot` is #352:
+		const ModulesWithoutSwitch = ['commands', 'modules', 'honeypot'];
+		const switches = () => [
+			...getVisibleKeys(resolveSettingGroup(ModulesGroupPath)!).map((key) => key.name),
+			...OwnTableModuleSwitches.map((property) => getConfigurableKeys().get(property)!.name)
+		];
+
+		test('GIVEN a module of the select menu THEN the page of the modules has its switch', () => {
+			// A new module fails here until it has one: a flag of `Modules`, or an entry of `OwnTableModuleSwitches`.
+			const missing = getVisibleGroups(getConfigurableGroups())
+				.map((group) => group.key)
+				.filter((module) => !ModulesWithoutSwitch.includes(module))
+				.filter((module) => !switches().includes(`modules.${module}`) && !switches().includes(`${module}.enabled`));
+
+			expect(missing).toEqual([]);
+		});
+
+		test('GIVEN the switches of the modules THEN each is a boolean', () => {
+			for (const property of OwnTableModuleSwitches) expect(getSettingKind(getConfigurableKeys().get(property)!)).toBe('boolean');
+		});
+
+		test('GIVEN the page of the modules THEN a switch of a table of its own stays on it, and a flag toggles as any key', () => {
+			const group = resolveSettingGroup(ModulesGroupPath)!;
+			const pages = [0, 1].flatMap((page) => collectCustomIds(renderSettingsGroup(createContext(), group, page).components!));
+			const actions = pages.map((customId) => decodeSettingsMenuId(customId.split('.').slice(1))).filter((action) => action !== null);
+
+			expect(actions).toContainEqual(expect.objectContaining({ verb: 'moduleToggle', target: 'appealsEnabled' }));
+			expect(actions).toContainEqual(expect.objectContaining({ verb: 'moduleToggle', target: 'joinGuardEnabled' }));
+			expect(actions).toContainEqual(expect.objectContaining({ verb: 'toggle', target: 'modulesReports' }));
+		});
+
+		test('GIVEN the page of a module with a table of its own THEN its switch toggles as any key', () => {
+			const ids = collectCustomIds(renderSettingsGroup(createContext(), resolveSettingGroup('appeals')!, 0).components!);
+			const actions = ids.map((customId) => decodeSettingsMenuId(customId.split('.').slice(1))).filter((action) => action !== null);
+
+			expect(actions).toContainEqual(expect.objectContaining({ verb: 'toggle', target: 'appealsEnabled' }));
 		});
 	});
 

@@ -2,13 +2,32 @@ import { Emojis } from '#utils/emojis';
 import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelTypes';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import { getConfigurableGroups, getSettingName, isSchemaGroup, type Serializer } from '#lib/database';
+import { getConfigurableGroups, getConfigurableKeys, getSettingName, isSchemaGroup, type SchemaDataKey, type Serializer } from '#lib/database';
 import { MessageUpdateStyles, type ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { ChannelType } from 'discord-api-types/v10';
+
+/**
+ * The path of the group of the switches of the modules, the page of the menu that lists every module.
+ */
+export const ModulesGroupPath = 'modules';
+
+/**
+ * The switches of the modules that have a table of their own, not a flag of `Modules`. The page of the modules lists
+ * them after the flags, as the dashboard does.
+ */
+export const OwnTableModuleSwitches = ['appealsEnabled', 'joinGuardEnabled'] as const satisfies readonly SchemaDataKey[];
+
+/**
+ * The keys of {@linkcode OwnTableModuleSwitches}.
+ */
+export function getOwnTableModuleSwitches(): SchemaKey[] {
+	const keys = getConfigurableKeys();
+	return OwnTableModuleSwitches.map((property) => keys.get(property)!);
+}
 
 /**
  * How a key is displayed and edited:

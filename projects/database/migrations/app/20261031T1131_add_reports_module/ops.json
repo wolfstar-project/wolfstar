@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.Modules.reports",
+		"label": "Add the switch of the module of the reports",
+		"summary": "Adds column \"reports\" to \"Modules\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Modules"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, on for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"Modules\" ADD COLUMN IF NOT EXISTS \"reports\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"reports\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Modules' AND column_name = 'reports') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

@@ -30,6 +30,7 @@ import {
 	claimSettingsExpiredNotice,
 	renderSettingsExpired,
 	renderUserSettings,
+	ModulesGroupPath,
 	resolveSettingGroup,
 	type SettingsMenuAction
 } from '#lib/structures/settings-menu';
@@ -125,6 +126,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		switch (action.verb) {
 			case 'toggle':
 				return this.write(interaction, guildId, action, key, (settings) => !settings[key.property]);
+			case 'moduleToggle':
+				return this.write(interaction, guildId, action, key, (settings) => !settings[key.property], resolveSettingGroup(ModulesGroupPath));
 			case 'reset':
 				return this.write(interaction, guildId, action, key, () => key.default);
 			case 'edit':
@@ -231,7 +234,8 @@ export class UserInteractionHandler extends InteractionHandler {
 		guildId: Snowflake,
 		action: SettingsMenuAction,
 		key: SchemaKey,
-		getValue: (settings: ReadonlyGuildData) => unknown
+		getValue: (settings: ReadonlyGuildData) => unknown,
+		group?: SchemaGroup | null
 	) {
 		return this.commit(
 			interaction,
@@ -239,7 +243,8 @@ export class UserInteractionHandler extends InteractionHandler {
 			action,
 			key,
 			(settings) => ({ [key.property]: getValue(settings) }),
-			createTranslator(getSupportedUserLanguageT(interaction))
+			createTranslator(getSupportedUserLanguageT(interaction)),
+			group
 		);
 	}
 
@@ -253,9 +258,10 @@ export class UserInteractionHandler extends InteractionHandler {
 		action: SettingsMenuAction,
 		key: SchemaKey,
 		getData: (settings: ReadonlyGuildData) => Partial<ReadonlyGuildData>,
-		t: Translator
+		t: Translator,
+		shownGroup?: SchemaGroup | null
 	) {
-		const group = this.getGroup(key);
+		const group = shownGroup ?? this.getGroup(key);
 		if (!isHoneypotSettingsWrite([key.property])) {
 			await writeSettings(guildId, getData, interaction.user.id);
 			return interaction.update(renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), group, action.page));

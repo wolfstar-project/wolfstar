@@ -43,6 +43,7 @@ export function getConfiguration() {
 		modulesAutodelete: { type: 'boolean', name: 'modules.autodelete', description: 'settings:modulesAutodelete', default: true },
 		modulesAutopurge: { type: 'boolean', name: 'modules.autopurge', description: 'settings:modulesAutopurge', default: true },
 		modulesAutomessage: { type: 'boolean', name: 'modules.automessage', description: 'settings:modulesAutomessage', default: true },
+		modulesReports: { type: 'boolean', name: 'modules.reports', description: 'settings:modulesReports', default: true },
 
 		// Auto-moderation
 		automodChannel: { type: 'guildTextChannel', name: 'automod.channel', description: 'settings:automodChannel' },

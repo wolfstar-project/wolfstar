@@ -25,6 +25,8 @@ export async function fetchGuildTranslator(guildId: Snowflake): Promise<Translat
  */
 export async function getReportDenial(t: Translator, guildId: Snowflake, reporterId: Snowflake, targetId: Snowflake): Promise<string | null> {
 	const settings = await readSettings(guildId);
+	// `/report` is denied before it asks anything, this is for the form that was open when the module was turned off:
+	if (!settings.modulesReports) return t('preconditions:disabledModuleReports');
 	if (settings.reportsChannel === null) return t('commands/report:notConfigured');
 	if (settings.reportsBlockedUsers.includes(reporterId)) return t('commands/report:blocked');
 	if (targetId === reporterId) return t('commands/report:targetSelf');

@@ -1,6 +1,6 @@
 import { readSettings } from '#lib/database';
 import { findDisabledBy, ProtectedCommands } from '#lib/structures/commands-menu/disabled';
-import { isCommandOfDisabledModule } from '#lib/structures/commands/modules';
+import { getDisabledModuleDenial } from '#lib/structures/commands/modules';
 import {
 	findMatchingRestrictions,
 	getCommandRulesDenial,
@@ -24,7 +24,7 @@ interface CommandUse {
 
 /**
  * Denies the commands a server disabled with `commands.disabled`, the ones of a module it turned off (`modules.*`, see
- * `ModerationModuleCommands`), and the ones it restricted to some channels or roles where or for whom they are not
+ * `getDisabledModuleDenial`), and the ones it restricted to some channels or roles where or for whom they are not
  * allowed, which `/commands` edits.
  *
  * @remarks It is global, so it runs before every command. The commands that edit the settings are never denied, see
@@ -50,7 +50,8 @@ export class UserPrecondition extends AllFlowsPrecondition {
 
 		const settings = await readSettings(guildId);
 		if (findDisabledBy(settings.commandsDisabled, command) !== null) return this.error({ identifier: 'preconditions:disabledGuild' });
-		if (isCommandOfDisabledModule(settings, command.name)) return this.error({ identifier: 'preconditions:disabledModuleModeration' });
+		const moduleDenial = getDisabledModuleDenial(settings, command.name);
+		if (moduleDenial !== null) return this.error({ identifier: moduleDenial });
 
 		const matching = findMatchingRestrictions(readCommandRestrictions(settings.commandsRestrictions, guildId), command);
 		if (matching.length === 0 || !member) return this.ok();

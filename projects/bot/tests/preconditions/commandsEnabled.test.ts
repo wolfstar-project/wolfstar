@@ -68,6 +68,15 @@ describe('commandsEnabled precondition', () => {
 		expect(await check(otherCommands)).toEqual({ reasons: null, report: null, settings: null });
 	});
 
+	test('GIVEN modules.reports off THEN /report is denied with preconditions:disabledModuleReports, and /reports is not', async () => {
+		vi.mocked(readSettings).mockResolvedValue({ ...getDefaultGuildSettings()!, id: guild.id, modulesReports: false } as ReadonlyGuildData);
+
+		expect(await check([createCommand('report', 'Moderation'), createCommand('reports', 'Moderation')])).toEqual({
+			report: 'preconditions:disabledModuleReports',
+			reports: null
+		});
+	});
+
 	test('GIVEN modules.moderation on THEN the commands of the module run', async () => {
 		mockSettings(true);
 
