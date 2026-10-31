@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'9286a43801b733d0730e1935ea8cc73a9a908e061fa77132baae20a0cf2e1fbc'>;
+export type StorageHash = StorageHashBase<'86a434c6928441364a2ed8374ee67825f4a7c1ddbf971e17549ce2484d26edd3'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -331,7 +331,7 @@ export type FieldOutputTypes = {
 			readonly escalation: PrismaJson.AutoModerationRuleEscalation;
 			readonly escalationDuration: CodecTypes['pg/int4@1']['output'];
 			readonly guildId: CodecTypes['pg/int8@1']['output'];
-			readonly hardAction: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly hardAction: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly hardActionDuration: CodecTypes['pg/int4@1']['output'] | null;
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
@@ -362,7 +362,8 @@ export type FieldOutputTypes = {
 				| 'Spoilers'
 				| 'MaskedLinks'
 				| 'StickersCooldown'
-				| 'Polls';
+				| 'Polls'
+				| 'MessageDuplicates';
 		};
 		readonly GuildAutoPurge: {
 			readonly channelId: CodecTypes['pg/int8@1']['output'];
@@ -471,6 +472,10 @@ export type FieldOutputTypes = {
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
+			readonly directMessage: CodecTypes['pg/bool@1']['output'];
+			readonly displayMessage: CodecTypes['pg/bool@1']['output'];
+			readonly displayModerator: CodecTypes['pg/bool@1']['output'];
+			readonly displayReason: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly trackBans: CodecTypes['pg/bool@1']['output'];
 			readonly trackKicks: CodecTypes['pg/bool@1']['output'];
@@ -522,7 +527,7 @@ export type FieldOutputTypes = {
 			readonly uniqueRoleSets: PrismaJson.UniqueRoleSetEntries;
 		};
 		readonly GuildWarnThreshold: {
-			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly count: CodecTypes['pg/int4@1']['output'];
 			readonly duration: CodecTypes['pg/int4@1']['output'] | null;
 			readonly guildId: CodecTypes['pg/int8@1']['output'];
@@ -615,7 +620,6 @@ export type FieldOutputTypes = {
 			readonly automod: CodecTypes['pg/bool@1']['output'];
 			readonly autopurge: CodecTypes['pg/bool@1']['output'];
 			readonly commands: CodecTypes['pg/bool@1']['output'];
-			readonly honeypot: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly logs: CodecTypes['pg/bool@1']['output'];
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
@@ -749,7 +753,7 @@ export type FieldInputTypes = {
 			readonly escalation: CodecTypes['typed/json@1']['input'];
 			readonly escalationDuration: CodecTypes['pg/int4@1']['input'];
 			readonly guildId: CodecTypes['pg/int8@1']['input'];
-			readonly hardAction: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly hardAction: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly hardActionDuration: CodecTypes['pg/int4@1']['input'] | null;
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
@@ -780,7 +784,8 @@ export type FieldInputTypes = {
 				| 'Spoilers'
 				| 'MaskedLinks'
 				| 'StickersCooldown'
-				| 'Polls';
+				| 'Polls'
+				| 'MessageDuplicates';
 		};
 		readonly GuildAutoPurge: {
 			readonly channelId: CodecTypes['pg/int8@1']['input'];
@@ -889,6 +894,10 @@ export type FieldInputTypes = {
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
+			readonly directMessage: CodecTypes['pg/bool@1']['input'];
+			readonly displayMessage: CodecTypes['pg/bool@1']['input'];
+			readonly displayModerator: CodecTypes['pg/bool@1']['input'];
+			readonly displayReason: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly trackBans: CodecTypes['pg/bool@1']['input'];
 			readonly trackKicks: CodecTypes['pg/bool@1']['input'];
@@ -940,7 +949,7 @@ export type FieldInputTypes = {
 			readonly uniqueRoleSets: CodecTypes['typed/json@1']['input'];
 		};
 		readonly GuildWarnThreshold: {
-			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly count: CodecTypes['pg/int4@1']['input'];
 			readonly duration: CodecTypes['pg/int4@1']['input'] | null;
 			readonly guildId: CodecTypes['pg/int8@1']['input'];
@@ -1033,7 +1042,6 @@ export type FieldInputTypes = {
 			readonly automod: CodecTypes['pg/bool@1']['input'];
 			readonly autopurge: CodecTypes['pg/bool@1']['input'];
 			readonly commands: CodecTypes['pg/bool@1']['input'];
-			readonly honeypot: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly logs: CodecTypes['pg/bool@1']['input'];
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
@@ -1167,7 +1175,7 @@ export type StorageColumnTypes = {
 			readonly escalation: PrismaJson.AutoModerationRuleEscalation;
 			readonly escalation_duration: CodecTypes['pg/int4@1']['output'];
 			readonly guild_id: CodecTypes['pg/int8@1']['output'];
-			readonly hard_action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly hard_action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly hard_action_duration: CodecTypes['pg/int4@1']['output'] | null;
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly ignored_channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
@@ -1198,7 +1206,8 @@ export type StorageColumnTypes = {
 				| 'Spoilers'
 				| 'MaskedLinks'
 				| 'StickersCooldown'
-				| 'Polls';
+				| 'Polls'
+				| 'MessageDuplicates';
 		};
 		readonly GuildAutoPurge: {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'];
@@ -1307,6 +1316,10 @@ export type StorageColumnTypes = {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
+			readonly direct_message: CodecTypes['pg/bool@1']['output'];
+			readonly display_message: CodecTypes['pg/bool@1']['output'];
+			readonly display_moderator: CodecTypes['pg/bool@1']['output'];
+			readonly display_reason: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly track_bans: CodecTypes['pg/bool@1']['output'];
 			readonly track_kicks: CodecTypes['pg/bool@1']['output'];
@@ -1358,7 +1371,7 @@ export type StorageColumnTypes = {
 			readonly unique_role_sets: PrismaJson.UniqueRoleSetEntries;
 		};
 		readonly GuildWarnThreshold: {
-			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly count: CodecTypes['pg/int4@1']['output'];
 			readonly duration: CodecTypes['pg/int4@1']['output'] | null;
 			readonly guild_id: CodecTypes['pg/int8@1']['output'];
@@ -1451,7 +1464,6 @@ export type StorageColumnTypes = {
 			readonly automod: CodecTypes['pg/bool@1']['output'];
 			readonly autopurge: CodecTypes['pg/bool@1']['output'];
 			readonly commands: CodecTypes['pg/bool@1']['output'];
-			readonly honeypot: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly logs: CodecTypes['pg/bool@1']['output'];
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
@@ -1585,7 +1597,7 @@ export type StorageColumnInputTypes = {
 			readonly escalation: CodecTypes['typed/json@1']['input'];
 			readonly escalation_duration: CodecTypes['pg/int4@1']['input'];
 			readonly guild_id: CodecTypes['pg/int8@1']['input'];
-			readonly hard_action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly hard_action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly hard_action_duration: CodecTypes['pg/int4@1']['input'] | null;
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly ignored_channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
@@ -1616,7 +1628,8 @@ export type StorageColumnInputTypes = {
 				| 'Spoilers'
 				| 'MaskedLinks'
 				| 'StickersCooldown'
-				| 'Polls';
+				| 'Polls'
+				| 'MessageDuplicates';
 		};
 		readonly GuildAutoPurge: {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'];
@@ -1725,6 +1738,10 @@ export type StorageColumnInputTypes = {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
+			readonly direct_message: CodecTypes['pg/bool@1']['input'];
+			readonly display_message: CodecTypes['pg/bool@1']['input'];
+			readonly display_moderator: CodecTypes['pg/bool@1']['input'];
+			readonly display_reason: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly track_bans: CodecTypes['pg/bool@1']['input'];
 			readonly track_kicks: CodecTypes['pg/bool@1']['input'];
@@ -1776,7 +1793,7 @@ export type StorageColumnInputTypes = {
 			readonly unique_role_sets: CodecTypes['typed/json@1']['input'];
 		};
 		readonly GuildWarnThreshold: {
-			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+			readonly action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 			readonly count: CodecTypes['pg/int4@1']['input'];
 			readonly duration: CodecTypes['pg/int4@1']['input'] | null;
 			readonly guild_id: CodecTypes['pg/int8@1']['input'];
@@ -1869,7 +1886,6 @@ export type StorageColumnInputTypes = {
 			readonly automod: CodecTypes['pg/bool@1']['input'];
 			readonly autopurge: CodecTypes['pg/bool@1']['input'];
 			readonly commands: CodecTypes['pg/bool@1']['input'];
-			readonly honeypot: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly logs: CodecTypes['pg/bool@1']['input'];
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
@@ -2019,7 +2035,7 @@ export namespace Models {
 		escalation: PrismaJson.AutoModerationRuleEscalation;
 		escalationDuration: CodecTypes['pg/int4@1']['output'];
 		guildId: CodecTypes['pg/int8@1']['output'];
-		hardAction: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+		hardAction: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 		hardActionDuration: CodecTypes['pg/int4@1']['output'] | null;
 		id: CodecTypes['pg/int8@1']['output'];
 		ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
@@ -2050,7 +2066,8 @@ export namespace Models {
 			| 'Spoilers'
 			| 'MaskedLinks'
 			| 'StickersCooldown'
-			| 'Polls';
+			| 'Polls'
+			| 'MessageDuplicates';
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
 	};
@@ -2175,6 +2192,10 @@ export namespace Models {
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
 		confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
 		dehoist: CodecTypes['pg/bool@1']['output'];
+		directMessage: CodecTypes['pg/bool@1']['output'];
+		displayMessage: CodecTypes['pg/bool@1']['output'];
+		displayModerator: CodecTypes['pg/bool@1']['output'];
+		displayReason: CodecTypes['pg/bool@1']['output'];
 		id: CodecTypes['pg/int8@1']['output'];
 		trackBans: CodecTypes['pg/bool@1']['output'];
 		trackKicks: CodecTypes['pg/bool@1']['output'];
@@ -2238,7 +2259,7 @@ export namespace Models {
 		readonly [RelationKeys]?: 'modules';
 	};
 	export type public_GuildWarnThreshold = {
-		action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban';
+		action: 'VoiceKick' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'None';
 		count: CodecTypes['pg/int4@1']['output'];
 		duration: CodecTypes['pg/int4@1']['output'] | null;
 		guildId: CodecTypes['pg/int8@1']['output'];
@@ -2345,7 +2366,6 @@ export namespace Models {
 		automod: CodecTypes['pg/bool@1']['output'];
 		autopurge: CodecTypes['pg/bool@1']['output'];
 		commands: CodecTypes['pg/bool@1']['output'];
-		honeypot: CodecTypes['pg/bool@1']['output'];
 		id: CodecTypes['pg/int8@1']['output'];
 		logs: CodecTypes['pg/bool@1']['output'];
 		moderation: CodecTypes['pg/bool@1']['output'];
@@ -4042,6 +4062,42 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
 									};
 								};
+								readonly direct_message: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+									};
+								};
+								readonly display_message: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
+								readonly display_moderator: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
+								readonly display_reason: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
 								readonly id: {
 									readonly nativeType: 'int8';
 									readonly codecId: 'pg/int8@1';
@@ -5115,15 +5171,6 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
 									};
 								};
-								readonly honeypot: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-									};
-								};
 								readonly id: {
 									readonly nativeType: 'int8';
 									readonly codecId: 'pg/int8@1';
@@ -5416,7 +5463,7 @@ type ContractBase = Omit<
 					readonly valueSet: {
 						readonly GuildAutoModerationHardAction: {
 							readonly kind: 'valueSet';
-							readonly values: readonly ['VoiceKick', 'Warning', 'Timeout', 'Mute', 'Kick', 'Softban', 'Ban'];
+							readonly values: readonly ['VoiceKick', 'Warning', 'Timeout', 'Mute', 'Kick', 'Softban', 'Ban', 'None'];
 						};
 						readonly GuildAutoModerationRuleType: {
 							readonly kind: 'valueSet';
@@ -5441,7 +5488,8 @@ type ContractBase = Omit<
 								'Spoilers',
 								'MaskedLinks',
 								'StickersCooldown',
-								'Polls'
+								'Polls',
+								'MessageDuplicates'
 							];
 						};
 						readonly HoneypotAction: {
@@ -6983,6 +7031,22 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
+							readonly directMessage: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly displayMessage: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly displayModerator: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly displayReason: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly id: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
@@ -7025,6 +7089,10 @@ type ContractBase = Omit<
 								readonly channelId: { readonly column: 'channel_id' };
 								readonly confirmRecentMinutes: { readonly column: 'confirm_recent_minutes' };
 								readonly dehoist: { readonly column: 'dehoist' };
+								readonly directMessage: { readonly column: 'direct_message' };
+								readonly displayMessage: { readonly column: 'display_message' };
+								readonly displayModerator: { readonly column: 'display_moderator' };
+								readonly displayReason: { readonly column: 'display_reason' };
 								readonly id: { readonly column: 'id' };
 								readonly trackBans: { readonly column: 'track_bans' };
 								readonly trackKicks: { readonly column: 'track_kicks' };
@@ -7901,10 +7969,6 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
-							readonly honeypot: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
 							readonly id: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
@@ -7945,7 +8009,6 @@ type ContractBase = Omit<
 								readonly automod: { readonly column: 'automod' };
 								readonly autopurge: { readonly column: 'autopurge' };
 								readonly commands: { readonly column: 'commands' };
-								readonly honeypot: { readonly column: 'honeypot' };
 								readonly id: { readonly column: 'id' };
 								readonly logs: { readonly column: 'logs' };
 								readonly moderation: { readonly column: 'moderation' };

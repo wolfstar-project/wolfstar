@@ -691,6 +691,10 @@
 							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"confirmRecentMinutes": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
 							"dehoist": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"directMessage": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"displayMessage": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"displayModerator": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"displayReason": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"trackBans": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"trackKicks": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
@@ -710,6 +714,10 @@
 								"channelId": { "column": "channel_id" },
 								"confirmRecentMinutes": { "column": "confirm_recent_minutes" },
 								"dehoist": { "column": "dehoist" },
+								"directMessage": { "column": "direct_message" },
+								"displayMessage": { "column": "display_message" },
+								"displayModerator": { "column": "display_moderator" },
+								"displayReason": { "column": "display_reason" },
 								"id": { "column": "id" },
 								"trackBans": { "column": "track_bans" },
 								"trackKicks": { "column": "track_kicks" },
@@ -1180,7 +1188,6 @@
 							"automod": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"autopurge": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"commands": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
-							"honeypot": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"logs": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"moderation": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
@@ -1201,7 +1208,6 @@
 								"automod": { "column": "automod" },
 								"autopurge": { "column": "autopurge" },
 								"commands": { "column": "commands" },
-								"honeypot": { "column": "honeypot" },
 								"id": { "column": "id" },
 								"logs": { "column": "logs" },
 								"moderation": { "column": "moderation" },
@@ -1397,7 +1403,7 @@
 					"native_enum": {
 						"GuildAutoModerationHardAction": {
 							"kind": "postgres-enum",
-							"members": ["VoiceKick", "Warning", "Timeout", "Mute", "Kick", "Softban", "Ban"],
+							"members": ["VoiceKick", "Warning", "Timeout", "Mute", "Kick", "Softban", "Ban", "None"],
 							"typeName": "GuildAutoModerationHardAction"
 						},
 						"GuildAutoModerationRuleType": {
@@ -1423,7 +1429,8 @@
 								"Spoilers",
 								"MaskedLinks",
 								"StickersCooldown",
-								"Polls"
+								"Polls",
+								"MessageDuplicates"
 							],
 							"typeName": "GuildAutoModerationRuleType"
 						},
@@ -2331,6 +2338,30 @@
 									"nativeType": "bool",
 									"nullable": false
 								},
+								"direct_message": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": false },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"display_message": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"display_moderator": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"display_reason": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
 								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
 								"track_bans": {
 									"codecId": "pg/bool@1",
@@ -2978,12 +3009,6 @@
 									"nativeType": "bool",
 									"nullable": false
 								},
-								"honeypot": {
-									"codecId": "pg/bool@1",
-									"default": { "kind": "literal", "value": true },
-									"nativeType": "bool",
-									"nullable": false
-								},
 								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
 								"logs": {
 									"codecId": "pg/bool@1",
@@ -3152,7 +3177,7 @@
 					"valueSet": {
 						"GuildAutoModerationHardAction": {
 							"kind": "valueSet",
-							"values": ["VoiceKick", "Warning", "Timeout", "Mute", "Kick", "Softban", "Ban"]
+							"values": ["VoiceKick", "Warning", "Timeout", "Mute", "Kick", "Softban", "Ban", "None"]
 						},
 						"GuildAutoModerationRuleType": {
 							"kind": "valueSet",
@@ -3177,7 +3202,8 @@
 								"Spoilers",
 								"MaskedLinks",
 								"StickersCooldown",
-								"Polls"
+								"Polls",
+								"MessageDuplicates"
 							]
 						},
 						"HoneypotAction": { "kind": "valueSet", "values": ["Kick", "Softban", "Ban"] },
@@ -3210,7 +3236,7 @@
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "9286a43801b733d0730e1935ea8cc73a9a908e061fa77132baae20a0cf2e1fbc",
+		"storageHash": "86a434c6928441364a2ed8374ee67825f4a7c1ddbf971e17549ce2484d26edd3",
 		"types": {
 			"AuditEventChanges": {
 				"codecId": "typed/json@1",

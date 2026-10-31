@@ -132,3 +132,19 @@ export class WindowCounter {
 export function getMessageSpamCounterKey(perChannel: boolean, channelId: string, userId: string): string {
 	return perChannel ? channelId : `${channelId}:${userId}`;
 }
+
+/**
+ * Adds a message to the queue of the latest ones of a channel, the newest first, and counts the ones that say the same
+ * thing, whatever the case.
+ *
+ * @param contents - The latest messages of the channel, in lowercase.
+ * @param content - The message.
+ * @param queueSize - How many messages the queue holds.
+ * @returns How many messages of the queue are the same as this one, this one included.
+ */
+export function pushMessageContent(contents: string[], content: string, queueSize: number): number {
+	const lowercase = content.toLowerCase();
+	if (contents.length >= queueSize) contents.length = queueSize - 1;
+	contents.unshift(lowercase);
+	return contents.filter((entry) => entry === lowercase).length;
+}

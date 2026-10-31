@@ -44,6 +44,7 @@ export const AutoModerationRuleTypeKeys = {
 	MaskedLinks: `${Root}:typeMaskedLinks`,
 	MassMentions: `${Root}:typeMassMentions`,
 	MentionsCooldown: `${Root}:typeMentionsCooldown`,
+	MessageDuplicates: `${Root}:typeMessageDuplicates`,
 	MessageSpam: `${Root}:typeMessageSpam`,
 	Newlines: `${Root}:typeNewlines`,
 	Phishing: `${Root}:typePhishing`,
@@ -72,6 +73,7 @@ export const AutoModerationRuleTypeSummaryKeys = {
 	MaskedLinks: `${Root}:typeMaskedLinksDescription`,
 	MassMentions: `${Root}:typeMassMentionsSummary`,
 	MentionsCooldown: `${Root}:typeMentionsCooldownSummary`,
+	MessageDuplicates: `${Root}:typeMessageDuplicatesSummary`,
 	MessageSpam: `${Root}:typeMessageSpamSummary`,
 	Newlines: `${Root}:typeNewlinesSummary`,
 	Phishing: `${Root}:typePhishingDescription`,
@@ -252,6 +254,8 @@ export function getRuleList(rule: AutoModerationRule): readonly string[] | null 
 
 export function getPunishment(punishment: AutoModerationHardAction): { key: TranslationKey; emoji: string } {
 	switch (punishment) {
+		case 'None':
+			return { key: `${Root}:punishmentNone`, emoji: Emojis.Unchecked };
 		case 'Ban':
 			return { key: 'moderation:typeBan', emoji: Emojis.Ban };
 		case 'Kick':

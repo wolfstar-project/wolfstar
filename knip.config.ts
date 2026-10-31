@@ -45,7 +45,8 @@ export default {
 			project: ['src/**/*.ts', 'tests/**/*.ts']
 		},
 		'projects/database': {
-			project: ['src/**/*.ts']
+			entry: ['tests/**/*.ts'],
+			project: ['src/**/*.ts', 'scripts/**/*.ts', 'tests/**/*.ts']
 		}
 	}
 } satisfies KnipConfig;

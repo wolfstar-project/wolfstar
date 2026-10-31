@@ -73,6 +73,7 @@ const AutoModerationRuleEmojis = {
 	MaskedLinks: 'AutoModMaskedLinks',
 	MassMentions: 'AutoModMassMentions',
 	MentionsCooldown: 'AutoModMentionsCooldown',
+	MessageDuplicates: 'AutoModMessageDuplicates',
 	MessageSpam: 'AutoModMessageSpam',
 	Newlines: 'AutoModNewlines',
 	Phishing: 'AutoModPhishing',

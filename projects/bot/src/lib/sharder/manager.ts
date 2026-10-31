@@ -1,4 +1,5 @@
 import { createShardManagerWebsiteTarget, createWebsiteClient, createWebsiteListener } from '#lib/database/website';
+import { runLegacyMigration } from '#lib/database/legacy';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { getLoggerOptions } from '#utils/logger';
 import { closeTelemetry } from '#utils/shutdown';
@@ -50,6 +51,9 @@ export async function startShardManager() {
 	});
 	container.stores.get('listeners').registerPath(fileURLToPath(new URL('../../listeners/sharder', import.meta.url)));
 	await client.load({ baseUserDirectory: null });
+
+	// Before the shards, which read what it writes:
+	await runLegacyMigration();
 
 	// The one connection that hears the website: the writes of the dashboard go to every shard, the requests of the join
 	// guard to the first one, see `lib/database/website.ts`.

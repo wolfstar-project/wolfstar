@@ -184,7 +184,11 @@ export const Columns = {
 		moderationTrackRoles: ['trackRoles', 'value'],
 		moderationTrackKicks: ['trackKicks', 'value'],
 		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value'],
-		moderationDehoist: ['dehoist', 'value']
+		moderationDehoist: ['dehoist', 'value'],
+		messagesModerationDm: ['directMessage', 'value'],
+		messagesModerationReasonDisplay: ['displayReason', 'value'],
+		messagesModerationMessageDisplay: ['displayMessage', 'value'],
+		messagesModeratorNameDisplay: ['displayModerator', 'value']
 	}),
 	...columns('GuildAppeals', {
 		appealsEnabled: ['enabled', 'value'],

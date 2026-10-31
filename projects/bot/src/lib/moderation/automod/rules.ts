@@ -1,6 +1,6 @@
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { Adder } from '#lib/database/utils/Adder';
-import { WindowCounter } from '#lib/moderation/automod/detectors';
+import { pushMessageContent, WindowCounter } from '#lib/moderation/automod/detectors';
 import { withSharedLock } from '#utils/locks';
 import { create } from 'wolfstar-shared';
 import { Collection } from '@discordjs/collection';
@@ -247,6 +247,8 @@ interface RuleState {
 	wordFilter: RegExp | null;
 	/** What each member sent lately, for the rules that count within a period (`maximum` in `timePeriod` seconds). */
 	counter: WindowCounter | null;
+	/** The latest messages of each channel, for a rule that compares them. */
+	messages: Map<Snowflake, string[]>;
 }
 
 const states = new Collection<string, RuleState>();
@@ -263,7 +265,8 @@ function getState(rule: AutoModerationRule): RuleState {
 		adder:
 			rule.thresholdMaximum > 0 && rule.thresholdDuration > 0 ? new Adder<string>(rule.thresholdMaximum, rule.thresholdDuration, true) : null,
 		wordFilter: words.length === 0 ? null : new RegExp(create(words), 'gi'),
-		counter: typeof maximum === 'number' && typeof timePeriod === 'number' ? new WindowCounter(timePeriod * 1000) : null
+		counter: typeof maximum === 'number' && typeof timePeriod === 'number' ? new WindowCounter(timePeriod * 1000) : null,
+		messages: new Map()
 	};
 	states.set(rule.id, state);
 	return state;
@@ -281,6 +284,21 @@ export function getAutoModerationRuleAdder(rule: AutoModerationRule): Adder<stri
  */
 export function getAutoModerationRuleWordFilter(rule: AutoModerationRule<'Words'>): RegExp | null {
 	return getState(rule).wordFilter;
+}
+
+/**
+ * Keeps a message among the latest ones of its channel for a `MessageDuplicates` rule.
+ *
+ * @param rule - The rule.
+ * @param channelId - The channel the message was sent in.
+ * @param content - The message.
+ * @returns How many of the latest messages of the channel are the same as this one, this one included.
+ */
+export function pushAutoModerationRuleMessage(rule: AutoModerationRule<'MessageDuplicates'>, channelId: Snowflake, content: string): number {
+	const { messages } = getState(rule);
+	const contents = messages.get(channelId) ?? [];
+	messages.set(channelId, contents);
+	return pushMessageContent(contents, content, rule.options.queueSize);
 }
 
 /**

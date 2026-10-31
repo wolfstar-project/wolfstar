@@ -248,6 +248,26 @@ export function getConfiguration() {
 			name: 'moderation.dehoist',
 			description: 'settings:moderationDehoist'
 		},
+		messagesModerationDm: {
+			type: 'boolean',
+			name: 'moderation.direct-message',
+			description: 'settings:messagesModerationDm'
+		},
+		messagesModerationReasonDisplay: {
+			type: 'boolean',
+			name: 'moderation.display-reason',
+			description: 'settings:messagesModerationReasonDisplay'
+		},
+		messagesModerationMessageDisplay: {
+			type: 'boolean',
+			name: 'moderation.display-message',
+			description: 'settings:messagesModerationMessageDisplay'
+		},
+		messagesModeratorNameDisplay: {
+			type: 'boolean',
+			name: 'moderation.display-moderator',
+			description: 'settings:messagesModeratorNameDisplay'
+		},
 
 		// Permissions
 		permissionsUsers: {

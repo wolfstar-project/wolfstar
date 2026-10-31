@@ -208,6 +208,9 @@ declare module "i18next" {
         typeEmojis: "Emoji spam";
         typeEmojisDescription: "Detects the messages with more than {{maximum, number}} emojis.";
         typeEmojisSummary: "Detects the messages with too many emojis.";
+        typeMessageDuplicates: "Identical messages";
+        typeMessageDuplicatesDescription: "Detects at least {{maximum, number}} identical messages among the last {{queueSize, number}} of a channel, whoever sent them.";
+        typeMessageDuplicatesSummary: "Detects the same message sent again and again in a channel, whoever sends it.";
         typeMessageSpam: "Fast message spam";
         typeMessageSpamDescription: "Detects more than {{maximum, number}} messages of a member in a channel within {{timePeriod, number}} seconds.";
         typeMessageSpamSummary: "Detects a member who sends too many messages in a channel in a short time.";
@@ -237,6 +240,8 @@ declare module "i18next" {
         menuOptionCharactersMaximum: "Maximum characters";
         menuOptionEmojisMaximum: "Maximum emojis";
         menuOptionMessageSpamMaximum: "Maximum messages";
+        menuOptionMessageDuplicatesMaximum: "Identical messages";
+        menuOptionMessageDuplicatesQueueSize: "Latest messages compared";
         menuOptionImageSpamMaximum: "Maximum images";
         menuOptionLinksCooldownMaximum: "Maximum links";
         menuOptionMassMentionsMaximum: "Maximum mentions";
@@ -354,6 +359,7 @@ declare module "i18next" {
         menuResponseLog: "Send to the logs";
         menuResponseLogDescription: "Posts the message in the auto-moderation log channel.";
         menuPunishment: "Punishment";
+        punishmentNone: "No punishment";
         menuPunishmentPlaceholder: "Select a punishment";
         menuDuration: "Punishment duration";
         menuDurationPermanent: "Permanent";
@@ -2423,6 +2429,10 @@ declare module "i18next" {
         ruleEmojisWithMaximum: "[Auto-Moderation] Triggered emoji spam filter, reached {{amount}} out of {{maximum}} infractions.";
         ruleEmojisAlert: "{{REDCROSS}} Hey {{user}}, that is too many emojis.";
         ruleEmojisFooter: "Too Many Emojis";
+        ruleMessageDuplicates: "[Auto-Moderation] Triggered identical messages filter, no threshold.";
+        ruleMessageDuplicatesWithMaximum: "[Auto-Moderation] Triggered identical messages filter, reached {{amount}} out of {{maximum}} infractions.";
+        ruleMessageDuplicatesAlert: "{{REDCROSS}} Hey {{user}}, this was already said in this channel, please do not repeat it.";
+        ruleMessageDuplicatesFooter: "Identical Messages";
         ruleMessageSpam: "[Auto-Moderation] Triggered fast message spam filter, no threshold.";
         ruleMessageSpamWithMaximum: "[Auto-Moderation] Triggered fast message spam filter, reached {{amount}} out of {{maximum}} infractions.";
         ruleMessageSpamAlert: "{{REDCROSS}} Hey {{user}}, you are sending messages too fast, slow down.";
@@ -3128,6 +3138,10 @@ declare module "i18next" {
           moderationTrackKicks: "Track Kicks";
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
           moderationDehoist: "Dehoist Names";
+          messagesModerationDm: "Direct Message the Members";
+          messagesModerationReasonDisplay: "Show the Reason";
+          messagesModerationMessageDisplay: "Answer in the Channel";
+          messagesModeratorNameDisplay: "Show the Moderator";
           permissionsUsers: "User Permissions";
           permissionsRoles: "Role Permissions";
           reportsChannel: "Reports Channel";

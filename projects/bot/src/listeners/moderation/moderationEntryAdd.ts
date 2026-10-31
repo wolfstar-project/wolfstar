@@ -1,6 +1,7 @@
 import { writeSettings } from '#lib/database';
 import type { ModerationManager } from '#lib/moderation';
-import { fetchGuildT, getEmbed, getUndoTaskId, getUndoTaskName, UndoTaskJobOptions } from '#lib/moderation/common';
+import { fetchGuildT, getEmbed } from '#lib/moderation/common';
+import { scheduleUndoTask } from '#lib/moderation/common/undoTasks';
 import { resolveOnErrorCodes } from '#common';
 import { getModeration } from '#utils/functions';
 import { isNullishOrZero } from '@sapphire/utilities';
@@ -35,27 +36,14 @@ export class UserListener extends Listener {
 	private async scheduleDuration(entry: ModerationManager.Entry) {
 		if (isNullishOrZero(entry.duration)) return;
 
-		const taskName = getUndoTaskName(entry.type);
-		if (taskName === null) return;
-
-		await this.container.tasks
-			.create(
-				{
-					name: taskName,
-					payload: {
-						caseID: entry.id,
-						userID: entry.userId,
-						guildID: entry.guild.id,
-						duration: entry.duration,
-						extraData: entry.extraData
-					}
-				},
-				{
-					repeated: false,
-					delay: Math.max(0, entry.expiresTimestamp! - Date.now()),
-					customJobOptions: { jobId: getUndoTaskId(entry.guild.id, entry.id), ...UndoTaskJobOptions }
-				}
-			)
-			.catch((error) => this.container.logger.fatal(error));
+		await scheduleUndoTask({
+			type: entry.type,
+			id: entry.id,
+			userId: entry.userId,
+			guildId: entry.guild.id,
+			duration: entry.duration!,
+			extraData: entry.extraData,
+			expiresAt: entry.expiresTimestamp!
+		}).catch((error) => this.container.logger.fatal(error));
 	}
 }
