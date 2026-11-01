@@ -89,7 +89,8 @@ export async function getAppealChoices(t: TFunction<AnyNamespace>, guildId: Snow
 	return Promise.all(
 		filterAppealChoices(appeals, query).map(async (appeal) => {
 			const entry = await moderation.fetch(appeal.caseId);
-			const user = await container.gatewayClient.users.fetch(appeal.userId).catch(() => null);
+			// Only what the cache knows: Discord waits 3 seconds for the choices, and they are asked for at every key.
+			const user = await container.gatewayClient.users.resolve(appeal.userId);
 			const name = t('commands/appeal:choice', {
 				case: appeal.caseId,
 				type: entry === null ? t('commands/appeal:caseGone') : getTitle(t, entry),

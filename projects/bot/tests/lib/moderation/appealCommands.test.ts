@@ -1,7 +1,9 @@
-import { filterAppealChoices, runAppealDecision } from '#lib/moderation/appealCommands';
+import { filterAppealChoices, getAppealChoices, runAppealDecision } from '#lib/moderation/appealCommands';
 import { settleAppeal } from '#lib/moderation/appealService';
+import { getModeration } from '#utils/functions';
+import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
-import { fetchAppealByCase, type Appeal } from 'wolfstar-database';
+import { fetchAppealByCase, fetchAppeals, type Appeal } from 'wolfstar-database';
 
 vi.mock('#lib/moderation/appealService', () => ({
 	AppealSettleErrorKeys: { caseGone: 'case-gone', decided: 'already-decided', undoFailed: 'undo-failed' },
@@ -9,8 +11,10 @@ vi.mock('#lib/moderation/appealService', () => ({
 }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
-	fetchAppealByCase: vi.fn()
+	fetchAppealByCase: vi.fn(),
+	fetchAppeals: vi.fn()
 }));
+vi.mock('#utils/functions', () => ({ getModeration: vi.fn() }));
 vi.mock('@wolfstar/plugin-i18next', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@wolfstar/plugin-i18next')>()),
 	getSupportedUserLanguageT: vi.fn(() => (key: string) => key)
@@ -150,5 +154,49 @@ describe('the choices of the appeal option', () => {
 		const many = Array.from({ length: 30 }, (_, index) => createAppeal({ caseId: index + 1 }));
 
 		expect(filterAppealChoices(many, '')).toHaveLength(25);
+	});
+
+	describe('getAppealChoices', () => {
+		const t = ((key: string, options?: Record<string, unknown>) => (options ? JSON.stringify(options) : key)) as never;
+		const resolve = vi.fn();
+		const fetchUser = vi.fn();
+
+		beforeEach(() => {
+			vi.clearAllMocks();
+			vi.mocked(fetchAppeals).mockResolvedValue([createAppeal()]);
+			vi.mocked(getModeration).mockResolvedValue({
+				fetch: vi.fn(async () => ({ type: TypeVariation.Ban, isUndo: () => false, isTemporary: () => false }))
+			} as never);
+			Object.assign(container, { prisma: {}, gatewayClient: { users: { resolve, fetch: fetchUser } } });
+		});
+
+		test('GIVEN a user the cache knows THEN their name tells them apart, and the value is the case', async () => {
+			resolve.mockResolvedValue({ username: 'pete' });
+
+			const [choice] = await getAppealChoices(t, guildId, '', false);
+
+			expect(choice.name).toContain('pete');
+			expect(choice.value).toBe('12');
+		});
+
+		test('GIVEN a user the cache does not know THEN their ID stands for them, with no request: Discord only waits 3 seconds', async () => {
+			resolve.mockResolvedValue(null);
+
+			const [choice] = await getAppealChoices(t, guildId, '', false);
+
+			expect(choice.name).toContain('266624760782258186');
+			expect(fetchUser).not.toHaveBeenCalled();
+		});
+
+		test.each([
+			[true, 'pending'],
+			[false, undefined]
+		])('GIVEN pendingOnly %s THEN the appeals read are the ones in the status %s', async (pendingOnly, status) => {
+			resolve.mockResolvedValue(null);
+
+			await getAppealChoices(t, guildId, '', pendingOnly);
+
+			expect(fetchAppeals).toHaveBeenCalledWith(container.prisma, guildId, expect.objectContaining({ status }));
+		});
 	});
 });

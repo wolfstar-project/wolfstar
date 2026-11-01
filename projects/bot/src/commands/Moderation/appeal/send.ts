@@ -10,8 +10,8 @@ import { fetchAppealByMessage } from 'wolfstar-database';
 
 /**
  * `/appeal send`, see the `appeal` parent command. Run in the thread of an appeal, it sends a direct message to the
- * member who made it, and the answer stays in the thread for the other moderators, in the language of the guild as the
- * appeal is. The member is not told who wrote.
+ * member who made it. The answer stays in the thread for the other moderators, in the language of the guild as the
+ * appeal is, whether it reached the member or not. The member is not told who wrote.
  */
 @RegisterAsSubcommand('appeal', (builder) =>
 	applyLocalizedBuilder(builder, 'commands/appeal:send').addStringOption((option) =>
@@ -24,12 +24,15 @@ export class UserCommand extends Command {
 		const appeal = await fetchAppealByMessage(this.container.prisma, interaction.guildId, interaction.channelId);
 		if (appeal === null) return interaction.reply({ content: t('commands/appeal:sendNotThread'), flags: MessageFlags.Ephemeral });
 
+		// Reaching the member takes a few requests, which can be longer than Discord waits for an answer:
+		const deferred = await interaction.defer();
 		const guild = await this.container.gatewayClient.guilds.fetch(interaction.guildId);
 		const sent = await sendAppealDirectMessage(guild, appeal, options.message);
-		if (!sent) return interaction.reply({ content: t('commands/appeal:sendFailed'), flags: MessageFlags.Ephemeral });
 
 		const guildT = await fetchGuildT(guild);
-		const content = guildT('commands/appeal:sent', { moderator: userMention(interaction.user.id), message: options.message });
-		return interaction.reply({ content, allowed_mentions: { parse: [] } });
+		const content = sent
+			? guildT('commands/appeal:sent', { moderator: userMention(interaction.user.id), message: options.message })
+			: guildT('commands/appeal:sendFailed');
+		return deferred.update({ content, allowed_mentions: { parse: [] } });
 	}
 }

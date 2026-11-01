@@ -24,12 +24,14 @@ const moderatorId = '242043489611808769';
 
 describe('/appeal send', () => {
 	const reply = vi.fn();
+	const update = vi.fn();
+	const defer = vi.fn(async () => ({ update }));
 	const appeal = { id: '1', caseId: 12, userId: '266624760782258186' };
 	const guild = { id: guildId };
 
 	function run(message = 'Tell us more') {
 		const command = Object.create(UserCommand.prototype) as UserCommand;
-		const interaction = { guildId, channelId: threadId, user: { id: moderatorId }, reply };
+		const interaction = { guildId, channelId: threadId, user: { id: moderatorId }, reply, defer };
 		return command.chatInputRun(interaction as never, { message });
 	}
 
@@ -46,7 +48,14 @@ describe('/appeal send', () => {
 		await run();
 
 		expect(reply).toHaveBeenCalledWith({ content: 'commands/appeal:sendNotThread', flags: MessageFlags.Ephemeral });
+		expect(defer).not.toHaveBeenCalled();
 		expect(sendAppealDirectMessage).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN the thread of an appeal THEN the answer is deferred first, reaching the member being slower than Discord waits', async () => {
+		await run();
+
+		expect(defer.mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(sendAppealDirectMessage).mock.invocationCallOrder[0]);
 	});
 
 	test('GIVEN the thread of an appeal THEN the appeal is the one of the thread', async () => {
@@ -59,18 +68,20 @@ describe('/appeal send', () => {
 	test('GIVEN a message that reached the member THEN it stays in the thread with who wrote it, and pings nobody', async () => {
 		await run('Tell us more @everyone');
 
-		const [answer] = reply.mock.calls[0] as [{ content: string; flags?: number; allowed_mentions: unknown }];
+		const [answer] = update.mock.calls[0] as [{ content: string; allowed_mentions: unknown }];
+		expect(defer).toHaveBeenCalledWith();
 		expect(answer.content).toContain('Tell us more @everyone');
 		expect(answer.content).toContain(`<@${moderatorId}>`);
 		expect(answer.allowed_mentions).toEqual({ parse: [] });
-		expect(answer.flags).toBeUndefined();
 	});
 
-	test('GIVEN a message that did not reach the member THEN only the moderator is told, and the thread says nothing', async () => {
+	test('GIVEN a message that did not reach the member THEN the thread says so, without showing it as sent', async () => {
 		vi.mocked(sendAppealDirectMessage).mockResolvedValue(false);
 
-		await run();
+		await run('Tell us more');
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/appeal:sendFailed', flags: MessageFlags.Ephemeral });
+		const [answer] = update.mock.calls[0] as [{ content: string }];
+		expect(answer.content).toContain('commands/appeal:sendFailed');
+		expect(answer.content).not.toContain('Tell us more');
 	});
 });
