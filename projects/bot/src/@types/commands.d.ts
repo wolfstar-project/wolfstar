@@ -13,13 +13,21 @@ declare module '@wolfstar/http-framework' {
       appeal: string;
       reason?: string;
     };
+    'appeal block': {
+      reason?: string;
+      user: TransformedArguments.User;
+    };
     'appeal deny': {
       appeal: string;
       reason?: string;
     };
     'appeal list': {};
     'appeal send': {
+      appeal?: string;
       message: string;
+    };
+    'appeal unblock': {
+      user: TransformedArguments.User;
     };
     'appeal view': {
       appeal: string;

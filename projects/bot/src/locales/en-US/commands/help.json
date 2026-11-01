@@ -1,12 +1,14 @@
 {
 	"/appeal": {
-		"extendedHelp": "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal, sends a direct message to the member, and leaves what was sent in the thread.",
+		"extendedHelp": "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal or with its `appeal` option, sends a direct message to the member, and leaves what was sent in the thread.\n`block` keeps a user from appealing here, which `unblock` undoes.",
 		"examples": [
 			"list",
 			"view appeal:42",
 			"approve appeal:42 reason:We talked about it, and it is settled",
 			"deny appeal:42",
-			"send message:Can you tell us more about what happened?"
+			"send message:Can you tell us more about what happened?",
+			"block user:@Pete reason:Spamming the appeals",
+			"unblock user:@Pete"
 		],
 		"reminder": "The `appeal` option takes the number of the case, which it suggests as you write. I cannot write to a member who shares no server with me, as a banned one often does."
 	},

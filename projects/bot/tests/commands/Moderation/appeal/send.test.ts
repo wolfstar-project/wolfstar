@@ -2,7 +2,7 @@ import { sendAppealDirectMessage } from '#lib/moderation/appealService';
 import { UserCommand } from '#root/commands/Moderation/appeal/send';
 import { container } from '@wolfstar/http-framework';
 import { MessageFlags } from 'discord-api-types/v10';
-import { fetchAppealByThread } from 'wolfstar-database';
+import { fetchAppealByCase, fetchAppealByThread } from 'wolfstar-database';
 
 vi.mock('#lib/moderation/appealService', () => ({ sendAppealDirectMessage: vi.fn() }));
 vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
@@ -11,6 +11,7 @@ vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
 }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
+	fetchAppealByCase: vi.fn(),
 	fetchAppealByThread: vi.fn()
 }));
 vi.mock('@wolfstar/plugin-i18next', async (importOriginal) => ({
@@ -29,10 +30,10 @@ describe('/appeal send', () => {
 	const appeal = { id: '1', caseId: 12, userId: '266624760782258186' };
 	const guild = { id: guildId };
 
-	function run(message = 'Tell us more') {
+	function run(message = 'Tell us more', option?: string) {
 		const command = Object.create(UserCommand.prototype) as UserCommand;
 		const interaction = { guildId, channelId: threadId, user: { id: moderatorId }, reply, defer };
-		return command.chatInputRun(interaction as never, { message });
+		return command.chatInputRun(interaction as never, { message, appeal: option });
 	}
 
 	beforeEach(() => {
@@ -49,6 +50,27 @@ describe('/appeal send', () => {
 
 		expect(reply).toHaveBeenCalledWith({ content: 'commands/appeal:sendNotThread', flags: MessageFlags.Ephemeral });
 		expect(defer).not.toHaveBeenCalled();
+		expect(sendAppealDirectMessage).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN the appeal option outside a thread THEN it writes about that case, and the answer stays private', async () => {
+		vi.mocked(fetchAppealByThread).mockResolvedValue(null);
+		vi.mocked(fetchAppealByCase).mockResolvedValue(appeal as never);
+
+		await run('Tell us more', '#12');
+
+		expect(fetchAppealByCase).toHaveBeenCalledWith(container.prisma, guildId, 12);
+		expect(sendAppealDirectMessage).toHaveBeenCalledWith(guild, appeal, 'Tell us more');
+		expect(defer).toHaveBeenCalledWith({ flags: MessageFlags.Ephemeral });
+	});
+
+	test('GIVEN an appeal option that is no appeal THEN nobody is written to', async () => {
+		vi.mocked(fetchAppealByThread).mockResolvedValue(null);
+		vi.mocked(fetchAppealByCase).mockResolvedValue(null);
+
+		await run('Tell us more', '12');
+
+		expect(reply).toHaveBeenCalledWith({ content: 'commands/appeal:notFound', flags: MessageFlags.Ephemeral });
 		expect(sendAppealDirectMessage).not.toHaveBeenCalled();
 	});
 
@@ -69,7 +91,7 @@ describe('/appeal send', () => {
 		await run('Tell us more @everyone');
 
 		const [answer] = update.mock.calls[0] as [{ content: string; allowed_mentions: unknown }];
-		expect(defer).toHaveBeenCalledWith();
+		expect(defer).toHaveBeenCalledWith(undefined);
 		expect(answer.content).toContain('Tell us more @everyone');
 		expect(answer.content).toContain(`<@${moderatorId}>`);
 		expect(answer.allowed_mentions).toEqual({ parse: [] });

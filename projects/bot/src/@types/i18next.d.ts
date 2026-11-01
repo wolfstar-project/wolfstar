@@ -102,6 +102,21 @@ declare module "i18next" {
         optionsReasonDescription: "The reason, which the member is told in a direct message.";
         optionsMessageName: "message";
         optionsMessageDescription: "What to write to the member.";
+        optionsSendAppealName: "appeal";
+        optionsSendAppealDescription: "The appeal, by the number of its case, when you are not in its thread.";
+        optionsUserName: "user";
+        optionsUserDescription: "The user.";
+        optionsBlockReasonName: "reason";
+        optionsBlockReasonDescription: "Why, which the user sees on the appeal page.";
+        blockName: "block";
+        blockDescription: "Keep a user from appealing in this server.";
+        unblockName: "unblock";
+        unblockDescription: "Let a user appeal in this server again.";
+        blocked: "{{user}} can no longer appeal in this server.";
+        blockedAlready: "{{user}} was already blocked from appealing.";
+        unblocked: "{{user}} can appeal in this server again.";
+        unblockedAlready: "{{user}} was not blocked from appealing.";
+        formAll: "All forms";
         notFound: "That case has no appeal.";
         caseGone: "Deleted case";
         choice: "#{{case}} · {{type}} · {{user}} · {{status}}";
@@ -116,7 +131,7 @@ declare module "i18next" {
         viewOpen: "Open in the channel";
         approved: "The appeal of the case #{{case}} was approved, and the member was told if they take direct messages.";
         denied: "The appeal of the case #{{case}} was denied, and the member was told if they take direct messages.";
-        sendNotThread: "Run this in the thread of an appeal, which tells me who to write to.";
+        sendNotThread: "Run this in the thread of an appeal, or pick the appeal with the `appeal` option.";
         sendFailed: "I could not send it: the member does not take direct messages, or shares no server with me.";
         sent: "{{moderator}} wrote to the member:\n>>> {{message}}";
       };
@@ -785,13 +800,15 @@ declare module "i18next" {
       };
       "commands/help": {
         "/appeal": {
-          extendedHelp: "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal, sends a direct message to the member, and leaves what was sent in the thread.";
+          extendedHelp: "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal or with its `appeal` option, sends a direct message to the member, and leaves what was sent in the thread.\n`block` keeps a user from appealing here, which `unblock` undoes.";
           examples: [
             "list",
             "view appeal:42",
             "approve appeal:42 reason:We talked about it, and it is settled",
             "deny appeal:42",
             "send message:Can you tell us more about what happened?",
+            "block user:@Pete reason:Spamming the appeals",
+            "unblock user:@Pete",
           ];
           reminder: "The `appeal` option takes the number of the case, which it suggests as you write. I cannot write to a member who shares no server with me, as a banned one often does.";
         };

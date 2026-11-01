@@ -6,6 +6,7 @@ import { getModeration } from '#utils/functions';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
+import { fetchAppealForm } from 'wolfstar-database';
 
 /**
  * `/appeal view`, see the `appeal` parent command. It shows everything a member wrote in an appeal and what was decided,
@@ -26,8 +27,9 @@ export class UserCommand extends Command {
 		const entry = await moderation.fetch(appeal.caseId);
 		if (entry === null) return interaction.reply({ content: t('moderation:appealCaseGone'), flags: MessageFlags.Ephemeral });
 
+		const form = appeal.formId === null ? null : await fetchAppealForm(this.container.prisma, interaction.guildId, appeal.formId);
 		return interaction.reply({
-			...renderAppealView(t, appeal, entry),
+			...renderAppealView(t, appeal, entry, form?.name ?? null),
 			flags: MessageFlags.Ephemeral,
 			allowed_mentions: { parse: [] }
 		});

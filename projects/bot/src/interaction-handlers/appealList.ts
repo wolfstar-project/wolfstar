@@ -22,10 +22,11 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const component = interaction as ComponentInteraction;
 		const selected = 'values' in component.data ? component.data.values[0] : undefined;
-		const filter = isAppealListFilter(selected) ? selected : action.filter;
+		const filter = action.verb === 'filter' && isAppealListFilter(selected) ? selected : action.filter;
+		const form = action.verb === 'form' && selected !== undefined ? selected : action.form;
 
 		const t = getSupportedUserLanguageT(interaction) as unknown as TFunction<AnyNamespace>;
-		const page = await fetchAppealListPage(t, guildId, filter, action.page);
+		const page = await fetchAppealListPage(t, guildId, filter, form, action.page);
 		return component.update(renderAppealList(page));
 	}
 }

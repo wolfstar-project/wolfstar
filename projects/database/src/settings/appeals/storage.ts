@@ -86,21 +86,27 @@ export async function fetchUserAppeals(db: Database, guildId: Snowflake, userId:
 }
 
 /**
- * What {@linkcode fetchAppeals} and {@linkcode countAppeals} read: every appeal of a guild, or the ones in a status.
+ * What {@linkcode fetchAppeals} and {@linkcode countAppeals} read: every appeal of a guild, or the ones in a status or
+ * sent with a form.
  */
-function whereAppeals(guildId: Snowflake, status: AppealStatus | undefined) {
-	return status === undefined ? { guildId: BigInt(guildId) } : { guildId: BigInt(guildId), status };
+export interface AppealFilter {
+	status?: AppealStatus | undefined;
+	formId?: string | undefined;
+}
+
+function whereAppeals(guildId: Snowflake, { status, formId }: AppealFilter) {
+	return {
+		guildId: BigInt(guildId),
+		...(status === undefined ? {} : { status }),
+		...(formId === undefined ? {} : { formId: BigInt(formId) })
+	};
 }
 
 /**
  * Reads the appeals of a guild, the latest ones first.
  */
-export async function fetchAppeals(
-	db: Database,
-	guildId: Snowflake,
-	options: { status?: AppealStatus; limit: number; offset?: number }
-): Promise<Appeal[]> {
-	const rows = (await db.orm.public.Appeal.where(whereAppeals(guildId, options.status))
+export async function fetchAppeals(db: Database, guildId: Snowflake, options: AppealFilter & { limit: number; offset?: number }): Promise<Appeal[]> {
+	const rows = (await db.orm.public.Appeal.where(whereAppeals(guildId, options))
 		.orderBy((appeal) => appeal.id.desc())
 		.limit(options.limit)
 		.offset(options.offset ?? 0)
@@ -111,8 +117,8 @@ export async function fetchAppeals(
 /**
  * Counts the appeals of a guild.
  */
-export async function countAppeals(db: Database, guildId: Snowflake, status?: AppealStatus): Promise<number> {
-	const { total } = await db.orm.public.Appeal.where(whereAppeals(guildId, status)).aggregate((aggregate) => ({ total: aggregate.count() }));
+export async function countAppeals(db: Database, guildId: Snowflake, filter: AppealFilter = {}): Promise<number> {
+	const { total } = await db.orm.public.Appeal.where(whereAppeals(guildId, filter)).aggregate((aggregate) => ({ total: aggregate.count() }));
 	return total;
 }
 

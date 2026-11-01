@@ -1,3 +1,4 @@
+import { readAppealOption } from '#lib/moderation/appealCommands';
 import { MaximumAppealMessageLength } from '#lib/moderation/appeals';
 import { sendAppealDirectMessage } from '#lib/moderation/appealService';
 import { fetchGuildT } from '#lib/moderation/common/util';
@@ -9,23 +10,31 @@ import { MessageFlags } from 'discord-api-types/v10';
 import { fetchAppealByThread } from 'wolfstar-database';
 
 /**
- * `/appeal send`, see the `appeal` parent command. Run in the thread of an appeal, it sends a direct message to the
- * member who made it. The answer stays in the thread for the other moderators, in the language of the guild as the
- * appeal is, whether it reached the member or not. The member is not told who wrote.
+ * `/appeal send`, see the `appeal` parent command. It sends a direct message to the member who made an appeal, the one of
+ * the thread it runs in or, with no thread, the one of its `appeal` option. In a thread the answer stays there for the
+ * other moderators, in the language of the guild as the appeal is, whether it reached the member or not; out of one it
+ * is the moderator's alone. The member is not told who wrote.
  */
 @RegisterAsSubcommand('appeal', (builder) =>
-	applyLocalizedBuilder(builder, 'commands/appeal:send').addStringOption((option) =>
-		applyLocalizedBuilder(option, 'commands/appeal:optionsMessage').setRequired(true).setMaxLength(MaximumAppealMessageLength)
-	)
+	applyLocalizedBuilder(builder, 'commands/appeal:send')
+		.addStringOption((option) =>
+			applyLocalizedBuilder(option, 'commands/appeal:optionsMessage').setRequired(true).setMaxLength(MaximumAppealMessageLength)
+		)
+		.addStringOption((option) => applyLocalizedBuilder(option, 'commands/appeal:optionsSendAppeal').setAutocomplete(true))
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'appeal send'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const appeal = await fetchAppealByThread(this.container.prisma, interaction.guildId, interaction.channelId);
-		if (appeal === null) return interaction.reply({ content: t('commands/appeal:sendNotThread'), flags: MessageFlags.Ephemeral });
+		const threaded = await fetchAppealByThread(this.container.prisma, interaction.guildId, interaction.channelId);
+		if (threaded === null && options.appeal === undefined) {
+			return interaction.reply({ content: t('commands/appeal:sendNotThread'), flags: MessageFlags.Ephemeral });
+		}
+
+		const appeal = threaded ?? (await readAppealOption(interaction.guildId, options.appeal!));
+		if (appeal === null) return interaction.reply({ content: t('commands/appeal:notFound'), flags: MessageFlags.Ephemeral });
 
 		// Reaching the member takes a few requests, which can be longer than Discord waits for an answer:
-		const deferred = await interaction.defer();
+		const deferred = await interaction.defer(threaded === null ? { flags: MessageFlags.Ephemeral } : undefined);
 		const guild = await this.container.gatewayClient.guilds.fetch(interaction.guildId);
 		const sent = await sendAppealDirectMessage(guild, appeal, options.message);
 

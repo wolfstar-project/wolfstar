@@ -28,16 +28,30 @@ function createAppeal(overrides: Partial<Appeal> = {}): Appeal {
 	};
 }
 
-function render(options: { rows?: readonly AppealListRow[]; total?: number; page?: number; filter?: AppealListFilter }) {
-	const { rows = [], total = rows.length, page = 0, filter = 'all' } = options;
-	const message = renderAppealList({ t, filter, page, total, rows });
+function render(options: {
+	rows?: readonly AppealListRow[];
+	total?: number;
+	page?: number;
+	filter?: AppealListFilter;
+	form?: string;
+	forms?: { id: string; name: string }[];
+}) {
+	const { rows = [], total = rows.length, page = 0, filter = 'all', form = 'all', forms = [] } = options;
+	const message = renderAppealList({ t, filter, form, forms, page, total, rows });
 	const [container] = message.components as [APIContainerComponent];
 	const rowsOf = container.components.filter((component) => component.type === ComponentType.ActionRow);
 
 	return {
 		text: container.components.flatMap((component) => (component.type === ComponentType.TextDisplay ? [component.content] : [])).join('\n'),
 		select: rowsOf[0].components[0] as unknown as { custom_id: string; options: { value: string; default: boolean }[] },
-		buttons: (rowsOf[1]?.components ?? []) as unknown as { custom_id: string; disabled: boolean }[]
+		selects: rowsOf.filter((row) => row.components[0].type === ComponentType.StringSelect).map((row) => row.components[0]) as unknown as {
+			custom_id: string;
+			options: { value: string; default: boolean }[];
+		}[],
+		buttons: (rowsOf.find((row) => row.components[0].type === ComponentType.Button)?.components ?? []) as unknown as {
+			custom_id: string;
+			disabled: boolean;
+		}[]
 	};
 }
 
@@ -70,6 +84,32 @@ describe('the list of the appeals', () => {
 		expect(select.options.filter((option) => option.default).map((option) => option.value)).toEqual(['pending']);
 	});
 
+	test('GIVEN a guild with no forms THEN there is no menu of forms', () => {
+		expect(render({}).selects).toHaveLength(1);
+	});
+
+	test('GIVEN forms THEN their menu has the one shown selected', () => {
+		const { selects } = render({
+			form: '2',
+			forms: [
+				{ id: '1', name: 'Bans' },
+				{ id: '2', name: 'Mutes' }
+			]
+		});
+
+		expect(selects[1].options.map((option) => [option.value, option.default])).toEqual([
+			['all', false],
+			['1', false],
+			['2', true]
+		]);
+	});
+
+	test('GIVEN more forms than a menu holds THEN it stops at 25 entries', () => {
+		const forms = Array.from({ length: 30 }, (_, index) => ({ id: String(index + 1), name: 'Form' }));
+
+		expect(render({ forms }).selects[1].options).toHaveLength(25);
+	});
+
 	test('GIVEN one page THEN there are no buttons', () => {
 		const rows = Array.from({ length: AppealsPerPage }, () => ({ appeal: createAppeal(), type: 'Ban' }));
 
@@ -87,25 +127,26 @@ describe('the list of the appeals', () => {
 	});
 
 	test.each([0, 1, 2])('GIVEN the page %i of three THEN no two components share a custom ID, which Discord refuses', (page) => {
-		const { select, buttons } = render({ total: AppealsPerPage * 3, page });
-		const ids = [select.custom_id, ...buttons.map((button) => button.custom_id)];
+		const { selects, buttons } = render({ total: AppealsPerPage * 3, page, forms: [{ id: '1', name: 'Bans' }] });
+		const ids = [...selects.map((select) => select.custom_id), ...buttons.map((button) => button.custom_id)];
 
 		expect(new Set(ids).size).toBe(ids.length);
 	});
 
 	test('GIVEN a click THEN its custom ID is read back', () => {
-		const id = encodeAppealListId({ verb: 'page', filter: 'denied', page: 3 });
+		const id = encodeAppealListId({ verb: 'page', filter: 'denied', form: '7', page: 3 });
 
 		expect(id.startsWith('appealList.')).toBe(true);
-		expect(decodeAppealListId(id.split('.').slice(1))).toEqual({ verb: 'page', filter: 'denied', page: 3 });
+		expect(decodeAppealListId(id.split('.').slice(1))).toEqual({ verb: 'page', filter: 'denied', form: '7', page: 3 });
 	});
 
 	test.each([
-		[['everything', 'page:0']],
-		[['pending', 'explode:0']],
-		[['pending', 'page:-1']],
-		[['pending', 'page:x']],
-		[['pending', 'page']],
+		[['everything', 'page:0:all']],
+		[['pending', 'explode:0:all']],
+		[['pending', 'page:-1:all']],
+		[['pending', 'page:x:all']],
+		[['pending', 'page:0']],
+		[['pending', 'page:0:x']],
 		[null]
 	])('GIVEN the custom ID %j THEN it is not one of the list', (content) => {
 		expect(decodeAppealListId(content)).toBeNull();

@@ -366,11 +366,12 @@ export function renderAppealMessage(
 }
 
 /**
- * What `/appeal view` shows of an appeal: its message, with what was decided, and a link to it when it was sent. The
- * buttons stay on that message, which is the one a decision changes.
+ * What `/appeal view` shows of an appeal: its message, with the form and what was decided, and a link to it when it was
+ * sent. The buttons stay on that message, which is the one a decision changes.
  */
-export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry) {
-	const { embeds } = renderAppealMessage(t, appeal, entry, appeal.status, appeal.reviewerId, appeal.reason);
+export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry, form: string | null = null) {
+	const message = renderAppealMessage(t, appeal, entry, appeal.status, appeal.reviewerId, appeal.reason);
+	const embeds = form === null ? message.embeds : [{ ...message.embeds[0], author: { name: cutText(form, 256) } }];
 	if (appeal.channelId === null || appeal.messageId === null) return { embeds, components: [] };
 
 	const row: APIActionRowComponent<APIButtonComponent> = {
