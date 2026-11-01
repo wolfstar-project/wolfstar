@@ -190,9 +190,9 @@ one. After 90 days the page says the file expired, and the answer keeps its name
 
 ### Who
 
-`hasAppealAccess(guildId, userId)`: the owner of the server, a member with `Administrator`, `Ban Members` or `Manage
-Server`, one with a role of `roles.moderator` or `roles.admin`, or one with a role of `appeals.manager-roles`. It is
-what the `moderator` level means (`isModerator`), written so it can be answered for a user ID and not only for an
+`hasAppealAccess(guildId, userId)`: `isModerator` (the owner of the server; a role of `roles.moderator`, or `Ban
+Members` when none is set; a role of `roles.admin`, or `Manage Server` when none is set), or a role of
+`appeals.manager-roles`. It is what the `moderator` level means, written so it can be answered for a user ID and not only for an
 interaction: the bot reads the member and the roles of the server from the gateway cache, the site from Discord's API
 as it already does for `canManageServerSettings`. A new precondition, `appealManager`, applies it to `/appeal` and to
 the handlers of the buttons and of the list in place of `moderator`; the bot answers `noAccess` to a dashboard request

@@ -4,6 +4,7 @@ import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
 import { ChannelType } from 'discord-api-types/v10';
+import { ModerationActions } from '#lib/moderation/actions';
 import {
 	createAppeal,
 	createAppealBlock,
@@ -114,7 +115,7 @@ describe('the appeals', () => {
 	const editChannel = vi.fn(async () => ({}));
 	const editMessage = vi.fn(async () => ({}));
 	const channelSend = vi.fn(async () => ({ id: messageId }));
-	const channel = { guildId, send: channelSend };
+	const channel = { guildId, type: ChannelType.GuildText, send: channelSend };
 
 	const baseSettings = {
 		appealsEnabled: true,
@@ -127,6 +128,7 @@ describe('the appeals', () => {
 		appealsAnonymous: false,
 		appealsThread: 'public',
 		appealsPingRoles: [] as string[],
+		appealsManagerRoles: [] as string[],
 		appealsBlockOnDenial: false
 	};
 	const useSettings = (overrides: Partial<typeof baseSettings>) =>
@@ -134,6 +136,7 @@ describe('the appeals', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		channel.type = ChannelType.GuildText;
 		fetchUser.mockResolvedValue({ send });
 		send.mockResolvedValue({ id: '1' });
 		fetchCase.mockResolvedValue(createEntry());
@@ -179,7 +182,7 @@ describe('the appeals', () => {
 			['public', messageId],
 			['private', undefined]
 		])('GIVEN %s threads THEN the thread is remembered by its own ID', async (appealsThread, starter) => {
-			useSettings({ appealsThread });
+			useSettings({ appealsThread, appealsPingRoles: ['7'] });
 
 			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
@@ -206,6 +209,39 @@ describe('the appeals', () => {
 				allowed_mentions: { roles: ['7'] }
 			});
 			expect(vi.mocked(createMessage).mock.calls[0]).toMatchObject([threadId, { content: expect.stringContaining('<@&7>') }]);
+		});
+
+		test('GIVEN a private thread THEN the manager roles are brought in too, and only the ping roles were mentioned in the channel', async () => {
+			useSettings({ appealsThread: 'private', appealsPingRoles: ['7'], appealsManagerRoles: ['8'] });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(createMessage).toHaveBeenCalledWith(threadId, expect.objectContaining({ allowed_mentions: { roles: ['7', '8'] } }));
+			expect(channelSend).toHaveBeenCalledWith(expect.objectContaining({ allowed_mentions: { roles: ['7'] } }));
+		});
+
+		test('GIVEN a private thread and no role to bring in THEN it is a public one: nobody would see it', async () => {
+			useSettings({ appealsThread: 'private' });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(createThread).toHaveBeenCalledWith(channelId, expect.not.objectContaining({ type: ChannelType.PrivateThread }), messageId);
+		});
+
+		test('GIVEN a private thread in an announcement channel THEN it is a public one: Discord has no private ones there', async () => {
+			useSettings({ appealsThread: 'private', appealsPingRoles: ['7'] });
+			channel.type = ChannelType.GuildAnnouncement;
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(createThread).toHaveBeenCalledWith(channelId, expect.not.objectContaining({ type: ChannelType.PrivateThread }), messageId);
+		});
+
+		test('GIVEN a form that requires a managed role THEN a member holding it can send it', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm({ requiredRoles: ['1'], questions: [] }));
+			fetchMember.mockResolvedValue({ roleIds: ['1'] });
+
+			expect(await submitAppeal(guild, userId, '5', 12, {})).not.toEqual({ error: 'locked' });
 		});
 
 		test('GIVEN ping roles THEN they alone are mentioned', async () => {
@@ -440,6 +476,34 @@ describe('the appeals', () => {
 			expect(editChannel).toHaveBeenCalledWith(threadId, { archived: true });
 		});
 
+		test('GIVEN an approval of a case in course THEN it is undone', async () => {
+			await settleAppeal(guild, createRow(), true, moderatorId, null);
+
+			expect(ModerationActions.ban.undo).toHaveBeenCalledOnce();
+		});
+
+		test.each([
+			['ended', { isCompleted: () => true }],
+			['archived', { isArchived: () => true }]
+		])('GIVEN an approval of a case that %s meanwhile THEN nothing is undone, and the decision stands', async (_, state) => {
+			fetchCase.mockResolvedValue(createEntry(TypeVariation.Ban, state));
+
+			expect(await settleAppeal(guild, createRow(), true, moderatorId, null)).toHaveProperty('message');
+			expect(ModerationActions.ban.undo).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a direct message that does not arrive THEN the message of the appeal says so', async () => {
+			send.mockRejectedValue(new Error('Cannot send messages to this user'));
+
+			const result = await settleAppeal(guild, createRow(), false, moderatorId, 'No');
+
+			expect(JSON.stringify(result)).toContain('appealNotDelivered');
+		});
+
+		test('GIVEN a direct message that arrives THEN it says nothing about it', async () => {
+			expect(JSON.stringify(await settleAppeal(guild, createRow(), false, moderatorId, 'No'))).not.toContain('appealNotDelivered');
+		});
+
 		test('GIVEN a thread that is gone THEN the decision stands', async () => {
 			const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
 			editChannel.mockRejectedValueOnce(new Error('Unknown Channel'));
@@ -514,6 +578,24 @@ describe('the appeals', () => {
 
 			expect(embed.fields?.[0]).toEqual({ name: 'Which?', value: 'One, Two' });
 			expect(embed.fields?.[1].value).toBe(`[ahttp://evil.png](https://wolfstar.rocks/appeal-files/${guildId}/1/0)`);
+		});
+
+		test('GIVEN the longest answers and a long reason THEN the embed fits what Discord takes', () => {
+			const answers = Array.from({ length: 5 }, (_, index) => ({
+				questionId: `q${index}`,
+				kind: 'text' as const,
+				label: 'L'.repeat(100),
+				value: 'V'.repeat(1000)
+			}));
+			const appeal = createRow({ answers, status: 'denied', reviewerId: moderatorId, reason: 'R'.repeat(500) });
+			const entry = createEntry(TypeVariation.Ban, { reason: 'C'.repeat(2000) });
+
+			const [embed] = renderAppealView(t, appeal, entry).embeds;
+			const fields = (embed.fields ?? []).reduce((total, field) => total + field.name.length + field.value.length, 0);
+
+			expect((embed.title?.length ?? 0) + (embed.description?.length ?? 0) + (embed.footer?.text.length ?? 0) + fields).toBeLessThanOrEqual(
+				6000
+			);
 		});
 
 		test('GIVEN an appeal that was sent THEN it links to its message', () => {

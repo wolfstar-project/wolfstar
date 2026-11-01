@@ -76,6 +76,7 @@
 	"appealDmAccepted": "Your appeal of the case #{{case}} in **{{guild}}** was approved: {{reason}}",
 	"appealDmDenied": "Your appeal of the case #{{case}} in **{{guild}}** was denied: {{reason}}",
 	"appealDmDecidedBy": "Decided by {{moderator}}.",
+	"appealNotDelivered": "The member could not be told.",
 	"appealDmMessage": "A moderator of **{{guild}}** wrote to you about your appeal of the case #{{case}}:\n>>> {{message}}",
 	"appealThreadName": "Appeal of the case #{{case}}",
 	"appealCaseGone": "The case of this appeal is gone.",

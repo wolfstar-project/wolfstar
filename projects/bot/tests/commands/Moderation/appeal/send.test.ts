@@ -27,6 +27,7 @@ describe('/appeal send', () => {
 	const reply = vi.fn();
 	const update = vi.fn();
 	const defer = vi.fn(async () => ({ update }));
+	const createMessage = vi.fn(async () => ({}));
 	const appeal = { id: '1', caseId: 12, userId: '266624760782258186' };
 	const guild = { id: guildId };
 
@@ -40,7 +41,10 @@ describe('/appeal send', () => {
 		vi.clearAllMocks();
 		vi.mocked(fetchAppealByThread).mockResolvedValue(appeal as never);
 		vi.mocked(sendAppealDirectMessage).mockResolvedValue(true);
-		Object.assign(container, { prisma: {}, gatewayClient: { guilds: { fetch: vi.fn(async () => guild) } } });
+		Object.assign(container, {
+			prisma: {},
+			gatewayClient: { guilds: { fetch: vi.fn(async () => guild) }, api: { channels: { createMessage } } }
+		});
 	});
 
 	test('GIVEN a channel that is not the thread of an appeal THEN nobody is written to', async () => {
@@ -62,6 +66,24 @@ describe('/appeal send', () => {
 		expect(fetchAppealByCase).toHaveBeenCalledWith(container.prisma, guildId, 12);
 		expect(sendAppealDirectMessage).toHaveBeenCalledWith(guild, appeal, 'Tell us more');
 		expect(defer).toHaveBeenCalledWith({ flags: MessageFlags.Ephemeral });
+	});
+
+	test('GIVEN the option in the thread of another appeal THEN it writes about the one the option names', async () => {
+		const other = { id: '2', caseId: 7, userId: '1', threadId: null };
+		vi.mocked(fetchAppealByCase).mockResolvedValue(other as never);
+
+		await run('Tell us more', '7');
+
+		expect(sendAppealDirectMessage).toHaveBeenCalledWith(guild, other, 'Tell us more');
+	});
+
+	test('GIVEN the option from another channel THEN the thread of that appeal keeps what was sent', async () => {
+		vi.mocked(fetchAppealByThread).mockResolvedValue(null);
+		vi.mocked(fetchAppealByCase).mockResolvedValue({ ...appeal, threadId: '555' } as never);
+
+		await run('Tell us more', '12');
+
+		expect(createMessage).toHaveBeenCalledWith('555', { content: expect.stringContaining('Tell us more'), allowed_mentions: { parse: [] } });
 	});
 
 	test('GIVEN an appeal option that is no appeal THEN nobody is written to', async () => {
