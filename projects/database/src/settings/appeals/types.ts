@@ -131,6 +131,12 @@ export interface AppealBlock {
 }
 
 /**
+ * Whether each appeal gets a thread, and of which kind: `appeals.thread`.
+ */
+export const AppealThreadModes = ['none', 'public', 'private'] as const;
+export type AppealThreadMode = (typeof AppealThreadModes)[number];
+
+/**
  * What the dashboard asks the bot to do with an appeal.
  */
 export const AppealRequestKinds = ['Approve', 'Deny', 'Block', 'Unblock'] as const;

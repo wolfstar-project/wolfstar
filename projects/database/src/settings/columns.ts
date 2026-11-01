@@ -197,7 +197,13 @@ export const Columns = {
 		appealsBans: ['bans', 'value'],
 		appealsMutes: ['mutes', 'value'],
 		appealsTimeouts: ['timeouts', 'value'],
-		appealsQuestions: ['questions', 'value']
+		appealsManagerRoles: ['managerRoles', 'snowflakes'],
+		appealsPingRoles: ['pingRoles', 'snowflakes'],
+		appealsAnonymous: ['anonymous', 'value'],
+		appealsThread: ['thread', 'value'],
+		appealsCooldownDays: ['cooldownDays', 'value'],
+		appealsMaxActive: ['maxActive', 'value'],
+		appealsBlockOnDenial: ['blockOnDenial', 'value']
 	}),
 	...columns('GuildPermissions', {
 		permissionsUsers: ['users', 'value'],

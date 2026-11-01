@@ -3,7 +3,7 @@ import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelType
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { getConfigurableGroups, getConfigurableKeys, getSettingName, isSchemaGroup, type SchemaDataKey, type Serializer } from '#lib/database';
-import { MessageUpdateStyles, type ReadonlyGuildData } from 'wolfstar-database';
+import { AppealThreadModes, MessageUpdateStyles, type ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import { isNullish, isNullishOrEmpty, toTitleCase } from '@sapphire/utilities';
@@ -55,6 +55,7 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 			return 'channel';
 		case 'language':
 			return 'language';
+		case 'appealThread':
 		case 'messageUpdateStyle':
 			return 'choice';
 		case 'timezone':
@@ -86,6 +87,8 @@ export function getSettingChannelTypes(key: SchemaKey): ChannelType[] {
  */
 export function getSettingChoices(key: SchemaKey): readonly string[] {
 	switch (key.type) {
+		case 'appealThread':
+			return AppealThreadModes;
 		case 'messageUpdateStyle':
 			return MessageUpdateStyles;
 		default:
@@ -98,6 +101,8 @@ export function getSettingChoices(key: SchemaKey): readonly string[] {
  */
 export function getSettingChoiceLabel(t: Translator, key: SchemaKey, value: unknown): string {
 	switch (key.type) {
+		case 'appealThread':
+			return t(`serializers:appealThread${String(value)}` as TranslationKey);
 		case 'messageUpdateStyle':
 			return t(`serializers:messageUpdateStyle${String(value)}` as TranslationKey);
 		default:

@@ -149,7 +149,27 @@ export function getConfiguration() {
 		appealsBans: { type: 'boolean', name: 'appeals.bans', description: 'settings:appealsBans', default: true },
 		appealsMutes: { type: 'boolean', name: 'appeals.mutes', description: 'settings:appealsMutes', default: true },
 		appealsTimeouts: { type: 'boolean', name: 'appeals.timeouts', description: 'settings:appealsTimeouts', default: true },
-		appealsQuestions: { type: 'string', name: 'appeals.questions', description: 'settings:appealsQuestions', array: true },
+		appealsManagerRoles: { type: 'role', name: 'appeals.manager-roles', description: 'settings:appealsManagerRoles', array: true },
+		appealsPingRoles: { type: 'role', name: 'appeals.ping-roles', description: 'settings:appealsPingRoles', array: true },
+		appealsAnonymous: { type: 'boolean', name: 'appeals.anonymous', description: 'settings:appealsAnonymous', default: false },
+		appealsThread: { type: 'appealThread', name: 'appeals.thread', description: 'settings:appealsThread', default: 'public' },
+		appealsCooldownDays: {
+			type: 'integer',
+			name: 'appeals.cooldown-days',
+			description: 'settings:appealsCooldownDays',
+			default: 7,
+			minimum: 0,
+			maximum: 365
+		},
+		appealsMaxActive: {
+			type: 'integer',
+			name: 'appeals.max-active',
+			description: 'settings:appealsMaxActive',
+			default: 1,
+			minimum: 1,
+			maximum: 10
+		},
+		appealsBlockOnDenial: { type: 'boolean', name: 'appeals.block-on-denial', description: 'settings:appealsBlockOnDenial', default: false },
 
 		// Logs
 		logsMemberAdd: logChannel('member-add', 'settings:channelsLogsMemberAdd'),

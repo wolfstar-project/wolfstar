@@ -16,6 +16,7 @@ import {
 	planConfigurationImport
 } from '#lib/database/settings/transfer/plan';
 import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
+import { UserSerializer as AppealThreadSerializer } from '#root/serializers/appealThread';
 import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
 import { UserSerializer as HoneypotActionSerializer } from '#root/serializers/honeypotAction';
 import { UserSerializer as JoinGuardTimeoutSerializer } from '#root/serializers/joinGuardTimeout';
@@ -94,6 +95,7 @@ async function parseIssues(file: unknown, rules: readonly AutoModerationRule[] =
 beforeAll(async () => {
 	container.stores.register(new SerializerStore());
 	const pieces = {
+		appealThread: AppealThreadSerializer,
 		boolean: BooleanSerializer,
 		number: NumberSerializer,
 		string: StringSerializer,
@@ -147,7 +149,11 @@ describe('configuration file', () => {
 				'appeals.bans',
 				'appeals.mutes',
 				'appeals.timeouts',
-				'appeals.questions',
+				'appeals.anonymous',
+				'appeals.thread',
+				'appeals.cooldown-days',
+				'appeals.max-active',
+				'appeals.block-on-denial',
 				'logs.message-update-style',
 				'logs.reaction-emoji-include-twemoji',
 				'logs.webhooks',
