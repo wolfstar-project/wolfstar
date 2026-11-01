@@ -190,6 +190,34 @@ describe('settings menu', () => {
 		});
 	});
 
+	describe('the forms of the appeals', () => {
+		const text = (context: SettingsMenuContext) => JSON.stringify(renderSettingsGroup(context, resolveSettingGroup('appeals')!, 0).components);
+
+		test('GIVEN forms THEN their page lists them, the disabled ones marked, to read only', () => {
+			const context = {
+				...createContext(),
+				appealForms: [
+					{ name: 'Bans', enabled: true },
+					{ name: 'Mutes', enabled: false }
+				]
+			};
+
+			expect(text(context)).toContain('Bans');
+			expect(text(context)).toContain('commands/conf:menuAppealFormDisabled');
+			expect(text(context)).toContain('commands/conf:menuAppealForms');
+		});
+
+		test('GIVEN no forms THEN it says the built-in one is used', () => {
+			expect(text(createContext())).toContain('commands/conf:menuAppealFormsEmpty');
+		});
+
+		test('GIVEN another page THEN the forms are not on it', () => {
+			const context = { ...createContext(), appealForms: [{ name: 'Bans', enabled: true }] };
+
+			expect(JSON.stringify(renderSettingsGroup(context, resolveSettingGroup('automod')!, 0).components)).not.toContain('Bans');
+		});
+	});
+
 	describe('rendering', () => {
 		test('GIVEN every page of every group THEN the message fits in the limits of Discord', () => {
 			const context = createContext();

@@ -4,6 +4,7 @@ import { readSettings, readSettingsPermissionNodes, writeSettingsTransaction } f
 import { RoleActions } from '#lib/moderation/actions';
 import { readCommandRestrictions, removeFromCommandRestrictions, writeCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
+import { forgetDeletedAppealRole } from '#lib/moderation/appealService';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { announceJoinGuardChange } from '#lib/moderation/joinguard/store';
 import { getLogPrefix } from '#utils/functions';
@@ -47,6 +48,8 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		if (trx.settings.joinGuardPendingRole === roleId) trx.write({ joinGuardPendingRole: null });
 		if (trx.settings.joinGuardVerifiedRole === roleId) trx.write({ joinGuardVerifiedRole: null });
 		trx.write({ joinGuardAllowedRoles: trx.settings.joinGuardAllowedRoles.filter((allowed) => allowed !== roleId) });
+		trx.write({ appealsManagerRoles: trx.settings.appealsManagerRoles.filter((role) => role !== roleId) });
+		trx.write({ appealsPingRoles: trx.settings.appealsPingRoles.filter((role) => role !== roleId) });
 
 		// The commands that were restricted to the role, or that ignored it, forget it:
 		const restrictions = removeFromCommandRestrictions(readCommandRestrictions(trx.settings.commandsRestrictions, guild.id), roleId);
@@ -75,6 +78,7 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		for (const action of actions) await this.#restoreActionRole(action, guild);
 
 		await this.#forgetJoinGuardRole(guild.id, roleId);
+		await this.#forgetAppealFormRole(guild.id, roleId);
 	}
 
 	/**
@@ -111,6 +115,18 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		return roles
 			.map((entry): UniqueRoleSet => ({ name: entry.name, roles: entry.roles.filter((urs) => urs !== roleId) }))
 			.filter((entry) => entry.roles.length > 0);
+	}
+
+	/**
+	 * The forms of the appeals that named the role forget it, see `removeAppealFormRole`.
+	 */
+	async #forgetAppealFormRole(guildId: Snowflake, roleId: Snowflake) {
+		await forgetDeletedAppealRole(guildId, roleId).catch((error: unknown) =>
+			this.container.logger.error(
+				`${getLogPrefix(this)} Could not remove the deleted role ${roleId} from the appeal forms of ${guildId}:`,
+				error
+			)
+		);
 	}
 
 	/**

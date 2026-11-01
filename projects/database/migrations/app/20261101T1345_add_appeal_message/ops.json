@@ -1,0 +1,70 @@
+[
+	{
+		"id": "column.public.Appeal.channel_id",
+		"label": "Add column \"channel_id\" to \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "channel_id",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"channel_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "channel_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"channel_id\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ADD COLUMN \"channel_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"channel_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "channel_id"]
+			}
+		]
+	},
+	{
+		"id": "column.public.Appeal.message_id",
+		"label": "Add column \"message_id\" to \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "message_id",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"message_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "message_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"message_id\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ADD COLUMN \"message_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"message_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "message_id"]
+			}
+		]
+	}
+]

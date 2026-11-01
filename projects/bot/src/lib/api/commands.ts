@@ -107,6 +107,7 @@ const GuildOnlyPrecondition = 'GuildOnly';
  */
 const PermissionLevelPreconditions: ReadonlyMap<string, PermissionLevels> = new Map([
 	['administrator', PermissionLevels.Administrator],
+	['appealManager', PermissionLevels.Moderator],
 	['moderator', PermissionLevels.Moderator]
 ]);
 

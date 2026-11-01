@@ -9,6 +9,29 @@ import type { TransformedArguments } from '@wolfstar/http-framework';
 // prettier-ignore
 declare module '@wolfstar/http-framework' {
   interface CommandOptionsRegistry {
+    'appeal approve': {
+      appeal: string;
+      reason?: string;
+    };
+    'appeal block': {
+      reason?: string;
+      user: TransformedArguments.User;
+    };
+    'appeal deny': {
+      appeal: string;
+      reason?: string;
+    };
+    'appeal list': {};
+    'appeal send': {
+      appeal?: string;
+      message: string;
+    };
+    'appeal unblock': {
+      user: TransformedArguments.User;
+    };
+    'appeal view': {
+      appeal: string;
+    };
     'archive create': {
       case?: number;
       user: TransformedArguments.User;
@@ -347,6 +370,10 @@ declare module '@wolfstar/http-framework' {
     'reasons list': {};
     'reasons remove': {
       alias: string;
+    };
+    'reply': {
+      appeal?: string;
+      message: string;
     };
     'report': {
       reason: string;

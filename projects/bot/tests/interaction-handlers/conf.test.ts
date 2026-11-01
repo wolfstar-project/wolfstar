@@ -5,6 +5,10 @@ import { UserInteractionHandler } from '#root/interaction-handlers/conf';
 import { container } from '@wolfstar/http-framework';
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 
+vi.mock('wolfstar-database', async (importOriginal) => ({
+	...(await importOriginal<typeof import('wolfstar-database')>()),
+	fetchAppealForms: vi.fn(async () => [])
+}));
 vi.mock('#lib/database', async (original) => ({
 	...(await original<typeof import('#lib/database')>()),
 	readSettings: vi.fn(),

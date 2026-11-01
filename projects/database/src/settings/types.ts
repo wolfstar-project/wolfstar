@@ -136,5 +136,7 @@ declare global {
 		type AutoModerationRuleOptions = import('./automod/types.js').AutoModerationRuleOptions;
 		type AutoModerationRuleEscalation = import('./automod/types.js').AutoModerationRuleEscalationStep[];
 		type MessageHistoryMessages = import('./histories/storage.js').MessageHistoryMessage[];
+		type AppealFormQuestions = import('./appeals/types.js').AppealQuestion[];
+		type AppealAnswers = import('./appeals/types.js').AppealAnswer[];
 	}
 }

@@ -55,6 +55,11 @@ export interface ShardMessages {
 	 * The website asked the join guard for something, which the shard manager hears and hands to the first shard.
 	 */
 	joinGuardRequest: { requestId: string };
+
+	/**
+	 * The dashboard asked for something to be done with the appeals, which goes the same way.
+	 */
+	appealRequest: { requestId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

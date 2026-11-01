@@ -25,6 +25,7 @@ export const ConfigurationFileName = 'wolfstar-settings.json';
  * somebody decides that it can be.
  */
 const PortableTypes = new Set<SchemaKeyType>([
+	'appealThread',
 	'boolean',
 	'command',
 	'commandMatch',
@@ -69,7 +70,7 @@ export function findPortableKey(name: string): SchemaKey | null {
  * The settings the bot no longer has, which a file exported before may still hold: an import leaves them out instead of
  * refusing the file. `modules.commands` turned off nothing, the commands are not a module.
  */
-export const RemovedSettings: ReadonlySet<string> = new Set(['modules.commands']);
+export const RemovedSettings: ReadonlySet<string> = new Set(['appeals.questions', 'modules.commands']);
 
 /**
  * The fields of a rule of the file. What names something of the server (`ignoredRoles`, `ignoredChannels`) and what is

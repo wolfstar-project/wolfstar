@@ -1,5 +1,12 @@
-import { decodeAppealId, encodeAppealId, findAppealableCases, getAppealUrl, isAppealable, type AppealableCase } from '#lib/moderation/appeals';
-import { getAppealQuestions, parseAppealAnswers } from '#lib/moderation/appealService';
+import {
+	decodeAppealId,
+	encodeAppealId,
+	findAppealableCases,
+	getAppealUrl,
+	isAppealable,
+	parseAppealCase,
+	type AppealableCase
+} from '#lib/moderation/appeals';
 import { TypeVariation } from '#utils/moderationConstants';
 
 describe('appeals', () => {
@@ -44,19 +51,18 @@ describe('appeals', () => {
 		expect(decodeAppealId(['x', 'accept:0'])).toBeNull();
 	});
 
-	test('GIVEN the answers of a form THEN there is one per question, written and not too long', () => {
-		expect(parseAppealAnswers([' I am sorry '], 1)).toEqual(['I am sorry']);
-		expect(parseAppealAnswers(['a'], 2)).toBeNull();
-		expect(parseAppealAnswers([''], 1)).toBeNull();
-		expect(parseAppealAnswers(['x'.repeat(1001)], 1)).toBeNull();
-		expect(parseAppealAnswers('nope', 1)).toBeNull();
+	test.each([
+		['42', 42],
+		['#42', 42],
+		[' 42 ', 42],
+		['2147483647', 2147483647]
+	])('GIVEN the option %j THEN it is the case %i', (value, expected) => {
+		expect(parseAppealCase(value)).toBe(expected);
 	});
 
-	test('GIVEN a guild with no questions THEN the form asks the default one', () => {
-		const t = ((key: string) => key) as never;
-
-		expect(getAppealQuestions(t, [])).toEqual(['moderation:appealDefaultQuestion']);
-		expect(getAppealQuestions(t, ['One', ' ', 'Two', 'Three', 'Four', 'Five', 'Six'])).toHaveLength(5);
+	// A number past an `int4` would make the database refuse the query instead of finding nothing:
+	test.each(['', '0', '-1', '1.5', 'nope', '##1', '2147483648', '99999999999'])('GIVEN the option %j THEN it cannot be a case', (value) => {
+		expect(parseAppealCase(value)).toBeNull();
 	});
 
 	test('GIVEN a guild THEN its appeal page is on the website', () => {

@@ -5,9 +5,8 @@ import { seconds } from 'wolfstar-shared';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
 
 /**
- * `GET /appeals/:guild`: what the user who is logged in can appeal in a guild, for the appeal page of the website: the
- * guild, whether it takes appeals, the questions of its form and the cases of the user that can be appealed, with the
- * appeal they already made of each. The user does not need to be a member: a banned one is not.
+ * `GET /appeals/:guild`: what the user who is logged in can do with the appeals of a guild, for the appeal page of the
+ * website, see `getAppealPage`. The user does not need to be a member: a banned one is not.
  */
 export class UserRoute extends Route {
 	@authenticated()

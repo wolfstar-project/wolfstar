@@ -12,6 +12,7 @@ import { container } from '@wolfstar/http-framework';
  * The kinds of value a key accepts, each the name or an alias of the serializer piece that reads and displays it.
  */
 export type SchemaKeyType =
+	| 'appealThread'
 	| 'boolean'
 	| 'categoryOrTextChannel'
 	| 'guildTextChannel'

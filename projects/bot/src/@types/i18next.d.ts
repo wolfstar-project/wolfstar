@@ -83,6 +83,58 @@ declare module "i18next" {
       assertions: {
         expectedNonThreadChannel: "Expected a regular text channel, but I received the thread channel {{channel}} instead.";
       };
+      "commands/appeal": {
+        name: "appeal";
+        description: "Review the appeals the members of this server send.";
+        listName: "list";
+        listDescription: "List the appeals of this server.";
+        viewName: "view";
+        viewDescription: "Show everything a member wrote in an appeal.";
+        approveName: "approve";
+        approveDescription: "Approve an appeal, which undoes its case.";
+        denyName: "deny";
+        denyDescription: "Deny an appeal, which keeps its case.";
+        sendName: "send";
+        sendDescription: "Send a direct message to the member who appealed, from the thread of the appeal.";
+        optionsAppealName: "appeal";
+        optionsAppealDescription: "The appeal, by the number of its case.";
+        optionsReasonName: "reason";
+        optionsReasonDescription: "The reason, which the member is told in a direct message.";
+        optionsMessageName: "message";
+        optionsMessageDescription: "What to write to the member.";
+        optionsSendAppealName: "appeal";
+        optionsSendAppealDescription: "The appeal, by the number of its case, when you are not in its thread.";
+        optionsUserName: "user";
+        optionsUserDescription: "The user.";
+        optionsBlockReasonName: "reason";
+        optionsBlockReasonDescription: "Why, which the user sees on the appeal page.";
+        blockName: "block";
+        blockDescription: "Keep a user from appealing in this server.";
+        unblockName: "unblock";
+        unblockDescription: "Let a user appeal in this server again.";
+        blocked: "{{user}} can no longer appeal in this server.";
+        blockedAlready: "{{user}} was already blocked from appealing.";
+        unblocked: "{{user}} can appeal in this server again.";
+        unblockedAlready: "{{user}} was not blocked from appealing.";
+        formAll: "All forms";
+        notFound: "That case has no appeal.";
+        caseGone: "Deleted case";
+        choice: "#{{case}} · {{type}} · {{user}} · {{status}}";
+        statusPending: "Pending";
+        statusAccepted: "Approved";
+        statusDenied: "Denied";
+        filterAll: "All appeals";
+        listTitle: "Appeals";
+        listEmpty: "No appeals found.";
+        listLine: "**#{{case}}** · {{type}} · {{user}} · {{status}} · {{time}}";
+        listFooter: "Page {{page, number}} of {{pages, number}} · {{total, number}} appeals";
+        viewOpen: "Open in the channel";
+        approved: "The appeal of the case #{{case}} was approved, and the member was told if they take direct messages.";
+        denied: "The appeal of the case #{{case}} was denied, and the member was told if they take direct messages.";
+        sendNotThread: "Run this in the thread of an appeal, or pick the appeal with the `appeal` option.";
+        sendFailed: "I could not send it: the member does not take direct messages, or shares no server with me.";
+        sent: "{{moderator}} wrote to the member:\n>>> {{message}}";
+      };
       "commands/archive": {
         archiveName: "archive";
         archiveDescription: "Save and read the recent messages of members.";
@@ -679,6 +731,9 @@ declare module "i18next" {
         menuResetCancelled: "Nothing was reset.";
         menuResetDone: "The settings of **{{module}}** have been reset.";
         menuAutomodRules: "Auto-moderation rules";
+        menuAppealForms: "Forms";
+        menuAppealFormsEmpty: "None yet: the members get the default question. Forms are built on the dashboard.";
+        menuAppealFormDisabled: "disabled";
         menuAutomodRulesDescription: "Create and configure the rules of the auto-moderation.";
         menuTransferTitle: "Export and import";
         menuTransferDescription: "Save the configuration of the server to a file, or apply a file exported from this server or another one.";
@@ -747,6 +802,19 @@ declare module "i18next" {
         transferErrorRuleNameTaken: "Two rules are named **{{name}}**.";
       };
       "commands/help": {
+        "/appeal": {
+          extendedHelp: "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal or with its `appeal` option, sends a direct message to the member, and leaves what was sent in the thread.\n`block` keeps a user from appealing here, which `unblock` undoes.";
+          examples: [
+            "list",
+            "view appeal:42",
+            "approve appeal:42 reason:We talked about it, and it is settled",
+            "deny appeal:42",
+            "send message:Can you tell us more about what happened?",
+            "block user:@Pete reason:Spamming the appeals",
+            "unblock user:@Pete",
+          ];
+          reminder: "The `appeal` option takes the number of the case, which it suggests as you write. I cannot write to a member who shares no server with me, as a banned one often does.";
+        };
         "/archive": {
           extendedHelp: "Saves the messages a member sent in the last 14 days in a history the moderators can read again later, as a text file. I read the latest messages of the 50 channels with the newest messages I can see, and keep up to 200 messages of the member, with the links of their attachments.\nA history can be saved for a case, and `/ban add`, `/softban` and `/kick` save one before the messages are deleted when their `archive` option is on.";
           examples: ["create user:@Pete", "create user:@Pete case:42", "list user:@Pete"];
@@ -874,6 +942,11 @@ declare module "i18next" {
             "remove alias:r1",
             "list",
           ];
+        };
+        "/reply": {
+          extendedHelp: "Answers the staff of a server about your appeal, from your direct messages with me: what you write goes to the thread of the appeal. It needs me to be installed on your account, which the appeal page asks for.";
+          examples: ["message:I did not know that was against the rules"];
+          reminder: "It only works while your appeal waits for a decision, on a server that gives each appeal a thread.";
         };
         "/report": {
           extendedHelp: "Reports a member to the moderators of the server, with what they did. The report is sent to the channel of the reports, where the moderators can warn, time out, kick, mute, softban or ban the member, delete the message, or dismiss the report.\nIt is also in the Apps menu, as `Report Message` and `Report User`, which ask for the reason in a form.";
@@ -1561,6 +1634,21 @@ declare module "i18next" {
         limit: "The server already has {{maximum}} predefined reasons, the most it can have.";
         listEmpty: "The server has no predefined reasons. Add one with `/reasons add`.";
         listTitle: "Predefined reasons ({{count}}/{{maximum}}):";
+      };
+      "commands/reply": {
+        name: "reply";
+        description: "Answer the staff of a server about your appeal.";
+        optionsMessageName: "message";
+        optionsMessageDescription: "What to tell the staff.";
+        optionsAppealName: "appeal";
+        optionsAppealDescription: "The appeal, when you have more than one waiting.";
+        none: "You have no appeal waiting for a decision.";
+        noThread: "Your appeal is waiting for a decision, but this server does not take answers. The staff will write to you here.";
+        choose: "You have more than one appeal waiting, pick one with the `appeal` option.";
+        notFound: "That is not one of your appeals waiting for a decision.";
+        failed: "I could not deliver it to the staff. The server may have removed me or the thread of your appeal.";
+        sent: "Delivered to the staff.";
+        posted: "{{user}} answered:\n>>> {{message}}";
       };
       "commands/report": {
         name: "report";
@@ -2618,20 +2706,25 @@ declare module "i18next" {
         actionTargetWolf: "I... I cannot do that to myself! You broke my heart. 💔";
         actionTargetHigherHierarchyWolf: "This action cannot be performed on a member with a role position that is higher than or equal to mine.";
         actionTargetHigherHierarchyAuthor: "This action cannot be performed on a member with a role position that is higher than or equal to yours.";
+        appealDefaultForm: "Appeal";
         appealDefaultQuestion: "Why should this case be undone?";
         appealTitle: "Appeal of the case #{{case}} ({{type}})";
         appealUser: "**User**: {{user}}";
         appealCaseReason: "**Reason of the case**: {{reason}}";
         appealDate: "**Sent**: {{time}}";
-        appealAccept: "Accept";
+        appealAccept: "Approve";
         appealDeny: "Deny";
         appealReasonLabel: "Reason, sent to the member";
-        appealAccepted: "Accepted: {{reason}}";
+        appealAccepted: "Approved: {{reason}}";
         appealDenied: "Denied: {{reason}}";
         appealReviewer: "Decided by";
-        appealUndoReason: "Appeal of the case #{{case}} accepted: {{reason}}";
-        appealDmAccepted: "Your appeal of the case #{{case}} in **{{guild}}** was accepted: {{reason}}";
+        appealUndoReason: "Appeal of the case #{{case}} approved: {{reason}}";
+        appealDmAccepted: "Your appeal of the case #{{case}} in **{{guild}}** was approved: {{reason}}";
         appealDmDenied: "Your appeal of the case #{{case}} in **{{guild}}** was denied: {{reason}}";
+        appealDmDecidedBy: "Decided by {{moderator}}.";
+        appealNotDelivered: "The member could not be told.";
+        appealDmMessage: "A moderator of **{{guild}}** wrote to you about your appeal of the case #{{case}}:\n>>> {{message}}";
+        appealThreadName: "Appeal of the case #{{case}}";
         appealCaseGone: "The case of this appeal is gone.";
         appealAlreadyDecided: "This appeal was already decided.";
         appealUndoFailed: "I could not undo the case, the appeal is still pending. Check my permissions and try again.";
@@ -2818,6 +2911,7 @@ declare module "i18next" {
         disabledModuleReports: "The reports module is turned off in this server, an admin can turn it back on with `/settings server`.";
         restrictedChannel: "This command cannot be used in this channel!";
         restrictedRole: "Your roles do not let you use this command in this server!";
+        appealManager: "You need to review the appeals of this server to run `{{command.name}}`!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
         serverOwner: "You need to be the server's owner to run `{{command.name}}`!";
         subCommandGuildOnly: 'This subcommand can only be used in server channels due to Discord limitations. We will likely make this command available in DMs when we implement the new "buttons" feature.';
@@ -2875,6 +2969,10 @@ declare module "i18next" {
         customCommandInvalidType_one: "The type {{tag.type}} is not valid, it must be the following: {{possibles, orList}}";
         customCommandInvalidType_other: "The type {{tag.type}} is not valid, it must be one of the following: {{possibles, orList}}";
         customCommandMissingParameter: "You need to write another parameter!\n\n> **Tip**: The type for the next argument is `{{type}}`!";
+        appealThreadnone: "No thread";
+        appealThreadpublic: "Public thread";
+        appealThreadprivate: "Private thread";
+        invalidAppealThread: "{{name}} must be one of: {{possibles, orList}}.";
         honeypotActionBan: "Ban";
         honeypotActionKick: "Kick";
         honeypotActionSoftban: "Softban";
@@ -2954,11 +3052,17 @@ declare module "i18next" {
         channelsLogsRoleCreate: "The channel for role creation logs, if set, I send a message when a new role is craeted.";
         channelsLogsInvites: "The channel for invite logs, if set, I send a message when an invite is created or deleted.";
         appealsEnabled: "Whether the members can appeal their bans, mutes and timeouts on the website. The direct message of the punishment links to the appeal page.";
-        appealsChannel: "The channel I send the appeals to, where the moderators accept or deny them.";
+        appealsChannel: "The channel I send the appeals to, where the staff approves or denies them. Without it, they are only on the dashboard.";
         appealsBans: "Whether the bans can be appealed.";
         appealsMutes: "Whether the mutes can be appealed.";
         appealsTimeouts: "Whether the timeouts can be appealed.";
-        appealsQuestions: "The questions of the appeal form, one per line, five at most. Without any, the form asks why the case should be undone.";
+        appealsManagerRoles: "The roles that review the appeals, besides the moderators.";
+        appealsPingRoles: "The roles I mention when an appeal arrives.";
+        appealsAnonymous: "Whether the member is never told who decided their appeal.";
+        appealsThread: "Whether each appeal gets a thread for the staff, public on its message or private, from which `/appeal send` writes to the member.";
+        appealsCooldownDays: "How many days a member waits to appeal again after a denial. `0` is no wait.";
+        appealsMaxActive: "How many appeals a member can have waiting for a decision.";
+        appealsBlockOnDenial: "Whether a denial blocks the member from appealing again, until the staff unblocks them.";
         channelsLogsThreads: "The channel for thread logs, if set, I send a message when a thread is created, deleted, renamed, archived or locked.";
         channelsLogsEvents: "The channel for scheduled event logs, if set, I send a message when an event is created, changed, started, ended or deleted.";
         channelsLogsExpressions: "The channel for sticker and sound logs, if set, I send a message when a sticker or a soundboard sound is created, changed or deleted.";
@@ -3115,7 +3219,13 @@ declare module "i18next" {
           appealsBans: "Appeal Bans";
           appealsMutes: "Appeal Mutes";
           appealsTimeouts: "Appeal Timeouts";
-          appealsQuestions: "Appeal Questions";
+          appealsManagerRoles: "Appeal Manager Roles";
+          appealsPingRoles: "Appeal Ping Roles";
+          appealsAnonymous: "Anonymous Appeals";
+          appealsThread: "Appeal Threads";
+          appealsCooldownDays: "Appeal Cooldown";
+          appealsMaxActive: "Maximum Active Appeals";
+          appealsBlockOnDenial: "Block on Denial";
           logsThreads: "Thread Logs";
           logsEvents: "Event Logs";
           logsExpressions: "Sticker and Sound Logs";
