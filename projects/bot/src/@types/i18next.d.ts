@@ -2869,6 +2869,7 @@ declare module "i18next" {
         disabledModuleReports: "The reports module is turned off in this server, an admin can turn it back on with `/settings server`.";
         restrictedChannel: "This command cannot be used in this channel!";
         restrictedRole: "Your roles do not let you use this command in this server!";
+        appealManager: "You need to review the appeals of this server to run `{{command.name}}`!";
         moderator: "You need moderator privileges to run `{{command.name}}`!";
         serverOwner: "You need to be the server's owner to run `{{command.name}}`!";
         subCommandGuildOnly: 'This subcommand can only be used in server channels due to Discord limitations. We will likely make this command available in DMs when we implement the new "buttons" feature.';

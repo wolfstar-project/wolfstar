@@ -4,7 +4,7 @@ import { RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type AnyNamespace, type TFunction } from '@wolfstar/plugin-i18next';
 import type { Command } from '@wolfstar/http-framework';
 import { Subcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
+import { ApplicationIntegrationType, InteractionContextType } from 'discord-api-types/v10';
 
 /**
  * The subcommands that decide an appeal, for which the autocomplete leaves out the ones that were decided.
@@ -16,12 +16,11 @@ const DecisionSubcommands: readonly (string | null)[] = ['approve', 'deny'];
  * the appeals the members send from the website, see `lib/moderation/appealService.ts`. They are wired onto this command
  * by `@wolfstar/plugin-subcommands-advanced`.
  */
-@ApplyOptions<Subcommand.Options>({ preconditions: ['moderator'] })
+@ApplyOptions<Subcommand.Options>({ preconditions: ['appealManager'] })
 @RegisterCommand((builder) =>
 	applyLocalizedBuilder(builder, 'commands/appeal:name', 'commands/appeal:description')
 		.setContexts(InteractionContextType.Guild)
 		.setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
-		.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 )
 export class UserCommand extends Subcommand {
 	// The autocomplete of the subcommands reaches the parent:

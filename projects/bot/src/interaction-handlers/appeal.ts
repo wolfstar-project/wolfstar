@@ -22,7 +22,7 @@ const ReasonInputId = 'reason';
  * and `Deny` open a modal that asks for the reason, which decides the appeal once, undoes the case when it is accepted,
  * and replaces the buttons with what was decided.
  */
-@ApplyOptions<InteractionHandler.Options>({ preconditions: ['moderator'] })
+@ApplyOptions<InteractionHandler.Options>({ preconditions: ['appealManager'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;

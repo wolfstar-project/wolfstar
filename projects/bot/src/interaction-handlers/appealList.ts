@@ -11,7 +11,7 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionH
  * Handles the select menu and the buttons of `/appeal list`, see `lib/moderation/appealList.ts`: what a click does is
  * read from its custom ID, so there is nothing to keep between the clicks.
  */
-@ApplyOptions<InteractionHandler.Options>({ preconditions: ['moderator'] })
+@ApplyOptions<InteractionHandler.Options>({ preconditions: ['appealManager'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
