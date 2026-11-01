@@ -33,9 +33,10 @@ export class ModerationActionBan extends ModerationAction<number, TypeVariation.
 		await this.completeLastModerationEntryFromUser({ guild, userId: entry.userId });
 	}
 
-	protected override async handleUndoPre(guild: Guild, entry: ModerationAction.Entry) {
+	protected override async handleUndoPre(guild: Guild, entry: ModerationAction.Entry, data: ModerationAction.Data<number>) {
 		const reason = await this.getReason(guild, entry.reason, true);
-		await container.gatewayClient.api.guilds.unbanUser(guild.id, entry.userId, { reason });
+		const unban = container.gatewayClient.api.guilds.unbanUser(guild.id, entry.userId, { reason });
+		await (data.ignoreMissing ? resolveOnErrorCodes(unban, RESTJSONErrorCodes.UnknownBan) : unban);
 
 		await this.completeLastModerationEntryFromUser({ guild, userId: entry.userId });
 	}

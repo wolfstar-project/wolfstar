@@ -161,7 +161,7 @@ let through what the submission refuses.
 A case is appealed once in all (the unique index that is there), whatever the form. `cooldown` counts from the latest
 denied appeal of the user in the server. `maxActive` counts the pending ones.
 
-A server with no enabled form gets the built-in one: a single long text question, "Why should this case be undone?",
+A server with no forms gets the built-in one: a single long text question, "Why should this case be undone?",
 the default of today, so a server that only turned appeals on keeps working as it does now and before the dashboard
 exists. Its appeals have no `formId`. My call: the alternative, no form and nothing to appeal with, would turn the
 feature off for every server at the deploy.

@@ -448,6 +448,12 @@ export declare namespace ModerationAction {
 		moderator?: User | null;
 
 		/**
+		 * Whether an undo takes a target that is no longer under the action as done, and finishes the case: an appeal that
+		 * is approved after the ban was lifted by hand. Without it Discord's refusal stops the undo, as `/ban remove` wants.
+		 */
+		ignoreMissing?: boolean;
+
+		/**
 		 * Set by the action when the user could not be sent the direct message, which the case is made without.
 		 */
 		directMessageUndelivered?: boolean;

@@ -1,5 +1,12 @@
 import { readSettings } from '#lib/database/settings/functions';
-import { getAppealPage, renderAppealView, sendAppealDirectMessage, settleAppeal, submitAppeal } from '#lib/moderation/appealService';
+import {
+	forgetDeletedAppealRole,
+	getAppealPage,
+	renderAppealView,
+	sendAppealDirectMessage,
+	settleAppeal,
+	submitAppeal
+} from '#lib/moderation/appealService';
 import { getModeration } from '#utils/functions';
 import { withSharedLock } from '#utils/locks';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -16,6 +23,7 @@ import {
 	fetchAppealForm,
 	fetchAppealForms,
 	fetchUserAppeals,
+	forgetAppealFormRole,
 	reopenAppeal,
 	setAppealMessage,
 	setAppealThread,
@@ -45,6 +53,7 @@ vi.mock('wolfstar-database', async (importOriginal) => ({
 	fetchAppealForm: vi.fn(),
 	fetchAppealForms: vi.fn(),
 	fetchUserAppeals: vi.fn(),
+	forgetAppealFormRole: vi.fn(),
 	reopenAppeal: vi.fn(),
 	setAppealMessage: vi.fn(),
 	setAppealThread: vi.fn()
@@ -366,6 +375,13 @@ describe('the appeals', () => {
 			expect(await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).toEqual({ error: 'blocked' });
 		});
 
+		test('GIVEN the built-in form on a server whose forms are all disabled THEN it does not exist', async () => {
+			vi.mocked(fetchAppealForms).mockResolvedValue([createForm({ enabled: false })]);
+
+			expect(await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' })).toEqual({ error: 'notFound' });
+			expect(createAppeal).not.toHaveBeenCalled();
+		});
+
 		test('GIVEN the built-in form on a server that has one enabled THEN it does not exist', async () => {
 			vi.mocked(fetchAppealForms).mockResolvedValue([createForm()]);
 
@@ -445,6 +461,14 @@ describe('the appeals', () => {
 			expect(page.forms).toMatchObject([{ id: null, lock: null, cases: [{ id: 12 }] }]);
 		});
 
+		test('GIVEN only disabled forms THEN nothing is offered: the built-in form is for a guild that set none up', async () => {
+			vi.mocked(fetchAppealForms).mockResolvedValue([createForm({ enabled: false })]);
+
+			const page = await getAppealPage(guild, userId);
+
+			expect(page.forms).toMatchObject([{ id: '5', lock: 'disabled' }]);
+		});
+
 		test('GIVEN a disabled form next to an enabled one THEN it is listed as locked, with no built-in form', async () => {
 			vi.mocked(fetchAppealForms).mockResolvedValue([createForm(), createForm({ id: '6', enabled: false, lockReason: 'Closed' })]);
 
@@ -503,19 +527,10 @@ describe('the appeals', () => {
 			expect(ModerationActions.ban.undo).not.toHaveBeenCalled();
 		});
 
-		test('GIVEN a ban that is already gone THEN the approval stands, which is what a retry after a half undo meets', async () => {
-			const unknownBan = new DiscordAPIError(
-				{ code: RESTJSONErrorCodes.UnknownBan, message: 'Unknown Ban' },
-				RESTJSONErrorCodes.UnknownBan,
-				404,
-				'DELETE',
-				'',
-				{}
-			);
-			vi.mocked(ModerationActions.ban.undo).mockRejectedValueOnce(unknownBan);
+		test('GIVEN an approval THEN the undo takes a ban that is already gone as done, so the case is still finished', async () => {
+			await settleAppeal(guild, createRow(), true, moderatorId, null);
 
-			expect(await settleAppeal(guild, createRow(), true, moderatorId, null)).toHaveProperty('message');
-			expect(reopenAppeal).not.toHaveBeenCalled();
+			expect(ModerationActions.ban.undo).toHaveBeenCalledWith(guild, expect.anything(), { ignoreMissing: true });
 		});
 
 		test('GIVEN an undo that fails otherwise THEN the appeal is pending again', async () => {
@@ -620,6 +635,21 @@ describe('the appeals', () => {
 			await settleAppeal(guild, createRow(), false, moderatorId, 'No');
 
 			expect(vi.mocked(send).mock.calls[0][0].content).toContain('appealDmDecidedBy');
+		});
+	});
+
+	describe('forgetDeletedAppealRole', () => {
+		test('GIVEN two roles deleted at once THEN each waits for the other, so neither brings the other back', async () => {
+			const order: string[] = [];
+			vi.mocked(forgetAppealFormRole).mockImplementation(async (_db, _guildId, roleId) => {
+				order.push(`start ${roleId}`);
+				await new Promise((resolve) => setTimeout(resolve, 5));
+				order.push(`end ${roleId}`);
+			});
+
+			await Promise.all([forgetDeletedAppealRole(guildId, 'a'), forgetDeletedAppealRole(guildId, 'b')]);
+
+			expect(order).toEqual(['start a', 'end a', 'start b', 'end b']);
 		});
 	});
 

@@ -10,7 +10,6 @@ import { getModeration } from '#utils/functions';
 import { withSharedLock } from '#utils/locks';
 import { Colors, Urls } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
-import { DiscordAPIError } from '@discordjs/rest';
 import { hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -37,6 +36,7 @@ import {
 	fetchAppealForm,
 	fetchAppealForms,
 	fetchUserAppeals,
+	forgetAppealFormRole,
 	reopenAppeal,
 	setAppealMessage,
 	setAppealThread,
@@ -48,11 +48,12 @@ import {
 } from 'wolfstar-database';
 
 /**
- * The forms a page offers: the ones of the guild, or the built-in one when none of them is enabled.
+ * The forms a page offers: the ones of the guild, or the built-in one when it set none up. A guild whose forms are all
+ * disabled closed its appeals, and the built-in form must not open them again.
  */
 async function readAppealForms(t: TFunction<AnyNamespace>, guildId: Snowflake) {
 	const forms = await fetchAppealForms(container.prisma, guildId);
-	return forms.some((form) => form.enabled) ? forms : [getBuiltInAppealForm(t, guildId), ...forms];
+	return forms.length === 0 ? [getBuiltInAppealForm(t, guildId)] : forms;
 }
 
 /**
@@ -454,14 +455,15 @@ export async function applyAppealDecision(
 		try {
 			const moderator = await container.gatewayClient.users.fetch(reviewerId);
 			const undoReason = t('moderation:appealUndoReason', { case: appeal.caseId, reason: reason ?? '-' });
-			await ModerationActions[getAppealUndoActionName(undo)].undo(guild, { user: appeal.userId, moderator, reason: undoReason });
+			await ModerationActions[getAppealUndoActionName(undo)].undo(
+				guild,
+				{ user: appeal.userId, moderator, reason: undoReason },
+				{ ignoreMissing: true }
+			);
 		} catch (error) {
-			// A ban that is gone is what the approval wanted: lifted by hand, or by an undo that stopped halfway.
-			if (!(error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownBan)) {
-				container.logger.error('[Appeals] Could not undo the case of an accepted appeal:', error);
-				await reopenAppeal(container.prisma, guild.id, appeal.id);
-				return { error: 'undoFailed' };
-			}
+			container.logger.error('[Appeals] Could not undo the case of an accepted appeal:', error);
+			await reopenAppeal(container.prisma, guild.id, appeal.id);
+			return { error: 'undoFailed' };
 		}
 	}
 
@@ -545,4 +547,12 @@ export async function sendAppealDirectMessage(guild: Guild, appeal: Appeal, mess
 
 	container.logger.debug(`[Appeals] A message to ${appeal.userId} of ${guild.id}: ${sent ? 'sent' : 'not delivered'}, appeal ${appeal.id}`);
 	return Boolean(sent);
+}
+
+/**
+ * Takes a role that was deleted out of the forms of a guild. Two roles deleted at once wait for each other, or the second
+ * would write back the first from what it read.
+ */
+export function forgetDeletedAppealRole(guildId: Snowflake, roleId: Snowflake) {
+	return withSharedLock(`appeals:forms:${guildId}`, () => forgetAppealFormRole(container.prisma, guildId, roleId));
 }
