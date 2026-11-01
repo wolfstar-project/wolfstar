@@ -1,4 +1,15 @@
 {
+	"/appeal": {
+		"extendedHelp": "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal, sends a direct message to the member, and leaves what was sent in the thread.",
+		"examples": [
+			"list",
+			"view appeal:42",
+			"approve appeal:42 reason:We talked about it, and it is settled",
+			"deny appeal:42",
+			"send message:Can you tell us more about what happened?"
+		],
+		"reminder": "The `appeal` option takes the number of the case, which it suggests as you write. I cannot write to a member who shares no server with me, as a banned one often does."
+	},
 	"/archive": {
 		"extendedHelp": "Saves the messages a member sent in the last 14 days in a history the moderators can read again later, as a text file. I read the latest messages of the 50 channels with the newest messages I can see, and keep up to 200 messages of the member, with the links of their attachments.\nA history can be saved for a case, and `/ban add`, `/softban` and `/kick` save one before the messages are deleted when their `archive` option is on.",
 		"examples": ["create user:@Pete", "create user:@Pete case:42", "list user:@Pete"],

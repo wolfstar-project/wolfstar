@@ -1,4 +1,12 @@
-import { decodeAppealId, encodeAppealId, findAppealableCases, getAppealUrl, isAppealable, type AppealableCase } from '#lib/moderation/appeals';
+import {
+	decodeAppealId,
+	encodeAppealId,
+	findAppealableCases,
+	getAppealUrl,
+	isAppealable,
+	parseAppealCase,
+	type AppealableCase
+} from '#lib/moderation/appeals';
 import { getAppealQuestions, parseAppealAnswers } from '#lib/moderation/appealService';
 import { TypeVariation } from '#utils/moderationConstants';
 
@@ -57,6 +65,20 @@ describe('appeals', () => {
 
 		expect(getAppealQuestions(t, [])).toEqual(['moderation:appealDefaultQuestion']);
 		expect(getAppealQuestions(t, ['One', ' ', 'Two', 'Three', 'Four', 'Five', 'Six'])).toHaveLength(5);
+	});
+
+	test.each([
+		['42', 42],
+		['#42', 42],
+		[' 42 ', 42],
+		['2147483647', 2147483647]
+	])('GIVEN the option %j THEN it is the case %i', (value, expected) => {
+		expect(parseAppealCase(value)).toBe(expected);
+	});
+
+	// A number past an `int4` would make the database refuse the query instead of finding nothing:
+	test.each(['', '0', '-1', '1.5', 'nope', '##1', '2147483648', '99999999999'])('GIVEN the option %j THEN it cannot be a case', (value) => {
+		expect(parseAppealCase(value)).toBeNull();
 	});
 
 	test('GIVEN a guild THEN its appeal page is on the website', () => {

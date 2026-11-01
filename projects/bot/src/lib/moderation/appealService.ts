@@ -1,18 +1,26 @@
 import { readSettings } from '#lib/database/settings/functions';
 import { ModerationActions } from '#lib/moderation/actions';
-import { encodeAppealId, findAppealableCases, getAppealUndoActionName, type AppealableType } from '#lib/moderation/appeals';
+import { AppealableTypes, encodeAppealId, findAppealableCases, getAppealUndoActionName, type AppealableType } from '#lib/moderation/appeals';
 import { fetchGuildT, getTitle } from '#lib/moderation/common/util';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
+import type { TranslationKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
 import { Colors } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
-import { time, TimestampStyles, userMention } from '@discordjs/formatters';
+import { messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { canSendEmbeds } from '@wolfstar/http-framework-utilities/gateway';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
-import { ButtonStyle, ComponentType, type APIActionRowComponent, type APIButtonComponent, type Snowflake } from 'discord-api-types/v10';
+import {
+	ButtonStyle,
+	ComponentType,
+	ThreadAutoArchiveDuration,
+	type APIActionRowComponent,
+	type APIButtonComponent,
+	type Snowflake
+} from 'discord-api-types/v10';
 import {
 	createAppeal,
 	decideAppeal,
@@ -20,6 +28,7 @@ import {
 	MaximumAppealAnswerLength,
 	MaximumAppealQuestions,
 	reopenAppeal,
+	setAppealMessage,
 	type Appeal,
 	type AppealStatus
 } from 'wolfstar-database';
@@ -147,7 +156,19 @@ async function sendAppealMessage(
 		return;
 	}
 
-	await channel.send({ ...renderAppealMessage(t, appeal, entry, questions, 'pending'), allowed_mentions: { parse: [] } });
+	const sent = await channel.send({ ...renderAppealMessage(t, appeal, entry, questions, 'pending'), allowed_mentions: { parse: [] } });
+	await setAppealMessage(container.prisma, guild.id, appeal.id, channelId, sent.id);
+	container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was sent to ${channelId}: message ${sent.id}`);
+
+	// The moderators talk about the appeal in its thread and `/appeal send` writes to the member from it, which finds the
+	// appeal by the ID of the thread: the one of the message it starts from. Without one the appeal is still decided.
+	await container.gatewayClient.api.channels
+		.createThread(
+			channelId,
+			{ name: cutText(t('moderation:appealThreadName', { case: entry.id }), 100), auto_archive_duration: ThreadAutoArchiveDuration.OneWeek },
+			sent.id
+		)
+		.catch((error: unknown) => container.logger.warn(`[Appeals] Could not start the thread of the appeal ${appeal.id} of ${guild.id}:`, error));
 }
 
 /**
@@ -208,6 +229,28 @@ export function renderAppealMessage(
 	return { embeds: [embed.toJSON()], components: [row] };
 }
 
+/**
+ * What `/appeal view` shows of an appeal: its message, with what was decided, and a link to it when it was sent. The
+ * buttons stay on that message, which is the one a decision changes.
+ */
+export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry, questions: readonly string[]) {
+	const { embeds } = renderAppealMessage(t, appeal, entry, questions, appeal.status, appeal.reviewerId, appeal.reason);
+	if (appeal.channelId === null || appeal.messageId === null) return { embeds, components: [] };
+
+	const row: APIActionRowComponent<APIButtonComponent> = {
+		type: ComponentType.ActionRow,
+		components: [
+			{
+				type: ComponentType.Button,
+				style: ButtonStyle.Link,
+				label: cutText(t('commands/appeal:viewOpen'), 80),
+				url: messageLink(appeal.channelId, appeal.messageId, appeal.guildId)
+			}
+		]
+	};
+	return { embeds, components: [row] };
+}
+
 export type AppealDecisionError = 'decided' | 'undoFailed';
 
 /**
@@ -250,4 +293,56 @@ export async function applyAppealDecision(
 		?.send({ content: t(key, { guild: guild.name, case: entry.id, reason: reason ?? '-' }), allowed_mentions: { parse: [] } })
 		.catch(() => null);
 	return null;
+}
+
+export type AppealSettleError = AppealDecisionError | 'caseGone';
+
+/**
+ * What a moderator is told when an appeal could not be decided.
+ */
+export const AppealSettleErrorKeys = {
+	caseGone: 'moderation:appealCaseGone',
+	decided: 'moderation:appealAlreadyDecided',
+	undoFailed: 'moderation:appealUndoFailed'
+} as const satisfies Record<AppealSettleError, TranslationKey>;
+
+/**
+ * Decides an appeal by its case, for the buttons of its message and for `/appeal approve` and `/appeal deny`.
+ *
+ * @returns Its message as it reads once decided, in the language of the guild as it was sent, or why it was not decided.
+ */
+export async function settleAppeal(
+	guild: Guild,
+	appeal: Appeal,
+	accept: boolean,
+	reviewerId: Snowflake,
+	reason: string | null
+): Promise<{ message: ReturnType<typeof renderAppealMessage> } | { error: AppealSettleError }> {
+	const moderation = await getModeration(guild);
+	const entry = await moderation.fetch(appeal.caseId);
+	if (entry === null || !(AppealableTypes as readonly number[]).includes(entry.type)) return { error: 'caseGone' };
+
+	const error = await applyAppealDecision(guild, appeal, { id: entry.id, type: entry.type as AppealableType }, accept, reviewerId, reason);
+	if (error !== null) return { error };
+
+	const t = await fetchGuildT(guild);
+	const settings = await readSettings(guild.id);
+	const questions = getAppealQuestions(t, settings.appealsQuestions);
+	return { message: renderAppealMessage(t, appeal, entry, questions, accept ? 'accepted' : 'denied', reviewerId, reason) };
+}
+
+/**
+ * Writes to the member who made an appeal, for `/appeal send`.
+ *
+ * @returns Whether it reached them: the bot cannot write to who shares no server with it, as a member it banned often
+ * does not, nor to who does not take direct messages.
+ */
+export async function sendAppealDirectMessage(guild: Guild, appeal: Appeal, message: string) {
+	const t = await fetchGuildT(guild);
+	const content = t('moderation:appealDmMessage', { guild: guild.name, case: appeal.caseId, message });
+	const user = await container.gatewayClient.users.fetch(appeal.userId).catch(() => null);
+	const sent = await user?.send({ content, allowed_mentions: { parse: [] } }).catch(() => null);
+
+	container.logger.debug(`[Appeals] A message to ${appeal.userId} of ${guild.id}: ${sent ? 'sent' : 'not delivered'}, appeal ${appeal.id}`);
+	return Boolean(sent);
 }

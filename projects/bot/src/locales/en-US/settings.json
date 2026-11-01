@@ -28,7 +28,7 @@
 	"channelsLogsRoleCreate": "The channel for role creation logs, if set, I send a message when a new role is craeted.",
 	"channelsLogsInvites": "The channel for invite logs, if set, I send a message when an invite is created or deleted.",
 	"appealsEnabled": "Whether the members can appeal their bans, mutes and timeouts on the website. The direct message of the punishment links to the appeal page.",
-	"appealsChannel": "The channel I send the appeals to, where the moderators accept or deny them.",
+	"appealsChannel": "The channel I send the appeals to, where the moderators accept or deny them. Each one gets a thread when I can create them, from which `/appeal send` writes to the member.",
 	"appealsBans": "Whether the bans can be appealed.",
 	"appealsMutes": "Whether the mutes can be appealed.",
 	"appealsTimeouts": "Whether the timeouts can be appealed.",

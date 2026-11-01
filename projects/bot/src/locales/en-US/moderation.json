@@ -74,6 +74,8 @@
 	"appealUndoReason": "Appeal of the case #{{case}} accepted: {{reason}}",
 	"appealDmAccepted": "Your appeal of the case #{{case}} in **{{guild}}** was accepted: {{reason}}",
 	"appealDmDenied": "Your appeal of the case #{{case}} in **{{guild}}** was denied: {{reason}}",
+	"appealDmMessage": "A moderator of **{{guild}}** wrote to you about your appeal of the case #{{case}}:\n>>> {{message}}",
+	"appealThreadName": "Appeal of the case #{{case}}",
 	"appealCaseGone": "The case of this appeal is gone.",
 	"appealAlreadyDecided": "This appeal was already decided.",
 	"appealUndoFailed": "I could not undo the case, the appeal is still pending. Check my permissions and try again."

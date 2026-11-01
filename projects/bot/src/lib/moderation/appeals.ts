@@ -12,6 +12,22 @@ import type { ReadonlyGuildData } from 'wolfstar-database';
 export const AppealHandlerName = 'appeal';
 
 /**
+ * The longest reason of a decision, the one the modal of the buttons and the `reason` option of `/appeal` ask for.
+ */
+export const MaximumAppealReasonLength = 500;
+
+/**
+ * The longest message `/appeal send` takes: a direct message holds 2000 characters, and it goes with a line that says
+ * what it is about.
+ */
+export const MaximumAppealMessageLength = 1500;
+
+/**
+ * The highest number of a case, which is an `int4` in the database.
+ */
+const MaximumCaseNumber = 2_147_483_647;
+
+/**
  * The types of case a member can appeal, each enabled by a setting of the guild.
  */
 export const AppealableTypes = [TypeVariation.Ban, TypeVariation.Mute, TypeVariation.Timeout] as const;
@@ -90,6 +106,20 @@ export function findAppealableCases<Entry extends AppealableCase>(
 	}
 
 	return [...latest.values()].filter((entry) => !entry.isUndo() && !entry.isCompleted()).sort((a, b) => b.id - a.id);
+}
+
+/**
+ * Reads the `appeal` option of `/appeal`: the number of the case, which the autocomplete fills in and a moderator may
+ * write by hand, with its `#` too.
+ *
+ * @returns The number, `null` when it cannot be the one of a case.
+ */
+export function parseAppealCase(value: string) {
+	const digits = value.trim().replace(/^#/, '');
+	if (!/^\d{1,10}$/.test(digits)) return null;
+
+	const caseId = Number(digits);
+	return caseId > 0 && caseId <= MaximumCaseNumber ? caseId : null;
 }
 
 /**

@@ -9,6 +9,21 @@ import type { TransformedArguments } from '@wolfstar/http-framework';
 // prettier-ignore
 declare module '@wolfstar/http-framework' {
   interface CommandOptionsRegistry {
+    'appeal approve': {
+      appeal: string;
+      reason?: string;
+    };
+    'appeal deny': {
+      appeal: string;
+      reason?: string;
+    };
+    'appeal list': {};
+    'appeal send': {
+      message: string;
+    };
+    'appeal view': {
+      appeal: string;
+    };
     'archive create': {
       case?: number;
       user: TransformedArguments.User;

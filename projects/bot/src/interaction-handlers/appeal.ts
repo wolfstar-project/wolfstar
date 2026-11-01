@@ -1,9 +1,6 @@
-import { readSettings } from '#lib/database';
-import { AppealableTypes, decodeAppealId, encodeAppealId, type AppealableType } from '#lib/moderation/appeals';
-import { applyAppealDecision, getAppealQuestions, renderAppealMessage } from '#lib/moderation/appealService';
-import { fetchGuildT } from '#lib/moderation/common/util';
+import { decodeAppealId, encodeAppealId, MaximumAppealReasonLength } from '#lib/moderation/appeals';
+import { AppealSettleErrorKeys, settleAppeal } from '#lib/moderation/appealService';
 import { createTranslator } from '#lib/structures/commands/utils';
-import { getModeration } from '#utils/functions';
 import { getModalValue } from 'wolfstar-shared';
 import { cutText } from '@sapphire/utilities';
 import { ApplyOptions } from '@wolfstar/decorators';
@@ -48,7 +45,7 @@ export class UserInteractionHandler extends InteractionHandler {
 								label: cutText(t('moderation:appealReasonLabel'), 45),
 								style: TextInputStyle.Paragraph,
 								required: false,
-								max_length: 500
+								max_length: MaximumAppealReasonLength
 							}
 						]
 					}
@@ -60,30 +57,10 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (appeal === null) return fail(getDefaultExpiredReply());
 
 		const guild = await this.container.gatewayClient.guilds.fetch(guildId);
-		const moderation = await getModeration(guild);
-		const entry = await moderation.fetch(appeal.caseId);
-		if (entry === null || !(AppealableTypes as readonly number[]).includes(entry.type)) return fail(t('moderation:appealCaseGone'));
-
 		const reason = getModalValue(interaction.data.components, ReasonInputId)?.trim() || null;
-		const accept = action.verb === 'accept';
-		const error = await applyAppealDecision(
-			guild,
-			appeal,
-			{ id: entry.id, type: entry.type as AppealableType },
-			accept,
-			interaction.user.id,
-			reason
-		);
-		if (error === 'decided') return fail(t('moderation:appealAlreadyDecided'));
-		if (error === 'undoFailed') return fail(t('moderation:appealUndoFailed'));
+		const result = await settleAppeal(guild, appeal, action.verb === 'accept', interaction.user.id, reason);
+		if ('error' in result) return fail(t(AppealSettleErrorKeys[result.error]));
 
-		// The message is in the language of the guild, as it was sent:
-		const guildT = await fetchGuildT(guild);
-		const settings = await readSettings(guildId);
-		const questions = getAppealQuestions(guildT, settings.appealsQuestions);
-		return interaction.update({
-			...renderAppealMessage(guildT, appeal, entry, questions, accept ? 'accepted' : 'denied', interaction.user.id, reason),
-			allowed_mentions: { parse: [] }
-		});
+		return interaction.update({ ...result.message, allowed_mentions: { parse: [] } });
 	}
 }

@@ -30,6 +30,10 @@ export interface Appeal {
 	status: AppealStatus;
 	reviewerId: Snowflake | null;
 	reason: string | null;
+	/** The channel its message was sent to, `null` when it could not be sent. */
+	channelId: Snowflake | null;
+	/** Its message in that channel, `null` when it could not be sent. The thread of the appeal has the same ID. */
+	messageId: Snowflake | null;
 	/** In milliseconds. */
 	createdAt: number;
 }
@@ -43,6 +47,8 @@ type Row = {
 	status: string;
 	reviewerId: bigint | null;
 	reason: string | null;
+	channelId: bigint | null;
+	messageId: bigint | null;
 	createdAt: string;
 };
 
@@ -56,6 +62,8 @@ function toAppeal(row: Row): Appeal {
 		status: (AppealStatuses as readonly string[]).includes(row.status) ? (row.status as AppealStatus) : 'pending',
 		reviewerId: row.reviewerId === null ? null : String(row.reviewerId),
 		reason: row.reason,
+		channelId: row.channelId === null ? null : String(row.channelId),
+		messageId: row.messageId === null ? null : String(row.messageId),
 		createdAt: parseTimestamp(row.createdAt)
 	};
 }
@@ -66,6 +74,65 @@ function toAppeal(row: Row): Appeal {
 export async function fetchUserAppeals(db: Database, guildId: Snowflake, userId: Snowflake): Promise<Appeal[]> {
 	const rows = (await db.orm.public.Appeal.where({ guildId: BigInt(guildId), userId: BigInt(userId) }).all()) as unknown as Row[];
 	return rows.map((row) => toAppeal(row));
+}
+
+/**
+ * What {@linkcode fetchAppeals} and {@linkcode countAppeals} read: every appeal of a guild, or the ones in a status.
+ */
+function whereAppeals(guildId: Snowflake, status: AppealStatus | undefined) {
+	return status === undefined ? { guildId: BigInt(guildId) } : { guildId: BigInt(guildId), status };
+}
+
+/**
+ * Reads the appeals of a guild, the latest ones first.
+ */
+export async function fetchAppeals(
+	db: Database,
+	guildId: Snowflake,
+	options: { status?: AppealStatus; limit: number; offset?: number }
+): Promise<Appeal[]> {
+	const rows = (await db.orm.public.Appeal.where(whereAppeals(guildId, options.status))
+		.orderBy((appeal) => appeal.id.desc())
+		.limit(options.limit)
+		.offset(options.offset ?? 0)
+		.all()) as unknown as Row[];
+	return rows.map((row) => toAppeal(row));
+}
+
+/**
+ * Counts the appeals of a guild.
+ */
+export async function countAppeals(db: Database, guildId: Snowflake, status?: AppealStatus): Promise<number> {
+	const { total } = await db.orm.public.Appeal.where(whereAppeals(guildId, status)).aggregate((aggregate) => ({ total: aggregate.count() }));
+	return total;
+}
+
+/**
+ * Reads the appeal of a case, a case being appealed once.
+ * @returns The appeal, `null` when the case has none.
+ */
+export async function fetchAppealByCase(db: Database, guildId: Snowflake, caseId: number): Promise<Appeal | null> {
+	const row = (await db.orm.public.Appeal.first({ guildId: BigInt(guildId), caseId })) as unknown as Row | null;
+	return row === null ? null : toAppeal(row);
+}
+
+/**
+ * Reads the appeal of a message, or of a thread, which has the ID of the message it was started from.
+ * @returns The appeal, `null` when it is the message of none.
+ */
+export async function fetchAppealByMessage(db: Database, guildId: Snowflake, messageId: Snowflake): Promise<Appeal | null> {
+	const row = (await db.orm.public.Appeal.first({ guildId: BigInt(guildId), messageId: BigInt(messageId) })) as unknown as Row | null;
+	return row === null ? null : toAppeal(row);
+}
+
+/**
+ * Remembers the message of an appeal, once it was sent.
+ */
+export async function setAppealMessage(db: Database, guildId: Snowflake, id: string, channelId: Snowflake, messageId: Snowflake): Promise<void> {
+	await db.orm.public.Appeal.where({ id: BigInt(id), guildId: BigInt(guildId) }).updateAndCount({
+		channelId: BigInt(channelId),
+		messageId: BigInt(messageId)
+	});
 }
 
 /**

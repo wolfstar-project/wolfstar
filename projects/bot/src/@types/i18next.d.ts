@@ -83,6 +83,43 @@ declare module "i18next" {
       assertions: {
         expectedNonThreadChannel: "Expected a regular text channel, but I received the thread channel {{channel}} instead.";
       };
+      "commands/appeal": {
+        name: "appeal";
+        description: "Review the appeals the members of this server send.";
+        listName: "list";
+        listDescription: "List the appeals of this server.";
+        viewName: "view";
+        viewDescription: "Show everything a member wrote in an appeal.";
+        approveName: "approve";
+        approveDescription: "Accept an appeal, which undoes its case.";
+        denyName: "deny";
+        denyDescription: "Deny an appeal, which keeps its case.";
+        sendName: "send";
+        sendDescription: "Send a direct message to the member who appealed, from the thread of the appeal.";
+        optionsAppealName: "appeal";
+        optionsAppealDescription: "The appeal, by the number of its case.";
+        optionsReasonName: "reason";
+        optionsReasonDescription: "The reason, which the member is told in a direct message.";
+        optionsMessageName: "message";
+        optionsMessageDescription: "What to write to the member.";
+        notFound: "That case has no appeal.";
+        caseGone: "Deleted case";
+        choice: "#{{case}} · {{type}} · {{user}} · {{status}}";
+        statusPending: "Pending";
+        statusAccepted: "Accepted";
+        statusDenied: "Denied";
+        filterAll: "All appeals";
+        listTitle: "Appeals";
+        listEmpty: "No appeals found.";
+        listLine: "**#{{case}}** · {{type}} · {{user}} · {{status}} · {{time}}";
+        listFooter: "Page {{page, number}} of {{pages, number}} · {{total, number}} appeals";
+        viewOpen: "Open in the channel";
+        approved: "The appeal of the case #{{case}} was accepted, and the member was told if they take direct messages.";
+        denied: "The appeal of the case #{{case}} was denied, and the member was told if they take direct messages.";
+        sendNotThread: "Run this in the thread of an appeal, which tells me who to write to.";
+        sendFailed: "I could not send it: the member does not take direct messages, or shares no server with me.";
+        sent: "{{moderator}} wrote to the member:\n>>> {{message}}";
+      };
       "commands/archive": {
         archiveName: "archive";
         archiveDescription: "Save and read the recent messages of members.";
@@ -747,6 +784,17 @@ declare module "i18next" {
         transferErrorRuleNameTaken: "Two rules are named **{{name}}**.";
       };
       "commands/help": {
+        "/appeal": {
+          extendedHelp: "Reviews the appeals the members send from the website. `list` lists them, with a menu that shows the pending, accepted or denied ones, and `view` shows everything a member wrote in one. `approve` accepts an appeal, which undoes its case, and `deny` denies it: the member is told in a direct message, with the reason, and the message of the appeal changes as the buttons on it change it.\n`send`, in the thread of an appeal, sends a direct message to the member, and leaves what was sent in the thread.";
+          examples: [
+            "list",
+            "view appeal:42",
+            "approve appeal:42 reason:We talked about it, and it is settled",
+            "deny appeal:42",
+            "send message:Can you tell us more about what happened?",
+          ];
+          reminder: "The `appeal` option takes the number of the case, which it suggests as you write. I cannot write to a member who shares no server with me, as a banned one often does.";
+        };
         "/archive": {
           extendedHelp: "Saves the messages a member sent in the last 14 days in a history the moderators can read again later, as a text file. I read the latest messages of the 50 channels with the newest messages I can see, and keep up to 200 messages of the member, with the links of their attachments.\nA history can be saved for a case, and `/ban add`, `/softban` and `/kick` save one before the messages are deleted when their `archive` option is on.";
           examples: ["create user:@Pete", "create user:@Pete case:42", "list user:@Pete"];
@@ -2632,6 +2680,8 @@ declare module "i18next" {
         appealUndoReason: "Appeal of the case #{{case}} accepted: {{reason}}";
         appealDmAccepted: "Your appeal of the case #{{case}} in **{{guild}}** was accepted: {{reason}}";
         appealDmDenied: "Your appeal of the case #{{case}} in **{{guild}}** was denied: {{reason}}";
+        appealDmMessage: "A moderator of **{{guild}}** wrote to you about your appeal of the case #{{case}}:\n>>> {{message}}";
+        appealThreadName: "Appeal of the case #{{case}}";
         appealCaseGone: "The case of this appeal is gone.";
         appealAlreadyDecided: "This appeal was already decided.";
         appealUndoFailed: "I could not undo the case, the appeal is still pending. Check my permissions and try again.";
@@ -2954,7 +3004,7 @@ declare module "i18next" {
         channelsLogsRoleCreate: "The channel for role creation logs, if set, I send a message when a new role is craeted.";
         channelsLogsInvites: "The channel for invite logs, if set, I send a message when an invite is created or deleted.";
         appealsEnabled: "Whether the members can appeal their bans, mutes and timeouts on the website. The direct message of the punishment links to the appeal page.";
-        appealsChannel: "The channel I send the appeals to, where the moderators accept or deny them.";
+        appealsChannel: "The channel I send the appeals to, where the moderators accept or deny them. Each one gets a thread when I can create them, from which `/appeal send` writes to the member.";
         appealsBans: "Whether the bans can be appealed.";
         appealsMutes: "Whether the mutes can be appealed.";
         appealsTimeouts: "Whether the timeouts can be appealed.";
