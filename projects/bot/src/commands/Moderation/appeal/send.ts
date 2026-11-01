@@ -6,7 +6,7 @@ import { userMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
-import { fetchAppealByMessage } from 'wolfstar-database';
+import { fetchAppealByThread } from 'wolfstar-database';
 
 /**
  * `/appeal send`, see the `appeal` parent command. Run in the thread of an appeal, it sends a direct message to the
@@ -21,7 +21,7 @@ import { fetchAppealByMessage } from 'wolfstar-database';
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'appeal send'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const appeal = await fetchAppealByMessage(this.container.prisma, interaction.guildId, interaction.channelId);
+		const appeal = await fetchAppealByThread(this.container.prisma, interaction.guildId, interaction.channelId);
 		if (appeal === null) return interaction.reply({ content: t('commands/appeal:sendNotThread'), flags: MessageFlags.Ephemeral });
 
 		// Reaching the member takes a few requests, which can be longer than Discord waits for an answer:

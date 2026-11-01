@@ -2,7 +2,7 @@ import { sendAppealDirectMessage } from '#lib/moderation/appealService';
 import { UserCommand } from '#root/commands/Moderation/appeal/send';
 import { container } from '@wolfstar/http-framework';
 import { MessageFlags } from 'discord-api-types/v10';
-import { fetchAppealByMessage } from 'wolfstar-database';
+import { fetchAppealByThread } from 'wolfstar-database';
 
 vi.mock('#lib/moderation/appealService', () => ({ sendAppealDirectMessage: vi.fn() }));
 vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
@@ -11,7 +11,7 @@ vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
 }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
-	fetchAppealByMessage: vi.fn()
+	fetchAppealByThread: vi.fn()
 }));
 vi.mock('@wolfstar/plugin-i18next', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@wolfstar/plugin-i18next')>()),
@@ -37,13 +37,13 @@ describe('/appeal send', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		vi.mocked(fetchAppealByMessage).mockResolvedValue(appeal as never);
+		vi.mocked(fetchAppealByThread).mockResolvedValue(appeal as never);
 		vi.mocked(sendAppealDirectMessage).mockResolvedValue(true);
 		Object.assign(container, { prisma: {}, gatewayClient: { guilds: { fetch: vi.fn(async () => guild) } } });
 	});
 
 	test('GIVEN a channel that is not the thread of an appeal THEN nobody is written to', async () => {
-		vi.mocked(fetchAppealByMessage).mockResolvedValue(null);
+		vi.mocked(fetchAppealByThread).mockResolvedValue(null);
 
 		await run();
 
@@ -61,7 +61,7 @@ describe('/appeal send', () => {
 	test('GIVEN the thread of an appeal THEN the appeal is the one of the thread', async () => {
 		await run('Tell us more');
 
-		expect(fetchAppealByMessage).toHaveBeenCalledWith(container.prisma, guildId, threadId);
+		expect(fetchAppealByThread).toHaveBeenCalledWith(container.prisma, guildId, threadId);
 		expect(sendAppealDirectMessage).toHaveBeenCalledWith(guild, appeal, 'Tell us more');
 	});
 
