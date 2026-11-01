@@ -66,12 +66,15 @@ export async function runAppealDecision(interaction: GuildChatInputInteraction, 
  * It reads the appeal again: its message may have been sent since, see `sendAppealMessage`.
  */
 export async function updateAppealMessage(guildId: Snowflake, appeal: Appeal, message: ReturnType<typeof renderAppealMessage>) {
-	const decided = await fetchAppeal(container.prisma, guildId, appeal.id);
-	if (decided === null || decided.channelId === null || decided.messageId === null) return;
+	// The decision is made by now: a message left as it was changes nothing about it.
+	try {
+		const decided = await fetchAppeal(container.prisma, guildId, appeal.id);
+		if (decided === null || decided.channelId === null || decided.messageId === null) return;
 
-	await container.gatewayClient.api.channels
-		.editMessage(decided.channelId, decided.messageId, { ...message, allowed_mentions: { parse: [] } })
-		.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
+		await container.gatewayClient.api.channels.editMessage(decided.channelId, decided.messageId, { ...message, allowed_mentions: { parse: [] } });
+	} catch (error) {
+		container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error);
+	}
 }
 
 /**

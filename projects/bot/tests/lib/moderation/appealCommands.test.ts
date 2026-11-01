@@ -124,6 +124,16 @@ describe('/appeal approve and /appeal deny', () => {
 		expect(update).toHaveBeenCalledWith({ content: 'commands/appeal:approved' });
 	});
 
+	test('GIVEN the appeal cannot be read again THEN the decision stands and is told', async () => {
+		const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
+		vi.mocked(fetchAppeal).mockRejectedValue(new Error('Connection lost'));
+
+		await run({ appeal: '12' });
+
+		expect(warn).toHaveBeenCalledOnce();
+		expect(update).toHaveBeenCalledWith({ content: 'commands/appeal:approved' });
+	});
+
 	test('GIVEN a message that cannot be changed THEN the decision stands and is told', async () => {
 		const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
 		editMessage.mockRejectedValueOnce(new Error('Unknown Message'));

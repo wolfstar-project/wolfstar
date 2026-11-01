@@ -1,3 +1,4 @@
+import { resolveOnErrorCodes } from '#common';
 import { readSettings } from '#lib/database/settings/functions';
 import { ModerationActions } from '#lib/moderation/actions';
 import { getAppealFormAccess, getBuiltInAppealForm, parseAppealAnswers, type AppealFormLock } from '#lib/moderation/appealForms';
@@ -18,6 +19,7 @@ import {
 	ButtonStyle,
 	ChannelType,
 	ComponentType,
+	RESTJSONErrorCodes,
 	ThreadAutoArchiveDuration,
 	type APIActionRowComponent,
 	type APIButtonComponent,
@@ -57,7 +59,8 @@ async function readAppealContext(guild: Guild, userId: Snowflake, settings: Read
 	const moderation = await getModeration(guild);
 	const entries = await moderation.fetch({ userId });
 	const appeals = await fetchUserAppeals(container.prisma, guild.id, userId);
-	const member = await container.gatewayClient.members.fetch(guild.id, userId).catch(() => null);
+	// Only an unknown member is not one: anything else passing for it would let a restricted role through.
+	const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 
 	return {
 		settings,

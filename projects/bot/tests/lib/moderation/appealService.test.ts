@@ -3,7 +3,8 @@ import { getAppealPage, renderAppealView, sendAppealDirectMessage, settleAppeal,
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
-import { ChannelType } from 'discord-api-types/v10';
+import { DiscordAPIError } from '@discordjs/rest';
+import { ChannelType, RESTJSONErrorCodes } from 'discord-api-types/v10';
 import { ModerationActions } from '#lib/moderation/actions';
 import {
 	createAppeal,
@@ -148,7 +149,16 @@ describe('the appeals', () => {
 		vi.mocked(fetchAppealForms).mockResolvedValue([]);
 		vi.mocked(fetchAppealForm).mockResolvedValue(null);
 		vi.mocked(fetchUserAppeals).mockResolvedValue([]);
-		fetchMember.mockRejectedValue(new Error('Unknown Member'));
+		fetchMember.mockRejectedValue(
+			new DiscordAPIError(
+				{ code: RESTJSONErrorCodes.UnknownMember, message: 'Unknown Member' },
+				RESTJSONErrorCodes.UnknownMember,
+				404,
+				'GET',
+				'',
+				{}
+			)
+		);
 		useSettings({});
 		Object.assign(container, {
 			prisma: {},
@@ -349,6 +359,14 @@ describe('the appeals', () => {
 			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
 
 			expect(await submitAppeal(guild, userId, '5', 12, { gone: 'Sorry' })).toEqual({ error: 'invalid' });
+			expect(createAppeal).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN Discord failing while the member is read THEN it does not pass for not being one, which a restricted role would slip through', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm({ restrictedRoles: ['1'] }));
+			fetchMember.mockRejectedValue(new Error('Service Unavailable'));
+
+			await expect(submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).rejects.toThrow('Service Unavailable');
 			expect(createAppeal).not.toHaveBeenCalled();
 		});
 

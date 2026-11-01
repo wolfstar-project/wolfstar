@@ -180,6 +180,7 @@ export function parseAppealAnswers(form: AppealForm, raw: unknown, owner: { guil
 		if (answer !== undefined) answers.push(answer);
 	}
 
-	const files = answers.reduce((total, answer) => total + (answer.kind === 'attachment' ? answer.value.length : 0), 0);
-	return files > MaximumAppealFiles ? null : answers;
+	// One file sent twice does not meet the `min` of a question, or count as two:
+	const keys = answers.flatMap((answer) => (answer.kind === 'attachment' ? answer.value.map((file) => file.key) : []));
+	return keys.length > MaximumAppealFiles || new Set(keys).size !== keys.length ? null : answers;
 }

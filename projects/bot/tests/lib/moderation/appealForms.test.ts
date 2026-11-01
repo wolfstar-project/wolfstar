@@ -195,15 +195,30 @@ describe('parseAppealAnswers', () => {
 		expect(parse([attachment], { files: [value] })).toBeNull();
 	});
 
+	test('GIVEN one file sent twice THEN it does not count as two, in a question or across them', () => {
+		const two = { ...attachment, min: 2 } as AppealQuestion;
+		const one = { ...attachment, id: 'more', max: 1 } as AppealQuestion;
+
+		expect(parse([two], { files: [file(), file()] })).toBeNull();
+		expect(parse([attachment, one], { files: [file()], more: [file()] })).toBeNull();
+	});
+
+	test('GIVEN two files THEN they are both kept', () => {
+		const other = file({ key: key('223e4567-e89b-42d3-a456-426614174000') });
+
+		expect(parse([attachment], { files: [file(), other] })).toHaveLength(1);
+	});
+
 	test('GIVEN fewer or more files than the question asks THEN they are refused', () => {
 		expect(parse([attachment], { files: [] })).toBeNull();
-		expect(parse([attachment], { files: [file(), file(), file()] })).toBeNull();
+		expect(parse([attachment], { files: [1, 2, 3].map((n) => file({ key: key(`${n}23e4567-e89b-42d3-a456-426614174000`) })) })).toBeNull();
 	});
 
 	test('GIVEN more than five files in all THEN they are refused', () => {
 		const three = { ...attachment, max: 3 } as AppealQuestion;
-		const files = [file(), file(), file()];
+		const files = [1, 2, 3].map((n) => file({ key: key(`${n}23e4567-e89b-42d3-a456-426614174000`) }));
+		const more = [4, 5, 6].map((n) => file({ key: key(`${n}23e4567-e89b-42d3-a456-426614174000`) }));
 
-		expect(parse([three, { ...three, id: 'more' } as AppealQuestion], { files, more: files })).toBeNull();
+		expect(parse([three, { ...three, id: 'more' } as AppealQuestion], { files, more })).toBeNull();
 	});
 });
