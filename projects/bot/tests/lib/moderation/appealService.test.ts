@@ -133,6 +133,17 @@ describe('the appeals', () => {
 			);
 		});
 
+		test('GIVEN a decided appeal whose message cannot be changed THEN its thread starts all the same', async () => {
+			const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
+			vi.mocked(fetchAppeal).mockResolvedValue(createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' }));
+			editMessage.mockRejectedValueOnce(new Error('Unknown Message'));
+
+			await submitAppeal(guild, userId, 12, ['Sorry']);
+
+			expect(createThread).toHaveBeenCalledOnce();
+			expect(warn).toHaveBeenCalledOnce();
+		});
+
 		test('GIVEN a thread that cannot start THEN the appeal is made and sent all the same', async () => {
 			const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
 			createThread.mockRejectedValueOnce(new Error('Missing Permissions'));

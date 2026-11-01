@@ -166,7 +166,9 @@ async function sendAppealMessage(
 	const current = await fetchAppeal(container.prisma, guild.id, appeal.id);
 	if (current !== null && current.status !== 'pending') {
 		const decided = renderAppealMessage(t, current, entry, questions, current.status, current.reviewerId, current.reason);
-		await container.gatewayClient.api.channels.editMessage(channelId, sent.id, { ...decided, allowed_mentions: { parse: [] } });
+		await container.gatewayClient.api.channels
+			.editMessage(channelId, sent.id, { ...decided, allowed_mentions: { parse: [] } })
+			.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
 	}
 
 	// The moderators talk about the appeal in its thread and `/appeal send` writes to the member from it, which finds the
