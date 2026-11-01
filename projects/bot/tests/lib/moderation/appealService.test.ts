@@ -1,9 +1,20 @@
 import { readSettings } from '#lib/database/settings/functions';
-import { renderAppealView, sendAppealDirectMessage, settleAppeal, submitAppeal } from '#lib/moderation/appealService';
+import { getAppealPage, renderAppealView, sendAppealDirectMessage, settleAppeal, submitAppeal } from '#lib/moderation/appealService';
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
-import { createAppeal, decideAppeal, fetchAppeal, setAppealMessage, type Appeal } from 'wolfstar-database';
+import {
+	createAppeal,
+	decideAppeal,
+	fetchAppeal,
+	fetchAppealBlock,
+	fetchAppealForm,
+	fetchAppealForms,
+	fetchUserAppeals,
+	setAppealMessage,
+	type Appeal,
+	type AppealForm
+} from 'wolfstar-database';
 
 vi.mock('#lib/database/settings/functions', () => ({ readSettings: vi.fn() }));
 vi.mock('#lib/moderation/actions', () => ({ ModerationActions: { ban: { undo: vi.fn() } } }));
@@ -18,6 +29,9 @@ vi.mock('wolfstar-database', async (importOriginal) => ({
 	createAppeal: vi.fn(),
 	decideAppeal: vi.fn(),
 	fetchAppeal: vi.fn(),
+	fetchAppealBlock: vi.fn(),
+	fetchAppealForm: vi.fn(),
+	fetchAppealForms: vi.fn(),
 	fetchUserAppeals: vi.fn(),
 	reopenAppeal: vi.fn(),
 	setAppealMessage: vi.fn()
@@ -30,7 +44,25 @@ const channelId = '254360814063058945';
 const messageId = '254360814063058946';
 const userId = '266624760782258186';
 const moderatorId = '242043489611808769';
-const guild = { id: guildId, name: 'The Lab' } as never;
+const guild = { id: guildId, name: 'The Lab', iconURL: () => null } as never;
+
+function createForm(overrides: Partial<AppealForm> = {}): AppealForm {
+	return {
+		id: '5',
+		guildId,
+		name: 'Bans',
+		description: null,
+		icon: null,
+		enabled: true,
+		lockReason: null,
+		types: [],
+		requiredRoles: [],
+		restrictedRoles: [],
+		questions: [{ id: 'why', kind: 'text', label: 'Why?', long: true, maxLength: 100, required: true }],
+		position: 0,
+		...overrides
+	};
+}
 
 function createRow(overrides: Partial<Appeal> = {}): Appeal {
 	return {
@@ -38,12 +70,15 @@ function createRow(overrides: Partial<Appeal> = {}): Appeal {
 		guildId,
 		caseId: 12,
 		userId,
-		answers: ['Sorry'],
+		formId: null,
+		answers: [{ questionId: 'why', kind: 'text', label: 'Why?', value: 'Sorry' }],
 		status: 'pending',
 		reviewerId: null,
 		reason: null,
 		channelId: null,
 		messageId: null,
+		threadId: null,
+		decidedAt: null,
 		createdAt: Date.UTC(2026, 0, 1),
 		...overrides
 	};
@@ -66,6 +101,7 @@ function createEntry(type = TypeVariation.Ban, overrides: Record<string, unknown
 describe('the appeals', () => {
 	const send = vi.fn();
 	const fetchUser = vi.fn();
+	const fetchMember = vi.fn();
 	const fetchCase = vi.fn();
 	const createThread = vi.fn(async () => ({}));
 	const editMessage = vi.fn(async () => ({}));
@@ -80,18 +116,26 @@ describe('the appeals', () => {
 		vi.mocked(getModeration).mockResolvedValue({ fetch: fetchCase } as never);
 		vi.mocked(decideAppeal).mockResolvedValue(true);
 		vi.mocked(createAppeal).mockResolvedValue(createRow());
+		vi.mocked(fetchAppealBlock).mockResolvedValue(null);
+		vi.mocked(fetchAppealForms).mockResolvedValue([]);
+		vi.mocked(fetchAppealForm).mockResolvedValue(null);
+		vi.mocked(fetchUserAppeals).mockResolvedValue([]);
+		fetchMember.mockRejectedValue(new Error('Unknown Member'));
 		vi.mocked(readSettings).mockResolvedValue({
 			appealsEnabled: true,
 			appealsBans: true,
 			appealsMutes: true,
 			appealsTimeouts: true,
 			appealsChannel: channelId,
-			appealsQuestions: []
+			appealsCooldownDays: 7,
+			appealsMaxActive: 1,
+			appealsAnonymous: false
 		} as never);
 		Object.assign(container, {
 			prisma: {},
 			gatewayClient: {
 				users: { fetch: fetchUser },
+				members: { fetch: fetchMember },
 				channels: { fetch: vi.fn(async () => channel) },
 				api: { channels: { createThread, editMessage } }
 			}
@@ -105,7 +149,7 @@ describe('the appeals', () => {
 		});
 
 		test('GIVEN an appeal THEN its message is remembered and a thread starts on it, which is how /appeal send finds it', async () => {
-			await submitAppeal(guild, userId, 12, ['Sorry']);
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
 			expect(setAppealMessage).toHaveBeenCalledWith(container.prisma, guildId, '1', channelId, messageId);
 			expect(createThread).toHaveBeenCalledWith(
@@ -116,7 +160,7 @@ describe('the appeals', () => {
 		});
 
 		test('GIVEN an appeal still pending once it was sent THEN its message stays as it is', async () => {
-			await submitAppeal(guild, userId, 12, ['Sorry']);
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
 			expect(editMessage).not.toHaveBeenCalled();
 		});
@@ -124,7 +168,7 @@ describe('the appeals', () => {
 		test('GIVEN an appeal decided while its message was on its way THEN the message does not ask for a decision', async () => {
 			vi.mocked(fetchAppeal).mockResolvedValue(createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' }));
 
-			await submitAppeal(guild, userId, 12, ['Sorry']);
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
 			expect(editMessage).toHaveBeenCalledWith(
 				channelId,
@@ -138,7 +182,7 @@ describe('the appeals', () => {
 			vi.mocked(fetchAppeal).mockResolvedValue(createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' }));
 			editMessage.mockRejectedValueOnce(new Error('Unknown Message'));
 
-			await submitAppeal(guild, userId, 12, ['Sorry']);
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
 			expect(createThread).toHaveBeenCalledOnce();
 			expect(warn).toHaveBeenCalledOnce();
@@ -148,7 +192,7 @@ describe('the appeals', () => {
 			const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
 			createThread.mockRejectedValueOnce(new Error('Missing Permissions'));
 
-			const result = await submitAppeal(guild, userId, 12, ['Sorry']);
+			const result = await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
 			expect(result).toEqual({ appeal: createRow() });
 			expect(setAppealMessage).toHaveBeenCalledOnce();
@@ -160,13 +204,131 @@ describe('the appeals', () => {
 				appealsEnabled: true,
 				appealsBans: true,
 				appealsChannel: null,
-				appealsQuestions: []
+				appealsCooldownDays: 7,
+				appealsMaxActive: 1
 			} as never);
 
-			await submitAppeal(guild, userId, 12, ['Sorry']);
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
 
 			expect(setAppealMessage).not.toHaveBeenCalled();
 			expect(createThread).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('submitAppeal with forms', () => {
+		beforeEach(() => {
+			fetchCase.mockResolvedValue(new Map([[12, createEntry()]]));
+			vi.mocked(fetchAppeal).mockResolvedValue(createRow());
+		});
+
+		test('GIVEN a form that was deleted THEN nothing is written', async () => {
+			expect(await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).toEqual({ error: 'notFound' });
+			expect(createAppeal).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a form locked since the page was read THEN nothing is written', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm({ enabled: false }));
+
+			expect(await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).toEqual({ error: 'locked' });
+			expect(createAppeal).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a blocked user THEN nothing is written', async () => {
+			vi.mocked(fetchAppealBlock).mockResolvedValue({ reason: 'Spam' } as never);
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
+
+			expect(await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).toEqual({ error: 'blocked' });
+		});
+
+		test('GIVEN the built-in form on a server that has one enabled THEN it does not exist', async () => {
+			vi.mocked(fetchAppealForms).mockResolvedValue([createForm()]);
+
+			expect(await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' })).toEqual({ error: 'notFound' });
+		});
+
+		test('GIVEN a case the form does not offer THEN it is not appealable', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
+
+			expect(await submitAppeal(guild, userId, '5', 77, { why: 'Sorry' })).toEqual({ error: 'notAppealable' });
+		});
+
+		test('GIVEN answers to questions the form no longer has THEN they are invalid and nothing is written', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
+
+			expect(await submitAppeal(guild, userId, '5', 12, { gone: 'Sorry' })).toEqual({ error: 'invalid' });
+			expect(createAppeal).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a member who left THEN a form with a required role is locked, and nothing throws', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm({ requiredRoles: ['1'] }));
+
+			expect(await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).toEqual({ error: 'locked' });
+		});
+
+		test('GIVEN a good submission THEN the appeal keeps its form', async () => {
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
+
+			await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' });
+
+			expect(createAppeal).toHaveBeenCalledWith(container.prisma, guildId, expect.objectContaining({ formId: '5', caseId: 12 }));
+		});
+	});
+
+	describe('getAppealPage', () => {
+		beforeEach(() => {
+			fetchCase.mockResolvedValue(new Map([[12, createEntry()]]));
+		});
+
+		test('GIVEN no enabled form THEN the page offers the built-in one', async () => {
+			const page = await getAppealPage(guild, userId);
+
+			expect(page.forms).toMatchObject([{ id: null, lock: null, cases: [{ id: 12 }] }]);
+		});
+
+		test('GIVEN a disabled form next to an enabled one THEN it is listed as locked, with no built-in form', async () => {
+			vi.mocked(fetchAppealForms).mockResolvedValue([createForm(), createForm({ id: '6', enabled: false, lockReason: 'Closed' })]);
+
+			const page = await getAppealPage(guild, userId);
+
+			expect(page.forms).toMatchObject([
+				{ id: '5', lock: null },
+				{ id: '6', lock: 'disabled', lockReason: 'Closed', cases: [] }
+			]);
+		});
+
+		test('GIVEN a blocked user THEN the page has the reason and no form', async () => {
+			vi.mocked(fetchAppealBlock).mockResolvedValue({ reason: 'Spam' } as never);
+
+			expect(await getAppealPage(guild, userId)).toMatchObject({ block: { reason: 'Spam' }, forms: [] });
+		});
+
+		test('GIVEN appeals that are off THEN the page offers nothing', async () => {
+			vi.mocked(readSettings).mockResolvedValue({ appealsEnabled: false } as never);
+
+			expect(await getAppealPage(guild, userId)).toMatchObject({ enabled: false, forms: [] });
+		});
+
+		test('GIVEN anonymous actions THEN the page never names who decided, and keeps the reason', async () => {
+			vi.mocked(readSettings).mockResolvedValue({
+				appealsEnabled: true,
+				appealsBans: true,
+				appealsAnonymous: true,
+				appealsCooldownDays: 0,
+				appealsMaxActive: 1
+			} as never);
+			vi.mocked(fetchUserAppeals).mockResolvedValue([createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' })]);
+
+			const page = await getAppealPage(guild, userId);
+
+			expect(page.appeals).toMatchObject([{ reviewerId: null, reason: 'No' }]);
+		});
+
+		test('GIVEN anonymous actions off THEN the page tells who decided', async () => {
+			vi.mocked(fetchUserAppeals).mockResolvedValue([createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' })]);
+
+			const page = await getAppealPage(guild, userId);
+
+			expect(page.appeals).toMatchObject([{ reviewerId: moderatorId }]);
 		});
 	});
 
@@ -219,7 +381,7 @@ describe('the appeals', () => {
 
 	describe('renderAppealView', () => {
 		test('GIVEN a pending appeal THEN it has no buttons to decide it: they stay on its message', () => {
-			const view = renderAppealView(t, createRow(), createEntry(), ['Why?']);
+			const view = renderAppealView(t, createRow(), createEntry());
 
 			expect(view.components).toEqual([]);
 			expect(view.embeds[0].fields).toEqual([{ name: 'Why?', value: 'Sorry' }]);
@@ -227,14 +389,29 @@ describe('the appeals', () => {
 
 		test('GIVEN a decided appeal THEN it tells what was decided and by whom', () => {
 			const appeal = createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' });
-			const [embed] = renderAppealView(t, appeal, createEntry(), ['Why?']).embeds;
+			const [embed] = renderAppealView(t, appeal, createEntry()).embeds;
 
 			expect(embed.footer?.text).toContain('appealDenied');
 			expect(embed.fields?.at(-1)?.value).toBe(`<@${moderatorId}>`);
 		});
 
+		test('GIVEN an answer of each kind THEN each reads as what the member gave', () => {
+			const file = { key: 'k', name: 'a](http://evil).png', size: 1, contentType: 'image/png' };
+			const appeal = createRow({
+				answers: [
+					{ questionId: 'a', kind: 'choice', label: 'Which?', value: ['One', 'Two'] },
+					{ questionId: 'b', kind: 'attachment', label: 'Proof', value: [file] }
+				]
+			});
+
+			const [embed] = renderAppealView(t, appeal, createEntry()).embeds;
+
+			expect(embed.fields?.[0]).toEqual({ name: 'Which?', value: 'One, Two' });
+			expect(embed.fields?.[1].value).toBe(`[ahttp://evil.png](https://wolfstar.rocks/appeal-files/${guildId}/1/0)`);
+		});
+
 		test('GIVEN an appeal that was sent THEN it links to its message', () => {
-			const { components } = renderAppealView(t, createRow({ channelId, messageId }), createEntry(), []);
+			const { components } = renderAppealView(t, createRow({ channelId, messageId }), createEntry());
 
 			expect(components[0].components[0]).toMatchObject({ url: `https://discord.com/channels/${guildId}/${channelId}/${messageId}` });
 		});

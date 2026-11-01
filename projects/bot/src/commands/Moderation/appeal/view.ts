@@ -1,6 +1,5 @@
-import { readSettings } from '#lib/database';
 import { readAppealOption } from '#lib/moderation/appealCommands';
-import { getAppealQuestions, renderAppealView } from '#lib/moderation/appealService';
+import { renderAppealView } from '#lib/moderation/appealService';
 import { getDisplayT } from '#lib/structures/commands/moderationCase';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
@@ -27,10 +26,8 @@ export class UserCommand extends Command {
 		const entry = await moderation.fetch(appeal.caseId);
 		if (entry === null) return interaction.reply({ content: t('moderation:appealCaseGone'), flags: MessageFlags.Ephemeral });
 
-		const settings = await readSettings(interaction.guildId);
-		const questions = getAppealQuestions(t, settings.appealsQuestions);
 		return interaction.reply({
-			...renderAppealView(t, appeal, entry, questions),
+			...renderAppealView(t, appeal, entry),
 			flags: MessageFlags.Ephemeral,
 			allowed_mentions: { parse: [] }
 		});

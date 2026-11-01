@@ -1,13 +1,15 @@
 import { readSettings } from '#lib/database/settings/functions';
 import { ModerationActions } from '#lib/moderation/actions';
+import { getAppealFormAccess, getBuiltInAppealForm, parseAppealAnswers, type AppealFormLock } from '#lib/moderation/appealForms';
 import { AppealableTypes, encodeAppealId, findAppealableCases, getAppealUndoActionName, type AppealableType } from '#lib/moderation/appeals';
+import { fetchMemberRoleIds } from '#lib/moderation/common/roles';
 import { fetchGuildT, getTitle } from '#lib/moderation/common/util';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import type { TranslationKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
-import { Colors } from '#utils/constants';
+import { Colors, Urls } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
-import { messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
+import { hyperlink, messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { canSendEmbeds } from '@wolfstar/http-framework-utilities/gateway';
@@ -25,86 +27,135 @@ import {
 	createAppeal,
 	decideAppeal,
 	fetchAppeal,
+	fetchAppealBlock,
+	fetchAppealForm,
+	fetchAppealForms,
 	fetchUserAppeals,
-	MaximumAppealAnswerLength,
-	MaximumAppealQuestions,
 	reopenAppeal,
 	setAppealMessage,
 	type Appeal,
-	type AppealStatus
+	type AppealAnswer,
+	type AppealForm,
+	type AppealStatus,
+	type ReadonlyGuildData
 } from 'wolfstar-database';
 
 /**
- * The questions of the form of a guild, the default one when it set none.
+ * The forms a page offers: the ones of the guild, or the built-in one when none of them is enabled.
  */
-export function getAppealQuestions(t: TFunction<AnyNamespace>, questions: readonly string[]): string[] {
-	const set = questions.map((question) => question.trim()).filter((question) => question !== '');
-	return set.length === 0 ? [t('moderation:appealDefaultQuestion')] : set.slice(0, MaximumAppealQuestions);
+async function readAppealForms(t: TFunction<AnyNamespace>, guildId: Snowflake) {
+	const forms = await fetchAppealForms(container.prisma, guildId);
+	return forms.some((form) => form.enabled) ? forms : [getBuiltInAppealForm(t, guildId), ...forms];
 }
 
 /**
- * Checks the answers of a form: one per question, each written and not too long.
- *
- * @returns The answers, trimmed, or `null` when they are not valid.
+ * What the forms of a guild depend on for a user, see `getAppealFormAccess`.
  */
-export function parseAppealAnswers(answers: unknown, questions: number): string[] | null {
-	if (!Array.isArray(answers) || answers.length !== questions) return null;
+async function readAppealContext(guild: Guild, userId: Snowflake, settings: ReadonlyGuildData) {
+	const moderation = await getModeration(guild);
+	const entries = await moderation.fetch({ userId });
+	const appeals = await fetchUserAppeals(container.prisma, guild.id, userId);
+	const member = await container.gatewayClient.members.fetch(guild.id, userId).catch(() => null);
 
-	const parsed: string[] = [];
-	for (const answer of answers) {
-		if (typeof answer !== 'string') return null;
-		const trimmed = answer.trim();
-		if (trimmed === '' || trimmed.length > MaximumAppealAnswerLength) return null;
-		parsed.push(trimmed);
-	}
-
-	return parsed;
+	return {
+		settings,
+		appeals,
+		now: Date.now(),
+		// A user who is not a member has no roles to read, a banned one is not:
+		roles: member === null ? null : await fetchMemberRoleIds(member),
+		cases: findAppealableCases(entries.values(), userId, settings)
+	};
 }
 
 /**
- * The cases of a member they can appeal in a guild, with the appeal they already made of each, for the page of the
- * website.
+ * What a user can do with the appeals of a guild, for the page of the website: whether they are on, the block of the
+ * user, the forms, each open with its cases or locked with why, and the appeals the user already sent.
  */
 export async function getAppealPage(guild: Guild, userId: Snowflake) {
 	const settings = await readSettings(guild.id);
 	const t = await fetchGuildT(guild);
-	const moderation = await getModeration(guild);
-	const entries = await moderation.fetch({ userId });
-	const appeals = await fetchUserAppeals(container.prisma, guild.id, userId);
+	const context = await readAppealContext(guild, userId, settings);
 
-	return {
+	const page = {
 		guild: { id: guild.id, name: guild.name, icon: guild.iconURL({ size: 128, extension: 'png' }) },
 		enabled: settings.appealsEnabled,
-		questions: getAppealQuestions(t, settings.appealsQuestions),
-		cases: findAppealableCases(entries.values(), userId, settings).map((entry) => {
-			const appeal = appeals.find((item) => item.caseId === entry.id) ?? null;
+		block: null as { reason: string | null } | null,
+		forms: [] as AppealPageForm[],
+		appeals: [...context.appeals]
+			.sort((a, b) => b.createdAt - a.createdAt)
+			.map((appeal) => ({
+				caseId: appeal.caseId,
+				formId: appeal.formId,
+				status: appeal.status,
+				reason: appeal.reason,
+				reviewerId: settings.appealsAnonymous ? null : appeal.reviewerId,
+				createdAt: appeal.createdAt
+			}))
+	};
+	if (!settings.appealsEnabled) return page;
+
+	const block = await fetchAppealBlock(container.prisma, guild.id, userId);
+	if (block !== null) return { ...page, block: { reason: block.reason } };
+
+	const forms = await readAppealForms(t, guild.id);
+	return {
+		...page,
+		forms: forms.map((form): AppealPageForm => {
+			const access = getAppealFormAccess({ ...context, form });
+			const { id, name, description, icon, questions, lockReason } = form;
 			return {
-				id: entry.id,
-				type: getTitle(t, entry),
-				reason: entry.reason,
-				createdAt: entry.createdAt,
-				duration: entry.duration,
-				appeal: appeal === null ? null : { status: appeal.status, reason: appeal.reason }
+				id,
+				name,
+				description,
+				icon,
+				questions,
+				lockReason: access.open ? null : lockReason,
+				lock: access.open ? null : access.lock,
+				until: !access.open && access.lock === 'cooldown' ? access.until : null,
+				cases: access.open
+					? access.cases.map((entry) => ({
+							id: entry.id,
+							type: getTitle(t, entry),
+							reason: entry.reason,
+							createdAt: entry.createdAt,
+							duration: entry.duration
+						}))
+					: []
 			};
 		})
 	};
 }
 
-export type AppealSubmitError = 'disabled' | 'notAppealable' | 'invalid' | 'appealed';
+/**
+ * A form on the page of the website.
+ */
+export interface AppealPageForm extends Pick<AppealForm, 'id' | 'name' | 'description' | 'icon' | 'questions' | 'lockReason'> {
+	lock: AppealFormLock | null;
+	/**
+	 * When a `cooldown` ends, in milliseconds.
+	 */
+	until: number | null;
+	cases: { id: number; type: string; reason: string | null; createdAt: number; duration: number | null }[];
+}
+
+export type AppealSubmitError = 'disabled' | 'blocked' | 'notFound' | 'locked' | 'notAppealable' | 'invalid' | 'appealed';
 
 /**
- * Makes the appeal of a case and sends it to the channel of the moderators.
+ * Makes the appeal of a case with a form and sends it to the channel of the staff. It asks everything the page asked
+ * again: the page may be old.
  *
  * @param guild - The guild.
- * @param userId - The member who appeals, who must be the one of the case.
+ * @param userId - The user who appeals, who must be the one of the case.
+ * @param formId - The form, `null` for the built-in one.
  * @param caseId - The case.
- * @param answers - The answers to the questions of the form.
+ * @param raw - What was sent, keyed by the ID of each question.
  */
 export async function submitAppeal(
 	guild: Guild,
 	userId: Snowflake,
+	formId: string | null,
 	caseId: number,
-	answers: unknown
+	raw: unknown
 ): Promise<{ appeal: Appeal } | { error: AppealSubmitError }> {
 	const settings = await readSettings(guild.id);
 	if (!settings.appealsEnabled) {
@@ -112,27 +163,41 @@ export async function submitAppeal(
 		return { error: 'disabled' };
 	}
 
-	const moderation = await getModeration(guild);
-	const entries = await moderation.fetch({ userId });
-	const entry = findAppealableCases(entries.values(), userId, settings).find((item) => item.id === caseId);
+	if ((await fetchAppealBlock(container.prisma, guild.id, userId)) !== null) {
+		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not appeal the case ${caseId}: they are blocked`);
+		return { error: 'blocked' };
+	}
+
+	const t = await fetchGuildT(guild);
+	const form =
+		formId === null
+			? (await readAppealForms(t, guild.id)).find((item) => item.id === null)
+			: await fetchAppealForm(container.prisma, guild.id, formId);
+	if (form === undefined || form === null) return { error: 'notFound' };
+
+	const access = getAppealFormAccess({ ...(await readAppealContext(guild, userId, settings)), form });
+	if (!access.open) {
+		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not use the form ${formId}: ${access.lock}`);
+		return { error: 'locked' };
+	}
+
+	const entry = access.cases.find((item) => item.id === caseId);
 	if (entry === undefined) {
 		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not appeal the case ${caseId}: it cannot be appealed`);
 		return { error: 'notAppealable' };
 	}
 
-	const t = await fetchGuildT(guild);
-	const questions = getAppealQuestions(t, settings.appealsQuestions);
-	const parsed = parseAppealAnswers(answers, questions.length);
-	if (parsed === null) return { error: 'invalid' };
+	const answers = parseAppealAnswers(form, raw, { guildId: guild.id, userId });
+	if (answers === null) return { error: 'invalid' };
 
-	const appeal = await createAppeal(container.prisma, guild.id, { caseId, userId, answers: parsed });
+	const appeal = await createAppeal(container.prisma, guild.id, { caseId, userId, formId, answers });
 	if (appeal === null) {
 		container.logger.debug(`[Appeals] ${userId} of ${guild.id} already appealed the case ${caseId}`);
 		return { error: 'appealed' };
 	}
 
 	container.logger.debug(`[Appeals] ${userId} of ${guild.id} appealed the case ${caseId}: appeal ${appeal.id}`);
-	await sendAppealMessage(guild, settings.appealsChannel, t, appeal, entry, questions).catch((error: unknown) =>
+	await sendAppealMessage(guild, settings.appealsChannel, t, appeal, entry).catch((error: unknown) =>
 		container.logger.error('[Appeals] Could not send an appeal to the channel of the moderators:', error)
 	);
 	return { appeal };
@@ -143,8 +208,7 @@ async function sendAppealMessage(
 	channelId: Snowflake | null,
 	t: TFunction<AnyNamespace>,
 	appeal: Appeal,
-	entry: ModerationManager.Entry,
-	questions: readonly string[]
+	entry: ModerationManager.Entry
 ) {
 	if (channelId === null) {
 		container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was not sent: no channel is set`);
@@ -157,7 +221,7 @@ async function sendAppealMessage(
 		return;
 	}
 
-	const sent = await channel.send({ ...renderAppealMessage(t, appeal, entry, questions, 'pending'), allowed_mentions: { parse: [] } });
+	const sent = await channel.send({ ...renderAppealMessage(t, appeal, entry, 'pending'), allowed_mentions: { parse: [] } });
 	await setAppealMessage(container.prisma, guild.id, appeal.id, channelId, sent.id);
 	container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was sent to ${channelId}: message ${sent.id}`);
 
@@ -165,7 +229,7 @@ async function sendAppealMessage(
 	// the message, so one of the two finds the other: a decision made while the message was on its way is not lost on it.
 	const current = await fetchAppeal(container.prisma, guild.id, appeal.id);
 	if (current !== null && current.status !== 'pending') {
-		const decided = renderAppealMessage(t, current, entry, questions, current.status, current.reviewerId, current.reason);
+		const decided = renderAppealMessage(t, current, entry, current.status, current.reviewerId, current.reason);
 		await container.gatewayClient.api.channels
 			.editMessage(channelId, sent.id, { ...decided, allowed_mentions: { parse: [] } })
 			.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
@@ -183,6 +247,36 @@ async function sendAppealMessage(
 }
 
 /**
+ * The page of the website that serves a file of an appeal, to the member who sent it and the staff.
+ *
+ * @param index - Its position among the files of the appeal, in the order of its answers.
+ */
+export function getAppealFileUrl(guildId: Snowflake, appealId: string, index: number) {
+	return `${Urls.Website}/appeal-files/${guildId}/${appealId}/${index}`;
+}
+
+/**
+ * Writes the answers of an appeal as fields. A name of a file is the member's, so what could close its link goes.
+ */
+function renderAppealAnswers(appeal: Appeal) {
+	let files = 0;
+	const render = (answer: AppealAnswer) => {
+		switch (answer.kind) {
+			case 'text':
+				return answer.value;
+			case 'choice':
+				return answer.value.join(', ');
+			case 'attachment':
+				return answer.value
+					.map((file) => hyperlink(file.name.replaceAll(/[[\]()]/g, ''), getAppealFileUrl(appeal.guildId, appeal.id, files++)))
+					.join('\n');
+		}
+	};
+
+	return appeal.answers.slice(0, 25).map((answer) => ({ name: cutText(answer.label, 256), value: cutText(render(answer), 1024) }));
+}
+
+/**
  * The message of an appeal in the channel of the moderators: the case, the answers, and buttons to accept or deny it
  * while it is pending; once decided, what was decided instead of the buttons.
  */
@@ -190,7 +284,6 @@ export function renderAppealMessage(
 	t: TFunction<AnyNamespace>,
 	appeal: Appeal,
 	entry: ModerationManager.Entry,
-	questions: readonly string[],
 	status: AppealStatus,
 	reviewerId: Snowflake | null = null,
 	reason: string | null = null
@@ -210,12 +303,7 @@ export function renderAppealMessage(
 				4096
 			)
 		)
-		.addFields(
-			appeal.answers.slice(0, 25).map((answer, index) => ({
-				name: cutText(questions[index] ?? `#${index + 1}`, 256),
-				value: cutText(answer, 1024)
-			}))
-		);
+		.addFields(renderAppealAnswers(appeal));
 
 	if (status !== 'pending') {
 		const key = status === 'accepted' ? 'moderation:appealAccepted' : 'moderation:appealDenied';
@@ -244,8 +332,8 @@ export function renderAppealMessage(
  * What `/appeal view` shows of an appeal: its message, with what was decided, and a link to it when it was sent. The
  * buttons stay on that message, which is the one a decision changes.
  */
-export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry, questions: readonly string[]) {
-	const { embeds } = renderAppealMessage(t, appeal, entry, questions, appeal.status, appeal.reviewerId, appeal.reason);
+export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry) {
+	const { embeds } = renderAppealMessage(t, appeal, entry, appeal.status, appeal.reviewerId, appeal.reason);
 	if (appeal.channelId === null || appeal.messageId === null) return { embeds, components: [] };
 
 	const row: APIActionRowComponent<APIButtonComponent> = {
@@ -337,9 +425,7 @@ export async function settleAppeal(
 	if (error !== null) return { error };
 
 	const t = await fetchGuildT(guild);
-	const settings = await readSettings(guild.id);
-	const questions = getAppealQuestions(t, settings.appealsQuestions);
-	return { message: renderAppealMessage(t, appeal, entry, questions, accept ? 'accepted' : 'denied', reviewerId, reason) };
+	return { message: renderAppealMessage(t, appeal, entry, accept ? 'accepted' : 'denied', reviewerId, reason) };
 }
 
 /**
