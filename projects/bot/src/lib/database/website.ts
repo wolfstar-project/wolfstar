@@ -13,6 +13,8 @@ export interface WebsiteNotificationTarget {
 	invalidateAllSettings(): void;
 	/** The website asked the join guard for something. */
 	joinGuardRequest(requestId: string): void;
+	/** The dashboard asked for something to be done with the appeals. */
+	appealRequest(requestId: string): void;
 }
 
 interface Logger {
@@ -32,7 +34,7 @@ export function createWebsiteClient(): NotificationClient {
 
 /**
  * Creates the one connection of the bot that hears the website, see {@linkcode DatabaseNotificationListener}: the
- * writes of the dashboard to the settings, and the requests to the join guard. Every time it listens, the first time
+ * writes of the dashboard to the settings, and the requests to the join guard and the appeals. Every time it listens, the first time
  * included, every cached copy of the settings is dropped, since a write made while it did not is lost.
  *
  * @param target - Where what it hears goes.
@@ -54,7 +56,8 @@ export function createWebsiteListener(
 				}
 				target.settingsUpdate(update);
 			},
-			[DatabaseNotificationChannels.JoinGuardRequest]: (payload) => target.joinGuardRequest(payload.trim())
+			[DatabaseNotificationChannels.JoinGuardRequest]: (payload) => target.joinGuardRequest(payload.trim()),
+			[DatabaseNotificationChannels.AppealRequest]: (payload) => target.appealRequest(payload.trim())
 		},
 		onListen: () => target.invalidateAllSettings()
 	});
@@ -62,15 +65,20 @@ export function createWebsiteListener(
 
 /**
  * The target of a bot that runs in one process: the messages the shards would get are dispatched here, and the
- * requests of the join guard are queued here.
+ * requests are queued here.
  *
- * @param enqueue - Queues a request of the join guard, see `JoinGuardRequestQueue`.
+ * @param enqueue - Queues a request of the join guard, see `RequestQueue`.
+ * @param enqueueAppeal - Queues a request of the appeals.
  */
-export function createLocalWebsiteTarget(enqueue: (requestId: string) => unknown): WebsiteNotificationTarget {
+export function createLocalWebsiteTarget(
+	enqueue: (requestId: string) => unknown,
+	enqueueAppeal: (requestId: string) => unknown
+): WebsiteNotificationTarget {
 	return {
 		settingsUpdate: ({ guildId, keys }) => dispatchShardMessage({ type: 'settingsUpdate', guildId, keys }),
 		invalidateAllSettings: () => dispatchShardMessage({ type: 'settingsInvalidateAll' }),
-		joinGuardRequest: (requestId) => void enqueue(requestId)
+		joinGuardRequest: (requestId) => void enqueue(requestId),
+		appealRequest: (requestId) => void enqueueAppeal(requestId)
 	};
 }
 
@@ -83,8 +91,8 @@ export interface ShardMessenger {
 }
 
 /**
- * The target of the shard manager: every shard gets the writes of the dashboard, and the first one, where the join
- * guard handles its requests, gets them.
+ * The target of the shard manager: every shard gets the writes of the dashboard, and the first one, where the requests
+ * of the website are handled, gets them.
  *
  * @param manager - The shard manager.
  * @param logger - Where a message that could not be sent is logged.
@@ -98,6 +106,7 @@ export function createShardManagerWebsiteTarget(manager: ShardMessenger, logger:
 	return {
 		settingsUpdate: ({ guildId, keys }) => send({ type: 'settingsUpdate', guildId, keys }, null),
 		invalidateAllSettings: () => send({ type: 'settingsInvalidateAll' }, null),
-		joinGuardRequest: (requestId) => send({ type: 'joinGuardRequest', requestId }, 0)
+		joinGuardRequest: (requestId) => send({ type: 'joinGuardRequest', requestId }, 0),
+		appealRequest: (requestId) => send({ type: 'appealRequest', requestId }, 0)
 	};
 }

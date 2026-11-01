@@ -29,7 +29,7 @@ describe('appealThread serializer', () => {
 
 	test('GIVEN anything else THEN it is refused', async () => {
 		expect((await serializer.parse('forum', context)).isErr()).toBe(true);
-		expect(await serializer.isValid('forum' as never, context)).toBe(false);
+		expect(await serializer.isValid('forum' as never)).toBe(false);
 	});
 
 	test('GIVEN a new server THEN each appeal gets a public thread and the limits of the design', () => {

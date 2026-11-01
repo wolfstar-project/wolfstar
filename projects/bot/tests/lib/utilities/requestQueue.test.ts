@@ -1,6 +1,6 @@
-import { JoinGuardRequestQueue } from '#lib/moderation/joinguard/queue';
+import { RequestQueue } from '#utils/requestQueue';
 
-describe('JoinGuardRequestQueue', () => {
+describe('RequestQueue', () => {
 	const logger = { error: vi.fn() };
 
 	beforeEach(() => vi.useFakeTimers());
@@ -8,7 +8,7 @@ describe('JoinGuardRequestQueue', () => {
 
 	test('GIVEN a request notified and swept at once THEN it is handled once', async () => {
 		const handle = vi.fn(async () => undefined);
-		const queue = new JoinGuardRequestQueue({ handle, sweep: async () => [], logger });
+		const queue = new RequestQueue({ header: '[Test]', handle, sweep: async () => [], logger });
 
 		await Promise.all([queue.enqueue('7'), queue.enqueue('7'), queue.enqueue(' ')]);
 
@@ -19,7 +19,7 @@ describe('JoinGuardRequestQueue', () => {
 	test('GIVEN the start and the interval THEN the requests nobody claimed are swept', async () => {
 		const handle = vi.fn(async () => undefined);
 		const sweep = vi.fn(async () => ['1', '2']);
-		const queue = new JoinGuardRequestQueue({ handle, sweep, logger, sweepInterval: 30_000 });
+		const queue = new RequestQueue({ header: '[Test]', handle, sweep, logger, sweepInterval: 30_000 });
 		queue.start();
 		await vi.advanceTimersByTimeAsync(0);
 		expect(sweep).toHaveBeenCalledTimes(1);
@@ -36,7 +36,7 @@ describe('JoinGuardRequestQueue', () => {
 		const handle = vi.fn(async (id: string) => {
 			if (id === '1') throw new Error('boom');
 		});
-		const queue = new JoinGuardRequestQueue({ handle, sweep: async () => [], logger });
+		const queue = new RequestQueue({ header: '[Test]', handle, sweep: async () => [], logger });
 
 		await Promise.all([queue.enqueue('1'), queue.enqueue('2')]);
 

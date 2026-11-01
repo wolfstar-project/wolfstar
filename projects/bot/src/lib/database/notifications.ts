@@ -3,11 +3,13 @@
  *
  * - `guild_settings_update`, with `{ "guildId": "…", "keys": ["…"] }`, the flat `GuildData` keys a write of the
  *   dashboard changed (`pg_notify('guild_settings_update', $1)`);
- * - `join_guard_request`, with the ID of a `JoinGuardRequest` it inserted (`NOTIFY join_guard_request, '<id>'`).
+ * - `join_guard_request`, with the ID of a `JoinGuardRequest` it inserted (`NOTIFY join_guard_request, '<id>'`);
+ * - `appeal_request`, with the ID of an `AppealRequest` it inserted (`NOTIFY appeal_request, '<id>'`).
  */
 export const DatabaseNotificationChannels = {
 	GuildSettingsUpdate: 'guild_settings_update',
-	JoinGuardRequest: 'join_guard_request'
+	JoinGuardRequest: 'join_guard_request',
+	AppealRequest: 'appeal_request'
 } as const;
 
 export type DatabaseNotificationChannel = (typeof DatabaseNotificationChannels)[keyof typeof DatabaseNotificationChannels];

@@ -36,7 +36,7 @@ describe('parseDashboardSettingsUpdate', () => {
 
 describe('createWebsiteListener', () => {
 	const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
-	const target = { settingsUpdate: vi.fn(), invalidateAllSettings: vi.fn(), joinGuardRequest: vi.fn() };
+	const target = { settingsUpdate: vi.fn(), invalidateAllSettings: vi.fn(), joinGuardRequest: vi.fn(), appealRequest: vi.fn() };
 
 	beforeEach(() => vi.clearAllMocks());
 
@@ -67,6 +67,15 @@ describe('createWebsiteListener', () => {
 		expect(target.settingsUpdate).toHaveBeenCalledTimes(1);
 		expect(target.settingsUpdate).toHaveBeenCalledWith({ guildId, keys: ['honeypotWarning'] });
 		expect(logger.warn).toHaveBeenCalledTimes(1);
+		await listener.stop();
+	});
+
+	test('GIVEN a request of the appeals THEN the target is told its ID', async () => {
+		const { client, listener } = await listen();
+
+		client.emit('notification', { channel: DatabaseNotificationChannels.AppealRequest, payload: ' 42 ' });
+
+		expect(target.appealRequest).toHaveBeenCalledWith('42');
 		await listener.stop();
 	});
 
@@ -101,7 +110,7 @@ describe('targets', () => {
 		onShardMessage('settingsUpdate', updates);
 		onShardMessage('settingsInvalidateAll', invalidations);
 		const enqueue = vi.fn();
-		const target = createLocalWebsiteTarget(enqueue);
+		const target = createLocalWebsiteTarget(enqueue, vi.fn());
 
 		target.settingsUpdate({ guildId, keys: ['logsWebhooks'] });
 		target.invalidateAllSettings();

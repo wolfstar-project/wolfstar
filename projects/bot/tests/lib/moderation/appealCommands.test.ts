@@ -30,12 +30,15 @@ function createAppeal(overrides: Partial<Appeal> = {}): Appeal {
 		guildId,
 		caseId: 12,
 		userId: '266624760782258186',
-		answers: ['Sorry'],
+		formId: null,
+		answers: [],
 		status: 'pending',
 		reviewerId: null,
 		reason: null,
 		channelId: '254360814063058945',
 		messageId: '254360814063058946',
+		threadId: null,
+		decidedAt: null,
 		createdAt: 0,
 		...overrides
 	};

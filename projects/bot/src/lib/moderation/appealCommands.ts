@@ -1,4 +1,5 @@
 import { parseAppealCase } from '#lib/moderation/appeals';
+import type { renderAppealMessage } from '#lib/moderation/appealService';
 import { AppealSettleErrorKeys, settleAppeal } from '#lib/moderation/appealService';
 import { getTitle } from '#lib/moderation/common/util';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
@@ -56,15 +57,21 @@ export async function runAppealDecision(interaction: GuildChatInputInteraction, 
 	const result = await settleAppeal(guild, appeal, accept, interaction.user.id, options.reason?.trim() || null);
 	if ('error' in result) return deferred.update({ content: t(AppealSettleErrorKeys[result.error]) });
 
-	// Read again: its message may have been sent since, see `sendAppealMessage`.
-	const decided = await fetchAppeal(container.prisma, interaction.guildId, appeal.id);
-	if (decided !== null && decided.channelId !== null && decided.messageId !== null) {
-		await container.gatewayClient.api.channels
-			.editMessage(decided.channelId, decided.messageId, { ...result.message, allowed_mentions: { parse: [] } })
-			.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
-	}
-
+	await updateAppealMessage(interaction.guildId, appeal, result.message);
 	return deferred.update({ content: t(accept ? 'commands/appeal:approved' : 'commands/appeal:denied', { case: appeal.caseId }) });
+}
+
+/**
+ * Changes the message of an appeal once it was decided by something else than its buttons, which change it themselves.
+ * It reads the appeal again: its message may have been sent since, see `sendAppealMessage`.
+ */
+export async function updateAppealMessage(guildId: Snowflake, appeal: Appeal, message: ReturnType<typeof renderAppealMessage>) {
+	const decided = await fetchAppeal(container.prisma, guildId, appeal.id);
+	if (decided === null || decided.channelId === null || decided.messageId === null) return;
+
+	await container.gatewayClient.api.channels
+		.editMessage(decided.channelId, decided.messageId, { ...message, allowed_mentions: { parse: [] } })
+		.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
 }
 
 /**
