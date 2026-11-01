@@ -10,6 +10,7 @@ import { getModeration } from '#utils/functions';
 import { withSharedLock } from '#utils/locks';
 import { Colors, Urls } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
+import { DiscordAPIError } from '@discordjs/rest';
 import { hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -20,6 +21,7 @@ import {
 	ButtonStyle,
 	ChannelType,
 	ComponentType,
+	MessageFlags,
 	RESTJSONErrorCodes,
 	ThreadAutoArchiveDuration,
 	type APIActionRowComponent,
@@ -296,7 +298,10 @@ async function startAppealThread(
 	if (isPrivate) {
 		const link = messageLink(channelId, messageId, appeal.guildId);
 		const content = [link, ...staff.map((role) => roleMention(role))].join(' ');
-		await channels.createMessage(thread.id, { content, allowed_mentions: { roles: staff } });
+		const posted = await channels.createMessage(thread.id, { content, allowed_mentions: { roles: staff } });
+		if (((posted.flags ?? 0) & MessageFlags.FailedToMentionSomeRolesInThread) !== 0) {
+			container.logger.warn(`[Appeals] Discord could not bring every role into the thread of the appeal ${appeal.id}: too many members`);
+		}
 	}
 }
 
@@ -349,19 +354,24 @@ function renderAppealAnswers(appeal: Appeal) {
 export function renderAppealMessage(
 	t: TFunction<AnyNamespace>,
 	appeal: Appeal,
-	entry: ModerationManager.Entry,
+	entry: ModerationManager.Entry | null,
 	status: AppealStatus,
 	reviewerId: Snowflake | null = null,
 	reason: string | null = null
 ) {
 	const embed = new EmbedBuilder()
 		.setColor(status === 'pending' ? Colors.Yellow : status === 'accepted' ? Colors.Green : Colors.Red)
-		.setTitle(cutText(t('moderation:appealTitle', { case: entry.id, type: getTitle(t, entry) }), 256))
+		.setTitle(
+			cutText(
+				t('moderation:appealTitle', { case: appeal.caseId, type: entry === null ? t('commands/appeal:caseGone') : getTitle(t, entry) }),
+				256
+			)
+		)
 		.setDescription(
 			cutText(
 				[
 					t('moderation:appealUser', { user: userMention(appeal.userId) }),
-					entry.reason ? t('moderation:appealCaseReason', { reason: cutText(entry.reason, MaximumCaseReasonLength) }) : null,
+					entry?.reason ? t('moderation:appealCaseReason', { reason: cutText(entry.reason, MaximumCaseReasonLength) }) : null,
 					t('moderation:appealDate', { time: time(Math.floor(appeal.createdAt / 1000), TimestampStyles.RelativeTime) })
 				]
 					.filter((line) => line !== null)
@@ -398,7 +408,7 @@ export function renderAppealMessage(
  * What `/appeal view` shows of an appeal: its message, with the form and what was decided, and a link to it when it was
  * sent. The buttons stay on that message, which is the one a decision changes.
  */
-export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry, form: string | null = null) {
+export function renderAppealView(t: TFunction<AnyNamespace>, appeal: Appeal, entry: ModerationManager.Entry | null, form: string | null = null) {
 	const message = renderAppealMessage(t, appeal, entry, appeal.status, appeal.reviewerId, appeal.reason);
 	const embeds = form === null ? message.embeds : [{ ...message.embeds[0], author: { name: cutText(form, 256) } }];
 	if (appeal.channelId === null || appeal.messageId === null) return { embeds, components: [] };
@@ -426,7 +436,7 @@ export type AppealDecisionError = 'decided' | 'undoFailed';
 export async function applyAppealDecision(
 	guild: Guild,
 	appeal: Appeal,
-	entry: { readonly type: AppealableType; readonly id: number; readonly inCourse: boolean },
+	undo: AppealableType | null,
 	accept: boolean,
 	reviewerId: Snowflake,
 	reason: string | null
@@ -440,17 +450,18 @@ export async function applyAppealDecision(
 	container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was decided by ${reviewerId}: ${status}`);
 
 	const t = await fetchGuildT(guild);
-	// `undo` acts on the member, not the case: one that ended meanwhile has nothing to undo, and what the member is under now
-	// may be another case.
-	if (accept && entry.inCourse) {
+	if (accept && undo !== null) {
 		try {
 			const moderator = await container.gatewayClient.users.fetch(reviewerId);
-			const undoReason = t('moderation:appealUndoReason', { case: entry.id, reason: reason ?? '-' });
-			await ModerationActions[getAppealUndoActionName(entry.type)].undo(guild, { user: appeal.userId, moderator, reason: undoReason });
+			const undoReason = t('moderation:appealUndoReason', { case: appeal.caseId, reason: reason ?? '-' });
+			await ModerationActions[getAppealUndoActionName(undo)].undo(guild, { user: appeal.userId, moderator, reason: undoReason });
 		} catch (error) {
-			container.logger.error('[Appeals] Could not undo the case of an accepted appeal:', error);
-			await reopenAppeal(container.prisma, guild.id, appeal.id);
-			return { error: 'undoFailed' };
+			// A ban that is gone is what the approval wanted: lifted by hand, or by an undo that stopped halfway.
+			if (!(error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownBan)) {
+				container.logger.error('[Appeals] Could not undo the case of an accepted appeal:', error);
+				await reopenAppeal(container.prisma, guild.id, appeal.id);
+				return { error: 'undoFailed' };
+			}
 		}
 	}
 
@@ -463,7 +474,7 @@ export async function applyAppealDecision(
 
 	// A member who does not take direct messages is not told, which is not a failure of the decision:
 	const key = accept ? 'moderation:appealDmAccepted' : 'moderation:appealDmDenied';
-	const lines: string[] = [t(key, { guild: guild.name, case: entry.id, reason: reason ?? '-' })];
+	const lines: string[] = [t(key, { guild: guild.name, case: appeal.caseId, reason: reason ?? '-' })];
 	if (!settings.appealsAnonymous) {
 		const moderator = await container.gatewayClient.users.fetch(reviewerId).catch(() => null);
 		if (moderator !== null) lines.push(t('moderation:appealDmDecidedBy', { moderator: moderator.username }));
@@ -499,17 +510,12 @@ export async function settleAppeal(
 ): Promise<{ message: ReturnType<typeof renderAppealMessage> } | { error: AppealSettleError }> {
 	const moderation = await getModeration(guild);
 	const entry = await moderation.fetch(appeal.caseId);
-	if (entry === null || !(AppealableTypes as readonly number[]).includes(entry.type)) return { error: 'caseGone' };
+	if (entry !== null && !(AppealableTypes as readonly number[]).includes(entry.type)) return { error: 'caseGone' };
 
-	const inCourse = !entry.isUndo() && !entry.isCompleted() && !entry.isArchived();
-	const decision = await applyAppealDecision(
-		guild,
-		appeal,
-		{ id: entry.id, type: entry.type as AppealableType, inCourse },
-		accept,
-		reviewerId,
-		reason
-	);
+	// `undo` acts on the member, not the case: a case that ended or was deleted has nothing to undo, and what the member is
+	// under now may be another case.
+	const inCourse = entry !== null && !entry.isUndo() && !entry.isCompleted() && !entry.isArchived();
+	const decision = await applyAppealDecision(guild, appeal, inCourse ? (entry.type as AppealableType) : null, accept, reviewerId, reason);
 	if ('error' in decision) return decision;
 
 	if (appeal.threadId !== null) {

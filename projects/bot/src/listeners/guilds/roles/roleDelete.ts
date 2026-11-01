@@ -10,7 +10,7 @@ import { getLogPrefix } from '#utils/functions';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Guild, Role } from '@wolfstar/plugin-gateway';
 import type { GatewayGuildRoleDeleteDispatchData, Snowflake } from 'discord-api-types/v10';
-import { clearJoinGuardRuleRole, type StickyRole, type UniqueRoleSet } from 'wolfstar-database';
+import { clearJoinGuardRuleRole, forgetAppealFormRole, type StickyRole, type UniqueRoleSet } from 'wolfstar-database';
 
 /**
  * How long to wait before the role of an action is made again after it could not be, once for each attempt but the first.
@@ -47,6 +47,8 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		if (trx.settings.joinGuardPendingRole === roleId) trx.write({ joinGuardPendingRole: null });
 		if (trx.settings.joinGuardVerifiedRole === roleId) trx.write({ joinGuardVerifiedRole: null });
 		trx.write({ joinGuardAllowedRoles: trx.settings.joinGuardAllowedRoles.filter((allowed) => allowed !== roleId) });
+		trx.write({ appealsManagerRoles: trx.settings.appealsManagerRoles.filter((role) => role !== roleId) });
+		trx.write({ appealsPingRoles: trx.settings.appealsPingRoles.filter((role) => role !== roleId) });
 
 		// The commands that were restricted to the role, or that ignored it, forget it:
 		const restrictions = removeFromCommandRestrictions(readCommandRestrictions(trx.settings.commandsRestrictions, guild.id), roleId);
@@ -75,6 +77,7 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		for (const action of actions) await this.#restoreActionRole(action, guild);
 
 		await this.#forgetJoinGuardRole(guild.id, roleId);
+		await this.#forgetAppealFormRole(guild.id, roleId);
 	}
 
 	/**
@@ -111,6 +114,18 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 		return roles
 			.map((entry): UniqueRoleSet => ({ name: entry.name, roles: entry.roles.filter((urs) => urs !== roleId) }))
 			.filter((entry) => entry.roles.length > 0);
+	}
+
+	/**
+	 * The forms of the appeals that named the role forget it, see `removeAppealFormRole`.
+	 */
+	async #forgetAppealFormRole(guildId: Snowflake, roleId: Snowflake) {
+		await forgetAppealFormRole(this.container.prisma, guildId, roleId).catch((error: unknown) =>
+			this.container.logger.error(
+				`${getLogPrefix(this)} Could not remove the deleted role ${roleId} from the appeal forms of ${guildId}:`,
+				error
+			)
+		);
 	}
 
 	/**

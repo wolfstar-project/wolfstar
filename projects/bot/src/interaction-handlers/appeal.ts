@@ -56,11 +56,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		const appeal = await fetchAppeal(this.container.prisma, guildId, action.appealId);
 		if (appeal === null) return fail(getDefaultExpiredReply());
 
+		// The undo of the case may take longer than Discord waits for an answer:
+		const deferred = await interaction.deferUpdate();
 		const guild = await this.container.gatewayClient.guilds.fetch(guildId);
 		const reason = getModalValue(interaction.data.components, ReasonInputId)?.trim() || null;
 		const result = await settleAppeal(guild, appeal, action.verb === 'accept', interaction.user.id, reason);
-		if ('error' in result) return fail(t(AppealSettleErrorKeys[result.error]));
+		if ('error' in result) return interaction.followup({ content: t(AppealSettleErrorKeys[result.error]), flags: MessageFlags.Ephemeral });
 
-		return interaction.update({ ...result.message, allowed_mentions: { parse: [] } });
+		return deferred.update({ ...result.message, allowed_mentions: { parse: [] } });
 	}
 }

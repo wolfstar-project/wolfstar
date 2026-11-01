@@ -1,7 +1,6 @@
 import type { Database } from '../../index.js';
 import { formatTimestamp, parseTimestamp } from '../time.js';
 import type { AppealAnswer } from './types.js';
-import { and } from '@prisma/orm-postgres/orm-client';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
@@ -141,12 +140,10 @@ export async function fetchAppealByThread(db: Database, guildId: Snowflake, thre
 }
 
 /**
- * Reads the appeals of a user that wait for a decision and have a thread, in every guild: what `/reply` can answer.
+ * Reads the appeals of a user that wait for a decision, in every guild: what `/reply` can answer.
  */
-export async function fetchPendingAppealsWithThread(db: Database, userId: Snowflake): Promise<Appeal[]> {
-	const rows = (await db.orm.public.Appeal.where((appeal) =>
-		and(appeal.userId.eq(BigInt(userId)), appeal.status.eq('pending'), appeal.threadId.isNotNull())
-	).all()) as unknown as Row[];
+export async function fetchPendingAppeals(db: Database, userId: Snowflake): Promise<Appeal[]> {
+	const rows = (await db.orm.public.Appeal.where({ userId: BigInt(userId), status: 'pending' }).all()) as unknown as Row[];
 	return rows.map((row) => toAppeal(row));
 }
 

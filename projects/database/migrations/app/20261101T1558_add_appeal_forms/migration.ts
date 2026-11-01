@@ -65,9 +65,9 @@ const questionsToForms = rawSql({
 		{
 			description: 'insert the forms',
 			sql: `WITH "lines" AS (
-        SELECT "g"."id", btrim("q"."line") AS "line", row_number() OVER (PARTITION BY "g"."id" ORDER BY "q"."position") AS "number"
+        SELECT "g"."id", btrim("q"."line", E' \\t\\n\\r') AS "line", row_number() OVER (PARTITION BY "g"."id" ORDER BY "q"."position") AS "number"
         FROM "public"."GuildAppeals" AS "g", unnest("g"."questions") WITH ORDINALITY AS "q"("line", "position")
-        WHERE btrim("q"."line") <> ''
+        WHERE btrim("q"."line", E' \\t\\n\\r') <> ''
       )
       INSERT INTO "public"."AppealForm" ("guild_id", "name", "questions")
       SELECT "id", 'Appeal', jsonb_agg(

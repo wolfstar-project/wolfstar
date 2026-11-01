@@ -1,6 +1,6 @@
 import { getAppealFormAccess, getBuiltInAppealForm, parseAppealAnswers } from '#lib/moderation/appealForms';
 import { TypeVariation } from '#utils/moderationConstants';
-import type { Appeal, AppealForm, AppealQuestion } from 'wolfstar-database';
+import { removeAppealFormRole, type Appeal, type AppealForm, type AppealQuestion } from 'wolfstar-database';
 
 const guildId = '254360814063058944';
 const userId = '266624760782258186';
@@ -107,6 +107,28 @@ describe('getAppealFormAccess', () => {
 	test('GIVEN as many pending appeals as allowed THEN no more can be sent', () => {
 		expect(access({ appeals: [appeal()] })).toEqual({ open: false, lock: 'maxActive' });
 		expect(access({ appeals: [appeal()], settings: { ...settings, appealsMaxActive: 2 } })).toMatchObject({ open: true });
+	});
+});
+
+describe('removeAppealFormRole', () => {
+	test('GIVEN a form that does not name the role THEN nothing changes', () => {
+		expect(removeAppealFormRole(form({ requiredRoles: ['1'] }), '2')).toBeNull();
+	});
+
+	test('GIVEN a restricted role THEN it goes, and the form stays as it was', () => {
+		expect(removeAppealFormRole(form({ restrictedRoles: ['1', '2'] }), '2')).toEqual({
+			requiredRoles: [],
+			restrictedRoles: ['1'],
+			enabled: true
+		});
+	});
+
+	test('GIVEN one of the required roles THEN it goes, and the others still let in', () => {
+		expect(removeAppealFormRole(form({ requiredRoles: ['1', '2'] }), '2')).toEqual({ requiredRoles: ['1'], restrictedRoles: [], enabled: true });
+	});
+
+	test('GIVEN the last required role THEN the form is disabled: it must not open to everybody', () => {
+		expect(removeAppealFormRole(form({ requiredRoles: ['2'] }), '2')).toEqual({ requiredRoles: [], restrictedRoles: [], enabled: false });
 	});
 });
 

@@ -5,7 +5,7 @@ import { withSharedLock } from '#utils/locks';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
 import { DiscordAPIError } from '@discordjs/rest';
-import { ChannelType, RESTJSONErrorCodes } from 'discord-api-types/v10';
+import { ChannelType, MessageFlags, RESTJSONErrorCodes } from 'discord-api-types/v10';
 import { ModerationActions } from '#lib/moderation/actions';
 import {
 	createAppeal,
@@ -16,6 +16,7 @@ import {
 	fetchAppealForm,
 	fetchAppealForms,
 	fetchUserAppeals,
+	reopenAppeal,
 	setAppealMessage,
 	setAppealThread,
 	type Appeal,
@@ -266,6 +267,16 @@ describe('the appeals', () => {
 			expect(await submitAppeal(guild, userId, '5', 12, {})).not.toEqual({ error: 'locked' });
 		});
 
+		test('GIVEN roles Discord could not bring into a private thread THEN it is logged', async () => {
+			const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
+			useSettings({ appealsThread: 'private', appealsPingRoles: ['7'] });
+			createMessage.mockResolvedValueOnce({ flags: MessageFlags.FailedToMentionSomeRolesInThread });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(warn).toHaveBeenCalledOnce();
+		});
+
 		test('GIVEN ping roles THEN they alone are mentioned', async () => {
 			useSettings({ appealsPingRoles: ['7', '8'] });
 
@@ -482,11 +493,37 @@ describe('the appeals', () => {
 	});
 
 	describe('settleAppeal', () => {
-		test('GIVEN a case that is gone THEN the appeal is not decided', async () => {
+		test('GIVEN a case that was deleted THEN the appeal is decided all the same, with nothing to undo', async () => {
 			fetchCase.mockResolvedValue(null);
 
-			expect(await settleAppeal(guild, createRow(), true, moderatorId, null)).toEqual({ error: 'caseGone' });
-			expect(decideAppeal).not.toHaveBeenCalled();
+			const result = await settleAppeal(guild, createRow(), true, moderatorId, null);
+
+			expect(result).toHaveProperty('message');
+			expect(decideAppeal).toHaveBeenCalledOnce();
+			expect(ModerationActions.ban.undo).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a ban that is already gone THEN the approval stands, which is what a retry after a half undo meets', async () => {
+			const unknownBan = new DiscordAPIError(
+				{ code: RESTJSONErrorCodes.UnknownBan, message: 'Unknown Ban' },
+				RESTJSONErrorCodes.UnknownBan,
+				404,
+				'DELETE',
+				'',
+				{}
+			);
+			vi.mocked(ModerationActions.ban.undo).mockRejectedValueOnce(unknownBan);
+
+			expect(await settleAppeal(guild, createRow(), true, moderatorId, null)).toHaveProperty('message');
+			expect(reopenAppeal).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN an undo that fails otherwise THEN the appeal is pending again', async () => {
+			vi.spyOn(container.logger, 'error').mockImplementation(() => undefined);
+			vi.mocked(ModerationActions.ban.undo).mockRejectedValueOnce(new Error('Missing Permissions'));
+
+			expect(await settleAppeal(guild, createRow(), true, moderatorId, null)).toEqual({ error: 'undoFailed' });
+			expect(reopenAppeal).toHaveBeenCalledOnce();
 		});
 
 		test('GIVEN a case of a type that cannot be appealed THEN the appeal is not decided', async () => {
@@ -634,6 +671,13 @@ describe('the appeals', () => {
 
 			expect(embed.fields?.[0]).toEqual({ name: 'Which?', value: 'One, Two' });
 			expect(embed.fields?.[1].value).toBe(`[ahttp://evil.png](https://wolfstar.rocks/appeal-files/${guildId}/1/0)`);
+		});
+
+		test('GIVEN a case that was deleted THEN the appeal still reads, and says so', () => {
+			const [embed] = renderAppealView(t, createRow(), null).embeds;
+
+			expect(embed.title).toContain('commands/appeal:caseGone');
+			expect(embed.fields).toEqual([{ name: 'Why?', value: 'Sorry' }]);
 		});
 
 		test('GIVEN four long answers THEN they are shown whole', () => {

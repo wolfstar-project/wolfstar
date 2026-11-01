@@ -1,7 +1,7 @@
 import { UserCommand } from '#root/commands/Tools/reply';
 import { container } from '@wolfstar/http-framework';
 import { MessageFlags } from 'discord-api-types/v10';
-import { fetchPendingAppealsWithThread } from 'wolfstar-database';
+import { fetchPendingAppeals } from 'wolfstar-database';
 
 vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
 	...(await importOriginal<typeof import('#lib/moderation/common/util')>()),
@@ -9,7 +9,7 @@ vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
 }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
-	fetchPendingAppealsWithThread: vi.fn()
+	fetchPendingAppeals: vi.fn()
 }));
 vi.mock('@wolfstar/plugin-i18next', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@wolfstar/plugin-i18next')>()),
@@ -33,16 +33,25 @@ describe('/reply', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		vi.mocked(fetchPendingAppealsWithThread).mockResolvedValue([appeal('1', 12)] as never);
+		vi.mocked(fetchPendingAppeals).mockResolvedValue([appeal('1', 12)] as never);
 		Object.assign(container, { prisma: {}, gatewayClient: { guilds: { fetch: fetchGuild }, api: { channels: { createMessage } } } });
 	});
 
 	test('GIVEN no pending appeal THEN the member is told, and nothing is posted', async () => {
-		vi.mocked(fetchPendingAppealsWithThread).mockResolvedValue([]);
+		vi.mocked(fetchPendingAppeals).mockResolvedValue([]);
 
 		await run();
 
 		expect(reply).toHaveBeenCalledWith({ content: 'commands/reply:none', flags: MessageFlags.Ephemeral });
+		expect(createMessage).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a pending appeal with no thread THEN the member is told there is nowhere to answer, not that they have no appeal', async () => {
+		vi.mocked(fetchPendingAppeals).mockResolvedValue([{ ...appeal('1', 12), threadId: null }] as never);
+
+		await run();
+
+		expect(reply).toHaveBeenCalledWith({ content: 'commands/reply:noThread', flags: MessageFlags.Ephemeral });
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -54,7 +63,7 @@ describe('/reply', () => {
 	});
 
 	test('GIVEN several pending appeals and no option THEN it asks which, and nothing is posted', async () => {
-		vi.mocked(fetchPendingAppealsWithThread).mockResolvedValue([appeal('1', 12), appeal('2', 3)] as never);
+		vi.mocked(fetchPendingAppeals).mockResolvedValue([appeal('1', 12), appeal('2', 3)] as never);
 
 		await run();
 
@@ -63,7 +72,7 @@ describe('/reply', () => {
 	});
 
 	test('GIVEN several pending appeals and the option THEN it goes to that one', async () => {
-		vi.mocked(fetchPendingAppealsWithThread).mockResolvedValue([appeal('1', 12), appeal('2', 3)] as never);
+		vi.mocked(fetchPendingAppeals).mockResolvedValue([appeal('1', 12), appeal('2', 3)] as never);
 
 		await run({ appeal: '2:3' });
 
@@ -96,7 +105,7 @@ describe('/reply', () => {
 
 	test('GIVEN the autocomplete THEN it offers the appeals of the user, by their server', async () => {
 		const respond = vi.fn();
-		vi.mocked(fetchPendingAppealsWithThread).mockResolvedValue([appeal('1', 12), appeal('2', 3)] as never);
+		vi.mocked(fetchPendingAppeals).mockResolvedValue([appeal('1', 12), appeal('2', 3)] as never);
 
 		await UserCommand.prototype.autocompleteRun.call(
 			{} as never,

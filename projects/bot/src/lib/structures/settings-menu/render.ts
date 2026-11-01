@@ -103,6 +103,11 @@ export interface SettingsMenuContext {
 	 * The settings of the guild.
 	 */
 	settings: ReadonlyGuildData;
+
+	/**
+	 * The forms of the appeals of the guild, which the dashboard edits and its page lists.
+	 */
+	appealForms?: readonly { name: string; enabled: boolean }[];
 }
 
 /**
@@ -168,6 +173,15 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 				button(encodeAutoModerationMenuId({ ownerId: context.ownerId, verb: 'list' }), { emoji: getEmojiComponent('ArrowRight') })
 			)
 		);
+	}
+
+	// The forms of the appeals are rows of their own too, built on the dashboard:
+	if (path === 'appeals') {
+		const forms = (context.appealForms ?? []).map(({ name, enabled }) =>
+			enabled ? `- ${name}` : `- ${name} (${t('commands/conf:menuAppealFormDisabled')})`
+		);
+		const list = forms.length === 0 ? t('commands/conf:menuAppealFormsEmpty') : forms.join('\n');
+		body.push({ type: ComponentType.Separator }, text(`**${Emojis.ModuleAppeals} ${t('commands/conf:menuAppealForms')}**\n${list}`));
 	}
 
 	// The configuration of the whole server is exported and imported from the page of the general module:

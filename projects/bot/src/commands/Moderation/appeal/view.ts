@@ -25,8 +25,6 @@ export class UserCommand extends Command {
 
 		const moderation = await getModeration(interaction.guildId);
 		const entry = await moderation.fetch(appeal.caseId);
-		if (entry === null) return interaction.reply({ content: t('moderation:appealCaseGone'), flags: MessageFlags.Ephemeral });
-
 		const form = appeal.formId === null ? null : await fetchAppealForm(this.container.prisma, interaction.guildId, appeal.formId);
 		return interaction.reply({
 			...renderAppealView(t, appeal, entry, form?.name ?? null),

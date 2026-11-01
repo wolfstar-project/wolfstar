@@ -6,7 +6,7 @@ import { cutText } from '@sapphire/utilities';
 import { container, Command, RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { ApplicationIntegrationType, InteractionContextType, MessageFlags } from 'discord-api-types/v10';
-import { fetchPendingAppealsWithThread, type Appeal } from 'wolfstar-database';
+import { fetchPendingAppeals, type Appeal } from 'wolfstar-database';
 
 /**
  * The value of an appeal in the option of this command: its guild and its case, since a member may appeal in several.
@@ -34,8 +34,11 @@ export class UserCommand extends Command {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
 
-		const appeals = await fetchPendingAppealsWithThread(container.prisma, interaction.user.id);
-		if (appeals.length === 0) return fail(t('commands/reply:none'));
+		const pending = await fetchPendingAppeals(container.prisma, interaction.user.id);
+		if (pending.length === 0) return fail(t('commands/reply:none'));
+
+		const appeals = pending.filter((appeal) => appeal.threadId !== null);
+		if (appeals.length === 0) return fail(t('commands/reply:noThread'));
 		if (options.appeal === undefined && appeals.length > 1) return fail(t('commands/reply:choose'));
 
 		const appeal = options.appeal === undefined ? appeals[0] : appeals.find((item) => getReplyValue(item) === options.appeal);
@@ -64,12 +67,15 @@ export class UserCommand extends Command {
 	) {
 		if (args.focused !== 'appeal') return interaction.replyEmpty();
 
-		const appeals = await fetchPendingAppealsWithThread(container.prisma, interaction.user.id);
+		const appeals = await fetchPendingAppeals(container.prisma, interaction.user.id);
 		const choices = await Promise.all(
-			appeals.slice(0, 25).map(async (appeal) => {
-				const guild = await container.gatewayClient.guilds.fetch(appeal.guildId).catch(() => null);
-				return { name: cutText(`${guild?.name ?? appeal.guildId} · #${appeal.caseId}`, 100), value: getReplyValue(appeal) };
-			})
+			appeals
+				.filter((appeal) => appeal.threadId !== null)
+				.slice(0, 25)
+				.map(async (appeal) => {
+					const guild = await container.gatewayClient.guilds.fetch(appeal.guildId).catch(() => null);
+					return { name: cutText(`${guild?.name ?? appeal.guildId} · #${appeal.caseId}`, 100), value: getReplyValue(appeal) };
+				})
 		);
 		return interaction.reply({ choices });
 	}

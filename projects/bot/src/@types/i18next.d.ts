@@ -731,6 +731,9 @@ declare module "i18next" {
         menuResetCancelled: "Nothing was reset.";
         menuResetDone: "The settings of **{{module}}** have been reset.";
         menuAutomodRules: "Auto-moderation rules";
+        menuAppealForms: "Forms";
+        menuAppealFormsEmpty: "None yet: the members get the default question. Forms are built on the dashboard.";
+        menuAppealFormDisabled: "disabled";
         menuAutomodRulesDescription: "Create and configure the rules of the auto-moderation.";
         menuTransferTitle: "Export and import";
         menuTransferDescription: "Save the configuration of the server to a file, or apply a file exported from this server or another one.";
@@ -1640,6 +1643,7 @@ declare module "i18next" {
         optionsAppealName: "appeal";
         optionsAppealDescription: "The appeal, when you have more than one waiting.";
         none: "You have no appeal waiting for a decision.";
+        noThread: "Your appeal is waiting for a decision, but this server does not take answers. The staff will write to you here.";
         choose: "You have more than one appeal waiting, pick one with the `appeal` option.";
         notFound: "That is not one of your appeals waiting for a decision.";
         failed: "I could not deliver it to the staff. The server may have removed me or the thread of your appeal.";

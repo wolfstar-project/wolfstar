@@ -4,6 +4,7 @@ import type { SettingsMenuContext } from '#lib/structures/settings-menu/render';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT, type Target } from '@wolfstar/plugin-i18next';
 import type { Snowflake } from 'discord-api-types/v10';
+import { fetchAppealForms } from 'wolfstar-database';
 
 export * from '#lib/structures/settings-menu/expired';
 export * from '#lib/structures/settings-menu/ids';
@@ -25,6 +26,7 @@ export async function createSettingsMenuContext(interaction: Target, guildId: Sn
 		t: createTranslator(getSupportedUserLanguageT(interaction)),
 		ownerId,
 		guild,
-		settings: await readSettings(guildId)
+		settings: await readSettings(guildId),
+		appealForms: await fetchAppealForms(container.prisma, guildId)
 	};
 }
