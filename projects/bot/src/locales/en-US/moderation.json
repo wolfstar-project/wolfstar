@@ -60,6 +60,7 @@
 	"actionTargetWolf": "I... I cannot do that to myself! You broke my heart. 💔",
 	"actionTargetHigherHierarchyWolf": "This action cannot be performed on a member with a role position that is higher than or equal to mine.",
 	"actionTargetHigherHierarchyAuthor": "This action cannot be performed on a member with a role position that is higher than or equal to yours.",
+	"appealDefaultForm": "Appeal",
 	"appealDefaultQuestion": "Why should this case be undone?",
 	"appealTitle": "Appeal of the case #{{case}} ({{type}})",
 	"appealUser": "**User**: {{user}}",
