@@ -2,6 +2,7 @@ import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { isOwnGuild } from '#lib/database/settings/dashboard';
 import {
+	readHoneypotNotice,
 	readHoneypotNotices,
 	refreshHoneypotNotice,
 	removeHoneypotNotice,
@@ -19,7 +20,13 @@ import { fetchHoneypotChannels, type GuildDataKey, type HoneypotChannel, type Re
  * The settings the warning of the honeypot depends on: where it is, whether there is one, and the action it tells
  * about.
  */
-export const HoneypotNoticeKeys = ['honeypotChannel', 'honeypotAction', 'honeypotWarning'] as const satisfies readonly GuildDataKey[];
+const HoneypotWarningKeys = ['honeypotChannel', 'honeypotAction', 'honeypotWarning'] as const satisfies readonly GuildDataKey[];
+
+/**
+ * The settings {@linkcode followHoneypotSettings} reacts to: the ones of the warning, and the switch of the module,
+ * since a warning that waited for it is sent when it is turned on.
+ */
+export const HoneypotNoticeKeys = [...HoneypotWarningKeys, 'modulesHoneypot'] as const satisfies readonly GuildDataKey[];
 
 /**
  * What following a write of the dashboard did to the warning of the honeypot.
@@ -37,6 +44,9 @@ export type HoneypotFollowOutcome = 'Ignored' | 'Removed' | 'Refreshed' | 'Faile
  * same time does not leave a warning behind. When the warning cannot be sent, nothing is written back: the dashboard
  * checked the permissions when it saved, and the failure is told in the channel of `honeypot.log-channel`, or logged.
  *
+ * While `modules.honeypot` is off nothing is sent to the channel (a warning that is not wanted anymore is still taken
+ * off), and turning the module on sends the warning only when it is out of step.
+ *
  * @param guildId - The guild.
  * @param keys - The keys the dashboard changed.
  */
@@ -49,6 +59,15 @@ export async function followHoneypotSettings(guildId: Snowflake, keys: readonly 
 		if (channelId === null) {
 			await removeHoneypotNotice(guildId);
 			return 'Removed';
+		}
+
+		// A paused honeypot gets no warning, one it does not want anymore is still taken off below:
+		if (settings.honeypotWarning && !settings.modulesHoneypot) return 'Ignored';
+
+		// The switch alone: a warning that is right is not sent again, only one that waited for the module is:
+		if (!keys.some((key) => (HoneypotWarningKeys as readonly string[]).includes(key))) {
+			const honeypot = { channelId, warning: settings.honeypotWarning, action: settings.honeypotAction };
+			if (planHoneypotNoticeReconcile(honeypot, await readHoneypotNotice(guildId)) === 'Keep') return 'Ignored';
 		}
 
 		const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: settings.honeypotWarning, action: settings.honeypotAction });
@@ -96,7 +115,9 @@ export function planHoneypotNoticeReconcile(
  * Puts in order the warnings of the honeypots of the guilds of this process, after the connection that hears the
  * dashboard was down: what it changed meanwhile was not heard. A warning that is right is left as it is, so this costs
  * nothing at every start; the others go through {@linkcode followHoneypotSettings}, under the lock and on the settings
- * read then.
+ * read then. While `modules.honeypot` is off nothing is sent to the channel, as in `runHoneypotUpkeep`: a warning that
+ * is out of step waits for the module (turning it on is a key of {@linkcode HoneypotNoticeKeys}), and only one the
+ * settings no longer want is taken off.
  */
 export async function reconcileHoneypotNotices(): Promise<void> {
 	const [honeypots, notices] = await Promise.all([fetchHoneypotChannels(container.prisma.orm), readHoneypotNotices()]);
@@ -104,11 +125,13 @@ export async function reconcileHoneypotNotices(): Promise<void> {
 
 	for (const guildId of new Set([...byGuild.keys(), ...notices.keys()])) {
 		if (!isOwnGuild(guildId)) continue;
-		if (planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null) === 'Keep') continue;
+		const plan = planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null);
+		if (plan === 'Keep') continue;
 		// The rows of a guild the bot left stay, and every request for its channels would be refused:
 		if (!(await isGuildJoined(guildId))) continue;
 
 		try {
+			if (plan === 'Refresh' && !(await readSettings(guildId)).modulesHoneypot) continue;
 			await followHoneypotSettings(guildId, HoneypotNoticeKeys);
 		} catch (error) {
 			container.logger.error(`[Honeypot] Could not put the warning of the guild ${guildId} in order:`, error);

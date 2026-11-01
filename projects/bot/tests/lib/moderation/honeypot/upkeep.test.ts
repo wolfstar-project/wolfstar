@@ -230,6 +230,27 @@ describe('runHoneypotUpkeep', () => {
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
 	});
 
+	test('GIVEN the honeypot module off THEN the channel is not renamed nor written in', async () => {
+		setSettings({ modulesHoneypot: false, honeypotRandomName: true, honeypotKeepActive: true });
+
+		expect(await runHoneypotUpkeep(upkeep)).toBe('skipped');
+
+		expect(edit).not.toHaveBeenCalled();
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+		expect(createMessage).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN the honeypot module off and a channel that was deleted THEN the honeypot keeps its settings', async () => {
+		setSettings({ modulesHoneypot: false, honeypotRandomName: true });
+		fetch.mockRejectedValue(createError(10003, 'Unknown Channel'));
+
+		expect(await runHoneypotUpkeep(upkeep)).toBe('skipped');
+
+		expect(settings.honeypotChannel).toBe(channelId);
+		expect(audits).toEqual([]);
+		expect(removeHoneypotNotice).not.toHaveBeenCalled();
+	});
+
 	test('GIVEN switches that were turned off after the task read them THEN nothing is done', async () => {
 		expect(await runHoneypotUpkeep(upkeep)).toBe('skipped');
 
