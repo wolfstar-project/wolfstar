@@ -3,8 +3,10 @@ import { getAppealPage, renderAppealView, sendAppealDirectMessage, settleAppeal,
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
+import { ChannelType } from 'discord-api-types/v10';
 import {
 	createAppeal,
+	createAppealBlock,
 	decideAppeal,
 	fetchAppeal,
 	fetchAppealBlock,
@@ -12,6 +14,7 @@ import {
 	fetchAppealForms,
 	fetchUserAppeals,
 	setAppealMessage,
+	setAppealThread,
 	type Appeal,
 	type AppealForm
 } from 'wolfstar-database';
@@ -27,6 +30,7 @@ vi.mock('@wolfstar/http-framework-utilities/gateway', () => ({ canSendEmbeds: vi
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
 	createAppeal: vi.fn(),
+	createAppealBlock: vi.fn(),
 	decideAppeal: vi.fn(),
 	fetchAppeal: vi.fn(),
 	fetchAppealBlock: vi.fn(),
@@ -34,7 +38,8 @@ vi.mock('wolfstar-database', async (importOriginal) => ({
 	fetchAppealForms: vi.fn(),
 	fetchUserAppeals: vi.fn(),
 	reopenAppeal: vi.fn(),
-	setAppealMessage: vi.fn()
+	setAppealMessage: vi.fn(),
+	setAppealThread: vi.fn()
 }));
 
 const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)) as never;
@@ -42,6 +47,7 @@ const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key
 const guildId = '254360814063058944';
 const channelId = '254360814063058945';
 const messageId = '254360814063058946';
+const threadId = '254360814063058947';
 const userId = '266624760782258186';
 const moderatorId = '242043489611808769';
 const guild = { id: guildId, name: 'The Lab', iconURL: () => null } as never;
@@ -103,10 +109,28 @@ describe('the appeals', () => {
 	const fetchUser = vi.fn();
 	const fetchMember = vi.fn();
 	const fetchCase = vi.fn();
-	const createThread = vi.fn(async () => ({}));
+	const createThread = vi.fn(async () => ({ id: threadId }));
+	const createMessage = vi.fn(async () => ({}));
+	const editChannel = vi.fn(async () => ({}));
 	const editMessage = vi.fn(async () => ({}));
 	const channelSend = vi.fn(async () => ({ id: messageId }));
 	const channel = { guildId, send: channelSend };
+
+	const baseSettings = {
+		appealsEnabled: true,
+		appealsBans: true,
+		appealsMutes: true,
+		appealsTimeouts: true,
+		appealsChannel: channelId,
+		appealsCooldownDays: 7,
+		appealsMaxActive: 1,
+		appealsAnonymous: false,
+		appealsThread: 'public',
+		appealsPingRoles: [] as string[],
+		appealsBlockOnDenial: false
+	};
+	const useSettings = (overrides: Partial<typeof baseSettings>) =>
+		vi.mocked(readSettings).mockResolvedValue({ ...baseSettings, ...overrides } as never);
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -116,28 +140,20 @@ describe('the appeals', () => {
 		vi.mocked(getModeration).mockResolvedValue({ fetch: fetchCase } as never);
 		vi.mocked(decideAppeal).mockResolvedValue(true);
 		vi.mocked(createAppeal).mockResolvedValue(createRow());
+		vi.mocked(createAppealBlock).mockResolvedValue(true);
 		vi.mocked(fetchAppealBlock).mockResolvedValue(null);
 		vi.mocked(fetchAppealForms).mockResolvedValue([]);
 		vi.mocked(fetchAppealForm).mockResolvedValue(null);
 		vi.mocked(fetchUserAppeals).mockResolvedValue([]);
 		fetchMember.mockRejectedValue(new Error('Unknown Member'));
-		vi.mocked(readSettings).mockResolvedValue({
-			appealsEnabled: true,
-			appealsBans: true,
-			appealsMutes: true,
-			appealsTimeouts: true,
-			appealsChannel: channelId,
-			appealsCooldownDays: 7,
-			appealsMaxActive: 1,
-			appealsAnonymous: false
-		} as never);
+		useSettings({});
 		Object.assign(container, {
 			prisma: {},
 			gatewayClient: {
 				users: { fetch: fetchUser },
 				members: { fetch: fetchMember },
 				channels: { fetch: vi.fn(async () => channel) },
-				api: { channels: { createThread, editMessage } }
+				api: { channels: { createThread, createMessage, editMessage, edit: editChannel } }
 			}
 		});
 	});
@@ -157,6 +173,47 @@ describe('the appeals', () => {
 				expect.objectContaining({ name: expect.stringContaining('appealThreadName') }),
 				messageId
 			);
+		});
+
+		test.each([
+			['public', messageId],
+			['private', undefined]
+		])('GIVEN %s threads THEN the thread is remembered by its own ID', async (appealsThread, starter) => {
+			useSettings({ appealsThread });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(createThread).toHaveBeenCalledWith(channelId, expect.anything(), starter);
+			expect(setAppealThread).toHaveBeenCalledWith(container.prisma, guildId, '1', threadId);
+		});
+
+		test('GIVEN no threads THEN none starts', async () => {
+			useSettings({ appealsThread: 'none' });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(createThread).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a private thread THEN it links to the appeal and brings the ping roles in', async () => {
+			useSettings({ appealsThread: 'private', appealsPingRoles: ['7'] });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(createThread).toHaveBeenCalledWith(channelId, expect.objectContaining({ type: ChannelType.PrivateThread }), undefined);
+			expect(createMessage).toHaveBeenCalledWith(threadId, {
+				content: expect.stringContaining(`https://discord.com/channels/${guildId}/${channelId}/${messageId}`),
+				allowed_mentions: { roles: ['7'] }
+			});
+			expect(vi.mocked(createMessage).mock.calls[0]).toMatchObject([threadId, { content: expect.stringContaining('<@&7>') }]);
+		});
+
+		test('GIVEN ping roles THEN they alone are mentioned', async () => {
+			useSettings({ appealsPingRoles: ['7', '8'] });
+
+			await submitAppeal(guild, userId, null, 12, { statement: 'Sorry' });
+
+			expect(channelSend).toHaveBeenCalledWith(expect.objectContaining({ content: '<@&7> <@&8>', allowed_mentions: { roles: ['7', '8'] } }));
 		});
 
 		test('GIVEN an appeal still pending once it was sent THEN its message stays as it is', async () => {
@@ -357,6 +414,55 @@ describe('the appeals', () => {
 			const result = await settleAppeal(guild, createRow(), false, moderatorId, 'No');
 
 			expect(result).toMatchObject({ message: { components: [], embeds: [{ footer: { text: expect.stringContaining('appealDenied') } }] } });
+		});
+	});
+
+	describe('settleAppeal, what follows a decision', () => {
+		test('GIVEN a denial with the block on THEN the member is blocked, by the moderator and automatically', async () => {
+			useSettings({ appealsBlockOnDenial: true });
+
+			await settleAppeal(guild, createRow(), false, moderatorId, 'No');
+
+			expect(createAppealBlock).toHaveBeenCalledWith(container.prisma, guildId, { userId, reason: 'No', moderatorId, automatic: true });
+		});
+
+		test('GIVEN an approval with the block on THEN nobody is blocked', async () => {
+			useSettings({ appealsBlockOnDenial: true });
+
+			await settleAppeal(guild, createRow(), true, moderatorId, null);
+
+			expect(createAppealBlock).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN a decision THEN the thread of the appeal is archived', async () => {
+			await settleAppeal(guild, createRow({ threadId }), false, moderatorId, null);
+
+			expect(editChannel).toHaveBeenCalledWith(threadId, { archived: true });
+		});
+
+		test('GIVEN a thread that is gone THEN the decision stands', async () => {
+			const warn = vi.spyOn(container.logger, 'warn').mockImplementation(() => undefined);
+			editChannel.mockRejectedValueOnce(new Error('Unknown Channel'));
+
+			expect(await settleAppeal(guild, createRow({ threadId }), false, moderatorId, null)).toHaveProperty('message');
+			expect(warn).toHaveBeenCalledOnce();
+		});
+
+		test('GIVEN anonymous actions THEN the direct message names nobody', async () => {
+			useSettings({ appealsAnonymous: true });
+			fetchUser.mockResolvedValue({ send, username: 'mod' });
+
+			await settleAppeal(guild, createRow(), false, moderatorId, 'No');
+
+			expect(vi.mocked(send).mock.calls[0][0].content).not.toContain('mod"');
+		});
+
+		test('GIVEN no anonymous actions THEN the direct message tells who decided', async () => {
+			fetchUser.mockResolvedValue({ send, username: 'mod' });
+
+			await settleAppeal(guild, createRow(), false, moderatorId, 'No');
+
+			expect(vi.mocked(send).mock.calls[0][0].content).toContain('appealDmDecidedBy');
 		});
 	});
 

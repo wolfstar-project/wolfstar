@@ -9,7 +9,7 @@ import type { TranslationKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
 import { Colors, Urls } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
-import { hyperlink, messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
+import { hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { canSendEmbeds } from '@wolfstar/http-framework-utilities/gateway';
@@ -17,6 +17,7 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import {
 	ButtonStyle,
+	ChannelType,
 	ComponentType,
 	ThreadAutoArchiveDuration,
 	type APIActionRowComponent,
@@ -25,6 +26,7 @@ import {
 } from 'discord-api-types/v10';
 import {
 	createAppeal,
+	createAppealBlock,
 	decideAppeal,
 	fetchAppeal,
 	fetchAppealBlock,
@@ -33,6 +35,7 @@ import {
 	fetchUserAppeals,
 	reopenAppeal,
 	setAppealMessage,
+	setAppealThread,
 	type Appeal,
 	type AppealAnswer,
 	type AppealForm,
@@ -197,7 +200,7 @@ export async function submitAppeal(
 	}
 
 	container.logger.debug(`[Appeals] ${userId} of ${guild.id} appealed the case ${caseId}: appeal ${appeal.id}`);
-	await sendAppealMessage(guild, settings.appealsChannel, t, appeal, entry).catch((error: unknown) =>
+	await sendAppealMessage(guild, settings, t, appeal, entry).catch((error: unknown) =>
 		container.logger.error('[Appeals] Could not send an appeal to the channel of the moderators:', error)
 	);
 	return { appeal };
@@ -205,11 +208,12 @@ export async function submitAppeal(
 
 async function sendAppealMessage(
 	guild: Guild,
-	channelId: Snowflake | null,
+	settings: ReadonlyGuildData,
 	t: TFunction<AnyNamespace>,
 	appeal: Appeal,
 	entry: ModerationManager.Entry
 ) {
+	const channelId = settings.appealsChannel;
 	if (channelId === null) {
 		container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was not sent: no channel is set`);
 		return;
@@ -221,7 +225,12 @@ async function sendAppealMessage(
 		return;
 	}
 
-	const sent = await channel.send({ ...renderAppealMessage(t, appeal, entry, 'pending'), allowed_mentions: { parse: [] } });
+	const pings = settings.appealsPingRoles;
+	const sent = await channel.send({
+		...renderAppealMessage(t, appeal, entry, 'pending'),
+		content: pings.map((role) => roleMention(role)).join(' '),
+		allowed_mentions: { roles: [...pings] }
+	});
 	await setAppealMessage(container.prisma, guild.id, appeal.id, channelId, sent.id);
 	container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was sent to ${channelId}: message ${sent.id}`);
 
@@ -235,15 +244,43 @@ async function sendAppealMessage(
 			.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
 	}
 
-	// The moderators talk about the appeal in its thread and `/appeal send` writes to the member from it, which finds the
-	// appeal by the ID of the thread: the one of the message it starts from. Without one the appeal is still decided.
-	await container.gatewayClient.api.channels
-		.createThread(
-			channelId,
-			{ name: cutText(t('moderation:appealThreadName', { case: entry.id }), 100), auto_archive_duration: ThreadAutoArchiveDuration.OneWeek },
-			sent.id
-		)
-		.catch((error: unknown) => container.logger.warn(`[Appeals] Could not start the thread of the appeal ${appeal.id} of ${guild.id}:`, error));
+	// The staff talks about the appeal in its thread and `/appeal send` writes to the member from it. Without one the
+	// appeal is still decided:
+	await startAppealThread(settings, t, appeal, entry.id, channelId, sent.id).catch((error: unknown) =>
+		container.logger.warn(`[Appeals] Could not start the thread of the appeal ${appeal.id} of ${guild.id}:`, error)
+	);
+}
+
+/**
+ * Starts the thread of an appeal as `appeals.thread` says: a public one on its message, or a private one in its channel,
+ * since Discord starts none on a message. That one links to the appeal, and mentioning the ping roles brings them in.
+ */
+async function startAppealThread(
+	settings: ReadonlyGuildData,
+	t: TFunction<AnyNamespace>,
+	appeal: Appeal,
+	caseId: number,
+	channelId: Snowflake,
+	messageId: Snowflake
+) {
+	const mode = settings.appealsThread;
+	if (mode === 'none') return;
+
+	const { channels } = container.gatewayClient.api;
+	const name = cutText(t('moderation:appealThreadName', { case: caseId }), 100);
+	const body = { name, auto_archive_duration: ThreadAutoArchiveDuration.OneWeek };
+	const thread =
+		mode === 'private'
+			? await channels.createThread(channelId, { ...body, type: ChannelType.PrivateThread, invitable: false }, undefined)
+			: await channels.createThread(channelId, body, messageId);
+	await setAppealThread(container.prisma, appeal.guildId, appeal.id, thread.id);
+
+	if (mode === 'private') {
+		const pings = settings.appealsPingRoles;
+		const link = messageLink(channelId, messageId, appeal.guildId);
+		const content = [link, ...pings.map((role) => roleMention(role))].join(' ');
+		await channels.createMessage(thread.id, { content, allowed_mentions: { roles: [...pings] } });
+	}
 }
 
 /**
@@ -385,12 +422,23 @@ export async function applyAppealDecision(
 		}
 	}
 
+	const settings = await readSettings(guild.id);
+	if (!accept && settings.appealsBlockOnDenial) {
+		await createAppealBlock(container.prisma, guild.id, { userId: appeal.userId, reason, moderatorId: reviewerId, automatic: true }).catch(
+			(error: unknown) => container.logger.warn(`[Appeals] Could not block ${appeal.userId} of ${guild.id}:`, error)
+		);
+	}
+
 	// A member who does not take direct messages is not told, which is not a failure of the decision:
-	const user = await container.gatewayClient.users.fetch(appeal.userId).catch(() => null);
 	const key = accept ? 'moderation:appealDmAccepted' : 'moderation:appealDmDenied';
-	await user
-		?.send({ content: t(key, { guild: guild.name, case: entry.id, reason: reason ?? '-' }), allowed_mentions: { parse: [] } })
-		.catch(() => null);
+	const lines: string[] = [t(key, { guild: guild.name, case: entry.id, reason: reason ?? '-' })];
+	if (!settings.appealsAnonymous) {
+		const moderator = await container.gatewayClient.users.fetch(reviewerId).catch(() => null);
+		if (moderator !== null) lines.push(t('moderation:appealDmDecidedBy', { moderator: moderator.username }));
+	}
+
+	const user = await container.gatewayClient.users.fetch(appeal.userId).catch(() => null);
+	await user?.send({ content: lines.join('\n'), allowed_mentions: { parse: [] } }).catch(() => null);
 	return null;
 }
 
@@ -423,6 +471,12 @@ export async function settleAppeal(
 
 	const error = await applyAppealDecision(guild, appeal, { id: entry.id, type: entry.type as AppealableType }, accept, reviewerId, reason);
 	if (error !== null) return { error };
+
+	if (appeal.threadId !== null) {
+		await container.gatewayClient.api.channels
+			.edit(appeal.threadId, { archived: true })
+			.catch((error: unknown) => container.logger.warn(`[Appeals] Could not archive the thread of the appeal ${appeal.id}:`, error));
+	}
 
 	const t = await fetchGuildT(guild);
 	return { message: renderAppealMessage(t, appeal, entry, accept ? 'accepted' : 'denied', reviewerId, reason) };

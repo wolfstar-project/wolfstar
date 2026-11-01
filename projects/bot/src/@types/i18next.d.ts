@@ -91,7 +91,7 @@ declare module "i18next" {
         viewName: "view";
         viewDescription: "Show everything a member wrote in an appeal.";
         approveName: "approve";
-        approveDescription: "Accept an appeal, which undoes its case.";
+        approveDescription: "Approve an appeal, which undoes its case.";
         denyName: "deny";
         denyDescription: "Deny an appeal, which keeps its case.";
         sendName: "send";
@@ -106,7 +106,7 @@ declare module "i18next" {
         caseGone: "Deleted case";
         choice: "#{{case}} · {{type}} · {{user}} · {{status}}";
         statusPending: "Pending";
-        statusAccepted: "Accepted";
+        statusAccepted: "Approved";
         statusDenied: "Denied";
         filterAll: "All appeals";
         listTitle: "Appeals";
@@ -114,7 +114,7 @@ declare module "i18next" {
         listLine: "**#{{case}}** · {{type}} · {{user}} · {{status}} · {{time}}";
         listFooter: "Page {{page, number}} of {{pages, number}} · {{total, number}} appeals";
         viewOpen: "Open in the channel";
-        approved: "The appeal of the case #{{case}} was accepted, and the member was told if they take direct messages.";
+        approved: "The appeal of the case #{{case}} was approved, and the member was told if they take direct messages.";
         denied: "The appeal of the case #{{case}} was denied, and the member was told if they take direct messages.";
         sendNotThread: "Run this in the thread of an appeal, which tells me who to write to.";
         sendFailed: "I could not send it: the member does not take direct messages, or shares no server with me.";
@@ -2672,15 +2672,16 @@ declare module "i18next" {
         appealUser: "**User**: {{user}}";
         appealCaseReason: "**Reason of the case**: {{reason}}";
         appealDate: "**Sent**: {{time}}";
-        appealAccept: "Accept";
+        appealAccept: "Approve";
         appealDeny: "Deny";
         appealReasonLabel: "Reason, sent to the member";
-        appealAccepted: "Accepted: {{reason}}";
+        appealAccepted: "Approved: {{reason}}";
         appealDenied: "Denied: {{reason}}";
         appealReviewer: "Decided by";
-        appealUndoReason: "Appeal of the case #{{case}} accepted: {{reason}}";
-        appealDmAccepted: "Your appeal of the case #{{case}} in **{{guild}}** was accepted: {{reason}}";
+        appealUndoReason: "Appeal of the case #{{case}} approved: {{reason}}";
+        appealDmAccepted: "Your appeal of the case #{{case}} in **{{guild}}** was approved: {{reason}}";
         appealDmDenied: "Your appeal of the case #{{case}} in **{{guild}}** was denied: {{reason}}";
+        appealDmDecidedBy: "Decided by {{moderator}}.";
         appealDmMessage: "A moderator of **{{guild}}** wrote to you about your appeal of the case #{{case}}:\n>>> {{message}}";
         appealThreadName: "Appeal of the case #{{case}}";
         appealCaseGone: "The case of this appeal is gone.";
