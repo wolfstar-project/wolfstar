@@ -29,6 +29,8 @@ types {
   AutoModerationRuleOptions = typed.Json("PrismaJson.AutoModerationRuleOptions")
   AutoModerationRuleEscalation = typed.Json("PrismaJson.AutoModerationRuleEscalation")
   MessageHistoryMessages = typed.Json("PrismaJson.MessageHistoryMessages")
+  AppealFormQuestions = typed.Json("PrismaJson.AppealFormQuestions")
+  AppealAnswers = typed.Json("PrismaJson.AppealAnswers")
 }
 
 namespace public {
@@ -116,14 +118,74 @@ namespace public {
   }
 
   model GuildAppeals {
-    id        BigInt   @id(map: "GuildAppeals_pkey")
-    enabled   Boolean  @default(false)
-    channelId BigInt?  @map("channel_id")
-    bans      Boolean  @default(true)
-    mutes     Boolean  @default(true)
-    timeouts  Boolean  @default(true)
-    questions String[] @default([]) @noCheck(elementNotNull)
-    modules   Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAppeals_id_fkey")
+    id            BigInt   @id(map: "GuildAppeals_pkey")
+    enabled       Boolean  @default(false)
+    channelId     BigInt?  @map("channel_id")
+    bans          Boolean  @default(true)
+    mutes         Boolean  @default(true)
+    timeouts      Boolean  @default(true)
+    // Not read since the forms: it stays until wolfstar.rocks takes the contract that has them, its reads select it.
+    questions     String[] @default([]) @noCheck(elementNotNull)
+    managerRoles  BigInt[] @default([]) @noCheck(elementNotNull) @map("manager_roles")
+    pingRoles     BigInt[] @default([]) @noCheck(elementNotNull) @map("ping_roles")
+    anonymous     Boolean  @default(false)
+    thread        String   @default("public")
+    cooldownDays  Int      @default(7) @map("cooldown_days")
+    maxActive     Int      @default(1) @map("max_active")
+    blockOnDenial Boolean  @default(false) @map("block_on_denial")
+    modules       Modules  @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAppeals_id_fkey")
+  }
+
+  // A form of the appeals, built on the dashboard. Its name is unique whatever its case by an index made by hand.
+  model AppealForm {
+    id              BigInt              @id(map: "AppealForm_pkey") @default(autoincrement())
+    guildId         BigInt              @map("guild_id")
+    name            String
+    description     String?
+    icon            String?
+    enabled         Boolean             @default(true)
+    lockReason      String?             @map("lock_reason")
+    types           Int[]               @default([]) @noCheck(elementNotNull)
+    requiredRoles   BigInt[]            @default([]) @noCheck(elementNotNull) @map("required_roles")
+    restrictedRoles BigInt[]            @default([]) @noCheck(elementNotNull) @map("restricted_roles")
+    questions       AppealFormQuestions @default(sql`'[]'::jsonb`)
+    position        Int                 @default(0)
+    createdAt       TimestampString(3)  @default(now()) @map("created_at")
+    updatedAt       TimestampString(3)  @default(now()) @map("updated_at")
+    guild           Guild               @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "AppealForm_guild_id_fkey", index: false)
+
+    @@index([guildId, position], map: "AppealForm_guild_id_position_idx")
+  }
+
+  // Who a guild keeps from appealing, by hand or by `appeals.block-on-denial`.
+  model AppealBlock {
+    guildId     BigInt             @map("guild_id")
+    userId      BigInt             @map("user_id")
+    reason      String?
+    moderatorId BigInt?            @map("moderator_id")
+    automatic   Boolean            @default(false)
+    createdAt   TimestampString(3) @default(now()) @map("created_at")
+    guild       Guild              @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "AppealBlock_guild_id_fkey", index: false)
+
+    @@id([guildId, userId], map: "AppealBlock_pkey")
+  }
+
+  // What the dashboard asks the bot to do, announced with `NOTIFY appeal_request, '<id>'` in the transaction that inserts
+  // it. The ones not done yet are found by a partial index made by hand, as the requests of the join guard.
+  model AppealRequest {
+    id          BigInt                     @id(map: "AppealRequest_pkey") @default(autoincrement())
+    guildId     BigInt                     @map("guild_id")
+    kind        pg.enum(AppealRequestKind)
+    appealId    BigInt?                    @map("appeal_id")
+    userId      BigInt?                    @map("user_id")
+    moderatorId BigInt                     @map("moderator_id")
+    reason      String?
+    createdAt   TimestampString(3)         @default(now()) @map("created_at")
+    processedAt TimestampString(3)?        @map("processed_at")
+    error       String?
+    guild       Guild                      @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "AppealRequest_guild_id_fkey", index: false)
+
+    @@index([guildId, createdAt], map: "AppealRequest_guild_id_created_at_idx")
   }
 
   model Appeal {
@@ -131,12 +193,15 @@ namespace public {
     guildId    BigInt             @map("guild_id")
     caseId     Int                @map("case_id")
     userId     BigInt             @map("user_id")
-    answers    String[]           @default([]) @noCheck(elementNotNull)
+    formId     BigInt?            @map("form_id")
+    answers    AppealAnswers      @default(sql`'[]'::jsonb`)
     status     String             @default("pending")
     reviewerId BigInt?            @map("reviewer_id")
     reason     String?
     channelId  BigInt?            @map("channel_id")
     messageId  BigInt?            @map("message_id")
+    threadId   BigInt?            @map("thread_id")
+    decidedAt  TimestampString(3)? @map("decided_at")
     createdAt  TimestampString(3) @map("created_at")
     guild      Guild              @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "Appeal_guild_id_fkey", index: false)
 
@@ -639,6 +704,13 @@ namespace public {
     Checkpoint = "Checkpoint"
     Timeout = "Timeout"
     Moderator = "Moderator"
+  }
+
+  native_enum AppealRequestKind {
+    Approve = "Approve"
+    Deny = "Deny"
+    Block = "Block"
+    Unblock = "Unblock"
   }
 
   native_enum JoinGuardRequestKind {

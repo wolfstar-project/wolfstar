@@ -3,11 +3,6 @@ import { formatTimestamp, parseTimestamp } from '../time.js';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
- * The most questions the form of an appeal asks.
- */
-export const MaximumAppealQuestions = 5;
-
-/**
  * The longest answer to a question of an appeal.
  */
 export const MaximumAppealAnswerLength = 1000;
