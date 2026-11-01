@@ -3,7 +3,7 @@ import { settleAppeal } from '#lib/moderation/appealService';
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
-import { fetchAppealByCase, fetchAppeals, type Appeal } from 'wolfstar-database';
+import { fetchAppeal, fetchAppealByCase, fetchAppeals, type Appeal } from 'wolfstar-database';
 
 vi.mock('#lib/moderation/appealService', () => ({
 	AppealSettleErrorKeys: { caseGone: 'case-gone', decided: 'already-decided', undoFailed: 'undo-failed' },
@@ -11,6 +11,7 @@ vi.mock('#lib/moderation/appealService', () => ({
 }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
+	fetchAppeal: vi.fn(),
 	fetchAppealByCase: vi.fn(),
 	fetchAppeals: vi.fn()
 }));
@@ -55,6 +56,7 @@ describe('/appeal approve and /appeal deny', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(fetchAppealByCase).mockResolvedValue(createAppeal());
+		vi.mocked(fetchAppeal).mockResolvedValue(createAppeal());
 		vi.mocked(settleAppeal).mockResolvedValue({ message });
 		Object.assign(container, { prisma: {}, gatewayClient: { guilds: { fetch: vi.fn(async () => guild) }, api: { channels: { editMessage } } } });
 	});
@@ -102,8 +104,16 @@ describe('/appeal approve and /appeal deny', () => {
 		expect(update).toHaveBeenCalledWith({ content });
 	});
 
-	test('GIVEN an appeal whose message was never sent THEN it is decided all the same', async () => {
+	test('GIVEN a message sent after the appeal was read THEN it stops asking for a decision too', async () => {
 		vi.mocked(fetchAppealByCase).mockResolvedValue(createAppeal({ channelId: null, messageId: null }));
+
+		await run({ appeal: '12' });
+
+		expect(editMessage).toHaveBeenCalledWith('254360814063058945', '254360814063058946', expect.anything());
+	});
+
+	test('GIVEN an appeal whose message was never sent THEN it is decided all the same', async () => {
+		vi.mocked(fetchAppeal).mockResolvedValue(createAppeal({ channelId: null, messageId: null }));
 
 		await run({ appeal: '12' });
 

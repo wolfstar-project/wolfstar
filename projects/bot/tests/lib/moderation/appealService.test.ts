@@ -3,7 +3,7 @@ import { renderAppealView, sendAppealDirectMessage, settleAppeal, submitAppeal }
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
-import { createAppeal, decideAppeal, setAppealMessage, type Appeal } from 'wolfstar-database';
+import { createAppeal, decideAppeal, fetchAppeal, setAppealMessage, type Appeal } from 'wolfstar-database';
 
 vi.mock('#lib/database/settings/functions', () => ({ readSettings: vi.fn() }));
 vi.mock('#lib/moderation/actions', () => ({ ModerationActions: { ban: { undo: vi.fn() } } }));
@@ -17,6 +17,7 @@ vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
 	createAppeal: vi.fn(),
 	decideAppeal: vi.fn(),
+	fetchAppeal: vi.fn(),
 	fetchUserAppeals: vi.fn(),
 	reopenAppeal: vi.fn(),
 	setAppealMessage: vi.fn()
@@ -67,6 +68,7 @@ describe('the appeals', () => {
 	const fetchUser = vi.fn();
 	const fetchCase = vi.fn();
 	const createThread = vi.fn(async () => ({}));
+	const editMessage = vi.fn(async () => ({}));
 	const channelSend = vi.fn(async () => ({ id: messageId }));
 	const channel = { guildId, send: channelSend };
 
@@ -88,13 +90,18 @@ describe('the appeals', () => {
 		} as never);
 		Object.assign(container, {
 			prisma: {},
-			gatewayClient: { users: { fetch: fetchUser }, channels: { fetch: vi.fn(async () => channel) }, api: { channels: { createThread } } }
+			gatewayClient: {
+				users: { fetch: fetchUser },
+				channels: { fetch: vi.fn(async () => channel) },
+				api: { channels: { createThread, editMessage } }
+			}
 		});
 	});
 
 	describe('submitAppeal', () => {
 		beforeEach(() => {
 			fetchCase.mockResolvedValue(new Map([[12, createEntry()]]));
+			vi.mocked(fetchAppeal).mockResolvedValue(createRow());
 		});
 
 		test('GIVEN an appeal THEN its message is remembered and a thread starts on it, which is how /appeal send finds it', async () => {
@@ -105,6 +112,24 @@ describe('the appeals', () => {
 				channelId,
 				expect.objectContaining({ name: expect.stringContaining('appealThreadName') }),
 				messageId
+			);
+		});
+
+		test('GIVEN an appeal still pending once it was sent THEN its message stays as it is', async () => {
+			await submitAppeal(guild, userId, 12, ['Sorry']);
+
+			expect(editMessage).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN an appeal decided while its message was on its way THEN the message does not ask for a decision', async () => {
+			vi.mocked(fetchAppeal).mockResolvedValue(createRow({ status: 'denied', reviewerId: moderatorId, reason: 'No' }));
+
+			await submitAppeal(guild, userId, 12, ['Sorry']);
+
+			expect(editMessage).toHaveBeenCalledWith(
+				channelId,
+				messageId,
+				expect.objectContaining({ components: [], allowed_mentions: { parse: [] } })
 			);
 		});
 

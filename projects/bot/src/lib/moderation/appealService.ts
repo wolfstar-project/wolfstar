@@ -24,6 +24,7 @@ import {
 import {
 	createAppeal,
 	decideAppeal,
+	fetchAppeal,
 	fetchUserAppeals,
 	MaximumAppealAnswerLength,
 	MaximumAppealQuestions,
@@ -159,6 +160,14 @@ async function sendAppealMessage(
 	const sent = await channel.send({ ...renderAppealMessage(t, appeal, entry, questions, 'pending'), allowed_mentions: { parse: [] } });
 	await setAppealMessage(container.prisma, guild.id, appeal.id, channelId, sent.id);
 	container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was sent to ${channelId}: message ${sent.id}`);
+
+	// `/appeal approve` and `/appeal deny` read the message after they decide, and this reads the decision after it saves
+	// the message, so one of the two finds the other: a decision made while the message was on its way is not lost on it.
+	const current = await fetchAppeal(container.prisma, guild.id, appeal.id);
+	if (current !== null && current.status !== 'pending') {
+		const decided = renderAppealMessage(t, current, entry, questions, current.status, current.reviewerId, current.reason);
+		await container.gatewayClient.api.channels.editMessage(channelId, sent.id, { ...decided, allowed_mentions: { parse: [] } });
+	}
 
 	// The moderators talk about the appeal in its thread and `/appeal send` writes to the member from it, which finds the
 	// appeal by the ID of the thread: the one of the message it starts from. Without one the appeal is still decided.

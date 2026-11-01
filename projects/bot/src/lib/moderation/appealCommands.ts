@@ -7,7 +7,7 @@ import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT, type AnyNamespace, type TFunction } from '@wolfstar/plugin-i18next';
 import { MessageFlags, type Snowflake } from 'discord-api-types/v10';
-import { fetchAppealByCase, fetchAppeals, type Appeal, type AppealStatus } from 'wolfstar-database';
+import { fetchAppeal, fetchAppealByCase, fetchAppeals, type Appeal, type AppealStatus } from 'wolfstar-database';
 
 /**
  * How many of the latest appeals the autocomplete of `/appeal` looks through.
@@ -56,9 +56,11 @@ export async function runAppealDecision(interaction: GuildChatInputInteraction, 
 	const result = await settleAppeal(guild, appeal, accept, interaction.user.id, options.reason?.trim() || null);
 	if ('error' in result) return deferred.update({ content: t(AppealSettleErrorKeys[result.error]) });
 
-	if (appeal.channelId !== null && appeal.messageId !== null) {
+	// Read again: its message may have been sent since, see `sendAppealMessage`.
+	const decided = await fetchAppeal(container.prisma, interaction.guildId, appeal.id);
+	if (decided !== null && decided.channelId !== null && decided.messageId !== null) {
 		await container.gatewayClient.api.channels
-			.editMessage(appeal.channelId, appeal.messageId, { ...result.message, allowed_mentions: { parse: [] } })
+			.editMessage(decided.channelId, decided.messageId, { ...result.message, allowed_mentions: { parse: [] } })
 			.catch((error: unknown) => container.logger.warn(`[Appeals] Could not update the message of the appeal ${appeal.id}:`, error));
 	}
 
