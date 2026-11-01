@@ -371,6 +371,10 @@ declare module '@wolfstar/http-framework' {
     'reasons remove': {
       alias: string;
     };
+    'reply': {
+      appeal?: string;
+      message: string;
+    };
     'report': {
       reason: string;
       user: TransformedArguments.User;

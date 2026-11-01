@@ -940,6 +940,11 @@ declare module "i18next" {
             "list",
           ];
         };
+        "/reply": {
+          extendedHelp: "Answers the staff of a server about your appeal, from your direct messages with me: what you write goes to the thread of the appeal. It needs me to be installed on your account, which the appeal page asks for.";
+          examples: ["message:I did not know that was against the rules"];
+          reminder: "It only works while your appeal waits for a decision, on a server that gives each appeal a thread.";
+        };
         "/report": {
           extendedHelp: "Reports a member to the moderators of the server, with what they did. The report is sent to the channel of the reports, where the moderators can warn, time out, kick, mute, softban or ban the member, delete the message, or dismiss the report.\nIt is also in the Apps menu, as `Report Message` and `Report User`, which ask for the reason in a form.";
           examples: ["user:@Pete reason:Sent me scam links in direct messages"];
@@ -1626,6 +1631,20 @@ declare module "i18next" {
         limit: "The server already has {{maximum}} predefined reasons, the most it can have.";
         listEmpty: "The server has no predefined reasons. Add one with `/reasons add`.";
         listTitle: "Predefined reasons ({{count}}/{{maximum}}):";
+      };
+      "commands/reply": {
+        name: "reply";
+        description: "Answer the staff of a server about your appeal.";
+        optionsMessageName: "message";
+        optionsMessageDescription: "What to tell the staff.";
+        optionsAppealName: "appeal";
+        optionsAppealDescription: "The appeal, when you have more than one waiting.";
+        none: "You have no appeal waiting for a decision.";
+        choose: "You have more than one appeal waiting, pick one with the `appeal` option.";
+        notFound: "That is not one of your appeals waiting for a decision.";
+        failed: "I could not deliver it to the staff. The server may have removed me or the thread of your appeal.";
+        sent: "Delivered to the staff.";
+        posted: "{{user}} answered:\n>>> {{message}}";
       };
       "commands/report": {
         name: "report";

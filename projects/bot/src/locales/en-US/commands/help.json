@@ -110,6 +110,11 @@
 		"extendedHelp": "Manages the predefined reasons of the server: up to 25 reasons, each with a short alias. The `reason` option of every moderation command suggests them as you write, and takes an alias, in any case, in place of the reason it stands for.",
 		"examples": ["add alias:r1 reason:Spamming or flooding the channels", "remove alias:r1", "list"]
 	},
+	"/reply": {
+		"extendedHelp": "Answers the staff of a server about your appeal, from your direct messages with me: what you write goes to the thread of the appeal. It needs me to be installed on your account, which the appeal page asks for.",
+		"examples": ["message:I did not know that was against the rules"],
+		"reminder": "It only works while your appeal waits for a decision, on a server that gives each appeal a thread."
+	},
 	"/report": {
 		"extendedHelp": "Reports a member to the moderators of the server, with what they did. The report is sent to the channel of the reports, where the moderators can warn, time out, kick, mute, softban or ban the member, delete the message, or dismiss the report.\nIt is also in the Apps menu, as `Report Message` and `Report User`, which ask for the reason in a form.",
 		"examples": ["user:@Pete reason:Sent me scam links in direct messages"],
