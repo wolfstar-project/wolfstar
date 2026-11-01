@@ -7,6 +7,7 @@ import { fetchGuildT, getTitle } from '#lib/moderation/common/util';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import type { TranslationKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
+import { withSharedLock } from '#utils/locks';
 import { Colors, Urls } from '#utils/constants';
 import { EmbedBuilder } from '@discordjs/builders';
 import { hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
@@ -180,27 +181,38 @@ export async function submitAppeal(
 			: await fetchAppealForm(container.prisma, guild.id, formId);
 	if (form === undefined || form === null) return { error: 'notFound' };
 
-	const access = getAppealFormAccess({ ...(await readAppealContext(guild, userId, settings)), form });
-	if (!access.open) {
-		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not use the form ${formId}: ${access.lock}`);
-		return { error: 'locked' };
-	}
+	// What it reads decides whether it can write, so two submissions of a user wait for each other: `appeals.max-active`
+	// would let both through.
+	const created = await withSharedLock<{ error: AppealSubmitError } | { appeal: Appeal; entry: ModerationManager.Entry }>(
+		`appeals:${guild.id}:${userId}`,
+		async () => {
+			const access = getAppealFormAccess({ ...(await readAppealContext(guild, userId, settings)), form });
+			if (!access.open) {
+				container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not use the form ${formId}: ${access.lock}`);
+				return { error: 'locked' };
+			}
 
-	const entry = access.cases.find((item) => item.id === caseId);
-	if (entry === undefined) {
-		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not appeal the case ${caseId}: it cannot be appealed`);
-		return { error: 'notAppealable' };
-	}
+			const entry = access.cases.find((item) => item.id === caseId);
+			if (entry === undefined) {
+				container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not appeal the case ${caseId}: it cannot be appealed`);
+				return { error: 'notAppealable' };
+			}
 
-	const answers = parseAppealAnswers(form, raw, { guildId: guild.id, userId });
-	if (answers === null) return { error: 'invalid' };
+			const answers = parseAppealAnswers(form, raw, { guildId: guild.id, userId });
+			if (answers === null) return { error: 'invalid' };
 
-	const appeal = await createAppeal(container.prisma, guild.id, { caseId, userId, formId, answers });
-	if (appeal === null) {
-		container.logger.debug(`[Appeals] ${userId} of ${guild.id} already appealed the case ${caseId}`);
-		return { error: 'appealed' };
-	}
+			const appeal = await createAppeal(container.prisma, guild.id, { caseId, userId, formId, answers });
+			if (appeal === null) {
+				container.logger.debug(`[Appeals] ${userId} of ${guild.id} already appealed the case ${caseId}`);
+				return { error: 'appealed' };
+			}
 
+			return { appeal, entry };
+		}
+	);
+	if ('error' in created) return created;
+
+	const { appeal, entry } = created;
 	container.logger.debug(`[Appeals] ${userId} of ${guild.id} appealed the case ${caseId}: appeal ${appeal.id}`);
 	await sendAppealMessage(guild, settings, t, appeal, entry).catch((error: unknown) =>
 		container.logger.error('[Appeals] Could not send an appeal to the channel of the moderators:', error)
@@ -289,7 +301,7 @@ async function startAppealThread(
 }
 
 // An embed holds 6000 characters in all, past which Discord refuses the message and the staff never sees the appeal:
-const MaximumAnswerFieldLength = 800;
+const MaximumAnswersLength = 4250;
 const MaximumCaseReasonLength = 400;
 const MaximumFileNameLength = 60;
 
@@ -325,9 +337,9 @@ function renderAppealAnswers(appeal: Appeal) {
 		}
 	};
 
-	return appeal.answers
-		.slice(0, 25)
-		.map((answer) => ({ name: cutText(answer.label, 256), value: cutText(render(answer), MaximumAnswerFieldLength) }));
+	// Four answers fit whole, five share what is left: the rest of a long one is on the dashboard.
+	const fieldLength = Math.min(1000, Math.floor(MaximumAnswersLength / Math.max(1, appeal.answers.length)));
+	return appeal.answers.slice(0, 25).map((answer) => ({ name: cutText(answer.label, 256), value: cutText(render(answer), fieldLength) }));
 }
 
 /**

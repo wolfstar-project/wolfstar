@@ -1,6 +1,7 @@
 import { readSettings } from '#lib/database/settings/functions';
 import { getAppealPage, renderAppealView, sendAppealDirectMessage, settleAppeal, submitAppeal } from '#lib/moderation/appealService';
 import { getModeration } from '#utils/functions';
+import { withSharedLock } from '#utils/locks';
 import { TypeVariation } from '#utils/moderationConstants';
 import { container } from '@wolfstar/http-framework';
 import { DiscordAPIError } from '@discordjs/rest';
@@ -28,6 +29,10 @@ vi.mock('#lib/moderation/common/util', async (importOriginal) => ({
 	fetchGuildT: vi.fn(async () => (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key))
 }));
 vi.mock('#utils/functions', () => ({ getModeration: vi.fn() }));
+vi.mock('#utils/locks', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#utils/locks')>()),
+	withSharedLock: vi.fn()
+}));
 vi.mock('@wolfstar/http-framework-utilities/gateway', () => ({ canSendEmbeds: vi.fn(async () => true) }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
 	...(await importOriginal<typeof import('wolfstar-database')>()),
@@ -144,6 +149,13 @@ describe('the appeals', () => {
 		vi.mocked(getModeration).mockResolvedValue({ fetch: fetchCase } as never);
 		vi.mocked(decideAppeal).mockResolvedValue(true);
 		vi.mocked(createAppeal).mockResolvedValue(createRow());
+		// As the real one does: what takes it runs after what holds it.
+		let tail: Promise<unknown> = Promise.resolve();
+		vi.mocked(withSharedLock).mockImplementation((_key, callback) => {
+			const result = tail.then(callback);
+			tail = result.catch(() => undefined);
+			return result as never;
+		});
 		vi.mocked(createAppealBlock).mockResolvedValue(true);
 		vi.mocked(fetchAppealBlock).mockResolvedValue(null);
 		vi.mocked(fetchAppealForms).mockResolvedValue([]);
@@ -376,6 +388,32 @@ describe('the appeals', () => {
 			expect(await submitAppeal(guild, userId, '5', 12, { why: 'Sorry' })).toEqual({ error: 'locked' });
 		});
 
+		test('GIVEN two submissions at once and room for one THEN only one is written', async () => {
+			fetchCase.mockResolvedValue(
+				new Map([
+					[12, createEntry()],
+					[13, createEntry(TypeVariation.Mute, { id: 13 })]
+				])
+			);
+			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
+			const written: Appeal[] = [];
+			vi.mocked(fetchUserAppeals).mockImplementation(async () => [...written]);
+			vi.mocked(createAppeal).mockImplementation(async (_db, _guildId, data) => {
+				await new Promise((resolve) => setTimeout(resolve, 5));
+				const row = createRow({ caseId: data.caseId });
+				written.push(row);
+				return row;
+			});
+
+			const results = await Promise.all([
+				submitAppeal(guild, userId, '5', 12, { why: 'A' }),
+				submitAppeal(guild, userId, '5', 13, { why: 'B' })
+			]);
+
+			expect(createAppeal).toHaveBeenCalledOnce();
+			expect(results[1]).toEqual({ error: 'locked' });
+		});
+
 		test('GIVEN a good submission THEN the appeal keeps its form', async () => {
 			vi.mocked(fetchAppealForm).mockResolvedValue(createForm());
 
@@ -596,6 +634,19 @@ describe('the appeals', () => {
 
 			expect(embed.fields?.[0]).toEqual({ name: 'Which?', value: 'One, Two' });
 			expect(embed.fields?.[1].value).toBe(`[ahttp://evil.png](https://wolfstar.rocks/appeal-files/${guildId}/1/0)`);
+		});
+
+		test('GIVEN four long answers THEN they are shown whole', () => {
+			const answers = Array.from({ length: 4 }, (_, index) => ({
+				questionId: `q${index}`,
+				kind: 'text' as const,
+				label: 'Why?',
+				value: 'V'.repeat(1000)
+			}));
+
+			const [embed] = renderAppealView(t, createRow({ answers }), createEntry()).embeds;
+
+			expect(embed.fields?.map((field) => field.value.length)).toEqual([1000, 1000, 1000, 1000]);
 		});
 
 		test('GIVEN the longest answers and a long reason THEN the embed fits what Discord takes', () => {
