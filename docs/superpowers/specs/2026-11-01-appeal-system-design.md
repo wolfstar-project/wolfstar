@@ -1,7 +1,7 @@
 # Appeals as Flamey has them
 
 Date: 2026-11-01
-Status: draft, for the owner's approval
+Status: implemented on the bot, the website is the brief below
 
 ## Purpose
 
@@ -181,7 +181,7 @@ The bot never sees a file. It checks what the form asks of the answer: how many,
 that every key starts with the guild and the user of the session, so a member cannot attach what somebody else
 uploaded. A key nothing refers to expires with the others.
 
-The staff opens a file at `wolfstar.rocks/appeal-files/<guildId>/<appealId>/<index>`, on the website: it reads the row,
+The staff opens a file at `wolfstar.rocks/appeal-files/<guildId>/<appealId>/<index>`, `index` counting the files of the appeal in the order of its answers, on the website: it reads the row,
 and answers the member who sent the appeal and whoever passes `hasAppealAccess`, nobody else, after a Discord login. So
 the links in the channel, in `/appeal view` and on the dashboard are the same, and open for no one who was forwarded
 one. After 90 days the page says the file expired, and the answer keeps its name.
