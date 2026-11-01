@@ -7,6 +7,7 @@ import { renderHoneypotLog } from '#lib/moderation/honeypot/log';
 import { recordSharedBan } from '#lib/moderation/joinguard/log';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
+import { describeMessage } from '#utils/debug';
 import { getModeration, isModerator } from '#utils/functions';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
@@ -50,13 +51,27 @@ const IgnoredDeleteCodes = [
  * @param settings - The settings of the guild.
  */
 export async function catchHoneypotMessage(message: GuildMessage, settings: ReadonlyGuildData): Promise<void> {
+	const subject = describeMessage(message);
+
 	// Without the member the moderator level cannot be checked, so nobody is caught by guess:
 	const { member } = message;
-	if (member === null || (await isModerator(member))) return;
+	if (member === null) {
+		container.logger.debug(`[Honeypot] ${subject}: left alone, the gateway gave no member`);
+		return;
+	}
 
-	floatPromise(resolveOnErrorCodes(container.gatewayClient.messages.delete(message.channelId, message.id, 'Honeypot'), ...IgnoredDeleteCodes));
+	if (await isModerator(member)) {
+		container.logger.debug(`[Honeypot] ${subject}: left alone, the author is a moderator`);
+		return;
+	}
 
-	if (!(await claimHoneypotCatch(message.guildId, message.author.id))) return;
+	container.logger.debug(`[Honeypot] ${subject}: caught`);
+	floatPromise(deleteCaughtMessage(message, subject));
+
+	if (!(await claimHoneypotCatch(message.guildId, message.author.id))) {
+		container.logger.debug(`[Honeypot] ${subject}: no case, the author was caught less than a minute ago`);
+		return;
+	}
 
 	const guild = message.guild ?? (await resolveGuild(message.guildId));
 	const t = await fetchGuildT(guild);
@@ -68,18 +83,23 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 	const unlock = (await getModeration(guild)).createLock();
 	try {
 		const sendDirectMessage = settings.honeypotDirectMessage && (await fetchUserReportEnabled(message.author.id));
+		container.logger.debug(`[Honeypot] ${subject}: taking the action ${action}, direct message ${sendDirectMessage}`);
 		const entry = await applyHoneypotAction(guild, action, message.author, t('events/moderation:honeypot'), sendDirectMessage);
 		caseId = entry.id;
+		container.logger.debug(`[Honeypot] ${subject}: the action made the case ${caseId}`);
 		// Who writes in the trap is a spam bot or a hacked account, which the checkpoint of every guild then refuses:
 		if (action !== 'Kick') await recordSharedBan({ guildId: guild.id, userId: message.author.id, caseId, source: 'Honeypot' });
 	} catch (cause) {
 		// What Discord refuses (the member is above the bot, a missing permission) is what the moderators can fix:
-		if (cause instanceof DiscordAPIError) error = cause.message;
-		else container.logger.error(`[Honeypot] Could not act on ${message.author.id} in the guild ${message.guildId}:`, cause);
+		if (cause instanceof DiscordAPIError) {
+			error = cause.message;
+			container.logger.debug(`[Honeypot] ${subject}: Discord refused the action ${action}: ${error}`);
+		} else container.logger.error(`[Honeypot] Could not act on ${message.author.id} in the guild ${message.guildId}:`, cause);
 	} finally {
 		unlock();
 	}
 
+	container.logger.debug(`[Honeypot] ${subject}: reporting it to the channel ${settings.honeypotLogChannel}`);
 	container.client.emit(Events.GuildMessageLog, guild, settings.honeypotLogChannel, 'honeypotLogChannel', () =>
 		renderHoneypotLog(t, {
 			action,
@@ -91,6 +111,17 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 			error
 		})
 	);
+}
+
+/**
+ * Deletes a message that was caught. What cannot be deleted stays in the channel, and only the debug log says so.
+ */
+async function deleteCaughtMessage(message: GuildMessage, subject: string): Promise<void> {
+	const deleted = await resolveOnErrorCodes(
+		container.gatewayClient.messages.delete(message.channelId, message.id, 'Honeypot'),
+		...IgnoredDeleteCodes
+	);
+	container.logger.debug(`[Honeypot] ${subject}: ${deleted === null ? 'the message could not be deleted' : 'the message was deleted'}`);
 }
 
 /**

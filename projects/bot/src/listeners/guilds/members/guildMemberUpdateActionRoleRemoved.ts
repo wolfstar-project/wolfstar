@@ -40,6 +40,7 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 			const roleId = settings[action.roleKey];
 			if (isNullish(roleId) || !removed.includes(roleId)) continue;
 
+			this.container.logger.debug(`[MODERATION] The role ${roleId} of ${action.roleKey} was taken from a member of ${guildId}`);
 			try {
 				await this.handle(action, guildId, userId, roleId);
 			} catch (error) {

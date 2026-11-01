@@ -1,10 +1,15 @@
 import { Events } from '#lib/types';
+import { describeMessage } from '#utils/debug';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 
 @RegisterAsDispatchListener('messageCreate')
 export class UserListener extends EventGatewayListener<'messageCreate'> {
 	public run(message: Message) {
+		this.container.logger.debug(
+			`[Messages] ${describeMessage(message)}: webhook ${message.webhookId !== null}, system ${message.system}, bot ${message.author.bot}`
+		);
+
 		// If the message was sent by a webhook, return:
 		if (message.webhookId !== null) return;
 

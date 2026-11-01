@@ -48,9 +48,13 @@ export class UserTask extends ScheduledTask<'autoMessage'> {
 		if (message === null || message.id !== due.id || message.nextRunAt > now) return;
 
 		await setAutoMessageNextRun(prisma, message.id, now + message.interval);
-		if (!(await readSettings(message.guildId)).modulesAutomessage) return;
+		if (!(await readSettings(message.guildId)).modulesAutomessage) {
+			logger.debug(`[AutoMessage] The channel ${message.channelId} of ${message.guildId} was skipped: the module is off`);
+			return;
+		}
 
 		const result = await runAutoMessage(message);
+		logger.debug(`[AutoMessage] The channel ${message.channelId} of ${message.guildId}: ${result}`);
 		// A channel that was deleted gets no message anymore:
 		if (result === 'gone') await deleteAutoMessage(prisma, message.guildId, message.channelId);
 		// It is tried again at the next interval, and is sent once the bot has the permissions back:

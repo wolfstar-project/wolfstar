@@ -30,7 +30,12 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 
 			const me = await this.container.gatewayClient.members.fetchMe(member.guildId);
 			await me.roles.fetch();
-			if (!(await me.permissions).has(PermissionFlagsBits.ManageNicknames)) return;
+			if (!(await me.permissions).has(PermissionFlagsBits.ManageNicknames)) {
+				this.container.logger.debug(
+					`[Members] ${userId} joined ${member.guildId}: sticky nickname kept back, the bot lacks Manage Nicknames`
+				);
+				return;
+			}
 
 			const t = await fetchGuildT({ id: member.guildId });
 			const result = await toErrorCodeResult(
@@ -55,10 +60,14 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 		const me = await this.container.gatewayClient.members.fetchMe(member.guildId);
 		// The roles are fetched before the cache is read: the one that grants the permission may not be cached.
 		await me.roles.fetch();
-		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) return false;
+		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) {
+			this.container.logger.debug(`[Members] A member joined ${member.guildId}: sticky roles skipped, the bot lacks Manage Roles`);
+			return false;
+		}
 
 		const user = member.user ?? (await member.fetchUser());
 		const stickyRoles = await (await getStickyRoles(member)).fetch(user.id);
+		this.container.logger.debug(`[Members] ${user.id} joined ${member.guildId}: ${stickyRoles.length} sticky roles`);
 		if (stickyRoles.length === 0) return false;
 
 		// Handle the case the user is muted
@@ -66,6 +75,7 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 		const mutedRoleId = settings.rolesMuted;
 		const targetChannelId = settings.logsMemberAdd;
 		if (mutedRoleId && stickyRoles.includes(mutedRoleId)) {
+			this.container.logger.debug(`[Members] ${user.id} joined ${member.guildId}: muted again`);
 			void this.#handleMutedMemberAddRole(member, mutedRoleId);
 			void this.#handleMutedMemberNotify(member, user, targetChannelId);
 
@@ -74,6 +84,7 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 
 		// With the roles module off, only the roles of a restriction are given back:
 		const restored = getRestoredStickyRoles(settings, stickyRoles);
+		this.container.logger.debug(`[Members] ${user.id} joined ${member.guildId}: ${restored.length} roles given back`);
 		if (restored.length > 0) void this.#handleStickyRolesAddRoles(member, restored);
 
 		return false;

@@ -23,6 +23,7 @@ export class UserListener extends Listener {
 		const threshold = findReachedWarnThreshold(thresholds, [...entries.values()]);
 		if (threshold === null) return;
 
+		this.container.logger.debug(`[MODERATION] ${entry.userId} of ${entry.guild.id} reached the threshold of ${threshold.count} warnings`);
 		try {
 			await applyWarnThreshold(entry.guild, entry.userId, threshold);
 		} catch (error) {

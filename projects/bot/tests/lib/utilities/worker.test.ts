@@ -5,7 +5,12 @@ import { join } from 'node:path';
 /**
  * The events of the gateway itself, which a worker never replays: their listeners stay on the gateway process.
  */
-const GatewayOwnEvents = new Set(['clientReady', 'shardReady', 'shardResume', 'shardError', 'shardClose']);
+const GatewayOwnEvents = new Set(['clientReady', 'shardReady', 'shardResume', 'shardError', 'shardClose', 'cacheError']);
+
+/**
+ * The listeners of an event of Discord that are meant to run on every process it reaches: the debug log tells each one.
+ */
+const EveryProcessListeners = new Set(['debug/rawDebug.ts']);
 
 describe('worker', () => {
 	const env = { BOT_MODE: process.env.BOT_MODE, BROKER_ENABLED: process.env.BROKER_ENABLED };
@@ -39,7 +44,7 @@ describe('worker', () => {
 		for (const file of files) {
 			const content = await readFile(join(root, file), 'utf8');
 			for (const [, event] of content.matchAll(/@RegisterAsGatewayListener\('(\w+)'/g)) {
-				if (!GatewayOwnEvents.has(event)) offenders.push(`${file}: ${event}`);
+				if (!GatewayOwnEvents.has(event) && !EveryProcessListeners.has(file)) offenders.push(`${file}: ${event}`);
 			}
 		}
 

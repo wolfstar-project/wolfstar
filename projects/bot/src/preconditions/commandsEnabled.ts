@@ -49,9 +49,16 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		if (!guildId || ProtectedCommands.has(command.name)) return this.ok();
 
 		const settings = await readSettings(guildId);
-		if (findDisabledBy(settings.commandsDisabled, command) !== null) return this.error({ identifier: 'preconditions:disabledGuild' });
+		if (findDisabledBy(settings.commandsDisabled, command) !== null) {
+			this.container.logger.debug(`[Commands] ${command.name} denied in ${guildId}: disabled by the guild`);
+			return this.error({ identifier: 'preconditions:disabledGuild' });
+		}
+
 		const moduleDenial = getDisabledModuleDenial(settings, command.name);
-		if (moduleDenial !== null) return this.error({ identifier: moduleDenial });
+		if (moduleDenial !== null) {
+			this.container.logger.debug(`[Commands] ${command.name} denied in ${guildId}: ${moduleDenial}`);
+			return this.error({ identifier: moduleDenial });
+		}
 
 		const matching = findMatchingRestrictions(readCommandRestrictions(settings.commandsRestrictions, guildId), command);
 		if (matching.length === 0 || !member) return this.ok();
@@ -64,6 +71,7 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		if (denial === null) return this.ok();
 		if (await hasCommandPermissionLevel({ guildId, member }, CommandPermissionLevel.Administrator)) return this.ok();
 
+		this.container.logger.debug(`[Commands] ${command.name} denied to ${member.user.id} in ${guildId}: the rule of the ${denial}`);
 		return this.error({
 			identifier:
 				denial === 'channel'

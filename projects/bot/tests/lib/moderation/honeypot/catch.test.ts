@@ -57,6 +57,7 @@ function createSettings(overrides: Partial<ReadonlyGuildData> = {}) {
 describe('catchHoneypotMessage', () => {
 	const deleteMessage = vi.fn(async () => undefined);
 	const emit = vi.fn();
+	const debug = vi.fn();
 
 	// A member is claimed for a minute by the process when Redis is not there, so each test starts after the claims of
 	// the one before it ended:
@@ -72,7 +73,12 @@ describe('catchHoneypotMessage', () => {
 			vi.mocked(action.apply).mockResolvedValue({ id: 7 } as never);
 		}
 
-		Object.assign(container, { gatewayClient: { messages: { delete: deleteMessage } }, client: { emit }, redis: undefined });
+		Object.assign(container, {
+			gatewayClient: { messages: { delete: deleteMessage } },
+			client: { emit },
+			redis: undefined,
+			logger: { debug, error: vi.fn() }
+		});
 	});
 
 	afterEach(() => {
@@ -138,7 +144,6 @@ describe('catchHoneypotMessage', () => {
 
 	test('GIVEN an action that could not be taken THEN nothing goes on the shared ban list', async () => {
 		vi.mocked(ModerationActions.softban.apply).mockRejectedValue(new Error('boom'));
-		Object.assign(container, { logger: { error: vi.fn() } });
 
 		await catchHoneypotMessage(createMessage(), createSettings());
 
@@ -153,6 +158,34 @@ describe('catchHoneypotMessage', () => {
 		expect(deleteMessage).not.toHaveBeenCalled();
 		expect(ModerationActions.softban.apply).not.toHaveBeenCalled();
 		expect(emit).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a moderator THEN the debug log says why nothing was done', async () => {
+		vi.mocked(isModerator).mockResolvedValue(true);
+
+		await catchHoneypotMessage(createMessage(), createSettings());
+
+		expect(debug).toHaveBeenCalledTimes(1);
+		expect(debug.mock.calls[0][0]).toContain('left alone, the author is a moderator');
+	});
+
+	test('GIVEN a member who is caught THEN the debug log follows every step', async () => {
+		await catchHoneypotMessage(createMessage(), createSettings());
+		await vi.waitFor(() => expect(debug.mock.calls.flat().join('\n')).toContain('the message was deleted'));
+
+		const lines = debug.mock.calls.flat().join('\n');
+		expect(lines).toContain(': caught');
+		expect(lines).toContain('taking the action Softban');
+		expect(lines).toContain('the action made the case 7');
+		expect(lines).toContain(`reporting it to the channel ${logChannelId}`);
+	});
+
+	test('GIVEN a message that cannot be deleted THEN the debug log says so', async () => {
+		const error = new DiscordAPIError({ code: 50013, message: 'Missing Permissions' }, 50013, 403, 'DELETE', 'https://discord.com', {});
+		deleteMessage.mockRejectedValueOnce(error);
+
+		await catchHoneypotMessage(createMessage(), createSettings());
+		await vi.waitFor(() => expect(debug.mock.calls.flat().join('\n')).toContain('the message could not be deleted'));
 	});
 
 	test('GIVEN a message without its member THEN nobody is caught by guess', async () => {
@@ -191,7 +224,7 @@ describe('catchHoneypotMessage', () => {
 
 	test('GIVEN an action that fails for another reason THEN it is logged and reported without the details', async () => {
 		const error = vi.fn();
-		Object.assign(container, { logger: { error } });
+		Object.assign(container, { logger: { debug, error } });
 		vi.mocked(ModerationActions.softban.apply).mockRejectedValue(new Error('boom'));
 
 		await catchHoneypotMessage(createMessage(), createSettings());
@@ -245,7 +278,7 @@ describe('catchHoneypotMessage', () => {
 		const set = vi.fn(async () => {
 			throw new Error('Connection is closed.');
 		});
-		Object.assign(container, { redis: { status: 'ready', set }, logger: { error: vi.fn() } });
+		Object.assign(container, { redis: { status: 'ready', set } });
 
 		await catchHoneypotMessage(createMessage(), createSettings());
 		await catchHoneypotMessage(createMessage(), createSettings());

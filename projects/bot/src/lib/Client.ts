@@ -125,14 +125,22 @@ async function ensureBrokerGroup() {
 }
 
 export async function loadAll() {
+	const { logger } = container;
+	// A listener of an event of Discord only runs on a process that does not forward its dispatches:
+	logger.debug(`[Startup] Worker ${isWorker()}, forwards the dispatches ${forwardsDispatches()}, shard ${container.shard?.id ?? 'none'}`);
+
 	// The shards leave it to the shard manager, which does it before it spawns them:
 	if (!container.shard) await runLegacyMigration();
+	logger.debug('[Startup] The legacy tables were looked at');
 
 	// The emojis are the ones of the application the bot runs as, which staging, beta and production each have:
 	await loadApplicationEmojis();
+	logger.debug('[Startup] The application emojis were read');
 	await container.redis.connect();
+	logger.debug('[Startup] Redis connected');
 	await ensureBrokerGroup();
 	await container.workers.start();
+	logger.debug('[Startup] The word filter threads started');
 
 	if (isWorker()) {
 		// No HTTP server and no gateway connection: load the pieces, then start reading the stream:

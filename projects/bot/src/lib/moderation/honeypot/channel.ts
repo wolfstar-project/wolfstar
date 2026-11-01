@@ -273,6 +273,7 @@ export async function removeHoneypotNotice(guildId: Snowflake): Promise<void> {
 
 	await deleteHoneypotNoticeMessage(notice);
 	await writeHoneypotNotice(guildId, null);
+	container.logger.debug(`[Honeypot] The warning ${notice.messageId} of the guild ${guildId} was taken off the channel ${notice.channelId}`);
 }
 
 /**
@@ -311,6 +312,7 @@ export async function refreshHoneypotNotice(
 		RESTJSONErrorCodes.MissingPermissions
 	);
 	if (sent === null) {
+		container.logger.debug(`[Honeypot] Could not send the warning to the channel ${channelId} of the guild ${guildId}`);
 		// The warning of another channel tells about a trap that is not there anymore, so it goes all the same:
 		if (previous !== null && previous.channelId !== channelId) await removeHoneypotNotice(guildId);
 		return false;
@@ -318,5 +320,6 @@ export async function refreshHoneypotNotice(
 
 	await writeHoneypotNotice(guildId, { channelId, messageId: sent.id, action: options.action });
 	if (previous !== null) await deleteHoneypotNoticeMessage(previous);
+	container.logger.debug(`[Honeypot] The warning ${sent.id} was sent to the channel ${channelId} of the guild ${guildId}`);
 	return true;
 }

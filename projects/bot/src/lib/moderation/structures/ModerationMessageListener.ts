@@ -13,6 +13,7 @@ import { Events } from '#lib/types/Enums';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise, resolveGuild } from '#common';
 import { minutes, seconds } from 'wolfstar-shared';
+import { describeMessage } from '#utils/debug';
 import { deleteMessage, getModeration, isModerator } from '#utils/functions';
 import type { createLogMessage } from '#utils/functions';
 import type { EmbedBuilder } from '@discordjs/builders';
@@ -59,15 +60,21 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 
 		// Without the member the roles and the moderator level cannot be checked, so nobody is moderated by guess:
 		const { member } = message;
-		if (member === null || (await isModerator(member))) return;
+		if (member === null || (await isModerator(member))) {
+			this.debug(message, `left alone by ${rules.length} rules, the author ${member === null ? 'has no member' : 'is a moderator'}`);
+			return;
+		}
 
 		for (const rule of rules) {
 			const preProcessed = await this.preProcess(message, rule);
 			if (preProcessed === null) continue;
 
+			this.debug(message, `infringes the rule ${rule.id}`);
 			// One rule per message: a second one of the same type would delete and punish for the same thing again.
 			return this.processInfraction(message, rule, preProcessed);
 		}
+
+		this.debug(message, `infringes none of ${rules.length} rules`);
 	}
 
 	protected async processInfraction(message: GuildMessage, rule: AutoModerationRule<Type>, preProcessed: T) {
@@ -78,6 +85,7 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		await this.processSoftPunishment(message, logChannelId, t, rule.softAction, preProcessed);
 
 		const adder = getAutoModerationRuleAdder(rule);
+		this.debug(message, `soft actions ${rule.softAction} of the rule ${rule.id} done, threshold ${adder ? adder.maximum : 'none'}`);
 		if (!adder) return this.processHardPunishment(message, rule, t, 0, 0);
 
 		const points = typeof preProcessed === 'number' ? preProcessed : 1;
@@ -121,9 +129,11 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		// A member who keeps reaching the threshold moves up the escalation of the rule:
 		const strikes = await addAutoModerationRuleStrike(rule, message.author.id);
 		const { action, duration } = resolveAutoModerationRulePunishment(rule, strikes);
+		this.debug(message, `hard action ${action} of the rule ${rule.id}, duration ${duration}, strike ${strikes}`);
 
 		// A timeout needs a duration, Discord takes none without an end: nothing is done, so nothing is counted.
 		if (action === 'Timeout' && isNullishOrZero(duration)) {
+			this.debug(message, `the Timeout of the rule ${rule.id} has no duration, nothing is done`);
 			await removeAutoModerationRuleStrike(rule, message.author.id);
 			return;
 		}
@@ -155,6 +165,7 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 					break;
 			}
 		} catch (error) {
+			this.debug(message, `the hard action ${action} of the rule ${rule.id} failed`);
 			// The hard action was not taken, so the member does not move up the escalation for it:
 			await removeAutoModerationRuleStrike(rule, message.author.id);
 			throw error;
@@ -308,6 +319,10 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		language: TFunction<AnyNamespace>,
 		value: T
 	): Awaitable<ModerationMessageListener.LogMessage>;
+
+	private debug(message: GuildMessage, what: string) {
+		this.container.logger.debug(`[AutoMod] ${this.type} ${describeMessage(message)}: ${what}`);
+	}
 
 	private checkRule(rule: AutoModerationRule, message: GuildMessage) {
 		if (rule.ignoredChannels.includes(message.channelId)) return false;

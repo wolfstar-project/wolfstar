@@ -13,7 +13,8 @@ import type { Snowflake } from 'discord-api-types/v10';
 export class UserListener extends Listener {
 	public async run(guildId: Snowflake, keys: readonly string[]) {
 		try {
-			await followHoneypotSettings(guildId, keys);
+			const outcome = await followHoneypotSettings(guildId, keys);
+			this.container.logger.debug(`[Honeypot] The dashboard changed ${keys.join(', ')} of the guild ${guildId}: ${outcome}`);
 		} catch (error) {
 			this.container.logger.error(`${getLogPrefix(this)} Could not follow the honeypot settings of ${guildId}:`, error);
 		}

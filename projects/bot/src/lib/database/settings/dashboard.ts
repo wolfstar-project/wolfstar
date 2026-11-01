@@ -67,6 +67,7 @@ export function isOwnGuild(guildId: Snowflake): boolean {
  * @param update - The write.
  */
 export function handleDashboardSettingsUpdate(update: DashboardSettingsUpdate) {
+	container.logger.debug(`[Settings] The dashboard wrote for ${update.guildId}: ${update.keys.join(', ')}`);
 	for (const type of DerivedCacheMessages) dispatchShardMessage({ type, guildId: update.guildId });
 	if (isOwnGuild(update.guildId)) container.client.emit(Events.DashboardSettingsUpdate, update.guildId, update.keys);
 }

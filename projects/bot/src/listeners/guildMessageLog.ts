@@ -17,12 +17,17 @@ export class UserListener extends Listener {
 		key: GuildSettingsOfType<string | Nullish>,
 		makeMessage: () => Awaitable<EmbedBuilder | EmbedBuilder[] | MessageCreateOptions>
 	) {
-		if (isNullish(logChannelId)) return;
+		const { logger } = this.container;
+		if (isNullish(logChannelId)) {
+			logger.debug(`[Logs] ${key} of the guild ${guild.id}: not sent, no channel is set`);
+			return;
+		}
 
 		// The channels are not cached in memory, an unknown channel is one the cache and the API do not have:
 		const result = await toErrorCodeResult(this.container.gatewayClient.channels.fetch(logChannelId));
 		const channel = result.unwrapOr(null);
 		if (isNullish(channel)) {
+			logger.debug(`[Logs] ${key} of the guild ${guild.id}: not sent, the channel ${logChannelId} could not be read`);
 			if (result.isOk() || result.unwrapErr() === RESTJSONErrorCodes.UnknownChannel) {
 				await writeSettings(guild, { [key]: null }, this.container.gatewayClient.user!.id);
 			}
@@ -30,10 +35,16 @@ export class UserListener extends Listener {
 		}
 
 		// Unsupported channel type, or a channel from another guild, should never happen:
-		if (!isTextBasedChannel(channel) || isDMChannel(channel) || channel.guildId !== guild.id) return;
+		if (!isTextBasedChannel(channel) || isDMChannel(channel) || channel.guildId !== guild.id) {
+			logger.debug(`[Logs] ${key} of the guild ${guild.id}: not sent, the channel ${logChannelId} is not one a log can go to`);
+			return;
+		}
 
 		// Don't post if it's not possible
-		if (!(await canSendEmbeds(channel))) return;
+		if (!(await canSendEmbeds(channel))) {
+			logger.debug(`[Logs] ${key} of the guild ${guild.id}: not sent, the bot cannot post embeds in ${logChannelId}`);
+			return;
+		}
 
 		const options = this.resolveOptions(await makeMessage());
 		try {

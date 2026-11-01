@@ -55,7 +55,7 @@ describe('the modules of the automatic channels in their tasks', () => {
 		vi.clearAllMocks();
 		Object.assign(container, {
 			gatewayClient: { isClientReady: () => true, api: { channels: { getMessage } }, messages: { delete: deleteMessage } },
-			logger: { error: vi.fn(), warn: vi.fn() },
+			logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
 			// The queries are mocked, they are only given it:
 			prisma: { orm: {} }
 		});
