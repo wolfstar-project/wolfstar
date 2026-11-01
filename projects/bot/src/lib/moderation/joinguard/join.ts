@@ -73,17 +73,27 @@ function toJoinGuardUser(user: User): JoinGuardUser {
 export async function guardJoiningMember(member: GuildMember, now = Date.now()): Promise<JoinGuardPlan | null> {
 	const { guildId } = member;
 	const { settings, rules } = await readJoinGuardConfig(guildId);
-	if (!settings.joinGuardEnabled || rules.length === 0) return null;
+	if (!settings.joinGuardEnabled || rules.length === 0) {
+		container.logger.debug(`[JoinGuard] Member of ${guildId} not checked: enabled ${settings.joinGuardEnabled}, ${rules.length} rules`);
+		return null;
+	}
 
 	const user = member.user ?? (await member.fetchUser());
 	const roleIds = [...member.roles.ids, ...(await (await getStickyRoles(member)).fetch(user.id))];
-	if (isJoinGuardAllowed(settings, user.id, roleIds)) return null;
+	if (isJoinGuardAllowed(settings, user.id, roleIds)) {
+		container.logger.debug(`[JoinGuard] ${user.id} of ${guildId} let through: allowed`);
+		return null;
+	}
 
 	const signals = readJoinGuardSignals(toJoinGuardUser(user));
 	const matched = rules.filter((rule) => matchesJoinGuardRule(rule, signals, now));
+	container.logger.debug(`[JoinGuard] ${user.id} of ${guildId} matched ${matched.length} of ${rules.length} rules`);
 	if (matched.length === 0) return null;
 
 	const plan = planJoinGuardActions(matched, settings);
+	container.logger.debug(
+		`[JoinGuard] ${user.id} of ${guildId}: stopped with ${plan.stop.kind}, rules ${plan.rules.map((rule) => rule.id).join(', ')}`
+	);
 	const guild = await member.fetchGuild();
 	await withJoinGuardMemberLock(guildId, user.id, () => runJoinGuardPlan({ guild, member, user, settings, plan, signals, now }));
 	return plan;
@@ -123,6 +133,9 @@ async function runJoinGuardPlan(run: JoinGuardRun) {
 	const removed = outcome.kind === 'Banned' || outcome.kind === 'Kicked';
 	const roles = removed ? [] : await giveRoles(t, run, errors);
 	const alerts = await sendAlerts(t, run, errors);
+	container.logger.debug(
+		`[JoinGuard] ${user.id} of ${guild.id}: outcome ${outcome.kind}, direct message ${directMessage}, ${errors.length} errors`
+	);
 
 	sendJoinGuardLog(guild, settings.joinGuardLogChannel, user.toJSON(), {
 		kind: 'Stopped',

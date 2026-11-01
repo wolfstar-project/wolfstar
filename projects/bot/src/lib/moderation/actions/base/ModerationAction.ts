@@ -153,16 +153,21 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	public async apply(guild: Guild, options: ModerationAction.PartialOptions<Type>, data: ModerationAction.Data<ContextType> = {}) {
 		const moderation = await getModeration(guild);
 		const entry = moderation.create(await this.resolveOptions(guild, options, data));
+		container.logger.debug(`${this.logPrefix} Applying to ${entry.userId} in ${guild.id}, duration ${entry.duration}`);
 		try {
 			await this.handleApplyPreOnStart(guild, entry, data);
 			await this.handleApplyPre(guild, entry, data);
 		} catch (error) {
+			container.logger.debug(`${this.logPrefix} Could not apply to ${entry.userId} in ${guild.id}: ${(error as Error).message}`);
 			await this.handleApplyPreOnError(error as Error, guild, entry, data);
 			throw error;
 		}
 		await this.sendDirectMessage(guild, entry, data);
 		await this.handleApplyPost(guild, entry, data);
-		return moderation.insert(entry);
+
+		const created = await moderation.insert(entry);
+		container.logger.debug(`${this.logPrefix} Applied to ${entry.userId} in ${guild.id}: case ${created.id}`);
+		return created;
 	}
 
 	/**
@@ -176,16 +181,21 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 	public async undo(guild: Guild, options: ModerationAction.PartialOptions<Type>, data: ModerationAction.Data<ContextType> = {}) {
 		const moderation = await getModeration(guild);
 		const entry = moderation.create(await this.resolveAppealOptions(guild, options, data));
+		container.logger.debug(`${this.logPrefix} Undoing for ${entry.userId} in ${guild.id}`);
 		try {
 			await this.handleUndoPreOnStart(guild, entry, data);
 			await this.handleUndoPre(guild, entry, data);
 		} catch (error) {
+			container.logger.debug(`${this.logPrefix} Could not undo for ${entry.userId} in ${guild.id}: ${(error as Error).message}`);
 			await this.handleUndoPreOnError(error as Error, guild, entry, data);
 			throw error;
 		}
 		await this.sendDirectMessage(guild, entry, data);
 		await this.handleUndoPost(guild, entry, data);
-		return moderation.insert(entry);
+
+		const created = await moderation.insert(entry);
+		container.logger.debug(`${this.logPrefix} Undone for ${entry.userId} in ${guild.id}: case ${created.id}`);
+		return created;
 	}
 
 	/**
@@ -341,7 +351,9 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 			const target = await entry.fetchUser();
 			const embed = await this.#buildEmbed(guild, entry, data);
 			await target.send({ embeds: [embed] });
+			container.logger.debug(`${this.logPrefix} Direct message sent to ${entry.userId}`);
 		} catch (error) {
+			container.logger.debug(`${this.logPrefix} Direct message to ${entry.userId} not delivered: ${(error as Error).message}`);
 			// It throws what is not the user having closed their direct messages, which is not a failure of the case:
 			this.#handleDirectMessageError(error as Error);
 			data.directMessageUndelivered = true;

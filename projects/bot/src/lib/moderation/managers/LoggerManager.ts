@@ -67,6 +67,7 @@ export class LoggerManager {
 	 */
 	public async send(options: LoggerManagerSendOptions): Promise<boolean> {
 		if (isNullish(options.channelId) || !this.#resolveSendCondition(options.condition)) {
+			container.logger.debug(`[Logs] ${options.key} of the guild ${this.guild.id}: not sent, no channel is set or its condition is false`);
 			options.onAbort?.();
 			return false;
 		}
@@ -81,12 +82,18 @@ export class LoggerManager {
 	async #sendChannelOk(options: LoggerManagerSendOptions, channel: AnyChannel | null) {
 		// Unsupported channel type, or a channel from another guild, should never happen:
 		if (isNullish(channel) || !this.#isGuildTextBasedChannel(channel)) {
+			container.logger.debug(
+				`[Logs] ${options.key} of the guild ${this.guild.id}: not sent, ${options.channelId} is not a channel a log can go to`
+			);
 			options.onAbort?.();
 			return false;
 		}
 
 		const rawOptions = await options.makeMessage(channel);
-		if (rawOptions === null) return false;
+		if (rawOptions === null) {
+			container.logger.debug(`[Logs] ${options.key} of the guild ${this.guild.id}: nothing to send`);
+			return false;
+		}
 
 		const messageOptions = this.#resolveMessageOptions(rawOptions);
 
@@ -98,7 +105,10 @@ export class LoggerManager {
 
 		const me = await container.gatewayClient.members.fetchMe(this.guild.id);
 		const hasPermissions = (await computePermissionsIn(channel, me)).has(requiredPermissions);
-		if (!hasPermissions) return false;
+		if (!hasPermissions) {
+			container.logger.debug(`[Logs] ${options.key} of the guild ${this.guild.id}: not sent, the bot lacks a permission in ${channel.id}`);
+			return false;
+		}
 
 		const result = await toErrorCodeResult(sendLogMessage(channel, options.key, messageOptions));
 		return result //

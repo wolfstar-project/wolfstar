@@ -34,7 +34,10 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 
 		const guild = await gatewayClient.guilds.resolve(data.guildID);
 		// If the bot is not in the guild anymore, cancel the task.
-		if (guild === null) return;
+		if (guild === null) {
+			this.container.logger.debug(`[MODERATION] The undo of case ${data.caseID} of ${data.guildID} was cancelled, the bot left the guild`);
+			return;
+		}
 
 		// If the guild is not available, re-schedule the task the same way, it is tried again 20 seconds later.
 		if (!guild.available) throw new Error(`The guild ${guild.id} is not available.`);
@@ -52,8 +55,10 @@ export abstract class ModerationTask<T = unknown> extends ScheduledTask<UndoTask
 		// Mark the moderation entry as complete.
 		try {
 			await (await getModeration(guild)).complete(data.caseID);
+			this.container.logger.debug(`[MODERATION] The case ${data.caseID} of ${guild.id} was completed`);
 		} catch {
 			// The case was deleted in the meantime.
+			this.container.logger.debug(`[MODERATION] The case ${data.caseID} of ${guild.id} is gone, nothing to complete`);
 		}
 	}
 

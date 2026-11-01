@@ -1,5 +1,6 @@
 import { readSettings } from '#lib/database/settings/functions';
 import { canSendThroughWebhook, getLogWebhookTarget, isWebhookLogKey, sendThroughLogWebhook } from '#lib/moderation/logs/webhooks';
+import { container } from '@wolfstar/http-framework';
 import type { AnyChannel, MessageCreateOptions } from '@wolfstar/plugin-gateway';
 
 /**
@@ -32,12 +33,19 @@ export async function sendLogMessage(channel: LogChannel, key: string, message: 
 	const target = isWebhookLogKey(key) && canSendThroughWebhook(message) ? getLogWebhookTarget(channel) : null;
 	if (eventLog || target !== null) {
 		const settings = await readSettings(channel.guildId);
-		if (eventLog && !settings.modulesLogs) return;
-		if (target !== null && settings.logsWebhooks && (await sendThroughLogWebhook(channel.guildId, target.channelId, message, target.threadId)))
+		if (eventLog && !settings.modulesLogs) {
+			container.logger.debug(`[Logs] ${key} of the guild ${channel.guildId}: not sent, the module is off`);
 			return;
+		}
+
+		if (target !== null && settings.logsWebhooks && (await sendThroughLogWebhook(channel.guildId, target.channelId, message, target.threadId))) {
+			container.logger.debug(`[Logs] ${key} of the guild ${channel.guildId}: sent to ${channel.id} through its webhook`);
+			return;
+		}
 	}
 
 	await channel.send(message);
+	container.logger.debug(`[Logs] ${key} of the guild ${channel.guildId}: sent to ${channel.id} by the bot`);
 }
 
 /**

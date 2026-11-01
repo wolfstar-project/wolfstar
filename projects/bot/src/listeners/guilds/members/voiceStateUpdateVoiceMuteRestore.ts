@@ -41,16 +41,21 @@ export class UserListener extends EventGatewayListener<'voiceStateUpdate'> {
 	private async handle(guildId: Snowflake, userId: Snowflake) {
 		if (await isKnownNotVoiceMuted(guildId, userId)) return;
 		// Without the permission the member is not remembered either: the mute is given back once the bot has it.
-		if (!(await this.canMute(guildId))) return;
+		if (!(await this.canMute(guildId))) {
+			this.container.logger.debug(`[VoiceMute] ${userId} of ${guildId} was not checked: the bot lacks Mute Members`);
+			return;
+		}
 
 		const guild = await this.container.gatewayClient.guilds.fetch(guildId);
 		const moderation = await getModeration(guild);
 		const entries = await moderation.fetch({ userId });
 		if (!getUsersInCourse(entries.values(), TypeVariation.VoiceMute).includes(userId)) {
+			this.container.logger.debug(`[VoiceMute] ${userId} of ${guildId} has no voice mute in course`);
 			await markNotVoiceMuted(guildId, userId);
 			return;
 		}
 
+		this.container.logger.debug(`[VoiceMute] ${userId} of ${guildId} is muted again`);
 		const t = await fetchGuildT(guild);
 		const reason = t('moderationActions:voiceMuteRestored');
 		// The member may have left the channel, or the server, since the update:

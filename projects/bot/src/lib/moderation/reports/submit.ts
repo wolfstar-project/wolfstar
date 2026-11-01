@@ -48,10 +48,14 @@ export async function submitReport(
 	reason: string
 ): Promise<string> {
 	const denial = await getReportDenial(t, guildId, reporterId, subject.targetId);
-	if (denial !== null) return denial;
+	if (denial !== null) {
+		container.logger.debug(`[REPORTS] ${reporterId} of ${guildId} was refused a report of ${subject.targetId}`);
+		return denial;
+	}
 
 	const messageId = subject.message?.id ?? null;
 	const claim = await claimReport(guildId, reporterId, messageId);
+	if (claim === 'duplicate' || claim === 'cooldown') container.logger.debug(`[REPORTS] ${reporterId} of ${guildId}: ${claim}`);
 	if (claim === 'duplicate') return t('commands/report:duplicate');
 	if (claim === 'cooldown') return t('commands/report:cooldown', { seconds: ReportCooldownSeconds });
 
@@ -90,6 +94,7 @@ export async function submitReport(
 		container.logger.error(`[REPORTS] Could not send the report ${report.id}:`, error);
 	}
 
+	container.logger.debug(`[REPORTS] The report ${report.id} of ${guildId}: sent ${sent} to ${settings.reportsChannel}`);
 	if (!sent) {
 		// The member is not made to wait, nor the message kept from another report, for a report nobody received:
 		await Promise.all([deleteReport(prisma, guildId, report.id), releaseReport(guildId, reporterId, messageId)]);

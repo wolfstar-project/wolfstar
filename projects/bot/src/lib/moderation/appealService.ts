@@ -97,12 +97,18 @@ export async function submitAppeal(
 	answers: unknown
 ): Promise<{ appeal: Appeal } | { error: AppealSubmitError }> {
 	const settings = await readSettings(guild.id);
-	if (!settings.appealsEnabled) return { error: 'disabled' };
+	if (!settings.appealsEnabled) {
+		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not appeal the case ${caseId}: appeals are off`);
+		return { error: 'disabled' };
+	}
 
 	const moderation = await getModeration(guild);
 	const entries = await moderation.fetch({ userId });
 	const entry = findAppealableCases(entries.values(), userId, settings).find((item) => item.id === caseId);
-	if (entry === undefined) return { error: 'notAppealable' };
+	if (entry === undefined) {
+		container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not appeal the case ${caseId}: it cannot be appealed`);
+		return { error: 'notAppealable' };
+	}
 
 	const t = await fetchGuildT(guild);
 	const questions = getAppealQuestions(t, settings.appealsQuestions);
@@ -110,8 +116,12 @@ export async function submitAppeal(
 	if (parsed === null) return { error: 'invalid' };
 
 	const appeal = await createAppeal(container.prisma, guild.id, { caseId, userId, answers: parsed });
-	if (appeal === null) return { error: 'appealed' };
+	if (appeal === null) {
+		container.logger.debug(`[Appeals] ${userId} of ${guild.id} already appealed the case ${caseId}`);
+		return { error: 'appealed' };
+	}
 
+	container.logger.debug(`[Appeals] ${userId} of ${guild.id} appealed the case ${caseId}: appeal ${appeal.id}`);
 	await sendAppealMessage(guild, settings.appealsChannel, t, appeal, entry, questions).catch((error: unknown) =>
 		container.logger.error('[Appeals] Could not send an appeal to the channel of the moderators:', error)
 	);
@@ -126,11 +136,16 @@ async function sendAppealMessage(
 	entry: ModerationManager.Entry,
 	questions: readonly string[]
 ) {
-	if (channelId === null) return;
+	if (channelId === null) {
+		container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was not sent: no channel is set`);
+		return;
+	}
 
 	const channel = await container.gatewayClient.channels.fetch(channelId).catch(() => null);
-	if (channel === null || !('send' in channel) || !('guildId' in channel) || channel.guildId !== guild.id) return;
-	if (!(await canSendEmbeds(channel))) return;
+	if (channel === null || !('send' in channel) || !('guildId' in channel) || channel.guildId !== guild.id || !(await canSendEmbeds(channel))) {
+		container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was not sent: the bot cannot post in ${channelId}`);
+		return;
+	}
 
 	await channel.send({ ...renderAppealMessage(t, appeal, entry, questions, 'pending'), allowed_mentions: { parse: [] } });
 }
@@ -208,7 +223,12 @@ export async function applyAppealDecision(
 	reason: string | null
 ): Promise<AppealDecisionError | null> {
 	const status = accept ? 'accepted' : 'denied';
-	if (!(await decideAppeal(container.prisma, guild.id, appeal.id, status, reviewerId, reason))) return 'decided';
+	if (!(await decideAppeal(container.prisma, guild.id, appeal.id, status, reviewerId, reason))) {
+		container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was already decided`);
+		return 'decided';
+	}
+
+	container.logger.debug(`[Appeals] The appeal ${appeal.id} of ${guild.id} was decided by ${reviewerId}: ${status}`);
 
 	const t = await fetchGuildT(guild);
 	if (accept) {

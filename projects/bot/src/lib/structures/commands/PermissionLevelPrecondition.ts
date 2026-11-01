@@ -47,6 +47,7 @@ export abstract class PermissionLevelPrecondition extends AllFlowsPrecondition {
 
 		// The message is the one of the level, in the language of the member, which the listeners of the denials resolve:
 		const identifier = this.level === CommandPermissionLevel.Administrator ? 'preconditions:administrator' : 'preconditions:moderator';
+		this.container.logger.debug(`[Commands] ${name} denied in ${guildId}: ${identifier}`);
 		return this.error({ identifier, context: { command: { name } } });
 	}
 }

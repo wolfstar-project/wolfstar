@@ -28,13 +28,21 @@ const IgnoredCodes = [
  */
 export class UserTask extends ScheduledTask<'autoDeleteMessage'> {
 	public override async run({ guildId, channelId, messageId }: AutoDeleteMessagePayload) {
-		if (guildId !== undefined && !(await readSettings(guildId)).modulesAutodelete) return null;
+		const { logger } = this.container;
+		if (guildId !== undefined && !(await readSettings(guildId)).modulesAutodelete) {
+			logger.debug(`[AutoDelete] The message ${messageId} of ${channelId} stays: the module is off`);
+			return null;
+		}
 
 		const { api, messages } = this.container.gatewayClient;
 
 		const message = await resolveOnErrorCodes(api.channels.getMessage(channelId, messageId), ...IgnoredCodes);
-		if (message === null || message.pinned) return null;
+		if (message === null || message.pinned) {
+			logger.debug(`[AutoDelete] The message ${messageId} of ${channelId} stays: ${message === null ? 'it is gone' : 'it is pinned'}`);
+			return null;
+		}
 
+		logger.debug(`[AutoDelete] The message ${messageId} of ${channelId} is deleted`);
 		await resolveOnErrorCodes(messages.delete(channelId, messageId, 'Auto delete'), ...IgnoredCodes);
 		return null;
 	}

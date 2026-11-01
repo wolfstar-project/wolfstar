@@ -2,6 +2,7 @@ import { resolveOnErrorCodes } from '#common';
 import { readSettings } from '#lib/database';
 import { shouldAutoDelete } from '#lib/moderation/cleanup/filters';
 import { readAutoDeletes } from '#lib/moderation/cleanup/store';
+import { describeMessage } from '#utils/debug';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
@@ -27,7 +28,12 @@ export class UserListener extends EventGatewayListener<'messageCreate'> {
 		const configs = await readAutoDeletes(guildId);
 		const config = configs.find((entry) => entry.channelId === message.channelId);
 		if (config === undefined) return;
-		if (!(await readSettings(guildId)).modulesAutodelete) return;
+
+		const prefix = `[AutoDelete] ${describeMessage(message)}`;
+		if (!(await readSettings(guildId)).modulesAutodelete) {
+			this.container.logger.debug(`${prefix}: left alone, the module is off`);
+			return;
+		}
 
 		const subject = {
 			content: message.content,
@@ -36,8 +42,12 @@ export class UserListener extends EventGatewayListener<'messageCreate'> {
 			attachments: message.attachments,
 			embeds: message.embeds
 		};
-		if (!shouldAutoDelete(subject, config)) return;
+		if (!shouldAutoDelete(subject, config)) {
+			this.container.logger.debug(`${prefix}: kept by the filter of the channel`);
+			return;
+		}
 
+		this.container.logger.debug(`${prefix}: deleted after ${config.delay}ms`);
 		if (config.delay > 0) {
 			await this.container.tasks.create(
 				{ name: 'autoDeleteMessage', payload: { guildId, channelId: message.channelId, messageId: message.id } },

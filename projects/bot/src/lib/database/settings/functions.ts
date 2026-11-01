@@ -159,6 +159,7 @@ export class Transaction {
 
 			const webhookChannels = getLogWebhookChannels(this.settings);
 			const updatesChannel = this.settings.updatesChannel;
+			container.logger.debug(`[Settings] Written for ${this.settings.id}: ${Object.keys(this.#changes).join(', ')}`);
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;
 

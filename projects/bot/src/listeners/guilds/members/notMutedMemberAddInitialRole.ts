@@ -12,12 +12,18 @@ import type { GuildSettingsOfType } from 'wolfstar-database';
 export class UserListener extends Listener {
 	public async run(member: GuildMember) {
 		// If the bot cannot manage roles, do not proceed:
-		if (!(await this.canGiveRoles(member))) return;
+		if (!(await this.canGiveRoles(member))) {
+			this.container.logger.debug(`[Members] No initial roles in ${member.guildId}: the bot lacks Manage Roles`);
+			return;
+		}
 
 		const user = member.user ?? (await member.fetchUser());
 		const settings = await readSettings(member);
 		// The initial roles are of the roles module:
-		if (!settings.modulesRoles) return;
+		if (!settings.modulesRoles) {
+			this.container.logger.debug(`[Members] No initial roles in ${member.guildId}: the module is off`);
+			return;
+		}
 
 		const initial = settings.rolesInitial;
 		const initialHumans = settings.rolesInitialHumans;
@@ -31,6 +37,7 @@ export class UserListener extends Listener {
 					? 'rolesInitialRobots'
 					: 'rolesInitialHumans';
 		const roleIds = key === 'rolesInitial' ? initial : key === 'rolesInitialRobots' ? initialRobots : initialHumans;
+		this.container.logger.debug(`[Members] ${user.id} joined ${member.guildId}: ${roleIds.length} roles of ${key}`);
 		if (roleIds.length === 0) return;
 
 		const invalid = new Set<Snowflake>();

@@ -112,23 +112,35 @@ export async function dehoistMember(member: GuildMember, user: User): Promise<vo
 	// Most names are clean, which costs nothing to tell:
 	if (getDehoistChange({ nickname: member.nickname, globalName: user.globalName, username: user.username }) === null) return;
 
-	const permissions = await member.fetchPermissions();
-	if (permissions.has(PermissionFlagsBits.ManageNicknames)) return;
-
 	const { gatewayClient, logger, prisma } = container;
+	const permissions = await member.fetchPermissions();
+	if (permissions.has(PermissionFlagsBits.ManageNicknames)) {
+		logger.debug(`[DEHOIST] ${user.id} of ${member.guildId} left alone: they can manage nicknames`);
+		return;
+	}
+
 	const me = await gatewayClient.members.fetchMe(member.guildId);
 	await me.roles.fetch();
-	if (!(await me.permissions).has(PermissionFlagsBits.ManageNicknames)) return;
+	if (!(await me.permissions).has(PermissionFlagsBits.ManageNicknames)) {
+		logger.debug(`[DEHOIST] ${user.id} of ${member.guildId} left alone: the bot lacks Manage Nicknames`);
+		return;
+	}
 
 	// Discord refuses to rename a member whose highest role is not below the one of the bot, asking would only fail:
 	await member.roles.fetch();
 	const [ownHighest, memberHighest] = await Promise.all([me.roles.highest, member.roles.highest]);
-	if (isNullish(ownHighest) || (!isNullish(memberHighest) && ownHighest.comparePositionTo(memberHighest) <= 0)) return;
+	if (isNullish(ownHighest) || (!isNullish(memberHighest) && ownHighest.comparePositionTo(memberHighest) <= 0)) {
+		logger.debug(`[DEHOIST] ${user.id} of ${member.guildId} left alone: their highest role is not below the one of the bot`);
+		return;
+	}
 
 	const t = await fetchGuildT({ id: member.guildId });
 	await withNicknameLock(member.guildId, user.id, async () => {
 		const sticky = await fetchStickyNickname(prisma, member.guildId, user.id);
-		if (!isNullish(sticky)) return;
+		if (!isNullish(sticky)) {
+			logger.debug(`[DEHOIST] ${user.id} of ${member.guildId} left alone: they have a sticky nickname`);
+			return;
+		}
 
 		// The member as Discord has it now, since a moderator may have renamed them while the checks ran:
 		const current = await toErrorCodeResult(gatewayClient.api.guilds.getMember(member.guildId, user.id));
@@ -138,6 +150,7 @@ export async function dehoistMember(member: GuildMember, user: User): Promise<vo
 		const change = getDehoistChange({ nickname: nick ?? null, globalName: currentUser.global_name, username: currentUser.username });
 		if (change === null) return;
 
+		logger.debug(`[DEHOIST] ${user.id} of ${member.guildId} is renamed`);
 		const result = await toErrorCodeResult(
 			gatewayClient.api.guilds.editMember(member.guildId, user.id, change, { reason: t('moderationActions:dehoistReason') })
 		);

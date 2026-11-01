@@ -25,6 +25,7 @@ export class UserTask extends ScheduledTask<'honeypotUpkeep'> {
 
 			try {
 				const result = await runHoneypotUpkeep(upkeep);
+				logger.debug(`[Honeypot] Upkeep of the channel ${upkeep.channelId} of the guild ${upkeep.guildId}: ${result}`);
 				// The channel keeps the warning it had, and the server is not told: the log is where it shows.
 				if (result === 'failed') {
 					logger.warn(

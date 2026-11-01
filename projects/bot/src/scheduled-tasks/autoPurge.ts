@@ -29,10 +29,15 @@ export class UserTask extends ScheduledTask<'autoPurge'> {
 		for (const purge of await fetchDueAutoPurges(prisma.orm, now, PurgesPerRun)) {
 			try {
 				await setAutoPurgeNextRun(prisma, purge.id, now + purge.interval);
-				if (!(await readSettings(purge.guildId)).modulesAutopurge) continue;
+				if (!(await readSettings(purge.guildId)).modulesAutopurge) {
+					logger.debug(`[AutoPurge] The channel ${purge.channelId} of ${purge.guildId} was skipped: the module is off`);
+					continue;
+				}
 
+				const result = await runAutoPurge(purge);
+				logger.debug(`[AutoPurge] The channel ${purge.channelId} of ${purge.guildId}: ${result}`);
 				// A channel that was deleted is not purged anymore:
-				if ((await runAutoPurge(purge)) === 'gone') await deleteAutoPurge(prisma, purge.guildId, purge.channelId);
+				if (result === 'gone') await deleteAutoPurge(prisma, purge.guildId, purge.channelId);
 			} catch (error) {
 				logger.error(`[AutoPurge] Could not purge the channel ${purge.channelId} of the guild ${purge.guildId}:`, error);
 			}

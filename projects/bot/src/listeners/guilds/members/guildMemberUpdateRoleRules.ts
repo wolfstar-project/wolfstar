@@ -33,12 +33,16 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 
 		const roleIds = new Set(next.roleIds);
 		const { add, remove } = getRoleRuleChanges(rules, roleIds);
+		this.container.logger.debug(`[RoleRules] A member of ${next.guildId}: ${add.length} roles to give and ${remove.length} to take`);
 		if (add.length === 0 && remove.length === 0) return;
 
 		const { gatewayClient } = this.container;
 		const me = await gatewayClient.members.fetchMe(next.guildId);
 		await me.roles.fetch();
-		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) return;
+		if (!(await me.permissions).has(PermissionFlagsBits.ManageRoles)) {
+			this.container.logger.debug(`[RoleRules] Nothing done in ${next.guildId}: the bot lacks Manage Roles`);
+			return;
+		}
 
 		const position = (await me.roles.highest)?.position ?? 0;
 		const roles = new Map((await gatewayClient.roles.fetchAll(next.guildId)).map((role) => [role.id, role]));
@@ -49,6 +53,9 @@ export class UserListener extends EventGatewayListener<'guildMemberUpdate'> {
 
 		const toAdd = add.filter(manageable);
 		const toRemove = new Set(remove.filter(manageable));
+		this.container.logger.debug(
+			`[RoleRules] A member of ${next.guildId}: ${toAdd.length} roles given and ${toRemove.size} taken, the bot manages those`
+		);
 		if (toAdd.length === 0 && toRemove.size === 0) return;
 
 		const user = next.user ?? (await next.fetchUser());

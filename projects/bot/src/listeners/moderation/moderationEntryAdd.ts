@@ -17,7 +17,12 @@ export class UserListener extends Listener {
 	private async sendMessage(entry: ModerationManager.Entry) {
 		const moderation = await getModeration(entry.guild);
 		const channel = await moderation.fetchChannel();
-		if (channel === null || !(await canSendEmbeds(channel))) return;
+		if (channel === null || !(await canSendEmbeds(channel))) {
+			this.container.logger.debug(
+				`[MODERATION] The case ${entry.id} of ${entry.guild.id} was not posted: no channel the bot can post embeds in`
+			);
+			return;
+		}
 
 		const t = await fetchGuildT(entry.guild);
 		// The case replies to the copy of its message that was forwarded before the action, see `forwardCaseMessage`:
@@ -36,6 +41,7 @@ export class UserListener extends Listener {
 	private async scheduleDuration(entry: ModerationManager.Entry) {
 		if (isNullishOrZero(entry.duration)) return;
 
+		this.container.logger.debug(`[MODERATION] The undo of case ${entry.id} of ${entry.guild.id} is scheduled in ${entry.duration}ms`);
 		await scheduleUndoTask({
 			type: entry.type,
 			id: entry.id,

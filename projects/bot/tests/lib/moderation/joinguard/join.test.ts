@@ -96,7 +96,7 @@ beforeEach(() => {
 	vi.mocked(ModerationActions.kick.apply).mockResolvedValue({ id: 8 } as never);
 	Object.assign(container, {
 		prisma: {},
-		logger: { error: vi.fn() },
+		logger: { debug: vi.fn(), error: vi.fn() },
 		gatewayClient: { user: { id: '1' }, api: { channels: { createMessage } } }
 	});
 });
