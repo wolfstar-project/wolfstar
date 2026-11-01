@@ -1,5 +1,5 @@
 import { readSettings } from '#lib/database';
-import { refreshHoneypotNotice, removeHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
+import { readHoneypotNotice, refreshHoneypotNotice, removeHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
 import { followHoneypotSettings, planHoneypotNoticeReconcile, reconcileHoneypotNotices } from '#lib/moderation/honeypot/dashboard';
 import { readHoneypotNotices } from '#lib/moderation/honeypot/channel';
 import { fetchHoneypotChannels } from 'wolfstar-database';
@@ -13,6 +13,7 @@ vi.mock('#lib/moderation/honeypot/channel', () => ({
 	withHoneypotLock: vi.fn((_guildId: string, callback: () => Promise<unknown>) => callback()),
 	refreshHoneypotNotice: vi.fn(async () => true),
 	removeHoneypotNotice: vi.fn(async () => undefined),
+	readHoneypotNotice: vi.fn(async () => null),
 	readHoneypotNotices: vi.fn(async () => new Map())
 }));
 vi.mock('wolfstar-database', async (importOriginal) => ({
@@ -60,6 +61,37 @@ describe('followHoneypotSettings', () => {
 			expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: false, action: 'Ban' });
 		}
 	);
+
+	test('GIVEN a honeypot whose module is off THEN no warning is sent', async () => {
+		settings({ modulesHoneypot: false });
+
+		expect(await followHoneypotSettings(guildId, ['honeypotWarning'])).toBe('Ignored');
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+		expect(removeHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a honeypot whose module is off and wants no warning THEN the one it has is taken off', async () => {
+		settings({ modulesHoneypot: false, honeypotWarning: false });
+
+		expect(await followHoneypotSettings(guildId, ['honeypotWarning'])).toBe('Refreshed');
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, expect.objectContaining({ warning: false }));
+	});
+
+	test('GIVEN the module turned on and the warning missing THEN it is sent', async () => {
+		settings({ honeypotAction: 'Ban' });
+		vi.mocked(readHoneypotNotice).mockResolvedValueOnce(null);
+
+		expect(await followHoneypotSettings(guildId, ['modulesHoneypot'])).toBe('Refreshed');
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban' });
+	});
+
+	test('GIVEN the module turned on and the warning right THEN it is not sent again', async () => {
+		settings({ honeypotAction: 'Ban' });
+		vi.mocked(readHoneypotNotice).mockResolvedValueOnce({ channelId, messageId: '1', action: 'Ban' });
+
+		expect(await followHoneypotSettings(guildId, ['modulesHoneypot'])).toBe('Ignored');
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+	});
 
 	test('GIVEN other settings changed THEN the warning is left alone and the lock is not taken', async () => {
 		expect(await followHoneypotSettings(guildId, ['honeypotLogChannel', 'logsWebhooks'])).toBe('Ignored');
@@ -133,6 +165,27 @@ describe('reconcileHoneypotNotices', () => {
 		expect(readSettings).not.toHaveBeenCalled();
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
 		expect(removeHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a honeypot whose module is off, with no warning THEN none is sent to its channel', async () => {
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: true, action: 'Softban' }]);
+		vi.mocked(readHoneypotNotices).mockResolvedValue(new Map());
+		settings({ modulesHoneypot: false });
+
+		await reconcileHoneypotNotices();
+
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+		expect(removeHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN a honeypot whose module is off, with a warning it no longer wants THEN it is taken off', async () => {
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: false, action: 'Softban' }]);
+		vi.mocked(readHoneypotNotices).mockResolvedValue(new Map([[guildId, { channelId, messageId: '1', action: 'Softban' }]]));
+		settings({ modulesHoneypot: false, honeypotWarning: false });
+
+		await reconcileHoneypotNotices();
+
+		expect(refreshHoneypotNotice).toHaveBeenCalledExactlyOnceWith(guildId, channelId, expect.objectContaining({ warning: false }));
 	});
 
 	test('GIVEN warnings out of step after the connection was down THEN each is put in order, the others are left alone', async () => {

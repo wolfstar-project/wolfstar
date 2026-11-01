@@ -76,7 +76,8 @@ export function pickHoneypotChannelName(current: string | null, random = Math.ra
  * The task read the honeypots of every guild before it kept the first one up, and an administrator may have disabled
  * this one, moved it or changed what is done to it since. So the upkeep runs under the lock of the honeypot, as the
  * commands do, and does what the settings say now: a channel that is not the honeypot anymore is not renamed nor
- * written in, and the settings are only cleared of the channel that is gone, not of the one that took its place.
+ * written in, and the settings are only cleared of the channel that is gone, not of the one that took its place. While
+ * `modules.honeypot` is off the channel is left as it is: it is not renamed, written in, nor taken off when it is gone.
  *
  * @param upkeep - The honeypot channel the task read.
  * @returns `'gone'` when the channel does not exist anymore and the honeypot was turned off, `'skipped'` when the
@@ -90,7 +91,7 @@ export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'chan
 		const { gatewayClient } = container;
 
 		const settings = await readCurrentSettings(guildId);
-		if (settings.honeypotChannel !== channelId) return 'skipped';
+		if (settings.honeypotChannel !== channelId || !settings.modulesHoneypot) return 'skipped';
 		if (!settings.honeypotRandomName && !settings.honeypotKeepActive) return 'skipped';
 
 		const channel = await resolveOnErrorCodes(gatewayClient.channels.fetch(channelId), RESTJSONErrorCodes.UnknownChannel);

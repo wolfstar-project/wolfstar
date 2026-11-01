@@ -3038,6 +3038,7 @@ declare module "i18next" {
         modulesAutopurge: "Whether the channels set up with `/autopurge` are purged. When it is off they are not, and each one is purged again at its next time once it is on.";
         modulesAutomessage: "Whether the messages set up with `/automessage` are sent. When it is off they are not, and each one is sent again at its next time once it is on.";
         modulesReports: "Whether the members can report with `/report` and the Apps menu. When it is off they cannot, the reports already sent can still be handled, and what the reports are set up with stays.";
+        modulesHoneypot: "Whether the members who write in the channel of `/honeypot` are caught. When it is off nothing is done to them, the channel is not kept up, and what the honeypot is set up with stays.";
         automodChannel: "The channel where the auto-moderation actions are reported.";
         automodTrackNative: "Whether I should also report the actions taken by Discord's native AutoMod.";
         moderationTrackBans: "Whether I should record the bans made without using my commands.";
@@ -3064,6 +3065,7 @@ declare module "i18next" {
           modulesAutopurge: "Auto-purge Module";
           modulesAutomessage: "Auto-message Module";
           modulesReports: "Reports Module";
+          modulesHoneypot: "Honeypot Module";
           automodChannel: "Auto-moderation Channel";
           automodTrackNative: "Track Native Auto-moderation";
           commandsDisabled: "Disabled Commands";
