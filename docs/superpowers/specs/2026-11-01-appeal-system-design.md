@@ -74,18 +74,18 @@ group and shows the forms read-only, as it does for the join guard.
 
 ### Settings (`GuildAppeals`, keys `appeals.*`)
 
-| Key                                                 | Type                                | Default  | What it does                                                                                                                                                                   |
-| --------------------------------------------------- | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `appeals.enabled`                                   | boolean                             | off      | The whole thing. Off, the page says appeals are off and no form is served.                                                                                                     |
-| `appeals.channel`                                   | text channel                        | none     | Where the appeals are sent for the staff. Without it an appeal is still saved and the dashboard reviews it, but a form with attachments refuses submissions (see attachments). |
-| `appeals.bans`, `appeals.mutes`, `appeals.timeouts` | boolean                             | on       | Which kinds of case can be appealed at all, and which direct message of a case links to the page. A form narrows them, never widens them.                                      |
-| `appeals.manager-roles`                             | roles                               | none     | Who reviews, besides the moderators.                                                                                                                                           |
-| `appeals.ping-roles`                                | roles                               | none     | Mentioned when an appeal arrives, in the channel.                                                                                                                              |
-| `appeals.anonymous`                                 | boolean                             | off      | The member is never told who decided: not in the direct message, not on the website. The staff channel and the dashboard always show it.                                       |
-| `appeals.thread`                                    | choice: `none`, `public`, `private` | `public` | Whether each appeal gets a thread, and of which kind.                                                                                                                          |
-| `appeals.cooldown-days`                             | number, 0 to 365                    | 7        | After a denial, how long before the member may appeal again in the server. `0` is no wait.                                                                                     |
-| `appeals.max-active`                                | number, 1 to 10                     | 1        | How many pending appeals a member may have in the server.                                                                                                                      |
-| `appeals.block-on-denial`                           | boolean                             | off      | A denial blocks the member from appealing again until the staff unblocks them.                                                                                                 |
+| Key                                                 | Type                                | Default  | What it does                                                                                                                              |
+| --------------------------------------------------- | ----------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `appeals.enabled`                                   | boolean                             | off      | The whole thing. Off, the page says appeals are off and no form is served.                                                                |
+| `appeals.channel`                                   | text channel                        | none     | Where the appeals are sent for the staff. Without it an appeal is still saved and the dashboard reviews it.                               |
+| `appeals.bans`, `appeals.mutes`, `appeals.timeouts` | boolean                             | on       | Which kinds of case can be appealed at all, and which direct message of a case links to the page. A form narrows them, never widens them. |
+| `appeals.manager-roles`                             | roles                               | none     | Who reviews, besides the moderators.                                                                                                      |
+| `appeals.ping-roles`                                | roles                               | none     | Mentioned when an appeal arrives, in the channel.                                                                                         |
+| `appeals.anonymous`                                 | boolean                             | off      | The member is never told who decided: not in the direct message, not on the website. The staff channel and the dashboard always show it.  |
+| `appeals.thread`                                    | choice: `none`, `public`, `private` | `public` | Whether each appeal gets a thread, and of which kind.                                                                                     |
+| `appeals.cooldown-days`                             | number, 0 to 365                    | 7        | After a denial, how long before the member may appeal again in the server. `0` is no wait.                                                |
+| `appeals.max-active`                                | number, 1 to 10                     | 1        | How many pending appeals a member may have in the server.                                                                                 |
+| `appeals.block-on-denial`                           | boolean                             | off      | A denial blocks the member from appealing again until the staff unblocks them.                                                            |
 
 `appeals.questions` is no longer a setting: the migration turns it into the first form of the servers that set it
 (see migrations), and the column waits for the site before it is dropped.
@@ -135,7 +135,7 @@ in this order, what `GET /appeals/:guild` returns:
 2. A notice when the user is blocked, with the reason, and nothing else.
 3. The forms, each open or locked with why: `disabled` (and the lock reason), `missingRole`, `restrictedRole`,
    `noEligibleCase` (the user has no case in course of the kinds the form takes), `cooldown` (with when it ends),
-   `maxActive`, `channelRequired` (the form asks for attachments and the server set no channel).
+   `maxActive`.
 4. The appeals the user already sent in the server, with their status and, unless the server hides it, the reason and
    who decided.
 5. A box that asks to authorize the app on the account, with a button to Discord's authorization page
@@ -145,7 +145,7 @@ in this order, what `GET /appeals/:guild` returns:
 A form opens as a modal: the case to appeal, picked among the eligible cases of the user (one is preselected, and a
 form with only one eligible case shows it without asking), then the questions. Each answer is checked as the form says
 (required, lengths, number of choices, number and kind of files) before it is sent. The submission is one request,
-`POST /appeals/:guild/:form`, multipart when it carries files, with `caseId` and the answers keyed by question ID.
+`POST /appeals/:guild/:form`, with `caseId` and the answers keyed by question ID, the files being uploaded before it.
 
 Once sent, the page shows the appeal among the sent ones and the box of the authorization again, as Flamey does after
 a submission.
@@ -168,21 +168,23 @@ feature off for every server at the deploy.
 
 ### Attachments
 
-The files of an answer go to Discord, not to the website: the bot posts them as the attachments of the message of the
-appeal in the staff channel, and the answer stores their names and sizes. Nothing new to host, nothing with a public
-link, and a channel members cannot read holds them. The staff reads them on the message, `/appeal view` and the
-dashboard link to them through the bot (`GET /appeals/:guild/:appeal/attachments/:index` answers a redirect to a fresh
-CDN link, since Discord's links expire), and the message is deleted with nothing else when the server deletes it.
+The files of an answer live on Cloudflare KV, on the Worker of the website (a binding of its own, `APPEAL_FILES`, next
+to `CACHE` and `RATE_LIMIT`). The owner chose Cloudflare over Discord and Netlify. KV over a Durable Object is my
+call: a value holds 25 MiB against about 2 MiB, and a key expires by itself, which is the whole cleanup.
 
-Limits: 5 files per appeal in all, 8 MiB each, images only when the question says so (checked by content type and by
-the first bytes). A form with an attachment question needs `appeals.channel`, a channel the bot can post and attach
-files in: the page says so (`channelRequired`, checked with the channel and the permissions, not only the setting).
-The files are posted before the row is written, so a submission whose files cannot be posted is refused whole
-(`502`, the member tries again) and never saved without its evidence; a message that was posted for a row that then
-could not be written is deleted. My call: the order of today (row, then message) is turned around for this one path.
+The page uploads each file to the website first (`POST /api/appeals/:guild/files`, the user's session), which checks
+size and kind (8 MiB, images by content type and first bytes when the question says so) and stores it under
+`appeals/<guildId>/<userId>/<uuid>`, for 90 days, with its name and type as metadata. It answers
+`{ key, name, size, contentType }`, and that is the answer the page sends to the bot.
 
-The alternative was to keep the files on the website (Netlify Blobs) and link to them: it needs a store, a signed
-link, and a cleanup, for a file the staff opens once. Marked as my call.
+The bot never sees a file. It checks what the form asks of the answer: how many, 5 per appeal in all, 8 MiB each, and
+that every key starts with the guild and the user of the session, so a member cannot attach what somebody else
+uploaded. A key nothing refers to expires with the others.
+
+The staff opens a file at `wolfstar.rocks/appeal-files/<guildId>/<appealId>/<index>`, on the website: it reads the row,
+and answers the member who sent the appeal and whoever passes `hasAppealAccess`, nobody else, after a Discord login. So
+the links in the channel, in `/appeal view` and on the dashboard are the same, and open for no one who was forwarded
+one. After 90 days the page says the file expired, and the answer keeps its name.
 
 ## What the staff does
 
@@ -194,15 +196,14 @@ what the `moderator` level means (`isModerator`), written so it can be answered 
 interaction: the bot reads the member and the roles of the server from the gateway cache, the site from Discord's API
 as it already does for `canManageServerSettings`. A new precondition, `appealManager`, applies it to `/appeal` and to
 the handlers of the buttons and of the list in place of `moderator`; the bot answers `noAccess` to a dashboard request
-whose moderator fails it. `/reply` has no level: it is the member's. The route of the attachments answers the staff
-(the same rule) and the member who sent the appeal, nobody else. My call: the `moderator` level alone is "everybody"
+whose moderator fails it. `/reply` has no level: it is the member's. My call: the `moderator` level alone is "everybody"
 when a server set no moderator role, since Discord filters the commands by their default permissions, and a dashboard
 request has no such filter.
 
 ### Where
 
 With `appeals.channel` set, every appeal is one message in it, as today, with the embed of the case and the answers:
-a `text` answer as a field, a `choice` answer as the labels picked, an `attachment` answer as the files of the message,
+a `text` answer as a field, a `choice` answer as the labels picked, an `attachment` answer as links to the files,
 a `display` question not at all. The ping roles are mentioned above it. The buttons are `Approve` and `Deny`, and the
 `accepted` status reads `Approved` everywhere a person sees it: Flamey's word, and the one `/appeal approve` already
 uses. The stored value stays `accepted`.
@@ -300,16 +301,19 @@ contract bump brings the tables.
   (add, remove, reorder, at most five, at least one that asks; the fields of each kind as listed under Forms, with the
   limits). Written straight to `AppealForm`; the bot does not cache them, no notification needed. Question IDs are
   generated as the other IDs of the dashboard are (`settings/ids.ts` of the contract).
-- The appeals: a list with filters by status and form, the answers of one (attachments through the bot's redirect
-  route), the decision with a reason, block from an appeal, and a page of the blocked members with unblock. Every
+- The appeals: a list with filters by status and form, the answers of one (attachments through the route below), the decision with a reason, block from an appeal, and a page of the blocked members with unblock. Every
   action is an `AppealRequest` row plus `NOTIFY appeal_request, '<id>'` in the same transaction, then the row is
   polled for `processedAt` and shown with its `error` code when it has one. Only a member who passes
   `hasAppealAccess` may act: the `moderator` level as the bot computes it, or a manager role.
 
 **Public page, `/appeal/:guildId`**: as described under "The page", on `GET /appeals/:guild`,
-`POST /appeals/:guild/:form` (multipart) and `GET /appeals/:guild/:appeal/attachments/:index`, with the user's
-session. The authorization button goes to `https://discord.com/oauth2/authorize?client_id=<CLIENT_ID>&integration_type=1&scope=applications.commands`
+`POST /appeals/:guild/:form`, with the user's session. The authorization button goes to `https://discord.com/oauth2/authorize?client_id=<CLIENT_ID>&integration_type=1&scope=applications.commands`
 with a `redirect_uri` back to the page, which is registered on the application.
+
+**Files**: a KV namespace bound as `APPEAL_FILES` on both Workers (`config/cloudflare.ts`), with the two routes of
+"Attachments": the upload and `/appeal-files/:guildId/:appealId/:index`, which applies the access rule and serves the
+file as a download with `Content-Disposition: attachment` and `nosniff`, so an uploaded page cannot run on the domain.
+This needs wolfstar.rocks#498, which moves the site to Workers.
 
 ## Left to the builder
 
