@@ -92,7 +92,7 @@ export async function guardJoiningMember(member: GuildMember, now = Date.now()):
 
 	const plan = planJoinGuardActions(matched, settings);
 	container.logger.debug(
-		`[JoinGuard] ${user.id} of ${guildId}: stopped with ${plan.stop.kind}, rules ${plan.rules.map((rule) => rule.name).join(', ')}`
+		`[JoinGuard] ${user.id} of ${guildId}: stopped with ${plan.stop.kind}, rules ${plan.rules.map((rule) => rule.id).join(', ')}`
 	);
 	const guild = await member.fetchGuild();
 	await withJoinGuardMemberLock(guildId, user.id, () => runJoinGuardPlan({ guild, member, user, settings, plan, signals, now }));
