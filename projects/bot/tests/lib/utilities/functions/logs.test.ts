@@ -1,7 +1,7 @@
-import { createLogMessage, fitLogParts, MaximumLogMessageLength } from '#utils/functions/logs';
+import { createEventLogMessage, createLogMessage, fitLogParts, MaximumLogMessageLength } from '#utils/functions/logs';
 import { REST } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
-import { ComponentType, MessageFlags } from 'discord-api-types/v10';
+import { ButtonStyle, ComponentType, MessageFlags } from 'discord-api-types/v10';
 
 const author = { id: '266624760782258186', username: 'wolf', discriminator: '0', global_name: null, avatar: null };
 
@@ -54,6 +54,60 @@ describe('createLogMessage', () => {
 		expect(texts.join('').length).toBeLessThanOrEqual(MaximumLogMessageLength);
 		expect(texts.some((text) => text.startsWith('a'))).toBe(true);
 		expect(texts.some((text) => text.startsWith('b'))).toBe(true);
+	});
+});
+
+describe('createEventLogMessage', () => {
+	const options = { color: 0xffbf00, title: 'Message Edited', details: 'From: <@1>   In: <#2>', footer: 'Author: 1 | Message ID: 3' };
+
+	test('GIVEN a log THEN it has the title, who and where, the content and the footer, in that order', () => {
+		const message = createEventLogMessage({ ...options, content: ['**Before**\nold', '**After**\nnew'] });
+		const texts = collectText(message.components);
+
+		expect(message.flags).toBe(MessageFlags.IsComponentsV2);
+		expect(message.allowed_mentions).toEqual({ parse: [] });
+		expect(texts.slice(0, 2)).toEqual(['### Message Edited', 'From: <@1>   In: <#2>']);
+		expect(texts.slice(2, -1)).toEqual(['**Before**\nold', '**After**\nnew']);
+		expect(texts.at(-1)).toContain('Author: 1 | Message ID: 3');
+	});
+
+	test('GIVEN buttons THEN they are a row under the container, and five at most', () => {
+		const buttons = Array.from({ length: 7 }, (_, index) => ({
+			type: ComponentType.Button as const,
+			style: ButtonStyle.Secondary as const,
+			custom_id: `button.${index}`,
+			label: `Button ${index}`
+		}));
+		const message = createEventLogMessage({ ...options, content: 'text', buttons });
+
+		expect(message.components.map((component) => component.type)).toEqual([ComponentType.Container, ComponentType.ActionRow]);
+		expect((message.components[1] as { components: unknown[] }).components).toHaveLength(5);
+	});
+
+	test('GIVEN no buttons THEN there is only the container', () => {
+		const message = createEventLogMessage({ ...options, content: 'text' });
+
+		expect(message.components.map((component) => component.type)).toEqual([ComponentType.Container]);
+	});
+
+	test('GIVEN images THEN they are a gallery after the text, 10 at most', () => {
+		const images = Array.from({ length: 12 }, (_, index) => `https://cdn.discordapp.com/attachments/1/2/${index}.png`);
+		const message = createEventLogMessage({ ...options, content: 'text', images });
+		const { components } = message.components[0] as { components: { type: ComponentType; items?: unknown[] }[] };
+		const gallery = components.find((component) => component.type === ComponentType.MediaGallery);
+
+		expect(gallery?.items).toHaveLength(10);
+		expect(components.findIndex((component) => component === gallery)).toBeGreaterThan(
+			components.findIndex(
+				(component) => component.type === ComponentType.TextDisplay && (component as { content?: string }).content === 'text'
+			)
+		);
+	});
+
+	test('GIVEN a long log THEN the text stays within the limit of Discord', () => {
+		const message = createEventLogMessage({ ...options, content: 'word '.repeat(3000) });
+
+		expect(collectText(message.components).join('').length).toBeLessThanOrEqual(MaximumLogMessageLength);
 	});
 });
 

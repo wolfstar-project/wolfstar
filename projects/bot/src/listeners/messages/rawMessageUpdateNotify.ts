@@ -2,10 +2,10 @@ import { isWebhookMessage } from '#common';
 import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
-import type { Translator } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
-import { createLogMessage, getLogger, getMessageUpdateContent } from '#utils/functions';
-import { hyperlink, messageLink } from '@discordjs/formatters';
+import { getMessageLogButtons } from '#lib/moderation/logs/messageButtons';
+import { createEventLogMessage, getLogger, getMessageUpdateContent } from '#utils/functions';
+import { channelMention, userMention } from '@discordjs/formatters';
 import { isNullish } from '@sapphire/utilities';
 import { isNsfwChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
@@ -39,21 +39,18 @@ export class UserListener extends EventGatewayListener<'messageUpdate'> {
 				if (isNullish(cachedMessage)) return null;
 
 				const t = await fetchGuildT(guild);
-				const log = createLogMessage({
+				const log = createEventLogMessage({
 					color: Colors.Amber,
-					author: message.author.toJSON(),
+					title: t('events/messages:logTitleUpdate'),
+					details: t('events/messages:logDetails', { user: userMention(message.author.id), channel: channelMention(channel.id) }),
 					content: getMessageUpdateContent(settings.logsMessageUpdateStyle, t, oldContent!, currentContent),
-					footer: this.getFooter(t, guild.id, channel, message.id)
+					footer: t('events/messages:logFooter', { userId: message.author.id, messageId: message.id }),
+					buttons: getMessageLogButtons(t, { userId: message.author.id, guildId: guild.id, channelId: channel.id, messageId: message.id })
 				});
 				// The log is typed as a constant, whose allowed mentions are read-only:
 				return { ...log, allowed_mentions: { parse: [] } };
 			}
 		});
-	}
-
-	private getFooter(t: Translator, guildId: string, channel: GuildTextBasedChannel, messageId: string) {
-		const link = hyperlink(t('events/messages:jumpToContext'), messageLink(channel.id, messageId, guildId));
-		return `${t('events/messages:messageUpdate', { channel: `#${channel.name}` })} • ${link}`;
 	}
 
 	private onCondition(cachedMessage: Message | null, channel: GuildTextBasedChannel, author: User, settings: ReadonlyGuildData) {

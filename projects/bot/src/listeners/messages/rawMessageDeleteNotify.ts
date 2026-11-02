@@ -1,11 +1,12 @@
 import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
+import { getMessageLogButtons } from '#lib/moderation/logs/messageButtons';
 import { Colors } from '#utils/constants';
-import { getLogger } from '#utils/functions';
-import { getContent, getFullEmbedAuthor, getImages, setMultipleEmbedImages } from '#utils/util';
-import { EmbedBuilder } from '@discordjs/builders';
-import { cutText, isNullish, isNullishOrEmpty } from '@sapphire/utilities';
+import { createEventLogMessage, getLogger } from '#utils/functions';
+import { getContent, getImages } from '#utils/util';
+import { channelMention, userMention } from '@discordjs/formatters';
+import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { isNsfwChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
@@ -35,16 +36,18 @@ export class UserListener extends EventGatewayListener<'messageDelete'> {
 				if (isNullish(message)) return null;
 
 				const t = await fetchGuildT(guild);
-				const embed = new EmbedBuilder()
-					.setColor(Colors.Red)
-					.setTimestamp()
-					.setAuthor(getFullEmbedAuthor(message.author, message.url))
-					.setFooter({ text: t('events/messages:messageDelete', { channel: `#${channel.name}` }) });
-
 				const content = getContent(message);
-				if (!isNullishOrEmpty(content)) embed.setDescription(cutText(content, 1900));
-
-				return setMultipleEmbedImages(embed, getImages(message));
+				const images = [...getImages(message)];
+				return createEventLogMessage({
+					color: Colors.Red,
+					title: t('events/messages:logTitleDelete'),
+					details: t('events/messages:logDetails', { user: userMention(message.author.id), channel: channelMention(channel.id) }),
+					// A message of images only has no text to show, which the log says instead of leaving it blank:
+					content: isNullishOrEmpty(content) && images.length === 0 ? t('events/messages:messageUpdateEmpty') : (content ?? ''),
+					images,
+					footer: t('events/messages:logFooter', { userId: message.author.id, messageId: message.id }),
+					buttons: getMessageLogButtons(t, { userId: message.author.id, guildId: guild.id, channelId: channel.id, messageId: message.id })
+				});
 			}
 		});
 	}
