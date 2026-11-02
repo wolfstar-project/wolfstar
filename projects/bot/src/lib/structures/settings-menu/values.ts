@@ -2,7 +2,15 @@ import { Emojis } from '#utils/emojis';
 import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelTypes';
 import type { SchemaGroup } from '#lib/database/settings/schema/SchemaGroup';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
-import { getConfigurableGroups, getConfigurableKeys, getSettingName, isSchemaGroup, type SchemaDataKey, type Serializer } from '#lib/database';
+import {
+	getConfigurableGroups,
+	getConfigurableKeys,
+	getSchemaPath,
+	getSettingName,
+	isSchemaGroup,
+	type SchemaDataKey,
+	type Serializer
+} from '#lib/database';
 import { AppealThreadModes, MessageUpdateStyles, type ReadonlyGuildData } from 'wolfstar-database';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
@@ -168,6 +176,18 @@ export function getVisibleKeys(group: SchemaGroup, recursive = false): SchemaKey
 	}
 
 	return keys;
+}
+
+/**
+ * The keys the reset button of the page of a group resets: the keys of the group and of its groups, but on the page of
+ * the root, which only holds its own (the modules are reset one by one). The page of the modules also lists the
+ * switches of {@linkcode OwnTableModuleSwitches}, which belong to other groups, so it resets them too.
+ *
+ * @param group - The group of the page.
+ */
+export function getResetKeys(group: SchemaGroup): SchemaKey[] {
+	const keys = getVisibleKeys(group, group.parent !== null);
+	return getSchemaPath(group) === ModulesGroupPath ? [...keys, ...getOwnTableModuleSwitches()] : keys;
 }
 
 /**

@@ -64,6 +64,20 @@ describe('writes of the dashboard', () => {
 		expect(emit).toHaveBeenCalledWith(Events.DashboardSettingsUpdate, guildId, ['logsWebhooks']);
 	});
 
+	test('GIVEN a worker of the broker THEN it drops what it cached and leaves the event to the gateway', async () => {
+		vi.stubEnv('BOT_MODE', 'worker');
+		try {
+			await readSettings(guildId);
+			dispatchShardMessage({ type: 'settingsUpdate', guildId, keys: ['honeypotChannel'] });
+
+			expect(readSettingsCached(guildId)).toBeNull();
+			expect(automod).toHaveBeenCalledWith({ type: 'automodRulesUpdate', guildId });
+			expect(emit).not.toHaveBeenCalled();
+		} finally {
+			vi.unstubAllEnvs();
+		}
+	});
+
 	test('GIVEN a read that started before the write THEN a read after it does not join it', async () => {
 		let resolveOld!: (data: GuildData) => void;
 		vi.mocked(fetchGuildData).mockImplementationOnce(() => new Promise((resolve) => (resolveOld = resolve)));

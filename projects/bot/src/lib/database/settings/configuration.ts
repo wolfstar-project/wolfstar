@@ -262,7 +262,8 @@ export function getConfiguration() {
 			name: 'moderation.confirm-recent',
 			description: 'settings:moderationConfirmRecentMinutes',
 			minimum: 0,
-			maximum: 60
+			maximum: 60,
+			default: 0
 		},
 		moderationDehoist: {
 			type: 'boolean',
@@ -277,17 +278,20 @@ export function getConfiguration() {
 		messagesModerationReasonDisplay: {
 			type: 'boolean',
 			name: 'moderation.display-reason',
-			description: 'settings:messagesModerationReasonDisplay'
+			description: 'settings:messagesModerationReasonDisplay',
+			default: true
 		},
 		messagesModerationMessageDisplay: {
 			type: 'boolean',
 			name: 'moderation.display-message',
-			description: 'settings:messagesModerationMessageDisplay'
+			description: 'settings:messagesModerationMessageDisplay',
+			default: true
 		},
 		messagesModeratorNameDisplay: {
 			type: 'boolean',
 			name: 'moderation.display-moderator',
-			description: 'settings:messagesModeratorNameDisplay'
+			description: 'settings:messagesModeratorNameDisplay',
+			default: true
 		},
 
 		// Permissions

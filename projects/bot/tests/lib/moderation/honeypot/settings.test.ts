@@ -2,6 +2,7 @@ import { readSettings, writeSettings } from '#lib/database';
 import {
 	getMissingHoneypotLogPermissions,
 	getMissingHoneypotPermissions,
+	readHoneypotNotice,
 	refreshHoneypotNotice,
 	removeHoneypotNotice,
 	withHoneypotLock
@@ -14,6 +15,7 @@ vi.mock('#lib/moderation/honeypot/commands', () => ({ HoneypotRoot: 'commands/ho
 vi.mock('#lib/moderation/honeypot/channel', () => ({
 	getMissingHoneypotLogPermissions: vi.fn(),
 	getMissingHoneypotPermissions: vi.fn(),
+	readHoneypotNotice: vi.fn(),
 	refreshHoneypotNotice: vi.fn(),
 	removeHoneypotNotice: vi.fn(),
 	withHoneypotLock: vi.fn()
@@ -116,6 +118,31 @@ describe('writeHoneypotSettings', () => {
 		expect(removeHoneypotNotice).not.toHaveBeenCalled();
 	});
 
+	test('GIVEN the module turned on with a warning that waited for it THEN the warning is sent again', async () => {
+		settings.modulesHoneypot = false;
+		settings.honeypotAction = 'Ban';
+		vi.mocked(readHoneypotNotice).mockResolvedValue({ channelId, messageId: '1', action: 'Kick' });
+
+		expect(await write({ modulesHoneypot: true })).toEqual({ ok: true, notes: [] });
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban' });
+	});
+
+	test('GIVEN the module turned on with a warning that is right THEN it is not sent again', async () => {
+		settings.modulesHoneypot = false;
+		vi.mocked(readHoneypotNotice).mockResolvedValue({ channelId, messageId: '1', action: settings.honeypotAction });
+
+		await write({ modulesHoneypot: true });
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN the module turned off THEN the warning is left as it is', async () => {
+		await write({ modulesHoneypot: false });
+
+		expect(readHoneypotNotice).not.toHaveBeenCalled();
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+		expect(removeHoneypotNotice).not.toHaveBeenCalled();
+	});
+
 	test('GIVEN a function THEN it is given the settings read under the lock', async () => {
 		await writeHoneypotSettings(guildId, (current) => ({ honeypotWarning: !current.honeypotWarning }), userId, t as never);
 
@@ -127,6 +154,7 @@ describe('isHoneypotSettingsWrite', () => {
 	test('GIVEN keys of the honeypot or of anything else THEN it tells them apart', () => {
 		expect(isHoneypotSettingsWrite(['honeypotAction'])).toBe(true);
 		expect(isHoneypotSettingsWrite(['language', 'honeypotChannel'])).toBe(true);
+		expect(isHoneypotSettingsWrite(['modulesHoneypot'])).toBe(true);
 		expect(isHoneypotSettingsWrite(['language'])).toBe(false);
 	});
 });

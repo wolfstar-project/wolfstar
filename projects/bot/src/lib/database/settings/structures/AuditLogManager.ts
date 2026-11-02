@@ -1,6 +1,7 @@
 import { hashEnvelope, type AuditEnvelopeInput } from '#lib/database/settings/structures/AuditLogEnvelope';
 import { container } from '@wolfstar/http-framework';
 import { randomUUID } from 'node:crypto';
+import { formatTimestamp } from 'wolfstar-database';
 import type { AuditOutcome, Models, ReadonlyGuildData } from 'wolfstar-database';
 
 type TimestampString = Models.public_AuditEvent['timestamp'];
@@ -125,7 +126,8 @@ export class AuditLogManager {
 			};
 
 			const hash = hashEnvelope(envelope);
-			const storedTimestamp = timestamp.toISOString() as TimestampString;
+			// The column has no time zone and holds UTC:
+			const storedTimestamp = formatTimestamp(timestamp.getTime()) as TimestampString;
 
 			await tx.orm.public.AuditEvent.create({
 				id: randomUUID(),

@@ -11,6 +11,7 @@ import {
 } from '#lib/moderation/honeypot/channel';
 import { onShardMessage } from '#lib/sharder/messages';
 import { Events } from '#lib/types/Enums';
+import { isWorker } from '#utils/worker';
 import { channelMention } from '@discordjs/formatters';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -144,6 +145,8 @@ async function isGuildJoined(guildId: Snowflake) {
 	return Boolean(await guilds.cache.get(guilds.resolveKey(guildId)));
 }
 
+// A worker of the broker has no guild of its own (`isOwnGuild`), the gateway puts the warnings in order:
 onShardMessage('settingsInvalidateAll', () => {
+	if (isWorker()) return;
 	void reconcileHoneypotNotices().catch((error: unknown) => container.logger.error('[Honeypot] Could not put the warnings in order:', error));
 });

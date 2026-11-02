@@ -83,7 +83,7 @@ export class UserPrecondition extends AllFlowsPrecondition {
 	}
 
 	/**
-	 * The roles of a member that a rule names, highest first (by position, then the higher ID), since the highest one
+	 * The roles of a member that a rule names, highest first (by position, then the lower ID, as Discord ranks them), since the highest one
 	 * decides. This runs before every command a rule covers, so a request to Discord is the last resort: one role has no
 	 * order to find, and the positions come from the cache.
 	 */
@@ -95,6 +95,6 @@ export class UserPrecondition extends AllFlowsPrecondition {
 		const { roles } = container.gatewayClient;
 		const cached = await Promise.all(held.map((id) => roles.cache.get(roles.resolveKey(guildId, id))));
 		const known = cached.every((role) => !isNullish(role)) ? cached : (await roles.fetchAll(guildId)).filter((role) => held.includes(role.id));
-		return known.sort((a, b) => b.position - a.position || (BigInt(b.id) > BigInt(a.id) ? 1 : -1)).map((role) => role.id);
+		return known.sort((a, b) => b.position - a.position || (BigInt(a.id) < BigInt(b.id) ? -1 : 1)).map((role) => role.id);
 	}
 }

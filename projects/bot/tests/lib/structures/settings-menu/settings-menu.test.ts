@@ -12,6 +12,7 @@ import {
 	getSettingKind,
 	getVisibleGroups,
 	getVisibleKeys,
+	getResetKeys,
 	ModulesGroupPath,
 	OwnTableModuleSwitches,
 	parseSettingInput,
@@ -166,6 +167,13 @@ describe('settings menu', () => {
 				.filter((module) => !switches().includes(`modules.${module}`) && !switches().includes(`${module}.enabled`));
 
 			expect(missing).toEqual([]);
+		});
+
+		test('GIVEN the reset of the page of the modules THEN it resets every switch it lists', () => {
+			const reset = getResetKeys(resolveSettingGroup(ModulesGroupPath)!).map((key) => key.name);
+
+			expect(reset).toEqual(expect.arrayContaining(switches()));
+			expect(getResetKeys(resolveSettingGroup('honeypot')!).map((key) => key.property)).not.toContain('appealsEnabled');
 		});
 
 		test('GIVEN the switches of the modules THEN each is a boolean', () => {

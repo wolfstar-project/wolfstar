@@ -17,7 +17,7 @@ import {
 	decodeSettingsMenuId,
 	getSettingKind,
 	getSettingTitle,
-	getVisibleKeys,
+	getResetKeys,
 	isSettingsMenuExpired,
 	parseSettingInput,
 	validateSettingPick,
@@ -315,8 +315,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 */
 	private async resetGroup(interaction: ComponentInteraction, guildId: Snowflake, action: SettingsMenuAction, t: Translator) {
 		const group = resolveSettingGroup(action.target) ?? getConfigurableGroups();
-		// The page of the root only holds its own keys, the modules are reset one by one:
-		const keys = getVisibleKeys(group, group.parent !== null);
+		const keys = getResetKeys(group);
 		const module = group.parent === null ? t('commands/conf:menuModuleGeneral') : getSettingTitle(group);
 
 		const prompter = new MessagePrompter(t('commands/conf:menuResetConfirm', { count: keys.length, module }), 'confirm', {

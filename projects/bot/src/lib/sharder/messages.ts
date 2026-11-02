@@ -89,12 +89,28 @@ export function dispatchShardMessage(message: ShardMessage) {
 	for (const handler of handlers.get(message?.type) ?? []) handler(message);
 }
 
+type ShardMessageRelay = (message: ShardMessage) => void;
+let relay: ShardMessageRelay | null = null;
+
 /**
- * Sends a message to every other shard. Does nothing when the bot runs in a single process.
+ * Sets what also carries the messages this process broadcasts to the workers of the broker, which are no shards, see
+ * `startWorkerMessageRelay`.
+ *
+ * @param value - The relay, `null` to stop relaying.
+ */
+export function setShardMessageRelay(value: ShardMessageRelay | null) {
+	relay = value;
+}
+
+/**
+ * Sends a message to every other shard, and to the workers of the broker when it is on. Does nothing when the bot
+ * runs in a single process.
  *
  * @param message - The message to send.
  */
 export function broadcastShardMessage(message: ShardMessage) {
+	relay?.(message);
+
 	const shard = container.shard ?? null;
 	if (shard === null) return;
 

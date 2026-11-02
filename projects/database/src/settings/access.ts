@@ -59,7 +59,7 @@ export interface AccessRole {
 /**
  * The dashboard access rule that decides for a member: their own rule in `permissions.users` first, else the rule of
  * their highest role that has one in `permissions.roles`, by position, and of two roles at the same position the one
- * with the higher ID, as Discord orders them. A rule decides on its own: an `allow` lets in a member without
+ * with the lower ID, the older one, as Discord orders them. A rule decides on its own: an `allow` lets in a member without
  * `Manage Server`, a `deny` keeps out an administrator.
  *
  * The owner of the server is not a matter of rules: whoever calls this lets them in first.
@@ -84,7 +84,7 @@ export function resolveAccess(subject: AccessSubject, entries: AccessEntries, gu
 	let highest: AccessRole | null = null;
 	for (const role of guildRoles) {
 		if (!held.has(role.id) || !ruled.has(role.id)) continue;
-		if (highest === null || role.position > highest.position || (role.position === highest.position && BigInt(role.id) > BigInt(highest.id))) {
+		if (highest === null || role.position > highest.position || (role.position === highest.position && BigInt(role.id) < BigInt(highest.id))) {
 			highest = role;
 		}
 	}

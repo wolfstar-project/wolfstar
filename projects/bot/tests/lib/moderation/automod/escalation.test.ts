@@ -75,6 +75,12 @@ describe('auto-moderation escalation', () => {
 		test('GIVEN a rule without an escalation THEN its hard action never changes', () => {
 			expect(resolveAutoModerationRulePunishment({ ...rule, escalation: [] }, 5)).toEqual({ action: 'Warning', duration: null });
 		});
+
+		test('GIVEN a rule whose hard action is None THEN the steps it kept are not taken', () => {
+			const none = { ...rule, hardAction: 'None' } as const;
+			expect(resolveAutoModerationRulePunishment(none, 0)).toEqual({ action: 'None', duration: null });
+			expect(resolveAutoModerationRulePunishment(none, 3)).toEqual({ action: 'None', duration: null });
+		});
 	});
 
 	describe('normalizeAutoModerationRuleEscalation', () => {

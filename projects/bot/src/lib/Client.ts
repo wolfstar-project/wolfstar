@@ -14,6 +14,7 @@ import { GatewayIntentBits } from 'discord-api-types/v10';
 import { parseInternationalizationOptions } from '#lib/i18n/options';
 import { WorkerManager } from '#lib/moderation/workers/WorkerManager';
 import { bindShardClient, createShardClient } from '#lib/sharder/client';
+import { startWorkerMessageRelay } from '#lib/sharder/workers';
 import { forwardsDispatches, isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
 
@@ -139,6 +140,8 @@ export async function loadAll() {
 	await container.redis.connect();
 	logger.debug('[Startup] Redis connected');
 	await ensureBrokerGroup();
+	// With the broker on, what a process changes reaches the workers too, which are no shards:
+	await startWorkerMessageRelay();
 	await container.workers.start();
 	logger.debug('[Startup] The word filter threads started');
 
