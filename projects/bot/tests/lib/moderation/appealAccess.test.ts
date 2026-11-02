@@ -15,12 +15,15 @@ describe('who reviews the appeals', () => {
 		({ appealsManagerRoles, rolesModerator, rolesAdmin }) as never;
 	const fetchMember = vi.fn();
 	const fetchGuild = vi.fn();
+	const cachedGuild = vi.fn();
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(readSettings).mockResolvedValue(settings([]));
 		fetchGuild.mockResolvedValue({ id: guildId, ownerId });
-		Object.assign(container, { gatewayClient: { members: { fetch: fetchMember }, guilds: { fetch: fetchGuild } } });
+		cachedGuild.mockResolvedValue({ id: guildId, ownerId });
+		const guilds = { fetch: fetchGuild, cache: { get: cachedGuild }, resolveKey: (id: string) => id };
+		Object.assign(container, { gatewayClient: { members: { fetch: fetchMember }, guilds } });
 	});
 
 	test('GIVEN no moderator nor administrator roles THEN Ban Members, Manage Server or Administrator reviews, and a plain member does not', () => {
@@ -61,6 +64,24 @@ describe('who reviews the appeals', () => {
 		expect(fetchPermissions).toHaveBeenCalledOnce();
 	});
 
+	test('GIVEN a manager role on the dashboard THEN it decides, even when the permissions cannot be read', async () => {
+		vi.mocked(readSettings).mockResolvedValue(settings(['1']));
+		const fetchPermissions = vi.fn().mockRejectedValue(new Error('Missing Access'));
+		fetchMember.mockResolvedValue({ roleIds: ['1'], fetchPermissions });
+
+		expect(await hasAppealAccess(guildId, userId)).toBe(true);
+		expect(fetchPermissions).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN moderator and administrator roles on the dashboard THEN the permissions are not read', async () => {
+		vi.mocked(readSettings).mockResolvedValue(settings([], ['2'], ['3']));
+		const fetchPermissions = vi.fn().mockResolvedValue({ bitField: PermissionFlagsBits.Administrator });
+		fetchMember.mockResolvedValue({ roleIds: ['1'], fetchPermissions });
+
+		expect(await hasAppealAccess(guildId, userId)).toBe(false);
+		expect(fetchPermissions).not.toHaveBeenCalled();
+	});
+
 	test('GIVEN an interaction THEN the member Discord sent decides, and no member is fetched', async () => {
 		const member = (permissions: bigint, roles: string[] = []) => ({ user: { id: userId }, roles, permissions: String(permissions) });
 
@@ -70,5 +91,17 @@ describe('who reviews the appeals', () => {
 		vi.mocked(readSettings).mockResolvedValue(settings(['1']));
 		expect(await hasAppealAccessFrom({ guildId, member: member(0n, ['1']) })).toBe(true);
 		expect(fetchMember).not.toHaveBeenCalled();
+		expect(fetchGuild).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN an interaction THEN the owner is read from the cache, and a guild that is not cached makes no request', async () => {
+		const owner = { user: { id: ownerId }, roles: [], permissions: '0' };
+		expect(await hasAppealAccessFrom({ guildId, member: owner })).toBe(true);
+
+		cachedGuild.mockResolvedValue(null);
+		expect(await hasAppealAccessFrom({ guildId, member: owner })).toBe(false);
+		cachedGuild.mockRejectedValue(new Error('Redis is down'));
+		expect(await hasAppealAccessFrom({ guildId, member: owner })).toBe(false);
+		expect(fetchGuild).not.toHaveBeenCalled();
 	});
 });

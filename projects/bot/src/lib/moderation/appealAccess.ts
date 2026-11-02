@@ -47,25 +47,35 @@ export function isAppealManager(reviewer: AppealReviewer, settings: AppealManage
  * Whether a user reviews the appeals of a guild, for what has no interaction: the requests of the dashboard. A guild
  * with no moderator role does not leave it open to everybody, as the `moderator` level does.
  *
+ * @remarks
+ *
+ * The owner and the roles decide first, so a manager is not turned away when the permissions cannot be read. Those are
+ * read only when a level has no role of its own, with every role of the member, since the cache may lack the one that
+ * gives them `Ban Members`.
+ *
  * @returns Whether they do, `false` for who is not a member.
  */
 export async function hasAppealAccess(guildId: Snowflake, userId: Snowflake) {
 	const member = await container.gatewayClient.members.fetch(guildId, userId).catch(() => null);
 	if (member === null) return false;
 
-	// Every role of the member is read, the cache may lack the one that gives them `Ban Members`:
+	const guild = await container.gatewayClient.guilds.fetch(guildId).catch(() => null);
+	const settings = await readSettings(guildId);
+	const ownerId = guild?.ownerId ?? null;
+	if (isAppealManager({ userId, roleIds: member.roleIds, permissions: 0n }, settings, ownerId)) return true;
+	if (settings.rolesModerator.length > 0 && settings.rolesAdmin.length > 0) return false;
+
 	const permissions = await member.fetchPermissions().catch(() => null);
 	if (permissions === null) return false;
-
-	const guild = await container.gatewayClient.guilds.fetch(guildId).catch(() => null);
-	const reviewer = { userId, roleIds: member.roleIds, permissions: permissions.bitField };
-	return isAppealManager(reviewer, await readSettings(guildId), guild?.ownerId ?? null);
+	return isAppealManager({ userId, roleIds: member.roleIds, permissions: permissions.bitField }, settings, ownerId);
 }
 
 /**
  * Whether the author of an interaction reviews the appeals of its guild, see {@linkcode isAppealManager}. It reads the
- * member and the permissions Discord sent with it, so nothing is fetched before the interaction is answered: `/appeal`
- * and the buttons of an appeal, which a manager role has to reach as the command has no default member permissions.
+ * member and the permissions Discord sent with it, and the owner from the cache, so no request to Discord is made
+ * before the interaction is answered: `/appeal` and the buttons of an appeal, which a manager role has to reach as the
+ * command has no default member permissions. A guild that is not cached leaves the owner unknown, which loses them
+ * nothing: Discord gives the owner every permission.
  *
  * @param interaction - The interaction, with its member.
  */
@@ -74,7 +84,21 @@ export async function hasAppealAccessFrom(interaction: {
 	member: { user: { id: Snowflake }; roles: readonly Snowflake[]; permissions: string };
 }) {
 	const { guildId, member } = interaction;
-	const guild = await container.gatewayClient.guilds.fetch(guildId).catch(() => null);
 	const reviewer = { userId: member.user.id, roleIds: member.roles, permissions: BigInt(member.permissions) };
-	return isAppealManager(reviewer, await readSettings(guildId), guild?.ownerId ?? null);
+	return isAppealManager(reviewer, await readSettings(guildId), await readCachedOwnerId(guildId));
+}
+
+/**
+ * The owner of a guild, from the cache alone.
+ *
+ * @returns The ID of the owner, `null` when the guild is not cached or the cache cannot be read.
+ */
+async function readCachedOwnerId(guildId: Snowflake): Promise<Snowflake | null> {
+	const { guilds } = container.gatewayClient;
+	try {
+		const guild = await guilds.cache.get(guilds.resolveKey(guildId));
+		return guild?.ownerId ?? null;
+	} catch {
+		return null;
+	}
 }
