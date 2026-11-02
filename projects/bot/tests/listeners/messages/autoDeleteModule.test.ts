@@ -33,7 +33,6 @@ const message = {
 	channelId,
 	system: false,
 	content: 'Hello',
-	webhookId: null,
 	author: { id: '266624760782258186', bot: false },
 	attachments: [],
 	embeds: []

@@ -1,3 +1,4 @@
+import { isWebhookMessage } from '#common';
 import { Events } from '#lib/types';
 import { describeMessage } from '#utils/debug';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
@@ -7,11 +8,11 @@ import type { Message } from '@wolfstar/plugin-gateway';
 export class UserListener extends EventGatewayListener<'messageCreate'> {
 	public run(message: Message) {
 		this.container.logger.debug(
-			`[Messages] ${describeMessage(message)}: webhook ${message.webhookId !== null}, system ${message.system}, bot ${message.author.bot}`
+			`[Messages] ${describeMessage(message)}: webhook ${isWebhookMessage(message)}, system ${message.system}, bot ${message.author.bot}`
 		);
 
 		// If the message was sent by a webhook, return:
-		if (message.webhookId !== null) return;
+		if (isWebhookMessage(message)) return;
 
 		// If the message was sent by the system, return:
 		if (message.system) return;

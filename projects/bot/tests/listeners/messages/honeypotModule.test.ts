@@ -28,7 +28,6 @@ function createMessage(overrides: { channelId?: string } = {}) {
 		channelId,
 		system: false,
 		content: 'Free nitro',
-		webhookId: null,
 		author: { id: '266624760782258186', bot: false },
 		...overrides
 	} as unknown as Message;

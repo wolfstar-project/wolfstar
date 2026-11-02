@@ -1,4 +1,4 @@
-import { resolveOnErrorCodes } from '#common';
+import { isWebhookMessage, resolveOnErrorCodes } from '#common';
 import { readSettings } from '#lib/database';
 import { shouldAutoDelete } from '#lib/moderation/cleanup/filters';
 import { readAutoDeletes } from '#lib/moderation/cleanup/store';
@@ -38,7 +38,7 @@ export class UserListener extends EventGatewayListener<'messageCreate'> {
 		const subject = {
 			content: message.content,
 			// A webhook is not a member either, so it goes with the bots:
-			author: { id: message.author.id, bot: message.author.bot || message.webhookId !== null },
+			author: { id: message.author.id, bot: message.author.bot || isWebhookMessage(message) },
 			attachments: message.attachments,
 			embeds: message.embeds
 		};
