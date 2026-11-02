@@ -2,11 +2,13 @@ import { readSettings, writeSettings } from '#lib/database';
 import {
 	getMissingHoneypotLogPermissions,
 	getMissingHoneypotPermissions,
+	readHoneypotNotice,
 	refreshHoneypotNotice,
 	removeHoneypotNotice,
 	withHoneypotLock
 } from '#lib/moderation/honeypot/channel';
 import { HoneypotRoot } from '#lib/moderation/honeypot/commands';
+import { planHoneypotNoticeReconcile } from '#lib/moderation/honeypot/dashboard';
 import type { Translator } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -15,9 +17,11 @@ import type { GuildData, ReadonlyGuildData } from 'wolfstar-database';
 const Root = HoneypotRoot;
 
 /**
- * The settings of the honeypot, which {@linkcode writeHoneypotSettings} writes.
+ * The settings of the honeypot, which {@linkcode writeHoneypotSettings} writes, and the switch of its module, which
+ * sends a warning that waited for it.
  */
 export const HoneypotSettingKeys = [
+	'modulesHoneypot',
 	'honeypotChannel',
 	'honeypotLogChannel',
 	'honeypotAction',
@@ -81,15 +85,22 @@ export async function writeHoneypotSettings(
 		const written = await readSettings(guildId);
 
 		const notes: string[] = [];
+		const refresh = async (channelId: Snowflake) => {
+			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: written.honeypotWarning, action: written.honeypotAction });
+			if (!noticed) notes.push(t(`${Root}:setupNoticeFailed`));
+		};
+
 		// The channel is read after the write, which is the one the honeypot has now:
 		if (written.honeypotChannel === null) {
 			if (changed('honeypotChannel')) await removeHoneypotNotice(guildId);
 		} else if (changed('honeypotChannel') || changed('honeypotWarning') || changed('honeypotAction')) {
-			const noticed = await refreshHoneypotNotice(guildId, written.honeypotChannel, {
-				warning: written.honeypotWarning,
-				action: written.honeypotAction
-			});
-			if (!noticed) notes.push(t(`${Root}:setupNoticeFailed`));
+			await refresh(written.honeypotChannel);
+		} else if (changed('modulesHoneypot') && written.modulesHoneypot) {
+			// The module comes back: a warning that waited for it is put in order, one that is right is not sent again.
+			const honeypot = { channelId: written.honeypotChannel, warning: written.honeypotWarning, action: written.honeypotAction };
+			const plan = planHoneypotNoticeReconcile(honeypot, await readHoneypotNotice(guildId));
+			if (plan === 'Remove') await removeHoneypotNotice(guildId);
+			else if (plan === 'Refresh') await refresh(written.honeypotChannel);
 		}
 
 		return { ok: true, notes };

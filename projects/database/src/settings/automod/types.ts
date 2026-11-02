@@ -276,7 +276,8 @@ export function normalizeAutoModerationRuleEscalation(value: unknown): AutoModer
 
 /**
  * The hard action a rule takes on a member, given how many it took on them lately: its own the first time, then the
- * steps of its escalation, the last of which is repeated.
+ * steps of its escalation, the last of which is repeated. A rule whose hard action is `None` takes none, whatever steps
+ * it kept from before: `None` is no step of an escalation.
  *
  * @param rule - The rule the member reached the threshold of.
  * @param strikes - How many hard actions the rule took on the member within its `escalationDuration`, before this one.
@@ -285,6 +286,7 @@ export function resolveAutoModerationRulePunishment(
 	rule: Pick<AutoModerationRule, 'hardAction' | 'hardActionDuration' | 'escalation'>,
 	strikes: number
 ): AutoModerationRuleEscalationStep {
+	if (rule.hardAction === 'None') return { action: 'None', duration: null };
 	if (strikes <= 0 || rule.escalation.length === 0) return { action: rule.hardAction, duration: rule.hardActionDuration };
 	return rule.escalation[Math.min(strikes, rule.escalation.length) - 1];
 }

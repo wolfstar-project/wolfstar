@@ -314,7 +314,7 @@ export interface CommandRuleSubject {
 	channelIds: readonly Snowflake[];
 
 	/**
-	 * The roles of the member, highest first (by position, then the higher ID), ending with the one of everybody, the
+	 * The roles of the member, highest first (by position, then the lower ID), ending with the one of everybody, the
 	 * ID of the guild: the highest role a rule names is the one that decides.
 	 */
 	roleIds: readonly Snowflake[];

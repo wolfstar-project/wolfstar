@@ -154,5 +154,20 @@ describe('commandsEnabled precondition', () => {
 			expect((await precondition.chatInputRun(use, moderationCommands.at(-1)!)).isOk()).toBe(true);
 			expect(fetchAll).toHaveBeenCalledOnce();
 		});
+
+		test('GIVEN two of their roles at the same position THEN the one with the lower ID decides, as Discord ranks it higher', async () => {
+			const older = { id: '541743369081192451', position: 5 };
+			const newer = { id: '637592502756704256', position: 5 };
+			cache.set(older.id, older).set(newer.id, newer);
+			mockRules({ allowedRoles: [newer.id], ignoredRoles: [older.id] });
+
+			for (const roles of [
+				[older.id, newer.id],
+				[newer.id, older.id]
+			]) {
+				const member = { guildId: guild.id, member: { user: { id: userId }, roles, permissions: '0' }, channel: { id: '2' } } as never;
+				expect((await precondition.chatInputRun(member, moderationCommands.at(-1)!)).isErr()).toBe(true);
+			}
+		});
 	});
 });

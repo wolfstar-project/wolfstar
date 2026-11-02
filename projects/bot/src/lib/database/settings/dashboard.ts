@@ -1,5 +1,6 @@
 import { dispatchShardMessage, onShardMessage, type ShardMessageType } from '#lib/sharder/messages';
 import { Events } from '#lib/types/Enums';
+import { isWorker } from '#utils/worker';
 import { container } from '@wolfstar/http-framework';
 import { shardIdForGuild } from '@wolfstar/plugin-sharder';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -51,9 +52,12 @@ const DerivedCacheMessages = [
 
 /**
  * Whether the events of a guild reach this process: it is the only process, or it connects the gateway shard of the
- * guild.
+ * guild. A worker of the broker is never one: the gateway is told every write of the dashboard and acts on it, the
+ * workers only drop what they cached.
  */
 export function isOwnGuild(guildId: Snowflake): boolean {
+	if (isWorker()) return false;
+
 	const shard = container.shard ?? null;
 	return shard === null || shard.shards.includes(shardIdForGuild(guildId, shard.shardCount));
 }

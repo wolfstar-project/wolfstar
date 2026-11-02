@@ -57,21 +57,29 @@ async function readAppealForms(t: TFunction<AnyNamespace>, guildId: Snowflake) {
 }
 
 /**
- * What the forms of a guild depend on for a user, see `getAppealFormAccess`.
+ * The roles of a user in a guild, which the forms require or restrict, `null` when they are not a member: a banned one
+ * is not. It may ask Discord, so a submission reads it before it takes its lock.
  */
-async function readAppealContext(guild: Guild, userId: Snowflake, settings: ReadonlyGuildData) {
+async function readAppealRoles(guild: Guild, userId: Snowflake) {
+	// Only an unknown member is not one: anything else passing for it would let a restricted role through.
+	const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
+	return member?.roleIds ?? null;
+}
+
+/**
+ * What the forms of a guild depend on for a user, see `getAppealFormAccess`: what the database has, and the roles read
+ * with {@linkcode readAppealRoles}.
+ */
+async function readAppealContext(guild: Guild, userId: Snowflake, settings: ReadonlyGuildData, roles: readonly Snowflake[] | null) {
 	const moderation = await getModeration(guild);
 	const entries = await moderation.fetch({ userId });
 	const appeals = await fetchUserAppeals(container.prisma, guild.id, userId);
-	// Only an unknown member is not one: anything else passing for it would let a restricted role through.
-	const member = await resolveOnErrorCodes(container.gatewayClient.members.fetch(guild.id, userId), RESTJSONErrorCodes.UnknownMember);
 
 	return {
 		settings,
 		appeals,
 		now: Date.now(),
-		// A user who is not a member has no roles to read, a banned one is not:
-		roles: member?.roleIds ?? null,
+		roles,
 		cases: findAppealableCases(entries.values(), userId, settings)
 	};
 }
@@ -83,7 +91,7 @@ async function readAppealContext(guild: Guild, userId: Snowflake, settings: Read
 export async function getAppealPage(guild: Guild, userId: Snowflake) {
 	const settings = await readSettings(guild.id);
 	const t = await fetchGuildT(guild);
-	const context = await readAppealContext(guild, userId, settings);
+	const context = await readAppealContext(guild, userId, settings, await readAppealRoles(guild, userId));
 
 	const page = {
 		guild: { id: guild.id, name: guild.name, icon: guild.iconURL({ size: 128, extension: 'png' }) },
@@ -185,11 +193,13 @@ export async function submitAppeal(
 	if (form === undefined || form === null) return { error: 'notFound' };
 
 	// What it reads decides whether it can write, so two submissions of a user wait for each other: `appeals.max-active`
-	// would let both through.
+	// would let both through. The roles come from Discord, which may be slow, so they are read first: what the lock holds
+	// is the database alone, well within the time it is held.
+	const roles = await readAppealRoles(guild, userId);
 	const created = await withSharedLock<{ error: AppealSubmitError } | { appeal: Appeal; entry: ModerationManager.Entry }>(
 		`appeals:${guild.id}:${userId}`,
 		async () => {
-			const access = getAppealFormAccess({ ...(await readAppealContext(guild, userId, settings)), form });
+			const access = getAppealFormAccess({ ...(await readAppealContext(guild, userId, settings, roles)), form });
 			if (!access.open) {
 				container.logger.debug(`[Appeals] ${userId} of ${guild.id} could not use the form ${formId}: ${access.lock}`);
 				return { error: 'locked' };

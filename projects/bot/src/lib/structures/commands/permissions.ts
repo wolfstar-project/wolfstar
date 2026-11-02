@@ -1,10 +1,11 @@
 import { readSettings, readSettingsPermissionNodes } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { createFunctionPrecondition } from '@wolfstar/decorators';
+import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
-import { hasAccessEntries, resolveAccess, type AccessRole } from 'wolfstar-database';
+import { isAccessEntry, resolveAccess, type AccessRole, type PermissionsNode } from 'wolfstar-database';
 
 /**
  * The permission levels a command can require.
@@ -93,12 +94,9 @@ export async function canManageServerSettings(manager: ServerSettingsManager): P
 
 	const settings = await readSettings(manager.guildId);
 	const entries = { users: settings.permissionsUsers, roles: settings.permissionsRoles };
-	// The roles of the guild are only read when a rule of a role could decide:
-	const roles: AccessRole[] = hasAccessEntries(entries.roles)
-		? (await container.gatewayClient.roles.fetchAll(manager.guildId)).map((role) => ({ id: role.id, position: role.position }))
-		: [];
 	// Everybody holds `@everyone`, whose ID is the guild's: a rule or an administrator role can name it.
 	const roleIds = [manager.guildId, ...manager.roleIds];
+	const roles = await readRuledRolePositions(manager.guildId, roleIds, entries.roles);
 	const access = resolveAccess({ userId: manager.userId, roleIds }, entries, roles);
 	if (access !== null) return access === 'allow';
 
@@ -109,6 +107,27 @@ export async function canManageServerSettings(manager: ServerSettingsManager): P
 	const command = container.stores.get('commands').get('settings');
 	if (command === undefined) return true;
 	return (await readSettingsPermissionNodes(settings).run({ id: manager.userId, roleIds: manager.roleIds }, command)) ?? true;
+}
+
+/**
+ * The positions of the roles of a member that a dashboard access rule names, which `resolveAccess` ranks. It runs
+ * before a click of the settings is answered, and Discord waits three seconds for that, so a request is the last
+ * resort: no role or one has no order to find, and the positions come from the cache; only a role it lacks fetches
+ * the roles of the guild.
+ *
+ * @param guildId - The guild.
+ * @param roleIds - The roles the member holds, `@everyone` included.
+ * @param entries - The `permissions.roles` column.
+ */
+async function readRuledRolePositions(guildId: Snowflake, roleIds: readonly Snowflake[], entries: readonly PermissionsNode[]): Promise<AccessRole[]> {
+	const ruled = new Set(entries.filter(isAccessEntry).map((entry) => entry.id));
+	const held = roleIds.filter((id) => ruled.has(id));
+	if (held.length < 2) return held.map((id) => ({ id, position: 0 }));
+
+	const { roles } = container.gatewayClient;
+	const cached = await Promise.all(held.map((id) => roles.cache.get(roles.resolveKey(guildId, id))));
+	const known = cached.every((role) => !isNullish(role)) ? cached : (await roles.fetchAll(guildId)).filter((role) => held.includes(role.id));
+	return known.map((role) => ({ id: role.id, position: role.position }));
 }
 
 /**

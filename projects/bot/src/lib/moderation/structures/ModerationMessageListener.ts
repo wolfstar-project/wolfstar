@@ -126,6 +126,13 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		points: number,
 		maximum: number
 	) {
+		// `None` takes no hard action, so the member is not counted, and the steps of an escalation the rule kept wait for
+		// another action to be picked:
+		if (rule.hardAction === 'None') {
+			this.debug(message, `the rule ${rule.id} takes no hard action`);
+			return;
+		}
+
 		// A member who keeps reaching the threshold moves up the escalation of the rule:
 		const strikes = await addAutoModerationRuleStrike(rule, message.author.id);
 		const { action, duration } = resolveAutoModerationRulePunishment(rule, strikes);

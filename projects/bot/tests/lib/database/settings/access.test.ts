@@ -22,12 +22,13 @@ describe('resolveAccess', () => {
 		expect(resolve([], ruled, [lower.id])).toBe('allow');
 	});
 
-	test('GIVEN two ruled roles at the same position THEN the one with the higher ID decides', () => {
+	test('GIVEN two ruled roles at the same position THEN the one with the lower ID decides, as Discord ranks it higher', () => {
 		const older = { id: '541743369081192451', position: 5 };
 		const newer = { id: '637592502756704256', position: 5 };
 		const ruled = [createAccessEntry(newer.id, 'allow'), createAccessEntry(older.id, 'deny')];
 
-		expect(resolve([], ruled, [older.id, newer.id], [older, newer])).toBe('allow');
+		expect(resolve([], ruled, [older.id, newer.id], [older, newer])).toBe('deny');
+		expect(resolve([], ruled, [newer.id, older.id], [newer, older])).toBe('deny');
 	});
 
 	test('GIVEN no rule that names the member or one of their roles THEN nothing is decided', () => {

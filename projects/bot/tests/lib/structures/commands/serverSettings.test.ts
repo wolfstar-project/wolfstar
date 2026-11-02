@@ -42,10 +42,17 @@ function manager(overrides: { userId?: string; roleIds?: string[]; manageGuild?:
 describe('canManageServerSettings', () => {
 	// The tests have no gateway: the owner of the guild and its roles come from a stand-in client.
 	const gatewayClient = container.gatewayClient;
+	// The roles the cache holds, none unless a test puts some: a miss fetches the roles of the guild.
+	const cache = new Map<string, unknown>();
 	beforeEach(() => {
+		cache.clear();
 		container.gatewayClient = {
 			guilds: { fetch: vi.fn().mockResolvedValue({ id: guildId, ownerId }) },
-			roles: { fetchAll: vi.fn().mockResolvedValue([higher, lower]) }
+			roles: {
+				cache: { get: async (key: string) => cache.get(key) },
+				resolveKey: (_: string, id: string) => id,
+				fetchAll: vi.fn().mockResolvedValue([higher, lower])
+			}
 		} as never;
 	});
 
@@ -93,6 +100,18 @@ describe('canManageServerSettings', () => {
 
 		await expect(canManageServerSettings(manager())).resolves.toBe(false);
 		await expect(canManageServerSettings(manager({ roleIds: [lower.id] }))).resolves.toBe(true);
+	});
+
+	test('GIVEN the ruled roles of the member in the cache, or only one of them THEN Discord is not asked', async () => {
+		cache.set(higher.id, higher).set(lower.id, lower);
+		mockSettings({ roles: [createAccessEntry(lower.id, 'allow'), createAccessEntry(higher.id, 'deny')] });
+		await expect(canManageServerSettings(manager())).resolves.toBe(false);
+
+		cache.clear();
+		mockSettings({ roles: [createAccessEntry(lower.id, 'allow')] });
+		await expect(canManageServerSettings(manager())).resolves.toBe(true);
+
+		expect(container.gatewayClient.roles.fetchAll).not.toHaveBeenCalled();
 	});
 
 	test('GIVEN no rule THEN an administrator may, unless a legacy node denies them the settings command', async () => {
