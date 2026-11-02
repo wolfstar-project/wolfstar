@@ -1,3 +1,4 @@
+import { isWebhookMessage } from '#common';
 import { readSettings } from '#lib/database';
 import type { GuildTextBasedChannel } from '#lib/moderation/managers';
 import { fetchGuildT } from '#lib/moderation/common';
@@ -24,7 +25,7 @@ export class UserListener extends EventGatewayListener<'messageUpdate'> {
 
 		const oldContent = cachedMessage?.content;
 		const currentContent = message.content ?? '';
-		if ((cachedMessage && cachedMessage.content === currentContent) || message.webhookId !== null) return;
+		if ((cachedMessage && cachedMessage.content === currentContent) || isWebhookMessage(message)) return;
 
 		const key: GuildDataKey = isNsfwChannel(channel) ? 'logsMessageUpdateNsfw' : 'logsMessageUpdate';
 		const settings = await readSettings(guild);

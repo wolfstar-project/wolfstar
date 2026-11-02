@@ -1,4 +1,4 @@
-import { isGuildMessage } from '#common';
+import { isGuildMessage, isWebhookMessage } from '#common';
 import { readSettings } from '#lib/database';
 import { catchHoneypotMessage } from '#lib/moderation/honeypot/catch';
 import { describeMessage } from '#utils/debug';
@@ -18,7 +18,7 @@ import type { Message } from '@wolfstar/plugin-gateway';
 export class UserListener extends EventGatewayListener<'messageCreate'> {
 	public async run(message: Message) {
 		const { guildId } = message;
-		if (guildId === null || message.system || message.webhookId !== null || message.author.bot) return;
+		if (guildId === null || message.system || isWebhookMessage(message) || message.author.bot) return;
 
 		const settings = await readSettings(guildId);
 		this.container.logger.debug(`[Honeypot] ${describeMessage(message)}: the honeypot of the guild is in ${settings.honeypotChannel}`);
