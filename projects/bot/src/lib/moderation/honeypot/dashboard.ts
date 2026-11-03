@@ -134,21 +134,21 @@ export async function reconcileHoneypotNotices(): Promise<void> {
 		channels.push(honeypot);
 		byGuild.set(honeypot.guildId, channels);
 	}
-	const trackedByGuild = new Map<string, HoneypotNotice[]>();
+	const trackedByGuild = new Map<string, Map<string, HoneypotNotice>>();
 	for (const [key, notice] of notices) {
 		const guildId = key.split(':')[0];
-		const tracked = trackedByGuild.get(guildId) ?? [];
-		tracked.push(notice);
+		const tracked = trackedByGuild.get(guildId) ?? new Map<string, HoneypotNotice>();
+		tracked.set(key, notice);
 		trackedByGuild.set(guildId, tracked);
 	}
 	for (const guildId of new Set([...byGuild.keys(), ...trackedByGuild.keys()])) {
 		if (!isOwnGuild(guildId)) continue;
 		const channels = byGuild.get(guildId) ?? [];
-		const tracked = trackedByGuild.get(guildId) ?? [];
+		const tracked = trackedByGuild.get(guildId) ?? new Map<string, HoneypotNotice>();
+		const expected = new Map(channels.map((channel) => [channel.primary ? guildId : `${guildId}:${channel.channelId}`, channel]));
 		const needsReconcile =
-			channels.some(
-				(channel) => planHoneypotNoticeReconcile(channel, tracked.find((notice) => notice.channelId === channel.channelId) ?? null) !== 'Keep'
-			) || tracked.some((notice) => !channels.some((channel) => channel.channelId === notice.channelId));
+			[...expected].some(([key, channel]) => planHoneypotNoticeReconcile(channel, tracked.get(key) ?? null) !== 'Keep') ||
+			[...tracked.keys()].some((key) => !expected.has(key));
 		if (!needsReconcile || !(await isGuildJoined(guildId))) continue;
 		try {
 			// Recheck every warning under the guild lock; correct primary warnings stay in place.

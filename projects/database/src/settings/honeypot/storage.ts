@@ -60,6 +60,8 @@ export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> 
  * A honeypot that is set up, with what its warning depends on.
  */
 export interface HoneypotChannel {
+	/** Selects the legacy guild key for the primary trap, or the guild:channel key for an additional trap. */
+	primary: boolean;
 	guildId: Snowflake;
 	channelId: Snowflake;
 	warning: boolean;
@@ -74,6 +76,7 @@ export async function fetchHoneypotChannels(orm: Orm): Promise<HoneypotChannel[]
 	const rows = await orm.public.GuildHoneypot.all();
 	return rows.flatMap((row) =>
 		[...new Set([row.channelId, ...row.channels].filter((id): id is bigint => id !== null))].map((channelId) => ({
+			primary: channelId === row.channelId,
 			guildId: String(row.id),
 			channelId: String(channelId),
 			warning: row.warning,
