@@ -463,6 +463,7 @@ namespace public {
     displayMessage Boolean @default(true) @map("display_message")
     displayModerator Boolean @default(true) @map("display_moderator")
     lockdownChannels BigInt[] @default([]) @noCheck(elementNotNull) @map("lockdown_channels")
+    defaultWarnThresholds Boolean @default(true) @map("default_warn_thresholds")
     modules       Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
 
     @@control(external)

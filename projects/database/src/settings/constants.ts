@@ -90,6 +90,7 @@ export function getDefaultGuildSettings() {
 		moderationConfirmRecentMinutes: 0,
 		moderationDehoist: false,
 		moderationLockdownChannels: [],
+		moderationDefaultWarnThresholds: true,
 		messagesModerationDm: false,
 		messagesModerationReasonDisplay: true,
 		messagesModerationMessageDisplay: true,

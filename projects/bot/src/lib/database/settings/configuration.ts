@@ -277,6 +277,12 @@ export function getConfiguration() {
 			array: true,
 			maximum: 25
 		},
+		moderationDefaultWarnThresholds: {
+			type: 'boolean',
+			name: 'moderation.default-warn-thresholds',
+			description: 'settings:moderationDefaultWarnThresholds',
+			default: true
+		},
 		messagesModerationDm: {
 			type: 'boolean',
 			name: 'moderation.direct-message',

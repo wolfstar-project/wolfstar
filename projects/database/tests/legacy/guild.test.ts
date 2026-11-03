@@ -74,6 +74,10 @@ describe('convertLegacyGuild', () => {
 		expect(convertLegacyGuild(createLegacyGuild()).GuildModeration[0]).toMatchObject({ track_bans: false });
 	});
 
+	test('GIVEN a legacy guild THEN the default thresholds of warnings stay off for it', () => {
+		expect(convertLegacyGuild(createLegacyGuild()).GuildModeration[0]).toMatchObject({ default_warn_thresholds: false });
+	});
+
 	test('GIVEN the channels ignored by the edits and the deletions THEN only the ones both ignore stay, so no log goes silent', () => {
 		const rows = convertLegacyGuild(
 			createLegacyGuild({ 'channels.ignore.message-edit': [Channel, Other], 'channels.ignore.message-delete': [Channel] })

@@ -2153,6 +2153,8 @@ declare module "i18next" {
         limit: "The server already has {{maximum}} thresholds, the most it can have.";
         listEmpty: "The server has no thresholds of warnings. Add one with `/warn-thresholds add`.";
         listTitle: "Thresholds of warnings ({{count}}/{{maximum}}):";
+        listDefaultsTitle: "The server has no thresholds of warnings of its own, so the default ones apply:";
+        listDefaultsFooter: "-# Add one with `/warn-thresholds add` to replace them, or turn `moderation.default-warn-thresholds` off in `/settings server` to have none.";
       };
       errors: {
         channelNotReadable: "I am sorry, but I need the permissions **{{VIEW_CHANNEL, permissions}}** and **{{READ_MESSAGE_HISTORY, permissions}}**";
@@ -3171,6 +3173,7 @@ declare module "i18next" {
         moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
         moderationConfirmRecentMinutes: "When a member already has a case made within these minutes, I ask the moderator to confirm before taking another action on them, so two moderators acting on one message do not punish twice. 0 never asks.";
         moderationLockdownChannels: "The channels `/lockdown channels:configured` locks down and unlocks together, up to 25: the ones a raid writes in, and not the ones the staff and the bots work in. A deleted channel leaves the list.";
+        moderationDefaultWarnThresholds: "Whether the default thresholds of warnings apply while the server has none of its own: 3 warnings mute for 30 minutes (a timeout when there is no muted role), 5 kick and 7 ban. The ones you add with `/warn-thresholds add` replace them.";
         moderationDehoist: "Whether I should clean the names of the members when they join or change them, with a nickname: what lists a name above the others (spaces and `!`, `.`, `-` and the like at its start) is taken away, and the strange characters (fancy fonts, zalgo, symbols, emojis, other scripts) are turned into plain letters. The accents are kept. A sticky nickname and the members who can manage nicknames are left alone.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
@@ -3273,6 +3276,7 @@ declare module "i18next" {
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
           moderationDehoist: "Dehoist Names";
           moderationLockdownChannels: "Lockdown Channels";
+          moderationDefaultWarnThresholds: "Default Warn Thresholds";
           messagesModerationDm: "Direct Message the Members";
           messagesModerationReasonDisplay: "Show the Reason";
           messagesModerationMessageDisplay: "Answer in the Channel";
