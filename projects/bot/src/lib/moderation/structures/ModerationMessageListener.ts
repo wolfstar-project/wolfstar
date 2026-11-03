@@ -13,6 +13,7 @@ import { Events } from '#lib/types/Enums';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise, resolveGuild } from '#common';
 import { minutes, seconds } from 'wolfstar-shared';
+import { claimOnce, releaseClaim } from '#utils/claims';
 import { describeMessage } from '#utils/debug';
 import { deleteMessage, getModeration, isModerator } from '#utils/functions';
 import type { createLogMessage } from '#utils/functions';
@@ -23,6 +24,12 @@ import { canSendMessages, isTextBasedChannel } from '@wolfstar/http-framework-ut
 import type { Message } from '@wolfstar/plugin-gateway';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import { resolveAutoModerationRulePunishment, type AutoModerationRule, type AutoModerationRuleType } from 'wolfstar-database';
+
+/**
+ * How long an alert is on the screen, and how long a member who infringes the same rule in the same channel is not told
+ * again.
+ */
+const AlertCooldownSeconds = 60;
 
 /**
  * The base of the listeners that run the auto-moderation rules of a type on the messages the members send
@@ -308,14 +315,33 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 	/**
 	 * Sends the alert of a rule to the channel of a message, which is deleted a minute later.
 	 *
+	 * @remarks
+	 *
+	 * A member who keeps sending what the rule does not allow is told once for as long as the alert is on the screen,
+	 * the same minute: the bot answering every message with the same line is spam of its own. Their messages are still
+	 * deleted, logged and counted.
+	 *
 	 * @param message - The message that infringed the rule.
 	 * @param t - The translation function of the guild.
 	 * @param key - The key of the alert, which takes the mention of the author as `user`.
+	 * @returns The alert, `null` when it was not sent.
 	 */
-	protected sendAlert(message: GuildMessage, t: TFunction<AnyNamespace>, key: ModerationMessageListener.AlertKey) {
+	protected async sendAlert(message: GuildMessage, t: TFunction<AnyNamespace>, key: ModerationMessageListener.AlertKey) {
+		const claim = `automod-alert:${message.guildId}:${message.channelId}:${message.author.id}:${key}`;
+		if (!(await claimOnce(claim, AlertCooldownSeconds))) {
+			this.debug(message, `alert ${key} left out, the author was told less than ${AlertCooldownSeconds} seconds ago`);
+			return null;
+		}
+
 		// The alerts also take the emojis every translation gets by default, which the typed options do not know about:
 		const content = (t as unknown as (key: string, options: Record<string, unknown>) => string)(key, { user: message.author.toString() });
-		return this.sendTemporaryMessage(message, content);
+		try {
+			return await this.sendTemporaryMessage(message, content, seconds(AlertCooldownSeconds));
+		} catch (error) {
+			// An alert that could not be sent does not keep the next one out:
+			await releaseClaim(claim);
+			throw error;
+		}
 	}
 
 	protected abstract preProcess(message: GuildMessage, rule: AutoModerationRule<Type>): Promise<T | null> | T | null;
