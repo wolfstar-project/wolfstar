@@ -191,7 +191,13 @@ export const Columns = {
 		messagesModerationDm: ['directMessage', 'value'],
 		messagesModerationReasonDisplay: ['displayReason', 'value'],
 		messagesModerationMessageDisplay: ['displayMessage', 'value'],
-		messagesModeratorNameDisplay: ['displayModerator', 'value']
+		messagesModeratorNameDisplay: ['displayModerator', 'value'],
+		messagesResponseBan: ['responseBan', 'value'],
+		messagesResponseUnban: ['responseUnban', 'value'],
+		messagesResponseSoftban: ['responseSoftban', 'value'],
+		messagesResponseKick: ['responseKick', 'value'],
+		messagesResponseMute: ['responseMute', 'value'],
+		messagesResponseUnmute: ['responseUnmute', 'value']
 	}),
 	...columns('GuildAppeals', {
 		appealsEnabled: ['enabled', 'value'],

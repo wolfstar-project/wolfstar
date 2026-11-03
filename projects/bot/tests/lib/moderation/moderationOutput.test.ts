@@ -43,6 +43,26 @@ describe('moderation output', () => {
 		expect(answer.description).not.toContain('Undelivered');
 	});
 
+	test('GIVEN a custom response THEN it takes the place of the sentence, and the case and the reason stay under it', () => {
+		const answer = embed(renderModerationOutput(t, { id: 12, tag: 'user#0', reason: 'spam', response: '**user#0 was banned**' }));
+		const lines = answer.description!.split('\n');
+
+		expect(lines[0]).toBe('**user#0 was banned**');
+		expect(lines[1]).toContain('commands/moderation:moderationOutputCase');
+		expect(lines[1]).toContain('"range":12');
+		expect(lines[2]).toContain('commands/moderation:moderationOutputReason');
+		expect(answer.description).not.toContain('moderationOutputWithReason');
+		expect(answer.color).toBe(Colors.Green);
+	});
+
+	test('GIVEN a custom response and no reason to show THEN only the case stays under it', () => {
+		const answer = embed(renderModerationOutput(t, { id: 12, tag: 'user#0', reason: null, response: 'gone', undelivered: true }));
+		const lines = answer.description!.split('\n');
+
+		expect(lines).toHaveLength(3);
+		expect(lines[2]).toContain('moderationOutputUndelivered');
+	});
+
 	test('GIVEN a failure THEN it is a small red embed with the reason', () => {
 		const answer = renderModerationFailure('Failed to moderate user');
 

@@ -1434,6 +1434,9 @@ declare module "i18next" {
         moderationOutputWithReason_one: "{{GREENTICK}} Case {{range}} created for {{users, list(conjunction)}}.\n**Reason:** {{reason}}";
         moderationOutputWithReason_other: "{{GREENTICK}} Cases {{range}} created for {{users, list(conjunction)}}.\n**Reason:** {{reason}}";
         moderationOutputUndelivered: "I could not send them a direct message, they may have them closed.";
+        moderationOutputCase: "-# Case {{range}}";
+        moderationOutputReason: "**Reason:** {{reason}}";
+        moderationOutputPermanent: "permanent";
         moderationFailed_one: "{{REDCROSS}} Failed to moderate user:\n{{users}}";
         moderationFailed_other: "{{REDCROSS}} Failed to moderate users:\n{{users}}";
         moderationDmFooter: "To stop receiving these messages, use `/settings user`.";
@@ -3149,6 +3152,12 @@ declare module "i18next" {
         messagesModerationMessageDisplay: "Whether or not a response should be sent for moderation commands.";
         messagesModerationReasonDisplay: "Whether the reason will be displayed in moderation commands.";
         messagesModeratorNameDisplay: "Whether or not I should display the name of the moderator who took the action when sending the target user a moderation message. Requires `messages.moderation-dm` to be enabled.";
+        messagesResponseBan: "What I answer in the channel when a member is banned with `/ban add`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was banned for {reason}`. The case number and the reason stay under it.";
+        messagesResponseUnban: "What I answer in the channel when a member is unbanned with `/ban remove`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was unbanned for {reason}`. The case number and the reason stay under it.";
+        messagesResponseSoftban: "What I answer in the channel when a member is softbanned with `/softban`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was softbanned for {reason}`. The case number and the reason stay under it.";
+        messagesResponseKick: "What I answer in the channel when a member is kicked with `/kick`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was kicked for {reason}`. The case number and the reason stay under it.";
+        messagesResponseMute: "What I answer in the channel when a member is muted with `/mute add`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was muted for {reason}`. The case number and the reason stay under it.";
+        messagesResponseUnmute: "What I answer in the channel when a member is unmuted with `/mute remove`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was unmuted for {reason}`. The case number and the reason stay under it.";
         rolesAdmin: "The administrator roles. Administrators have access to all moderation and management commands. Defaults to anyone with the {{MANAGE_GUILD, permissions}} permission.";
         rolesInitial: "The initial role, if configured, I will give it to users as soon as they join.";
         rolesInitialHumans: "If configured, I will give this role to regular users upon joining. (not bots)";
@@ -3298,6 +3307,12 @@ declare module "i18next" {
           messagesModerationReasonDisplay: "Show the Reason";
           messagesModerationMessageDisplay: "Answer in the Channel";
           messagesModeratorNameDisplay: "Show the Moderator";
+          messagesResponseBan: "Ban Response";
+          messagesResponseUnban: "Unban Response";
+          messagesResponseSoftban: "Softban Response";
+          messagesResponseKick: "Kick Response";
+          messagesResponseMute: "Mute Response";
+          messagesResponseUnmute: "Unmute Response";
           permissionsUsers: "User Permissions";
           permissionsRoles: "Role Permissions";
           reportsChannel: "Reports Channel";
