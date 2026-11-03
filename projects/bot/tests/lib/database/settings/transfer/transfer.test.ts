@@ -167,6 +167,12 @@ describe('configuration file', () => {
 				'moderation.display-reason',
 				'moderation.display-message',
 				'moderation.display-moderator',
+				'moderation.response-ban',
+				'moderation.response-unban',
+				'moderation.response-softban',
+				'moderation.response-kick',
+				'moderation.response-mute',
+				'moderation.response-unmute',
 				'reports.anonymous',
 				'reports.notify',
 				'roles.remove-initial'

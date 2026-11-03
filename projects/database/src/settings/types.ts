@@ -140,3 +140,8 @@ declare global {
 		type AppealAnswers = import('./appeals/types.js').AppealAnswer[];
 	}
 }
+
+/**
+ * The most characters a custom response of a moderation command (`moderation.response-*`) has.
+ */
+export const MaximumModerationResponseLength = 200;
