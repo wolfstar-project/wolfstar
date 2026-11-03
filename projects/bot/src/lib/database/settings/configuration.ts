@@ -270,6 +270,12 @@ export function getConfiguration() {
 			name: 'moderation.dehoist',
 			description: 'settings:moderationDehoist'
 		},
+		moderationDefaultWarnThresholds: {
+			type: 'boolean',
+			name: 'moderation.default-warn-thresholds',
+			description: 'settings:moderationDefaultWarnThresholds',
+			default: true
+		},
 		messagesModerationDm: {
 			type: 'boolean',
 			name: 'moderation.direct-message',
