@@ -26,7 +26,13 @@ const AutoModerationRuleLogKey = 'automodRule';
  */
 export async function getMissingAutoModerationLogPermissions(guildId: Snowflake, channelId: Snowflake): Promise<string[] | null> {
 	const { gatewayClient } = container;
-	const channel = await resolveOnErrorCodes(gatewayClient.channels.fetch(channelId), RESTJSONErrorCodes.UnknownChannel);
+	// A channel the bot cannot see is refused as one that is not there, with the usual answer instead of an error:
+	const channel = await resolveOnErrorCodes(
+		gatewayClient.channels.fetch(channelId),
+		RESTJSONErrorCodes.UnknownChannel,
+		RESTJSONErrorCodes.MissingAccess,
+		RESTJSONErrorCodes.MissingPermissions
+	);
 	if (channel === null || !isTextBasedChannel(channel) || isDMChannel(channel) || channel.guildId !== guildId) return null;
 
 	const required = {
