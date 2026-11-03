@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.GuildModeration.lockdown_channels",
+		"label": "Add the channels a lockdown locks together",
+		"summary": "Adds column \"lockdown_channels\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"lockdown_channels\" int8[] NOT NULL DEFAULT '{}'::int8[]",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"lockdown_channels\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'lockdown_channels') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

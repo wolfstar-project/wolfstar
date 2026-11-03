@@ -169,7 +169,10 @@ export function convertLegacyGuild(row: LegacyRow): LegacyGuildRows {
 				direct_message: row['messages.moderation-dm'] === true,
 				display_reason: row['messages.moderation-reason-display'] !== false,
 				display_message: row['messages.moderation-message-display'] !== false,
-				display_moderator: row['messages.moderator-name-display'] !== false
+				display_moderator: row['messages.moderator-name-display'] !== false,
+				// A server that was there keeps the behaviour it had: no threshold until it adds one. The column's default
+				// is for the servers that come after, and the legacy rows are inserted after the migration set it.
+				default_warn_thresholds: false
 			}
 		],
 		GuildPermissions: [{ id, users: row['permissions.users'] ?? [], roles: row['permissions.roles'] ?? [] }],

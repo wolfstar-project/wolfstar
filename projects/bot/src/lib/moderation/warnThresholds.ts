@@ -1,10 +1,11 @@
+import { readSettings } from '#lib/database';
 import { GuildCache } from '#utils/guildCache';
 import { ModerationActions } from '#lib/moderation/actions';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
-import { seconds } from 'wolfstar-shared';
+import { minutes, seconds } from 'wolfstar-shared';
 import { container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -25,10 +26,47 @@ export class WarnThresholdLimitError extends Error {
 }
 
 /**
- * Reads the thresholds of warnings of a guild, from the cache after the first time.
+ * Reads the thresholds of warnings a guild set, from the cache after the first time.
  */
-export function readWarnThresholds(guildId: Snowflake): Promise<readonly WarnThreshold[]> {
+function readWarnThresholds(guildId: Snowflake): Promise<readonly WarnThreshold[]> {
 	return cache.read(guildId);
+}
+
+/**
+ * The thresholds every server starts with, while it has none of its own and `moderation.default-warn-thresholds` is
+ * on: a mute of half an hour at the third warning, a kick at the fifth and a ban at the seventh. A server with no muted
+ * role gets a timeout instead of the mute, since a mute needs the role and the bot would not set one up on its own.
+ *
+ * @param mutedRoleId - The muted role of the server, `null` when it has none.
+ */
+export function getDefaultWarnThresholds(mutedRoleId: Snowflake | null): readonly WarnThreshold[] {
+	return [
+		{ count: 3, period: 0, action: mutedRoleId === null ? 'Timeout' : 'Mute', duration: minutes(30) },
+		{ count: 5, period: 0, action: 'Kick', duration: null },
+		{ count: 7, period: 0, action: 'Ban', duration: null }
+	];
+}
+
+/**
+ * The thresholds a guild is held to: its own, or the default ones while it has none and wants them, see
+ * {@linkcode getDefaultWarnThresholds}. The moment a server adds one of its own, its list is the whole list.
+ */
+export interface ResolvedWarnThresholds {
+	readonly thresholds: readonly WarnThreshold[];
+	/** Whether they are the default ones. */
+	readonly defaults: boolean;
+}
+
+/**
+ * Reads the thresholds a guild is held to, see {@linkcode ResolvedWarnThresholds}.
+ */
+export async function resolveWarnThresholds(guildId: Snowflake): Promise<ResolvedWarnThresholds> {
+	const own = await readWarnThresholds(guildId);
+	if (own.length > 0) return { thresholds: own, defaults: false };
+
+	const settings = await readSettings(guildId);
+	if (!settings.moderationDefaultWarnThresholds) return { thresholds: own, defaults: false };
+	return { thresholds: getDefaultWarnThresholds(settings.rolesMuted), defaults: true };
 }
 
 // The thresholds are cached by every shard process, so a change in one of them makes the copies of the others stale.

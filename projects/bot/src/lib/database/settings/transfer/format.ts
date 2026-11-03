@@ -73,8 +73,8 @@ export function findPortableKey(name: string): SchemaKey | null {
 export const RemovedSettings: ReadonlySet<string> = new Set(['appeals.questions', 'modules.commands']);
 
 /**
- * The fields of a rule of the file. What names something of the server (`ignoredRoles`, `ignoredChannels`) and what is
- * of the database (`id`, `guildId`) are not in it.
+ * The fields of a rule of the file. What names something of the server (`ignoredRoles`, `ignoredChannels`,
+ * `logChannelId`) and what is of the database (`id`, `guildId`) are not in it.
  */
 export const ConfigurationRuleFields = [
 	'name',
@@ -87,7 +87,8 @@ export const ConfigurationRuleFields = [
 	'thresholdDuration',
 	'options',
 	'escalation',
-	'escalationDuration'
+	'escalationDuration',
+	'response'
 ] as const satisfies readonly (keyof AutoModerationRuleData)[];
 
 /**
@@ -124,7 +125,8 @@ export function toConfigurationRule(rule: Pick<AutoModerationRule, (typeof Confi
 		thresholdDuration: rule.thresholdDuration,
 		options: rule.options,
 		escalation: rule.escalation,
-		escalationDuration: rule.escalationDuration
+		escalationDuration: rule.escalationDuration,
+		response: rule.response
 	};
 }
 

@@ -39,6 +39,24 @@ describe('auto-moderation rules', () => {
 	});
 
 	describe('patch', () => {
+		test('GIVEN a response and a log channel THEN they are read, and an empty response is none', () => {
+			expect(parseAutoModerationRulePatch('Words', { response: ' {user}, no. ', logChannelId: '254360814063058944' }).data).toEqual({
+				response: '{user}, no.',
+				logChannelId: '254360814063058944'
+			});
+			expect(parseAutoModerationRulePatch('Words', { response: '  ', logChannelId: null }).data).toEqual({
+				response: null,
+				logChannelId: null
+			});
+		});
+
+		test('GIVEN a response too long, or a log channel that is no ID THEN they are refused', () => {
+			expect(parseAutoModerationRulePatch('Words', { response: 'x'.repeat(201) }).errors).toEqual([
+				'response: Expected null or a string of at most 200 characters.'
+			]);
+			expect(parseAutoModerationRulePatch('Words', { logChannelId: 'general' }).errors).toEqual(['logChannelId: Expected null or an ID.']);
+		});
+
 		test('GIVEN a body that is not an object THEN it is refused', () => {
 			expect(parseAutoModerationRulePatch('Links', null).errors).toEqual(['Invalid body.']);
 			expect(parseAutoModerationRulePatch('Links', 'text').errors).toEqual(['Invalid body.']);

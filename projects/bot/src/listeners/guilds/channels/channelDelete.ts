@@ -1,15 +1,17 @@
 import { readSettings, writeSettings } from '#lib/database';
+import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { announceJoinGuardChange } from '#lib/moderation/joinguard/store';
 import { getLogPrefix } from '#utils/functions';
 import { readCommandRestrictions, removeFromCommandRestrictions, writeCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
 import { isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
-import { clearJoinGuardRuleAlertChannel } from 'wolfstar-database';
+import { clearJoinGuardRuleAlertChannel, type AutoModerationRule } from 'wolfstar-database';
 
 /**
- * Takes a channel that was deleted out of what the server restricted its commands to: a command that was only allowed
- * in that channel would otherwise run nowhere.
+ * Takes a channel that was deleted out of what the server restricted its commands to (a command that was only allowed
+ * in that channel would otherwise run nowhere), out of the join guard, out of the lockdown channels and out of the
+ * auto-moderation rules.
  */
 @RegisterAsDispatchListener('channelDelete')
 export class UserListener extends EventGatewayListener<'channelDelete'> {
@@ -19,6 +21,63 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 		const channel = deleted as GuildBasedChannel;
 		await this.#forgetCommandRestrictions(channel);
 		await this.#forgetJoinGuardChannel(channel);
+		await this.#forgetLockdownChannel(channel);
+		await this.#forgetAutoModerationChannel(channel);
+	}
+
+	/**
+	 * The lockdown channels forget it: `/lockdown channels:configured` would report it as unknown every time.
+	 */
+	async #forgetLockdownChannel(channel: GuildBasedChannel) {
+		const { guildId, id } = channel;
+		try {
+			const settings = await readSettings(guildId);
+			if (!settings.moderationLockdownChannels.includes(id)) return;
+
+			await writeSettings(
+				guildId,
+				(current) => ({ moderationLockdownChannels: current.moderationLockdownChannels.filter((channelId) => channelId !== id) }),
+				this.container.gatewayClient.user!.id
+			);
+		} catch (error) {
+			this.container.logger.error(
+				`${getLogPrefix(this)} Could not remove the deleted channel ${id} from the lockdown channels of ${guildId}:`,
+				error
+			);
+		}
+	}
+
+	/**
+	 * The rules that log in the channel, or that exempted it, forget it: a log would be lost, and an exemption of a
+	 * channel that is gone is noise.
+	 */
+	async #forgetAutoModerationChannel(channel: GuildBasedChannel) {
+		const { guildId, id } = channel;
+		let rules: readonly AutoModerationRule[];
+		try {
+			rules = await readAutoModerationRules(guildId);
+		} catch (error) {
+			this.container.logger.error(`${getLogPrefix(this)} Could not read the auto-moderation rules of ${guildId}:`, error);
+			return;
+		}
+
+		// A rule that fails (deleted meanwhile, a database error) does not keep the others pointing at the channel:
+		for (const rule of rules) {
+			if (rule.logChannelId !== id && !rule.ignoredChannels.includes(id)) continue;
+			try {
+				await updateAutoModerationRule(guildId, rule.id, (current) => ({
+					...(current.logChannelId === id ? { logChannelId: null } : {}),
+					...(current.ignoredChannels.includes(id)
+						? { ignoredChannels: current.ignoredChannels.filter((channelId) => channelId !== id) }
+						: {})
+				}));
+			} catch (error) {
+				this.container.logger.error(
+					`${getLogPrefix(this)} Could not remove the deleted channel ${id} from the rule ${rule.id} of ${guildId}:`,
+					error
+				);
+			}
+		}
 	}
 
 	async #forgetCommandRestrictions(channel: GuildBasedChannel) {

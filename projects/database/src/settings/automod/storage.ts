@@ -28,16 +28,19 @@ function toRule(row: Pick<Row, keyof AutoModerationRuleData | 'id' | 'guildId'>)
 		ignoredChannels: row.ignoredChannels.map(String),
 		options: normalizeAutoModerationRuleOptions(row.type, row.options),
 		escalation: normalizeAutoModerationRuleEscalation(row.escalation),
-		escalationDuration: row.escalationDuration
+		escalationDuration: row.escalationDuration,
+		response: row.response,
+		logChannelId: row.logChannelId === null ? null : String(row.logChannelId)
 	} satisfies AutoModerationRule;
 }
 
 function toColumns(data: Partial<AutoModerationRuleData>) {
-	const { ignoredRoles, ignoredChannels, ...rest } = data;
+	const { ignoredRoles, ignoredChannels, logChannelId, ...rest } = data;
 	return {
 		...rest,
 		...(ignoredRoles === undefined ? {} : { ignoredRoles: ignoredRoles.map((id) => BigInt(id)) }),
-		...(ignoredChannels === undefined ? {} : { ignoredChannels: ignoredChannels.map((id) => BigInt(id)) })
+		...(ignoredChannels === undefined ? {} : { ignoredChannels: ignoredChannels.map((id) => BigInt(id)) }),
+		...(logChannelId === undefined ? {} : { logChannelId: logChannelId === null ? null : BigInt(logChannelId) })
 	};
 }
 
@@ -67,12 +70,7 @@ export async function createAutoModerationRule(
 	const id = BigInt(guildId);
 	return db.transaction(async (tx) => {
 		await tx.orm.public.Guild.upsert({ create: { id, language }, update: { id } });
-		const row = await tx.orm.public.GuildAutoModerationRule.create({
-			...data,
-			guildId: id,
-			ignoredRoles: data.ignoredRoles.map((role) => BigInt(role)),
-			ignoredChannels: data.ignoredChannels.map((channel) => BigInt(channel))
-		});
+		const row = await tx.orm.public.GuildAutoModerationRule.create({ ...data, ...toColumns(data), guildId: id });
 		return toRule(row);
 	});
 }
@@ -151,12 +149,7 @@ export async function writeAutoModerationRulePlan(
 
 	const created: AutoModerationRule[] = [];
 	for (const data of plan.create) {
-		const row = await rules.create({
-			...data,
-			guildId: id,
-			ignoredRoles: data.ignoredRoles.map((role) => BigInt(role)),
-			ignoredChannels: data.ignoredChannels.map((channel) => BigInt(channel))
-		});
+		const row = await rules.create({ ...data, ...toColumns(data), guildId: id });
 		created.push(toRule(row));
 	}
 

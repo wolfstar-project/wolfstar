@@ -1,5 +1,6 @@
 import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
 import { GuildMessageChannelTypes } from '#utils/channelTypes';
+import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelTypes';
 import {
 	AutoModerationRoot,
 	AutoModerationRuleTypeKeys,
@@ -54,6 +55,7 @@ import {
 	AutoModerationRuleTypes,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
+	MaximumAutoModerationRuleResponseLength,
 	MaximumAutoModerationRules,
 	type AutoModerationRule,
 	type AutoModerationRuleType
@@ -103,7 +105,7 @@ const MaximumListLength = 1500;
  */
 function getSectionEmoji(section: AutoModerationMenuSection): EmojiComponent {
 	if (section === 'response') return getEmojiComponent('ModuleAutomod');
-	return { name: section === 'options' ? '📝' : '📜' };
+	return { name: section === 'options' ? '📝' : section === 'exempt' ? '📜' : '🧩' };
 }
 
 export interface AutoModerationMenuContext {
@@ -275,6 +277,9 @@ export function renderAutoModerationRule(
 		case 'exempt':
 			body.push(...renderExemptions(context, rule, id));
 			break;
+		case 'extra':
+			body.push(...renderExtra(context, rule, id));
+			break;
 	}
 
 	body.push(
@@ -322,7 +327,8 @@ export function renderAutoModerationRule(
 const SectionKeys = {
 	options: `${Root}:menuSectionOptions`,
 	response: `${Root}:menuSectionResponse`,
-	exempt: `${Root}:menuSectionExempt`
+	exempt: `${Root}:menuSectionExempt`,
+	extra: `${Root}:menuSectionExtra`
 } as const satisfies Record<AutoModerationMenuSection, TranslationKey>;
 
 type IdFactory = (verb: AutoModerationMenuVerb, argument?: string) => string;
@@ -445,6 +451,43 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 		)
 	);
 	return body;
+}
+
+/**
+ * The additional options of a rule, as Dyno calls them: what its alert says instead of the line of its type, and where
+ * its logs go instead of the moderation channel.
+ */
+function renderExtra({ t }: AutoModerationMenuContext, rule: AutoModerationRule, id: IdFactory): APIComponentInContainer[] {
+	return [
+		block(
+			`**${translateKey(t, `${Root}:menuCustomResponse`)}**\n${renderCustomResponse(t, rule)}\n-# ${translateKey(t, `${Root}:menuCustomResponseDescription`)}`,
+			button(id('edit', 'response'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '💬' })
+		),
+		text(
+			`**${translateKey(t, `${Root}:menuLogChannel`)}**\n${rule.logChannelId === null ? translateKey(t, `${Root}:menuLogChannelDefault`) : channelMention(rule.logChannelId)}\n-# ${translateKey(t, `${Root}:menuLogChannelDescription`)}`
+		),
+		row([
+			{
+				type: ComponentType.ChannelSelect,
+				// Where a log can go: a text or an announcement channel, or a thread of one.
+				channel_types: getSchemaChannelTypes('guildLogChannel'),
+				custom_id: id('logChannel'),
+				placeholder: cutText(translateKey(t, `${Root}:menuLogChannelPlaceholder`), 150),
+				min_values: 0,
+				max_values: 1,
+				default_values: rule.logChannelId === null ? [] : [{ id: rule.logChannelId, type: SelectMenuDefaultValueType.Channel }]
+			}
+		])
+	];
+}
+
+/**
+ * The custom response of a rule, as it was written, or that there is none. It is shown in a code block, so what it
+ * holds is read as it was typed and pings nobody.
+ */
+function renderCustomResponse(t: TFunction, rule: AutoModerationRule): string {
+	if (rule.response === null) return translateKey(t, `${Root}:menuCustomResponseNone`);
+	return codeBlock(cutText(rule.response, MaximumAutoModerationRuleResponseLength));
 }
 
 /**
@@ -606,6 +649,16 @@ export function renderAutoModerationModal(
 					placeholder: '1d 12h',
 					required: false,
 					max_length: 30
+				})
+			]);
+		case 'response':
+			return modal(`${Root}:menuCustomResponse`, [
+				input(AutoModerationMenuInputId, translateKey(t, `${Root}:menuCustomResponseLabel`), {
+					style: TextInputStyle.Paragraph,
+					value: rule.response ?? '',
+					placeholder: '{user}, that is not allowed here.',
+					required: false,
+					max_length: MaximumAutoModerationRuleResponseLength
 				})
 			]);
 		case 'escalation':

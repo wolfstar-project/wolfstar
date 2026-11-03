@@ -12,8 +12,9 @@ export const AutoModerationMenuHandlerName = 'automod';
  * - `options`: what the rule looks for, its list or its numbers.
  * - `response`: what it does to a message and to its author.
  * - `exempt`: the roles and the channels it leaves alone.
+ * - `extra`: what it says in its alert, and where its logs go.
  */
-export const AutoModerationMenuSections = ['options', 'response', 'exempt'] as const;
+export const AutoModerationMenuSections = ['options', 'response', 'exempt', 'extra'] as const;
 export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[number];
 
 /**
@@ -29,10 +30,12 @@ export type AutoModerationMenuSection = (typeof AutoModerationMenuSections)[numb
  * - `section`: the section select menu, the section is its selected value.
  * - `toggle`: flips what the argument names: `enabled`, a soft action (`delete`, `alert`, `log`), `alerts` or `perChannel`.
  * - `punishment`: the punishment select menu.
- * - `edit`: opens a modal: `name`, `add` and `remove` (the list), `numbers`, `duration`, `threshold` or `escalation`.
+ * - `edit`: opens a modal: `name`, `add` and `remove` (the list), `numbers`, `duration`, `threshold`, `escalation` or
+ *   `response`.
  * - `submit`: the modal `edit` opened, with the same argument.
  * - `clear`: empties the list of the rule.
  * - `roles` and `channels`: the select menus of the exemptions, the argument is the mark of the list they showed.
+ * - `logChannel`: the select menu of the log channel of the rule, none for the moderation channel.
  * - `delete`: asks whether to delete the rule, and `confirm` deletes it.
  */
 export const AutoModerationMenuVerbs = [
@@ -49,6 +52,7 @@ export const AutoModerationMenuVerbs = [
 	'clear',
 	'roles',
 	'channels',
+	'logChannel',
 	'delete',
 	'confirm'
 ] as const;

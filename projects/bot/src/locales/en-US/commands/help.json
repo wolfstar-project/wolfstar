@@ -85,8 +85,14 @@
 	},
 	"/lockdown": {
 		"extendedHelp": "Locks a channel, a thread or the whole server for a role, `@everyone` unless you choose one, so it cannot write there (nor create threads, nor connect to a voice channel), and unlocks it. Unlocking gives the role back the permissions it had in the channel before.\nA lockdown can last a `duration`, from 30 seconds to a month, and lift itself when it ends, even after I restart.",
-		"examples": ["action:lock", "action:lock channel:#general duration:10m", "action:unlock channel:#general", "action:lock global:true"],
-		"reminder": "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel."
+		"examples": [
+			"action:lock",
+			"action:lock channel:#general duration:10m",
+			"action:unlock channel:#general",
+			"action:lock channels:configured duration:10m",
+			"action:lock global:true"
+		],
+		"reminder": "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel. With `channels:configured`, the channels of `moderation.lockdown-channels` are locked, or unlocked, together."
 	},
 	"/mute": {
 		"extendedHelp": "Mutes a member: they lose their roles and get the muted role, which keeps them from writing in the channels and from joining the voice channels, and they get their roles back when they are unmuted. A mute can last a `duration` and be lifted by itself when it ends, and the muted role is given back when they leave and join the server again.\n`create` prepares the mute system: it creates the muted role, or uses the one you give, and sets it up in every channel.",

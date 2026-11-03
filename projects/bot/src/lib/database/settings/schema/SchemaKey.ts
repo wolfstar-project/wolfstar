@@ -19,6 +19,7 @@ export type SchemaKeyType =
 	| 'guildLogChannel'
 	| 'guildVoiceChannel'
 	| 'guildCategoryChannel'
+	| 'lockdownChannel'
 	| 'command'
 	| 'commandMatch'
 	| 'emoji'

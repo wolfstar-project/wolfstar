@@ -486,8 +486,10 @@
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"ignoredChannels": { "many": true, "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"ignoredRoles": { "many": true, "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"logChannelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"name": { "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
 							"options": { "nullable": false, "type": { "codecId": "typed/json@1", "kind": "scalar" } },
+							"response": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
 							"softAction": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
 							"thresholdDuration": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
 							"thresholdMaximum": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
@@ -515,8 +517,10 @@
 								"id": { "column": "id" },
 								"ignoredChannels": { "column": "ignored_channels" },
 								"ignoredRoles": { "column": "ignored_roles" },
+								"logChannelId": { "column": "log_channel_id" },
 								"name": { "column": "name" },
 								"options": { "column": "options" },
+								"response": { "column": "response" },
 								"softAction": { "column": "soft_action" },
 								"thresholdDuration": { "column": "threshold_duration" },
 								"thresholdMaximum": { "column": "threshold_maximum" },
@@ -849,18 +853,14 @@
 						"fields": {
 							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"confirmRecentMinutes": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"defaultWarnThresholds": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"dehoist": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"directMessage": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"displayMessage": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"displayModerator": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"displayReason": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"responseBan": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
-							"responseKick": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
-							"responseMute": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
-							"responseSoftban": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
-							"responseUnban": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
-							"responseUnmute": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"lockdownChannels": { "many": true, "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"trackBans": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"trackKicks": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
 							"trackRoles": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
@@ -878,18 +878,14 @@
 							"fields": {
 								"channelId": { "column": "channel_id" },
 								"confirmRecentMinutes": { "column": "confirm_recent_minutes" },
+								"defaultWarnThresholds": { "column": "default_warn_thresholds" },
 								"dehoist": { "column": "dehoist" },
 								"directMessage": { "column": "direct_message" },
 								"displayMessage": { "column": "display_message" },
 								"displayModerator": { "column": "display_moderator" },
 								"displayReason": { "column": "display_reason" },
 								"id": { "column": "id" },
-								"responseBan": { "column": "response_ban" },
-								"responseKick": { "column": "response_kick" },
-								"responseMute": { "column": "response_mute" },
-								"responseSoftban": { "column": "response_softban" },
-								"responseUnban": { "column": "response_unban" },
-								"responseUnmute": { "column": "response_unmute" },
+								"lockdownChannels": { "column": "lockdown_channels" },
 								"trackBans": { "column": "track_bans" },
 								"trackKicks": { "column": "track_kicks" },
 								"trackRoles": { "column": "track_roles" },
@@ -2297,6 +2293,7 @@
 									"noCheck": ["elementNotNull"],
 									"nullable": false
 								},
+								"log_channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
 								"name": { "codecId": "pg/text@1", "nativeType": "text", "nullable": false },
 								"options": {
 									"codecId": "typed/json@1",
@@ -2305,6 +2302,7 @@
 									"nullable": false,
 									"typeRef": "AutoModerationRuleOptions"
 								},
+								"response": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
 								"soft_action": {
 									"codecId": "pg/int4@1",
 									"default": { "kind": "literal", "value": 0 },
@@ -2764,6 +2762,12 @@
 									"nativeType": "int4",
 									"nullable": false
 								},
+								"default_warn_thresholds": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
 								"dehoist": {
 									"codecId": "pg/bool@1",
 									"default": { "kind": "literal", "value": false },
@@ -2795,12 +2799,13 @@
 									"nullable": false
 								},
 								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"response_ban": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
-								"response_kick": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
-								"response_mute": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
-								"response_softban": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
-								"response_unban": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
-								"response_unmute": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
+								"lockdown_channels": {
+									"codecId": "pg/int8@1",
+									"default": { "kind": "literal", "value": [] },
+									"many": true,
+									"nativeType": "int8",
+									"nullable": false
+								},
 								"track_bans": {
 									"codecId": "pg/bool@1",
 									"default": { "kind": "literal", "value": false },
@@ -3709,7 +3714,7 @@
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "a74dd5a94643931c52c38b49e66ad56ea5b07040cb056bc2e1d63604e0807fc4",
+		"storageHash": "cdc02b1afa8004f51c20e82ead9f57e154a2a835bf2182e0a3e9e923f41dbf6a",
 		"types": {
 			"AppealAnswers": {
 				"codecId": "typed/json@1",

@@ -238,6 +238,10 @@ declare module "i18next" {
         optionsWholeChannelDescription: "Fast message spam: count the messages of everybody in the channel together";
         optionsWeightedName: "weighted";
         optionsWeightedDescription: "Mentions cooldown: count a role mention as two and @everyone as five";
+        optionsResponseName: "response";
+        optionsResponseDescription: "What the alert says, with {user}, {rule} and {channel}. Write none for the default line";
+        optionsLogChannelName: "log-channel";
+        optionsLogChannelDescription: "Where the logs of this rule go instead of the moderation channel";
         optionsValueName: "value";
         optionsValueDescription: "A word, the hostname of a link, an invite code or the ID of a server";
         optionsRoleName: "role";
@@ -320,6 +324,9 @@ declare module "i18next" {
         typeZalgoSummary: "Detects the messages with characters that carry too many marks.";
         editSuccess: "Successfully edited the rule **{{name}}**.";
         editNothing: "Nothing to change: give at least one option besides the rule.";
+        editResponseTooLong: "The response has at most {{maximum, number}} characters.";
+        editLogChannelUnknown: "I could not find that channel in this server.";
+        editLogChannelMissingPermissions: "I cannot post the logs in {{channel}}: I lack {{permissions}} there.";
         deleteSuccess: "Deleted the rule **{{name}}**.";
         errorLimit: "This server already has {{maximum, number}} rules, which is the most it can have. Delete one first.";
         errorNameTaken: "There is already a rule with that name in this server.";
@@ -358,6 +365,8 @@ declare module "i18next" {
         menuSectionResponseDescription: "What happens when a member triggers the rule";
         menuSectionExempt: "Roles and channels whitelist";
         menuSectionExemptDescription: "The roles and channels the rule leaves alone";
+        menuSectionExtra: "Additional options";
+        menuSectionExtraDescription: "What the alert says, and where the logs of the rule go";
         menuRuleDetails: "**ID:** {{id}} · **Type:** {{type}}";
         menuStatus: "Status";
         menuEnabled: "Enabled";
@@ -430,6 +439,14 @@ declare module "i18next" {
         menuEscalationInvalid: "`{{line}}` is not a step. Write a punishment ({{actions}}), then how long it lasts when it is temporary.";
         menuEscalationTooMany: "The escalation has at most {{maximum, number}} steps.";
         menuEscalationPeriodRequired: "Tell how long a punishment is remembered, for example `1d`.";
+        menuCustomResponse: "Custom response";
+        menuCustomResponseDescription: "What the alert says instead of the line of the rule type. {user}, {rule} and {channel} are replaced.";
+        menuCustomResponseNone: "None, the alert says the line of the rule type.";
+        menuCustomResponseLabel: "The response, empty for the default line";
+        menuLogChannel: "Log channel";
+        menuLogChannelDescription: "Where the logs of this rule go. Pick none for the moderation channel.";
+        menuLogChannelDefault: "The moderation channel.";
+        menuLogChannelPlaceholder: "Select a channel, or none";
         menuTimingDuration: "Punishment duration, empty for permanent";
         menuTimingThreshold: "Infractions before the punishment, 0 for one";
         menuTimingPeriod: "Period the infractions are counted in";
@@ -908,9 +925,10 @@ declare module "i18next" {
             "action:lock",
             "action:lock channel:#general duration:10m",
             "action:unlock channel:#general",
+            "action:lock channels:configured duration:10m",
             "action:lock global:true",
           ];
-          reminder: "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel.";
+          reminder: "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel. With `channels:configured`, the channels of `moderation.lockdown-channels` are locked, or unlocked, together.";
         };
         "/mute": {
           extendedHelp: "Mutes a member: they lose their roles and get the muted role, which keeps them from writing in the channels and from joining the voice channels, and they get their roles back when they are unmuted. A mute can last a `duration` and be lifted by itself when it ends, and the muted role is given back when they leave and join the server again.\n`create` prepares the mute system: it creates the muted role, or uses the one you give, and sets it up in every channel.";
@@ -1190,6 +1208,22 @@ declare module "i18next" {
         durationDescription: "How long the lockdown lasts, from 30 seconds to a month. Only applies when locking.";
         globalName: "global";
         globalDescription: "⚠ Whether to lock down the whole server instead of a channel.";
+        channelsName: "channels";
+        channelsDescription: "Which channels to lock down together: the ones of `moderation.lockdown-channels`.";
+        channelsConfigured: "configured";
+        configuredEmpty: "The server has no lockdown channels. Pick them in `moderation.lockdown-channels` of `/settings server`.";
+        configuredLocked_one: "Locked down {{count}} channel for {{role}}.";
+        configuredLocked_other: "Locked down {{count}} channels for {{role}}.";
+        configuredUnlocked_one: "Unlocked {{count}} channel for {{role}}.";
+        configuredUnlocked_other: "Unlocked {{count}} channels for {{role}}.";
+        configuredAlreadyLocked_one: "{{count}} channel was already locked down and was left as it was.";
+        configuredAlreadyLocked_other: "{{count}} channels were already locked down and were left as they were.";
+        configuredAlreadyUnlocked_one: "{{count}} channel was not locked down and was left as it was.";
+        configuredAlreadyUnlocked_other: "{{count}} channels were not locked down and were left as they were.";
+        configuredFailed: "These could not be changed:";
+        configuredFailedMore_one: "-# …and {{count}} more channel.";
+        configuredFailedMore_other: "-# …and {{count}} more channels.";
+        configuredWithOthers: "`channels:configured` locks down the configured channels on its own: leave `channel` and `global` out, or leave it out.";
         auditLogLockRequestedBy: "Locked down at the request of {{user}}";
         auditLogUnlockRequestedBy: "Unlocked at the request of {{user}}";
         guildLocked: "{{role}} is already locked down in the server.";
@@ -2139,6 +2173,8 @@ declare module "i18next" {
         limit: "The server already has {{maximum}} thresholds, the most it can have.";
         listEmpty: "The server has no thresholds of warnings. Add one with `/warn-thresholds add`.";
         listTitle: "Thresholds of warnings ({{count}}/{{maximum}}):";
+        listDefaultsTitle: "The server has no thresholds of warnings of its own, so the default ones apply:";
+        listDefaultsFooter: "-# Add one with `/warn-thresholds add` to replace them, or turn `moderation.default-warn-thresholds` off in `/settings server` to have none.";
       };
       errors: {
         channelNotReadable: "I am sorry, but I need the permissions **{{VIEW_CHANNEL, permissions}}** and **{{READ_MESSAGE_HISTORY, permissions}}**";
@@ -3162,6 +3198,8 @@ declare module "i18next" {
         moderationTrackRoles: "Whether I should record the muted and restriction roles given or taken away without using my commands. A muted role given by hand mutes the member as `/mute add` does: their other roles are taken away and kept, and they are given back when the role is taken away.";
         moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
         moderationConfirmRecentMinutes: "When a member already has a case made within these minutes, I ask the moderator to confirm before taking another action on them, so two moderators acting on one message do not punish twice. 0 never asks.";
+        moderationLockdownChannels: "The channels `/lockdown channels:configured` locks down and unlocks together, up to 25: the ones a raid writes in, and not the ones the staff and the bots work in. A deleted channel leaves the list.";
+        moderationDefaultWarnThresholds: "Whether the default thresholds of warnings apply while the server has none of its own: 3 warnings mute for 30 minutes (a timeout when there is no muted role), 5 kick and 7 ban. The ones you add with `/warn-thresholds add` replace them.";
         moderationDehoist: "Whether I should clean the names of the members when they join or change them, with a nickname: what lists a name above the others (spaces and `!`, `.`, `-` and the like at its start) is taken away, and the strange characters (fancy fonts, zalgo, symbols, emojis, other scripts) are turned into plain letters. The accents are kept. A sticky nickname and the members who can manage nicknames are left alone.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
@@ -3263,6 +3301,8 @@ declare module "i18next" {
           moderationTrackKicks: "Track Kicks";
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
           moderationDehoist: "Dehoist Names";
+          moderationLockdownChannels: "Lockdown Channels";
+          moderationDefaultWarnThresholds: "Default Warn Thresholds";
           messagesModerationDm: "Direct Message the Members";
           messagesModerationReasonDisplay: "Show the Reason";
           messagesModerationMessageDisplay: "Answer in the Channel";

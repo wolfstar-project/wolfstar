@@ -33,5 +33,7 @@
 	"notFound": "There is no action for {{count}} warnings.",
 	"limit": "The server already has {{maximum}} thresholds, the most it can have.",
 	"listEmpty": "The server has no thresholds of warnings. Add one with `/warn-thresholds add`.",
-	"listTitle": "Thresholds of warnings ({{count}}/{{maximum}}):"
+	"listTitle": "Thresholds of warnings ({{count}}/{{maximum}}):",
+	"listDefaultsTitle": "The server has no thresholds of warnings of its own, so the default ones apply:",
+	"listDefaultsFooter": "-# Add one with `/warn-thresholds add` to replace them, or turn `moderation.default-warn-thresholds` off in `/settings server` to have none."
 }

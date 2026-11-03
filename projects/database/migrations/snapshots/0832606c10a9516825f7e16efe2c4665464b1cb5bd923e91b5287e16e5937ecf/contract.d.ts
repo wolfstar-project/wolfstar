@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'a74dd5a94643931c52c38b49e66ad56ea5b07040cb056bc2e1d63604e0807fc4'>;
+export type StorageHash = StorageHashBase<'0832606c10a9516825f7e16efe2c4665464b1cb5bd923e91b5287e16e5937ecf'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -519,18 +519,13 @@ export type FieldOutputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly directMessage: CodecTypes['pg/bool@1']['output'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['output'];
 			readonly displayModerator: CodecTypes['pg/bool@1']['output'];
 			readonly displayReason: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly responseBan: CodecTypes['pg/text@1']['output'] | null;
-			readonly responseKick: CodecTypes['pg/text@1']['output'] | null;
-			readonly responseMute: CodecTypes['pg/text@1']['output'] | null;
-			readonly responseSoftban: CodecTypes['pg/text@1']['output'] | null;
-			readonly responseUnban: CodecTypes['pg/text@1']['output'] | null;
-			readonly responseUnmute: CodecTypes['pg/text@1']['output'] | null;
 			readonly trackBans: CodecTypes['pg/bool@1']['output'];
 			readonly trackKicks: CodecTypes['pg/bool@1']['output'];
 			readonly trackRoles: CodecTypes['pg/bool@1']['output'];
@@ -1002,18 +997,13 @@ export type FieldInputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['input'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly directMessage: CodecTypes['pg/bool@1']['input'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['input'];
 			readonly displayModerator: CodecTypes['pg/bool@1']['input'];
 			readonly displayReason: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly responseBan: CodecTypes['pg/text@1']['input'] | null;
-			readonly responseKick: CodecTypes['pg/text@1']['input'] | null;
-			readonly responseMute: CodecTypes['pg/text@1']['input'] | null;
-			readonly responseSoftban: CodecTypes['pg/text@1']['input'] | null;
-			readonly responseUnban: CodecTypes['pg/text@1']['input'] | null;
-			readonly responseUnmute: CodecTypes['pg/text@1']['input'] | null;
 			readonly trackBans: CodecTypes['pg/bool@1']['input'];
 			readonly trackKicks: CodecTypes['pg/bool@1']['input'];
 			readonly trackRoles: CodecTypes['pg/bool@1']['input'];
@@ -1485,18 +1475,13 @@ export type StorageColumnTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['output'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly direct_message: CodecTypes['pg/bool@1']['output'];
 			readonly display_message: CodecTypes['pg/bool@1']['output'];
 			readonly display_moderator: CodecTypes['pg/bool@1']['output'];
 			readonly display_reason: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly response_ban: CodecTypes['pg/text@1']['output'] | null;
-			readonly response_kick: CodecTypes['pg/text@1']['output'] | null;
-			readonly response_mute: CodecTypes['pg/text@1']['output'] | null;
-			readonly response_softban: CodecTypes['pg/text@1']['output'] | null;
-			readonly response_unban: CodecTypes['pg/text@1']['output'] | null;
-			readonly response_unmute: CodecTypes['pg/text@1']['output'] | null;
 			readonly track_bans: CodecTypes['pg/bool@1']['output'];
 			readonly track_kicks: CodecTypes['pg/bool@1']['output'];
 			readonly track_roles: CodecTypes['pg/bool@1']['output'];
@@ -1968,18 +1953,13 @@ export type StorageColumnInputTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['input'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly direct_message: CodecTypes['pg/bool@1']['input'];
 			readonly display_message: CodecTypes['pg/bool@1']['input'];
 			readonly display_moderator: CodecTypes['pg/bool@1']['input'];
 			readonly display_reason: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly response_ban: CodecTypes['pg/text@1']['input'] | null;
-			readonly response_kick: CodecTypes['pg/text@1']['input'] | null;
-			readonly response_mute: CodecTypes['pg/text@1']['input'] | null;
-			readonly response_softban: CodecTypes['pg/text@1']['input'] | null;
-			readonly response_unban: CodecTypes['pg/text@1']['input'] | null;
-			readonly response_unmute: CodecTypes['pg/text@1']['input'] | null;
 			readonly track_bans: CodecTypes['pg/bool@1']['input'];
 			readonly track_kicks: CodecTypes['pg/bool@1']['input'];
 			readonly track_roles: CodecTypes['pg/bool@1']['input'];
@@ -2489,18 +2469,13 @@ export namespace Models {
 	export type public_GuildModeration = {
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
 		confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+		defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 		dehoist: CodecTypes['pg/bool@1']['output'];
 		directMessage: CodecTypes['pg/bool@1']['output'];
 		displayMessage: CodecTypes['pg/bool@1']['output'];
 		displayModerator: CodecTypes['pg/bool@1']['output'];
 		displayReason: CodecTypes['pg/bool@1']['output'];
 		id: CodecTypes['pg/int8@1']['output'];
-		responseBan: CodecTypes['pg/text@1']['output'] | null;
-		responseKick: CodecTypes['pg/text@1']['output'] | null;
-		responseMute: CodecTypes['pg/text@1']['output'] | null;
-		responseSoftban: CodecTypes['pg/text@1']['output'] | null;
-		responseUnban: CodecTypes['pg/text@1']['output'] | null;
-		responseUnmute: CodecTypes['pg/text@1']['output'] | null;
 		trackBans: CodecTypes['pg/bool@1']['output'];
 		trackKicks: CodecTypes['pg/bool@1']['output'];
 		trackRoles: CodecTypes['pg/bool@1']['output'];
@@ -4740,6 +4715,15 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
 									};
 								};
+								readonly default_warn_thresholds: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
 								readonly dehoist: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
@@ -4789,36 +4773,6 @@ type ContractBase = Omit<
 									readonly nativeType: 'int8';
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: false;
-								};
-								readonly response_ban: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
-								readonly response_kick: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
-								readonly response_mute: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
-								readonly response_softban: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
-								readonly response_unban: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
-								readonly response_unmute: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
 								};
 								readonly track_bans: {
 									readonly nativeType: 'bool';
@@ -8137,6 +8091,10 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
 							};
+							readonly defaultWarnThresholds: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly dehoist: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -8160,30 +8118,6 @@ type ContractBase = Omit<
 							readonly id: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly responseBan: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
-							readonly responseKick: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
-							readonly responseMute: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
-							readonly responseSoftban: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
-							readonly responseUnban: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
-							readonly responseUnmute: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
 							};
 							readonly trackBans: {
 								readonly nullable: false;
@@ -8222,18 +8156,13 @@ type ContractBase = Omit<
 							readonly fields: {
 								readonly channelId: { readonly column: 'channel_id' };
 								readonly confirmRecentMinutes: { readonly column: 'confirm_recent_minutes' };
+								readonly defaultWarnThresholds: { readonly column: 'default_warn_thresholds' };
 								readonly dehoist: { readonly column: 'dehoist' };
 								readonly directMessage: { readonly column: 'direct_message' };
 								readonly displayMessage: { readonly column: 'display_message' };
 								readonly displayModerator: { readonly column: 'display_moderator' };
 								readonly displayReason: { readonly column: 'display_reason' };
 								readonly id: { readonly column: 'id' };
-								readonly responseBan: { readonly column: 'response_ban' };
-								readonly responseKick: { readonly column: 'response_kick' };
-								readonly responseMute: { readonly column: 'response_mute' };
-								readonly responseSoftban: { readonly column: 'response_softban' };
-								readonly responseUnban: { readonly column: 'response_unban' };
-								readonly responseUnmute: { readonly column: 'response_unmute' };
 								readonly trackBans: { readonly column: 'track_bans' };
 								readonly trackKicks: { readonly column: 'track_kicks' };
 								readonly trackRoles: { readonly column: 'track_roles' };
