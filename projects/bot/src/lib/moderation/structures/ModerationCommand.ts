@@ -530,7 +530,9 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		log: ModerationManager.Entry,
 		undelivered: boolean
 	): ModerationCommand.Answer {
-		// The custom response of the action, when the server wrote one, takes the place of the sentence of the bot:
+		// The custom response of the action, when the server wrote one, takes the place of the sentence of the bot. A
+		// reason the server hides stays hidden, whatever the response says; and only an action that can be temporary
+		// (a ban, a mute) reads as permanent without a duration, the others have none.
 		const key = getModerationResponseKey(this.action.type, this.isUndoAction);
 		const template = key === null ? null : settings.responses[key];
 		const response =
@@ -538,12 +540,14 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 				? null
 				: formatModerationResponse(template, {
 						user: target.tag,
-						reason: log.reason ?? '',
+						reason: settings.reasonDisplay ? (log.reason ?? '') : '',
 						case: String(log.id),
 						moderator: userMention(log.moderatorId),
-						duration: isNullishOrZero(log.duration)
-							? t('commands/moderation:moderationOutputPermanent')
-							: t('globals:durationValue', { value: log.duration })
+						duration: !isNullishOrZero(log.duration)
+							? t('globals:durationValue', { value: log.duration })
+							: this.supportsSchedule
+								? t('commands/moderation:moderationOutputPermanent')
+								: ''
 					});
 		return renderModerationOutput(t, { id: log.id, tag: target.tag, reason: settings.reasonDisplay ? log.reason : null, undelivered, response });
 	}
