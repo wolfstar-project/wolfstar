@@ -270,6 +270,19 @@ export function getConfiguration() {
 			name: 'moderation.dehoist',
 			description: 'settings:moderationDehoist'
 		},
+		moderationLockdownChannels: {
+			type: 'lockdownChannel',
+			name: 'moderation.lockdown-channels',
+			description: 'settings:moderationLockdownChannels',
+			array: true,
+			maximum: 25
+		},
+		moderationDefaultWarnThresholds: {
+			type: 'boolean',
+			name: 'moderation.default-warn-thresholds',
+			description: 'settings:moderationDefaultWarnThresholds',
+			default: true
+		},
 		messagesModerationDm: {
 			type: 'boolean',
 			name: 'moderation.direct-message',

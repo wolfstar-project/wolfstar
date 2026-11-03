@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'534e3f1dff9b8b7099c4103175e4fa5d0a0ab0ca025de2facd5c6927a1b4b596'>;
+export type StorageHash = StorageHashBase<'0832606c10a9516825f7e16efe2c4665464b1cb5bd923e91b5287e16e5937ecf'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -384,10 +384,8 @@ export type FieldOutputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly ignoredRoles: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
-			readonly logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly name: CodecTypes['pg/text@1']['output'];
 			readonly options: PrismaJson.AutoModerationRuleOptions;
-			readonly response: CodecTypes['pg/text@1']['output'] | null;
 			readonly softAction: CodecTypes['pg/int4@1']['output'];
 			readonly thresholdDuration: CodecTypes['pg/int4@1']['output'];
 			readonly thresholdMaximum: CodecTypes['pg/int4@1']['output'];
@@ -521,6 +519,7 @@ export type FieldOutputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly directMessage: CodecTypes['pg/bool@1']['output'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['output'];
@@ -863,10 +862,8 @@ export type FieldInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly ignoredRoles: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
-			readonly logChannelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly name: CodecTypes['pg/text@1']['input'];
 			readonly options: CodecTypes['typed/json@1']['input'];
-			readonly response: CodecTypes['pg/text@1']['input'] | null;
 			readonly softAction: CodecTypes['pg/int4@1']['input'];
 			readonly thresholdDuration: CodecTypes['pg/int4@1']['input'];
 			readonly thresholdMaximum: CodecTypes['pg/int4@1']['input'];
@@ -1000,6 +997,7 @@ export type FieldInputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['input'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly directMessage: CodecTypes['pg/bool@1']['input'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['input'];
@@ -1342,10 +1340,8 @@ export type StorageColumnTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly ignored_channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly ignored_roles: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
-			readonly log_channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly name: CodecTypes['pg/text@1']['output'];
 			readonly options: PrismaJson.AutoModerationRuleOptions;
-			readonly response: CodecTypes['pg/text@1']['output'] | null;
 			readonly soft_action: CodecTypes['pg/int4@1']['output'];
 			readonly threshold_duration: CodecTypes['pg/int4@1']['output'];
 			readonly threshold_maximum: CodecTypes['pg/int4@1']['output'];
@@ -1479,6 +1475,7 @@ export type StorageColumnTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['output'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly direct_message: CodecTypes['pg/bool@1']['output'];
 			readonly display_message: CodecTypes['pg/bool@1']['output'];
@@ -1821,10 +1818,8 @@ export type StorageColumnInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly ignored_channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly ignored_roles: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
-			readonly log_channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly name: CodecTypes['pg/text@1']['input'];
 			readonly options: CodecTypes['typed/json@1']['input'];
-			readonly response: CodecTypes['pg/text@1']['input'] | null;
 			readonly soft_action: CodecTypes['pg/int4@1']['input'];
 			readonly threshold_duration: CodecTypes['pg/int4@1']['input'];
 			readonly threshold_maximum: CodecTypes['pg/int4@1']['input'];
@@ -1958,6 +1953,7 @@ export type StorageColumnInputTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['input'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly direct_message: CodecTypes['pg/bool@1']['input'];
 			readonly display_message: CodecTypes['pg/bool@1']['input'];
@@ -2322,10 +2318,8 @@ export namespace Models {
 		id: CodecTypes['pg/int8@1']['output'];
 		ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 		ignoredRoles: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
-		logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 		name: CodecTypes['pg/text@1']['output'];
 		options: PrismaJson.AutoModerationRuleOptions;
-		response: CodecTypes['pg/text@1']['output'] | null;
 		softAction: CodecTypes['pg/int4@1']['output'];
 		thresholdDuration: CodecTypes['pg/int4@1']['output'];
 		thresholdMaximum: CodecTypes['pg/int4@1']['output'];
@@ -2475,6 +2469,7 @@ export namespace Models {
 	export type public_GuildModeration = {
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
 		confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+		defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 		dehoist: CodecTypes['pg/bool@1']['output'];
 		directMessage: CodecTypes['pg/bool@1']['output'];
 		displayMessage: CodecTypes['pg/bool@1']['output'];
@@ -3858,11 +3853,6 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/int8@1', readonly []>;
 									};
 								};
-								readonly log_channel_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: true;
-								};
 								readonly name: {
 									readonly nativeType: 'text';
 									readonly codecId: 'pg/text@1';
@@ -3877,11 +3867,6 @@ type ContractBase = Omit<
 										readonly expression: "'{}'::jsonb";
 									};
 									readonly typeRef: 'AutoModerationRuleOptions';
-								};
-								readonly response: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
 								};
 								readonly soft_action: {
 									readonly nativeType: 'int4';
@@ -4728,6 +4713,15 @@ type ContractBase = Omit<
 									readonly default: {
 										readonly kind: 'literal';
 										readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+									};
+								};
+								readonly default_warn_thresholds: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
 									};
 								};
 								readonly dehoist: {
@@ -7380,10 +7374,6 @@ type ContractBase = Omit<
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 								readonly many: true;
 							};
-							readonly logChannelId: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
 							readonly name: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -7391,10 +7381,6 @@ type ContractBase = Omit<
 							readonly options: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'typed/json@1' };
-							};
-							readonly response: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
 							};
 							readonly softAction: {
 								readonly nullable: false;
@@ -7444,10 +7430,8 @@ type ContractBase = Omit<
 								readonly id: { readonly column: 'id' };
 								readonly ignoredChannels: { readonly column: 'ignored_channels' };
 								readonly ignoredRoles: { readonly column: 'ignored_roles' };
-								readonly logChannelId: { readonly column: 'log_channel_id' };
 								readonly name: { readonly column: 'name' };
 								readonly options: { readonly column: 'options' };
-								readonly response: { readonly column: 'response' };
 								readonly softAction: { readonly column: 'soft_action' };
 								readonly thresholdDuration: { readonly column: 'threshold_duration' };
 								readonly thresholdMaximum: { readonly column: 'threshold_maximum' };
@@ -8107,6 +8091,10 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
 							};
+							readonly defaultWarnThresholds: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly dehoist: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -8168,6 +8156,7 @@ type ContractBase = Omit<
 							readonly fields: {
 								readonly channelId: { readonly column: 'channel_id' };
 								readonly confirmRecentMinutes: { readonly column: 'confirm_recent_minutes' };
+								readonly defaultWarnThresholds: { readonly column: 'default_warn_thresholds' };
 								readonly dehoist: { readonly column: 'dehoist' };
 								readonly directMessage: { readonly column: 'direct_message' };
 								readonly displayMessage: { readonly column: 'display_message' };

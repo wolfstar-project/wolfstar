@@ -163,6 +163,7 @@ describe('configuration file', () => {
 				'moderation.track-kicks',
 				'moderation.confirm-recent',
 				'moderation.dehoist',
+				'moderation.default-warn-thresholds',
 				'moderation.direct-message',
 				'moderation.display-reason',
 				'moderation.display-message',
