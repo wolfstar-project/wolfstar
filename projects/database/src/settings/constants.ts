@@ -89,6 +89,7 @@ export function getDefaultGuildSettings() {
 		moderationTrackKicks: false,
 		moderationConfirmRecentMinutes: 0,
 		moderationDehoist: false,
+		moderationDefaultWarnThresholds: true,
 		messagesModerationDm: false,
 		messagesModerationReasonDisplay: true,
 		messagesModerationMessageDisplay: true,

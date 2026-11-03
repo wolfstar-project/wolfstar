@@ -1,5 +1,5 @@
 import type { ModerationManager } from '#lib/moderation';
-import { applyWarnThreshold, findReachedWarnThreshold, readWarnThresholds } from '#lib/moderation/warnThresholds';
+import { applyWarnThreshold, findReachedWarnThreshold, resolveWarnThresholds } from '#lib/moderation/warnThresholds';
 import { Events } from '#lib/types';
 import { getLogPrefix, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
@@ -15,7 +15,7 @@ export class UserListener extends Listener {
 	public async run(entry: ModerationManager.Entry) {
 		if (entry.type !== TypeVariation.Warning || entry.isUndo()) return;
 
-		const thresholds = await readWarnThresholds(entry.guild.id);
+		const { thresholds, defaults } = await resolveWarnThresholds(entry.guild.id);
 		if (thresholds.length === 0) return;
 
 		const moderation = await getModeration(entry.guild);
@@ -23,7 +23,9 @@ export class UserListener extends Listener {
 		const threshold = findReachedWarnThreshold(thresholds, [...entries.values()]);
 		if (threshold === null) return;
 
-		this.container.logger.debug(`[MODERATION] ${entry.userId} of ${entry.guild.id} reached the threshold of ${threshold.count} warnings`);
+		this.container.logger.debug(
+			`[MODERATION] ${entry.userId} of ${entry.guild.id} reached the ${defaults ? 'default ' : ''}threshold of ${threshold.count} warnings`
+		);
 		try {
 			await applyWarnThreshold(entry.guild, entry.userId, threshold);
 		} catch (error) {
