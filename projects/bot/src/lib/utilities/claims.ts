@@ -35,6 +35,8 @@ export async function claimOnce(key: string, duration: number): Promise<boolean>
 		}
 	}
 
+	// Another call may have claimed it here while Redis was asked and failed:
+	if (isClaimedLocally(key)) return false;
 	claimLocally(key, duration);
 	return true;
 }

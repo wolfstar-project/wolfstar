@@ -74,12 +74,13 @@ describe('claims', () => {
 		expect(await claimOnce('release:1', 60)).toBe(true);
 	});
 
-	test('GIVEN a Redis that fails THEN the process keeps the claim', async () => {
+	test('GIVEN a Redis that fails THEN the process keeps the claim, for the calls made at the same time too', async () => {
 		const redis = createRedis();
 		redis.set.mockRejectedValue(new Error('Connection is closed'));
 		container.redis = redis as never;
 
 		expect(await claimOnce('failing:1', 60)).toBe(true);
 		expect(await claimOnce('failing:1', 60)).toBe(false);
+		expect(await Promise.all([claimOnce('failing:2', 60), claimOnce('failing:2', 60)])).toEqual([true, false]);
 	});
 });
