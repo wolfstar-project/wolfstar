@@ -26,17 +26,26 @@ describe('the alert of an auto-moderation rule', () => {
 	const t = (key: string, options: { user: string }) => `${key} ${options.user}`;
 	const store = new Map<string, string>();
 	const original = container.redis;
+	// The process remembers its claims for a minute, so each test starts after the ones of the test before it ended:
+	let now = Date.UTC(2026, 0, 1);
 
 	beforeEach(() => {
 		store.clear();
+		vi.useFakeTimers({ toFake: ['Date'] });
+		vi.setSystemTime((now += 61_000));
 		container.redis = {
 			status: 'ready',
 			set: async (key: string, value: string) => {
 				if (store.has(key)) return null;
 				store.set(key, value);
 				return 'OK';
-			}
+			},
+			del: async (key: string) => (store.delete(key) ? 1 : 0)
 		} as never;
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
 	});
 
 	afterAll(() => {
@@ -55,6 +64,17 @@ describe('the alert of an auto-moderation rule', () => {
 		expect(first.send).toHaveBeenCalledOnce();
 		expect(second.send).not.toHaveBeenCalled();
 		expect(third.send).not.toHaveBeenCalled();
+	});
+
+	test('GIVEN an alert that could not be sent THEN the next message is told', async () => {
+		const failed = createMessage('266624760782258188');
+		failed.send.mockRejectedValueOnce(new Error('Missing Permissions'));
+		const next = createMessage('266624760782258188');
+
+		await expect(listener.sendAlert(failed.message, t, 'events/moderation:wordFilter')).rejects.toThrow('Missing Permissions');
+		await listener.sendAlert(next.message, t, 'events/moderation:wordFilter');
+
+		expect(next.send).toHaveBeenCalledOnce();
 	});
 
 	test('GIVEN another member, or another alert, THEN they are told as well', async () => {

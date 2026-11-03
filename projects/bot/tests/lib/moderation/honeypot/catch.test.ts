@@ -240,7 +240,7 @@ describe('catchHoneypotMessage', () => {
 
 		await catchHoneypotMessage(createMessage(), createSettings());
 
-		expect(set).toHaveBeenCalledWith(`wolfstar:honeypot:caught:${guildId}:${userId}`, '1', 'EX', 60, 'NX');
+		expect(set).toHaveBeenCalledWith(`wolfstar:claims:honeypot-caught:${guildId}:${userId}`, '1', 'EX', 60, 'NX');
 		expect(deleteMessage).toHaveBeenCalledTimes(1);
 		expect(ModerationActions.softban.apply).not.toHaveBeenCalled();
 		expect(emit).not.toHaveBeenCalled();
@@ -283,7 +283,8 @@ describe('catchHoneypotMessage', () => {
 		await catchHoneypotMessage(createMessage(), createSettings());
 		await catchHoneypotMessage(createMessage(), createSettings());
 
-		expect(set).toHaveBeenCalledTimes(2);
+		// The claim the process kept answers the second message, Redis is not asked again:
+		expect(set).toHaveBeenCalledTimes(1);
 		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(1);
 	});
 });

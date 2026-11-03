@@ -13,7 +13,7 @@ import { Events } from '#lib/types/Enums';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise, resolveGuild } from '#common';
 import { minutes, seconds } from 'wolfstar-shared';
-import { claimOnce } from '#utils/claims';
+import { claimOnce, releaseClaim } from '#utils/claims';
 import { describeMessage } from '#utils/debug';
 import { deleteMessage, getModeration, isModerator } from '#utils/functions';
 import type { createLogMessage } from '#utils/functions';
@@ -335,7 +335,13 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 
 		// The alerts also take the emojis every translation gets by default, which the typed options do not know about:
 		const content = (t as unknown as (key: string, options: Record<string, unknown>) => string)(key, { user: message.author.toString() });
-		return this.sendTemporaryMessage(message, content, seconds(AlertCooldownSeconds));
+		try {
+			return await this.sendTemporaryMessage(message, content, seconds(AlertCooldownSeconds));
+		} catch (error) {
+			// An alert that could not be sent does not keep the next one out:
+			await releaseClaim(claim);
+			throw error;
+		}
 	}
 
 	protected abstract preProcess(message: GuildMessage, rule: AutoModerationRule<Type>): Promise<T | null> | T | null;

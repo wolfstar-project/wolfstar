@@ -7,12 +7,13 @@ import { renderHoneypotLog } from '#lib/moderation/honeypot/log';
 import { recordSharedBan } from '#lib/moderation/joinguard/log';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
+import { claimOnce } from '#utils/claims';
 import { describeMessage } from '#utils/debug';
 import { getModeration, isModerator } from '#utils/functions';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import type { Guild, User } from '@wolfstar/plugin-gateway';
-import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 import type { HoneypotAction, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
@@ -68,7 +69,8 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 	container.logger.debug(`[Honeypot] ${subject}: caught`);
 	floatPromise(deleteCaughtMessage(message, subject));
 
-	if (!(await claimHoneypotCatch(message.guildId, message.author.id))) {
+	// The claim keeps the messages a bot sends in a row to one case, see {@linkcode claimOnce}:
+	if (!(await claimOnce(`honeypot-caught:${message.guildId}:${message.author.id}`, ClaimSeconds))) {
 		container.logger.debug(`[Honeypot] ${subject}: no case, the author was caught less than a minute ago`);
 		return;
 	}
@@ -138,47 +140,4 @@ function applyHoneypotAction(guild: Guild, action: HoneypotAction, user: User, r
 		case 'Ban':
 			return ModerationActions.ban.apply(guild, { user, reason }, { sendDirectMessage, context: HoneypotDeleteMessageSeconds });
 	}
-}
-
-/**
- * The members this process caught while Redis could not be asked, and when each claim ends, see
- * {@linkcode claimHoneypotCatch}.
- */
-const localClaims = new Map<string, number>();
-
-/**
- * Claims a member the honeypot caught, so the messages they send right after are only deleted.
- *
- * @remarks
- *
- * The claim is in Redis, so it holds across the processes of the bot. Without a connection, or when Redis fails, the
- * claim is kept by this process: a burst of messages is still one case here, which is all a single process needs, and
- * the most that can be done when the connection is down.
- *
- * @returns Whether the member was not claimed yet.
- */
-async function claimHoneypotCatch(guildId: Snowflake, userId: Snowflake): Promise<boolean> {
-	const { redis } = container;
-	if (redis?.status === 'ready') {
-		try {
-			return (await redis.set(`wolfstar:honeypot:caught:${guildId}:${userId}`, '1', 'EX', ClaimSeconds, 'NX')) !== null;
-		} catch (error) {
-			container.logger.error(`[Honeypot] Could not claim ${userId} in the guild ${guildId} in Redis:`, error);
-		}
-	}
-
-	return claimHoneypotCatchLocally(`${guildId}:${userId}`);
-}
-
-function claimHoneypotCatchLocally(key: string): boolean {
-	const now = Date.now();
-	// The claims that ended are dropped here, so the map only holds the members of the last minute:
-	for (const [claimed, expiresAt] of localClaims) {
-		if (expiresAt <= now) localClaims.delete(claimed);
-	}
-
-	if (localClaims.has(key)) return false;
-
-	localClaims.set(key, now + seconds(ClaimSeconds));
-	return true;
 }
