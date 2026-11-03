@@ -82,12 +82,14 @@ declare module '@wolfstar/http-framework' {
       delete?: boolean;
       enabled?: boolean;
       log?: boolean;
+      'log-channel'?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5 | 10 | 11 | 12> };
       maximum?: number;
       minimum?: number;
       period?: number;
       punishment?: 'None' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
       'punishment-duration'?: string;
       rename?: string;
+      response?: string;
       rule: string;
       threshold?: number;
       'threshold-period'?: string;

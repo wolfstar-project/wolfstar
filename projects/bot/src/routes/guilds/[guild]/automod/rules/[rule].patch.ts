@@ -2,6 +2,7 @@ import { resolveManagedGuildId, sendAutoModerationRuleError } from '#lib/api/aut
 import type { ApiAuthRequest } from '#lib/api/Auth';
 import { authenticated, ratelimit } from '#lib/api/utils';
 import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
+import { checkAutoModerationLogChannel } from '#lib/moderation/automod/log';
 import { parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
 import { seconds } from 'wolfstar-shared';
 import { HttpCodes, Route } from '@wolfstar/plugin-api';
@@ -23,8 +24,11 @@ export class UserRoute extends Route {
 
 		// The body is read once, and checked against the rule as it is cached to answer a bad one with a 400:
 		const body = await request.readBodyJson();
-		const { errors } = parseAutoModerationRulePatch(rule.type, body, rule);
+		const { data, errors } = parseAutoModerationRulePatch(rule.type, body, rule);
 		if (errors) return response.status(HttpCodes.BadRequest).json(errors);
+		// The channel is checked as the command and the menu check it, so a rule never points at one the bot cannot post in:
+		const channelError = await checkAutoModerationLogChannel(guildId, data.logChannelId);
+		if (channelError !== null) return response.status(HttpCodes.BadRequest).json([channelError]);
 
 		try {
 			// The options are merged on the rule the database has inside the queue, so two requests that change different

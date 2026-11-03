@@ -7,17 +7,21 @@ import {
 	resolveSoftAction,
 	translateRuleError
 } from '#lib/moderation/automod/commands';
+import { getMissingAutoModerationLogPermissions } from '#lib/moderation/automod/log';
+import { parseAutoModerationResponse } from '#lib/moderation/automod/response';
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
+import { channelMention, inlineCode } from '@discordjs/formatters';
 import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { isNullish } from '@sapphire/utilities';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
+import { ChannelType, MessageFlags } from 'discord-api-types/v10';
 import {
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
 	MaximumAutoModerationRuleNameLength,
+	MaximumAutoModerationRuleResponseLength,
 	type AutoModerationRule,
 	type AutoModerationRuleData
 } from 'wolfstar-database';
@@ -39,7 +43,8 @@ const TypeOptions = [
  * `/automod edit`, see the `automod` parent command.
  *
  * @remarks The `minimum`, `maximum`, `period`, `whole-channel` and `weighted` options set the options of the rule, which depend
- * on its type: a rule answers with an error when it is given one it does not have.
+ * on its type: a rule answers with an error when it is given one it does not have. `response` is what the alert says
+ * (`none` for the line of the type) and `log-channel` where the logs go; the menu takes the channel off again.
  */
 @RegisterAsSubcommand('automod', (builder) =>
 	applyRuleOption(applyLocalizedBuilder(builder, `${Root}:edit`))
@@ -72,6 +77,16 @@ const TypeOptions = [
 		.addIntegerOption((option) => applyLocalizedBuilder(option, `${Root}:optionsPeriod`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWholeChannel`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWeighted`))
+		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:optionsResponse`).setMaxLength(MaximumAutoModerationRuleResponseLength))
+		.addChannelOption((option) =>
+			applyLocalizedBuilder(option, `${Root}:optionsLogChannel`).addChannelTypes(
+				ChannelType.GuildText,
+				ChannelType.GuildAnnouncement,
+				ChannelType.PublicThread,
+				ChannelType.PrivateThread,
+				ChannelType.AnnouncementThread
+			)
+		)
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'automod edit'>) {
@@ -96,6 +111,28 @@ export class UserCommand extends Command {
 		if (punishmentDuration !== null) data.hardActionDuration = punishmentDuration === 0 ? null : punishmentDuration;
 		if (!isNullish(options.threshold)) data.thresholdMaximum = options.threshold;
 		if (thresholdDuration !== null) data.thresholdDuration = thresholdDuration;
+		if (!isNullish(options.response)) {
+			const response = parseAutoModerationResponse(options.response);
+			if (response === undefined) {
+				return this.#reply(interaction, translateKey(t, `${Root}:editResponseTooLong`, { maximum: MaximumAutoModerationRuleResponseLength }));
+			}
+			data.response = response;
+		}
+		if (!isNullish(options['log-channel'])) {
+			const channelId = options['log-channel'].id;
+			const missing = await getMissingAutoModerationLogPermissions(interaction.guildId, channelId);
+			if (missing === null) return this.#reply(interaction, translateKey(t, `${Root}:editLogChannelUnknown`));
+			if (missing.length > 0) {
+				return this.#reply(
+					interaction,
+					translateKey(t, `${Root}:editLogChannelMissingPermissions`, {
+						channel: channelMention(channelId),
+						permissions: missing.map((permission) => inlineCode(permission)).join(', ')
+					})
+				);
+			}
+			data.logChannelId = channelId;
+		}
 
 		if (Object.keys(data).length === 0 && !hasSoftAction && ruleOptions === null)
 			return this.#reply(interaction, translateKey(t, `${Root}:editNothing`));
@@ -116,7 +153,8 @@ export class UserCommand extends Command {
 		// The rule is opened on what was edited, see the `automod` interaction handler:
 		const changedResponse =
 			hasSoftAction || 'hardAction' in data || 'hardActionDuration' in data || 'thresholdMaximum' in data || 'thresholdDuration' in data;
-		const section = changedResponse && ruleOptions === null ? 'response' : 'options';
+		const changedExtra = 'response' in data || 'logChannelId' in data;
+		const section = ruleOptions !== null ? 'options' : changedExtra && !changedResponse ? 'extra' : changedResponse ? 'response' : 'options';
 		return replyWithAutoModerationRule(interaction, t, updated, section, translateKey(t, `${Root}:editSuccess`, { name: updated.name }));
 	}
 

@@ -322,10 +322,12 @@ describe('configuration file', () => {
 		describe('rules', () => {
 			test('GIVEN a rule with only a name and a type THEN the rest takes the defaults of the type', async () => {
 				const parsed = await parseOk({ version: 1, automod: { rules: [{ name: ' Links ', type: 'Links' }] } });
-				const { ignoredRoles, ignoredChannels, ...defaults } = getDefaultAutoModerationRule('Links');
+				// What names something of the server is not in the file:
+				const { ignoredRoles, ignoredChannels, logChannelId, ...defaults } = getDefaultAutoModerationRule('Links');
 
 				expect(ignoredRoles).toEqual([]);
 				expect(ignoredChannels).toEqual([]);
+				expect(logChannelId).toBeNull();
 				expect(parsed.rules).toEqual([{ ...defaults, name: 'Links' }]);
 			});
 
@@ -367,6 +369,18 @@ describe('configuration file', () => {
 					'automod.rules[3].options.perChannel',
 					'automod.rules[4].options'
 				]);
+			});
+
+			test('GIVEN a rule with a custom response THEN it is kept, and a log channel is not a field of the file', async () => {
+				const parsed = await parseOk({ version: 1, automod: { rules: [{ name: 'Slurs', type: 'Words', response: '{user}, no.' }] } });
+				expect(parsed.rules?.[0]).toMatchObject({ name: 'Slurs', response: '{user}, no.' });
+				expect(parsed.rules?.[0]).not.toHaveProperty('logChannelId');
+
+				const issues = await parseIssues({
+					version: 1,
+					automod: { rules: [{ name: 'Slurs', type: 'Words', logChannelId: '254360814063058945' }] }
+				});
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].logChannelId']);
 			});
 
 			test('GIVEN a mention spam rule of an older file THEN it is imported as a mentions cooldown rule that bans', async () => {

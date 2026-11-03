@@ -117,6 +117,22 @@ describe('auto-moderation menu', () => {
 			}
 		);
 
+		test('GIVEN the additional options THEN they edit the custom response and pick the log channel of the rule', () => {
+			const rule = createRule('Words', { response: '{user}, no.', logChannelId: '254360814063058945' });
+			const components = flatten(renderAutoModerationRule(context, rule, 'extra').components!);
+			const customIds = components.map((component) => String(component.custom_id ?? ''));
+
+			expect(customIds.some((id) => id.endsWith('edit:42:extra:response'))).toBe(true);
+			const select = components.find(
+				(component) => component.type === ComponentType.ChannelSelect && String(component.custom_id).includes('logChannel')
+			)!;
+			expect(select).toMatchObject({ min_values: 0, max_values: 1, default_values: [{ id: '254360814063058945', type: 'channel' }] });
+			expect(select.channel_types).toContain(ChannelType.GuildText);
+			expect(select.channel_types).toContain(ChannelType.PublicThread);
+			expect(select.channel_types).not.toContain(ChannelType.GuildVoice);
+			expect(components.some((component) => typeof component.content === 'string' && component.content.includes('{user}, no.'))).toBe(true);
+		});
+
 		test('GIVEN a full list of words THEN it is cut to fit a message', () => {
 			const words = Array.from({ length: 200 }, (_, index) => `${'word'.repeat(7)}${index}`);
 			const message = renderAutoModerationRule(context, createRule('Words', { options: { words } }), 'options');
@@ -241,6 +257,13 @@ describe('auto-moderation menu', () => {
 
 			expect(labels('duration')).toEqual(['duration']);
 			expect(labels('threshold')).toEqual(['threshold', 'period']);
+		});
+
+		test('GIVEN the custom response THEN its modal holds what the rule says, and nothing is required', () => {
+			const modal = renderAutoModerationModal(context, createRule('Links', { response: '{user}, no links.' }), action('response'))!;
+			const [input] = flatten(modal.components).filter((entry) => typeof entry.label === 'string');
+
+			expect(input).toMatchObject({ custom_id: 'value', value: '{user}, no links.', required: false, max_length: 200 });
 		});
 
 		test('GIVEN a rule without what the modal edits THEN there is no modal', () => {

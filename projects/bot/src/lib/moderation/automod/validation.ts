@@ -12,6 +12,7 @@ import {
 	MaximumAutoModerationRuleEscalationSteps,
 	MaximumAutoModerationRuleListLength,
 	MaximumAutoModerationRuleNameLength,
+	MaximumAutoModerationRuleResponseLength,
 	normalizeAutoModerationRuleEscalation,
 	normalizeAutoModerationRuleOptions,
 	type AutoModerationEscalationAction,
@@ -161,6 +162,19 @@ export function parseAutoModerationRulePatch(
 		const { minimum, maximum } = AutoModerationRuleLimits.escalationDuration;
 		if (isInteger(body.escalationDuration, minimum, maximum)) data.escalationDuration = body.escalationDuration;
 		else errors.push(`escalationDuration: Expected an integer between ${minimum} and ${maximum}.`);
+	}
+
+	if (body.response !== undefined) {
+		// An empty response is none, the alert says the line of the type:
+		if (body.response === null || (typeof body.response === 'string' && body.response.trim().length === 0)) data.response = null;
+		else if (typeof body.response === 'string' && body.response.trim().length <= MaximumAutoModerationRuleResponseLength) {
+			data.response = body.response.trim();
+		} else errors.push(`response: Expected null or a string of at most ${MaximumAutoModerationRuleResponseLength} characters.`);
+	}
+
+	if (body.logChannelId !== undefined) {
+		if (body.logChannelId === null || isSnowflake(body.logChannelId)) data.logChannelId = body.logChannelId;
+		else errors.push('logChannelId: Expected null or an ID.');
 	}
 
 	if (body.options !== undefined) {
