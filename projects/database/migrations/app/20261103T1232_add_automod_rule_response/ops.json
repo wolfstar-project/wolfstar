@@ -1,0 +1,70 @@
+[
+	{
+		"id": "column.public.GuildAutoModerationRule.log_channel_id",
+		"label": "Add column \"log_channel_id\" to \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "log_channel_id",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"log_channel_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "log_channel_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"log_channel_id\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationRule\" ADD COLUMN \"log_channel_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"log_channel_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "log_channel_id"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAutoModerationRule.response",
+		"label": "Add column \"response\" to \"GuildAutoModerationRule\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "response",
+				"table": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"response\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "response"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"response\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoModerationRule\" ADD COLUMN \"response\" text"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAutoModerationRule", "response"]
+			}
+		]
+	}
+]

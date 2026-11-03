@@ -1,4 +1,5 @@
 import { readSettings, writeSettings } from '#lib/database';
+import { readAutoModerationRules, updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { announceJoinGuardChange } from '#lib/moderation/joinguard/store';
 import { getLogPrefix } from '#utils/functions';
 import { readCommandRestrictions, removeFromCommandRestrictions, writeCommandRestrictions } from '#lib/structures/commands-menu/restrictions';
@@ -8,8 +9,8 @@ import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
 import { clearJoinGuardRuleAlertChannel } from 'wolfstar-database';
 
 /**
- * Takes a channel that was deleted out of what the server restricted its commands to: a command that was only allowed
- * in that channel would otherwise run nowhere.
+ * Takes a channel that was deleted out of what the server restricted its commands to (a command that was only allowed
+ * in that channel would otherwise run nowhere), out of the join guard and out of the auto-moderation rules.
  */
 @RegisterAsDispatchListener('channelDelete')
 export class UserListener extends EventGatewayListener<'channelDelete'> {
@@ -19,6 +20,31 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 		const channel = deleted as GuildBasedChannel;
 		await this.#forgetCommandRestrictions(channel);
 		await this.#forgetJoinGuardChannel(channel);
+		await this.#forgetAutoModerationChannel(channel);
+	}
+
+	/**
+	 * The rules that log in the channel, or that exempted it, forget it: a log would be lost, and an exemption of a
+	 * channel that is gone is noise.
+	 */
+	async #forgetAutoModerationChannel(channel: GuildBasedChannel) {
+		const { guildId, id } = channel;
+		try {
+			for (const rule of await readAutoModerationRules(guildId)) {
+				if (rule.logChannelId !== id && !rule.ignoredChannels.includes(id)) continue;
+				await updateAutoModerationRule(guildId, rule.id, (current) => ({
+					...(current.logChannelId === id ? { logChannelId: null } : {}),
+					...(current.ignoredChannels.includes(id)
+						? { ignoredChannels: current.ignoredChannels.filter((channelId) => channelId !== id) }
+						: {})
+				}));
+			}
+		} catch (error) {
+			this.container.logger.error(
+				`${getLogPrefix(this)} Could not remove the deleted channel ${id} from the auto-moderation rules of ${guildId}:`,
+				error
+			);
+		}
 	}
 
 	async #forgetCommandRestrictions(channel: GuildBasedChannel) {

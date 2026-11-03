@@ -368,6 +368,15 @@ describe('configuration file', () => {
 				]);
 			});
 
+			test('GIVEN a rule with a custom response THEN it is kept, and a log channel is not a field of the file', async () => {
+				const parsed = await parseOk({ version: 1, automod: { rules: [{ name: 'Slurs', type: 'Words', response: '{user}, no.' }] } });
+				expect(parsed.rules?.[0]).toMatchObject({ name: 'Slurs', response: '{user}, no.' });
+				expect(parsed.rules?.[0]).not.toHaveProperty('logChannelId');
+
+				const issues = await parseIssues({ version: 1, automod: { rules: [{ name: 'Slurs', type: 'Words', logChannelId: '1' }] } });
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].logChannelId']);
+			});
+
 			test('GIVEN a mention spam rule of an older file THEN it is imported as a mentions cooldown rule that bans', async () => {
 				const parsed = await parseOk({
 					version: 1,

@@ -2,6 +2,8 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import { writeSettings } from '#lib/database';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { AutoModerationRoot, translateRuleError } from '#lib/moderation/automod/commands';
+import { getMissingAutoModerationLogPermissions } from '#lib/moderation/automod/log';
+import { parseAutoModerationResponse } from '#lib/moderation/automod/response';
 import {
 	AutoModerationRuleError,
 	createAutoModerationRule,
@@ -33,12 +35,18 @@ import {
 } from '#lib/structures/automod-menu';
 import { translateKey } from '#lib/structures/commands/utils';
 import { getModalValue } from 'wolfstar-shared';
-import { inlineCode } from '@discordjs/formatters';
+import { channelMention, inlineCode } from '@discordjs/formatters';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, type Snowflake } from 'discord-api-types/v10';
-import { AutoModerationHardActions, isAutoModerationRuleType, type AutoModerationHardAction, type AutoModerationRule } from 'wolfstar-database';
+import {
+	AutoModerationHardActions,
+	isAutoModerationRuleType,
+	type AutoModerationHardAction,
+	type AutoModerationRule,
+	MaximumAutoModerationRuleResponseLength
+} from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
 
@@ -124,6 +132,8 @@ export class UserInteractionHandler extends InteractionHandler {
 				return this.exempt(component, guildId, context, action, 'ignoredRoles');
 			case 'channels':
 				return this.exempt(component, guildId, context, action, 'ignoredChannels');
+			case 'logChannel':
+				return this.logChannel(component, guildId, context, action);
 			default:
 				return fail(getDefaultExpiredReply());
 		}
@@ -219,6 +229,13 @@ export class UserInteractionHandler extends InteractionHandler {
 			switch (action.argument) {
 				case 'name':
 					return { update: { name: value } };
+				case 'response': {
+					const response = parseAutoModerationResponse(value);
+					if (response === undefined) {
+						throw new InvalidInput(translateKey(t, `${Root}:editResponseTooLong`, { maximum: MaximumAutoModerationRuleResponseLength }));
+					}
+					return { update: { response } };
+				}
 				case 'add':
 				case 'remove': {
 					const result = editAutoModerationMenuList(t, rule, parseAutoModerationMenuEntries(value), action.argument);
@@ -245,6 +262,36 @@ export class UserInteractionHandler extends InteractionHandler {
 				default:
 					return { update: null };
 			}
+		});
+	}
+
+	/**
+	 * Sets the log channel of a rule to the channel that was picked, none for the moderation channel. A channel the bot
+	 * cannot post logs in is refused, as the honeypot refuses its log channel.
+	 */
+	private async logChannel(
+		interaction: ComponentInteraction,
+		guildId: Snowflake,
+		context: AutoModerationMenuContext,
+		action: AutoModerationMenuAction
+	) {
+		const { t } = context;
+		const [channelId] = getSelectValues(interaction);
+		let error: string | null = null;
+		if (channelId !== undefined) {
+			const missing = await getMissingAutoModerationLogPermissions(guildId, channelId);
+			if (missing === null) error = translateKey(t, `${Root}:editLogChannelUnknown`);
+			else if (missing.length > 0) {
+				error = translateKey(t, `${Root}:editLogChannelMissingPermissions`, {
+					channel: channelMention(channelId),
+					permissions: missing.map((permission) => inlineCode(permission)).join(', ')
+				});
+			}
+		}
+
+		return this.change(interaction, guildId, context, action, () => {
+			if (error !== null) throw new InvalidInput(error);
+			return { update: { logChannelId: channelId ?? null } };
 		});
 	}
 

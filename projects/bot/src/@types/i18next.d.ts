@@ -238,6 +238,10 @@ declare module "i18next" {
         optionsWholeChannelDescription: "Fast message spam: count the messages of everybody in the channel together";
         optionsWeightedName: "weighted";
         optionsWeightedDescription: "Mentions cooldown: count a role mention as two and @everyone as five";
+        optionsResponseName: "response";
+        optionsResponseDescription: "What the alert says, with {user}, {rule} and {channel}. Write none for the default line";
+        optionsLogChannelName: "log-channel";
+        optionsLogChannelDescription: "Where the logs of this rule go instead of the moderation channel";
         optionsValueName: "value";
         optionsValueDescription: "A word, the hostname of a link, an invite code or the ID of a server";
         optionsRoleName: "role";
@@ -320,6 +324,9 @@ declare module "i18next" {
         typeZalgoSummary: "Detects the messages with characters that carry too many marks.";
         editSuccess: "Successfully edited the rule **{{name}}**.";
         editNothing: "Nothing to change: give at least one option besides the rule.";
+        editResponseTooLong: "The response has at most {{maximum, number}} characters.";
+        editLogChannelUnknown: "I could not find that channel in this server.";
+        editLogChannelMissingPermissions: "I cannot post the logs in {{channel}}: I lack {{permissions}} there.";
         deleteSuccess: "Deleted the rule **{{name}}**.";
         errorLimit: "This server already has {{maximum, number}} rules, which is the most it can have. Delete one first.";
         errorNameTaken: "There is already a rule with that name in this server.";
@@ -358,6 +365,8 @@ declare module "i18next" {
         menuSectionResponseDescription: "What happens when a member triggers the rule";
         menuSectionExempt: "Roles and channels whitelist";
         menuSectionExemptDescription: "The roles and channels the rule leaves alone";
+        menuSectionExtra: "Additional options";
+        menuSectionExtraDescription: "What the alert says, and where the logs of the rule go";
         menuRuleDetails: "**ID:** {{id}} · **Type:** {{type}}";
         menuStatus: "Status";
         menuEnabled: "Enabled";
@@ -430,6 +439,14 @@ declare module "i18next" {
         menuEscalationInvalid: "`{{line}}` is not a step. Write a punishment ({{actions}}), then how long it lasts when it is temporary.";
         menuEscalationTooMany: "The escalation has at most {{maximum, number}} steps.";
         menuEscalationPeriodRequired: "Tell how long a punishment is remembered, for example `1d`.";
+        menuCustomResponse: "Custom response";
+        menuCustomResponseDescription: "What the alert says instead of the line of the rule type. {user}, {rule} and {channel} are replaced.";
+        menuCustomResponseNone: "None, the alert says the line of the rule type.";
+        menuCustomResponseLabel: "The response, empty for the default line";
+        menuLogChannel: "Log channel";
+        menuLogChannelDescription: "Where the logs of this rule go. Pick none for the moderation channel.";
+        menuLogChannelDefault: "The moderation channel.";
+        menuLogChannelPlaceholder: "Select a channel, or none";
         menuTimingDuration: "Punishment duration, empty for permanent";
         menuTimingThreshold: "Infractions before the punishment, 0 for one";
         menuTimingPeriod: "Period the infractions are counted in";

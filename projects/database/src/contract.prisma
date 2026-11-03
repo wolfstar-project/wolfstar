@@ -274,6 +274,8 @@ namespace public {
     options            AutoModerationRuleOptions              @default(sql`'{}'::jsonb`)
     escalation         AutoModerationRuleEscalation           @default(sql`'[]'::jsonb`)
     escalationDuration Int                                    @default(86400000) @map("escalation_duration")
+    response           String?
+    logChannelId       BigInt?                                @map("log_channel_id")
     guild              Guild                                  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationRule_guild_id_fkey", index: false)
 
     @@index([guildId], map: "GuildAutoModerationRule_guild_id_idx")

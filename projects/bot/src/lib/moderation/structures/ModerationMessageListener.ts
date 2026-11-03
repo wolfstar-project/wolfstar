@@ -1,4 +1,6 @@
 import { readSettings } from '#lib/database';
+import { sendAutoModerationRuleLog } from '#lib/moderation/automod/log';
+import { formatAutoModerationResponse } from '#lib/moderation/automod/response';
 import {
 	addAutoModerationRuleStrike,
 	getAutoModerationRuleAdder,
@@ -18,6 +20,7 @@ import { describeMessage } from '#utils/debug';
 import { deleteMessage, getModeration, isModerator } from '#utils/functions';
 import type { createLogMessage } from '#utils/functions';
 import type { EmbedBuilder } from '@discordjs/builders';
+import { channelMention } from '@discordjs/formatters';
 import { isNullishOrZero, type Awaitable, type Nullish } from '@sapphire/utilities';
 import { Listener } from '@wolfstar/http-framework';
 import { canSendMessages, isTextBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
@@ -89,7 +92,7 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 
 		const logChannelId = settings.moderationChannel;
 		const t = await fetchGuildT({ id: message.guildId });
-		await this.processSoftPunishment(message, logChannelId, t, rule.softAction, preProcessed);
+		await this.processSoftPunishment(message, logChannelId, t, rule.softAction, preProcessed, rule);
 
 		const adder = getAutoModerationRuleAdder(rule);
 		this.debug(message, `soft actions ${rule.softAction} of the rule ${rule.id} done, threshold ${adder ? adder.maximum : 'none'}`);
@@ -103,12 +106,19 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		}
 	}
 
+	/**
+	 * Takes the soft actions of a rule. The alert says the custom response of the rule when it has one, the line of the
+	 * type otherwise, and the log goes to the channel of the rule when it has one, to `logChannelId` otherwise.
+	 *
+	 * @param rule - The rule that was infringed, when the soft actions are the ones of a rule.
+	 */
 	protected async processSoftPunishment(
 		message: GuildMessage,
 		logChannelId: string | Nullish,
 		language: TFunction<AnyNamespace>,
 		bitfield: number,
-		preProcessed: T
+		preProcessed: T,
+		rule?: AutoModerationRule<Type>
 	) {
 		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Delete) && (await message.deletable)) {
 			floatPromise(this.onDelete(message, language, preProcessed));
@@ -118,11 +128,13 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 			AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Alert) &&
 			(await canSendMessages(await message.fetchChannel()))
 		) {
-			floatPromise(this.onAlert(message, language, preProcessed));
+			floatPromise(rule?.response ? this.sendCustomAlert(message, rule) : this.onAlert(message, language, preProcessed));
 		}
 
 		if (AutoModerationOnInfraction.has(bitfield, AutoModerationOnInfraction.flags.Log)) {
-			floatPromise(this.onLog(message, logChannelId, language, preProcessed));
+			floatPromise(
+				rule?.logChannelId ? this.onRuleLog(message, rule, language, preProcessed) : this.onLog(message, logChannelId, language, preProcessed)
+			);
 		}
 	}
 
@@ -262,6 +274,13 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		}
 	}
 
+	/**
+	 * Sends the log of a rule to the channel of the rule, see `sendAutoModerationRuleLog`.
+	 */
+	protected async onRuleLog(message: GuildMessage, rule: AutoModerationRule<Type>, language: TFunction<AnyNamespace>, value: T): Promise<void> {
+		await sendAutoModerationRuleLog(await this.fetchGuild(message), rule, this.onLogMessage.bind(this, message, language, value));
+	}
+
 	protected async onLog(message: GuildMessage, logChannelId: string | Nullish, language: TFunction<AnyNamespace>, value: T): Promise<void> {
 		this.container.client.emit(
 			Events.GuildMessageLog,
@@ -326,15 +345,38 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 	 * @param key - The key of the alert, which takes the mention of the author as `user`.
 	 * @returns The alert, `null` when it was not sent.
 	 */
-	protected async sendAlert(message: GuildMessage, t: TFunction<AnyNamespace>, key: ModerationMessageListener.AlertKey) {
+	protected sendAlert(message: GuildMessage, t: TFunction<AnyNamespace>, key: ModerationMessageListener.AlertKey) {
+		// The alerts also take the emojis every translation gets by default, which the typed options do not know about:
+		const content = (t as unknown as (key: string, options: Record<string, unknown>) => string)(key, { user: message.author.toString() });
+		return this.sendAlertContent(message, key, content);
+	}
+
+	/**
+	 * Sends the custom response of a rule as its alert, see `formatAutoModerationResponse`. It is told once a minute
+	 * for each member, as the alert of the type is, and claimed apart from it, since it is of the rule.
+	 */
+	protected sendCustomAlert(message: GuildMessage, rule: AutoModerationRule<Type>) {
+		const content = formatAutoModerationResponse(rule.response ?? '', {
+			user: message.author.toString(),
+			rule: rule.name,
+			channel: channelMention(message.channelId)
+		});
+		return this.sendAlertContent(message, `rule-${rule.id}`, content);
+	}
+
+	/**
+	 * Sends an alert, once a minute for each member and each alert in a channel, see {@linkcode sendAlert}.
+	 *
+	 * @param key - What the alert is, which tells it apart from the other alerts of the channel in the claim.
+	 * @param content - What it says.
+	 */
+	private async sendAlertContent(message: GuildMessage, key: string, content: string) {
 		const claim = `automod-alert:${message.guildId}:${message.channelId}:${message.author.id}:${key}`;
 		if (!(await claimOnce(claim, AlertCooldownSeconds))) {
 			this.debug(message, `alert ${key} left out, the author was told less than ${AlertCooldownSeconds} seconds ago`);
 			return null;
 		}
 
-		// The alerts also take the emojis every translation gets by default, which the typed options do not know about:
-		const content = (t as unknown as (key: string, options: Record<string, unknown>) => string)(key, { user: message.author.toString() });
 		try {
 			return await this.sendTemporaryMessage(message, content, seconds(AlertCooldownSeconds));
 		} catch (error) {
