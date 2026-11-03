@@ -28,7 +28,12 @@ const SummaryKeys = [
 	'honeypotDirectMessage',
 	'honeypotWarning',
 	'honeypotRandomName',
-	'honeypotKeepActive'
+	'honeypotChaosName',
+	'honeypotKeepActive',
+	'honeypotForwardMessage',
+	'honeypotTimeoutFirst',
+	'honeypotRecentDelete',
+	'honeypotEnsureDeletion'
 ] as const satisfies readonly (keyof ReadonlyGuildData)[];
 
 /**

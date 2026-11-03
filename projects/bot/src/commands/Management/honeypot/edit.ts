@@ -41,6 +41,11 @@ const Root = HoneypotRoot;
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWarning`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsRandomName`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsKeepActive`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsForwardMessage`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsTimeoutFirst`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsRecentDelete`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsChaosName`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsEnsureDeletion`))
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'honeypot edit'>) {
@@ -56,6 +61,11 @@ export class UserCommand extends Command {
 		if (options.warning !== undefined) changes.honeypotWarning = options.warning;
 		if (options['random-name'] !== undefined) changes.honeypotRandomName = options['random-name'];
 		if (options['keep-active'] !== undefined) changes.honeypotKeepActive = options['keep-active'];
+		if (options['forward-message'] !== undefined) changes.honeypotForwardMessage = options['forward-message'];
+		if (options['timeout-first'] !== undefined) changes.honeypotTimeoutFirst = options['timeout-first'];
+		if (options['recent-delete'] !== undefined) changes.honeypotRecentDelete = options['recent-delete'];
+		if (options['chaos-name'] !== undefined) changes.honeypotChaosName = options['chaos-name'];
+		if (options['ensure-deletion'] !== undefined) changes.honeypotEnsureDeletion = options['ensure-deletion'];
 		if (Object.keys(changes).length === 0) return update(translateKey(t, `${Root}:editNothing`));
 
 		// A channel the bot cannot write in would be saved, and every report dropped without a word:

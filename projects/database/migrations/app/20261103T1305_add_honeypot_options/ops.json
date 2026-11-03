@@ -1,0 +1,172 @@
+[
+	{
+		"id": "column.public.GuildHoneypot.chaos_name",
+		"label": "Add column \"chaos_name\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "chaos_name",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"chaos_name\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "chaos_name"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"chaos_name\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"chaos_name\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"chaos_name\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "chaos_name"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildHoneypot.ensure_deletion",
+		"label": "Add column \"ensure_deletion\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "ensure_deletion",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"ensure_deletion\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "ensure_deletion"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"ensure_deletion\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"ensure_deletion\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"ensure_deletion\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "ensure_deletion"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildHoneypot.forward_message",
+		"label": "Add column \"forward_message\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "forward_message",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"forward_message\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "forward_message"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"forward_message\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"forward_message\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"forward_message\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "forward_message"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildHoneypot.recent_delete",
+		"label": "Add column \"recent_delete\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "recent_delete",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"recent_delete\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "recent_delete"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"recent_delete\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"recent_delete\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"recent_delete\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "recent_delete"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildHoneypot.timeout_first",
+		"label": "Add column \"timeout_first\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "timeout_first",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"timeout_first\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "timeout_first"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"timeout_first\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"timeout_first\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"timeout_first\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "timeout_first"]
+			}
+		]
+	}
+]

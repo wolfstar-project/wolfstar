@@ -86,6 +86,11 @@ export function getConfiguration() {
 		honeypotWarning: { type: 'boolean', name: 'honeypot.warning', description: 'settings:honeypotWarning', default: true },
 		honeypotRandomName: { type: 'boolean', name: 'honeypot.random-name', description: 'settings:honeypotRandomName' },
 		honeypotKeepActive: { type: 'boolean', name: 'honeypot.keep-active', description: 'settings:honeypotKeepActive' },
+		honeypotForwardMessage: { type: 'boolean', name: 'honeypot.forward-message', description: 'settings:honeypotForwardMessage' },
+		honeypotTimeoutFirst: { type: 'boolean', name: 'honeypot.timeout-first', description: 'settings:honeypotTimeoutFirst' },
+		honeypotRecentDelete: { type: 'boolean', name: 'honeypot.recent-delete', description: 'settings:honeypotRecentDelete' },
+		honeypotChaosName: { type: 'boolean', name: 'honeypot.chaos-name', description: 'settings:honeypotChaosName' },
+		honeypotEnsureDeletion: { type: 'boolean', name: 'honeypot.ensure-deletion', description: 'settings:honeypotEnsureDeletion' },
 
 		// Join Guard. The rules are rows of their own, which the dashboard edits:
 		joinGuardEnabled: { type: 'boolean', name: 'join-guard.enabled', description: 'settings:joinGuardEnabled' },

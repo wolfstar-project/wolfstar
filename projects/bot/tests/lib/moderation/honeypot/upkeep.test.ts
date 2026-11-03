@@ -1,6 +1,12 @@
 import { writeSettingsTransaction } from '#lib/database';
 import { refreshHoneypotNotice, removeHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
-import { getHoneypotUpkeepHour, HoneypotChannelNames, pickHoneypotChannelName, runHoneypotUpkeep } from '#lib/moderation/honeypot/upkeep';
+import {
+	getHoneypotUpkeepHour,
+	HoneypotChannelNames,
+	makeChaosChannelName,
+	pickHoneypotChannelName,
+	runHoneypotUpkeep
+} from '#lib/moderation/honeypot/upkeep';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import { getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
@@ -257,5 +263,22 @@ describe('runHoneypotUpkeep', () => {
 		expect(fetch).not.toHaveBeenCalled();
 		expect(edit).not.toHaveBeenCalled();
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	describe('chaos name', () => {
+		test('GIVEN the chaos name THEN the channel gets ten random characters, whatever the random name says', async () => {
+			setSettings({ honeypotChaosName: true, honeypotRandomName: true });
+
+			await runHoneypotUpkeep({ guildId, channelId });
+
+			expect(edit).toHaveBeenCalledOnce();
+			const [, { name }] = edit.mock.calls[0] as unknown as [string, { name: string }];
+			expect(name).toMatch(/^[a-z0-9]{10}$/);
+		});
+
+		test('GIVEN a random number THEN the name is made of the characters it picks', () => {
+			expect(makeChaosChannelName(() => 0)).toBe('aaaaaaaaaa');
+			expect(makeChaosChannelName(() => 0.999)).toBe('9999999999');
+		});
 	});
 });

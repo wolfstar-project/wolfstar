@@ -283,7 +283,12 @@ describe('renderHoneypotSummary', () => {
 			'commands/honeypot:showLine {"name":"settings:names.honeypotDirectMessage","value":"arguments:booleanEnabled"}',
 			'commands/honeypot:showLine {"name":"settings:names.honeypotWarning","value":"arguments:booleanEnabled"}',
 			'commands/honeypot:showLine {"name":"settings:names.honeypotRandomName","value":"arguments:booleanEnabled"}',
-			'commands/honeypot:showLine {"name":"settings:names.honeypotKeepActive","value":"arguments:booleanDisabled"}'
+			'commands/honeypot:showLine {"name":"settings:names.honeypotChaosName","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotKeepActive","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotForwardMessage","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotTimeoutFirst","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotRecentDelete","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotEnsureDeletion","value":"arguments:booleanDisabled"}'
 		]);
 	});
 

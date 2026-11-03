@@ -53,6 +53,26 @@ export function getHoneypotUpkeepHour(guildId: Snowflake): number {
 }
 
 /**
+ * The characters a chaos name is made of, and how long it is: a name that looks like nothing, which no list of channel
+ * names a bot keeps can hold.
+ */
+const ChaosNameCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const ChaosNameLength = 10;
+
+/**
+ * Makes the name of a honeypot channel that is renamed with random characters every day (`honeypot.chaos-name`).
+ *
+ * @param random - Gives a number from 0 to 1, 1 excluded, for each character.
+ */
+export function makeChaosChannelName(random = Math.random): string {
+	let name = '';
+	for (let i = 0; i < ChaosNameLength; i++) {
+		name += ChaosNameCharacters[Math.min(ChaosNameCharacters.length - 1, Math.floor(random() * ChaosNameCharacters.length))];
+	}
+	return name;
+}
+
+/**
  * Picks the next name of a honeypot channel, which is never the one it has.
  *
  * @param current - The name the channel has.
@@ -64,8 +84,8 @@ export function pickHoneypotChannelName(current: string | null, random = Math.ra
 }
 
 /**
- * Keeps a honeypot channel up for the day: it is given another name when the guild wants one, and a new message when
- * the guild keeps it active.
+ * Keeps a honeypot channel up for the day: it is given another name when the guild wants one (from the list, or random
+ * characters with `honeypot.chaos-name`), and a new message when the guild keeps it active.
  *
  * @remarks
  *
@@ -92,7 +112,7 @@ export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'chan
 
 		const settings = await readCurrentSettings(guildId);
 		if (settings.honeypotChannel !== channelId || !settings.modulesHoneypot) return 'skipped';
-		if (!settings.honeypotRandomName && !settings.honeypotKeepActive) return 'skipped';
+		if (!settings.honeypotRandomName && !settings.honeypotChaosName && !settings.honeypotKeepActive) return 'skipped';
 
 		const channel = await resolveOnErrorCodes(gatewayClient.channels.fetch(channelId), RESTJSONErrorCodes.UnknownChannel);
 		if (isNullish(channel) || !('guildId' in channel) || channel.guildId !== guildId) {
@@ -100,8 +120,11 @@ export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'chan
 			return cleared ? 'gone' : 'skipped';
 		}
 
-		if (settings.honeypotRandomName) {
-			const name = pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
+		// The chaos name takes the place of the one of the list while both are on:
+		if (settings.honeypotChaosName || settings.honeypotRandomName) {
+			const name = settings.honeypotChaosName
+				? makeChaosChannelName()
+				: pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
 			await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
 		}
 

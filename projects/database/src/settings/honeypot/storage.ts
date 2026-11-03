@@ -15,19 +15,25 @@ export interface HoneypotUpkeep {
 	warning: boolean;
 	randomName: boolean;
 	keepActive: boolean;
+	/** Whether the name of the day is random characters instead of one of the list. */
+	chaosName: boolean;
 }
 
 /**
  * Reads the honeypot channels that are kept up, of every guild: the ones that are set up and get another name every
- * day, a message every day, or both.
+ * day (from the list, or random characters), a message every day, or both.
  * @param orm The ORM surface to read through.
  */
 export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> {
 	const honeypots = orm.public.GuildHoneypot;
-	const [renamed, active] = await Promise.all([honeypots.where({ randomName: true }).all(), honeypots.where({ keepActive: true }).all()]);
+	const [renamed, chaos, active] = await Promise.all([
+		honeypots.where({ randomName: true }).all(),
+		honeypots.where({ chaosName: true }).all(),
+		honeypots.where({ keepActive: true }).all()
+	]);
 
 	const rows = new Map<bigint, Row>();
-	for (const row of [...renamed, ...active]) rows.set(row.id, row);
+	for (const row of [...renamed, ...chaos, ...active]) rows.set(row.id, row);
 
 	const upkeeps: HoneypotUpkeep[] = [];
 	for (const row of rows.values()) {
@@ -40,7 +46,8 @@ export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> 
 			action: row.action,
 			warning: row.warning,
 			randomName: row.randomName,
-			keepActive: row.keepActive
+			keepActive: row.keepActive,
+			chaosName: row.chaosName
 		});
 	}
 

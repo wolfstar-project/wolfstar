@@ -164,10 +164,15 @@ declare module '@wolfstar/http-framework' {
     'honeypot disable': {};
     'honeypot edit': {
       action?: 'Kick' | 'Softban' | 'Ban';
+      'chaos-name'?: boolean;
       'direct-message'?: boolean;
+      'ensure-deletion'?: boolean;
+      'forward-message'?: boolean;
       'keep-active'?: boolean;
       logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
       'random-name'?: boolean;
+      'recent-delete'?: boolean;
+      'timeout-first'?: boolean;
       warning?: boolean;
     };
     'honeypot setup': {

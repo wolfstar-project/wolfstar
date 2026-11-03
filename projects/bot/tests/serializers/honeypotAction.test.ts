@@ -45,7 +45,12 @@ describe('honeypotAction serializer', () => {
 			'honeypot.direct-message',
 			'honeypot.warning',
 			'honeypot.random-name',
-			'honeypot.keep-active'
+			'honeypot.keep-active',
+			'honeypot.forward-message',
+			'honeypot.timeout-first',
+			'honeypot.recent-delete',
+			'honeypot.chaos-name',
+			'honeypot.ensure-deletion'
 		]);
 		expect(keys.map((key) => key.default)).toEqual(keys.map((key) => defaults[key.property]));
 	});

@@ -298,6 +298,11 @@ namespace public {
     warning       Boolean                 @default(true)
     randomName    Boolean                 @default(false) @map("random_name")
     keepActive    Boolean                 @default(false) @map("keep_active")
+    forwardMessage Boolean                @default(false) @map("forward_message")
+    timeoutFirst  Boolean                 @default(false) @map("timeout_first")
+    recentDelete  Boolean                 @default(false) @map("recent_delete")
+    chaosName     Boolean                 @default(false) @map("chaos_name")
+    ensureDeletion Boolean                @default(false) @map("ensure_deletion")
     modules       Modules                 @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildHoneypot_id_fkey")
   }
 
