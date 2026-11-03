@@ -6,7 +6,7 @@ import { readCommandRestrictions, removeFromCommandRestrictions, writeCommandRes
 import { isGuildBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
-import { clearJoinGuardRuleAlertChannel } from 'wolfstar-database';
+import { clearJoinGuardRuleAlertChannel, type AutoModerationRule } from 'wolfstar-database';
 
 /**
  * Takes a channel that was deleted out of what the server restricted its commands to (a command that was only allowed
@@ -29,21 +29,30 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 	 */
 	async #forgetAutoModerationChannel(channel: GuildBasedChannel) {
 		const { guildId, id } = channel;
+		let rules: readonly AutoModerationRule[];
 		try {
-			for (const rule of await readAutoModerationRules(guildId)) {
-				if (rule.logChannelId !== id && !rule.ignoredChannels.includes(id)) continue;
+			rules = await readAutoModerationRules(guildId);
+		} catch (error) {
+			this.container.logger.error(`${getLogPrefix(this)} Could not read the auto-moderation rules of ${guildId}:`, error);
+			return;
+		}
+
+		// A rule that fails (deleted meanwhile, a database error) does not keep the others pointing at the channel:
+		for (const rule of rules) {
+			if (rule.logChannelId !== id && !rule.ignoredChannels.includes(id)) continue;
+			try {
 				await updateAutoModerationRule(guildId, rule.id, (current) => ({
 					...(current.logChannelId === id ? { logChannelId: null } : {}),
 					...(current.ignoredChannels.includes(id)
 						? { ignoredChannels: current.ignoredChannels.filter((channelId) => channelId !== id) }
 						: {})
 				}));
+			} catch (error) {
+				this.container.logger.error(
+					`${getLogPrefix(this)} Could not remove the deleted channel ${id} from the rule ${rule.id} of ${guildId}:`,
+					error
+				);
 			}
-		} catch (error) {
-			this.container.logger.error(
-				`${getLogPrefix(this)} Could not remove the deleted channel ${id} from the auto-moderation rules of ${guildId}:`,
-				error
-			);
 		}
 	}
 

@@ -43,6 +43,23 @@ export async function getMissingAutoModerationLogPermissions(guildId: Snowflake,
 }
 
 /**
+ * Checks the log channel a request gives a rule, for the API: the channel of another guild, one a log cannot go to,
+ * or one the bot cannot post logs in is refused, as `/automod edit` and the menu refuse it.
+ *
+ * @param guildId - The guild of the rule.
+ * @param logChannelId - The channel of the request, `undefined` when it gives none and `null` for the moderation channel.
+ * @returns What is wrong, as the other errors of the body are written, `null` when nothing is.
+ */
+export async function checkAutoModerationLogChannel(guildId: Snowflake, logChannelId: Snowflake | null | undefined): Promise<string | null> {
+	if (!logChannelId) return null;
+
+	const missing = await getMissingAutoModerationLogPermissions(guildId, logChannelId);
+	if (missing === null) return 'logChannelId: Expected a text or announcement channel of the guild, or a thread of one.';
+	if (missing.length > 0) return `logChannelId: The bot lacks ${missing.join(', ')} in the channel.`;
+	return null;
+}
+
+/**
  * Sends the log of a rule to the channel of the rule (`logChannelId`), where the `guildMessageLog` listener sends the
  * ones of the moderation channel. A channel that is gone is taken off the rule, so the log goes to the moderation
  * channel from then on; a channel the bot cannot post in is only logged.
