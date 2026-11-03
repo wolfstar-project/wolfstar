@@ -48,6 +48,14 @@ describe('createLogMessage', () => {
 		expect(texts.slice(1, -1).join('')).toBe(content);
 	});
 
+	test('GIVEN a text whose only space is at its start THEN no block is empty', () => {
+		const message = createLogMessage({ color: 0, author, content: ` ${'x'.repeat(2000)}`, footer: 'footer' });
+		const texts = collectText(message.components);
+
+		expect(texts.every((text) => text.length > 0)).toBe(true);
+		expect(texts.slice(1, -1).join('')).toBe('x'.repeat(2000));
+	});
+
 	test('GIVEN several parts THEN each starts a block of its own, in order', () => {
 		const message = createLogMessage({ color: 0, author, content: ['before', 'after'], footer: 'footer' });
 		const texts = collectText(message.components);

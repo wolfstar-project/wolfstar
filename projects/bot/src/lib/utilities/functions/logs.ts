@@ -279,7 +279,9 @@ function splitContent(content: string): string[] {
 			blocks.push(slice);
 			rest = rest.slice(MaximumBlockLength);
 		} else {
-			blocks.push(rest.slice(0, index).trim());
+			// A window whose only separator is at its start leaves nothing before it, and Discord refuses an empty block:
+			const block = rest.slice(0, index).trim();
+			if (block.length > 0) blocks.push(block);
 			rest = rest.slice(index + 1);
 		}
 	}
