@@ -8,8 +8,8 @@ import type { AnyChannel, GuildBasedChannel } from '@wolfstar/plugin-gateway';
 import { clearJoinGuardRuleAlertChannel } from 'wolfstar-database';
 
 /**
- * Takes a channel that was deleted out of what the server restricted its commands to: a command that was only allowed
- * in that channel would otherwise run nowhere.
+ * Takes a channel that was deleted out of what the server restricted its commands to (a command that was only allowed
+ * in that channel would otherwise run nowhere), out of the join guard and out of the lockdown channels.
  */
 @RegisterAsDispatchListener('channelDelete')
 export class UserListener extends EventGatewayListener<'channelDelete'> {
@@ -19,6 +19,29 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 		const channel = deleted as GuildBasedChannel;
 		await this.#forgetCommandRestrictions(channel);
 		await this.#forgetJoinGuardChannel(channel);
+		await this.#forgetLockdownChannel(channel);
+	}
+
+	/**
+	 * The lockdown channels forget it: `/lockdown channels:configured` would report it as unknown every time.
+	 */
+	async #forgetLockdownChannel(channel: GuildBasedChannel) {
+		const { guildId, id } = channel;
+		try {
+			const settings = await readSettings(guildId);
+			if (!settings.moderationLockdownChannels.includes(id)) return;
+
+			await writeSettings(
+				guildId,
+				(current) => ({ moderationLockdownChannels: current.moderationLockdownChannels.filter((channelId) => channelId !== id) }),
+				this.container.gatewayClient.user!.id
+			);
+		} catch (error) {
+			this.container.logger.error(
+				`${getLogPrefix(this)} Could not remove the deleted channel ${id} from the lockdown channels of ${guildId}:`,
+				error
+			);
+		}
 	}
 
 	async #forgetCommandRestrictions(channel: GuildBasedChannel) {

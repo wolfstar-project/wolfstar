@@ -15,6 +15,17 @@ export function getSchemaChannelTypes(type: SchemaKeyType): ChannelType[] {
 			return [ChannelType.GuildCategory];
 		case 'categoryOrTextChannel':
 			return [ChannelType.GuildText, ChannelType.GuildCategory];
+		case 'lockdownChannel':
+			// What `/lockdown channel:` takes, but the threads, which a lockdown locks one by one:
+			return [
+				ChannelType.GuildText,
+				ChannelType.GuildAnnouncement,
+				ChannelType.GuildVoice,
+				ChannelType.GuildStageVoice,
+				ChannelType.GuildCategory,
+				ChannelType.GuildForum,
+				ChannelType.GuildMedia
+			];
 		default:
 			return [];
 	}

@@ -191,6 +191,7 @@ declare module '@wolfstar/http-framework' {
     'lockdown': {
       action: 'lock' | 'unlock';
       channel?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 2 | 4 | 5 | 10 | 11 | 12 | 13 | 15 | 16> };
+      channels?: 'configured';
       duration?: string;
       global?: boolean;
       role?: TransformedArguments.Role;

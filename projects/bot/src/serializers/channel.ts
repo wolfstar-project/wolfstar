@@ -3,7 +3,7 @@ import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelType
 import { ApplyOptions } from '@wolfstar/decorators';
 
 @ApplyOptions<Serializer.Options>({
-	aliases: ['guildTextChannel', 'guildLogChannel', 'guildVoiceChannel', 'guildCategoryChannel', 'categoryOrTextChannel']
+	aliases: ['guildTextChannel', 'guildLogChannel', 'guildVoiceChannel', 'guildCategoryChannel', 'categoryOrTextChannel', 'lockdownChannel']
 })
 export class UserSerializer extends Serializer<string> {
 	public async parse(input: string, { t, entry, guild }: Serializer.UpdateContext) {
