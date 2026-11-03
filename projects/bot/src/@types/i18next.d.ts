@@ -908,9 +908,10 @@ declare module "i18next" {
             "action:lock",
             "action:lock channel:#general duration:10m",
             "action:unlock channel:#general",
+            "action:lock channels:configured duration:10m",
             "action:lock global:true",
           ];
-          reminder: "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel.";
+          reminder: "With `global`, the permission to write is taken away from the role in the whole server, instead of in a channel. With `channels:configured`, the channels of `moderation.lockdown-channels` are locked, or unlocked, together.";
         };
         "/mute": {
           extendedHelp: "Mutes a member: they lose their roles and get the muted role, which keeps them from writing in the channels and from joining the voice channels, and they get their roles back when they are unmuted. A mute can last a `duration` and be lifted by itself when it ends, and the muted role is given back when they leave and join the server again.\n`create` prepares the mute system: it creates the muted role, or uses the one you give, and sets it up in every channel.";
@@ -1190,6 +1191,19 @@ declare module "i18next" {
         durationDescription: "How long the lockdown lasts, from 30 seconds to a month. Only applies when locking.";
         globalName: "global";
         globalDescription: "⚠ Whether to lock down the whole server instead of a channel.";
+        channelsName: "channels";
+        channelsDescription: "Which channels to lock down together: the ones of `moderation.lockdown-channels`.";
+        channelsConfigured: "configured";
+        configuredEmpty: "The server has no lockdown channels. Pick them in `moderation.lockdown-channels` of `/settings server`.";
+        configuredLocked_one: "Locked down {{count}} channel for {{role}}.";
+        configuredLocked_other: "Locked down {{count}} channels for {{role}}.";
+        configuredUnlocked_one: "Unlocked {{count}} channel for {{role}}.";
+        configuredUnlocked_other: "Unlocked {{count}} channels for {{role}}.";
+        configuredAlreadyLocked_one: "{{count}} channel was already locked down and was left as it was.";
+        configuredAlreadyLocked_other: "{{count}} channels were already locked down and were left as they were.";
+        configuredAlreadyUnlocked_one: "{{count}} channel was not locked down and was left as it was.";
+        configuredAlreadyUnlocked_other: "{{count}} channels were not locked down and were left as they were.";
+        configuredFailed: "These could not be changed:";
         auditLogLockRequestedBy: "Locked down at the request of {{user}}";
         auditLogUnlockRequestedBy: "Unlocked at the request of {{user}}";
         guildLocked: "{{role}} is already locked down in the server.";
@@ -3153,6 +3167,7 @@ declare module "i18next" {
         moderationTrackRoles: "Whether I should record the muted and restriction roles given or taken away without using my commands. A muted role given by hand mutes the member as `/mute add` does: their other roles are taken away and kept, and they are given back when the role is taken away.";
         moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
         moderationConfirmRecentMinutes: "When a member already has a case made within these minutes, I ask the moderator to confirm before taking another action on them, so two moderators acting on one message do not punish twice. 0 never asks.";
+        moderationLockdownChannels: "The channels `/lockdown channels:configured` locks down and unlocks together, up to 25: the ones a raid writes in, and not the ones the staff and the bots work in. A deleted channel leaves the list.";
         moderationDehoist: "Whether I should clean the names of the members when they join or change them, with a nickname: what lists a name above the others (spaces and `!`, `.`, `-` and the like at its start) is taken away, and the strange characters (fancy fonts, zalgo, symbols, emojis, other scripts) are turned into plain letters. The accents are kept. A sticky nickname and the members who can manage nicknames are left alone.";
         channelsIgnoreMessages: "The channels where I will not log the message edits and deletions.";
         channelsIgnoreVoiceActivity: "The channels I should ignore when reporting activity changes.";
@@ -3254,6 +3269,7 @@ declare module "i18next" {
           moderationTrackKicks: "Track Kicks";
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
           moderationDehoist: "Dehoist Names";
+          moderationLockdownChannels: "Lockdown Channels";
           messagesModerationDm: "Direct Message the Members";
           messagesModerationReasonDisplay: "Show the Reason";
           messagesModerationMessageDisplay: "Answer in the Channel";

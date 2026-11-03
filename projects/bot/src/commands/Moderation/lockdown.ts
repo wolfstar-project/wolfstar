@@ -1,5 +1,12 @@
 import { ApplyOptions } from '@wolfstar/decorators';
 import { toErrorCodeResult } from '#common';
+import { readSettings } from '#lib/database';
+import {
+	describeLockdownChannelOutcome,
+	summarizeLockdownChannels,
+	type LockdownChannelOutcome,
+	type LockdownChannelResult
+} from '#lib/moderation/lockdownChannels';
 import { months } from 'wolfstar-shared';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
 import {
@@ -40,6 +47,7 @@ const MaximumDuration = months(1);
 
 type LockdownTarget =
 	| { readonly kind: 'guild' }
+	| { readonly kind: 'configured' }
 	| { readonly kind: 'channel'; readonly channel: LockdownChannel }
 	| { readonly kind: 'thread'; readonly channel: AnyThreadChannel };
 
@@ -52,6 +60,8 @@ type LockdownTarget =
  *   categories, to connect, to the role. Unlocking gives back what the role had in the channel before.
  * - A thread is locked with its own lock.
  * - With `global`, the permissions to write are taken away from the role in the whole server instead.
+ * - With `channels:configured`, every channel of `moderation.lockdown-channels` is locked, or unlocked, as `channel`
+ *   locks one: a channel that fails does not stop the others, and the answer says what came of each.
  * - `role` defaults to `@everyone`, `channel` to the channel the command was run in, and `duration` only applies when
  *   locking.
  *
@@ -91,6 +101,11 @@ type LockdownTarget =
 		)
 		.addStringOption((option) => applyLocalizedBuilder(option, `${Root}:duration`).setRequired(false))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:global`).setRequired(false))
+		.addStringOption((option) =>
+			applyLocalizedBuilder(option, `${Root}:channels`)
+				.setChoices(createLocalizedChoice(`${Root}:channelsConfigured`, { value: 'configured' }))
+				.setRequired(false)
+		)
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'lockdown'>) {
@@ -132,10 +147,14 @@ export class UserCommand extends Command {
 		switch (target.kind) {
 			case 'guild':
 				return this.lockGuild(t, guildId, user.id, roleId, reason, duration);
+			case 'configured':
+				return this.changeConfigured(t, guildId, user.id, roleId, reason, 'lock', duration);
 			case 'thread':
 				return this.lockThread(t, user.id, target.channel, reason, duration);
 			case 'channel':
-				return this.lockChannel(t, user.id, target.channel, roleId, reason, duration);
+				return this.lockChannel(user.id, target.channel, roleId, reason, duration).then((outcome) =>
+					describeLockdownChannelOutcome(t, 'lock', outcome, target.channel.id, roleId)
+				);
 		}
 	}
 
@@ -144,10 +163,14 @@ export class UserCommand extends Command {
 		switch (target.kind) {
 			case 'guild':
 				return this.unlockGuild(t, guildId, user.id, roleId, reason);
+			case 'configured':
+				return this.changeConfigured(t, guildId, user.id, roleId, reason, 'unlock', null);
 			case 'thread':
 				return this.unlockThread(t, guildId, user.id, target.channel, reason);
 			case 'channel':
-				return this.unlockChannel(t, user.id, target.channel, roleId, reason);
+				return this.unlockChannel(user.id, target.channel, roleId, reason).then((outcome) =>
+					describeLockdownChannelOutcome(t, 'unlock', outcome, target.channel.id, roleId)
+				);
 		}
 	}
 
@@ -230,7 +253,7 @@ export class UserCommand extends Command {
 		const result = await toErrorCodeResult(Promise.resolve(channel.setLocked(true, reason)).then(() => undefined));
 		if (result.isErr()) {
 			await lockdowns.remove(data);
-			return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadLockFailed');
+			return this.channelError(t, mention, result.unwrapErr(), 'threadLockFailed');
 		}
 
 		return t(`${Root}:successThread`, { channel: mention });
@@ -244,30 +267,63 @@ export class UserCommand extends Command {
 
 		const data: LockdownData = { type: LockdownType.Thread, guildId, userId, channelId: channel.id };
 		const result = await toErrorCodeResult(lockdowns.release(data, reason));
-		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'thread', 'threadUnlockFailed');
+		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'threadUnlockFailed');
 
 		return t(`${Root}:successThread`, { channel: mention });
 	}
 
 	// Channels
 
-	private async lockChannel(
+	/**
+	 * Locks down, or unlocks, every channel of `moderation.lockdown-channels`, one after the other, and answers with what
+	 * came of all of them. A channel that is gone, or that is no longer one a lockdown applies to, is reported and left
+	 * alone; the list forgets it when it is deleted (`channelDelete`).
+	 */
+	private async changeConfigured(
 		t: Translator,
+		guildId: Snowflake,
+		userId: Snowflake,
+		roleId: Snowflake,
+		reason: string,
+		action: 'lock' | 'unlock',
+		duration: number | null
+	) {
+		const settings = await readSettings(guildId);
+		const channelIds = settings.moderationLockdownChannels;
+		if (channelIds.length === 0) return t(`${Root}:configuredEmpty`);
+
+		const results: LockdownChannelResult[] = [];
+		for (const channelId of channelIds) {
+			const channel = await container.gatewayClient.channels.fetch(channelId).catch(() => null);
+			const outcome: LockdownChannelOutcome =
+				channel === null || !isLockdownChannel(channel)
+					? 'unknown'
+					: action === 'lock'
+						? await this.lockChannel(userId, channel, roleId, reason, duration)
+						: await this.unlockChannel(userId, channel, roleId, reason);
+			results.push({ channelId, outcome });
+		}
+
+		container.logger.debug(
+			`[Lockdown] ${action} of the configured channels of ${guildId} for ${roleId}: ${results.map((result) => `${result.channelId}=${result.outcome}`).join(', ')}`
+		);
+		return summarizeLockdownChannels(t, action, roleId, results);
+	}
+
+	private async lockChannel(
 		userId: Snowflake,
 		channel: LockdownChannel,
 		roleId: Snowflake,
 		reason: string,
 		duration: number | null
-	) {
-		const mention = channelMention(channel.id);
-		const role = roleMention(roleId);
+	): Promise<LockdownChannelOutcome> {
 		const permissionsApplied = getChannelLockdownPermissions(channel.type);
 
 		// Locked means none of the permissions is left in the channel:
 		const effective = await channel.permissionsFor(roleId);
-		if ((effective.bitField & permissionsApplied) === 0n) return t(`${Root}:channelLocked`, { channel: mention, role });
+		if ((effective.bitField & permissionsApplied) === 0n) return 'already';
 		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles))) {
-			return t(`${Root}:channelUnmanageable`, { channel: mention });
+			return 'unmanageable';
 		}
 
 		const existing = channel.permissionOverwrites.resolve(roleId);
@@ -291,21 +347,19 @@ export class UserCommand extends Command {
 		const result = await toErrorCodeResult(channel.permissionOverwrites.edit(roleId, deny, { type: OverwriteType.Role, reason }));
 		if (result.isErr()) {
 			await lockdowns.remove(data);
-			return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelLockFailed');
+			return this.channelOutcome(channel.id, result.unwrapErr());
 		}
 
-		return t(`${Root}:successChannel`, { channel: mention, role });
+		return 'done';
 	}
 
-	private async unlockChannel(t: Translator, userId: Snowflake, channel: LockdownChannel, roleId: Snowflake, reason: string) {
-		const mention = channelMention(channel.id);
-		const role = roleMention(roleId);
+	private async unlockChannel(userId: Snowflake, channel: LockdownChannel, roleId: Snowflake, reason: string): Promise<LockdownChannelOutcome> {
 		const permissionsApplied = getChannelLockdownPermissions(channel.type);
 
 		const effective = await channel.permissionsFor(roleId);
-		if ((effective.bitField & permissionsApplied) === permissionsApplied) return t(`${Root}:channelUnlocked`, { channel: mention, role });
+		if ((effective.bitField & permissionsApplied) === permissionsApplied) return 'already';
 		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles))) {
-			return t(`${Root}:channelUnmanageable`, { channel: mention });
+			return 'unmanageable';
 		}
 
 		// Without what the lockdown changed, reset the permissions that were applied to the default state:
@@ -320,21 +374,26 @@ export class UserCommand extends Command {
 			permissionsOriginalDeny: 0n
 		};
 		const result = await toErrorCodeResult(lockdowns.release(data, reason));
-		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'channel', 'channelUnlockFailed');
+		if (result.isErr()) return this.channelOutcome(channel.id, result.unwrapErr());
 
-		return t(`${Root}:successChannel`, { channel: mention, role });
+		return 'done';
 	}
 
-	private channelError(
-		t: Translator,
-		mention: string,
-		code: RESTJSONErrorCodes,
-		kind: 'channel' | 'thread',
-		failed: 'channelLockFailed' | 'channelUnlockFailed' | 'threadLockFailed' | 'threadUnlockFailed'
-	) {
-		if (code === RESTJSONErrorCodes.UnknownChannel) return t(`${Root}:${kind}UnknownChannel`, { channel: mention });
+	/**
+	 * What the refusal of Discord means for a channel, see {@linkcode LockdownChannelOutcome}.
+	 */
+	private channelOutcome(channelId: Snowflake, code: RESTJSONErrorCodes): LockdownChannelOutcome {
+		if (code === RESTJSONErrorCodes.UnknownChannel) return 'unknown';
+		if (code === RESTJSONErrorCodes.MissingPermissions || code === RESTJSONErrorCodes.MissingAccess) return 'unmanageable';
+
+		container.logger.error(`[Lockdown] Discord answered ${code} while changing ${channelId}`);
+		return 'failed';
+	}
+
+	private channelError(t: Translator, mention: string, code: RESTJSONErrorCodes, failed: 'threadLockFailed' | 'threadUnlockFailed') {
+		if (code === RESTJSONErrorCodes.UnknownChannel) return t(`${Root}:threadUnknownChannel`, { channel: mention });
 		if (code === RESTJSONErrorCodes.MissingPermissions || code === RESTJSONErrorCodes.MissingAccess)
-			return t(`${Root}:${kind}Unmanageable`, { channel: mention });
+			return t(`${Root}:threadUnmanageable`, { channel: mention });
 
 		container.logger.error(`[Lockdown] Discord answered ${code} while changing ${mention}`);
 		return t(`${Root}:${failed}`, { channel: mention });
@@ -343,12 +402,14 @@ export class UserCommand extends Command {
 	// Resolution
 
 	/**
-	 * Resolves what to lock: the whole server with `global`, otherwise the `channel` option or the channel the command
-	 * was run in.
+	 * Resolves what to lock: the channels of `moderation.lockdown-channels` with `channels:configured`, the whole server
+	 * with `global`, otherwise the `channel` option or the channel the command was run in.
 	 *
 	 * @returns The target, or `null` when the channel is not one that can be locked down.
 	 */
 	private async resolveTarget(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'lockdown'>): Promise<LockdownTarget | null> {
+		if (args.channels === 'configured') return { kind: 'configured' };
+
 		const channelId = args.channel?.id ?? (args.global ? undefined : interaction.channel.id);
 		if (channelId === undefined) return { kind: 'guild' };
 

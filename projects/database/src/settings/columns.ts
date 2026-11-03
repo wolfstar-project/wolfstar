@@ -186,6 +186,7 @@ export const Columns = {
 		moderationTrackKicks: ['trackKicks', 'value'],
 		moderationConfirmRecentMinutes: ['confirmRecentMinutes', 'value'],
 		moderationDehoist: ['dehoist', 'value'],
+		moderationLockdownChannels: ['lockdownChannels', 'snowflakes'],
 		messagesModerationDm: ['directMessage', 'value'],
 		messagesModerationReasonDisplay: ['displayReason', 'value'],
 		messagesModerationMessageDisplay: ['displayMessage', 'value'],
