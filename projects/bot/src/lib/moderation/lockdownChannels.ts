@@ -56,8 +56,15 @@ export function describeLockdownChannelOutcome(
 }
 
 /**
+ * The most channels the answer lists with why they could not be changed: a message holds 2000 characters, and the
+ * line of a channel the bot cannot manage is over a hundred.
+ */
+export const MaximumListedLockdownFailures = 10;
+
+/**
  * One answer for the channels of `moderation.lockdown-channels`: how many were changed, how many were already as
- * asked, and a line for each one that could not be changed, with why.
+ * asked, and a line for each one that could not be changed, with why, up to {@linkcode MaximumListedLockdownFailures}
+ * and then how many more there are.
  *
  * @param t - The function to translate with.
  * @param action - Whether the channels were being locked or unlocked.
@@ -79,7 +86,11 @@ export function summarizeLockdownChannels(
 	if (already > 0) lines.push(t(action === 'lock' ? `${Root}:configuredAlreadyLocked` : `${Root}:configuredAlreadyUnlocked`, { count: already }));
 	if (failures.length > 0) {
 		lines.push(t(`${Root}:configuredFailed`));
-		for (const { channelId, outcome } of failures) lines.push(`- ${describeLockdownChannelOutcome(t, action, outcome, channelId, roleId)}`);
+		for (const { channelId, outcome } of failures.slice(0, MaximumListedLockdownFailures)) {
+			lines.push(`- ${describeLockdownChannelOutcome(t, action, outcome, channelId, roleId)}`);
+		}
+		const more = failures.length - MaximumListedLockdownFailures;
+		if (more > 0) lines.push(t(`${Root}:configuredFailedMore`, { count: more }));
 	}
 
 	return lines.join('\n');

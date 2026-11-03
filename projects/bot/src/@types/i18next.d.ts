@@ -1204,6 +1204,9 @@ declare module "i18next" {
         configuredAlreadyUnlocked_one: "{{count}} channel was not locked down and was left as it was.";
         configuredAlreadyUnlocked_other: "{{count}} channels were not locked down and were left as they were.";
         configuredFailed: "These could not be changed:";
+        configuredFailedMore_one: "-# …and {{count}} more channel.";
+        configuredFailedMore_other: "-# …and {{count}} more channels.";
+        configuredWithOthers: "`channels:configured` locks down the configured channels on its own: leave `channel` and `global` out, or leave it out.";
         auditLogLockRequestedBy: "Locked down at the request of {{user}}";
         auditLogUnlockRequestedBy: "Unlocked at the request of {{user}}";
         guildLocked: "{{role}} is already locked down in the server.";

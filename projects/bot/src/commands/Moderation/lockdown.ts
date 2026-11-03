@@ -1,5 +1,6 @@
 import { ApplyOptions } from '@wolfstar/decorators';
 import { toErrorCodeResult } from '#common';
+import { DiscordAPIError } from '@discordjs/rest';
 import { readSettings } from '#lib/database';
 import {
 	describeLockdownChannelOutcome,
@@ -121,6 +122,10 @@ export class UserCommand extends Command {
 
 			duration = result.unwrap();
 		}
+
+		// The configured channels are a target of their own: with another one, which would be dropped in silence, the
+		// moderator is asked to pick, a raid being the wrong time to believe the whole server is locked when it is not.
+		if (args.channels === 'configured' && (args.channel !== undefined || args.global === true)) return fail(t(`${Root}:configuredWithOthers`));
 
 		const target = await this.resolveTarget(interaction, args);
 		if (target === null) return fail(t(`${Root}:channelUnknownChannel`, { channel: channelMention(args.channel?.id ?? interaction.channel.id) }));
@@ -294,14 +299,22 @@ export class UserCommand extends Command {
 
 		const results: LockdownChannelResult[] = [];
 		for (const channelId of channelIds) {
-			const channel = await container.gatewayClient.channels.fetch(channelId).catch(() => null);
-			const outcome: LockdownChannelOutcome =
-				channel === null || !isLockdownChannel(channel)
+			// A channel that fails, whatever the reason, does not stop the others: Discord may refuse one, or not answer,
+			// and the release job of one may not be written. A channel that is gone is unknown; one that could not be
+			// read is a failure, since it may well be there.
+			try {
+				const channel = await container.gatewayClient.channels.fetch(channelId);
+				const outcome: LockdownChannelOutcome = !isLockdownChannel(channel)
 					? 'unknown'
 					: action === 'lock'
 						? await this.lockChannel(userId, channel, roleId, reason, duration)
 						: await this.unlockChannel(userId, channel, roleId, reason);
-			results.push({ channelId, outcome });
+				results.push({ channelId, outcome });
+			} catch (error) {
+				const code = error instanceof DiscordAPIError ? error.code : null;
+				if (code !== RESTJSONErrorCodes.UnknownChannel) container.logger.error(`[Lockdown] Could not ${action} ${channelId}:`, error);
+				results.push({ channelId, outcome: code === RESTJSONErrorCodes.UnknownChannel ? 'unknown' : 'failed' });
+			}
 		}
 
 		container.logger.debug(

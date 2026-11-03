@@ -1,5 +1,7 @@
 import { getSchemaChannelTypes } from '#lib/database/settings/schema/channelTypes';
-import { describeLockdownChannelOutcome, summarizeLockdownChannels } from '#lib/moderation/lockdownChannels';
+import { describeLockdownChannelOutcome, MaximumListedLockdownFailures, summarizeLockdownChannels } from '#lib/moderation/lockdownChannels';
+import { getSettingKind } from '#lib/structures/settings-menu/values';
+import { getConfigurableKeys } from '#lib/database';
 import type { Translator } from '#lib/structures/commands/utils';
 import { ChannelType } from 'discord-api-types/v10';
 
@@ -58,5 +60,21 @@ describe('lockdown channels', () => {
 			'- commands/lockdown:channelUnmanageable(channel=<#3>)',
 			'- commands/lockdown:channelUnknownChannel(channel=<#4>)'
 		]);
+	});
+
+	test('GIVEN more failures than the answer lists THEN the rest is counted, so the answer fits a message', () => {
+		const results = Array.from({ length: 25 }, (_, index) => ({ channelId: String(index + 1), outcome: 'unmanageable' as const }));
+		const summary = summarizeLockdownChannels(t, 'lock', roleId, results);
+		const lines = summary.split('\n');
+
+		expect(lines.filter((line) => line.startsWith('- '))).toHaveLength(MaximumListedLockdownFailures);
+		expect(lines.at(-1)).toBe(`commands/lockdown:configuredFailedMore(count=${25 - MaximumListedLockdownFailures})`);
+	});
+
+	test('GIVEN the setting THEN the menu edits it with a channel picker', () => {
+		const key = getConfigurableKeys().find((entry) => entry.name === 'moderation.lockdown-channels')!;
+
+		expect(key.array).toBe(true);
+		expect(getSettingKind(key)).toBe('channel');
 	});
 });
