@@ -81,10 +81,13 @@ describe('catchHoneypotMessage', () => {
 		}
 
 		Object.assign(container, {
-			gatewayClient: { messages: { delete: deleteMessage } },
+			gatewayClient: {
+				messages: { delete: deleteMessage },
+				members: { fetch: vi.fn(async () => ({ communicationDisabledUntilTimestamp: null })) }
+			},
 			client: { emit },
 			redis: undefined,
-			logger: { debug, error: vi.fn() }
+			logger: { debug, error: vi.fn(), fatal: vi.fn(), warn: vi.fn() }
 		});
 	});
 
@@ -325,6 +328,30 @@ describe('catchHoneypotMessage', () => {
 			expect(ModerationActions.timeout.apply).toHaveBeenCalledOnce();
 		});
 
+		test('an existing longer timeout is preserved', async () => {
+			vi.mocked(container.gatewayClient.members.fetch).mockResolvedValue({
+				communicationDisabledUntilTimestamp: now + HoneypotTimeoutDuration * 2
+			} as never);
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotTimeoutFirst: true }));
+			expect(ModerationActions.timeout.apply).not.toHaveBeenCalled();
+			expect(ModerationActions.softban.apply).toHaveBeenCalled();
+		});
+
+		test('a reinvite reaches the action DM after a softban but is never created for a ban', async () => {
+			const post = vi.fn(async () => ({ code: 'return' }));
+			Object.assign(container, { rest: { post } });
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotReinvite: true }));
+			expect(ModerationActions.softban.apply).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.objectContaining({ reinviteUrl: 'https://discord.gg/return' })
+			);
+			post.mockClear();
+			vi.setSystemTime((now += 61_000));
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotReinvite: true, honeypotAction: 'Ban' }));
+			expect(post).not.toHaveBeenCalled();
+		});
+
 		test('GIVEN the recent delete THEN the softban deletes the last fifteen minutes', async () => {
 			await catchHoneypotMessage(createMessage(), createSettings({ honeypotRecentDelete: true }));
 
@@ -342,7 +369,7 @@ describe('catchHoneypotMessage', () => {
 
 			await catchHoneypotMessage(createMessage(), createSettings({ honeypotEnsureDeletion: true }));
 
-			expect(scheduleHoneypotSweep).toHaveBeenCalledWith({ guildId, userId });
+			expect(scheduleHoneypotSweep).toHaveBeenCalledWith({ guildId, userId, caughtAt: now, deleteSeconds: HoneypotDeleteMessageSeconds });
 		});
 
 		test('GIVEN the options off THEN nothing is forwarded, timed out nor swept', async () => {

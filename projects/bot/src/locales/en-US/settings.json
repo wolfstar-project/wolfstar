@@ -262,6 +262,12 @@
 		"rolesRestrictedEmoji": "Emoji Restriction Role",
 		"rolesRestrictedAttachment": "Attachment Restriction Role",
 		"rolesRestrictedVoice": "Voice Restriction Role",
-		"stickyRoles": "Sticky Roles"
-	}
+		"stickyRoles": "Sticky Roles",
+		"honeypotChannels": "Additional Honeypot Channels",
+		"honeypotReinvite": "Reinvite in Direct Message",
+		"honeypotRecreate": "Recreate Channels Daily"
+	},
+	"honeypotChannels": "Up to four additional trap channels, sharing the action and options of the main honeypot.",
+	"honeypotReinvite": "Whether a kick or softban direct message includes a one-use invite that expires after 24 hours. No invite is sent for a ban.",
+	"honeypotRecreate": "Whether each trap is replaced daily with a new channel ID. Messages are deleted. Its name, category and permission overwrites are preserved unless random naming is enabled."
 }

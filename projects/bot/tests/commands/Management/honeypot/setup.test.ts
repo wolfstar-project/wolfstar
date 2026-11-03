@@ -25,6 +25,7 @@ vi.mock('#lib/moderation/honeypot/channel', () => ({
 	getMissingHoneypotLogPermissions: vi.fn(),
 	getMissingHoneypotPermissions: vi.fn(),
 	refreshHoneypotNotice: vi.fn(),
+	readHoneypotNotices: vi.fn(async () => new Map()),
 	withHoneypotLock: vi.fn((_guildId: string, callback: () => Promise<unknown>) => callback())
 }));
 vi.mock('#lib/structures/commands/utils', () => ({

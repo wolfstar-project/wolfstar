@@ -1,3 +1,4 @@
+import { getHoneypotChannels } from '#lib/moderation/honeypot/channels';
 import { isGuildMessage, isWebhookMessage } from '#common';
 import { readSettings } from '#lib/database';
 import { catchHoneypotMessage } from '#lib/moderation/honeypot/catch';
@@ -22,7 +23,7 @@ export class UserListener extends EventGatewayListener<'messageCreate'> {
 
 		const settings = await readSettings(guildId);
 		this.container.logger.debug(`[Honeypot] ${describeMessage(message)}: the honeypot of the guild is in ${settings.honeypotChannel}`);
-		if (settings.honeypotChannel !== message.channelId || !settings.modulesHoneypot || !isGuildMessage(message)) return;
+		if (!getHoneypotChannels(settings).includes(message.channelId) || !settings.modulesHoneypot || !isGuildMessage(message)) return;
 
 		await catchHoneypotMessage(message, settings);
 	}

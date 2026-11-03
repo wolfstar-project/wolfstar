@@ -39,6 +39,9 @@ describe('honeypotAction serializer', () => {
 		const keys = [...getConfigurableKeys().values()].filter((key) => key.name.startsWith('honeypot.'));
 
 		expect(keys.map((key) => key.name)).toEqual([
+			'honeypot.channels',
+			'honeypot.reinvite',
+			'honeypot.recreate',
 			'honeypot.channel',
 			'honeypot.log-channel',
 			'honeypot.action',

@@ -125,6 +125,42 @@ describe('runHoneypotUpkeep', () => {
 		});
 	});
 
+	test('daily recreation preserves permissions and saves the replacement before deleting the old trap', async () => {
+		setSettings({ honeypotRecreate: true });
+		const overwrites = [{ id: guildId, type: 0, allow: '1024', deny: '0' }];
+		Object.assign(container, {
+			rest: { get: vi.fn(async () => ({ type: 0, name: 'trap', permission_overwrites: overwrites, parent_id: 'parent', position: 2 })) }
+		});
+		const createChannel = vi.fn(async () => ({ id: 'replacement' }));
+		const atDeletion: string[] = [];
+		const remove = vi.fn(async (_id: string) => {
+			atDeletion.push(settings.honeypotChannel!);
+		});
+		Object.assign(container.gatewayClient.api, { guilds: { createChannel } });
+		Object.assign(container.gatewayClient.channels, { delete: remove });
+		expect(await runHoneypotUpkeep(upkeep)).toBe('done');
+		expect(createChannel).toHaveBeenCalledWith(
+			guildId,
+			expect.objectContaining({ name: 'trap', permission_overwrites: overwrites, parent_id: 'parent' }),
+			expect.anything()
+		);
+		expect(settings.honeypotChannel).toBe('replacement');
+		expect(atDeletion).toEqual(['replacement']);
+	});
+
+	test('failed daily deletion restores the original trap and cleans up the replacement', async () => {
+		setSettings({ honeypotRecreate: true });
+		Object.assign(container, { rest: { get: vi.fn(async () => ({ type: 0, name: 'trap' })) } });
+		Object.assign(container.gatewayClient.api, { guilds: { createChannel: vi.fn(async () => ({ id: 'replacement' })) } });
+		const remove = vi.fn(async (id: string) => {
+			if (id === channelId) throw new Error('denied');
+		});
+		Object.assign(container.gatewayClient.channels, { delete: remove });
+		await expect(runHoneypotUpkeep(upkeep)).rejects.toThrow('denied');
+		expect(settings.honeypotChannel).toBe(channelId);
+		expect(remove).toHaveBeenCalledWith('replacement', 'Honeypot recreation failed');
+	});
+
 	test('GIVEN a channel that is renamed THEN it gets a name it did not have, and no message, under the lock', async () => {
 		setSettings({ honeypotRandomName: true });
 
@@ -143,7 +179,7 @@ describe('runHoneypotUpkeep', () => {
 		expect(await runHoneypotUpkeep(upkeep)).toBe('done');
 
 		expect(edit).not.toHaveBeenCalled();
-		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban' });
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban', independent: false });
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -188,7 +224,7 @@ describe('runHoneypotUpkeep', () => {
 
 		expect(settings.honeypotChannel).toBeNull();
 		expect(audits).toEqual([botId]);
-		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId);
+		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, undefined);
 		expect(edit).not.toHaveBeenCalled();
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
 	});

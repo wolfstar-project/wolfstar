@@ -102,5 +102,6 @@
 	"wordFilterDm": "Shush! You said some words that are not allowed in the server! But since you took a moment to write the message, I will post it here:\n{{filtered}}",
 	"wordFilterFooter": "Filtered Word",
 	"words": "[Auto-Moderation] Triggered word filter, no threshold.",
-	"wordsWithMaximum": "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions."
+	"wordsWithMaximum": "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions.",
+	"honeypotLogTimeoutFailed": "I could not apply the preliminary timeout. Check my Moderate Members permission and role position. The main action result is shown above."
 }

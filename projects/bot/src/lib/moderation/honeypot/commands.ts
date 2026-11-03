@@ -1,3 +1,4 @@
+import { getHoneypotChannels } from './channels';
 import { getSettingName } from '#lib/database';
 import { createTranslator, translateKey, type TranslationKey } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
@@ -23,6 +24,9 @@ export const HoneypotActionKeys = {
  */
 const SummaryKeys = [
 	'honeypotChannel',
+	'honeypotChannels',
+	'honeypotReinvite',
+	'honeypotRecreate',
 	'honeypotAction',
 	'honeypotLogChannel',
 	'honeypotDirectMessage',
@@ -45,7 +49,7 @@ const SummaryKeys = [
  */
 export function renderHoneypotSummary(t: TFunction, settings: ReadonlyGuildData) {
 	const embed = new EmbedBuilder().setTitle(translateKey(t, `${Root}:showTitle`));
-	if (settings.honeypotChannel === null) {
+	if (getHoneypotChannels(settings).length === 0) {
 		return embed.setColor(Colors.Grey).setDescription(translateKey(t, `${Root}:showOff`, { command: inlineCode('/honeypot setup') }));
 	}
 
@@ -56,9 +60,11 @@ export function renderHoneypotSummary(t: TFunction, settings: ReadonlyGuildData)
 	return embed.setColor(Colors.Amber).setDescription(lines.join('\n'));
 }
 
-function displayValue(t: TFunction, value: string | boolean | null): string {
+function displayValue(t: TFunction, value: string | readonly string[] | boolean | null): string {
+	if (Array.isArray(value)) return value.length ? value.map(channelMention).join(', ') : translateKey(t, `${Root}:showNone`);
 	if (value === null) return translateKey(t, `${Root}:showNone`);
 	if (typeof value === 'boolean') return translateKey(t, value ? 'arguments:booleanEnabled' : 'arguments:booleanDisabled');
+	if (typeof value !== 'string') return '';
 	if (value in HoneypotActionKeys) return translateKey(t, HoneypotActionKeys[value as HoneypotAction]);
 	return channelMention(value);
 }

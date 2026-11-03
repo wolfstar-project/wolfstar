@@ -74,6 +74,9 @@ export function getConfiguration() {
 		},
 
 		// Honeypot
+		honeypotChannels: { type: 'guildTextChannel', array: true, maximum: 4, name: 'honeypot.channels', description: 'settings:honeypotChannels' },
+		honeypotReinvite: { type: 'boolean', name: 'honeypot.reinvite', description: 'settings:honeypotReinvite' },
+		honeypotRecreate: { type: 'boolean', name: 'honeypot.recreate', description: 'settings:honeypotRecreate' },
 		honeypotChannel: { type: 'guildTextChannel', name: 'honeypot.channel', description: 'settings:honeypotChannel' },
 		honeypotLogChannel: { type: 'guildTextChannel', name: 'honeypot.log-channel', description: 'settings:honeypotLogChannel' },
 		honeypotAction: { type: 'honeypotAction', name: 'honeypot.action', description: 'settings:honeypotAction', default: 'Softban' },

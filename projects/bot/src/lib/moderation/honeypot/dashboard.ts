@@ -1,3 +1,4 @@
+import { syncAdditionalHoneypotNotices } from './channels';
 import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { isOwnGuild } from '#lib/database/settings/dashboard';
@@ -21,7 +22,7 @@ import { fetchHoneypotChannels, type GuildDataKey, type HoneypotChannel, type Re
  * The settings the warning of the honeypot depends on: where it is, whether there is one, and the action it tells
  * about.
  */
-const HoneypotWarningKeys = ['honeypotChannel', 'honeypotAction', 'honeypotWarning'] as const satisfies readonly GuildDataKey[];
+const HoneypotWarningKeys = ['honeypotChannels', 'honeypotChannel', 'honeypotAction', 'honeypotWarning'] as const satisfies readonly GuildDataKey[];
 
 /**
  * The settings {@linkcode followHoneypotSettings} reacts to: the ones of the warning, and the switch of the module,
@@ -56,6 +57,7 @@ export async function followHoneypotSettings(guildId: Snowflake, keys: readonly 
 
 	return withHoneypotLock(guildId, async () => {
 		const settings = await readSettings(guildId);
+		await syncAdditionalHoneypotNotices(guildId, settings);
 		const channelId = settings.honeypotChannel;
 		if (channelId === null) {
 			await removeHoneypotNotice(guildId);
@@ -122,9 +124,9 @@ export function planHoneypotNoticeReconcile(
  */
 export async function reconcileHoneypotNotices(): Promise<void> {
 	const [honeypots, notices] = await Promise.all([fetchHoneypotChannels(container.prisma.orm), readHoneypotNotices()]);
-	const byGuild = new Map(honeypots.map((honeypot) => [honeypot.guildId, honeypot]));
+	const byGuild = new Map(honeypots.toReversed().map((honeypot) => [honeypot.guildId, honeypot]));
 
-	for (const guildId of new Set([...byGuild.keys(), ...notices.keys()])) {
+	for (const guildId of new Set([...byGuild.keys(), ...[...notices.keys()].map((key) => key.split(':')[0])])) {
 		if (!isOwnGuild(guildId)) continue;
 		const plan = planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null);
 		if (plan === 'Keep') continue;

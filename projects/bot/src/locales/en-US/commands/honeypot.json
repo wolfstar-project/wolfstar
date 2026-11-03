@@ -71,5 +71,10 @@
 	"problemEveryoneCannotSend": "`@everyone` cannot write in the channel, so the bots cannot either: nobody is caught.",
 	"problemEveryoneCannotAttach": "`@everyone` cannot attach files in the channel, and many spam bots post an image: they are not caught.",
 	"problemBotCannotAct": "I lack what the action needs: check my permissions and that my highest role is above the ones of the members.",
-	"problemBigRoleAboveBot": "A role most of the members hold is above my highest role, so I cannot act on them: move my role above it."
+	"problemBigRoleAboveBot": "A role most of the members hold is above my highest role, so I cannot act on them: move my role above it.",
+	"optionsReinviteName": "reinvite",
+	"optionsReinviteDescription": "Include a one-use, 24-hour invite in the direct message after a kick or softban.",
+	"optionsRecreateName": "recreate",
+	"optionsRecreateDescription": "Replace each honeypot channel daily. Its messages are deleted.",
+	"reinviteMessage": "You can rejoin the server using this invite: {{url}}"
 }

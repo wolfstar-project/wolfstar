@@ -16,6 +16,7 @@ const guildId = '254360814063058944';
 describe('the buttons of the honeypot', () => {
 	const reply = vi.fn(async () => undefined);
 	const deferUpdate = vi.fn(async () => 'deferred');
+	const defer = vi.fn(async () => ({ update: reply }));
 	const deleteMessage = vi.fn(async () => undefined);
 
 	beforeEach(() => {
@@ -28,11 +29,11 @@ describe('the buttons of the honeypot', () => {
 		vi.mocked(readSettings).mockResolvedValue({ honeypotAction: 'Softban', honeypotChannel: '254360814063058945' } as never);
 		const handler = Object.create(StatsHandler.prototype) as StatsHandler;
 
-		await handler.run({ reply, guildId } as never, [guildId, 'show']);
+		await handler.run({ reply, defer, guildId } as never, [guildId, 'show']);
 
+		expect(defer).toHaveBeenCalledWith({ flags: MessageFlags.Ephemeral });
 		expect(reply).toHaveBeenCalledWith(
 			expect.objectContaining({
-				flags: MessageFlags.Ephemeral,
 				content: expect.stringContaining('"total":12,"recent":3,"days":7')
 			})
 		);

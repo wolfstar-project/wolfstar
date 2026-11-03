@@ -64,7 +64,7 @@ export async function fetchChannelMessages(channelId: string, options: FetchChan
  * @remarks The prune logger is told the bot is who deletes, so the message delete logs are not written for each one.
  * @returns How many messages were deleted.
  */
-export async function bulkDeleteChannelMessages(guildId: string, channelId: string, messages: readonly Message[]): Promise<number> {
+export async function bulkDeleteChannelMessages(guildId: string, channelId: string, messages: readonly Pick<Message, 'id'>[]): Promise<number> {
 	const logger = await getLogger(guildId);
 	logger.prune.set(channelId, { userId: container.gatewayClient.user!.id });
 

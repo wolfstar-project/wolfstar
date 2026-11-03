@@ -1,3 +1,4 @@
+import { getHoneypotChannels } from '#lib/moderation/honeypot/channels';
 import { readSettings } from '#lib/database';
 import { HoneypotActionKeys } from '#lib/moderation/honeypot/commands';
 import { readHoneypotStats, RecentCatchesDays } from '#lib/moderation/honeypot/stats';
@@ -22,14 +23,15 @@ export class UserInteractionHandler extends InteractionHandler {
 		}
 
 		const t = getSupportedUserLanguageT(interaction);
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const [stats, settings] = await Promise.all([readHoneypotStats(guildId), readSettings(guildId)]);
 		const content_ = translateKey(t, 'commands/honeypot:stats', {
 			total: stats.total,
 			recent: stats.recent,
 			days: RecentCatchesDays,
 			action: translateKey(t, HoneypotActionKeys[settings.honeypotAction]),
-			channel: settings.honeypotChannel === null ? translateKey(t, 'commands/honeypot:showNone') : channelMention(settings.honeypotChannel)
+			channel: getHoneypotChannels(settings).map(channelMention).join(', ') || translateKey(t, 'commands/honeypot:showNone')
 		});
-		return interaction.reply({ content: content_, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		return deferred.update({ content: content_, allowed_mentions: { parse: [] } });
 	}
 }

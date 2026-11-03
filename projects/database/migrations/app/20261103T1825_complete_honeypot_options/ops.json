@@ -1,0 +1,138 @@
+[
+	{
+		"id": "column.public.GuildHoneypot.channels",
+		"label": "Add column \"channels\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "channels",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"channels\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "channels"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"channels\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"channels\" int8[] DEFAULT '{}' NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"channels\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "channels"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildHoneypot.recreate",
+		"label": "Add column \"recreate\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "recreate",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"recreate\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "recreate"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"recreate\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"recreate\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"recreate\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "recreate"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildHoneypot.reinvite",
+		"label": "Add column \"reinvite\" to \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "reinvite",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"reinvite\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "reinvite"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"reinvite\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD COLUMN \"reinvite\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"reinvite\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildHoneypot", "reinvite"]
+			}
+		]
+	},
+	{
+		"id": "checkConstraint.GuildHoneypot.GuildHoneypot_channels_elem_not_null_6ac6295a",
+		"label": "Add check constraint \"GuildHoneypot_channels_elem_not_null_6ac6295a\" on \"GuildHoneypot\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "checkConstraint",
+				"name": "GuildHoneypot_channels_elem_not_null_6ac6295a",
+				"table": "GuildHoneypot"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildHoneypot_channels_elem_not_null_6ac6295a\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildHoneypot_channels_elem_not_null_6ac6295a", "public", "\"public\".\"GuildHoneypot\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add check constraint \"GuildHoneypot_channels_elem_not_null_6ac6295a\"",
+				"sql": "ALTER TABLE \"public\".\"GuildHoneypot\" ADD CONSTRAINT \"GuildHoneypot_channels_elem_not_null_6ac6295a\" CHECK (array_position(\"channels\", NULL) IS NULL)"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildHoneypot_channels_elem_not_null_6ac6295a\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildHoneypot_channels_elem_not_null_6ac6295a", "public", "\"public\".\"GuildHoneypot\""]
+			}
+		]
+	}
+]

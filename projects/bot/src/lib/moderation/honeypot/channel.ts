@@ -242,24 +242,31 @@ const HoneypotStatsHandlerName = 'honeypotStats';
  * count a burst leaves behind is put right by the next catch, or by the upkeep. A warning that is gone is forgotten.
  */
 export async function updateHoneypotNoticeCount(guildId: Snowflake): Promise<void> {
-	const notice = await readHoneypotNotice(guildId);
-	if (notice === null || notice.action === null) return;
+	const notices = [...(await readHoneypotNotices())]
+		.filter(([key]) => key === guildId || key.startsWith(`${guildId}:`))
+		.map(([, notice]) => notice);
+	if (notices.length === 0) return;
 	if (!(await claimOnce(`honeypot-notice:${guildId}`, 5))) return;
 
 	const [t, stats] = await Promise.all([fetchGuildT({ id: guildId }), readHoneypotStats(guildId)]);
-	const edited = await resolveOnErrorCodes(
-		container.gatewayClient.api.channels.editMessage(
-			notice.channelId,
-			notice.messageId,
-			renderHoneypotNotice(t, notice.action, { guildId, catches: stats.total })
-		),
-		RESTJSONErrorCodes.UnknownMessage,
-		RESTJSONErrorCodes.UnknownChannel,
-		RESTJSONErrorCodes.MissingAccess,
-		RESTJSONErrorCodes.MissingPermissions
-	);
-	if (edited === null)
-		container.logger.debug(`[Honeypot] Could not write the count of the catches into the warning ${notice.messageId} of the guild ${guildId}`);
+	for (const notice of notices) {
+		if (notice.action === null) continue;
+		const edited = await resolveOnErrorCodes(
+			container.gatewayClient.api.channels.editMessage(
+				notice.channelId,
+				notice.messageId,
+				renderHoneypotNotice(t, notice.action, { guildId, catches: stats.total })
+			),
+			RESTJSONErrorCodes.UnknownMessage,
+			RESTJSONErrorCodes.UnknownChannel,
+			RESTJSONErrorCodes.MissingAccess,
+			RESTJSONErrorCodes.MissingPermissions
+		);
+		if (edited === null)
+			container.logger.debug(
+				`[Honeypot] Could not write the count of the catches into the warning ${notice.messageId} of the guild ${guildId}`
+			);
+	}
 }
 
 /**
@@ -275,11 +282,12 @@ export async function updateHoneypotNoticeCount(guildId: Snowflake): Promise<voi
  * @param guildId - The guild of the honeypot.
  * @returns The warning, or `null` when the honeypot has none.
  */
-export async function readHoneypotNotice(guildId: Snowflake): Promise<HoneypotNotice | null> {
+export async function readHoneypotNotice(guildId: Snowflake, channelId?: Snowflake): Promise<HoneypotNotice | null> {
 	const { redis } = container;
-	if (redis?.status !== 'ready') return localNotices.get(guildId) ?? null;
+	const key = channelId ? `${guildId}:${channelId}` : guildId;
+	if (redis?.status !== 'ready') return localNotices.get(key) ?? null;
 
-	const value = await redis.hget(NoticesHash, guildId);
+	const value = await redis.hget(NoticesHash, key);
 	return value === null ? null : parseHoneypotNotice(value);
 }
 
@@ -325,12 +333,12 @@ function deleteHoneypotNoticeMessage(notice: HoneypotNotice) {
  *
  * @param guildId - The guild of the honeypot.
  */
-export async function removeHoneypotNotice(guildId: Snowflake): Promise<void> {
-	const notice = await readHoneypotNotice(guildId);
+export async function removeHoneypotNotice(guildId: Snowflake, channelId?: Snowflake): Promise<void> {
+	const notice = await readHoneypotNotice(guildId, channelId);
 	if (notice === null) return;
 
 	await deleteHoneypotNoticeMessage(notice);
-	await writeHoneypotNotice(guildId, null);
+	await writeHoneypotNotice(channelId ? `${guildId}:${channelId}` : guildId, null);
 	container.logger.debug(`[Honeypot] The warning ${notice.messageId} of the guild ${guildId} was taken off the channel ${notice.channelId}`);
 }
 
@@ -354,14 +362,14 @@ export async function removeHoneypotNotice(guildId: Snowflake): Promise<void> {
 export async function refreshHoneypotNotice(
 	guildId: Snowflake,
 	channelId: Snowflake,
-	options: { warning: boolean; action: HoneypotAction }
+	options: { warning: boolean; action: HoneypotAction; independent?: boolean }
 ): Promise<boolean> {
 	if (!options.warning) {
-		await removeHoneypotNotice(guildId);
+		await removeHoneypotNotice(guildId, options.independent ? channelId : undefined);
 		return true;
 	}
 
-	const previous = await readHoneypotNotice(guildId);
+	const previous = await readHoneypotNotice(guildId, options.independent ? channelId : undefined);
 	const t = await fetchGuildT({ id: guildId });
 	const stats = await readHoneypotStats(guildId);
 	const sent = await resolveOnErrorCodes(
@@ -377,7 +385,7 @@ export async function refreshHoneypotNotice(
 		return false;
 	}
 
-	await writeHoneypotNotice(guildId, { channelId, messageId: sent.id, action: options.action });
+	await writeHoneypotNotice(options.independent ? `${guildId}:${channelId}` : guildId, { channelId, messageId: sent.id, action: options.action });
 	if (previous !== null) await deleteHoneypotNoticeMessage(previous);
 	container.logger.debug(`[Honeypot] The warning ${sent.id} was sent to the channel ${channelId} of the guild ${guildId}`);
 	return true;

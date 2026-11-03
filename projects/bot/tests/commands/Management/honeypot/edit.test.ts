@@ -111,7 +111,7 @@ describe('/honeypot edit and /honeypot disable', () => {
 		await disable();
 
 		expect(withHoneypotLock).toHaveBeenCalledWith(guildId, expect.any(Function));
-		expect(writeSettings).toHaveBeenCalledWith(guildId, { honeypotChannel: null }, userId);
+		expect(writeSettings).toHaveBeenCalledWith(guildId, { honeypotChannel: null, honeypotChannels: [] }, userId);
 		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId);
 	});
 

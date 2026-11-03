@@ -72,6 +72,7 @@ const IgnoredDeleteCodes = [
  */
 export async function catchHoneypotMessage(message: GuildMessage, settings: ReadonlyGuildData): Promise<void> {
 	const subject = describeMessage(message);
+	const caughtAt = Date.now();
 
 	// Without the member the moderator level cannot be checked, so nobody is caught by guess:
 	const { member } = message;
@@ -88,17 +89,19 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 	}
 
 	container.logger.debug(`[Honeypot] ${subject}: caught`);
+
+	// The claim keeps the messages a bot sends in a row to one case, see {@linkcode claimOnce}:
+	if (!(await claimOnce(`honeypot-caught:${message.guildId}:${message.author.id}`, ClaimSeconds))) {
+		floatPromise(deleteCaughtMessage(message, subject));
+		container.logger.debug(`[Honeypot] ${subject}: no case, the author was caught less than a minute ago`);
+		return;
+	}
+
 	// The message is forwarded before it is deleted, since a forward of a deleted message shows nothing:
 	if (settings.honeypotForwardMessage && settings.honeypotLogChannel !== null) {
 		await forwardCaughtMessage(message, settings.honeypotLogChannel, subject);
 	}
 	floatPromise(deleteCaughtMessage(message, subject));
-
-	// The claim keeps the messages a bot sends in a row to one case, see {@linkcode claimOnce}:
-	if (!(await claimOnce(`honeypot-caught:${message.guildId}:${message.author.id}`, ClaimSeconds))) {
-		container.logger.debug(`[Honeypot] ${subject}: no case, the author was caught less than a minute ago`);
-		return;
-	}
 
 	const guild = message.guild ?? (await resolveGuild(message.guildId));
 	const t = await fetchGuildT(guild);
@@ -106,6 +109,7 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 
 	let caseId: number | null = null;
 	let error: string | undefined;
+	let timeoutFailed = false;
 	// The lock holds the logs of the guild back until the case is made, so the ban is not tracked as a second one:
 	const unlock = (await getModeration(guild)).createLock();
 	try {
@@ -114,14 +118,23 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 		// The timeout holds the member while the softban or the ban is taken, and after they come back:
 		if (settings.honeypotTimeoutFirst && action !== 'Kick') {
 			container.logger.debug(`[Honeypot] ${subject}: timing the member out before the ${action}`);
-			await ModerationActions.timeout
-				.apply(guild, { user: message.author, reason, duration: HoneypotTimeoutDuration }, { sendDirectMessage: false })
-				.catch((cause: unknown) => container.logger.debug(`[Honeypot] ${subject}: the timeout could not be applied:`, cause));
+			await applyHoneypotTimeout(guild, message.author, reason).catch((cause: unknown) => {
+				timeoutFailed = true;
+				container.logger.warn(`[Honeypot] ${subject}: the timeout could not be applied:`, cause);
+			});
 		}
 
 		const deleteSeconds = settings.honeypotRecentDelete ? HoneypotRecentDeleteSeconds : HoneypotDeleteMessageSeconds;
 		container.logger.debug(`[Honeypot] ${subject}: taking the action ${action}, direct message ${sendDirectMessage}`);
-		const entry = await applyHoneypotAction(guild, action, message.author, reason, sendDirectMessage, deleteSeconds);
+		const entry = await applyHoneypotAction(
+			guild,
+			action,
+			message.author,
+			reason,
+			sendDirectMessage,
+			deleteSeconds,
+			settings.honeypotReinvite ? await createHoneypotReinvite(message, action, sendDirectMessage) : undefined
+		);
 		caseId = entry.id;
 		container.logger.debug(`[Honeypot] ${subject}: the action made the case ${caseId}`);
 		// The catch is counted, and the warning of the channel shows the count:
@@ -140,7 +153,13 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 	}
 
 	// What the member left is looked for in two minutes, whether the action was taken or not:
-	if (settings.honeypotEnsureDeletion) await scheduleHoneypotSweep({ guildId: message.guildId, userId: message.author.id });
+	if (settings.honeypotEnsureDeletion)
+		await scheduleHoneypotSweep({
+			guildId: message.guildId,
+			userId: message.author.id,
+			caughtAt,
+			deleteSeconds: settings.honeypotRecentDelete ? HoneypotRecentDeleteSeconds : HoneypotDeleteMessageSeconds
+		});
 
 	container.logger.debug(`[Honeypot] ${subject}: reporting it to the channel ${settings.honeypotLogChannel}`);
 	container.client.emit(Events.GuildMessageLog, guild, settings.honeypotLogChannel, 'honeypotLogChannel', () =>
@@ -151,7 +170,8 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 			content: message.content,
 			attachments: message.attachments.size,
 			caseId,
-			error
+			error,
+			...(timeoutFailed ? { timeoutFailed: true } : {})
 		})
 	);
 }
@@ -197,14 +217,30 @@ async function deleteCaughtMessage(message: GuildMessage, subject: string): Prom
  *
  * @returns The case the action made.
  */
-function applyHoneypotAction(guild: Guild, action: HoneypotAction, user: User, reason: string, sendDirectMessage: boolean, deleteSeconds: number) {
+function applyHoneypotAction(
+	guild: Guild,
+	action: HoneypotAction,
+	user: User,
+	reason: string,
+	sendDirectMessage: boolean,
+	deleteSeconds: number,
+	reinviteUrl?: string
+) {
 	switch (action) {
 		case 'Kick':
-			return ModerationActions.kick.apply(guild, { user, reason }, { sendDirectMessage });
+			return ModerationActions.kick.apply(guild, { user, reason }, { sendDirectMessage, ...(reinviteUrl ? { reinviteUrl } : {}) });
 		case 'Softban':
-			return ModerationActions.softban.apply(guild, { user, reason }, { sendDirectMessage, context: deleteSeconds });
+			return ModerationActions.softban.apply(
+				guild,
+				{ user, reason },
+				{ sendDirectMessage, context: deleteSeconds, ...(reinviteUrl ? { reinviteUrl } : {}) }
+			);
 		case 'Ban':
-			return ModerationActions.ban.apply(guild, { user, reason }, { sendDirectMessage, context: deleteSeconds });
+			return ModerationActions.ban.apply(
+				guild,
+				{ user, reason },
+				{ sendDirectMessage, context: deleteSeconds, ...(reinviteUrl ? { reinviteUrl } : {}) }
+			);
 	}
 }
 
@@ -229,5 +265,25 @@ async function forwardCaughtMessage(message: GuildMessage, logChannelId: Snowfla
 		container.logger.debug(`[Honeypot] ${subject}: the message was forwarded to ${logChannelId}`);
 	} catch (error) {
 		container.logger.debug(`[Honeypot] ${subject}: the message could not be forwarded to ${logChannelId}:`, error);
+	}
+}
+
+async function applyHoneypotTimeout(guild: Guild, user: User, reason: string) {
+	const current = await container.gatewayClient.members.fetch(guild.id, user.id, { force: true });
+	if ((current.communicationDisabledUntilTimestamp ?? 0) >= Date.now() + HoneypotTimeoutDuration) return;
+	return ModerationActions.timeout.apply(guild, { user, reason, duration: HoneypotTimeoutDuration }, { sendDirectMessage: false });
+}
+
+async function createHoneypotReinvite(message: GuildMessage, action: HoneypotAction, send: boolean): Promise<string | undefined> {
+	if (!send || action === 'Ban') return undefined;
+	try {
+		const invite = (await container.rest.post(Routes.channelInvites(message.guild?.systemChannelId ?? message.channelId), {
+			body: { max_age: 86400, max_uses: 1, unique: true },
+			reason: 'Honeypot reinvite'
+		})) as { code: string };
+		return `https://discord.gg/${invite.code}`;
+	} catch (error) {
+		container.logger.warn('[Honeypot] Could not create the reinvite:', error);
+		return undefined;
 	}
 }

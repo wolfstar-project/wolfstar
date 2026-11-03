@@ -172,6 +172,8 @@ declare module '@wolfstar/http-framework' {
       logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
       'random-name'?: boolean;
       'recent-delete'?: boolean;
+      recreate?: boolean;
+      reinvite?: boolean;
       'timeout-first'?: boolean;
       warning?: boolean;
     };

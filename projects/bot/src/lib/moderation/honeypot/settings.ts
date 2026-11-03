@@ -1,3 +1,4 @@
+import { getHoneypotChannels, syncAdditionalHoneypotNotices } from './channels';
 import { readSettings, writeSettings } from '#lib/database';
 import {
 	getMissingHoneypotLogPermissions,
@@ -23,6 +24,9 @@ const Root = HoneypotRoot;
 export const HoneypotSettingKeys = [
 	'modulesHoneypot',
 	'honeypotChannel',
+	'honeypotChannels',
+	'honeypotReinvite',
+	'honeypotRecreate',
 	'honeypotLogChannel',
 	'honeypotAction',
 	'honeypotDirectMessage',
@@ -103,6 +107,7 @@ export async function writeHoneypotSettings(
 			else if (plan === 'Refresh') await refresh(written.honeypotChannel);
 		}
 
+		await syncAdditionalHoneypotNotices(guildId, written).catch(() => notes.push(t(`${Root}:setupNoticeFailed`)));
 		return { ok: true, notes };
 	});
 }
@@ -120,6 +125,14 @@ async function checkHoneypotSettings(
 ): Promise<string | null> {
 	const channelId = next.honeypotChannel;
 	const logsId = next.honeypotLogChannel;
+	if (getHoneypotChannels(next).includes(logsId ?? '')) return t(`${Root}:menuLogsSameChannel`);
+	if (changed('honeypotChannels') || changed('honeypotAction')) {
+		for (const extra of next.honeypotChannels) {
+			const missing = await getMissingHoneypotPermissions(guildId, extra, next.honeypotAction);
+			if (missing === null) return t(`${Root}:channelUnknown`);
+			if (missing.length) return t(`${Root}:missingPermissions`, { channel: channelMention(extra), missing });
+		}
+	}
 
 	if ((changed('honeypotChannel') || changed('honeypotLogChannel')) && channelId !== null && channelId === logsId) {
 		return t(`${Root}:menuLogsSameChannel`);

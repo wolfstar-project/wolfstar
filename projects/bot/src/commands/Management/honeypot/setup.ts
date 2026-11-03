@@ -1,3 +1,4 @@
+import { syncAdditionalHoneypotNotices } from '#lib/moderation/honeypot/channels';
 import { readSettings, writeSettings } from '#lib/database';
 import {
 	createHoneypotChannel,
@@ -58,7 +59,8 @@ export class UserCommand extends Command {
 			const logs = options.logs?.id ?? settings.honeypotLogChannel;
 
 			let channelId = options.channel?.id ?? settings.honeypotChannel;
-			if (channelId !== null && channelId === logs) return update(translateKey(t, `${Root}:logsSameChannel`));
+			if ((channelId !== null && channelId === logs) || settings.honeypotChannels.includes(logs ?? ''))
+				return update(translateKey(t, `${Root}:logsSameChannel`));
 
 			// A channel the bot cannot write in would be saved, and every report dropped without a word:
 			if (options.logs !== undefined) {
@@ -100,6 +102,9 @@ export class UserCommand extends Command {
 			}
 
 			// The warning the honeypot had is replaced wherever it was, so a channel it moved from keeps none:
+			await syncAdditionalHoneypotNotices(guildId, await readSettings(guildId)).catch((error: unknown) =>
+				this.container.logger.error('[Honeypot] Could not refresh additional warnings:', error)
+			);
 			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: settings.honeypotWarning, action });
 
 			// A channel the bot made gets the intro with the tips, in the language of who set it up:

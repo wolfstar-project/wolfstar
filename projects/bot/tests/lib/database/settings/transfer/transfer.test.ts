@@ -131,6 +131,8 @@ describe('configuration file', () => {
 				'modules.honeypot',
 				'automod.track-native',
 				'commands.disabled',
+				'honeypot.reinvite',
+				'honeypot.recreate',
 				'honeypot.action',
 				'honeypot.direct-message',
 				'honeypot.warning',

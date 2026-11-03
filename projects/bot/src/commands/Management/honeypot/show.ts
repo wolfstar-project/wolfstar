@@ -14,16 +14,16 @@ import { MessageFlags } from 'discord-api-types/v10';
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const settings = await readSettings(interaction.guildId);
 		const problems =
 			settings.honeypotChannel === null
 				? []
 				: await detectHoneypotProblems(interaction.guildId, settings.honeypotChannel, settings.honeypotAction).catch(() => []);
 		const lines = renderHoneypotProblems(t, problems);
-		return interaction.reply({
+		return deferred.update({
 			...(lines.length > 0 ? { content: lines.join('\n') } : {}),
 			embeds: [renderHoneypotSummary(t, settings).toJSON()],
-			flags: MessageFlags.Ephemeral,
 			allowed_mentions: { parse: [] }
 		});
 	}

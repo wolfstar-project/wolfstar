@@ -91,5 +91,7 @@ export async function sendHoneypotIntro(t: TFunction, guildId: Snowflake, channe
 	}
 
 	// The intro is not worth a job: a restart leaves it in the channel, where the button still deletes it.
-	void sleep(HoneypotIntroLifetime).then(() => resolveOnErrorCodes(gatewayClient.messages.delete(channelId, sent.id, 'Honeypot'), ...IgnoredCodes));
+	void sleep(HoneypotIntroLifetime)
+		.then(() => resolveOnErrorCodes(gatewayClient.messages.delete(channelId, sent.id, 'Honeypot'), ...IgnoredCodes))
+		.catch((error: unknown) => logger.error('[Honeypot] Could not remove the intro:', error));
 }

@@ -1143,6 +1143,11 @@ declare module "i18next" {
         problemEveryoneCannotAttach: "`@everyone` cannot attach files in the channel, and many spam bots post an image: they are not caught.";
         problemBotCannotAct: "I lack what the action needs: check my permissions and that my highest role is above the ones of the members.";
         problemBigRoleAboveBot: "A role most of the members hold is above my highest role, so I cannot act on them: move my role above it.";
+        optionsReinviteName: "reinvite";
+        optionsReinviteDescription: "Include a one-use, 24-hour invite in the direct message after a kick or softban.";
+        optionsRecreateName: "recreate";
+        optionsRecreateDescription: "Replace each honeypot channel daily. Its messages are deleted.";
+        reinviteMessage: "You can rejoin the server using this invite: {{url}}";
       };
       "commands/join-guard": {
         joinguardName: "joinguard";
@@ -2589,6 +2594,7 @@ declare module "i18next" {
         wordFilterFooter: "Filtered Word";
         words: "[Auto-Moderation] Triggered word filter, no threshold.";
         wordsWithMaximum: "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions.";
+        honeypotLogTimeoutFailed: "I could not apply the preliminary timeout. Check my Moderate Members permission and role position. The main action result is shown above.";
       };
       "events/reactions": {
         reaction: "Reaction Added";
@@ -3313,7 +3319,13 @@ declare module "i18next" {
           rolesRestrictedAttachment: "Attachment Restriction Role";
           rolesRestrictedVoice: "Voice Restriction Role";
           stickyRoles: "Sticky Roles";
+          honeypotChannels: "Additional Honeypot Channels";
+          honeypotReinvite: "Reinvite in Direct Message";
+          honeypotRecreate: "Recreate Channels Daily";
         };
+        honeypotChannels: "Up to four additional trap channels, sharing the action and options of the main honeypot.";
+        honeypotReinvite: "Whether a kick or softban direct message includes a one-use invite that expires after 24 hours. No invite is sent for a ban.";
+        honeypotRecreate: "Whether each trap is replaced daily with a new channel ID. Messages are deleted. Its name, category and permission overwrites are preserved unless random naming is enabled.";
       };
       system: {
         discordAbortError: "I had a small network error when messaging Discord, please run this command again!";

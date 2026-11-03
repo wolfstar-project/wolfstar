@@ -65,6 +65,7 @@ function createRedis() {
 	return {
 		store,
 		status: 'ready',
+		hgetall: vi.fn(async () => Object.fromEntries(store)),
 		hget: vi.fn(async (_hash: string, field: string) => store.get(field) ?? null),
 		hset: vi.fn(async (_hash: string, field: string, value: string) => store.set(field, value).size),
 		hdel: vi.fn(async (_hash: string, field: string) => Number(store.delete(field)))
@@ -97,6 +98,14 @@ describe('the warning of the honeypot', () => {
 	});
 
 	describe('refreshHoneypotNotice', () => {
+		test('additional traps keep independent warnings when one is removed', async () => {
+			await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Ban' });
+			await refreshHoneypotNotice(guildId, 'extra', { warning: true, action: 'Ban', independent: true });
+			await removeHoneypotNotice(guildId, 'extra');
+			expect((await readHoneypotNotice(guildId))?.channelId).toBe(channelId);
+			expect(await readHoneypotNotice(guildId, 'extra')).toBeNull();
+		});
+
 		test('GIVEN a honeypot without a warning yet THEN one is sent and remembered, and nothing is deleted', async () => {
 			expect(await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Softban' })).toBe(true);
 
@@ -290,6 +299,9 @@ describe('renderHoneypotSummary', () => {
 
 		expect(lines).toEqual([
 			`commands/honeypot:showLine {"name":"settings:names.honeypotChannel","value":"<#${channelId}>"}`,
+			'commands/honeypot:showLine {"name":"settings:names.honeypotChannels","value":"commands/honeypot:showNone"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotReinvite","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotRecreate","value":"arguments:booleanDisabled"}',
 			'commands/honeypot:showLine {"name":"settings:names.honeypotAction","value":"serializers:honeypotActionBan"}',
 			`commands/honeypot:showLine {"name":"settings:names.honeypotLogChannel","value":"<#${logChannelId}>"}`,
 			'commands/honeypot:showLine {"name":"settings:names.honeypotDirectMessage","value":"arguments:booleanEnabled"}',

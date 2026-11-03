@@ -26,29 +26,31 @@ export interface HoneypotUpkeep {
  */
 export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> {
 	const honeypots = orm.public.GuildHoneypot;
-	const [renamed, chaos, active] = await Promise.all([
+	const [renamed, chaos, active, recreated] = await Promise.all([
 		honeypots.where({ randomName: true }).all(),
 		honeypots.where({ chaosName: true }).all(),
-		honeypots.where({ keepActive: true }).all()
+		honeypots.where({ keepActive: true }).all(),
+		honeypots.where({ recreate: true }).all()
 	]);
 
 	const rows = new Map<bigint, Row>();
-	for (const row of [...renamed, ...chaos, ...active]) rows.set(row.id, row);
+	for (const row of [...renamed, ...chaos, ...active, ...recreated]) rows.set(row.id, row);
 
 	const upkeeps: HoneypotUpkeep[] = [];
 	for (const row of rows.values()) {
 		// The switches outlive `/honeypot disable`, a honeypot without a channel has nothing to keep up:
-		if (row.channelId === null) continue;
-
-		upkeeps.push({
-			guildId: String(row.id),
-			channelId: String(row.channelId),
-			action: row.action,
-			warning: row.warning,
-			randomName: row.randomName,
-			keepActive: row.keepActive,
-			chaosName: row.chaosName
-		});
+		const channelIds = [...new Set([row.channelId, ...row.channels].filter((id): id is bigint => id !== null))];
+		for (const channelId of channelIds) {
+			upkeeps.push({
+				guildId: String(row.id),
+				channelId: String(channelId),
+				action: row.action,
+				warning: row.warning,
+				randomName: row.randomName,
+				keepActive: row.keepActive,
+				chaosName: row.chaosName
+			});
+		}
 	}
 
 	return upkeeps;
@@ -69,6 +71,13 @@ export interface HoneypotChannel {
  * @param orm The ORM surface to read through.
  */
 export async function fetchHoneypotChannels(orm: Orm): Promise<HoneypotChannel[]> {
-	const rows = await orm.public.GuildHoneypot.where((honeypot) => honeypot.channelId.isNotNull()).all();
-	return rows.map((row) => ({ guildId: String(row.id), channelId: String(row.channelId), warning: row.warning, action: row.action }));
+	const rows = await orm.public.GuildHoneypot.all();
+	return rows.flatMap((row) =>
+		[...new Set([row.channelId, ...row.channels].filter((id): id is bigint => id !== null))].map((channelId) => ({
+			guildId: String(row.id),
+			channelId: String(channelId),
+			warning: row.warning,
+			action: row.action
+		}))
+	);
 }

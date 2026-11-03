@@ -124,7 +124,10 @@ export const Columns = {
 		honeypotTimeoutFirst: ['timeoutFirst', 'value'],
 		honeypotRecentDelete: ['recentDelete', 'value'],
 		honeypotChaosName: ['chaosName', 'value'],
-		honeypotEnsureDeletion: ['ensureDeletion', 'value']
+		honeypotEnsureDeletion: ['ensureDeletion', 'value'],
+		honeypotChannels: ['channels', 'snowflakes'],
+		honeypotReinvite: ['reinvite', 'value'],
+		honeypotRecreate: ['recreate', 'value']
 	}),
 	...columns('GuildJoinGuard', {
 		joinGuardEnabled: ['enabled', 'value'],
