@@ -273,10 +273,15 @@ function splitContent(content: string): string[] {
 		const slice = rest.slice(0, MaximumBlockLength);
 		let index = slice.lastIndexOf('\n');
 		if (index === -1) index = slice.lastIndexOf(' ');
-		if (index === -1) index = MaximumBlockLength;
 
-		blocks.push(rest.slice(0, index).trim());
-		rest = rest.slice(index + 1);
+		// The separator is left out; a block with none is cut as it is, so no character is lost:
+		if (index === -1) {
+			blocks.push(slice);
+			rest = rest.slice(MaximumBlockLength);
+		} else {
+			blocks.push(rest.slice(0, index).trim());
+			rest = rest.slice(index + 1);
+		}
 	}
 
 	if (rest.trim().length > 0) blocks.push(rest.trim());

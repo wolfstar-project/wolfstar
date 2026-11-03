@@ -40,6 +40,14 @@ describe('createLogMessage', () => {
 		expect(texts.join('').length).toBeLessThanOrEqual(MaximumLogMessageLength);
 	});
 
+	test('GIVEN a long text with no space nor line break THEN it is cut in blocks and every character survives', () => {
+		const content = 'x'.repeat(1500);
+		const message = createLogMessage({ color: 0, author, content, footer: 'footer' });
+		const texts = collectText(message.components);
+
+		expect(texts.slice(1, -1).join('')).toBe(content);
+	});
+
 	test('GIVEN several parts THEN each starts a block of its own, in order', () => {
 		const message = createLogMessage({ color: 0, author, content: ['before', 'after'], footer: 'footer' });
 		const texts = collectText(message.components);
