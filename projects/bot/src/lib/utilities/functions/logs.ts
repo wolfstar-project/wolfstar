@@ -3,6 +3,9 @@ import {
 	ComponentType,
 	MessageFlags,
 	type AllowedMentionsTypes,
+	type APIActionRowComponent,
+	type APIButtonComponent,
+	type APIComponentInContainer,
 	type APIContainerComponent,
 	type APIMessageTopLevelComponent,
 	type APITextDisplayComponent
@@ -81,13 +84,7 @@ export function createLogMessage(options: LogMessageOptions) {
 
 	// The header and the footer count against the limit too:
 	const available = Math.max(0, MaximumLogMessageLength - header.length - footer.length);
-	const texts = isLogBlocks(options.content)
-		? fitBlocks(options.content.blocks, available)
-		: fitLogParts(typeof options.content === 'string' ? [options.content] : options.content, available).flatMap((part) => splitContent(part));
-	const blocks = texts.map((content): APITextDisplayComponent => ({
-		type: ComponentType.TextDisplay,
-		content
-	}));
+	const blocks = toContentBlocks(options.content, available);
 
 	const container: APIContainerComponent = {
 		type: ComponentType.Container,
@@ -107,6 +104,113 @@ export function createLogMessage(options: LogMessageOptions) {
 	const components: APIMessageTopLevelComponent[] = [container];
 	// The log mentions users and roles it only quotes, nobody is pinged:
 	return { components, flags: MessageFlags.IsComponentsV2 as const, allowed_mentions: { parse: [] as AllowedMentionsTypes[] } };
+}
+
+/**
+ * What the log of an event of a message is made of: the title says what happened, who and where follow it, then the
+ * content, and at the bottom the IDs and the time, with the buttons under the message.
+ */
+export interface EventLogMessageOptions {
+	/**
+	 * The color of the stripe on the side of the message.
+	 */
+	color: number;
+
+	/**
+	 * What happened, the first line: `Message Edited`.
+	 */
+	title: string;
+
+	/**
+	 * Who did it and where, under the title: `From: @member In: #channel`.
+	 */
+	details: string;
+
+	/**
+	 * The text of the log, see {@linkcode LogMessageOptions.content}.
+	 */
+	content: LogMessageOptions['content'];
+
+	/**
+	 * The images the log shows after its text, 10 at most.
+	 */
+	images?: readonly string[];
+
+	/**
+	 * The line at the bottom of the message, together with the time of the log: the IDs a moderator copies.
+	 */
+	footer: string;
+
+	/**
+	 * When the logged event happened, now by default.
+	 */
+	timestamp?: Date;
+
+	/**
+	 * The buttons under the message, 5 at most.
+	 */
+	buttons?: readonly APIButtonComponent[];
+}
+
+/**
+ * The most images a log shows, which is what a media gallery holds.
+ */
+const MaximumLogImages = 10;
+
+/**
+ * Builds the message of the log of an event of a message (an edit, a deletion), the way a moderator reads it at a
+ * glance: the title, `From` and `In`, the content, a footer with the IDs and the time, and the buttons that jump to
+ * the message and copy who sent it.
+ *
+ * @remarks It has no avatar next to it, which {@linkcode createLogMessage} has for the logs of a member. The buttons are
+ * under the container, as the components of a message are, and the mentions are not pinged.
+ *
+ * @param options - What the message is made of.
+ */
+export function createEventLogMessage(options: EventLogMessageOptions) {
+	const title = `### ${options.title}`;
+	const footer = `-# ${options.footer} • ${time(options.timestamp ?? new Date(), TimestampStyles.ShortDateTime)}`;
+
+	// The title, the details and the footer count against the limit too:
+	const available = Math.max(0, MaximumLogMessageLength - title.length - options.details.length - footer.length);
+	const blocks = toContentBlocks(options.content, available);
+
+	const images = (options.images ?? []).slice(0, MaximumLogImages);
+	const gallery: APIComponentInContainer[] =
+		images.length === 0 ? [] : [{ type: ComponentType.MediaGallery, items: images.map((url) => ({ media: { url } })) }];
+
+	const container: APIContainerComponent = {
+		type: ComponentType.Container,
+		accent_color: options.color,
+		components: [
+			{ type: ComponentType.TextDisplay, content: title },
+			{ type: ComponentType.TextDisplay, content: options.details },
+			{ type: ComponentType.Separator },
+			...blocks,
+			...gallery,
+			{ type: ComponentType.Separator },
+			{ type: ComponentType.TextDisplay, content: footer }
+		]
+	};
+
+	const components: APIMessageTopLevelComponent[] = [container];
+	if (options.buttons !== undefined && options.buttons.length > 0) {
+		const row: APIActionRowComponent<APIButtonComponent> = { type: ComponentType.ActionRow, components: options.buttons.slice(0, 5) };
+		components.push(row);
+	}
+
+	// The log mentions users and channels it only quotes, nobody is pinged:
+	return { components, flags: MessageFlags.IsComponentsV2 as const, allowed_mentions: { parse: [] as AllowedMentionsTypes[] } };
+}
+
+/**
+ * Fits the content of a log in what is left of the message and makes a block of text of each piece.
+ */
+function toContentBlocks(content: LogMessageOptions['content'], available: number): APITextDisplayComponent[] {
+	const texts = isLogBlocks(content)
+		? fitBlocks(content.blocks, available)
+		: fitLogParts(typeof content === 'string' ? [content] : content, available).flatMap((part) => splitContent(part));
+	return texts.map((text): APITextDisplayComponent => ({ type: ComponentType.TextDisplay, content: text }));
 }
 
 function isLogBlocks(content: LogMessageOptions['content']): content is LogBlocks {
@@ -169,10 +273,17 @@ function splitContent(content: string): string[] {
 		const slice = rest.slice(0, MaximumBlockLength);
 		let index = slice.lastIndexOf('\n');
 		if (index === -1) index = slice.lastIndexOf(' ');
-		if (index === -1) index = MaximumBlockLength;
 
-		blocks.push(rest.slice(0, index).trim());
-		rest = rest.slice(index + 1);
+		// The separator is left out; a block with none is cut as it is, so no character is lost:
+		if (index === -1) {
+			blocks.push(slice);
+			rest = rest.slice(MaximumBlockLength);
+		} else {
+			// A window whose only separator is at its start leaves nothing before it, and Discord refuses an empty block:
+			const block = rest.slice(0, index).trim();
+			if (block.length > 0) blocks.push(block);
+			rest = rest.slice(index + 1);
+		}
 	}
 
 	if (rest.trim().length > 0) blocks.push(rest.trim());

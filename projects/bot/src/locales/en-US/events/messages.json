@@ -1,6 +1,10 @@
 {
-	"messageDelete": "Message Deleted • {{channel}}",
-	"messageUpdate": "Message Edited • {{channel}}",
+	"logTitleDelete": "Message Deleted",
+	"logTitleUpdate": "Message Edited",
+	"logDetails": "From: {{user}}   In: {{channel}}",
+	"logFooter": "Author: {{userId}} | Message ID: {{messageId}}",
+	"logGetUserId": "Get User ID",
+	"logJumpToMessage": "Jump to Message",
 	"messageDeleteUnknown": "Unknown Message Deleted • {{channel}}",
 	"messageUpdateBefore": "Before",
 	"messageUpdateAfter": "After",
@@ -12,6 +16,5 @@
 	"messageDeleteBulkUnknown_one": "{{count}} message deleted in {{channel}}",
 	"messageDeleteBulkUnknown_other": "{{count}} messages deleted in {{channel}}",
 	"messageDeleteBulkFooter": "Multiple Messages Deleted",
-	"voiceActivityFooter": "Voice Activity",
-	"jumpToContext": "Jump to Context"
+	"voiceActivityFooter": "Voice Activity"
 }

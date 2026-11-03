@@ -2443,8 +2443,12 @@ declare module "i18next" {
         ruleRoleReason: "Join Guard: {{rule}}";
       };
       "events/messages": {
-        messageDelete: "Message Deleted • {{channel}}";
-        messageUpdate: "Message Edited • {{channel}}";
+        logTitleDelete: "Message Deleted";
+        logTitleUpdate: "Message Edited";
+        logDetails: "From: {{user}}   In: {{channel}}";
+        logFooter: "Author: {{userId}} | Message ID: {{messageId}}";
+        logGetUserId: "Get User ID";
+        logJumpToMessage: "Jump to Message";
         messageDeleteUnknown: "Unknown Message Deleted • {{channel}}";
         messageUpdateBefore: "Before";
         messageUpdateAfter: "After";
@@ -2457,7 +2461,6 @@ declare module "i18next" {
         messageDeleteBulkUnknown_other: "{{count}} messages deleted in {{channel}}";
         messageDeleteBulkFooter: "Multiple Messages Deleted";
         voiceActivityFooter: "Voice Activity";
-        jumpToContext: "Jump to Context";
       };
       "events/moderation": {
         attachmentFilter: "{{REDCROSS}} Dear {{user}}, file attachments aren't allowed here.";
