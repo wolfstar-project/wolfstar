@@ -182,6 +182,7 @@ describe('reconcileHoneypotNotices', () => {
 		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: false, action: 'Softban' }]);
 		vi.mocked(readHoneypotNotices).mockResolvedValue(new Map([[guildId, { channelId, messageId: '1', action: 'Softban' }]]));
 		settings({ modulesHoneypot: false, honeypotWarning: false });
+		vi.mocked(readHoneypotNotice).mockResolvedValueOnce({ channelId, messageId: '1', action: 'Softban' });
 
 		await reconcileHoneypotNotices();
 
@@ -207,5 +208,58 @@ describe('reconcileHoneypotNotices', () => {
 
 		expect(refreshHoneypotNotice).toHaveBeenCalledExactlyOnceWith(guildId, channelId, expect.anything());
 		expect(removeHoneypotNotice).toHaveBeenCalledExactlyOnceWith(other);
+	});
+});
+
+describe('additional warning recovery', () => {
+	const primary = { channelId, messageId: '1', action: 'Ban' as const };
+	beforeEach(() => {
+		vi.mocked(readHoneypotNotice)
+			.mockReset()
+			.mockImplementation(async (_guild, extra) => (extra ? null : primary));
+		vi.mocked(readHoneypotNotices)
+			.mockReset()
+			.mockResolvedValue(new Map([[guildId, primary]]));
+		vi.mocked(refreshHoneypotNotice).mockReset().mockResolvedValue(true);
+		vi.mocked(removeHoneypotNotice).mockReset().mockResolvedValue(undefined);
+		vi.mocked(withHoneypotLock).mockClear();
+		Object.assign(container, {
+			shard: null,
+			prisma: { orm: {} },
+			logger: { error: vi.fn(), warn: vi.fn() },
+			gatewayClient: { guilds: { resolveKey: (id: string) => id, cache: { get: async () => guild } } }
+		});
+	});
+
+	test('reconnecting restores a missing extra warning while retaining a correct primary warning', async () => {
+		settings({ honeypotAction: 'Ban', honeypotChannels: ['extra'] });
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([
+			{ guildId, channelId, warning: true, action: 'Ban' },
+			{ guildId, channelId: 'extra', warning: true, action: 'Ban' }
+		]);
+		await reconcileHoneypotNotices();
+		expect(refreshHoneypotNotice).toHaveBeenCalledExactlyOnceWith(guildId, 'extra', { warning: true, action: 'Ban', independent: true });
+	});
+
+	test('reconnecting removes a retired extra warning while retaining a correct primary warning', async () => {
+		settings({ honeypotAction: 'Ban' });
+		vi.mocked(fetchHoneypotChannels).mockResolvedValue([{ guildId, channelId, warning: true, action: 'Ban' }]);
+		vi.mocked(readHoneypotNotices).mockResolvedValue(
+			new Map([
+				[guildId, primary],
+				[`${guildId}:retired`, { ...primary, channelId: 'retired' }]
+			])
+		);
+		await reconcileHoneypotNotices();
+		expect(removeHoneypotNotice).toHaveBeenCalledExactlyOnceWith(guildId, 'retired');
+		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	test('a failed extra warning does not block the other extra or the primary action update', async () => {
+		settings({ honeypotAction: 'Ban', honeypotChannels: ['denied', 'working'] });
+		vi.mocked(refreshHoneypotNotice).mockImplementation(async (_guild, channel) => channel !== 'denied');
+		expect(await followHoneypotSettings(guildId, ['honeypotAction'])).toBe('Failed');
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, 'working', { warning: true, action: 'Ban', independent: true });
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban' });
 	});
 });
