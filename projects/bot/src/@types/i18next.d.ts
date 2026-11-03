@@ -1131,6 +1131,18 @@ declare module "i18next" {
         noticeKick: "Whoever does is kicked from the server at once.";
         noticeSoftban: "Whoever does is removed from the server at once, and what they sent lately is deleted.";
         noticeBan: "Whoever does is banned from the server at once.";
+        noticeCatches: "Catches: {{count, number}}";
+        stats: "## Honeypot of this server\nMembers caught: **{{total, number}}**, of which **{{recent, number}}** in the last {{days}} days.\nAction: **{{action}}**. Channel: {{channel}}.";
+        moderatorSpared: "{{user}}, you are a moderator, so I left you alone. A member who writes here is not: {{consequence}}";
+        intro: "## 👋 Welcome to the honeypot channel\n- Whoever writes here is caught: the message is deleted and the action of `/honeypot` is taken on them. The moderators are never caught, so you can test it.\n- **Tips to catch more:**\n  - Give the channel a name of its own, such as `#{{name}}`, so the bots cannot avoid it by its name; `/honeypot edit random-name:True` does it every day.\n  - Keep it near the top of the list: the bots write in the first channels they find.\n  - Keep my highest role above the roles the members give themselves, so I can act on all of them.\n- `/honeypot show` lists the settings and tells what keeps the trap from working.";
+        introDeletes: "-# This message deletes itself {{time}}.";
+        introDelete: "Delete now";
+        problemsTitle: "⚠️ Some things keep the honeypot from catching:";
+        problemEveryoneCannotView: "`@everyone` cannot see the channel, so the bots cannot either: nobody is caught.";
+        problemEveryoneCannotSend: "`@everyone` cannot write in the channel, so the bots cannot either: nobody is caught.";
+        problemEveryoneCannotAttach: "`@everyone` cannot attach files in the channel, and many spam bots post an image: they are not caught.";
+        problemBotCannotAct: "I lack what the action needs: check my permissions and that my highest role is above the ones of the members.";
+        problemBigRoleAboveBot: "A role most of the members hold is above my highest role, so I cannot act on them: move my role above it.";
       };
       "commands/join-guard": {
         joinguardName: "joinguard";
@@ -2488,6 +2500,7 @@ declare module "i18next" {
         honeypotLogCaught: "{{user}} wrote in {{channel}}, the honeypot channel.\n**Action**: {{action}}\n**Case**: {{caseId}}";
         honeypotLogFailed: "{{user}} wrote in {{channel}}, the honeypot channel, and I could not act on them.\n**Action**: {{action}}\n**Error**: {{error}}";
         honeypotLogFooter: "Honeypot";
+        honeypotLogHint: "-# Check that my highest role is above theirs and that I have the permission the action needs.";
         honeypotLogUnknownError: "Something went wrong, the details are in my logs.";
         inviteFilterAlert: "{{REDCROSS}} Dear {{user}}, invite links aren't allowed here.";
         inviteFilterLog_one: "**Link**: {{links, list(conjunction)}}";

@@ -6,6 +6,9 @@ import { fetchGuildT } from '#lib/moderation/common';
 import { renderHoneypotLog } from '#lib/moderation/honeypot/log';
 import { recordSharedBan } from '#lib/moderation/joinguard/log';
 import { scheduleHoneypotSweep } from '#lib/moderation/honeypot/sweep';
+import { countHoneypotCatch } from '#lib/moderation/honeypot/stats';
+import { updateHoneypotNoticeCount } from '#lib/moderation/honeypot/channel';
+import { sleep } from '@sapphire/utilities';
 import type { GuildMessage } from '#lib/types';
 import { Events } from '#lib/types/Enums';
 import { claimOnce } from '#utils/claims';
@@ -79,6 +82,8 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 
 	if (await isModerator(member)) {
 		container.logger.debug(`[Honeypot] ${subject}: left alone, the author is a moderator`);
+		// A moderator who writes there is testing the trap, so they are told what a member would have got:
+		floatPromise(tellModeratorSpared(message, settings.honeypotAction));
 		return;
 	}
 
@@ -119,6 +124,9 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 		const entry = await applyHoneypotAction(guild, action, message.author, reason, sendDirectMessage, deleteSeconds);
 		caseId = entry.id;
 		container.logger.debug(`[Honeypot] ${subject}: the action made the case ${caseId}`);
+		// The catch is counted, and the warning of the channel shows the count:
+		await countHoneypotCatch(message.guildId);
+		floatPromise(updateHoneypotNoticeCount(message.guildId));
 		// Who writes in the trap is a spam bot or a hacked account, which the checkpoint of every guild then refuses:
 		if (action !== 'Kick') await recordSharedBan({ guildId: guild.id, userId: message.author.id, caseId, source: 'Honeypot' });
 	} catch (cause) {
@@ -146,6 +154,31 @@ export async function catchHoneypotMessage(message: GuildMessage, settings: Read
 			error
 		})
 	);
+}
+
+/**
+ * How long the answer to a moderator who wrote in the honeypot stays in the channel.
+ */
+const ModeratorNoticeSeconds = 30;
+
+/**
+ * Tells a moderator who wrote in the honeypot channel that they were left alone, and what a member would have got,
+ * in a message that goes after a moment: without it, a moderator who tests the trap sees nothing happen.
+ */
+async function tellModeratorSpared(message: GuildMessage, action: HoneypotAction): Promise<void> {
+	const t = await fetchGuildT({ id: message.guildId });
+	const content = t('commands/honeypot:moderatorSpared', {
+		user: message.author.toString(),
+		consequence: t(`commands/honeypot:notice${action}`)
+	});
+	const sent = await resolveOnErrorCodes(
+		container.gatewayClient.api.channels.createMessage(message.channelId, { content, allowed_mentions: { parse: [] } }),
+		...IgnoredDeleteCodes
+	);
+	if (sent === null) return;
+
+	await sleep(seconds(ModeratorNoticeSeconds));
+	await resolveOnErrorCodes(container.gatewayClient.messages.delete(message.channelId, sent.id, 'Honeypot'), ...IgnoredDeleteCodes);
 }
 
 /**

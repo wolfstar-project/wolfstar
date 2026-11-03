@@ -40,11 +40,22 @@ describe('renderHoneypotNotice', () => {
 		expect(notice.flags).toBe(MessageFlags.IsComponentsV2);
 		expect(notice.allowed_mentions).toEqual({ parse: [] });
 		expect(notice.components[0].type).toBe(ComponentType.Container);
-		expect(notice.components[0].components[0].content).toContain('"consequence":"commands/honeypot:noticeBan"');
+		expect((notice.components[0].components[0] as { content: string }).content).toContain('"consequence":"commands/honeypot:noticeBan"');
+	});
+
+	test('GIVEN the catches THEN the warning has the button that tells them, and none without', () => {
+		const withButton = renderHoneypotNotice(t, 'Ban', { guildId: '254360814063058944', catches: 12 });
+		const button = (withButton.components[0].components[1] as { components: { label: string; custom_id: string }[] }).components[0];
+
+		expect(button.custom_id).toBe('honeypotStats.254360814063058944.show');
+		expect(button.label).toContain('"count":12');
+		expect(renderHoneypotNotice(t, 'Ban').components[0].components).toHaveLength(1);
 	});
 
 	test.each(['Kick', 'Softban', 'Ban'] as const)('GIVEN %s THEN the warning has a text of its own', (action) => {
-		expect(renderHoneypotNotice(t, action).components[0].components[0].content).toContain(`commands/honeypot:notice${action}`);
+		expect((renderHoneypotNotice(t, action).components[0].components[0] as { content: string }).content).toContain(
+			`commands/honeypot:notice${action}`
+		);
 	});
 });
 
@@ -89,7 +100,8 @@ describe('the warning of the honeypot', () => {
 		test('GIVEN a honeypot without a warning yet THEN one is sent and remembered, and nothing is deleted', async () => {
 			expect(await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Softban' })).toBe(true);
 
-			expect(createMessage).toHaveBeenCalledWith(channelId, renderHoneypotNotice(t, 'Softban'));
+			// The warning sent to the channel carries the count of the catches, which is a button:
+			expect(createMessage).toHaveBeenCalledWith(channelId, renderHoneypotNotice(t, 'Softban', { guildId, catches: 0 }));
 			expect(deleteMessage).not.toHaveBeenCalled();
 			expect(redis.hset).toHaveBeenCalledWith('wolfstar:honeypot:notices', guildId, `${channelId}:20:Softban`);
 			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20', action: 'Softban' });
