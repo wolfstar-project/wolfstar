@@ -126,12 +126,11 @@ export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'chan
 		const independent = settings.honeypotChannel !== channelId;
 		if (settings.honeypotRecreate) {
 			channelId = await recreateHoneypotChannel(guildId, channelId, settings);
-			const noticed = await refreshHoneypotNotice(guildId, channelId, {
-				warning: settings.honeypotWarning,
-				action: settings.honeypotAction,
-				independent
-			});
-			if (!noticed) return 'failed';
+			// With a warning, the one sent below is the only one the new channel gets; without it, the warning the old
+			// channel had is forgotten here, since the channel went with its message:
+			if (!settings.honeypotWarning) {
+				await refreshHoneypotNotice(guildId, channelId, { warning: false, action: settings.honeypotAction, independent });
+			}
 		}
 
 		// The chaos name takes the place of the one of the list while both are on:

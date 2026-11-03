@@ -276,14 +276,23 @@ async function applyHoneypotTimeout(guild: Guild, user: User, reason: string) {
 
 async function createHoneypotReinvite(message: GuildMessage, action: HoneypotAction, send: boolean): Promise<string | undefined> {
 	if (!send || action === 'Ban') return undefined;
+	// The invite goes on a channel that outlives the trap: Discord deletes an invite with its channel, so one made on the
+	// honeypot would die with the next `recreate`. A server with no system nor rules channel gets no link:
+	const inviteChannelId = message.guild?.systemChannelId ?? message.guild?.rulesChannelId ?? null;
+	if (inviteChannelId === null) {
+		container.logger.debug(`[Honeypot] ${describeMessage(message)}: no reinvite, the guild has no system nor rules channel`);
+		return undefined;
+	}
+
 	try {
-		const invite = (await container.rest.post(Routes.channelInvites(message.guild?.systemChannelId ?? message.channelId), {
+		const invite = (await container.rest.post(Routes.channelInvites(inviteChannelId), {
 			body: { max_age: 86400, max_uses: 1, unique: true },
 			reason: 'Honeypot reinvite'
 		})) as { code: string };
 		return `https://discord.gg/${invite.code}`;
 	} catch (error) {
-		container.logger.warn('[Honeypot] Could not create the reinvite:', error);
+		// Without `Create Invite` in that channel every catch would fail the same way, so it is not a warning:
+		container.logger.debug(`[Honeypot] ${describeMessage(message)}: could not create the reinvite:`, error);
 		return undefined;
 	}
 }

@@ -242,11 +242,14 @@ const HoneypotStatsHandlerName = 'honeypotStats';
  * count a burst leaves behind is put right by the next catch, or by the upkeep. A warning that is gone is forgotten.
  */
 export async function updateHoneypotNoticeCount(guildId: Snowflake): Promise<void> {
+	// The claim comes first, so the read of every warning (a hash of all the guilds) is made once every few seconds
+	// for a guild, whatever the size of the raid:
+	if (!(await claimOnce(`honeypot-notice:${guildId}`, 5))) return;
+
 	const notices = [...(await readHoneypotNotices())]
 		.filter(([key]) => key === guildId || key.startsWith(`${guildId}:`))
 		.map(([, notice]) => notice);
 	if (notices.length === 0) return;
-	if (!(await claimOnce(`honeypot-notice:${guildId}`, 5))) return;
 
 	const [t, stats] = await Promise.all([fetchGuildT({ id: guildId }), readHoneypotStats(guildId)]);
 	for (const notice of notices) {

@@ -285,7 +285,7 @@ describe('catchHoneypotMessage', () => {
 	});
 
 	test('GIVEN a Redis that fails THEN the process keeps the claim, and a burst is one case', async () => {
-		const set = vi.fn(async () => {
+		const set = vi.fn(async (_key: string) => {
 			throw new Error('Connection is closed.');
 		});
 		Object.assign(container, { redis: { status: 'ready', set } });
@@ -293,8 +293,9 @@ describe('catchHoneypotMessage', () => {
 		await catchHoneypotMessage(createMessage(), createSettings());
 		await catchHoneypotMessage(createMessage(), createSettings());
 
-		// The claim the process kept answers the second message, Redis is not asked again:
-		expect(set).toHaveBeenCalledTimes(1);
+		// The claim the process kept answers the second message, Redis is not asked again for the catch (the claim of the
+		// count in the warning is another key, which is the throttle of that edit):
+		expect(set.mock.calls.filter(([key]) => String(key).includes('honeypot-caught'))).toHaveLength(1);
 		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(1);
 	});
 
@@ -337,10 +338,42 @@ describe('catchHoneypotMessage', () => {
 			expect(ModerationActions.softban.apply).toHaveBeenCalled();
 		});
 
+		test('GIVEN a guild with no system nor rules channel THEN no invite is made on the trap, which would die with it', async () => {
+			const post = vi.fn(async () => ({ code: 'return' }));
+			Object.assign(container, { rest: { post } });
+
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: null, rulesChannelId: null } }),
+				createSettings({ honeypotReinvite: true })
+			);
+
+			expect(post).not.toHaveBeenCalled();
+			expect(ModerationActions.softban.apply).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.not.objectContaining({ reinviteUrl: expect.anything() })
+			);
+		});
+
+		test('GIVEN a rules channel and no system channel THEN the invite is made there', async () => {
+			const post = vi.fn(async () => ({ code: 'rules' }));
+			Object.assign(container, { rest: { post } });
+
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: null, rulesChannelId: '254360814063058999' } }),
+				createSettings({ honeypotReinvite: true })
+			);
+
+			expect(post).toHaveBeenCalledWith(expect.stringContaining('254360814063058999'), expect.anything());
+		});
+
 		test('a reinvite reaches the action DM after a softban but is never created for a ban', async () => {
 			const post = vi.fn(async () => ({ code: 'return' }));
 			Object.assign(container, { rest: { post } });
-			await catchHoneypotMessage(createMessage(), createSettings({ honeypotReinvite: true }));
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: '254360814063058998' } }),
+				createSettings({ honeypotReinvite: true })
+			);
 			expect(ModerationActions.softban.apply).toHaveBeenCalledWith(
 				expect.anything(),
 				expect.anything(),
@@ -348,7 +381,10 @@ describe('catchHoneypotMessage', () => {
 			);
 			post.mockClear();
 			vi.setSystemTime((now += 61_000));
-			await catchHoneypotMessage(createMessage(), createSettings({ honeypotReinvite: true, honeypotAction: 'Ban' }));
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: '254360814063058998' } }),
+				createSettings({ honeypotReinvite: true, honeypotAction: 'Ban' })
+			);
 			expect(post).not.toHaveBeenCalled();
 		});
 

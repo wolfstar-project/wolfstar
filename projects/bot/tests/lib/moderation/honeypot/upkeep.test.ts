@@ -146,6 +146,9 @@ describe('runHoneypotUpkeep', () => {
 		);
 		expect(settings.honeypotChannel).toBe('replacement');
 		expect(atDeletion).toEqual(['replacement']);
+		// The warning is sent once to the new channel, not once when it is made and again at the end of the upkeep:
+		expect(refreshHoneypotNotice).toHaveBeenCalledTimes(1);
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, 'replacement', expect.objectContaining({ warning: true }));
 	});
 
 	test('failed daily deletion restores the original trap and cleans up the replacement', async () => {
