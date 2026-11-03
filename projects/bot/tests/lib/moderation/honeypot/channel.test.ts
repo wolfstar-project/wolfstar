@@ -105,7 +105,7 @@ describe('the warning of the honeypot', () => {
 	});
 
 	describe('updateHoneypotNoticeCount', () => {
-		const editMessage = vi.fn(async () => ({}));
+		const editMessage = vi.fn(async (_channelId: string, _messageId: string, _body?: unknown) => ({}));
 
 		test('GIVEN a guild with two traps THEN only its own warnings are read and edited, never the whole hash, and once in a burst', async () => {
 			const other = '254360814063058999';
