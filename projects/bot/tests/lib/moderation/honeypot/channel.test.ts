@@ -6,8 +6,10 @@ import {
 	readHoneypotNotice,
 	refreshHoneypotNotice,
 	removeHoneypotNotice,
-	renderHoneypotNotice
+	renderHoneypotNotice,
+	updateHoneypotNoticeCount
 } from '#lib/moderation/honeypot/channel';
+import { readSettings } from '#lib/database';
 import { renderHoneypotSummary } from '#lib/moderation/honeypot/commands';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
@@ -19,6 +21,11 @@ import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-databa
 const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)) as never;
 
 vi.mock('#lib/moderation/common', () => ({ fetchGuildT: vi.fn(async () => t) }));
+vi.mock('#lib/database', async (importOriginal) => ({ ...(await importOriginal<object>()), readSettings: vi.fn() }));
+vi.mock('#lib/moderation/honeypot/stats', async (importOriginal) => ({
+	...(await importOriginal<object>()),
+	readHoneypotStats: vi.fn(async () => ({ total: 0, recent: 0 }))
+}));
 vi.mock('@wolfstar/plugin-gateway', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@wolfstar/plugin-gateway')>()),
 	computePermissionsIn: vi.fn()
@@ -95,6 +102,25 @@ describe('the warning of the honeypot', () => {
 
 	afterAll(() => {
 		container.redis = original;
+	});
+
+	describe('updateHoneypotNoticeCount', () => {
+		const editMessage = vi.fn(async () => ({}));
+
+		test('GIVEN a guild with two traps THEN only its own warnings are read and edited, never the whole hash, and once in a burst', async () => {
+			const other = '254360814063058999';
+			redis.store.set(guildId, `${channelId}:10:Softban`);
+			redis.store.set(`${guildId}:extra`, 'extra:11:Softban');
+			redis.store.set(other, 'elsewhere:12:Softban');
+			vi.mocked(readSettings).mockResolvedValue(createSettings({ honeypotChannel: channelId, honeypotChannels: ['extra'] }));
+			Object.assign(container.gatewayClient.api.channels, { editMessage });
+
+			await updateHoneypotNoticeCount(guildId);
+			await updateHoneypotNoticeCount(guildId);
+
+			expect(redis.hgetall).not.toHaveBeenCalled();
+			expect(editMessage.mock.calls.map(([channel, message]) => `${channel}:${message}`)).toEqual([`${channelId}:10`, 'extra:11']);
+		});
 	});
 
 	describe('refreshHoneypotNotice', () => {

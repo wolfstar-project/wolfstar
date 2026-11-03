@@ -1,4 +1,5 @@
 import { resolveOnErrorCodes } from '#common';
+import { readSettings } from '#lib/database';
 import { readHoneypotStats } from '#lib/moderation/honeypot/stats';
 import { claimOnce } from '#utils/claims';
 import { encodeCustomId } from '@wolfstar/http-framework-utilities';
@@ -246,9 +247,13 @@ export async function updateHoneypotNoticeCount(guildId: Snowflake): Promise<voi
 	// for a guild, whatever the size of the raid:
 	if (!(await claimOnce(`honeypot-notice:${guildId}`, 5))) return;
 
-	const notices = [...(await readHoneypotNotices())]
-		.filter(([key]) => key === guildId || key.startsWith(`${guildId}:`))
-		.map(([, notice]) => notice);
+	// Only the warnings of this guild are read: the one of the original trap, and one for each additional trap:
+	const settings = await readSettings(guildId);
+	const read = await Promise.all([
+		...(settings.honeypotChannel === null ? [] : [readHoneypotNotice(guildId)]),
+		...(settings.honeypotChannels ?? []).filter((id) => id !== settings.honeypotChannel).map((id) => readHoneypotNotice(guildId, id))
+	]);
+	const notices = read.filter((notice): notice is HoneypotNotice => notice !== null);
 	if (notices.length === 0) return;
 
 	const [t, stats] = await Promise.all([fetchGuildT({ id: guildId }), readHoneypotStats(guildId)]);
