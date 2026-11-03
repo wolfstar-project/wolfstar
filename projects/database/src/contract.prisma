@@ -274,6 +274,8 @@ namespace public {
     options            AutoModerationRuleOptions              @default(sql`'{}'::jsonb`)
     escalation         AutoModerationRuleEscalation           @default(sql`'[]'::jsonb`)
     escalationDuration Int                                    @default(86400000) @map("escalation_duration")
+    response           String?
+    logChannelId       BigInt?                                @map("log_channel_id")
     guild              Guild                                  @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildAutoModerationRule_guild_id_fkey", index: false)
 
     @@index([guildId], map: "GuildAutoModerationRule_guild_id_idx")
@@ -470,6 +472,14 @@ namespace public {
     displayReason Boolean @default(true) @map("display_reason")
     displayMessage Boolean @default(true) @map("display_message")
     displayModerator Boolean @default(true) @map("display_moderator")
+    lockdownChannels BigInt[] @default([]) @noCheck(elementNotNull) @map("lockdown_channels")
+    defaultWarnThresholds Boolean @default(true) @map("default_warn_thresholds")
+    responseBan     String? @map("response_ban")
+    responseUnban   String? @map("response_unban")
+    responseSoftban String? @map("response_softban")
+    responseKick    String? @map("response_kick")
+    responseMute    String? @map("response_mute")
+    responseUnmute  String? @map("response_unmute")
     modules       Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildModeration_id_fkey")
 
     @@control(external)

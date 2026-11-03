@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'ef9af6adae72bd915042fd65813c344e8e5f035e5f8fcb3147ccd895b6e37e16'>;
+export type StorageHash = StorageHashBase<'2bd6519063c2dd6fd637ddb28ff975f72b2dec8b3d9d05977dadd774ee5789e0'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -384,8 +384,10 @@ export type FieldOutputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly ignoredRoles: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
+			readonly logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly name: CodecTypes['pg/text@1']['output'];
 			readonly options: PrismaJson.AutoModerationRuleOptions;
+			readonly response: CodecTypes['pg/text@1']['output'] | null;
 			readonly softAction: CodecTypes['pg/int4@1']['output'];
 			readonly thresholdDuration: CodecTypes['pg/int4@1']['output'];
 			readonly thresholdMaximum: CodecTypes['pg/int4@1']['output'];
@@ -431,6 +433,7 @@ export type FieldOutputTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly chaosName: CodecTypes['pg/bool@1']['output'];
 			readonly directMessage: CodecTypes['pg/bool@1']['output'];
 			readonly ensureDeletion: CodecTypes['pg/bool@1']['output'];
@@ -440,6 +443,8 @@ export type FieldOutputTypes = {
 			readonly logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly randomName: CodecTypes['pg/bool@1']['output'];
 			readonly recentDelete: CodecTypes['pg/bool@1']['output'];
+			readonly recreate: CodecTypes['pg/bool@1']['output'];
+			readonly reinvite: CodecTypes['pg/bool@1']['output'];
 			readonly timeoutFirst: CodecTypes['pg/bool@1']['output'];
 			readonly warning: CodecTypes['pg/bool@1']['output'];
 		};
@@ -524,12 +529,20 @@ export type FieldOutputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly directMessage: CodecTypes['pg/bool@1']['output'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['output'];
 			readonly displayModerator: CodecTypes['pg/bool@1']['output'];
 			readonly displayReason: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly lockdownChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
+			readonly responseBan: CodecTypes['pg/text@1']['output'] | null;
+			readonly responseKick: CodecTypes['pg/text@1']['output'] | null;
+			readonly responseMute: CodecTypes['pg/text@1']['output'] | null;
+			readonly responseSoftban: CodecTypes['pg/text@1']['output'] | null;
+			readonly responseUnban: CodecTypes['pg/text@1']['output'] | null;
+			readonly responseUnmute: CodecTypes['pg/text@1']['output'] | null;
 			readonly trackBans: CodecTypes['pg/bool@1']['output'];
 			readonly trackKicks: CodecTypes['pg/bool@1']['output'];
 			readonly trackRoles: CodecTypes['pg/bool@1']['output'];
@@ -866,8 +879,10 @@ export type FieldInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly ignoredRoles: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
+			readonly logChannelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly name: CodecTypes['pg/text@1']['input'];
 			readonly options: CodecTypes['typed/json@1']['input'];
+			readonly response: CodecTypes['pg/text@1']['input'] | null;
 			readonly softAction: CodecTypes['pg/int4@1']['input'];
 			readonly thresholdDuration: CodecTypes['pg/int4@1']['input'];
 			readonly thresholdMaximum: CodecTypes['pg/int4@1']['input'];
@@ -913,6 +928,7 @@ export type FieldInputTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly chaosName: CodecTypes['pg/bool@1']['input'];
 			readonly directMessage: CodecTypes['pg/bool@1']['input'];
 			readonly ensureDeletion: CodecTypes['pg/bool@1']['input'];
@@ -922,6 +938,8 @@ export type FieldInputTypes = {
 			readonly logChannelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly randomName: CodecTypes['pg/bool@1']['input'];
 			readonly recentDelete: CodecTypes['pg/bool@1']['input'];
+			readonly recreate: CodecTypes['pg/bool@1']['input'];
+			readonly reinvite: CodecTypes['pg/bool@1']['input'];
 			readonly timeoutFirst: CodecTypes['pg/bool@1']['input'];
 			readonly warning: CodecTypes['pg/bool@1']['input'];
 		};
@@ -1006,12 +1024,20 @@ export type FieldInputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['input'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly directMessage: CodecTypes['pg/bool@1']['input'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['input'];
 			readonly displayModerator: CodecTypes['pg/bool@1']['input'];
 			readonly displayReason: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly lockdownChannels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
+			readonly responseBan: CodecTypes['pg/text@1']['input'] | null;
+			readonly responseKick: CodecTypes['pg/text@1']['input'] | null;
+			readonly responseMute: CodecTypes['pg/text@1']['input'] | null;
+			readonly responseSoftban: CodecTypes['pg/text@1']['input'] | null;
+			readonly responseUnban: CodecTypes['pg/text@1']['input'] | null;
+			readonly responseUnmute: CodecTypes['pg/text@1']['input'] | null;
 			readonly trackBans: CodecTypes['pg/bool@1']['input'];
 			readonly trackKicks: CodecTypes['pg/bool@1']['input'];
 			readonly trackRoles: CodecTypes['pg/bool@1']['input'];
@@ -1348,8 +1374,10 @@ export type StorageColumnTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly ignored_channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly ignored_roles: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
+			readonly log_channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly name: CodecTypes['pg/text@1']['output'];
 			readonly options: PrismaJson.AutoModerationRuleOptions;
+			readonly response: CodecTypes['pg/text@1']['output'] | null;
 			readonly soft_action: CodecTypes['pg/int4@1']['output'];
 			readonly threshold_duration: CodecTypes['pg/int4@1']['output'];
 			readonly threshold_maximum: CodecTypes['pg/int4@1']['output'];
@@ -1395,6 +1423,7 @@ export type StorageColumnTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 			readonly chaos_name: CodecTypes['pg/bool@1']['output'];
 			readonly direct_message: CodecTypes['pg/bool@1']['output'];
 			readonly ensure_deletion: CodecTypes['pg/bool@1']['output'];
@@ -1404,6 +1433,8 @@ export type StorageColumnTypes = {
 			readonly log_channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly random_name: CodecTypes['pg/bool@1']['output'];
 			readonly recent_delete: CodecTypes['pg/bool@1']['output'];
+			readonly recreate: CodecTypes['pg/bool@1']['output'];
+			readonly reinvite: CodecTypes['pg/bool@1']['output'];
 			readonly timeout_first: CodecTypes['pg/bool@1']['output'];
 			readonly warning: CodecTypes['pg/bool@1']['output'];
 		};
@@ -1488,12 +1519,20 @@ export type StorageColumnTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['output'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly direct_message: CodecTypes['pg/bool@1']['output'];
 			readonly display_message: CodecTypes['pg/bool@1']['output'];
 			readonly display_moderator: CodecTypes['pg/bool@1']['output'];
 			readonly display_reason: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly lockdown_channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
+			readonly response_ban: CodecTypes['pg/text@1']['output'] | null;
+			readonly response_kick: CodecTypes['pg/text@1']['output'] | null;
+			readonly response_mute: CodecTypes['pg/text@1']['output'] | null;
+			readonly response_softban: CodecTypes['pg/text@1']['output'] | null;
+			readonly response_unban: CodecTypes['pg/text@1']['output'] | null;
+			readonly response_unmute: CodecTypes['pg/text@1']['output'] | null;
 			readonly track_bans: CodecTypes['pg/bool@1']['output'];
 			readonly track_kicks: CodecTypes['pg/bool@1']['output'];
 			readonly track_roles: CodecTypes['pg/bool@1']['output'];
@@ -1830,8 +1869,10 @@ export type StorageColumnInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly ignored_channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly ignored_roles: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
+			readonly log_channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly name: CodecTypes['pg/text@1']['input'];
 			readonly options: CodecTypes['typed/json@1']['input'];
+			readonly response: CodecTypes['pg/text@1']['input'] | null;
 			readonly soft_action: CodecTypes['pg/int4@1']['input'];
 			readonly threshold_duration: CodecTypes['pg/int4@1']['input'];
 			readonly threshold_maximum: CodecTypes['pg/int4@1']['input'];
@@ -1877,6 +1918,7 @@ export type StorageColumnInputTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
 			readonly chaos_name: CodecTypes['pg/bool@1']['input'];
 			readonly direct_message: CodecTypes['pg/bool@1']['input'];
 			readonly ensure_deletion: CodecTypes['pg/bool@1']['input'];
@@ -1886,6 +1928,8 @@ export type StorageColumnInputTypes = {
 			readonly log_channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly random_name: CodecTypes['pg/bool@1']['input'];
 			readonly recent_delete: CodecTypes['pg/bool@1']['input'];
+			readonly recreate: CodecTypes['pg/bool@1']['input'];
+			readonly reinvite: CodecTypes['pg/bool@1']['input'];
 			readonly timeout_first: CodecTypes['pg/bool@1']['input'];
 			readonly warning: CodecTypes['pg/bool@1']['input'];
 		};
@@ -1970,12 +2014,20 @@ export type StorageColumnInputTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['input'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly direct_message: CodecTypes['pg/bool@1']['input'];
 			readonly display_message: CodecTypes['pg/bool@1']['input'];
 			readonly display_moderator: CodecTypes['pg/bool@1']['input'];
 			readonly display_reason: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly lockdown_channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
+			readonly response_ban: CodecTypes['pg/text@1']['input'] | null;
+			readonly response_kick: CodecTypes['pg/text@1']['input'] | null;
+			readonly response_mute: CodecTypes['pg/text@1']['input'] | null;
+			readonly response_softban: CodecTypes['pg/text@1']['input'] | null;
+			readonly response_unban: CodecTypes['pg/text@1']['input'] | null;
+			readonly response_unmute: CodecTypes['pg/text@1']['input'] | null;
 			readonly track_bans: CodecTypes['pg/bool@1']['input'];
 			readonly track_kicks: CodecTypes['pg/bool@1']['input'];
 			readonly track_roles: CodecTypes['pg/bool@1']['input'];
@@ -2334,8 +2386,10 @@ export namespace Models {
 		id: CodecTypes['pg/int8@1']['output'];
 		ignoredChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 		ignoredRoles: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
+		logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 		name: CodecTypes['pg/text@1']['output'];
 		options: PrismaJson.AutoModerationRuleOptions;
+		response: CodecTypes['pg/text@1']['output'] | null;
 		softAction: CodecTypes['pg/int4@1']['output'];
 		thresholdDuration: CodecTypes['pg/int4@1']['output'];
 		thresholdMaximum: CodecTypes['pg/int4@1']['output'];
@@ -2387,6 +2441,7 @@ export namespace Models {
 	export type public_GuildHoneypot = {
 		action: 'Kick' | 'Softban' | 'Ban';
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
+		channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
 		chaosName: CodecTypes['pg/bool@1']['output'];
 		directMessage: CodecTypes['pg/bool@1']['output'];
 		ensureDeletion: CodecTypes['pg/bool@1']['output'];
@@ -2396,6 +2451,8 @@ export namespace Models {
 		logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 		randomName: CodecTypes['pg/bool@1']['output'];
 		recentDelete: CodecTypes['pg/bool@1']['output'];
+		recreate: CodecTypes['pg/bool@1']['output'];
+		reinvite: CodecTypes['pg/bool@1']['output'];
 		timeoutFirst: CodecTypes['pg/bool@1']['output'];
 		warning: CodecTypes['pg/bool@1']['output'];
 		modules: public_Modules;
@@ -2490,12 +2547,20 @@ export namespace Models {
 	export type public_GuildModeration = {
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
 		confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+		defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 		dehoist: CodecTypes['pg/bool@1']['output'];
 		directMessage: CodecTypes['pg/bool@1']['output'];
 		displayMessage: CodecTypes['pg/bool@1']['output'];
 		displayModerator: CodecTypes['pg/bool@1']['output'];
 		displayReason: CodecTypes['pg/bool@1']['output'];
 		id: CodecTypes['pg/int8@1']['output'];
+		lockdownChannels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
+		responseBan: CodecTypes['pg/text@1']['output'] | null;
+		responseKick: CodecTypes['pg/text@1']['output'] | null;
+		responseMute: CodecTypes['pg/text@1']['output'] | null;
+		responseSoftban: CodecTypes['pg/text@1']['output'] | null;
+		responseUnban: CodecTypes['pg/text@1']['output'] | null;
+		responseUnmute: CodecTypes['pg/text@1']['output'] | null;
 		trackBans: CodecTypes['pg/bool@1']['output'];
 		trackKicks: CodecTypes['pg/bool@1']['output'];
 		trackRoles: CodecTypes['pg/bool@1']['output'];
@@ -3873,6 +3938,11 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/int8@1', readonly []>;
 									};
 								};
+								readonly log_channel_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
 								readonly name: {
 									readonly nativeType: 'text';
 									readonly codecId: 'pg/text@1';
@@ -3887,6 +3957,11 @@ type ContractBase = Omit<
 										readonly expression: "'{}'::jsonb";
 									};
 									readonly typeRef: 'AutoModerationRuleOptions';
+								};
+								readonly response: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
 								};
 								readonly soft_action: {
 									readonly nativeType: 'int4';
@@ -4101,6 +4176,15 @@ type ContractBase = Omit<
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: true;
 								};
+								readonly channels: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int8@1', readonly []>;
+									};
+								};
 								readonly chaos_name: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
@@ -4166,6 +4250,24 @@ type ContractBase = Omit<
 									};
 								};
 								readonly recent_delete: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+									};
+								};
+								readonly recreate: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+									};
+								};
+								readonly reinvite: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
 									readonly nullable: false;
@@ -4780,6 +4882,15 @@ type ContractBase = Omit<
 										readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
 									};
 								};
+								readonly default_warn_thresholds: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
 								readonly dehoist: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
@@ -4829,6 +4940,45 @@ type ContractBase = Omit<
 									readonly nativeType: 'int8';
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: false;
+								};
+								readonly lockdown_channels: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int8@1', readonly []>;
+									};
+								};
+								readonly response_ban: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly response_kick: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly response_mute: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly response_softban: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly response_unban: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly response_unmute: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
 								};
 								readonly track_bans: {
 									readonly nativeType: 'bool';
@@ -7430,6 +7580,10 @@ type ContractBase = Omit<
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 								readonly many: true;
 							};
+							readonly logChannelId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
 							readonly name: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -7437,6 +7591,10 @@ type ContractBase = Omit<
 							readonly options: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'typed/json@1' };
+							};
+							readonly response: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
 							};
 							readonly softAction: {
 								readonly nullable: false;
@@ -7486,8 +7644,10 @@ type ContractBase = Omit<
 								readonly id: { readonly column: 'id' };
 								readonly ignoredChannels: { readonly column: 'ignored_channels' };
 								readonly ignoredRoles: { readonly column: 'ignored_roles' };
+								readonly logChannelId: { readonly column: 'log_channel_id' };
 								readonly name: { readonly column: 'name' };
 								readonly options: { readonly column: 'options' };
+								readonly response: { readonly column: 'response' };
 								readonly softAction: { readonly column: 'soft_action' };
 								readonly thresholdDuration: { readonly column: 'threshold_duration' };
 								readonly thresholdMaximum: { readonly column: 'threshold_maximum' };
@@ -7618,6 +7778,11 @@ type ContractBase = Omit<
 								readonly nullable: true;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 							};
+							readonly channels: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+								readonly many: true;
+							};
 							readonly chaosName: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -7654,6 +7819,14 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
+							readonly recreate: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly reinvite: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly timeoutFirst: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -7683,6 +7856,7 @@ type ContractBase = Omit<
 							readonly fields: {
 								readonly action: { readonly column: 'action' };
 								readonly channelId: { readonly column: 'channel_id' };
+								readonly channels: { readonly column: 'channels' };
 								readonly chaosName: { readonly column: 'chaos_name' };
 								readonly directMessage: { readonly column: 'direct_message' };
 								readonly ensureDeletion: { readonly column: 'ensure_deletion' };
@@ -7692,6 +7866,8 @@ type ContractBase = Omit<
 								readonly logChannelId: { readonly column: 'log_channel_id' };
 								readonly randomName: { readonly column: 'random_name' };
 								readonly recentDelete: { readonly column: 'recent_delete' };
+								readonly recreate: { readonly column: 'recreate' };
+								readonly reinvite: { readonly column: 'reinvite' };
 								readonly timeoutFirst: { readonly column: 'timeout_first' };
 								readonly warning: { readonly column: 'warning' };
 							};
@@ -8172,6 +8348,10 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
 							};
+							readonly defaultWarnThresholds: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly dehoist: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -8195,6 +8375,35 @@ type ContractBase = Omit<
 							readonly id: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly lockdownChannels: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+								readonly many: true;
+							};
+							readonly responseBan: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly responseKick: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly responseMute: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly responseSoftban: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly responseUnban: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly responseUnmute: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
 							};
 							readonly trackBans: {
 								readonly nullable: false;
@@ -8233,12 +8442,20 @@ type ContractBase = Omit<
 							readonly fields: {
 								readonly channelId: { readonly column: 'channel_id' };
 								readonly confirmRecentMinutes: { readonly column: 'confirm_recent_minutes' };
+								readonly defaultWarnThresholds: { readonly column: 'default_warn_thresholds' };
 								readonly dehoist: { readonly column: 'dehoist' };
 								readonly directMessage: { readonly column: 'direct_message' };
 								readonly displayMessage: { readonly column: 'display_message' };
 								readonly displayModerator: { readonly column: 'display_moderator' };
 								readonly displayReason: { readonly column: 'display_reason' };
 								readonly id: { readonly column: 'id' };
+								readonly lockdownChannels: { readonly column: 'lockdown_channels' };
+								readonly responseBan: { readonly column: 'response_ban' };
+								readonly responseKick: { readonly column: 'response_kick' };
+								readonly responseMute: { readonly column: 'response_mute' };
+								readonly responseSoftban: { readonly column: 'response_softban' };
+								readonly responseUnban: { readonly column: 'response_unban' };
+								readonly responseUnmute: { readonly column: 'response_unmute' };
 								readonly trackBans: { readonly column: 'track_bans' };
 								readonly trackKicks: { readonly column: 'track_kicks' };
 								readonly trackRoles: { readonly column: 'track_roles' };

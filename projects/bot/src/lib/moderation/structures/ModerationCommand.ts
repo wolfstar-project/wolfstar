@@ -1,4 +1,5 @@
 import { fetchUserReportEnabled, readSettings } from '#lib/database';
+import { formatModerationResponse, getModerationResponseKey, type ModerationResponses } from '#lib/moderation/responses';
 import { getAction, type ActionByType, type GetContextType } from '#lib/moderation/actions';
 import { checkTargetCanBeModerated } from '#lib/moderation/common/checks';
 import { replyModerationReasonAutocomplete, resolveModerationReason } from '#lib/moderation/reasons';
@@ -15,6 +16,8 @@ import { ModerationCommandPrompt, type RoleSetupMessage } from '#lib/moderation/
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
 import type { TypeVariation } from '#utils/moderationConstants';
+import { userMention } from '@discordjs/formatters';
+import { isNullishOrZero } from '@sapphire/utilities';
 import { resolveTimeSpan } from '#utils/resolvers';
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import type { Awaitable } from '@sapphire/utilities';
@@ -508,7 +511,15 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			moderationDm: settings.messagesModerationDm,
 			reasonDisplay: settings.messagesModerationReasonDisplay,
 			messageDisplay: settings.messagesModerationMessageDisplay,
-			moderatorNameDisplay: settings.messagesModeratorNameDisplay
+			moderatorNameDisplay: settings.messagesModeratorNameDisplay,
+			responses: {
+				messagesResponseBan: settings.messagesResponseBan,
+				messagesResponseUnban: settings.messagesResponseUnban,
+				messagesResponseSoftban: settings.messagesResponseSoftban,
+				messagesResponseKick: settings.messagesResponseKick,
+				messagesResponseMute: settings.messagesResponseMute,
+				messagesResponseUnmute: settings.messagesResponseUnmute
+			}
 		};
 	}
 
@@ -519,7 +530,26 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		log: ModerationManager.Entry,
 		undelivered: boolean
 	): ModerationCommand.Answer {
-		return renderModerationOutput(t, { id: log.id, tag: target.tag, reason: settings.reasonDisplay ? log.reason : null, undelivered });
+		// The custom response of the action, when the server wrote one, takes the place of the sentence of the bot. A
+		// reason the server hides stays hidden, whatever the response says; and only an action that can be temporary
+		// (a ban, a mute) reads as permanent without a duration, the others have none.
+		const key = getModerationResponseKey(this.action.type, this.isUndoAction);
+		const template = key === null ? null : settings.responses[key];
+		const response =
+			template === null
+				? null
+				: formatModerationResponse(template, {
+						user: target.tag,
+						reason: settings.reasonDisplay ? (log.reason ?? '') : '',
+						case: String(log.id),
+						moderator: userMention(log.moderatorId),
+						duration: !isNullishOrZero(log.duration)
+							? t('globals:durationValue', { value: log.duration })
+							: this.supportsSchedule
+								? t('commands/moderation:moderationOutputPermanent')
+								: ''
+					});
+		return renderModerationOutput(t, { id: log.id, tag: target.tag, reason: settings.reasonDisplay ? log.reason : null, undelivered, response });
 	}
 
 	private formatFailureAnswer(t: Translator, target: User, error: unknown): ModerationCommand.Answer {
@@ -721,19 +751,27 @@ export function isModerationReplyPublic(
 /**
  * What a moderation command answers with when it made a case: a small embed that says the case it created, the user,
  * and the reason when the server wants it shown. It is green, as a success is, and yellow when the case was made but
- * the user could not be sent the direct message, which it says.
+ * the user could not be sent the direct message, which it says. With a custom response of the server
+ * (`moderation.response-*`, already written out), the response takes the place of the sentence, and the case and the
+ * reason stay under it, since the case is how a moderator finds it later.
  *
  * @param t - The function to translate with.
- * @param output - The case that was made: its number, the tag of the user, the reason to show, and whether the user
- * could not be sent the direct message.
+ * @param output - The case that was made: its number, the tag of the user, the reason to show, whether the user could
+ * not be sent the direct message, and the custom response of the server when it has one.
  */
 export function renderModerationOutput(
 	t: Translator,
-	output: { id: number; tag: string; reason: string | null; undelivered?: boolean }
+	output: { id: number; tag: string; reason: string | null; undelivered?: boolean; response?: string | null }
 ): ModerationCommand.Answer {
-	const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
-	const description = t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason });
-	const lines = output.undelivered ? [description, `${Emojis.Warning} ${t('commands/moderation:moderationOutputUndelivered')}`] : [description];
+	const lines: string[] = [];
+	if (output.response) {
+		lines.push(output.response, t('commands/moderation:moderationOutputCase', { range: output.id }));
+		if (output.reason) lines.push(t('commands/moderation:moderationOutputReason', { reason: output.reason }));
+	} else {
+		const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
+		lines.push(t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason }));
+	}
+	if (output.undelivered) lines.push(`${Emojis.Warning} ${t('commands/moderation:moderationOutputUndelivered')}`);
 
 	return toEmbedAnswer(lines.join('\n'), output.undelivered ? Colors.Yellow : Colors.Green);
 }
@@ -823,6 +861,8 @@ export declare namespace ModerationCommand {
 		reasonDisplay: boolean;
 		messageDisplay: boolean;
 		moderatorNameDisplay: boolean;
+		/** The custom responses of the server, see `getModerationResponseKey`. */
+		responses: ModerationResponses;
 	}
 
 	interface Parameters {

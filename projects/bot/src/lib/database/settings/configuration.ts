@@ -1,6 +1,11 @@
 import { SchemaGroup, type NonEmptyArray } from '#lib/database/settings/schema/SchemaGroup';
 import { SchemaKey, type ConfigurableKeyValueOptions } from '#lib/database/settings/schema/SchemaKey';
-import { JoinGuardMinimumTrustLimits, MaximumJoinGuardDirectMessageLength, type GuildDataKey } from 'wolfstar-database';
+import {
+	JoinGuardMinimumTrustLimits,
+	MaximumJoinGuardDirectMessageLength,
+	MaximumModerationResponseLength,
+	type GuildDataKey
+} from 'wolfstar-database';
 import type { TypedT } from '#lib/types';
 import { objectEntries } from '@sapphire/utilities';
 import { Collection } from '@discordjs/collection';
@@ -278,6 +283,19 @@ export function getConfiguration() {
 			name: 'moderation.dehoist',
 			description: 'settings:moderationDehoist'
 		},
+		moderationLockdownChannels: {
+			type: 'lockdownChannel',
+			name: 'moderation.lockdown-channels',
+			description: 'settings:moderationLockdownChannels',
+			array: true,
+			maximum: 25
+		},
+		moderationDefaultWarnThresholds: {
+			type: 'boolean',
+			name: 'moderation.default-warn-thresholds',
+			description: 'settings:moderationDefaultWarnThresholds',
+			default: true
+		},
 		messagesModerationDm: {
 			type: 'boolean',
 			name: 'moderation.direct-message',
@@ -300,6 +318,48 @@ export function getConfiguration() {
 			name: 'moderation.display-moderator',
 			description: 'settings:messagesModeratorNameDisplay',
 			default: true
+		},
+		messagesResponseBan: {
+			type: 'string',
+			name: 'moderation.response-ban',
+			description: 'settings:messagesResponseBan',
+			minimum: 1,
+			maximum: MaximumModerationResponseLength
+		},
+		messagesResponseUnban: {
+			type: 'string',
+			name: 'moderation.response-unban',
+			description: 'settings:messagesResponseUnban',
+			minimum: 1,
+			maximum: MaximumModerationResponseLength
+		},
+		messagesResponseSoftban: {
+			type: 'string',
+			name: 'moderation.response-softban',
+			description: 'settings:messagesResponseSoftban',
+			minimum: 1,
+			maximum: MaximumModerationResponseLength
+		},
+		messagesResponseKick: {
+			type: 'string',
+			name: 'moderation.response-kick',
+			description: 'settings:messagesResponseKick',
+			minimum: 1,
+			maximum: MaximumModerationResponseLength
+		},
+		messagesResponseMute: {
+			type: 'string',
+			name: 'moderation.response-mute',
+			description: 'settings:messagesResponseMute',
+			minimum: 1,
+			maximum: MaximumModerationResponseLength
+		},
+		messagesResponseUnmute: {
+			type: 'string',
+			name: 'moderation.response-unmute',
+			description: 'settings:messagesResponseUnmute',
+			minimum: 1,
+			maximum: MaximumModerationResponseLength
 		},
 
 		// Permissions

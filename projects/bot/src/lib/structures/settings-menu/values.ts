@@ -60,6 +60,7 @@ export function getSettingKind(key: SchemaKey): SettingKind {
 		case 'guildVoiceChannel':
 		case 'guildCategoryChannel':
 		case 'categoryOrTextChannel':
+		case 'lockdownChannel':
 			return 'channel';
 		case 'language':
 			return 'language';

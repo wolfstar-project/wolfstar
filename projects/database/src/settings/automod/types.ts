@@ -137,6 +137,13 @@ export interface AutoModerationRule<Type extends AutoModerationRuleType = AutoMo
 	escalation: AutoModerationRuleEscalationStep[];
 	/** How long a hard action counts towards the escalation, in milliseconds. */
 	escalationDuration: number;
+	/**
+	 * What the alert of the rule says instead of the line of its type, with `{user}`, `{rule}` and `{channel}` where
+	 * the member, the name of the rule and the channel go; `null` for the line of the type.
+	 */
+	response: string | null;
+	/** Where the log of the rule goes instead of the moderation channel; `null` for the moderation channel. */
+	logChannelId: Snowflake | null;
 }
 
 /**
@@ -156,6 +163,8 @@ export type AutoModerationRuleData = Omit<AutoModerationRule, 'id' | 'guildId'>;
 /** The most rules a guild can have. */
 export const MaximumAutoModerationRules = 25;
 export const MaximumAutoModerationRuleNameLength = 50;
+/** The most characters the custom response of a rule has. */
+export const MaximumAutoModerationRuleResponseLength = 200;
 /** The most entries a list of the options of a rule holds (words, allowed links, allowed invites). */
 export const MaximumAutoModerationRuleListLength = 200;
 
@@ -247,7 +256,9 @@ export function getDefaultAutoModerationRule<Type extends AutoModerationRuleType
 		ignoredChannels: [],
 		options: getDefaultAutoModerationRuleOptions(type),
 		escalation: [],
-		escalationDuration: 86_400_000
+		escalationDuration: 86_400_000,
+		response: null,
+		logChannelId: null
 	};
 }
 

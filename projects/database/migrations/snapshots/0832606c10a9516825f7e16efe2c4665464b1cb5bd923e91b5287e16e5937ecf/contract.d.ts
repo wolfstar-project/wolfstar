@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'5387137555d932b67462162becb8babd3378a00a6d90a3bbe8d0b1aea9f33ead'>;
+export type StorageHash = StorageHashBase<'0832606c10a9516825f7e16efe2c4665464b1cb5bd923e91b5287e16e5937ecf'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -431,19 +431,11 @@ export type FieldOutputTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
-			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
-			readonly chaosName: CodecTypes['pg/bool@1']['output'];
 			readonly directMessage: CodecTypes['pg/bool@1']['output'];
-			readonly ensureDeletion: CodecTypes['pg/bool@1']['output'];
-			readonly forwardMessage: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly keepActive: CodecTypes['pg/bool@1']['output'];
 			readonly logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly randomName: CodecTypes['pg/bool@1']['output'];
-			readonly recentDelete: CodecTypes['pg/bool@1']['output'];
-			readonly recreate: CodecTypes['pg/bool@1']['output'];
-			readonly reinvite: CodecTypes['pg/bool@1']['output'];
-			readonly timeoutFirst: CodecTypes['pg/bool@1']['output'];
 			readonly warning: CodecTypes['pg/bool@1']['output'];
 		};
 		readonly GuildJoinGuard: {
@@ -527,6 +519,7 @@ export type FieldOutputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly directMessage: CodecTypes['pg/bool@1']['output'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['output'];
@@ -916,19 +909,11 @@ export type FieldInputTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
-			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
-			readonly chaosName: CodecTypes['pg/bool@1']['input'];
 			readonly directMessage: CodecTypes['pg/bool@1']['input'];
-			readonly ensureDeletion: CodecTypes['pg/bool@1']['input'];
-			readonly forwardMessage: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly keepActive: CodecTypes['pg/bool@1']['input'];
 			readonly logChannelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly randomName: CodecTypes['pg/bool@1']['input'];
-			readonly recentDelete: CodecTypes['pg/bool@1']['input'];
-			readonly recreate: CodecTypes['pg/bool@1']['input'];
-			readonly reinvite: CodecTypes['pg/bool@1']['input'];
-			readonly timeoutFirst: CodecTypes['pg/bool@1']['input'];
 			readonly warning: CodecTypes['pg/bool@1']['input'];
 		};
 		readonly GuildJoinGuard: {
@@ -1012,6 +997,7 @@ export type FieldInputTypes = {
 		readonly GuildModeration: {
 			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirmRecentMinutes: CodecTypes['pg/int4@1']['input'];
+			readonly defaultWarnThresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly directMessage: CodecTypes['pg/bool@1']['input'];
 			readonly displayMessage: CodecTypes['pg/bool@1']['input'];
@@ -1401,19 +1387,11 @@ export type StorageColumnTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
-			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
-			readonly chaos_name: CodecTypes['pg/bool@1']['output'];
 			readonly direct_message: CodecTypes['pg/bool@1']['output'];
-			readonly ensure_deletion: CodecTypes['pg/bool@1']['output'];
-			readonly forward_message: CodecTypes['pg/bool@1']['output'];
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly keep_active: CodecTypes['pg/bool@1']['output'];
 			readonly log_channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly random_name: CodecTypes['pg/bool@1']['output'];
-			readonly recent_delete: CodecTypes['pg/bool@1']['output'];
-			readonly recreate: CodecTypes['pg/bool@1']['output'];
-			readonly reinvite: CodecTypes['pg/bool@1']['output'];
-			readonly timeout_first: CodecTypes['pg/bool@1']['output'];
 			readonly warning: CodecTypes['pg/bool@1']['output'];
 		};
 		readonly GuildJoinGuard: {
@@ -1497,6 +1475,7 @@ export type StorageColumnTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['output'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['output'];
 			readonly dehoist: CodecTypes['pg/bool@1']['output'];
 			readonly direct_message: CodecTypes['pg/bool@1']['output'];
 			readonly display_message: CodecTypes['pg/bool@1']['output'];
@@ -1886,19 +1865,11 @@ export type StorageColumnInputTypes = {
 		readonly GuildHoneypot: {
 			readonly action: 'Kick' | 'Softban' | 'Ban';
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
-			readonly channels: ReadonlyArray<CodecTypes['pg/int8@1']['input']>;
-			readonly chaos_name: CodecTypes['pg/bool@1']['input'];
 			readonly direct_message: CodecTypes['pg/bool@1']['input'];
-			readonly ensure_deletion: CodecTypes['pg/bool@1']['input'];
-			readonly forward_message: CodecTypes['pg/bool@1']['input'];
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly keep_active: CodecTypes['pg/bool@1']['input'];
 			readonly log_channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly random_name: CodecTypes['pg/bool@1']['input'];
-			readonly recent_delete: CodecTypes['pg/bool@1']['input'];
-			readonly recreate: CodecTypes['pg/bool@1']['input'];
-			readonly reinvite: CodecTypes['pg/bool@1']['input'];
-			readonly timeout_first: CodecTypes['pg/bool@1']['input'];
 			readonly warning: CodecTypes['pg/bool@1']['input'];
 		};
 		readonly GuildJoinGuard: {
@@ -1982,6 +1953,7 @@ export type StorageColumnInputTypes = {
 		readonly GuildModeration: {
 			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
 			readonly confirm_recent_minutes: CodecTypes['pg/int4@1']['input'];
+			readonly default_warn_thresholds: CodecTypes['pg/bool@1']['input'];
 			readonly dehoist: CodecTypes['pg/bool@1']['input'];
 			readonly direct_message: CodecTypes['pg/bool@1']['input'];
 			readonly display_message: CodecTypes['pg/bool@1']['input'];
@@ -2399,19 +2371,11 @@ export namespace Models {
 	export type public_GuildHoneypot = {
 		action: 'Kick' | 'Softban' | 'Ban';
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
-		channels: ReadonlyArray<CodecTypes['pg/int8@1']['output']>;
-		chaosName: CodecTypes['pg/bool@1']['output'];
 		directMessage: CodecTypes['pg/bool@1']['output'];
-		ensureDeletion: CodecTypes['pg/bool@1']['output'];
-		forwardMessage: CodecTypes['pg/bool@1']['output'];
 		id: CodecTypes['pg/int8@1']['output'];
 		keepActive: CodecTypes['pg/bool@1']['output'];
 		logChannelId: CodecTypes['pg/int8@1']['output'] | null;
 		randomName: CodecTypes['pg/bool@1']['output'];
-		recentDelete: CodecTypes['pg/bool@1']['output'];
-		recreate: CodecTypes['pg/bool@1']['output'];
-		reinvite: CodecTypes['pg/bool@1']['output'];
-		timeoutFirst: CodecTypes['pg/bool@1']['output'];
 		warning: CodecTypes['pg/bool@1']['output'];
 		modules: public_Modules;
 		readonly [RelationKeys]?: 'modules';
@@ -2505,6 +2469,7 @@ export namespace Models {
 	export type public_GuildModeration = {
 		channelId: CodecTypes['pg/int8@1']['output'] | null;
 		confirmRecentMinutes: CodecTypes['pg/int4@1']['output'];
+		defaultWarnThresholds: CodecTypes['pg/bool@1']['output'];
 		dehoist: CodecTypes['pg/bool@1']['output'];
 		directMessage: CodecTypes['pg/bool@1']['output'];
 		displayMessage: CodecTypes['pg/bool@1']['output'];
@@ -4116,24 +4081,6 @@ type ContractBase = Omit<
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: true;
 								};
-								readonly channels: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/int8@1', readonly []>;
-									};
-								};
-								readonly chaos_name: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
 								readonly direct_message: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
@@ -4141,24 +4088,6 @@ type ContractBase = Omit<
 									readonly default: {
 										readonly kind: 'literal';
 										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
-									};
-								};
-								readonly ensure_deletion: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly forward_message: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
 									};
 								};
 								readonly id: {
@@ -4181,42 +4110,6 @@ type ContractBase = Omit<
 									readonly nullable: true;
 								};
 								readonly random_name: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly recent_delete: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly recreate: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly reinvite: {
-									readonly nativeType: 'bool';
-									readonly codecId: 'pg/bool@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'literal';
-										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-									};
-								};
-								readonly timeout_first: {
 									readonly nativeType: 'bool';
 									readonly codecId: 'pg/bool@1';
 									readonly nullable: false;
@@ -4820,6 +4713,15 @@ type ContractBase = Omit<
 									readonly default: {
 										readonly kind: 'literal';
 										readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+									};
+								};
+								readonly default_warn_thresholds: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
 									};
 								};
 								readonly dehoist: {
@@ -7660,24 +7562,7 @@ type ContractBase = Omit<
 								readonly nullable: true;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 							};
-							readonly channels: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-								readonly many: true;
-							};
-							readonly chaosName: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
 							readonly directMessage: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly ensureDeletion: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly forwardMessage: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
@@ -7694,22 +7579,6 @@ type ContractBase = Omit<
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 							};
 							readonly randomName: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly recentDelete: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly recreate: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly reinvite: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-							};
-							readonly timeoutFirst: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
 							};
@@ -7738,19 +7607,11 @@ type ContractBase = Omit<
 							readonly fields: {
 								readonly action: { readonly column: 'action' };
 								readonly channelId: { readonly column: 'channel_id' };
-								readonly channels: { readonly column: 'channels' };
-								readonly chaosName: { readonly column: 'chaos_name' };
 								readonly directMessage: { readonly column: 'direct_message' };
-								readonly ensureDeletion: { readonly column: 'ensure_deletion' };
-								readonly forwardMessage: { readonly column: 'forward_message' };
 								readonly id: { readonly column: 'id' };
 								readonly keepActive: { readonly column: 'keep_active' };
 								readonly logChannelId: { readonly column: 'log_channel_id' };
 								readonly randomName: { readonly column: 'random_name' };
-								readonly recentDelete: { readonly column: 'recent_delete' };
-								readonly recreate: { readonly column: 'recreate' };
-								readonly reinvite: { readonly column: 'reinvite' };
-								readonly timeoutFirst: { readonly column: 'timeout_first' };
 								readonly warning: { readonly column: 'warning' };
 							};
 						};
@@ -8230,6 +8091,10 @@ type ContractBase = Omit<
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
 							};
+							readonly defaultWarnThresholds: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
 							readonly dehoist: {
 								readonly nullable: false;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -8291,6 +8156,7 @@ type ContractBase = Omit<
 							readonly fields: {
 								readonly channelId: { readonly column: 'channel_id' };
 								readonly confirmRecentMinutes: { readonly column: 'confirm_recent_minutes' };
+								readonly defaultWarnThresholds: { readonly column: 'default_warn_thresholds' };
 								readonly dehoist: { readonly column: 'dehoist' };
 								readonly directMessage: { readonly column: 'direct_message' };
 								readonly displayMessage: { readonly column: 'display_message' };
