@@ -1,0 +1,31 @@
+[
+	{
+		"id": "GuildModeration.directMessage.default",
+		"label": "Enable moderation direct messages by default",
+		"summary": "Changes the default for new rows without changing existing preferences",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"table": "GuildModeration",
+				"column": "direct_message"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "set the direct message default",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ALTER COLUMN \"direct_message\" SET DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify the direct message default",
+				"sql": "SELECT column_default = 'true' AS result FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'direct_message'",
+				"params": []
+			}
+		]
+	}
+]
