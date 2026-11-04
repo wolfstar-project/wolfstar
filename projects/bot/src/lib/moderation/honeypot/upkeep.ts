@@ -1,10 +1,11 @@
+import { getHoneypotChannels } from './channels';
 import { resolveOnErrorCodes } from '#common';
 import { writeSettingsTransaction } from '#lib/database';
 import { refreshHoneypotNotice, removeHoneypotNotice, renderHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
 import { fetchGuildT } from '#lib/moderation/common';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
-import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { ChannelType, Routes, RESTJSONErrorCodes, type RESTGetAPIChannelResult, type Snowflake } from 'discord-api-types/v10';
 import type { HoneypotUpkeep, ReadonlyGuildData } from 'wolfstar-database';
 
 /**
@@ -53,6 +54,26 @@ export function getHoneypotUpkeepHour(guildId: Snowflake): number {
 }
 
 /**
+ * The characters a chaos name is made of, and how long it is: a name that looks like nothing, which no list of channel
+ * names a bot keeps can hold.
+ */
+const ChaosNameCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const ChaosNameLength = 10;
+
+/**
+ * Makes the name of a honeypot channel that is renamed with random characters every day (`honeypot.chaos-name`).
+ *
+ * @param random - Gives a number from 0 to 1, 1 excluded, for each character.
+ */
+export function makeChaosChannelName(random = Math.random): string {
+	let name = '';
+	for (let i = 0; i < ChaosNameLength; i++) {
+		name += ChaosNameCharacters[Math.min(ChaosNameCharacters.length - 1, Math.floor(random() * ChaosNameCharacters.length))];
+	}
+	return name;
+}
+
+/**
  * Picks the next name of a honeypot channel, which is never the one it has.
  *
  * @param current - The name the channel has.
@@ -64,8 +85,8 @@ export function pickHoneypotChannelName(current: string | null, random = Math.ra
 }
 
 /**
- * Keeps a honeypot channel up for the day: it is given another name when the guild wants one, and a new message when
- * the guild keeps it active.
+ * Keeps a honeypot channel up for the day: it is given another name when the guild wants one (from the list, or random
+ * characters with `honeypot.chaos-name`), and a new message when the guild keeps it active.
  *
  * @remarks
  *
@@ -85,14 +106,16 @@ export function pickHoneypotChannelName(current: string | null, random = Math.ra
  * sent (the warning the channel had is kept), `'done'` otherwise.
  */
 export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'channelId'>): Promise<HoneypotUpkeepResult> {
-	const { guildId, channelId } = upkeep;
+	const { guildId } = upkeep;
+	let { channelId } = upkeep;
 
 	return withHoneypotLock(guildId, async () => {
 		const { gatewayClient } = container;
 
 		const settings = await readCurrentSettings(guildId);
-		if (settings.honeypotChannel !== channelId || !settings.modulesHoneypot) return 'skipped';
-		if (!settings.honeypotRandomName && !settings.honeypotKeepActive) return 'skipped';
+		if (!getHoneypotChannels(settings).includes(channelId) || !settings.modulesHoneypot) return 'skipped';
+		if (!settings.honeypotRandomName && !settings.honeypotChaosName && !settings.honeypotKeepActive && !settings.honeypotRecreate)
+			return 'skipped';
 
 		const channel = await resolveOnErrorCodes(gatewayClient.channels.fetch(channelId), RESTJSONErrorCodes.UnknownChannel);
 		if (isNullish(channel) || !('guildId' in channel) || channel.guildId !== guildId) {
@@ -100,17 +123,36 @@ export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'chan
 			return cleared ? 'gone' : 'skipped';
 		}
 
-		if (settings.honeypotRandomName) {
-			const name = pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
-			await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
+		const independent = settings.honeypotChannel !== channelId;
+		if (settings.honeypotRecreate) {
+			channelId = await recreateHoneypotChannel(guildId, channelId, settings);
+			// With a warning, the one sent below is the only one the new channel gets; without it, the warning the old
+			// channel had is forgotten here, since the channel went with its message:
+			if (!settings.honeypotWarning) {
+				await refreshHoneypotNotice(guildId, channelId, { warning: false, action: settings.honeypotAction, independent });
+			}
 		}
 
-		if (!settings.honeypotKeepActive) return 'done';
+		// The chaos name takes the place of the one of the list while both are on:
+		if (settings.honeypotChaosName || settings.honeypotRandomName) {
+			const name = settings.honeypotChaosName
+				? makeChaosChannelName()
+				: pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
+			// A rename that fails must not keep the warning from being sent: a recreated trap has no other way to warn
+			// whoever writes in it, and the old channel is already gone.
+			try {
+				await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
+			} catch (error) {
+				container.logger.warn(`[Honeypot] Could not rename the channel ${channelId} of the guild ${guildId}:`, error);
+			}
+		}
+
+		if (!settings.honeypotKeepActive && !settings.honeypotRecreate) return 'done';
 
 		const action = settings.honeypotAction;
 		if (settings.honeypotWarning) {
 			// The warning the channel had stays when the new one cannot be sent, which the task has to tell about:
-			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: true, action });
+			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: true, action, independent });
 			return noticed ? 'done' : 'failed';
 		}
 
@@ -142,9 +184,62 @@ async function readCurrentSettings(guildId: Snowflake): Promise<ReadonlyGuildDat
  */
 async function clearHoneypotChannel(guildId: Snowflake, channelId: Snowflake): Promise<boolean> {
 	using trx = await writeSettingsTransaction(guildId);
-	if (trx.settings.honeypotChannel !== channelId) return false;
+	if (!getHoneypotChannels(trx.settings).includes(channelId)) return false;
 
-	await trx.write({ honeypotChannel: null }).submitWithAudit(container.gatewayClient.user!.id);
-	await removeHoneypotNotice(guildId);
+	const primary = trx.settings.honeypotChannel === channelId;
+	await trx
+		.write({ ...(primary ? { honeypotChannel: null } : {}), honeypotChannels: trx.settings.honeypotChannels.filter((id) => id !== channelId) })
+		.submitWithAudit(container.gatewayClient.user!.id);
+	await removeHoneypotNotice(guildId, primary ? undefined : channelId);
 	return true;
+}
+
+/** Replaces a trap under its guild lock; a failed deletion restores the original configuration. */
+async function recreateHoneypotChannel(guildId: string, oldId: string, settings: ReadonlyGuildData): Promise<string> {
+	const { gatewayClient } = container;
+	const old = (await container.rest.get(Routes.channel(oldId))) as RESTGetAPIChannelResult;
+	if (old.type !== ChannelType.GuildText && old.type !== ChannelType.GuildAnnouncement)
+		throw new Error('Honeypot recreation requires a text channel');
+	const replacement = await gatewayClient.api.guilds.createChannel(
+		guildId,
+		{
+			name: old.name,
+			type: old.type,
+			parent_id: old.parent_id,
+			position: old.position,
+			topic: old.topic,
+			nsfw: old.nsfw,
+			rate_limit_per_user: old.rate_limit_per_user,
+			permission_overwrites: old.permission_overwrites
+		},
+		{ reason: 'Daily honeypot recreation' }
+	);
+	const primary = settings.honeypotChannel === oldId;
+	let saved = false;
+	try {
+		using trx = await writeSettingsTransaction(guildId);
+		if (!getHoneypotChannels(trx.settings).includes(oldId)) throw new Error('Honeypot changed during recreation');
+		await trx
+			.write({
+				...(primary ? { honeypotChannel: replacement.id } : {}),
+				honeypotChannels: trx.settings.honeypotChannels.map((id) => (id === oldId ? replacement.id : id))
+			})
+			.submitWithAudit(gatewayClient.user!.id);
+		saved = true;
+		await resolveOnErrorCodes(gatewayClient.channels.delete(oldId, 'Daily honeypot recreation'), RESTJSONErrorCodes.UnknownChannel);
+	} catch (error) {
+		if (saved) {
+			using trx = await writeSettingsTransaction(guildId);
+			await trx
+				.write({
+					...(primary && trx.settings.honeypotChannel === replacement.id ? { honeypotChannel: oldId } : {}),
+					honeypotChannels: trx.settings.honeypotChannels.map((id) => (id === replacement.id ? oldId : id))
+				})
+				.submitWithAudit(gatewayClient.user!.id);
+		}
+		await gatewayClient.channels.delete(replacement.id, 'Honeypot recreation failed');
+		throw error;
+	}
+	await removeHoneypotNotice(guildId, primary ? undefined : oldId);
+	return replacement.id;
 }

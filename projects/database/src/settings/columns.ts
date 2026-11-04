@@ -119,7 +119,15 @@ export const Columns = {
 		honeypotDirectMessage: ['directMessage', 'value'],
 		honeypotWarning: ['warning', 'value'],
 		honeypotRandomName: ['randomName', 'value'],
-		honeypotKeepActive: ['keepActive', 'value']
+		honeypotKeepActive: ['keepActive', 'value'],
+		honeypotForwardMessage: ['forwardMessage', 'value'],
+		honeypotTimeoutFirst: ['timeoutFirst', 'value'],
+		honeypotRecentDelete: ['recentDelete', 'value'],
+		honeypotChaosName: ['chaosName', 'value'],
+		honeypotEnsureDeletion: ['ensureDeletion', 'value'],
+		honeypotChannels: ['channels', 'snowflakes'],
+		honeypotReinvite: ['reinvite', 'value'],
+		honeypotRecreate: ['recreate', 'value']
 	}),
 	...columns('GuildJoinGuard', {
 		joinGuardEnabled: ['enabled', 'value'],

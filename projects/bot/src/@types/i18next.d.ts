@@ -1112,6 +1112,16 @@ declare module "i18next" {
         optionsRandomNameDescription: "Whether I give the channel another name every day.";
         optionsKeepActiveName: "keep-active";
         optionsKeepActiveDescription: "Whether I send a message to the channel every day, so it does not look abandoned.";
+        optionsForwardMessageName: "forward-message";
+        optionsForwardMessageDescription: "Whether I forward the message to the logs channel before I delete it.";
+        optionsTimeoutFirstName: "timeout-first";
+        optionsTimeoutFirstDescription: "Whether I time the member out for an hour before a softban or a ban.";
+        optionsRecentDeleteName: "recent-delete";
+        optionsRecentDeleteDescription: "Whether a softban or a ban deletes the last 15 minutes instead of the last hour.";
+        optionsChaosNameName: "chaos-name";
+        optionsChaosNameDescription: "Whether the daily name of the channel is random characters instead of one of my list.";
+        optionsEnsureDeletionName: "ensure-deletion";
+        optionsEnsureDeletionDescription: "Whether I delete what the member left in the channels two minutes after the action.";
         channelName: "honeypot";
         channelTopic: "Do not write here: this channel is a trap for spam bots, and who writes in it is removed from the server.";
         channelUnknown: "I could not find that channel in this server.";
@@ -1139,6 +1149,23 @@ declare module "i18next" {
         noticeKick: "Whoever does is kicked from the server at once.";
         noticeSoftban: "Whoever does is removed from the server at once, and what they sent lately is deleted.";
         noticeBan: "Whoever does is banned from the server at once.";
+        noticeCatches: "Catches: {{count, number}}";
+        stats: "## Honeypot of this server\nMembers caught: **{{total, number}}**, of which **{{recent, number}}** in the last {{days}} days.\nAction: **{{action}}**. Channel: {{channel}}.";
+        moderatorSpared: "{{user}}, you are a moderator, so I left you alone. A member who writes here is not: {{consequence}}";
+        intro: "## 👋 Welcome to the honeypot channel\n- Whoever writes here is caught: the message is deleted and the action of `/honeypot` is taken on them. The moderators are never caught, so you can test it.\n- **Tips to catch more:**\n  - Give the channel a name of its own, such as `#{{name}}`, so the bots cannot avoid it by its name; `/honeypot edit random-name:True` does it every day.\n  - Keep it near the top of the list: the bots write in the first channels they find.\n  - Keep my highest role above the roles the members give themselves, so I can act on all of them.\n- `/honeypot show` lists the settings and tells what keeps the trap from working.";
+        introDeletes: "-# This message deletes itself {{time}}.";
+        introDelete: "Delete now";
+        problemsTitle: "⚠️ Some things keep the honeypot from catching:";
+        problemEveryoneCannotView: "`@everyone` cannot see the channel, so the bots cannot either: nobody is caught.";
+        problemEveryoneCannotSend: "`@everyone` cannot write in the channel, so the bots cannot either: nobody is caught.";
+        problemEveryoneCannotAttach: "`@everyone` cannot attach files in the channel, and many spam bots post an image: they are not caught.";
+        problemBotCannotAct: "I lack what the action needs: check my permissions and that my highest role is above the ones of the members.";
+        problemBigRoleAboveBot: "A role most of the members hold is above my highest role, so I cannot act on them: move my role above it.";
+        optionsReinviteName: "reinvite";
+        optionsReinviteDescription: "Include a one-use, 24-hour invite in the direct message after a kick or softban.";
+        optionsRecreateName: "recreate";
+        optionsRecreateDescription: "Replace each honeypot channel daily. Its messages are deleted.";
+        reinviteMessage: "You can rejoin the server using this invite: {{url}}";
       };
       "commands/join-guard": {
         joinguardName: "joinguard";
@@ -2517,6 +2544,7 @@ declare module "i18next" {
         honeypotLogCaught: "{{user}} wrote in {{channel}}, the honeypot channel.\n**Action**: {{action}}\n**Case**: {{caseId}}";
         honeypotLogFailed: "{{user}} wrote in {{channel}}, the honeypot channel, and I could not act on them.\n**Action**: {{action}}\n**Error**: {{error}}";
         honeypotLogFooter: "Honeypot";
+        honeypotLogHint: "-# Check that my highest role is above theirs and that I have the permission the action needs.";
         honeypotLogUnknownError: "Something went wrong, the details are in my logs.";
         inviteFilterAlert: "{{REDCROSS}} Dear {{user}}, invite links aren't allowed here.";
         inviteFilterLog_one: "**Link**: {{links, list(conjunction)}}";
@@ -2605,6 +2633,7 @@ declare module "i18next" {
         wordFilterFooter: "Filtered Word";
         words: "[Auto-Moderation] Triggered word filter, no threshold.";
         wordsWithMaximum: "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions.";
+        honeypotLogTimeoutFailed: "I could not apply the preliminary timeout. Check my Moderate Members permission and role position. The main action result is shown above.";
       };
       "events/reactions": {
         reaction: "Reaction Added";
@@ -3126,6 +3155,11 @@ declare module "i18next" {
         honeypotWarning: "Whether I keep a message in the honeypot channel that warns the members not to write there. Without it the channel says nothing, which is harder for a bot to learn to avoid, and for a member too.";
         honeypotRandomName: "Whether I give the honeypot channel another name once a day, so the bots cannot avoid it by its name. Turning this on does not rename the channel immediately.";
         honeypotKeepActive: "Whether I send a message to the honeypot channel every day, so it does not look abandoned.";
+        honeypotForwardMessage: "Whether I forward the message that was sent in the honeypot channel to the honeypot logs channel before I delete it, so you see it as it was, attachments included. The log still quotes its text.";
+        honeypotTimeoutFirst: "Whether I time the member out for an hour before I softban or ban them, so a hacked account that comes back right away still cannot write. A kick gets no timeout: the member is gone.";
+        honeypotRecentDelete: "Whether a softban or a ban deletes what the member sent in the last 15 minutes instead of the last hour, which keeps more of the history of the channels.";
+        honeypotChaosName: "Whether the daily name of the honeypot channel is made of random characters instead of a name from my list, against the bots that keep a list of channel names. It takes the place of the random name while it is on, and does not rename the channel immediately.";
+        honeypotEnsureDeletion: "Whether I look for what the member left in the channels two minutes after the action and delete it, since a ban does not always delete everything.";
         joinGuardEnabled: "Whether the join guard checks the members who join against its rules, which the dashboard edits. A member who matches a rule is stopped, given a role, reported to the moderators or told, as the rule says.";
         joinGuardLogChannel: "The channel I report everything the join guard does to: who was stopped, by which rule and what it saw, what I did, and later what became of them.";
         joinGuardDirectMessage: "Whether I tell the members the join guard stops why, in a direct message, with the link of the checkpoint when they are sent there. A rule can also ask for the message itself.";
@@ -3232,6 +3266,11 @@ declare module "i18next" {
           honeypotWarning: "Warning in the Channel";
           honeypotRandomName: "Random Channel Name (Once a Day)";
           honeypotKeepActive: "Keep the Channel Active";
+          honeypotForwardMessage: "Forward the Message";
+          honeypotTimeoutFirst: "Timeout First";
+          honeypotRecentDelete: "Delete Only Recent Messages";
+          honeypotChaosName: "Random Characters as Name (Once a Day)";
+          honeypotEnsureDeletion: "Ensure Message Deletion";
           joinGuardEnabled: "Join Guard Module";
           joinGuardLogChannel: "Join Guard Logs Channel";
           joinGuardDirectMessage: "Tell Who Is Stopped";
@@ -3335,7 +3374,13 @@ declare module "i18next" {
           rolesRestrictedAttachment: "Attachment Restriction Role";
           rolesRestrictedVoice: "Voice Restriction Role";
           stickyRoles: "Sticky Roles";
+          honeypotChannels: "Additional Honeypot Channels";
+          honeypotReinvite: "Reinvite in Direct Message";
+          honeypotRecreate: "Recreate Channels Daily";
         };
+        honeypotChannels: "Up to four additional trap channels, sharing the action and options of the main honeypot.";
+        honeypotReinvite: "Whether a kick or softban direct message includes a one-use invite that expires after 24 hours. No invite is sent for a ban.";
+        honeypotRecreate: "Whether each trap is replaced daily with a new channel ID. Messages are deleted. Its name, category and permission overwrites are preserved unless random naming is enabled.";
       };
       system: {
         discordAbortError: "I had a small network error when messaging Discord, please run this command again!";

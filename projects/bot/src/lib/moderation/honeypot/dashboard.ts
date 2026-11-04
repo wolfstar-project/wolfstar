@@ -1,3 +1,4 @@
+import { syncAdditionalHoneypotNotices } from './channels';
 import { readSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { isOwnGuild } from '#lib/database/settings/dashboard';
@@ -21,7 +22,7 @@ import { fetchHoneypotChannels, type GuildDataKey, type HoneypotChannel, type Re
  * The settings the warning of the honeypot depends on: where it is, whether there is one, and the action it tells
  * about.
  */
-const HoneypotWarningKeys = ['honeypotChannel', 'honeypotAction', 'honeypotWarning'] as const satisfies readonly GuildDataKey[];
+const HoneypotWarningKeys = ['honeypotChannels', 'honeypotChannel', 'honeypotAction', 'honeypotWarning'] as const satisfies readonly GuildDataKey[];
 
 /**
  * The settings {@linkcode followHoneypotSettings} reacts to: the ones of the warning, and the switch of the module,
@@ -56,23 +57,28 @@ export async function followHoneypotSettings(guildId: Snowflake, keys: readonly 
 
 	return withHoneypotLock(guildId, async () => {
 		const settings = await readSettings(guildId);
+		let additionalFailed = false;
+		await syncAdditionalHoneypotNotices(guildId, settings).catch((error: unknown) => {
+			additionalFailed = true;
+			container.logger.error(`[Honeypot] Could not synchronize additional warnings of ${guildId}:`, error);
+		});
 		const channelId = settings.honeypotChannel;
 		if (channelId === null) {
 			await removeHoneypotNotice(guildId);
-			return 'Removed';
+			return additionalFailed ? 'Failed' : 'Removed';
 		}
 
 		// A paused honeypot gets no warning, one it does not want anymore is still taken off below:
-		if (settings.honeypotWarning && !settings.modulesHoneypot) return 'Ignored';
+		if (settings.honeypotWarning && !settings.modulesHoneypot) return additionalFailed ? 'Failed' : 'Ignored';
 
 		// The switch alone: a warning that is right is not sent again, only one that waited for the module is:
 		if (!keys.some((key) => (HoneypotWarningKeys as readonly string[]).includes(key))) {
 			const honeypot = { channelId, warning: settings.honeypotWarning, action: settings.honeypotAction };
-			if (planHoneypotNoticeReconcile(honeypot, await readHoneypotNotice(guildId)) === 'Keep') return 'Ignored';
+			if (planHoneypotNoticeReconcile(honeypot, await readHoneypotNotice(guildId)) === 'Keep') return additionalFailed ? 'Failed' : 'Ignored';
 		}
 
 		const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: settings.honeypotWarning, action: settings.honeypotAction });
-		if (noticed) return 'Refreshed';
+		if (noticed) return additionalFailed ? 'Failed' : 'Refreshed';
 
 		await reportNoticeFailure(guildId, channelId, settings);
 		return 'Failed';
@@ -122,20 +128,33 @@ export function planHoneypotNoticeReconcile(
  */
 export async function reconcileHoneypotNotices(): Promise<void> {
 	const [honeypots, notices] = await Promise.all([fetchHoneypotChannels(container.prisma.orm), readHoneypotNotices()]);
-	const byGuild = new Map(honeypots.map((honeypot) => [honeypot.guildId, honeypot]));
-
-	for (const guildId of new Set([...byGuild.keys(), ...notices.keys()])) {
+	const byGuild = new Map<string, HoneypotChannel[]>();
+	for (const honeypot of honeypots) {
+		const channels = byGuild.get(honeypot.guildId) ?? [];
+		channels.push(honeypot);
+		byGuild.set(honeypot.guildId, channels);
+	}
+	const trackedByGuild = new Map<string, Map<string, HoneypotNotice>>();
+	for (const [key, notice] of notices) {
+		const guildId = key.split(':')[0];
+		const tracked = trackedByGuild.get(guildId) ?? new Map<string, HoneypotNotice>();
+		tracked.set(key, notice);
+		trackedByGuild.set(guildId, tracked);
+	}
+	for (const guildId of new Set([...byGuild.keys(), ...trackedByGuild.keys()])) {
 		if (!isOwnGuild(guildId)) continue;
-		const plan = planHoneypotNoticeReconcile(byGuild.get(guildId) ?? null, notices.get(guildId) ?? null);
-		if (plan === 'Keep') continue;
-		// The rows of a guild the bot left stay, and every request for its channels would be refused:
-		if (!(await isGuildJoined(guildId))) continue;
-
+		const channels = byGuild.get(guildId) ?? [];
+		const tracked = trackedByGuild.get(guildId) ?? new Map<string, HoneypotNotice>();
+		const expected = new Map(channels.map((channel) => [channel.primary ? guildId : `${guildId}:${channel.channelId}`, channel]));
+		const needsReconcile =
+			[...expected].some(([key, channel]) => planHoneypotNoticeReconcile(channel, tracked.get(key) ?? null) !== 'Keep') ||
+			[...tracked.keys()].some((key) => !expected.has(key));
+		if (!needsReconcile || !(await isGuildJoined(guildId))) continue;
 		try {
-			if (plan === 'Refresh' && !(await readSettings(guildId)).modulesHoneypot) continue;
-			await followHoneypotSettings(guildId, HoneypotNoticeKeys);
+			// Recheck every warning under the guild lock; correct primary warnings stay in place.
+			await followHoneypotSettings(guildId, ['modulesHoneypot']);
 		} catch (error) {
-			container.logger.error(`[Honeypot] Could not put the warning of the guild ${guildId} in order:`, error);
+			container.logger.error(`[Honeypot] Could not put the warnings of the guild ${guildId} in order:`, error);
 		}
 	}
 }

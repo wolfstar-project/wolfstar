@@ -1,6 +1,12 @@
 import { fetchUserReportEnabled } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions/index';
-import { catchHoneypotMessage, HoneypotDeleteMessageSeconds } from '#lib/moderation/honeypot/catch';
+import {
+	catchHoneypotMessage,
+	HoneypotDeleteMessageSeconds,
+	HoneypotRecentDeleteSeconds,
+	HoneypotTimeoutDuration
+} from '#lib/moderation/honeypot/catch';
+import { scheduleHoneypotSweep } from '#lib/moderation/honeypot/sweep';
 import { renderHoneypotLog } from '#lib/moderation/honeypot/log';
 import { recordSharedBan } from '#lib/moderation/joinguard/log';
 import type { GuildMessage } from '#lib/types';
@@ -13,10 +19,11 @@ import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-databa
 const { unlock } = vi.hoisted(() => ({ unlock: vi.fn() }));
 
 vi.mock('#lib/moderation/actions/index', () => ({
-	ModerationActions: { kick: { apply: vi.fn() }, softban: { apply: vi.fn() }, ban: { apply: vi.fn() } }
+	ModerationActions: { kick: { apply: vi.fn() }, softban: { apply: vi.fn() }, ban: { apply: vi.fn() }, timeout: { apply: vi.fn() } }
 }));
 vi.mock('#lib/moderation/common', () => ({ fetchGuildT: vi.fn(async () => (key: string) => key) }));
 vi.mock('#lib/moderation/honeypot/log', () => ({ renderHoneypotLog: vi.fn(() => 'log') }));
+vi.mock('#lib/moderation/honeypot/sweep', () => ({ scheduleHoneypotSweep: vi.fn(async () => undefined) }));
 vi.mock('#lib/database', () => ({ fetchUserReportEnabled: vi.fn() }));
 vi.mock('#lib/moderation/joinguard/log', () => ({ recordSharedBan: vi.fn(async () => undefined) }));
 vi.mock('#utils/functions', () => ({ isModerator: vi.fn(), getModeration: vi.fn(async () => ({ createLock: () => unlock })) }));
@@ -74,10 +81,13 @@ describe('catchHoneypotMessage', () => {
 		}
 
 		Object.assign(container, {
-			gatewayClient: { messages: { delete: deleteMessage } },
+			gatewayClient: {
+				messages: { delete: deleteMessage },
+				members: { fetch: vi.fn(async () => ({ communicationDisabledUntilTimestamp: null })) }
+			},
 			client: { emit },
 			redis: undefined,
-			logger: { debug, error: vi.fn() }
+			logger: { debug, error: vi.fn(), fatal: vi.fn(), warn: vi.fn() }
 		});
 	});
 
@@ -275,7 +285,7 @@ describe('catchHoneypotMessage', () => {
 	});
 
 	test('GIVEN a Redis that fails THEN the process keeps the claim, and a burst is one case', async () => {
-		const set = vi.fn(async () => {
+		const set = vi.fn(async (_key: string) => {
 			throw new Error('Connection is closed.');
 		});
 		Object.assign(container, { redis: { status: 'ready', set } });
@@ -283,8 +293,130 @@ describe('catchHoneypotMessage', () => {
 		await catchHoneypotMessage(createMessage(), createSettings());
 		await catchHoneypotMessage(createMessage(), createSettings());
 
-		// The claim the process kept answers the second message, Redis is not asked again:
-		expect(set).toHaveBeenCalledTimes(1);
+		// The claim the process kept answers the second message, Redis is not asked again for the catch (the claim of the
+		// count in the warning is another key, which is the throttle of that edit):
+		expect(set.mock.calls.filter(([key]) => String(key).includes('honeypot-caught'))).toHaveLength(1);
 		expect(ModerationActions.softban.apply).toHaveBeenCalledTimes(1);
+	});
+
+	describe('options', () => {
+		test('GIVEN the forward of the message THEN it is forwarded to the log channel before it is deleted', async () => {
+			const post = vi.fn(async (_route: string) => ({}));
+			Object.assign(container, { rest: { post } });
+
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotForwardMessage: true }));
+
+			expect(post).toHaveBeenCalledOnce();
+			expect(post.mock.calls[0][0]).toContain(logChannelId);
+			expect(post.mock.invocationCallOrder[0]).toBeLessThan(deleteMessage.mock.invocationCallOrder[0]);
+		});
+
+		test('GIVEN the timeout first THEN the member is timed out before the softban, and not before a kick', async () => {
+			vi.mocked(ModerationActions.timeout.apply).mockResolvedValue({ id: 8 } as never);
+
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotTimeoutFirst: true }));
+			expect(ModerationActions.timeout.apply).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ duration: HoneypotTimeoutDuration }),
+				{ sendDirectMessage: false }
+			);
+			expect(vi.mocked(ModerationActions.timeout.apply).mock.invocationCallOrder[0]).toBeLessThan(
+				vi.mocked(ModerationActions.softban.apply).mock.invocationCallOrder[0]
+			);
+
+			vi.setSystemTime((now += 61_000));
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotTimeoutFirst: true, honeypotAction: 'Kick' }));
+			expect(ModerationActions.timeout.apply).toHaveBeenCalledOnce();
+		});
+
+		test('an existing longer timeout is preserved', async () => {
+			vi.mocked(container.gatewayClient.members.fetch).mockResolvedValue({
+				communicationDisabledUntilTimestamp: now + HoneypotTimeoutDuration * 2
+			} as never);
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotTimeoutFirst: true }));
+			expect(ModerationActions.timeout.apply).not.toHaveBeenCalled();
+			expect(ModerationActions.softban.apply).toHaveBeenCalled();
+		});
+
+		test('GIVEN a guild with no system nor rules channel THEN no invite is made on the trap, which would die with it', async () => {
+			const post = vi.fn(async () => ({ code: 'return' }));
+			Object.assign(container, { rest: { post } });
+
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: null, rulesChannelId: null } }),
+				createSettings({ honeypotReinvite: true })
+			);
+
+			expect(post).not.toHaveBeenCalled();
+			expect(ModerationActions.softban.apply).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.not.objectContaining({ reinviteUrl: expect.anything() })
+			);
+		});
+
+		test('GIVEN a rules channel and no system channel THEN the invite is made there', async () => {
+			const post = vi.fn(async () => ({ code: 'rules' }));
+			Object.assign(container, { rest: { post } });
+
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: null, rulesChannelId: '254360814063058999' } }),
+				createSettings({ honeypotReinvite: true })
+			);
+
+			expect(post).toHaveBeenCalledWith(expect.stringContaining('254360814063058999'), expect.anything());
+		});
+
+		test('a reinvite reaches the action DM after a softban but is never created for a ban', async () => {
+			const post = vi.fn(async () => ({ code: 'return' }));
+			Object.assign(container, { rest: { post } });
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: '254360814063058998' } }),
+				createSettings({ honeypotReinvite: true })
+			);
+			expect(ModerationActions.softban.apply).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.objectContaining({ reinviteUrl: 'https://discord.gg/return' })
+			);
+			post.mockClear();
+			vi.setSystemTime((now += 61_000));
+			await catchHoneypotMessage(
+				createMessage({ guild: { id: guildId, systemChannelId: '254360814063058998' } }),
+				createSettings({ honeypotReinvite: true, honeypotAction: 'Ban' })
+			);
+			expect(post).not.toHaveBeenCalled();
+		});
+
+		test('GIVEN the recent delete THEN the softban deletes the last fifteen minutes', async () => {
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotRecentDelete: true }));
+
+			expect(ModerationActions.softban.apply).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
+				sendDirectMessage: true,
+				context: HoneypotRecentDeleteSeconds
+			});
+			expect(HoneypotRecentDeleteSeconds).toBeLessThan(HoneypotDeleteMessageSeconds);
+		});
+
+		test('GIVEN the ensured deletion THEN a sweep is scheduled, even when the action failed', async () => {
+			vi.mocked(ModerationActions.softban.apply).mockRejectedValue(
+				new DiscordAPIError({ message: 'Missing Permissions', code: 50013 }, 50013, 403, 'PUT', 'url', {})
+			);
+
+			await catchHoneypotMessage(createMessage(), createSettings({ honeypotEnsureDeletion: true }));
+
+			expect(scheduleHoneypotSweep).toHaveBeenCalledWith({ guildId, userId, caughtAt: now, deleteSeconds: HoneypotDeleteMessageSeconds });
+		});
+
+		test('GIVEN the options off THEN nothing is forwarded, timed out nor swept', async () => {
+			const post = vi.fn(async (_route: string) => ({}));
+			Object.assign(container, { rest: { post } });
+
+			await catchHoneypotMessage(createMessage(), createSettings());
+
+			expect(post).not.toHaveBeenCalled();
+			expect(ModerationActions.timeout.apply).not.toHaveBeenCalled();
+			expect(scheduleHoneypotSweep).not.toHaveBeenCalled();
+		});
 	});
 });

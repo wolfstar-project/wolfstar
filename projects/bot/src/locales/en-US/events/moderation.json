@@ -14,6 +14,7 @@
 	"honeypotLogCaught": "{{user}} wrote in {{channel}}, the honeypot channel.\n**Action**: {{action}}\n**Case**: {{caseId}}",
 	"honeypotLogFailed": "{{user}} wrote in {{channel}}, the honeypot channel, and I could not act on them.\n**Action**: {{action}}\n**Error**: {{error}}",
 	"honeypotLogFooter": "Honeypot",
+	"honeypotLogHint": "-# Check that my highest role is above theirs and that I have the permission the action needs.",
 	"honeypotLogUnknownError": "Something went wrong, the details are in my logs.",
 	"inviteFilterAlert": "{{REDCROSS}} Dear {{user}}, invite links aren't allowed here.",
 	"inviteFilterLog_one": "**Link**: {{links, list(conjunction)}}",
@@ -101,5 +102,6 @@
 	"wordFilterDm": "Shush! You said some words that are not allowed in the server! But since you took a moment to write the message, I will post it here:\n{{filtered}}",
 	"wordFilterFooter": "Filtered Word",
 	"words": "[Auto-Moderation] Triggered word filter, no threshold.",
-	"wordsWithMaximum": "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions."
+	"wordsWithMaximum": "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions.",
+	"honeypotLogTimeoutFailed": "I could not apply the preliminary timeout. Check my Moderate Members permission and role position. The main action result is shown above."
 }

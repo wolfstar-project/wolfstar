@@ -50,6 +50,13 @@ describe('the honeypot module (modules.honeypot) in messageCreateHoneypot', () =
 		expect(catchHoneypotMessage).toHaveBeenCalledWith(message, settings);
 	});
 
+	test('an additional trap catches messages even without a primary channel', async () => {
+		const settings = mockSettings({ honeypotChannel: null, honeypotChannels: [otherChannelId], modulesHoneypot: true });
+		const message = createMessage({ channelId: otherChannelId });
+		await listener.run(message);
+		expect(catchHoneypotMessage).toHaveBeenCalledWith(message, settings);
+	});
+
 	test('GIVEN the module off THEN nobody is caught', async () => {
 		mockSettings({ modulesHoneypot: false });
 

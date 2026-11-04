@@ -21,7 +21,8 @@ export class UserCommand extends Command {
 
 		const settings = await readSettings(guildId);
 		const channelId = settings.honeypotChannel;
-		if (channelId === null) {
+		let disabledSettings = settings;
+		if (channelId === null && settings.honeypotChannels.length === 0) {
 			const content = translateKey(t, `${Root}:notSetUp`, { command: inlineCode('/honeypot setup') });
 			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		}
@@ -29,13 +30,20 @@ export class UserCommand extends Command {
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		// Under the lock of the honeypot, so a `/honeypot edit` that runs at the same time does not send the warning back:
 		await withHoneypotLock(guildId, async () => {
+			disabledSettings = await readSettings(guildId);
 			// The channel stops being a trap before its warning goes, so nobody is caught for what they write meanwhile:
-			await writeSettings(guildId, { honeypotChannel: null }, interaction.user.id);
+			await writeSettings(guildId, { honeypotChannel: null, honeypotChannels: [] }, interaction.user.id);
 			await removeHoneypotNotice(guildId);
+			for (const id of disabledSettings.honeypotChannels) await removeHoneypotNotice(guildId, id);
 		});
 
 		return deferred.update({
-			content: translateKey(t, `${Root}:disabled`, { channel: channelMention(channelId) }),
+			content: translateKey(t, `${Root}:disabled`, {
+				channel: [disabledSettings.honeypotChannel, ...disabledSettings.honeypotChannels]
+					.filter((id): id is string => id !== null)
+					.map(channelMention)
+					.join(', ')
+			}),
 			allowed_mentions: { parse: [] }
 		});
 	}

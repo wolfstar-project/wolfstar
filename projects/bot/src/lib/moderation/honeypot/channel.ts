@@ -1,4 +1,8 @@
 import { resolveOnErrorCodes } from '#common';
+import { readSettings } from '#lib/database';
+import { readHoneypotStats } from '#lib/moderation/honeypot/stats';
+import { claimOnce } from '#utils/claims';
+import { encodeCustomId } from '@wolfstar/http-framework-utilities';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Colors } from '#utils/constants';
 import { withSharedLock } from '#utils/locks';
@@ -12,7 +16,9 @@ import {
 	PermissionFlagsBits,
 	RESTJSONErrorCodes,
 	type RESTPostAPIChannelMessageJSONBody,
-	type Snowflake
+	type Snowflake,
+	ButtonStyle,
+	type APIComponentInContainer
 } from 'discord-api-types/v10';
 import { HoneypotActions, type HoneypotAction } from 'wolfstar-database';
 
@@ -190,18 +196,85 @@ export async function deleteHoneypotChannel(channelId: Snowflake): Promise<void>
  * @param t - The function to translate with, in the language of the guild.
  * @param action - What is done to who writes in the channel.
  */
-export function renderHoneypotNotice(t: TFunction<AnyNamespace>, action: HoneypotAction) {
+export function renderHoneypotNotice(t: TFunction<AnyNamespace>, action: HoneypotAction, stats?: { guildId: Snowflake; catches: number }) {
 	const content = t('commands/honeypot:notice', {
 		title: t('commands/honeypot:noticeTitle'),
 		description: t('commands/honeypot:noticeDescription'),
 		consequence: t(`commands/honeypot:notice${action}`)
 	});
 
+	// The count of the catches is a button, which answers with the numbers of the honeypot, as the one of RiskyMH does:
+	const counter: APIComponentInContainer[] =
+		stats === undefined
+			? []
+			: [
+					{
+						type: ComponentType.ActionRow,
+						components: [
+							{
+								type: ComponentType.Button,
+								style: ButtonStyle.Secondary,
+								label: t('commands/honeypot:noticeCatches', { count: stats.catches }),
+								emoji: { name: '🍯' },
+								custom_id: encodeCustomId(HoneypotStatsHandlerName, stats.guildId, 'show')
+							}
+						]
+					}
+				];
+
 	return {
-		components: [{ type: ComponentType.Container, accent_color: Colors.Red, components: [{ type: ComponentType.TextDisplay, content }] }],
+		components: [
+			{ type: ComponentType.Container, accent_color: Colors.Red, components: [{ type: ComponentType.TextDisplay, content }, ...counter] }
+		],
 		flags: MessageFlags.IsComponentsV2,
 		allowed_mentions: { parse: [] }
 	} satisfies RESTPostAPIChannelMessageJSONBody;
+}
+
+/**
+ * The name of the interaction handler of the `Catches` button of the warning, which is also the first part of its
+ * custom ID: `honeypotStats.<guildId>.show`.
+ */
+const HoneypotStatsHandlerName = 'honeypotStats';
+
+/**
+ * Writes the count of the catches into the warning of the honeypot of a guild, where it is, after a catch. The edit is
+ * made once every few seconds at most (`claimOnce`), so a raid does not edit the message for each of its bots; the
+ * count a burst leaves behind is put right by the next catch, or by the upkeep. A warning that is gone is forgotten.
+ */
+export async function updateHoneypotNoticeCount(guildId: Snowflake): Promise<void> {
+	// The claim comes first, so the read of every warning (a hash of all the guilds) is made once every few seconds
+	// for a guild, whatever the size of the raid:
+	if (!(await claimOnce(`honeypot-notice:${guildId}`, 5))) return;
+
+	// Only the warnings of this guild are read: the one of the original trap, and one for each additional trap:
+	const settings = await readSettings(guildId);
+	const read = await Promise.all([
+		...(settings.honeypotChannel === null ? [] : [readHoneypotNotice(guildId)]),
+		...(settings.honeypotChannels ?? []).filter((id) => id !== settings.honeypotChannel).map((id) => readHoneypotNotice(guildId, id))
+	]);
+	const notices = read.filter((notice): notice is HoneypotNotice => notice !== null);
+	if (notices.length === 0) return;
+
+	const [t, stats] = await Promise.all([fetchGuildT({ id: guildId }), readHoneypotStats(guildId)]);
+	for (const notice of notices) {
+		if (notice.action === null) continue;
+		const edited = await resolveOnErrorCodes(
+			container.gatewayClient.api.channels.editMessage(
+				notice.channelId,
+				notice.messageId,
+				renderHoneypotNotice(t, notice.action, { guildId, catches: stats.total })
+			),
+			RESTJSONErrorCodes.UnknownMessage,
+			RESTJSONErrorCodes.UnknownChannel,
+			RESTJSONErrorCodes.MissingAccess,
+			RESTJSONErrorCodes.MissingPermissions
+		);
+		if (edited === null)
+			container.logger.debug(
+				`[Honeypot] Could not write the count of the catches into the warning ${notice.messageId} of the guild ${guildId}`
+			);
+	}
 }
 
 /**
@@ -217,11 +290,12 @@ export function renderHoneypotNotice(t: TFunction<AnyNamespace>, action: Honeypo
  * @param guildId - The guild of the honeypot.
  * @returns The warning, or `null` when the honeypot has none.
  */
-export async function readHoneypotNotice(guildId: Snowflake): Promise<HoneypotNotice | null> {
+export async function readHoneypotNotice(guildId: Snowflake, channelId?: Snowflake): Promise<HoneypotNotice | null> {
 	const { redis } = container;
-	if (redis?.status !== 'ready') return localNotices.get(guildId) ?? null;
+	const key = channelId ? `${guildId}:${channelId}` : guildId;
+	if (redis?.status !== 'ready') return localNotices.get(key) ?? null;
 
-	const value = await redis.hget(NoticesHash, guildId);
+	const value = await redis.hget(NoticesHash, key);
 	return value === null ? null : parseHoneypotNotice(value);
 }
 
@@ -267,12 +341,12 @@ function deleteHoneypotNoticeMessage(notice: HoneypotNotice) {
  *
  * @param guildId - The guild of the honeypot.
  */
-export async function removeHoneypotNotice(guildId: Snowflake): Promise<void> {
-	const notice = await readHoneypotNotice(guildId);
+export async function removeHoneypotNotice(guildId: Snowflake, channelId?: Snowflake): Promise<void> {
+	const notice = await readHoneypotNotice(guildId, channelId);
 	if (notice === null) return;
 
 	await deleteHoneypotNoticeMessage(notice);
-	await writeHoneypotNotice(guildId, null);
+	await writeHoneypotNotice(channelId ? `${guildId}:${channelId}` : guildId, null);
 	container.logger.debug(`[Honeypot] The warning ${notice.messageId} of the guild ${guildId} was taken off the channel ${notice.channelId}`);
 }
 
@@ -296,17 +370,18 @@ export async function removeHoneypotNotice(guildId: Snowflake): Promise<void> {
 export async function refreshHoneypotNotice(
 	guildId: Snowflake,
 	channelId: Snowflake,
-	options: { warning: boolean; action: HoneypotAction }
+	options: { warning: boolean; action: HoneypotAction; independent?: boolean }
 ): Promise<boolean> {
 	if (!options.warning) {
-		await removeHoneypotNotice(guildId);
+		await removeHoneypotNotice(guildId, options.independent ? channelId : undefined);
 		return true;
 	}
 
-	const previous = await readHoneypotNotice(guildId);
+	const previous = await readHoneypotNotice(guildId, options.independent ? channelId : undefined);
 	const t = await fetchGuildT({ id: guildId });
+	const stats = await readHoneypotStats(guildId);
 	const sent = await resolveOnErrorCodes(
-		container.gatewayClient.api.channels.createMessage(channelId, renderHoneypotNotice(t, options.action)),
+		container.gatewayClient.api.channels.createMessage(channelId, renderHoneypotNotice(t, options.action, { guildId, catches: stats.total })),
 		RESTJSONErrorCodes.UnknownChannel,
 		RESTJSONErrorCodes.MissingAccess,
 		RESTJSONErrorCodes.MissingPermissions
@@ -318,7 +393,7 @@ export async function refreshHoneypotNotice(
 		return false;
 	}
 
-	await writeHoneypotNotice(guildId, { channelId, messageId: sent.id, action: options.action });
+	await writeHoneypotNotice(options.independent ? `${guildId}:${channelId}` : guildId, { channelId, messageId: sent.id, action: options.action });
 	if (previous !== null) await deleteHoneypotNoticeMessage(previous);
 	container.logger.debug(`[Honeypot] The warning ${sent.id} was sent to the channel ${channelId} of the guild ${guildId}`);
 	return true;

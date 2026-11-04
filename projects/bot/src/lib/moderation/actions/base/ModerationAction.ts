@@ -395,6 +395,8 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 			.setDescription(description)
 			.setFooter({ text: t('commands/moderation:moderationDmFooter') });
 
+		if (data.reinviteUrl)
+			embed.addFields({ name: t('commands/honeypot:showTitle'), value: t('commands/honeypot:reinviteMessage', { url: data.reinviteUrl }) });
 		if (data.moderator) embed.setAuthor(getFullEmbedAuthor(data.moderator));
 		// The case can be appealed on the website, when the guild takes appeals for its type:
 		if (await shouldLinkAppeal(guild.id, entry.type, entry.isUndo())) {
@@ -445,6 +447,7 @@ export declare namespace ModerationAction {
 	interface Data<ContextType = never> {
 		context?: ContextType;
 		sendDirectMessage?: boolean;
+		reinviteUrl?: string;
 		moderator?: User | null;
 
 		/**

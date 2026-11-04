@@ -79,6 +79,9 @@ export function getConfiguration() {
 		},
 
 		// Honeypot
+		honeypotChannels: { type: 'guildTextChannel', array: true, maximum: 4, name: 'honeypot.channels', description: 'settings:honeypotChannels' },
+		honeypotReinvite: { type: 'boolean', name: 'honeypot.reinvite', description: 'settings:honeypotReinvite' },
+		honeypotRecreate: { type: 'boolean', name: 'honeypot.recreate', description: 'settings:honeypotRecreate' },
 		honeypotChannel: { type: 'guildTextChannel', name: 'honeypot.channel', description: 'settings:honeypotChannel' },
 		honeypotLogChannel: { type: 'guildTextChannel', name: 'honeypot.log-channel', description: 'settings:honeypotLogChannel' },
 		honeypotAction: { type: 'honeypotAction', name: 'honeypot.action', description: 'settings:honeypotAction', default: 'Softban' },
@@ -91,6 +94,11 @@ export function getConfiguration() {
 		honeypotWarning: { type: 'boolean', name: 'honeypot.warning', description: 'settings:honeypotWarning', default: true },
 		honeypotRandomName: { type: 'boolean', name: 'honeypot.random-name', description: 'settings:honeypotRandomName' },
 		honeypotKeepActive: { type: 'boolean', name: 'honeypot.keep-active', description: 'settings:honeypotKeepActive' },
+		honeypotForwardMessage: { type: 'boolean', name: 'honeypot.forward-message', description: 'settings:honeypotForwardMessage' },
+		honeypotTimeoutFirst: { type: 'boolean', name: 'honeypot.timeout-first', description: 'settings:honeypotTimeoutFirst' },
+		honeypotRecentDelete: { type: 'boolean', name: 'honeypot.recent-delete', description: 'settings:honeypotRecentDelete' },
+		honeypotChaosName: { type: 'boolean', name: 'honeypot.chaos-name', description: 'settings:honeypotChaosName' },
+		honeypotEnsureDeletion: { type: 'boolean', name: 'honeypot.ensure-deletion', description: 'settings:honeypotEnsureDeletion' },
 
 		// Join Guard. The rules are rows of their own, which the dashboard edits:
 		joinGuardEnabled: { type: 'boolean', name: 'join-guard.enabled', description: 'settings:joinGuardEnabled' },

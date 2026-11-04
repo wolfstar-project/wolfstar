@@ -39,13 +39,21 @@ describe('honeypotAction serializer', () => {
 		const keys = [...getConfigurableKeys().values()].filter((key) => key.name.startsWith('honeypot.'));
 
 		expect(keys.map((key) => key.name)).toEqual([
+			'honeypot.channels',
+			'honeypot.reinvite',
+			'honeypot.recreate',
 			'honeypot.channel',
 			'honeypot.log-channel',
 			'honeypot.action',
 			'honeypot.direct-message',
 			'honeypot.warning',
 			'honeypot.random-name',
-			'honeypot.keep-active'
+			'honeypot.keep-active',
+			'honeypot.forward-message',
+			'honeypot.timeout-first',
+			'honeypot.recent-delete',
+			'honeypot.chaos-name',
+			'honeypot.ensure-deletion'
 		]);
 		expect(keys.map((key) => key.default)).toEqual(keys.map((key) => defaults[key.property]));
 	});

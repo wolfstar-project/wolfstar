@@ -1,3 +1,4 @@
+import { syncAdditionalHoneypotNotices, getHoneypotChannels } from '#lib/moderation/honeypot/channels';
 import { readSettings, writeSettings } from '#lib/database';
 import {
 	getMissingHoneypotLogPermissions,
@@ -41,6 +42,13 @@ const Root = HoneypotRoot;
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsWarning`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsRandomName`))
 		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsKeepActive`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsForwardMessage`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsTimeoutFirst`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsRecentDelete`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsChaosName`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsEnsureDeletion`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsReinvite`))
+		.addBooleanOption((option) => applyLocalizedBuilder(option, `${Root}:optionsRecreate`))
 )
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'honeypot edit'>) {
@@ -50,12 +58,19 @@ export class UserCommand extends Command {
 		const update = (content: string) => deferred.update({ content, allowed_mentions: { parse: [] } });
 
 		const changes: Partial<GuildData> = {};
+		if (options.reinvite !== undefined) changes.honeypotReinvite = options.reinvite;
+		if (options.recreate !== undefined) changes.honeypotRecreate = options.recreate;
 		if (options.action !== undefined) changes.honeypotAction = options.action;
 		if (options.logs !== undefined) changes.honeypotLogChannel = options.logs.id;
 		if (options['direct-message'] !== undefined) changes.honeypotDirectMessage = options['direct-message'];
 		if (options.warning !== undefined) changes.honeypotWarning = options.warning;
 		if (options['random-name'] !== undefined) changes.honeypotRandomName = options['random-name'];
 		if (options['keep-active'] !== undefined) changes.honeypotKeepActive = options['keep-active'];
+		if (options['forward-message'] !== undefined) changes.honeypotForwardMessage = options['forward-message'];
+		if (options['timeout-first'] !== undefined) changes.honeypotTimeoutFirst = options['timeout-first'];
+		if (options['recent-delete'] !== undefined) changes.honeypotRecentDelete = options['recent-delete'];
+		if (options['chaos-name'] !== undefined) changes.honeypotChaosName = options['chaos-name'];
+		if (options['ensure-deletion'] !== undefined) changes.honeypotEnsureDeletion = options['ensure-deletion'];
 		if (Object.keys(changes).length === 0) return update(translateKey(t, `${Root}:editNothing`));
 
 		// A channel the bot cannot write in would be saved, and every report dropped without a word:
@@ -69,9 +84,9 @@ export class UserCommand extends Command {
 
 		return withHoneypotLock(guildId, async () => {
 			const settings = await readSettings(guildId);
-			const channelId = settings.honeypotChannel;
-			if (channelId !== null) {
-				if (changes.honeypotLogChannel === channelId) return update(translateKey(t, `${Root}:logsSameChannel`));
+			for (const channelId of getHoneypotChannels(settings)) {
+				if (getHoneypotChannels(settings).includes(changes.honeypotLogChannel ?? ''))
+					return update(translateKey(t, `${Root}:logsSameChannel`));
 
 				// Another action needs another permission, which is asked for before the honeypot stops working:
 				if (changes.honeypotAction !== undefined) {
@@ -95,6 +110,7 @@ export class UserCommand extends Command {
 				if (!noticed) lines.push(translateKey(t, `${Root}:setupNoticeFailed`));
 			}
 
+			await syncAdditionalHoneypotNotices(guildId, next).catch(() => lines.push(translateKey(t, `${Root}:setupNoticeFailed`)));
 			return deferred.update({ content: lines.join('\n'), embeds: [renderHoneypotSummary(t, next).toJSON()], allowed_mentions: { parse: [] } });
 		});
 	}

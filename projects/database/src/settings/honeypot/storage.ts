@@ -15,33 +15,42 @@ export interface HoneypotUpkeep {
 	warning: boolean;
 	randomName: boolean;
 	keepActive: boolean;
+	/** Whether the name of the day is random characters instead of one of the list. */
+	chaosName: boolean;
 }
 
 /**
  * Reads the honeypot channels that are kept up, of every guild: the ones that are set up and get another name every
- * day, a message every day, or both.
+ * day (from the list, or random characters), a message every day, or both.
  * @param orm The ORM surface to read through.
  */
 export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> {
 	const honeypots = orm.public.GuildHoneypot;
-	const [renamed, active] = await Promise.all([honeypots.where({ randomName: true }).all(), honeypots.where({ keepActive: true }).all()]);
+	const [renamed, chaos, active, recreated] = await Promise.all([
+		honeypots.where({ randomName: true }).all(),
+		honeypots.where({ chaosName: true }).all(),
+		honeypots.where({ keepActive: true }).all(),
+		honeypots.where({ recreate: true }).all()
+	]);
 
 	const rows = new Map<bigint, Row>();
-	for (const row of [...renamed, ...active]) rows.set(row.id, row);
+	for (const row of [...renamed, ...chaos, ...active, ...recreated]) rows.set(row.id, row);
 
 	const upkeeps: HoneypotUpkeep[] = [];
 	for (const row of rows.values()) {
 		// The switches outlive `/honeypot disable`, a honeypot without a channel has nothing to keep up:
-		if (row.channelId === null) continue;
-
-		upkeeps.push({
-			guildId: String(row.id),
-			channelId: String(row.channelId),
-			action: row.action,
-			warning: row.warning,
-			randomName: row.randomName,
-			keepActive: row.keepActive
-		});
+		const channelIds = [...new Set([row.channelId, ...row.channels].filter((id): id is bigint => id !== null))];
+		for (const channelId of channelIds) {
+			upkeeps.push({
+				guildId: String(row.id),
+				channelId: String(channelId),
+				action: row.action,
+				warning: row.warning,
+				randomName: row.randomName,
+				keepActive: row.keepActive,
+				chaosName: row.chaosName
+			});
+		}
 	}
 
 	return upkeeps;
@@ -51,6 +60,8 @@ export async function fetchHoneypotUpkeeps(orm: Orm): Promise<HoneypotUpkeep[]> 
  * A honeypot that is set up, with what its warning depends on.
  */
 export interface HoneypotChannel {
+	/** Selects the legacy guild key for the primary trap, or the guild:channel key for an additional trap. */
+	primary: boolean;
 	guildId: Snowflake;
 	channelId: Snowflake;
 	warning: boolean;
@@ -62,6 +73,14 @@ export interface HoneypotChannel {
  * @param orm The ORM surface to read through.
  */
 export async function fetchHoneypotChannels(orm: Orm): Promise<HoneypotChannel[]> {
-	const rows = await orm.public.GuildHoneypot.where((honeypot) => honeypot.channelId.isNotNull()).all();
-	return rows.map((row) => ({ guildId: String(row.id), channelId: String(row.channelId), warning: row.warning, action: row.action }));
+	const rows = await orm.public.GuildHoneypot.all();
+	return rows.flatMap((row) =>
+		[...new Set([row.channelId, ...row.channels].filter((id): id is bigint => id !== null))].map((channelId) => ({
+			primary: channelId === row.channelId,
+			guildId: String(row.id),
+			channelId: String(channelId),
+			warning: row.warning,
+			action: row.action
+		}))
+	);
 }

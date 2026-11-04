@@ -11,6 +11,8 @@ import { UserCommand } from '#root/commands/Management/honeypot/setup';
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 
 vi.mock('#lib/database', () => ({ readSettings: vi.fn(), writeSettings: vi.fn() }));
+vi.mock('#lib/moderation/honeypot/intro', () => ({ sendHoneypotIntro: vi.fn(async () => undefined) }));
+vi.mock('#lib/moderation/honeypot/problems', () => ({ detectHoneypotProblems: vi.fn(async () => []), renderHoneypotProblems: vi.fn(() => []) }));
 vi.mock('#lib/moderation/honeypot/commands', () => ({
 	HoneypotRoot: 'commands/honeypot',
 	HoneypotActionKeys: { Kick: 'kick', Softban: 'softban', Ban: 'ban' },
@@ -23,6 +25,7 @@ vi.mock('#lib/moderation/honeypot/channel', () => ({
 	getMissingHoneypotLogPermissions: vi.fn(),
 	getMissingHoneypotPermissions: vi.fn(),
 	refreshHoneypotNotice: vi.fn(),
+	readHoneypotNotices: vi.fn(async () => new Map()),
 	withHoneypotLock: vi.fn((_guildId: string, callback: () => Promise<unknown>) => callback())
 }));
 vi.mock('#lib/structures/commands/utils', () => ({

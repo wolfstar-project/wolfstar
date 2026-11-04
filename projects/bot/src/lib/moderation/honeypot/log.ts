@@ -45,6 +45,7 @@ export interface HoneypotCatch {
 	 * Why the action could not be taken, when Discord said why.
 	 */
 	error?: string;
+	timeoutFailed?: boolean;
 }
 
 /**
@@ -72,7 +73,10 @@ export function renderHoneypotLog(t: TFunction<AnyNamespace>, caught: HoneypotCa
 			? t('events/moderation:honeypotLogFailed', { ...values, error: caught.error ?? t('events/moderation:honeypotLogUnknownError') })
 			: t('events/moderation:honeypotLogCaught', { ...values, caseId: caught.caseId })
 	];
+	if (caught.timeoutFailed) lines.push(t('events/moderation:honeypotLogTimeoutFailed'));
 	if (caught.attachments > 0) lines.push(t('events/moderation:honeypotLogAttachments', { count: caught.attachments }));
+	// What to check when the action was refused, which is the role hierarchy or a permission nearly every time:
+	if (caught.caseId === null) lines.push(t('events/moderation:honeypotLogHint'));
 
 	const content = [lines.join('\n')];
 	if (caught.content.length > 0) content.push(codeBlock(cutText(caught.content.replaceAll('```', "'''"), MaximumQuotedLength)));

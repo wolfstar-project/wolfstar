@@ -1,6 +1,12 @@
 import { writeSettingsTransaction } from '#lib/database';
 import { refreshHoneypotNotice, removeHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
-import { getHoneypotUpkeepHour, HoneypotChannelNames, pickHoneypotChannelName, runHoneypotUpkeep } from '#lib/moderation/honeypot/upkeep';
+import {
+	getHoneypotUpkeepHour,
+	HoneypotChannelNames,
+	makeChaosChannelName,
+	pickHoneypotChannelName,
+	runHoneypotUpkeep
+} from '#lib/moderation/honeypot/upkeep';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import { getDefaultGuildSettings, type GuildData } from 'wolfstar-database';
@@ -119,6 +125,45 @@ describe('runHoneypotUpkeep', () => {
 		});
 	});
 
+	test('daily recreation preserves permissions and saves the replacement before deleting the old trap', async () => {
+		setSettings({ honeypotRecreate: true });
+		const overwrites = [{ id: guildId, type: 0, allow: '1024', deny: '0' }];
+		Object.assign(container, {
+			rest: { get: vi.fn(async () => ({ type: 0, name: 'trap', permission_overwrites: overwrites, parent_id: 'parent', position: 2 })) }
+		});
+		const createChannel = vi.fn(async () => ({ id: 'replacement' }));
+		const atDeletion: string[] = [];
+		const remove = vi.fn(async (_id: string) => {
+			atDeletion.push(settings.honeypotChannel!);
+		});
+		Object.assign(container.gatewayClient.api, { guilds: { createChannel } });
+		Object.assign(container.gatewayClient.channels, { delete: remove });
+		expect(await runHoneypotUpkeep(upkeep)).toBe('done');
+		expect(createChannel).toHaveBeenCalledWith(
+			guildId,
+			expect.objectContaining({ name: 'trap', permission_overwrites: overwrites, parent_id: 'parent' }),
+			expect.anything()
+		);
+		expect(settings.honeypotChannel).toBe('replacement');
+		expect(atDeletion).toEqual(['replacement']);
+		// The warning is sent once to the new channel, not once when it is made and again at the end of the upkeep:
+		expect(refreshHoneypotNotice).toHaveBeenCalledTimes(1);
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, 'replacement', expect.objectContaining({ warning: true }));
+	});
+
+	test('failed daily deletion restores the original trap and cleans up the replacement', async () => {
+		setSettings({ honeypotRecreate: true });
+		Object.assign(container, { rest: { get: vi.fn(async () => ({ type: 0, name: 'trap' })) } });
+		Object.assign(container.gatewayClient.api, { guilds: { createChannel: vi.fn(async () => ({ id: 'replacement' })) } });
+		const remove = vi.fn(async (id: string) => {
+			if (id === channelId) throw new Error('denied');
+		});
+		Object.assign(container.gatewayClient.channels, { delete: remove });
+		await expect(runHoneypotUpkeep(upkeep)).rejects.toThrow('denied');
+		expect(settings.honeypotChannel).toBe(channelId);
+		expect(remove).toHaveBeenCalledWith('replacement', 'Honeypot recreation failed');
+	});
+
 	test('GIVEN a channel that is renamed THEN it gets a name it did not have, and no message, under the lock', async () => {
 		setSettings({ honeypotRandomName: true });
 
@@ -137,7 +182,7 @@ describe('runHoneypotUpkeep', () => {
 		expect(await runHoneypotUpkeep(upkeep)).toBe('done');
 
 		expect(edit).not.toHaveBeenCalled();
-		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban' });
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, channelId, { warning: true, action: 'Ban', independent: false });
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -182,7 +227,7 @@ describe('runHoneypotUpkeep', () => {
 
 		expect(settings.honeypotChannel).toBeNull();
 		expect(audits).toEqual([botId]);
-		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId);
+		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, undefined);
 		expect(edit).not.toHaveBeenCalled();
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
 	});
@@ -257,5 +302,34 @@ describe('runHoneypotUpkeep', () => {
 		expect(fetch).not.toHaveBeenCalled();
 		expect(edit).not.toHaveBeenCalled();
 		expect(refreshHoneypotNotice).not.toHaveBeenCalled();
+	});
+
+	describe('chaos name', () => {
+		test('GIVEN the chaos name THEN the channel gets ten random characters, whatever the random name says', async () => {
+			setSettings({ honeypotChaosName: true, honeypotRandomName: true });
+
+			await runHoneypotUpkeep({ guildId, channelId });
+
+			expect(edit).toHaveBeenCalledOnce();
+			const [, { name }] = edit.mock.calls[0] as unknown as [string, { name: string }];
+			expect(name).toMatch(/^[a-z0-9]{10}$/);
+		});
+
+		test('GIVEN a random number THEN the name is made of the characters it picks', () => {
+			expect(makeChaosChannelName(() => 0)).toBe('aaaaaaaaaa');
+			expect(makeChaosChannelName(() => 0.999)).toBe('9999999999');
+		});
+	});
+
+	test('GIVEN a recreated trap whose rename fails THEN the warning is still sent to it', async () => {
+		setSettings({ honeypotRecreate: true, honeypotChaosName: true });
+		Object.assign(container, { rest: { get: vi.fn(async () => ({ type: 0, name: 'trap' })) } });
+		Object.assign(container.gatewayClient.api, { guilds: { createChannel: vi.fn(async () => ({ id: 'replacement' })) } });
+		Object.assign(container.gatewayClient.channels, { delete: vi.fn(async () => undefined) });
+		edit.mockRejectedValueOnce(new Error('network down'));
+
+		expect(await runHoneypotUpkeep(upkeep)).toBe('done');
+
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, 'replacement', expect.objectContaining({ warning: true }));
 	});
 });

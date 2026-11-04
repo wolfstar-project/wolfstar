@@ -6,8 +6,10 @@ import {
 	readHoneypotNotice,
 	refreshHoneypotNotice,
 	removeHoneypotNotice,
-	renderHoneypotNotice
+	renderHoneypotNotice,
+	updateHoneypotNoticeCount
 } from '#lib/moderation/honeypot/channel';
+import { readSettings } from '#lib/database';
 import { renderHoneypotSummary } from '#lib/moderation/honeypot/commands';
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
@@ -19,6 +21,11 @@ import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-databa
 const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)) as never;
 
 vi.mock('#lib/moderation/common', () => ({ fetchGuildT: vi.fn(async () => t) }));
+vi.mock('#lib/database', async (importOriginal) => ({ ...(await importOriginal<object>()), readSettings: vi.fn() }));
+vi.mock('#lib/moderation/honeypot/stats', async (importOriginal) => ({
+	...(await importOriginal<object>()),
+	readHoneypotStats: vi.fn(async () => ({ total: 0, recent: 0 }))
+}));
 vi.mock('@wolfstar/plugin-gateway', async (importOriginal) => ({
 	...(await importOriginal<typeof import('@wolfstar/plugin-gateway')>()),
 	computePermissionsIn: vi.fn()
@@ -40,11 +47,22 @@ describe('renderHoneypotNotice', () => {
 		expect(notice.flags).toBe(MessageFlags.IsComponentsV2);
 		expect(notice.allowed_mentions).toEqual({ parse: [] });
 		expect(notice.components[0].type).toBe(ComponentType.Container);
-		expect(notice.components[0].components[0].content).toContain('"consequence":"commands/honeypot:noticeBan"');
+		expect((notice.components[0].components[0] as { content: string }).content).toContain('"consequence":"commands/honeypot:noticeBan"');
+	});
+
+	test('GIVEN the catches THEN the warning has the button that tells them, and none without', () => {
+		const withButton = renderHoneypotNotice(t, 'Ban', { guildId: '254360814063058944', catches: 12 });
+		const button = (withButton.components[0].components[1] as { components: { label: string; custom_id: string }[] }).components[0];
+
+		expect(button.custom_id).toBe('honeypotStats.254360814063058944.show');
+		expect(button.label).toContain('"count":12');
+		expect(renderHoneypotNotice(t, 'Ban').components[0].components).toHaveLength(1);
 	});
 
 	test.each(['Kick', 'Softban', 'Ban'] as const)('GIVEN %s THEN the warning has a text of its own', (action) => {
-		expect(renderHoneypotNotice(t, action).components[0].components[0].content).toContain(`commands/honeypot:notice${action}`);
+		expect((renderHoneypotNotice(t, action).components[0].components[0] as { content: string }).content).toContain(
+			`commands/honeypot:notice${action}`
+		);
 	});
 });
 
@@ -54,6 +72,7 @@ function createRedis() {
 	return {
 		store,
 		status: 'ready',
+		hgetall: vi.fn(async () => Object.fromEntries(store)),
 		hget: vi.fn(async (_hash: string, field: string) => store.get(field) ?? null),
 		hset: vi.fn(async (_hash: string, field: string, value: string) => store.set(field, value).size),
 		hdel: vi.fn(async (_hash: string, field: string) => Number(store.delete(field)))
@@ -85,11 +104,39 @@ describe('the warning of the honeypot', () => {
 		container.redis = original;
 	});
 
+	describe('updateHoneypotNoticeCount', () => {
+		const editMessage = vi.fn(async (_channelId: string, _messageId: string, _body?: unknown) => ({}));
+
+		test('GIVEN a guild with two traps THEN only its own warnings are read and edited, never the whole hash, and once in a burst', async () => {
+			const other = '254360814063058999';
+			redis.store.set(guildId, `${channelId}:10:Softban`);
+			redis.store.set(`${guildId}:extra`, 'extra:11:Softban');
+			redis.store.set(other, 'elsewhere:12:Softban');
+			vi.mocked(readSettings).mockResolvedValue(createSettings({ honeypotChannel: channelId, honeypotChannels: ['extra'] }));
+			Object.assign(container.gatewayClient.api.channels, { editMessage });
+
+			await updateHoneypotNoticeCount(guildId);
+			await updateHoneypotNoticeCount(guildId);
+
+			expect(redis.hgetall).not.toHaveBeenCalled();
+			expect(editMessage.mock.calls.map(([channel, message]) => `${channel}:${message}`)).toEqual([`${channelId}:10`, 'extra:11']);
+		});
+	});
+
 	describe('refreshHoneypotNotice', () => {
+		test('additional traps keep independent warnings when one is removed', async () => {
+			await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Ban' });
+			await refreshHoneypotNotice(guildId, 'extra', { warning: true, action: 'Ban', independent: true });
+			await removeHoneypotNotice(guildId, 'extra');
+			expect((await readHoneypotNotice(guildId))?.channelId).toBe(channelId);
+			expect(await readHoneypotNotice(guildId, 'extra')).toBeNull();
+		});
+
 		test('GIVEN a honeypot without a warning yet THEN one is sent and remembered, and nothing is deleted', async () => {
 			expect(await refreshHoneypotNotice(guildId, channelId, { warning: true, action: 'Softban' })).toBe(true);
 
-			expect(createMessage).toHaveBeenCalledWith(channelId, renderHoneypotNotice(t, 'Softban'));
+			// The warning sent to the channel carries the count of the catches, which is a button:
+			expect(createMessage).toHaveBeenCalledWith(channelId, renderHoneypotNotice(t, 'Softban', { guildId, catches: 0 }));
 			expect(deleteMessage).not.toHaveBeenCalled();
 			expect(redis.hset).toHaveBeenCalledWith('wolfstar:honeypot:notices', guildId, `${channelId}:20:Softban`);
 			expect(await readHoneypotNotice(guildId)).toEqual({ channelId, messageId: '20', action: 'Softban' });
@@ -278,12 +325,20 @@ describe('renderHoneypotSummary', () => {
 
 		expect(lines).toEqual([
 			`commands/honeypot:showLine {"name":"settings:names.honeypotChannel","value":"<#${channelId}>"}`,
+			'commands/honeypot:showLine {"name":"settings:names.honeypotChannels","value":"commands/honeypot:showNone"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotReinvite","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotRecreate","value":"arguments:booleanDisabled"}',
 			'commands/honeypot:showLine {"name":"settings:names.honeypotAction","value":"serializers:honeypotActionBan"}',
 			`commands/honeypot:showLine {"name":"settings:names.honeypotLogChannel","value":"<#${logChannelId}>"}`,
 			'commands/honeypot:showLine {"name":"settings:names.honeypotDirectMessage","value":"arguments:booleanEnabled"}',
 			'commands/honeypot:showLine {"name":"settings:names.honeypotWarning","value":"arguments:booleanEnabled"}',
 			'commands/honeypot:showLine {"name":"settings:names.honeypotRandomName","value":"arguments:booleanEnabled"}',
-			'commands/honeypot:showLine {"name":"settings:names.honeypotKeepActive","value":"arguments:booleanDisabled"}'
+			'commands/honeypot:showLine {"name":"settings:names.honeypotChaosName","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotKeepActive","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotForwardMessage","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotTimeoutFirst","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotRecentDelete","value":"arguments:booleanDisabled"}',
+			'commands/honeypot:showLine {"name":"settings:names.honeypotEnsureDeletion","value":"arguments:booleanDisabled"}'
 		]);
 	});
 

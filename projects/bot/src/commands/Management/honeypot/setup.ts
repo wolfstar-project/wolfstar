@@ -1,3 +1,4 @@
+import { syncAdditionalHoneypotNotices } from '#lib/moderation/honeypot/channels';
 import { readSettings, writeSettings } from '#lib/database';
 import {
 	createHoneypotChannel,
@@ -9,6 +10,8 @@ import {
 	withHoneypotLock
 } from '#lib/moderation/honeypot/channel';
 import { HoneypotActionKeys, HoneypotRoot, renderHoneypotSummary } from '#lib/moderation/honeypot/commands';
+import { sendHoneypotIntro } from '#lib/moderation/honeypot/intro';
+import { detectHoneypotProblems, renderHoneypotProblems } from '#lib/moderation/honeypot/problems';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -56,7 +59,8 @@ export class UserCommand extends Command {
 			const logs = options.logs?.id ?? settings.honeypotLogChannel;
 
 			let channelId = options.channel?.id ?? settings.honeypotChannel;
-			if (channelId !== null && channelId === logs) return update(translateKey(t, `${Root}:logsSameChannel`));
+			if ((channelId !== null && channelId === logs) || settings.honeypotChannels.includes(logs ?? ''))
+				return update(translateKey(t, `${Root}:logsSameChannel`));
 
 			// A channel the bot cannot write in would be saved, and every report dropped without a word:
 			if (options.logs !== undefined) {
@@ -98,10 +102,18 @@ export class UserCommand extends Command {
 			}
 
 			// The warning the honeypot had is replaced wherever it was, so a channel it moved from keeps none:
+			await syncAdditionalHoneypotNotices(guildId, await readSettings(guildId)).catch((error: unknown) =>
+				this.container.logger.error('[Honeypot] Could not refresh additional warnings:', error)
+			);
 			const noticed = await refreshHoneypotNotice(guildId, channelId, { warning: settings.honeypotWarning, action });
+
+			// A channel the bot made gets the intro with the tips, in the language of who set it up:
+			if (created) await sendHoneypotIntro(t, guildId, channelId).catch(() => null);
 
 			const lines = [translateKey(t, created ? `${Root}:setupCreated` : `${Root}:setupDone`, { channel })];
 			if (!noticed) lines.push(translateKey(t, `${Root}:setupNoticeFailed`));
+			// What keeps the trap from catching, told now rather than found out after a raid:
+			lines.push(...renderHoneypotProblems(t, await detectHoneypotProblems(guildId, channelId, action).catch(() => [])));
 			return deferred.update({
 				content: lines.join('\n'),
 				embeds: [renderHoneypotSummary(t, await readSettings(guildId)).toJSON()],

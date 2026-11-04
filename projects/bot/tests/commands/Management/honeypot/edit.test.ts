@@ -111,8 +111,18 @@ describe('/honeypot edit and /honeypot disable', () => {
 		await disable();
 
 		expect(withHoneypotLock).toHaveBeenCalledWith(guildId, expect.any(Function));
-		expect(writeSettings).toHaveBeenCalledWith(guildId, { honeypotChannel: null }, userId);
+		expect(writeSettings).toHaveBeenCalledWith(guildId, { honeypotChannel: null, honeypotChannels: [] }, userId);
 		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId);
+	});
+
+	test('disable removes warnings added while it was waiting for the lock', async () => {
+		vi.mocked(withHoneypotLock).mockImplementationOnce(async (_guild, run) => {
+			settings.honeypotChannels = ['new-trap'];
+			return run();
+		});
+		await disable();
+		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, 'new-trap');
+		expect(settings.honeypotChannels).toEqual([]);
 	});
 
 	test('GIVEN a disable that runs while an edit does THEN the warning is gone in the end', async () => {

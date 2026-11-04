@@ -16,6 +16,7 @@ vi.mock('#lib/moderation/honeypot/channel', () => ({
 	getMissingHoneypotLogPermissions: vi.fn(),
 	getMissingHoneypotPermissions: vi.fn(),
 	readHoneypotNotice: vi.fn(),
+	readHoneypotNotices: vi.fn(async () => new Map()),
 	refreshHoneypotNotice: vi.fn(),
 	removeHoneypotNotice: vi.fn(),
 	withHoneypotLock: vi.fn()
@@ -48,6 +49,18 @@ describe('writeHoneypotSettings', () => {
 		vi.mocked(getMissingHoneypotPermissions).mockResolvedValue([]);
 		vi.mocked(getMissingHoneypotLogPermissions).mockResolvedValue([]);
 		vi.mocked(refreshHoneypotNotice).mockResolvedValue(true);
+	});
+
+	test('additional traps are checked before being saved and receive independent warnings', async () => {
+		vi.mocked(readHoneypotNotice).mockResolvedValue(null);
+		expect(await write({ honeypotChannels: [otherChannelId] })).toEqual({ ok: true, notes: [] });
+		expect(getMissingHoneypotPermissions).toHaveBeenCalledWith(guildId, otherChannelId, 'Softban');
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, otherChannelId, { warning: true, action: 'Softban', independent: true });
+	});
+
+	test('a log channel cannot also be an additional trap', async () => {
+		expect((await write({ honeypotChannels: [otherChannelId], honeypotLogChannel: otherChannelId })).ok).toBe(false);
+		expect(writeSettings).not.toHaveBeenCalled();
 	});
 
 	test('GIVEN a new channel THEN its permissions are checked, it is written and the warning goes to it', async () => {
