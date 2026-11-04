@@ -8,8 +8,8 @@
 			"id": "postgres",
 			"details": {
 				"schema": "public",
-				"table": "GuildModeration",
-				"column": "direct_message"
+				"objectType": "table",
+				"name": "GuildModeration"
 			}
 		},
 		"precheck": [],

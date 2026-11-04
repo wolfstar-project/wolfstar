@@ -16,7 +16,7 @@ export default class M extends Migration<Start, End> {
 				label: 'Enable moderation direct messages by default',
 				summary: 'Changes the default for new rows without changing existing preferences',
 				operationClass: 'additive',
-				target: { id: 'postgres', details: { schema: 'public', table: 'GuildModeration', column: 'direct_message' } },
+				target: { id: 'postgres', details: { schema: 'public', objectType: 'table', name: 'GuildModeration' } },
 				precheck: [],
 				execute: [
 					{
