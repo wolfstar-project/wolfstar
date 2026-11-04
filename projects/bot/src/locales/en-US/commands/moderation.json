@@ -52,7 +52,7 @@
 	"moderationOutputPermanent": "permanent",
 	"moderationFailed_one": "{{REDCROSS}} Failed to moderate user:\n{{users}}",
 	"moderationFailed_other": "{{REDCROSS}} Failed to moderate users:\n{{users}}",
-	"moderationDmFooter": "To stop receiving these messages, use `/settings user`.",
+	"moderationDmFooter": "To stop receiving these messages, use /settings user.",
 	"moderationDmAppealTitle": "Appeal",
 	"moderationDmAppeal": "You can ask the moderators to undo this on {{url}}.",
 	"moderationDmDescription": "**❯ Server**: {{guild}}\n**❯ Type**: {{title}}\n**❯ Reason**: None specified",
