@@ -45,6 +45,19 @@ function toColumns(data: Partial<AutoModerationRuleData>) {
 }
 
 /**
+ * The columns of a rule that is created: every field, with the snowflakes as the database holds them.
+ */
+function toCreateColumns(data: AutoModerationRuleData) {
+	const { ignoredRoles, ignoredChannels, logChannelId, ...rest } = data;
+	return {
+		...rest,
+		ignoredRoles: ignoredRoles.map((id) => BigInt(id)),
+		ignoredChannels: ignoredChannels.map((id) => BigInt(id)),
+		logChannelId: logChannelId === null ? null : BigInt(logChannelId)
+	};
+}
+
+/**
  * Reads the auto-moderation rules of a guild, oldest first.
  * @param orm The ORM surface to read through, `db.orm` or a transaction's `tx.orm`.
  * @param guildId The guild's ID.
@@ -70,7 +83,7 @@ export async function createAutoModerationRule(
 	const id = BigInt(guildId);
 	return db.transaction(async (tx) => {
 		await tx.orm.public.Guild.upsert({ create: { id, language }, update: { id } });
-		const row = await tx.orm.public.GuildAutoModerationRule.create({ ...data, ...toColumns(data), guildId: id });
+		const row = await tx.orm.public.GuildAutoModerationRule.create({ ...toCreateColumns(data), guildId: id });
 		return toRule(row);
 	});
 }
@@ -149,7 +162,7 @@ export async function writeAutoModerationRulePlan(
 
 	const created: AutoModerationRule[] = [];
 	for (const data of plan.create) {
-		const row = await rules.create({ ...data, ...toColumns(data), guildId: id });
+		const row = await rules.create({ ...toCreateColumns(data), guildId: id });
 		created.push(toRule(row));
 	}
 

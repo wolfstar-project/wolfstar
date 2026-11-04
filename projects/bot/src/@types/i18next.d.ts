@@ -239,7 +239,7 @@ declare module "i18next" {
         optionsWeightedName: "weighted";
         optionsWeightedDescription: "Mentions cooldown: count a role mention as two and @everyone as five";
         optionsResponseName: "response";
-        optionsResponseDescription: "What the alert says, with {user}, {rule} and {channel}. Write none for the default line";
+        optionsResponseDescription: "What the alert says. Put user, rule or channel in curly brackets. Write none for the default line";
         optionsLogChannelName: "log-channel";
         optionsLogChannelDescription: "Where the logs of this rule go instead of the moderation channel";
         optionsValueName: "value";
@@ -440,7 +440,7 @@ declare module "i18next" {
         menuEscalationTooMany: "The escalation has at most {{maximum, number}} steps.";
         menuEscalationPeriodRequired: "Tell how long a punishment is remembered, for example `1d`.";
         menuCustomResponse: "Custom response";
-        menuCustomResponseDescription: "What the alert says instead of the line of the rule type. {user}, {rule} and {channel} are replaced.";
+        menuCustomResponseDescription: "What the alert says instead of the line of the rule type. Write user, rule or channel between curly brackets to put them in.";
         menuCustomResponseNone: "None, the alert says the line of the rule type.";
         menuCustomResponseLabel: "The response, empty for the default line";
         menuLogChannel: "Log channel";
@@ -3186,12 +3186,12 @@ declare module "i18next" {
         messagesModerationMessageDisplay: "Whether or not a response should be sent for moderation commands.";
         messagesModerationReasonDisplay: "Whether the reason will be displayed in moderation commands.";
         messagesModeratorNameDisplay: "Whether or not I should display the name of the moderator who took the action when sending the target user a moderation message. Requires `messages.moderation-dm` to be enabled.";
-        messagesResponseBan: "What I answer in the channel when a member is banned with `/ban add`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was banned for {reason}`. The case number and the reason stay under it.";
-        messagesResponseUnban: "What I answer in the channel when a member is unbanned with `/ban remove`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was unbanned for {reason}`. The case number and the reason stay under it.";
-        messagesResponseSoftban: "What I answer in the channel when a member is softbanned with `/softban`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was softbanned for {reason}`. The case number and the reason stay under it.";
-        messagesResponseKick: "What I answer in the channel when a member is kicked with `/kick`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was kicked for {reason}`. The case number and the reason stay under it.";
-        messagesResponseMute: "What I answer in the channel when a member is muted with `/mute add`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was muted for {reason}`. The case number and the reason stay under it.";
-        messagesResponseUnmute: "What I answer in the channel when a member is unmuted with `/mute remove`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes: `{user} was unmuted for {reason}`. The case number and the reason stay under it.";
+        messagesResponseBan: "What I answer in the channel when a member is banned with `/ban add`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes. The case number and the reason stay under it.";
+        messagesResponseUnban: "What I answer in the channel when a member is unbanned with `/ban remove`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes. The case number and the reason stay under it.";
+        messagesResponseSoftban: "What I answer in the channel when a member is softbanned with `/softban`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes. The case number and the reason stay under it.";
+        messagesResponseKick: "What I answer in the channel when a member is kicked with `/kick`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes. The case number and the reason stay under it.";
+        messagesResponseMute: "What I answer in the channel when a member is muted with `/mute add`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes. The case number and the reason stay under it.";
+        messagesResponseUnmute: "What I answer in the channel when a member is unmuted with `/mute remove`, instead of `Case 3 created for user`, 200 characters at most. Write the user, the reason, the case, the moderator or the duration between curly brackets where each goes. The case number and the reason stay under it.";
         rolesAdmin: "The administrator roles. Administrators have access to all moderation and management commands. Defaults to anyone with the {{MANAGE_GUILD, permissions}} permission.";
         rolesInitial: "The initial role, if configured, I will give it to users as soon as they join.";
         rolesInitialHumans: "If configured, I will give this role to regular users upon joining. (not bots)";
