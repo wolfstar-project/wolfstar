@@ -299,7 +299,8 @@ export function getConfiguration() {
 		messagesModerationDm: {
 			type: 'boolean',
 			name: 'moderation.direct-message',
-			description: 'settings:messagesModerationDm'
+			description: 'settings:messagesModerationDm',
+			default: true
 		},
 		messagesModerationReasonDisplay: {
 			type: 'boolean',
