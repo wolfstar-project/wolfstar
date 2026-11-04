@@ -138,7 +138,13 @@ export function runHoneypotUpkeep(upkeep: Pick<HoneypotUpkeep, 'guildId' | 'chan
 			const name = settings.honeypotChaosName
 				? makeChaosChannelName()
 				: pickHoneypotChannelName(('name' in channel ? channel.name : null) ?? null);
-			await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
+			// A rename that fails must not keep the warning from being sent: a recreated trap has no other way to warn
+			// whoever writes in it, and the old channel is already gone.
+			try {
+				await resolveOnErrorCodes(gatewayClient.api.channels.edit(channelId, { name }, { reason: 'Honeypot' }), ...IgnoredCodes);
+			} catch (error) {
+				container.logger.warn(`[Honeypot] Could not rename the channel ${channelId} of the guild ${guildId}:`, error);
+			}
 		}
 
 		if (!settings.honeypotKeepActive && !settings.honeypotRecreate) return 'done';

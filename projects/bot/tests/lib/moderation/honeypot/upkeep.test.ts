@@ -320,4 +320,16 @@ describe('runHoneypotUpkeep', () => {
 			expect(makeChaosChannelName(() => 0.999)).toBe('9999999999');
 		});
 	});
+
+	test('GIVEN a recreated trap whose rename fails THEN the warning is still sent to it', async () => {
+		setSettings({ honeypotRecreate: true, honeypotChaosName: true });
+		Object.assign(container, { rest: { get: vi.fn(async () => ({ type: 0, name: 'trap' })) } });
+		Object.assign(container.gatewayClient.api, { guilds: { createChannel: vi.fn(async () => ({ id: 'replacement' })) } });
+		Object.assign(container.gatewayClient.channels, { delete: vi.fn(async () => undefined) });
+		edit.mockRejectedValueOnce(new Error('network down'));
+
+		expect(await runHoneypotUpkeep(upkeep)).toBe('done');
+
+		expect(refreshHoneypotNotice).toHaveBeenCalledWith(guildId, 'replacement', expect.objectContaining({ warning: true }));
+	});
 });
