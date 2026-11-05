@@ -1,5 +1,5 @@
 import {
-	ConfigurationFileVersion,
+	ReadableConfigurationFileVersions,
 	ConfigurationRuleFields,
 	findPortableKey,
 	RemovedSettings,
@@ -91,9 +91,12 @@ export async function parseConfigurationFile(text: string, context: ParseConfigu
 		return failure([{ path: 'version', message: t('commands/conf:transferErrorVersion') }]);
 	}
 
-	if (version !== ConfigurationFileVersion) {
+	if (!ReadableConfigurationFileVersions.includes(version)) {
 		return failure([
-			{ path: 'version', message: t('commands/conf:transferErrorVersionUnsupported', { version, supported: ConfigurationFileVersion }) }
+			{
+				path: 'version',
+				message: t('commands/conf:transferErrorVersionUnsupported', { version, supported: ReadableConfigurationFileVersions.join(', ') })
+			}
 		]);
 	}
 

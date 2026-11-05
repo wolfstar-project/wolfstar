@@ -275,7 +275,16 @@ describe('configuration file', () => {
 		test('GIVEN no version, or another one THEN it is refused', async () => {
 			expect((await parseIssues({ settings: {} }))[0]).toMatchObject({ path: 'version', message: 'commands/conf:transferErrorVersion' });
 			expect((await parseIssues({ version: '1' }))[0].path).toBe('version');
-			expect((await parseIssues({ version: 1 }))[0].message).toContain('transferErrorVersionUnsupported');
+			expect((await parseIssues({ version: 3 }))[0].message).toContain('transferErrorVersionUnsupported');
+		});
+
+		test('GIVEN a file of version 1 THEN it is read and upgraded', async () => {
+			const parsed = await parseOk({
+				version: 1,
+				settings: { 'modules.commands': false },
+				automod: { rules: [{ name: 'Mentions', type: 'NoMentionSpam' }] }
+			});
+			expect(parsed.rules?.[0]).toMatchObject({ type: 'MentionsCooldown', hardAction: 'Ban' });
 		});
 
 		test('GIVEN a field that is not of the file THEN it is refused', async () => {
