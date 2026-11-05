@@ -17,6 +17,11 @@ export function getUpdatesAnnouncementChannelId(): Snowflake {
 }
 
 /**
+ * The follow of each server that is still running, so the next one waits for it.
+ */
+const pendingFollows = new Map<Snowflake, Promise<void>>();
+
+/**
  * Makes the `channels.updates` of a server follow the announcement channel of the updates
  * ({@linkcode getUpdatesAnnouncementChannelId}), so what is published there is posted in the server too, and stops the
  * channel it had before from following it.
@@ -24,14 +29,25 @@ export function getUpdatesAnnouncementChannelId(): Snowflake {
  * @remarks
  *
  * A follow is a webhook of the channel that follows, which needs `Manage Webhooks` there. It is not waited for by the
- * write of the settings: a follow that fails is logged, and the setting stays as the server set it.
+ * write of the settings: a follow that fails is logged, and the setting stays as the server set it. The follows of a
+ * server run one after the other, so quick changes (A, then B, then A again) cannot interleave and leave A without one.
  *
+ * @param guildId - The server whose setting changed.
  * @param previous - The channel the setting had, `null` when it had none.
  * @param next - The channel the setting has now, `null` when it was removed.
  */
-export async function syncUpdatesChannelFollow(previous: Snowflake | null, next: Snowflake | null): Promise<void> {
-	if (previous === next) return;
+export function syncUpdatesChannelFollow(guildId: Snowflake, previous: Snowflake | null, next: Snowflake | null): Promise<void> {
+	if (previous === next) return pendingFollows.get(guildId) ?? Promise.resolve();
 
+	const follow = (pendingFollows.get(guildId) ?? Promise.resolve()).then(() => moveFollow(previous, next));
+	pendingFollows.set(guildId, follow);
+	void follow.finally(() => {
+		if (pendingFollows.get(guildId) === follow) pendingFollows.delete(guildId);
+	});
+	return follow;
+}
+
+async function moveFollow(previous: Snowflake | null, next: Snowflake | null) {
 	if (previous !== null) {
 		try {
 			await unfollowUpdates(previous);
@@ -70,7 +86,9 @@ async function followUpdates(channelId: Snowflake) {
 }
 
 async function unfollowUpdates(channelId: Snowflake) {
-	for (const webhook of await fetchUpdatesFollowers(channelId)) {
+	// Only the follow WolfStar made is removed, one an administrator made by hand is theirs to keep:
+	const followers = await fetchUpdatesFollowers(channelId);
+	for (const webhook of followers.filter((webhook) => webhook.user?.id === container.client.id)) {
 		await container.client.rest.delete(Routes.webhook(webhook.id), { reason: 'No longer the updates channel of WolfStar' });
 	}
 }

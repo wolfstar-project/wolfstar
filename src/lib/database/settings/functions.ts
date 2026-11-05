@@ -160,7 +160,7 @@ export class Transaction {
 
 			const previousUpdatesChannel = this.settings.channelsUpdates;
 			Object.assign(this.settings, this.#changes);
-			void syncUpdatesChannelFollow(previousUpdatesChannel, this.settings.channelsUpdates);
+			void syncUpdatesChannelFollow(this.settings.id, previousUpdatesChannel, this.settings.channelsUpdates);
 			this.#hasChanges = false;
 			updateSettingsContext(this.settings, this.#changes);
 		} finally {
