@@ -94,6 +94,7 @@ export function renderSettingsImportButtons(t: Translator, ownerId: Snowflake, i
 interface StoredImport {
 	settings: [name: string, value: unknown][];
 	rules: ParsedConfiguration['rules'];
+	addedRules?: ParsedConfiguration['addedRules'];
 }
 
 function getPendingKey(guildId: Snowflake, ownerId: Snowflake, importId: Snowflake) {
@@ -113,7 +114,11 @@ function getPendingKey(guildId: Snowflake, ownerId: Snowflake, importId: Snowfla
  * @param parsed - What the file holds, see `parseConfigurationFile`.
  */
 export async function savePendingImport(guildId: Snowflake, ownerId: Snowflake, importId: Snowflake, parsed: ParsedConfiguration) {
-	const stored: StoredImport = { settings: parsed.settings.map(({ key, value }) => [key.name, value]), rules: parsed.rules };
+	const stored: StoredImport = {
+		settings: parsed.settings.map(({ key, value }) => [key.name, value]),
+		rules: parsed.rules,
+		addedRules: parsed.addedRules
+	};
 	await container.redis.set(getPendingKey(guildId, ownerId, importId), JSON.stringify(stored), 'EX', PendingImportSeconds);
 }
 
@@ -138,5 +143,5 @@ export async function takePendingImport(guildId: Snowflake, ownerId: Snowflake, 
 	}
 
 	// What could not be imported was shown with the preview, the confirmation does not need it:
-	return { settings, rules: stored.rules, notices: [] };
+	return { settings, rules: stored.rules, addedRules: stored.addedRules ?? [], notices: [] };
 }

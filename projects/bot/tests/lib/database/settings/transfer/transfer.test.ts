@@ -994,8 +994,8 @@ describe('configuration file', () => {
 			);
 
 			expect(parsed.notices).toEqual([]);
-			expect(parsed.rules).toMatchObject([
-				{ name: 'Mine', type: 'Words' },
+			expect(parsed.rules).toBeNull();
+			expect(parsed.addedRules).toMatchObject([
 				{
 					name: 'Links',
 					type: 'Links',
@@ -1009,6 +1009,31 @@ describe('configuration file', () => {
 
 			const plan = planConfigurationImport(createSettings(), rules, parsed);
 			expect(countPlannedRules(plan)).toEqual({ created: 2, updated: 0, moved: 0, removed: 0, unchanged: 1 });
+		});
+
+		test('GIVEN a rule the server gained after the file was read THEN the import keeps it', async () => {
+			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true }), [createRule('Words', 'Mine', '1')]);
+
+			const now = [createRule('Words', 'Mine', '1'), createRule('Words', 'Added since', '2')];
+			const plan = planConfigurationImport(createSettings(), now, parsed);
+			expect(countPlannedRules(plan)).toEqual({ created: 1, updated: 0, moved: 0, removed: 0, unchanged: 2 });
+		});
+
+		test('GIVEN a file with a few settings and no filter THEN it makes no rule, not even a Mention spam that is off', async () => {
+			const parsed = await parseOk(legacy({ 'messages.moderation-dm': true }));
+
+			expect(parsed.addedRules).toEqual([]);
+			const plan = planConfigurationImport(createSettings(), [createRule('MentionsCooldown', 'Mention spam', '1')], parsed);
+			expect(countPlannedRules(plan)).toMatchObject({ created: 0, removed: 0, updated: 0 });
+		});
+
+		test('GIVEN a filter that cannot become a rule and another that can THEN the other is still made', async () => {
+			const parsed = await parseOk(
+				legacy({ 'selfmod.invites.enabled': true, 'selfmod.invites.ignored-guilds': ['not a server'], 'selfmod.links.enabled': true })
+			);
+
+			expect(parsed.notices.map((notice) => notice.message.split(' ')[0])).toEqual(['commands/conf:transferLegacyRuleFailed']);
+			expect(parsed.addedRules).toMatchObject([{ name: 'Links', type: 'Links', enabled: true }]);
 		});
 
 		test('GIVEN a filter the server already has as a rule THEN that rule is edited instead of made twice', async () => {
@@ -1035,7 +1060,7 @@ describe('configuration file', () => {
 		test('GIVEN a filter the limits of this bot changed THEN the rule is made and the change is told', async () => {
 			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true, 'selfmod.links.threshold-maximum': 5000 }));
 
-			expect(parsed.rules).toHaveLength(1);
+			expect(parsed.addedRules).toHaveLength(1);
 			expect(parsed.notices).toHaveLength(1);
 			expect(parsed.notices[0].message).toContain('transferLegacyRuleAdjusted');
 		});

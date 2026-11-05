@@ -72,6 +72,7 @@ describe('pending import', () => {
 			parsed = {
 				settings: [{ key: findPortableKey('modules.moderation')!, value: false }],
 				rules: [{ ...rule, name: 'Words', options: { words: ['spam'] } }],
+				addedRules: [],
 				notices: []
 			};
 		});
@@ -89,7 +90,11 @@ describe('pending import', () => {
 			expect(key).toBe(`wolfstar:settings:import:${guildId}:${ownerId}:${importId}`);
 			expect(entry.seconds).toBe(PendingImportSeconds);
 			expect(entry.seconds).toBe(300);
-			expect(JSON.parse(entry.value)).toEqual({ settings: [['modules.moderation', false]], rules: parsed.rules });
+			expect(JSON.parse(entry.value)).toEqual({
+				settings: [['modules.moderation', false]],
+				rules: parsed.rules,
+				addedRules: parsed.addedRules
+			});
 		});
 
 		test('GIVEN an import that waits THEN it is taken as it was read, with the keys of its settings, and only once', async () => {
@@ -111,7 +116,7 @@ describe('pending import', () => {
 		});
 
 		test('GIVEN two imports of an administrator THEN each preview confirms its own file', async () => {
-			const other = { settings: [], rules: null, notices: [] };
+			const other = { settings: [], rules: null, addedRules: [], notices: [] };
 			await savePendingImport(guildId, ownerId, importId, parsed);
 			await savePendingImport(guildId, ownerId, '1300000000000000002', other);
 

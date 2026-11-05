@@ -48,6 +48,12 @@ export interface ParsedConfiguration {
 	/** The rules of the file, `null` when it has no `automod` section: the rules of the server are left alone. */
 	rules: ConfigurationRule[] | null;
 	/**
+	 * The rules the filters of the bot before V7 became when the file has no `automod` section: they are added to the
+	 * rules the server has when the import is written (one with the name of a rule of the server takes its place), see
+	 * `getImportedRules`. Empty when the file has an `automod` section, which holds them.
+	 */
+	addedRules: ConfigurationRule[];
+	/**
 	 * What a file of the bot before V7 has that could not be imported, and how to set it by hand. The import goes on
 	 * without it, so it is shown with the preview instead of refusing the file.
 	 */
@@ -118,11 +124,11 @@ export async function parseConfigurationFile(text: string, context: ParseConfigu
 	}
 
 	const { settings, legacy } = await parseSettings(data.settings, version, context, issues);
-	let rules = parseRules(data.automod, context, issues);
+	const rules = parseRules(data.automod, context, issues);
 	const notices: ConfigurationIssue[] = [];
-	if (legacy !== null) rules = await importLegacy(legacy, settings, rules, context, notices);
+	const addedRules = legacy === null ? [] : await importLegacy(legacy, settings, rules, context, notices);
 
-	return issues.length === 0 ? { ok: true, value: { settings, rules, notices } } : failure(issues);
+	return issues.length === 0 ? { ok: true, value: { settings, rules, addedRules, notices } } : failure(issues);
 }
 
 async function parseSettings(section: unknown, version: number, context: ParseConfigurationContext, issues: ConfigurationIssue[]) {
@@ -160,8 +166,8 @@ async function parseSettings(section: unknown, version: number, context: ParseCo
  * Imports what the settings of the bot before V7 became, see `convertLegacySettings`. What cannot be imported is not a
  * reason to refuse the file, which is all the administrator has of that bot: it is told, with how to set it by hand.
  *
- * @returns The rules the import writes. When the file has no `automod` section the rules the filters became are added to
- * the ones of the server, which keeps the others: the bot before V7 had no rule to replace them with.
+ * @returns The rules the filters became to add to the ones of the server, when the file has no `automod` section: the
+ * bot before V7 had no rule to replace the others with. When it has one they are added to its rules instead.
  */
 async function importLegacy(
 	legacy: LegacyConversion,
@@ -169,7 +175,7 @@ async function importLegacy(
 	fileRules: ConfigurationRule[] | null,
 	context: ParseConfigurationContext,
 	notices: ConfigurationIssue[]
-): Promise<ConfigurationRule[] | null> {
+): Promise<ConfigurationRule[]> {
 	const { t } = context;
 	for (const notice of legacy.notices) notices.push(renderLegacyNotice(notice, t));
 
@@ -209,9 +215,12 @@ async function importLegacy(
 		}
 	}
 
-	if (legacy.rules.length === 0) return fileRules;
-
-	const rules = fileRules === null ? context.rules.map((rule) => toConfigurationRule(rule)) : [...fileRules];
+	const added: ConfigurationRule[] = [];
+	// What the names and the limit are checked against: the rules of the file, or the ones the server has now. The ones it
+	// has when the import is written are used again then:
+	const rules = fileRules ?? context.rules.map((rule) => toConfigurationRule(rule));
+	// The rules added that take no place of a rule of the server:
+	let created = 0;
 	for (const entry of legacy.rules) {
 		const name = entry.name as string;
 		const path = `settings.${getLegacyFilterPrefix(name).slice(0, -1)}`;
@@ -225,19 +234,20 @@ async function importLegacy(
 		}
 
 		const lower = rule.name.toLowerCase();
-		const index = rules.findIndex((other) => other.name.toLowerCase() === lower);
-		if (fileRules !== null && index !== -1) {
+		const exists = rules.some((other) => other.name.toLowerCase() === lower);
+		if (fileRules !== null && exists) {
 			failed(t('commands/conf:transferErrorRuleNameTaken', { name: rule.name }));
-		} else if (index !== -1) {
-			rules[index] = rule;
-		} else if (rules.length >= MaximumAutoModerationRules) {
+		} else if (!exists && rules.length + created >= MaximumAutoModerationRules) {
 			failed(t('commands/auto-moderation:errorLimit', { maximum: MaximumAutoModerationRules }));
+		} else if (fileRules !== null) {
+			fileRules.push(rule);
 		} else {
-			rules.push(rule);
+			added.push(rule);
+			if (!exists) created += 1;
 		}
 	}
 
-	return rules;
+	return added;
 }
 
 function renderLegacyNotice(notice: LegacyNotice, t: Translator): ConfigurationIssue {

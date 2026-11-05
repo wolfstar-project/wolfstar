@@ -161,38 +161,55 @@ function convertRenamedSettings(section: Readonly<Record<string, unknown>>, conv
 	conversion.settings.push(...byName.values());
 }
 
+/**
+ * What the converter reads of the mention spam filter when the file has nothing of it: the values the bot before V7 gave
+ * it, which the converter takes for a filter nobody changed. Without them it makes a rule that is off out of nothing.
+ */
+const MentionSpamDefaults: LegacyRow = { 'no-mention-spam.mentions-allowed': 20, 'no-mention-spam.time-period': 8 };
+
+/**
+ * Converts the filters the file has, each one by itself: one that cannot be converted does not keep the others from
+ * being imported, and a filter the file does not have is not converted at all, so a file that only has a few settings
+ * leaves the rules of the server alone.
+ */
 function convertFilters(row: LegacyRow, conversion: LegacyConversion) {
+	for (const [prefix, rule] of Object.entries(ConvertedFilters)) {
+		const filter = Object.fromEntries(Object.entries(row).filter(([name]) => name.startsWith(prefix)));
+		if (Object.keys(filter).length > 0) convertFilter(prefix, rule, filter, conversion);
+	}
+}
+
+function convertFilter(prefix: string, rule: string, filter: LegacyRow, conversion: LegacyConversion) {
 	let converted: ReturnType<typeof convertLegacyAutomodRules>;
 	try {
-		converted = convertLegacyAutomodRules(row, '0');
+		converted = convertLegacyAutomodRules({ ...MentionSpamDefaults, ...filter }, '0');
 	} catch (error) {
 		// A value that is not one the bot before V7 could hold, which this file was edited to have:
 		if (!(error instanceof LegacyValueError)) throw error;
 
-		const from = Object.keys(row).find((name) => error.message.includes(`"${name}"`)) ?? '';
-		const rule = Object.entries(ConvertedFilters).find(([prefix]) => from.startsWith(prefix))?.[1] ?? from;
+		const from = Object.keys(filter).find((name) => error.message.includes(`"${name}"`)) ?? prefix;
 		conversion.notices.push({ kind: 'ruleFailed', rule, from, detail: error.message });
 		return;
 	}
 
-	for (const rule of converted.rules) {
+	for (const made of converted.rules) {
 		conversion.rules.push({
-			name: rule.name,
-			type: rule.type,
-			enabled: rule.enabled,
-			softAction: rule.soft_action,
-			hardAction: rule.hard_action,
-			hardActionDuration: rule.hard_action_duration,
-			thresholdMaximum: rule.threshold_maximum,
-			thresholdDuration: rule.threshold_duration,
-			options: rule.options
+			name: made.name,
+			type: made.type,
+			enabled: made.enabled,
+			softAction: made.soft_action,
+			hardAction: made.hard_action,
+			hardActionDuration: made.hard_action_duration,
+			thresholdMaximum: made.threshold_maximum,
+			thresholdDuration: made.threshold_duration,
+			options: made.options
 		});
 	}
 
 	for (const warning of converted.warnings) {
 		// The rule is the last name in quotes: a warning about an option names the option before it:
-		const rule = [...warning.matchAll(/"([^"]+)"/g)].at(-1)?.[1] ?? '';
-		conversion.notices.push({ kind: 'ruleAdjusted', rule, detail: warning });
+		const name = [...warning.matchAll(/"([^"]+)"/g)].at(-1)?.[1] ?? '';
+		conversion.notices.push({ kind: 'ruleAdjusted', rule: name, detail: warning });
 	}
 }
 

@@ -66,6 +66,31 @@ export interface ConfigurationPlan {
 }
 
 /**
+ * The rules of the server once the file is imported, `null` when the import leaves them alone.
+ *
+ * @remarks The rules the filters of the bot before V7 became (`addedRules`) are added to the ones the server has when
+ * this is called, which is again when the import is written: a rule another administrator made, edited or deleted after
+ * the preview is kept as it is then. One of them with the name of a rule of the server takes its place.
+ *
+ * @param rules - The rules of the server, as the database has them.
+ * @param parsed - What the file holds, see `parseConfigurationFile`.
+ */
+export function getImportedRules(rules: readonly AutoModerationRule[], parsed: ParsedConfiguration): ConfigurationRule[] | null {
+	if (parsed.rules !== null) return parsed.rules;
+	if (parsed.addedRules.length === 0) return null;
+
+	const imported = rules.map((rule) => toConfigurationRule(rule));
+	for (const rule of parsed.addedRules) {
+		const lower = rule.name.toLowerCase();
+		const index = imported.findIndex((other) => other.name.toLowerCase() === lower);
+		if (index === -1) imported.push(rule);
+		else imported[index] = rule;
+	}
+
+	return imported;
+}
+
+/**
  * Works out what an import changes.
  *
  * @remarks
@@ -75,7 +100,7 @@ export interface ConfigurationPlan {
  *   is the same rule when it has the same name (whatever the case) and the same type, which is kept and edited in place:
  *   it keeps its ID, its exempt roles and channels, and what it counted of the members. One of another type is deleted
  *   and made again, since the options of a rule depend on its type. The rules of the server are left alone when the file
- *   has no `automod` section.
+ *   has no `automod` section, except for the rules a file of the bot before V7 adds to them (`addedRules`).
  * - The rules of a type are in the order of the file once it is imported, since a message is held to the first enabled
  *   rule of a type it infringes: the order decides which punishment a member gets. The rules have no position of their
  *   own, they are read by their ID, oldest first, and a rule that is created gets an ID after every other. So the rules
@@ -105,13 +130,14 @@ export function planConfigurationImport(
 		isEmpty: false
 	};
 
-	if (parsed.rules !== null) {
+	const imported = getImportedRules(rules, parsed);
+	if (imported !== null) {
 		const unmatched = new Map(rules.map((rule) => [rule.name.toLowerCase(), rule]));
 		// The ID of the last rule of each type that stays, `null` once a rule of the type is made: every rule of the
 		// type the file has after it has to be made after it.
 		const last = new Map<AutoModerationRuleType, bigint | null>();
 
-		for (const data of parsed.rules) {
+		for (const data of imported) {
 			const lower = data.name.toLowerCase();
 			const rule = unmatched.get(lower);
 
@@ -189,7 +215,7 @@ export interface OversizedRuleList {
  */
 export function findOversizedRuleLists(rules: readonly AutoModerationRule[], parsed: ParsedConfiguration): OversizedRuleList[] {
 	const oversized: OversizedRuleList[] = [];
-	for (const data of parsed.rules ?? []) {
+	for (const data of getImportedRules(rules, parsed) ?? []) {
 		const lower = data.name.toLowerCase();
 		const current = rules.find((rule) => rule.type === data.type && rule.name.toLowerCase() === lower);
 		const currentOptions = (current?.options ?? {}) as Record<string, unknown>;
@@ -220,7 +246,7 @@ export function findOversizedRuleLists(rules: readonly AutoModerationRule[], par
  */
 export function findStaleTimeoutRules(rules: readonly AutoModerationRule[], parsed: ParsedConfiguration): string[] {
 	const stale: string[] = [];
-	for (const data of parsed.rules ?? []) {
+	for (const data of getImportedRules(rules, parsed) ?? []) {
 		if (data.hardAction !== 'Timeout' || data.hardActionDuration) continue;
 
 		const lower = data.name.toLowerCase();

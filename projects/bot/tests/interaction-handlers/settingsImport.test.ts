@@ -25,7 +25,7 @@ const guildId = '254360814063058944';
 const ownerId = '266624760782258186';
 const importId = '1300000000000000001';
 
-const parsed: ParsedConfiguration = { settings: [], rules: [], notices: [] };
+const parsed: ParsedConfiguration = { settings: [], rules: [], addedRules: [], notices: [] };
 const plan = (overrides: Partial<ConfigurationPlan> = {}): ConfigurationPlan => ({
 	settings: [],
 	rules: { create: [], update: [], remove: [], unchanged: 0 },

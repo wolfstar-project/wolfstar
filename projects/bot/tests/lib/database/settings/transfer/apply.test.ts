@@ -54,7 +54,7 @@ vi.mock('#lib/moderation/automod/rules', () => ({
 }));
 
 function createParsed(value: boolean): ParsedConfiguration {
-	return { settings: [{ key: { property: 'modulesModeration' } as never, value }], rules: null, notices: [] };
+	return { settings: [{ key: { property: 'modulesModeration' } as never, value }], rules: null, addedRules: [], notices: [] };
 }
 
 describe('applyConfigurationImport', () => {
@@ -80,7 +80,7 @@ describe('applyConfigurationImport', () => {
 	test('GIVEN a list the server no longer allows THEN nothing is written and the locks are released', async () => {
 		const words = Array.from({ length: MaximumAutoModerationRuleListLength + 1 }, (_, index) => `word${index}`);
 		const { ignoredRoles: _roles, ignoredChannels: _channels, ...rule } = getDefaultAutoModerationRule('Words');
-		const parsed: ParsedConfiguration = { settings: [], rules: [{ ...rule, name: 'Words', options: { words } }], notices: [] };
+		const parsed: ParsedConfiguration = { settings: [], rules: [{ ...rule, name: 'Words', options: { words } }], addedRules: [], notices: [] };
 
 		// The server has no rule to allow the list by, as when the rule was deleted after the file was read:
 		await expect(applyConfigurationImport(guildId, parsed, '1')).rejects.toBeInstanceOf(ConfigurationImportStaleError);
@@ -92,6 +92,7 @@ describe('applyConfigurationImport', () => {
 		const parsed: ParsedConfiguration = {
 			settings: [],
 			rules: [{ ...rule, name: 'No links', hardAction: 'Timeout', hardActionDuration: null }],
+			addedRules: [],
 			notices: []
 		};
 
