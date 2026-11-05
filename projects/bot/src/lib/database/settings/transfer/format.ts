@@ -5,8 +5,9 @@ import type { AutoModerationRule, AutoModerationRuleData, ReadonlyGuildData } fr
 /**
  * The version of the file the export of the settings menu writes. It changes when a file of the previous version can no
  * longer be read, which a setting or a field that is added does not do: it is left out of the files that predate it.
+ * Version 1 is the file of the bot before V7, which this one does not read: its settings are not the same ones.
  */
-export const ConfigurationFileVersion = 1;
+export const ConfigurationFileVersion = 2;
 
 /**
  * The most bytes of a file an import reads. The biggest configuration, 25 rules with their lists at the limit, is a
