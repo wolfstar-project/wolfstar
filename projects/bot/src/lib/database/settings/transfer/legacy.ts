@@ -190,7 +190,8 @@ function convertFilters(row: LegacyRow, conversion: LegacyConversion) {
 	}
 
 	for (const warning of converted.warnings) {
-		const rule = /"([^"]+)"/.exec(warning)?.[1] ?? '';
+		// The rule is the last name in quotes: a warning about an option names the option before it:
+		const rule = [...warning.matchAll(/"([^"]+)"/g)].at(-1)?.[1] ?? '';
 		conversion.notices.push({ kind: 'ruleAdjusted', rule, detail: warning });
 	}
 }

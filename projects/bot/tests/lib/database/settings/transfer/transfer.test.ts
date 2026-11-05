@@ -1040,6 +1040,13 @@ describe('configuration file', () => {
 			expect(parsed.notices[0].message).toContain('transferLegacyRuleAdjusted');
 		});
 
+		test('GIVEN an option the limits changed THEN the notice names the rule, not the option', async () => {
+			const parsed = await parseOk(legacy({ 'selfmod.capitals.enabled': true, 'selfmod.capitals.maximum': 100000 }));
+
+			expect(parsed.notices[0].message).toContain('"rule":"Capitals"');
+			expect(parsed.notices[0].path).toBe('settings.selfmod.capitals');
+		});
+
 		test('GIVEN a setting nobody has THEN the file is still refused', async () => {
 			expect(await parseIssues(legacy({ 'no.such': true }))).toMatchObject([{ path: 'settings.no.such' }]);
 		});
