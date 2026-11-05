@@ -1019,6 +1019,9 @@ export function getConfiguration() {
 		}
 	});
 
+	// `channels.updates` is what the announcements of WolfStar are posted in, it is looked for by these names too:
+	configurableGroups.aliases.set('channel-logs', cachedConfiguration.channelsUpdates);
+	configurableGroups.aliases.set('updates-channel', cachedConfiguration.channelsUpdates);
 	return cachedConfiguration;
 }
 
