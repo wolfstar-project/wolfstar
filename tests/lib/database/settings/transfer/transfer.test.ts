@@ -120,6 +120,8 @@ describe('the limits of the columns', () => {
 			{ path: 'settings.selfmod.filter.raw', message: 'commands/conf:transferErrorTooLong' }
 		]);
 		expect(await issuesOf({ 'selfmod.filter.raw': ['x'.repeat(32)] })).toEqual([]);
+		// The database counts a character past U+FFFF once, JavaScript twice:
+		expect(await issuesOf({ 'selfmod.filter.raw': ['🐺'.repeat(17)] })).toEqual([]);
 	});
 
 	it('refuses a number its column cannot hold, even when the setting allows it', async () => {

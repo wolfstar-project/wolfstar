@@ -1,3 +1,4 @@
+import { readSettings } from '#lib/database/settings/functions';
 import { container } from '@sapphire/framework';
 import { DiscordAPIError } from 'discord.js';
 import { Routes, type APIWebhook } from 'discord-api-types/v10';
@@ -38,8 +39,14 @@ const pendingFollows = new Map<Snowflake, Promise<void>>();
  */
 export function syncUpdatesChannelFollow(guildId: Snowflake, previous: Snowflake | null, next: Snowflake | null): Promise<void> {
 	if (previous === next) return pendingFollows.get(guildId) ?? Promise.resolve();
+	return enqueueFollow(guildId, () => moveFollow(previous, next));
+}
 
-	const follow = (pendingFollows.get(guildId) ?? Promise.resolve()).then(() => moveFollow(previous, next));
+/**
+ * Runs a follow of a server after the ones it already has waiting.
+ */
+function enqueueFollow(guildId: Snowflake, run: () => Promise<void>): Promise<void> {
+	const follow = (pendingFollows.get(guildId) ?? Promise.resolve()).then(run);
 	pendingFollows.set(guildId, follow);
 	void follow.finally(() => {
 		if (pendingFollows.get(guildId) === follow) pendingFollows.delete(guildId);
@@ -53,15 +60,21 @@ export function syncUpdatesChannelFollow(guildId: Snowflake, previous: Snowflake
  * is ready, for the servers it is in, one after the other.
  *
  * @remarks A channel that already follows the announcements is left as it is (see `followUpdates`), so this only costs
- * a read of the webhooks of each channel.
+ * a read of the webhooks of each channel. The channel is read when the follow of its server runs, not when the servers
+ * are listed: one an administrator changed meanwhile is not made to follow again after the change stopped it.
  */
 export async function reconcileUpdatesChannelFollows(): Promise<void> {
 	const { client, prisma } = container;
-	const guilds = await prisma.guild.findMany({ where: { channelsUpdates: { not: null } }, select: { id: true, channelsUpdates: true } });
+	const guilds = await prisma.guild.findMany({ where: { channelsUpdates: { not: null } }, select: { id: true } });
 
-	for (const { id, channelsUpdates } of guilds) {
-		if (channelsUpdates === null || !client.guilds.cache.has(id)) continue;
-		await syncUpdatesChannelFollow(id, null, channelsUpdates);
+	for (const { id } of guilds) {
+		if (!client.guilds.cache.has(id)) continue;
+
+		// After the changes the server has waiting, so it reads what they saved:
+		await enqueueFollow(id, async () => {
+			const { channelsUpdates } = await readSettings(id);
+			if (channelsUpdates !== null) await moveFollow(null, channelsUpdates);
+		});
 	}
 }
 

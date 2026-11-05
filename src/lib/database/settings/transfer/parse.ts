@@ -133,7 +133,8 @@ async function checkValue(key: SchemaKey, value: unknown, context: Parameters<Sc
 	)
 		return t('commands/conf:transferErrorInvalidValue', { name: key.name });
 	const column = getColumnLimit(key);
-	if (column?.kind === 'text' && typeof value === 'string' && value.length > column.maximum)
+	// PostgreSQL counts the characters of a `VarChar`, which JavaScript counts twice when they are past U+FFFF:
+	if (column?.kind === 'text' && typeof value === 'string' && [...value].length > column.maximum)
 		return t('commands/conf:transferErrorTooLong', { name: key.name, maximum: column.maximum });
 	if (column?.kind === 'number' && typeof value === 'number' && (value < column.minimum || value > column.maximum))
 		return t('commands/conf:transferErrorOutOfRange', { name: key.name, minimum: column.minimum, maximum: column.maximum });

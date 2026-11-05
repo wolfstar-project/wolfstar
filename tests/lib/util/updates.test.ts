@@ -1,4 +1,5 @@
 import { reconcileUpdatesChannelFollows, syncUpdatesChannelFollow } from '#utils/updates';
+import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import { container } from '@sapphire/framework';
 import { WebhookType, Routes } from 'discord-api-types/v10';
 
@@ -72,16 +73,31 @@ it('runs the follows of a server one after the other', async () => {
 	expect(webhooks.get('B')).toHaveLength(0);
 });
 
-it('makes the updates channels the servers already have follow the announcements, once the bot is ready', async () => {
-	vi.spyOn(container.prisma.guild, 'findMany').mockResolvedValue([
-		{ id: '1', channelsUpdates: '456' },
-		{ id: '2', channelsUpdates: '789' }
-	] as never);
-	// The bot is no longer in the second server:
-	vi.spyOn(container.client.guilds.cache, 'has').mockImplementation((id) => id === '1');
+/** The servers listed with an updates channel, with the one each of them has when its follow runs. */
+function mockServers(channels: Record<string, string | null>, present: string[] = Object.keys(channels)) {
+	vi.spyOn(container.prisma.guild, 'findMany').mockResolvedValue(Object.keys(channels).map((id) => ({ id })) as never);
+	vi.spyOn(container.prisma.guild, 'findUnique').mockImplementation((async ({ where }: { where: { id: string } }) => ({
+		...getDefaultGuildSettings(),
+		id: where.id,
+		channelsUpdates: channels[where.id]
+	})) as never);
+	vi.spyOn(container.client.guilds.cache, 'has').mockImplementation((id) => present.includes(id));
 	vi.spyOn(container.client.rest, 'get').mockResolvedValue([]);
-	const post = vi.spyOn(container.client.rest, 'post').mockResolvedValue({});
+	return vi.spyOn(container.client.rest, 'post').mockResolvedValue({});
+}
+
+it('makes the updates channels the servers already have follow the announcements, once the bot is ready', async () => {
+	// The bot is no longer in the second server:
+	const post = mockServers({ '1001': '456', '1002': '789' }, ['1001']);
 
 	await reconcileUpdatesChannelFollows();
 	expect(post.mock.calls.map(([, options]) => options?.body)).toEqual([{ webhook_channel_id: '456' }]);
+});
+
+it('follows the channel a server has when its turn comes, not the one it had when the servers were listed', async () => {
+	// The first server moved its updates to another channel after the list was read, the second one reset it:
+	const post = mockServers({ '1003': '999', '1004': null });
+
+	await reconcileUpdatesChannelFollows();
+	expect(post.mock.calls.map(([, options]) => options?.body)).toEqual([{ webhook_channel_id: '999' }]);
 });
