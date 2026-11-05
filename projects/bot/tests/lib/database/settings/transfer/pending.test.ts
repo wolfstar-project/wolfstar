@@ -71,7 +71,8 @@ describe('pending import', () => {
 			const { ignoredRoles: _roles, ignoredChannels: _channels, ...rule } = getDefaultAutoModerationRule('Words');
 			parsed = {
 				settings: [{ key: findPortableKey('modules.moderation')!, value: false }],
-				rules: [{ ...rule, name: 'Words', options: { words: ['spam'] } }]
+				rules: [{ ...rule, name: 'Words', options: { words: ['spam'] } }],
+				notices: []
 			};
 		});
 
@@ -110,7 +111,7 @@ describe('pending import', () => {
 		});
 
 		test('GIVEN two imports of an administrator THEN each preview confirms its own file', async () => {
-			const other = { settings: [], rules: null };
+			const other = { settings: [], rules: null, notices: [] };
 			await savePendingImport(guildId, ownerId, importId, parsed);
 			await savePendingImport(guildId, ownerId, '1300000000000000002', other);
 

@@ -19,8 +19,10 @@ export type Database = typeof db;
 
 export type { Contract, Models };
 
+export { convertLegacyAutomodRules } from './legacy/automod.js';
 export * from './legacy/migrate.js';
 export * from './legacy/storage.js';
+export { LegacyValueError, type LegacyRow } from './legacy/types.js';
 export * from './settings/automod/storage.js';
 export * from './settings/appeals/forms.js';
 export * from './settings/appeals/requests.js';

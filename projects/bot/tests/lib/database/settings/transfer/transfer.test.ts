@@ -25,6 +25,7 @@ import { UserSerializer as MessageUpdateStyleSerializer } from '#root/serializer
 import { UserSerializer as NumberSerializer } from '#root/serializers/number';
 import { UserSerializer as StringSerializer } from '#root/serializers/string';
 import { container } from '@wolfstar/http-framework';
+import legacyFile from './__fixtures__/legacy-v1.json' with { type: 'json' };
 import type { Guild } from '@wolfstar/plugin-gateway';
 import {
 	getDefaultAutoModerationRule,
@@ -907,6 +908,154 @@ describe('configuration file', () => {
 				removed: 1,
 				unchanged: 0
 			});
+		});
+	});
+
+	describe('a file of the bot before V7', () => {
+		/** The file the export of the bot before V7 writes for a server that changed nothing, with the given settings. */
+		const legacy = (settings: Record<string, unknown> = {}) => ({ ...legacyFile, settings: { ...legacyFile.settings, ...settings } });
+		const valueOf = (parsed: { settings: { key: unknown; value: unknown }[] }, name: string) =>
+			parsed.settings.find((setting) => setting.key === findPortableKey(name))?.value;
+
+		test('GIVEN a file of a server that changed nothing THEN it is read with nothing to tell', async () => {
+			const parsed = await parseOk(legacy());
+
+			expect(parsed.notices).toEqual([]);
+			expect(parsed.rules).toBeNull();
+			// The bot before V7 sent no direct message by default, which this one does: the server keeps what it had.
+			expect(planConfigurationImport(createSettings(), [], parsed).settings.map(({ key, after }) => [key.name, after])).toEqual([
+				['moderation.direct-message', false]
+			]);
+		});
+
+		test('GIVEN the settings that were renamed THEN they take their name here', async () => {
+			const parsed = await parseOk(
+				legacy({
+					'messages.moderation-dm': true,
+					'messages.moderator-name-display': false,
+					'events.ban-add': false,
+					'events.ban-remove': true,
+					'events.timeout': true,
+					'events.twemoji-reactions': true,
+					'disabled-commands': ['okPing'],
+					language: 'it'
+				})
+			);
+
+			expect(parsed.notices).toEqual([]);
+			expect(valueOf(parsed, 'moderation.direct-message')).toBe(true);
+			expect(valueOf(parsed, 'moderation.display-moderator')).toBe(false);
+			expect(valueOf(parsed, 'moderation.track-bans')).toBe(true);
+			expect(valueOf(parsed, 'moderation.track-timeouts')).toBe(true);
+			expect(valueOf(parsed, 'logs.reaction-emoji-include-twemoji')).toBe(true);
+			expect(valueOf(parsed, 'commands.disabled')).toEqual(['okPing']);
+			expect(valueOf(parsed, 'language')).toBe('it');
+		});
+
+		test('GIVEN a value that cannot be converted THEN the rest is imported and it says how to set it by hand', async () => {
+			const parsed = await parseOk(
+				legacy({ 'messages.moderation-dm': 'yes', 'disabled-commands': ['okPing', 'gone'], 'events.timeout': true })
+			);
+
+			expect(valueOf(parsed, 'moderation.track-timeouts')).toBe(true);
+			expect(valueOf(parsed, 'moderation.direct-message')).toBeUndefined();
+			expect(valueOf(parsed, 'commands.disabled')).toEqual(['okPing']);
+			expect(parsed.notices).toMatchObject([
+				{ path: 'settings.disabled-commands', message: expect.stringContaining('"target":"commands.disabled"') },
+				{ path: 'settings.messages.moderation-dm', message: expect.stringContaining('"target":"moderation.direct-message"') }
+			]);
+			expect(parsed.notices[0].message).toContain('transferLegacySettingFailed');
+			expect(parsed.notices[0].message).toContain('gone');
+		});
+
+		test('GIVEN a setting this bot has nothing for THEN it is told only when it was changed', async () => {
+			const parsed = await parseOk(
+				legacy({ prefix: '!', 'events.include-bots': false, 'selfmod.reactions.enabled': true, 'selfmod.reactions.maximum': 3 })
+			);
+
+			expect(parsed.notices.map((notice) => notice.message.split(' ')[0])).toEqual([
+				'commands/conf:transferLegacyNoEquivalent',
+				'commands/conf:transferLegacyReactionFilter'
+			]);
+			expect(parsed.notices[0].path).toBe('settings.prefix');
+		});
+
+		test('GIVEN filters that were changed THEN they become rules, added to the ones of the server', async () => {
+			const rules = [createRule('Words', 'Mine', '1')];
+			const parsed = await parseOk(
+				legacy({
+					'selfmod.links.enabled': true,
+					'selfmod.links.allowed': ['wolfstar.rocks'],
+					'selfmod.links.hard-action': 6,
+					'selfmod.links.hard-action-duration': 60_000,
+					'no-mention-spam.enabled': true
+				}),
+				rules
+			);
+
+			expect(parsed.notices).toEqual([]);
+			expect(parsed.rules).toMatchObject([
+				{ name: 'Mine', type: 'Words' },
+				{
+					name: 'Links',
+					type: 'Links',
+					enabled: true,
+					hardAction: 'Timeout',
+					hardActionDuration: 60_000,
+					options: { allowed: ['wolfstar.rocks'] }
+				},
+				{ name: 'Mention spam', type: 'MentionsCooldown', enabled: true, hardAction: 'Ban' }
+			]);
+
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+			expect(countPlannedRules(plan)).toEqual({ created: 2, updated: 0, moved: 0, removed: 0, unchanged: 1 });
+		});
+
+		test('GIVEN a filter the server already has as a rule THEN that rule is edited instead of made twice', async () => {
+			const rules = [createRule('Links', 'Links', '1')];
+			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true }), rules);
+
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+			expect(countPlannedRules(plan)).toMatchObject({ created: 0, removed: 0 });
+		});
+
+		test('GIVEN a filter that cannot become a rule THEN the rest is imported and it says to create the rule by hand', async () => {
+			const parsed = await parseOk(
+				legacy({ 'selfmod.invites.enabled': true, 'selfmod.invites.ignored-guilds': ['not a server'], 'events.timeout': true })
+			);
+
+			expect(valueOf(parsed, 'moderation.track-timeouts')).toBe(true);
+			expect(parsed.rules).toBeNull();
+			expect(parsed.notices).toHaveLength(1);
+			expect(parsed.notices[0]).toMatchObject({ path: 'settings.selfmod.invites.ignored-guilds' });
+			expect(parsed.notices[0].message).toContain('transferLegacyRuleFailed');
+			expect(parsed.notices[0].message).toContain('"rule":"Invites"');
+		});
+
+		test('GIVEN a filter the limits of this bot changed THEN the rule is made and the change is told', async () => {
+			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true, 'selfmod.links.threshold-maximum': 5000 }));
+
+			expect(parsed.rules).toHaveLength(1);
+			expect(parsed.notices).toHaveLength(1);
+			expect(parsed.notices[0].message).toContain('transferLegacyRuleAdjusted');
+		});
+
+		test('GIVEN a setting nobody has THEN the file is still refused', async () => {
+			expect(await parseIssues(legacy({ 'no.such': true }))).toMatchObject([{ path: 'settings.no.such' }]);
+		});
+
+		test('GIVEN a setting of the bot before V7 in a file of version 2 THEN it is refused', async () => {
+			expect(await parseIssues({ version: 2, settings: { 'messages.moderation-dm': true } })).toMatchObject([
+				{ path: 'settings.messages.moderation-dm' }
+			]);
+		});
+
+		test('GIVEN what was not imported THEN the preview lists it', async () => {
+			const parsed = await parseOk(legacy({ prefix: '!', 'events.timeout': true }));
+			const embed = await renderConfigurationPreview(planConfigurationImport(createSettings(), [], parsed), context(), parsed.notices);
+
+			expect(embed.description).toContain('commands/conf:transferLegacyNotices {"count":1}');
+			expect(embed.description).toContain('transferLegacyNoEquivalent');
 		});
 	});
 

@@ -3,10 +3,11 @@ import { ConfigurationFileName, createConfigurationFile } from '#lib/database/se
 import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
 import { PendingImportSeconds, renderSettingsImportButtons, savePendingImport } from '#lib/database/settings/transfer/pending';
 import { planConfigurationImport } from '#lib/database/settings/transfer/plan';
-import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
+import { renderConfigurationIssues, renderConfigurationNotices, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
 import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import type { Translator } from '#lib/structures/commands/utils';
 import { resolveGuild } from '#common';
+import { cutText } from '@sapphire/utilities';
 import { seconds } from 'wolfstar-shared';
 import { Emojis } from '#utils/emojis';
 import { time, TimestampStyles } from '@discordjs/formatters';
@@ -93,12 +94,16 @@ export async function createConfigurationImportMessage(options: ConfigurationImp
 	if (!parsed.ok) return reply(renderConfigurationIssues(parsed.issues, t));
 
 	const plan = planConfigurationImport(settings, rules, parsed.value);
-	if (plan.isEmpty) return reply(t('commands/conf:transferNothing'));
+	const { notices } = parsed.value;
+	if (plan.isEmpty) {
+		const nothing = t('commands/conf:transferNothing');
+		return reply(notices.length === 0 ? nothing : cutText(`${nothing}\n\n${renderConfigurationNotices(notices, t)}`, 2000));
+	}
 
 	// What the file holds waits in Redis for the click, which may reach another process than this one:
 	await savePendingImport(guildId, ownerId, importId, parsed.value);
 
-	const embed = await renderConfigurationPreview(plan, { settings, guild, t });
+	const embed = await renderConfigurationPreview(plan, { settings, guild, t }, notices);
 	const expiresAt = new Date(Date.now() + seconds(PendingImportSeconds));
 	return {
 		content: `-# ${Emojis.Hourglass} ${t('commands/conf:transferImportExpires', { time: time(expiresAt, TimestampStyles.RelativeTime) })}`,

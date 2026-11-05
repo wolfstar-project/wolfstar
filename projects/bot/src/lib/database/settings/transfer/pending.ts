@@ -137,5 +137,6 @@ export async function takePendingImport(guildId: Snowflake, ownerId: Snowflake, 
 		settings.push({ key, value });
 	}
 
-	return { settings, rules: stored.rules };
+	// What could not be imported was shown with the preview, the confirmation does not need it:
+	return { settings, rules: stored.rules, notices: [] };
 }

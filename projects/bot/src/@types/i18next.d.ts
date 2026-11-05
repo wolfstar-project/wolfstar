@@ -804,7 +804,7 @@ declare module "i18next" {
         transferErrorJson: "The file is not valid JSON.";
         transferErrorObject: "The file has to be a JSON object.";
         transferErrorVersion: "The file has no `version`, or it is not a whole number.";
-        transferErrorVersionUnsupported: "The file is of version {{version}}, and I only read version {{supported}}.";
+        transferErrorVersionUnsupported: "The file is of version {{version}}, and I only read versions {{supported}}.";
         transferErrorUnknownField: "`{{path}}` is not a field of the file.";
         transferErrorUnknownSetting: "`{{name}}` is not a setting a file carries: it does not exist, or it depends on the server.";
         transferErrorExpectedObject: "`{{path}}` has to be an object.";
@@ -817,6 +817,13 @@ declare module "i18next" {
         transferErrorRuleType: "A rule needs a `type`, one of: {{types}}.";
         transferErrorRuleName: "A rule needs a `name` of up to {{maximum}} characters that is not only digits.";
         transferErrorRuleNameTaken: "Two rules are named **{{name}}**.";
+        transferLegacyNotices_one: "**Not imported** ({{count}}), from the file of the bot before V7. The rest is imported without it:";
+        transferLegacyNotices_other: "**Not imported** ({{count}}), from the file of the bot before V7. The rest is imported without them:";
+        transferLegacyNoEquivalent: "`{{name}}` has nothing that matches it in this version of WolfStar, so there is nothing to set by hand.";
+        transferLegacyReactionFilter: "The reaction filter (`{{name}}`) has no auto-moderation rule in this version of WolfStar, so there is nothing to set by hand.";
+        transferLegacyRuleAdjusted: "The **{{rule}}** rule was adjusted to the limits of this version: {{detail}} Check it with `/automod show` after the import.";
+        transferLegacyRuleFailed: "The **{{rule}}** filter could not become an auto-moderation rule: {{reason}} Create it by hand with `/automod create`, with the values the old bot had.";
+        transferLegacySettingFailed: "{{name}} could not be imported: {{reason}} Set **{{target}}** by hand from `/settings server`.";
       };
       "commands/help": {
         "/appeal": {
