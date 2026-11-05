@@ -53,7 +53,7 @@ it('runs the follows of a server one after the other', async () => {
 		return [...(webhooks.get(channelId) ?? [])];
 	});
 	vi.spyOn(container.client.rest, 'post').mockImplementation(async (_route, options) => {
-		const channelId = (options?.body as { webhook_channel_id: string }).webhook_channel_id;
+		const { webhook_channel_id: channelId } = options!.body as { webhook_channel_id: string };
 		webhooks.set(channelId, [...(webhooks.get(channelId) ?? []), follower(`w${++created}`, '123')]);
 		return {};
 	});
