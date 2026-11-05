@@ -44,9 +44,14 @@ export function syncUpdatesChannelFollow(guildId: Snowflake, previous: Snowflake
 
 /**
  * Runs a follow of a server after the ones it already has waiting.
+ *
+ * @remarks The follow never rejects: what fails is logged, so the follows waiting behind it still run, and so does the
+ * reconcile of the next servers.
  */
 function enqueueFollow(guildId: Snowflake, run: () => Promise<void>): Promise<void> {
-	const follow = (pendingFollows.get(guildId) ?? Promise.resolve()).then(run);
+	const follow = (pendingFollows.get(guildId) ?? Promise.resolve()).then(run).catch((error: unknown) => {
+		container.logger.error(`[UPDATES] Could not update the follow of the updates of the server ${guildId}:`, error);
+	});
 	pendingFollows.set(guildId, follow);
 	void follow.finally(() => {
 		if (pendingFollows.get(guildId) === follow) pendingFollows.delete(guildId);

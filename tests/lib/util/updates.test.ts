@@ -101,3 +101,20 @@ it('follows the channel a server has when its turn comes, not the one it had whe
 	await reconcileUpdatesChannelFollows();
 	expect(post.mock.calls.map(([, options]) => options?.body)).toEqual([{ webhook_channel_id: '999' }]);
 });
+
+it('goes on with the next servers when the setting of one cannot be read', async () => {
+	const post = mockServers({ '1005': '111', '1006': '222' });
+	const findUnique = vi.mocked(container.prisma.guild.findUnique);
+	const read = findUnique.getMockImplementation()!;
+	findUnique.mockImplementation(((args: { where: { id: string } }) =>
+		args.where.id === '1005' ? Promise.reject(new Error('database down')) : read(args as never)) as never);
+	const error = vi.spyOn(container.logger, 'error').mockImplementation(() => undefined);
+
+	await expect(reconcileUpdatesChannelFollows()).resolves.toBeUndefined();
+	expect(post.mock.calls.map(([, options]) => options?.body)).toEqual([{ webhook_channel_id: '222' }]);
+	expect(error).toHaveBeenCalledOnce();
+
+	// The follows the first server gets afterwards still run:
+	await syncUpdatesChannelFollow('1005', null, '333');
+	expect(post.mock.calls.map(([, options]) => options?.body)).toContainEqual({ webhook_channel_id: '333' });
+});
