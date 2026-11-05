@@ -2,6 +2,7 @@ import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import type { AdderKey } from '#lib/database/settings/structures/AdderManager';
 import type { GuildData, ReadonlyGuildData } from '#lib/database/settings/types';
+import { syncUpdatesChannelFollow } from '#utils/updates';
 import { maybeParseNumber } from '#utils/common';
 import { AsyncQueue } from '@sapphire/async-queue';
 import { container, type Awaitable } from '@sapphire/framework';
@@ -157,7 +158,9 @@ export class Transaction {
 				});
 			}
 
+			const previousUpdatesChannel = this.settings.channelsUpdates;
 			Object.assign(this.settings, this.#changes);
+			void syncUpdatesChannelFollow(this.settings.id, previousUpdatesChannel, this.settings.channelsUpdates);
 			this.#hasChanges = false;
 			updateSettingsContext(this.settings, this.#changes);
 		} finally {

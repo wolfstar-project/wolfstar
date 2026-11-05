@@ -16,7 +16,11 @@ export enum SettingsMenuAction {
 	InputCommand,
 	InputCommandBack,
 	InputModal,
-	InputModalField
+	InputModalField,
+	PreviousPage,
+	NextPage,
+	Export,
+	Import
 }
 
 export enum SettingsMenuUpdateType {
@@ -33,6 +37,7 @@ export interface SettingsMenuCustomIdData {
 	im?: 0 | 1;
 	it?: SettingsMenuUpdateType;
 	sc?: string;
+	pg?: number;
 }
 
 export const SettingsMenuPrefixes: Record<SettingsMenuAction, string> = {
@@ -53,7 +58,11 @@ export const SettingsMenuPrefixes: Record<SettingsMenuAction, string> = {
 	[SettingsMenuAction.InputCommand]: 'conf-input-command',
 	[SettingsMenuAction.InputCommandBack]: 'conf-input-command-back',
 	[SettingsMenuAction.InputModal]: 'conf-input-modal',
-	[SettingsMenuAction.InputModalField]: 'conf-input-modal-field'
+	[SettingsMenuAction.InputModalField]: 'conf-input-modal-field',
+	[SettingsMenuAction.PreviousPage]: 'conf-prev',
+	[SettingsMenuAction.NextPage]: 'conf-next',
+	[SettingsMenuAction.Export]: 'conf-export',
+	[SettingsMenuAction.Import]: 'conf-import'
 };
 
 export const prefixToSettingsMenuAction = new Map<string, SettingsMenuAction>(

@@ -1,3 +1,4 @@
+import { exportSettings, importSettings } from '#lib/structures/settings-menu/transfer';
 import {
 	getConfigurableGroups,
 	isSchemaGroup,
@@ -80,6 +81,7 @@ export class SettingsMenu {
 	private oldValue: unknown = undefined;
 	private inputMode = false;
 	private inputType: SettingsMenuUpdateType = SettingsMenuUpdateType.Set;
+	private page = 0;
 	private selectedCategory: string | null = null;
 
 	public constructor(message: WolfSubcommand.Interaction, language: TFunction) {
@@ -139,6 +141,7 @@ export class SettingsMenu {
 		return {
 			u: this.interaction.user.id,
 			p: getSchemaPath(this.schema),
+			pg: this.page || undefined,
 			im: this.inputMode ? 1 : 0,
 			it: this.inputMode ? this.inputType : undefined,
 			sc: this.selectedCategory?.slice(0, 48) ?? undefined
@@ -195,9 +198,46 @@ export class SettingsMenu {
 			}
 
 			if (options.length > 0) {
-				selectMenu.addOptions(options.slice(0, 25));
+				this.page = Math.min(this.page, Math.floor((options.length - 1) / 25));
+				selectMenu.setCustomId(this.buildCustomId(SettingsMenuAction.Select));
+				selectMenu.addOptions(options.slice(this.page * 25, (this.page + 1) * 25));
 				container.addActionRowComponents((actionRow) => actionRow.setComponents(selectMenu));
 			}
+		}
+
+		if (isSchemaGroup(this.schema)) {
+			const pages = Math.ceil([...this.schema.values()].filter((value) => !value.dashboardOnly).length / 25);
+			if (pages > 1)
+				container.addActionRowComponents((row) =>
+					row.addComponents(
+						new ButtonBuilder()
+							.setCustomId(this.buildCustomId(SettingsMenuAction.PreviousPage))
+							.setLabel(this.t('commands/conf:menuPreviousPage'))
+							.setStyle(ButtonStyle.Secondary)
+							.setDisabled(this.page === 0),
+						new ButtonBuilder()
+							.setCustomId(this.buildCustomId(SettingsMenuAction.NextPage))
+							.setLabel(this.t('commands/conf:menuNextPage'))
+							.setStyle(ButtonStyle.Secondary)
+							.setDisabled(this.page >= pages - 1)
+					)
+				);
+		}
+
+		if (!parent) {
+			container.addTextDisplayComponents((text) => text.setContent(this.t('commands/conf:transferDescription')));
+			container.addActionRowComponents((row) =>
+				row.addComponents(
+					new ButtonBuilder()
+						.setCustomId(this.buildCustomId(SettingsMenuAction.Export))
+						.setLabel(this.t('commands/conf:transferExport'))
+						.setStyle(ButtonStyle.Secondary),
+					new ButtonBuilder()
+						.setCustomId(this.buildCustomId(SettingsMenuAction.Import))
+						.setLabel(this.t('commands/conf:transferImport'))
+						.setStyle(ButtonStyle.Primary)
+				)
+			);
 		}
 
 		// Buttons Section
@@ -504,6 +544,7 @@ export class SettingsMenu {
 
 	private applyCustomIdContext(data: SettingsMenuCustomIdData): void {
 		this.schema = resolveSchemaPath(data.p);
+		this.page = Number.isSafeInteger(data.pg) && data.pg! >= 0 ? data.pg! : 0;
 		this.inputMode = data.im === 1;
 		if (data.it !== undefined) this.inputType = data.it;
 		this.selectedCategory = data.sc ?? null;
@@ -529,6 +570,7 @@ export class SettingsMenu {
 				const next = this.schema.get(selectedKey);
 				if (next) {
 					this.schema = next;
+					this.page = 0;
 					this.oldValue = undefined;
 				}
 			}
@@ -593,10 +635,24 @@ export class SettingsMenu {
 
 		if (interaction.isButton()) {
 			switch (action) {
+				case SettingsMenuAction.Export:
+					await exportSettings(interaction, this.t);
+					break;
+				case SettingsMenuAction.Import:
+					await importSettings(interaction, this.t);
+					await this._renderResponse();
+					break;
+				case SettingsMenuAction.PreviousPage:
+				case SettingsMenuAction.NextPage:
+					await interaction.deferUpdate();
+					this.page = Math.max(0, this.page + (action === SettingsMenuAction.NextPage ? 1 : -1));
+					await this._renderResponse();
+					break;
 				case SettingsMenuAction.Back:
 					await interaction.deferUpdate();
 					if (this.schema.parent) {
 						this.schema = this.schema.parent;
+						this.page = 0;
 						this.oldValue = undefined;
 					}
 					await this._renderResponse();
