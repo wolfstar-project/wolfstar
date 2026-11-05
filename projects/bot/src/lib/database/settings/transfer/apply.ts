@@ -3,6 +3,7 @@ import type { ParsedConfiguration } from '#lib/database/settings/transfer/parse'
 import {
 	findOversizedRuleLists,
 	findStaleTimeoutRules,
+	getImportedRules,
 	getPlannedRules,
 	getPlannedSettings,
 	planConfigurationImport,
@@ -11,7 +12,7 @@ import {
 import { announceAutoModerationRulesChange, writeAutoModerationRules } from '#lib/moderation/automod/rules';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
-import { writeAutoModerationRulePlan, type AutoModerationRule, type AutoModerationRulePlan } from 'wolfstar-database';
+import { MaximumAutoModerationRules, writeAutoModerationRulePlan, type AutoModerationRule, type AutoModerationRulePlan } from 'wolfstar-database';
 
 /**
  * What an import throws when the server changed since the file was read in a way that makes the file one it would
@@ -48,6 +49,9 @@ export async function applyConfigurationImport(guildId: Snowflake, parsed: Parse
 	// This holds the lock of the rules, and gives the rules as the database has them. It is awaited here: the lock of
 	// the settings is released when this function returns, which a promise that is only returned does before it settles.
 	return await writeAutoModerationRules(guildId, async (rules) => {
+		// The rules of the file are held to the limit when it is read, the ones added to the rules of the server are held to
+		// it now, since the server may have gained rules meanwhile:
+		if ((getImportedRules(rules, parsed)?.length ?? 0) > MaximumAutoModerationRules) throw new ConfigurationImportStaleError();
 		if (findOversizedRuleLists(rules, parsed).length > 0) throw new ConfigurationImportStaleError();
 		if (findStaleTimeoutRules(rules, parsed).length > 0) throw new ConfigurationImportStaleError();
 

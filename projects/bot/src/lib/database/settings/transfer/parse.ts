@@ -1,11 +1,18 @@
 import {
-	ConfigurationFileVersion,
+	ReadableConfigurationFileVersions,
 	ConfigurationRuleFields,
 	findPortableKey,
 	RemovedSettings,
 	toConfigurationRule,
 	type ConfigurationRule
 } from '#lib/database/settings/transfer/format';
+import {
+	convertLegacySettings,
+	getLegacyFilterPrefix,
+	isLegacySetting,
+	type LegacyConversion,
+	type LegacyNotice
+} from '#lib/database/settings/transfer/legacy';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import { checkAutoModerationRuleOptions, parseAutoModerationRulePatch } from '#lib/moderation/automod/validation';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
@@ -40,6 +47,17 @@ export interface ParsedConfiguration {
 	settings: { key: SchemaKey; value: unknown }[];
 	/** The rules of the file, `null` when it has no `automod` section: the rules of the server are left alone. */
 	rules: ConfigurationRule[] | null;
+	/**
+	 * The rules the filters of the bot before V7 became when the file has no `automod` section: they are added to the
+	 * rules the server has when the import is written (one with the name of a rule of the server takes its place), see
+	 * `getImportedRules`. Empty when the file has an `automod` section, which holds them.
+	 */
+	addedRules: ConfigurationRule[];
+	/**
+	 * What a file of the bot before V7 has that could not be imported, and how to set it by hand. The import goes on
+	 * without it, so it is shown with the preview instead of refusing the file.
+	 */
+	notices: ConfigurationIssue[];
 }
 
 export type ParseConfigurationResult = { ok: true; value: ParsedConfiguration } | { ok: false; issues: ConfigurationIssue[] };
@@ -91,9 +109,12 @@ export async function parseConfigurationFile(text: string, context: ParseConfigu
 		return failure([{ path: 'version', message: t('commands/conf:transferErrorVersion') }]);
 	}
 
-	if (version !== ConfigurationFileVersion) {
+	if (!ReadableConfigurationFileVersions.includes(version)) {
 		return failure([
-			{ path: 'version', message: t('commands/conf:transferErrorVersionUnsupported', { version, supported: ConfigurationFileVersion }) }
+			{
+				path: 'version',
+				message: t('commands/conf:transferErrorVersionUnsupported', { version, supported: ReadableConfigurationFileVersions.join(', ') })
+			}
 		]);
 	}
 
@@ -102,28 +123,34 @@ export async function parseConfigurationFile(text: string, context: ParseConfigu
 		if (!FileFields.has(field)) issues.push({ path: field, message: t('commands/conf:transferErrorUnknownField', { path: field }) });
 	}
 
-	const settings = await parseSettings(data.settings, context, issues);
+	const { settings, legacy } = await parseSettings(data.settings, version, context, issues);
 	const rules = parseRules(data.automod, context, issues);
-	return issues.length === 0 ? { ok: true, value: { settings, rules } } : failure(issues);
+	const notices: ConfigurationIssue[] = [];
+	const addedRules = legacy === null ? [] : await importLegacy(legacy, settings, rules, context, notices);
+
+	return issues.length === 0 ? { ok: true, value: { settings, rules, addedRules, notices } } : failure(issues);
 }
 
-async function parseSettings(section: unknown, context: ParseConfigurationContext, issues: ConfigurationIssue[]) {
+async function parseSettings(section: unknown, version: number, context: ParseConfigurationContext, issues: ConfigurationIssue[]) {
 	const settings: ParsedConfiguration['settings'] = [];
-	if (section === undefined) return settings;
+	if (section === undefined) return { settings, legacy: null };
 
 	const { t } = context;
 	if (!isRecord(section)) {
 		issues.push({ path: 'settings', message: t('commands/conf:transferErrorExpectedObject', { path: 'settings' }) });
-		return settings;
+		return { settings, legacy: null };
 	}
 
+	// The settings of the bot before V7, which only a file of version 1 has, are converted after the others:
+	const legacy: Record<string, unknown> = {};
 	for (const [name, value] of Object.entries(section)) {
 		if (RemovedSettings.has(name)) continue;
 
 		const path = `settings.${name}`;
 		const key = findPortableKey(name);
 		if (key === null) {
-			issues.push({ path, message: t('commands/conf:transferErrorUnknownSetting', { name }) });
+			if (version === 1 && isLegacySetting(name)) legacy[name] = value;
+			else issues.push({ path, message: t('commands/conf:transferErrorUnknownSetting', { name }) });
 			continue;
 		}
 
@@ -132,7 +159,114 @@ async function parseSettings(section: unknown, context: ParseConfigurationContex
 		else issues.push({ path, message: result.message });
 	}
 
-	return settings;
+	return { settings, legacy: Object.keys(legacy).length === 0 ? null : convertLegacySettings(legacy) };
+}
+
+/**
+ * Imports what the settings of the bot before V7 became, see `convertLegacySettings`. What cannot be imported is not a
+ * reason to refuse the file, which is all the administrator has of that bot: it is told, with how to set it by hand.
+ *
+ * @returns The rules the filters became to add to the ones of the server, when the file has no `automod` section: the
+ * bot before V7 had no rule to replace the others with. When it has one they are added to its rules instead.
+ */
+async function importLegacy(
+	legacy: LegacyConversion,
+	settings: ParsedConfiguration['settings'],
+	fileRules: ConfigurationRule[] | null,
+	context: ParseConfigurationContext,
+	notices: ConfigurationIssue[]
+): Promise<ConfigurationRule[]> {
+	const { t } = context;
+	for (const notice of legacy.notices) notices.push(renderLegacyNotice(notice, t));
+
+	for (const { name, value, from } of legacy.settings) {
+		const key = findPortableKey(name)!;
+		// The file has the setting under its name here too, which is the one it was exported with last:
+		if (settings.some((setting) => setting.key === key)) continue;
+
+		const path = `settings.${from[0]}`;
+		const values = key.array && Array.isArray(value) ? value : [value];
+		const kept: unknown[] = [];
+		for (const entry of values) {
+			const result = await validateValue(key, key.array ? [entry] : entry, context);
+			if (result.ok) {
+				kept.push(entry);
+				continue;
+			}
+
+			const shown = key.array ? `\`${String(entry)}\`` : from.map((old) => `\`${old}\``).join(', ');
+			notices.push({
+				path,
+				message: t('commands/conf:transferLegacySettingFailed', { name: shown, target: key.name, reason: result.message })
+			});
+		}
+
+		if (key.array) {
+			// The entries that are left are held to the length of the list as a whole:
+			const result = await validateValue(key, kept, context);
+			if (result.ok) settings.push({ key, value: result.value });
+			else
+				notices.push({
+					path,
+					message: t('commands/conf:transferLegacySettingFailed', { name: `\`${from[0]}\``, target: key.name, reason: result.message })
+				});
+		} else if (kept.length === 1) {
+			settings.push({ key, value: kept[0] });
+		}
+	}
+
+	const added: ConfigurationRule[] = [];
+	// What the names and the limit are checked against: the rules of the file, or the ones the server has now. The ones it
+	// has when the import is written are used again then:
+	const rules = fileRules ?? context.rules.map((rule) => toConfigurationRule(rule));
+	// The rules added that take no place of a rule of the server:
+	let created = 0;
+	for (const entry of legacy.rules) {
+		const name = entry.name as string;
+		const path = `settings.${getLegacyFilterPrefix(name).slice(0, -1)}`;
+		const failed = (reason: string) => notices.push({ path, message: t('commands/conf:transferLegacyRuleFailed', { rule: name, reason }) });
+
+		const ruleIssues: ConfigurationIssue[] = [];
+		const rule = parseRule(entry, path, context, ruleIssues);
+		if (rule === null || ruleIssues.length > 0) {
+			failed(ruleIssues.map((issue) => issue.message).join(' '));
+			continue;
+		}
+
+		const lower = rule.name.toLowerCase();
+		const exists = rules.some((other) => other.name.toLowerCase() === lower);
+		if (fileRules !== null && exists) {
+			failed(t('commands/conf:transferErrorRuleNameTaken', { name: rule.name }));
+		} else if (!exists && rules.length + created >= MaximumAutoModerationRules) {
+			failed(t('commands/auto-moderation:errorLimit', { maximum: MaximumAutoModerationRules }));
+		} else if (fileRules !== null) {
+			fileRules.push(rule);
+		} else {
+			added.push(rule);
+			if (!exists) created += 1;
+		}
+	}
+
+	return added;
+}
+
+function renderLegacyNotice(notice: LegacyNotice, t: Translator): ConfigurationIssue {
+	switch (notice.kind) {
+		case 'noEquivalent':
+			return { path: `settings.${notice.from}`, message: t('commands/conf:transferLegacyNoEquivalent', { name: notice.from }) };
+		case 'reactionFilter':
+			return { path: `settings.${notice.from}`, message: t('commands/conf:transferLegacyReactionFilter', { name: notice.from }) };
+		case 'ruleAdjusted':
+			return {
+				path: `settings.${getLegacyFilterPrefix(notice.rule).slice(0, -1)}`,
+				message: t('commands/conf:transferLegacyRuleAdjusted', { rule: notice.rule, detail: notice.detail })
+			};
+		case 'ruleFailed':
+			return {
+				path: `settings.${notice.from}`,
+				message: t('commands/conf:transferLegacyRuleFailed', { rule: notice.rule, reason: notice.detail })
+			};
+	}
 }
 
 type ValueResult = { ok: true; value: unknown } | { ok: false; message: string };

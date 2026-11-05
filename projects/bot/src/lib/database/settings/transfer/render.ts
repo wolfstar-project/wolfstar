@@ -32,7 +32,11 @@ export interface ConfigurationPreviewContext {
  * @param plan - What the import does, not empty.
  * @param context - What the values are stringified with.
  */
-export async function renderConfigurationPreview(plan: ConfigurationPlan, context: ConfigurationPreviewContext): Promise<APIEmbed> {
+export async function renderConfigurationPreview(
+	plan: ConfigurationPlan,
+	context: ConfigurationPreviewContext,
+	notices: readonly ConfigurationIssue[] = []
+): Promise<APIEmbed> {
 	const { t } = context;
 	const sections: string[] = [];
 
@@ -63,6 +67,8 @@ export async function renderConfigurationPreview(plan: ConfigurationPlan, contex
 			].join('\n')
 		);
 	}
+
+	if (notices.length > 0) sections.push(renderConfigurationNotices(notices, t));
 
 	sections.push(t('commands/conf:transferPreviewFooter'));
 	return {
@@ -96,6 +102,14 @@ async function renderValue(key: PlannedSettingChange['key'], value: unknown, { s
 
 function moreLines(total: number, t: Translator) {
 	return total > MaximumPreviewLines ? [t('commands/conf:transferPreviewMore', { count: total - MaximumPreviewLines })] : [];
+}
+
+/**
+ * What a file of the bot before V7 has that is not imported, one a line, with how to set it by hand.
+ */
+export function renderConfigurationNotices(notices: readonly ConfigurationIssue[], t: Translator): string {
+	const lines = notices.slice(0, MaximumPreviewLines).map((notice) => `• ${notice.message}`);
+	return [t('commands/conf:transferLegacyNotices', { count: notices.length }), ...lines, ...moreLines(notices.length, t)].join('\n');
 }
 
 /**
