@@ -47,6 +47,24 @@ export function syncUpdatesChannelFollow(guildId: Snowflake, previous: Snowflake
 	return follow;
 }
 
+/**
+ * Makes the `channels.updates` the servers already have follow the announcement channel of the updates: a server that
+ * set it before the follow existed has none, and a follow that was deleted by hand is made again. It runs once the bot
+ * is ready, for the servers it is in, one after the other.
+ *
+ * @remarks A channel that already follows the announcements is left as it is (see `followUpdates`), so this only costs
+ * a read of the webhooks of each channel.
+ */
+export async function reconcileUpdatesChannelFollows(): Promise<void> {
+	const { client, prisma } = container;
+	const guilds = await prisma.guild.findMany({ where: { channelsUpdates: { not: null } }, select: { id: true, channelsUpdates: true } });
+
+	for (const { id, channelsUpdates } of guilds) {
+		if (channelsUpdates === null || !client.guilds.cache.has(id)) continue;
+		await syncUpdatesChannelFollow(id, null, channelsUpdates);
+	}
+}
+
 async function moveFollow(previous: Snowflake | null, next: Snowflake | null) {
 	if (previous !== null) {
 		try {

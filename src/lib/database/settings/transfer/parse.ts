@@ -1,4 +1,6 @@
+import { getColumnLimit } from './columns';
 import { ConfigurationFileVersion, MaximumConfigurationFileSize, findPortableKey } from './format';
+import { create } from '#utils/Security/RegexCreator';
 import type { SchemaKey } from '#lib/database/settings/schema/SchemaKey';
 import type { ReadonlyGuildData } from '#lib/database/settings/types';
 import type { TFunction } from '@sapphire/plugin-i18next';
@@ -53,6 +55,7 @@ export async function parseConfigurationFile(text: string, context: ParseConfigu
 	}
 
 	const settings = await parseSettings(data.settings, context, issues);
+	checkWordFilter(settings, context, issues);
 	return issues.length === 0 ? { ok: true, value: { settings } } : failure(issues);
 }
 
@@ -129,6 +132,12 @@ async function checkValue(key: SchemaKey, value: unknown, context: Parameters<Sc
 			(key.maximum !== null && (key.inclusive ? size > key.maximum : size >= key.maximum)))
 	)
 		return t('commands/conf:transferErrorInvalidValue', { name: key.name });
+	const column = getColumnLimit(key);
+	if (column?.kind === 'text' && typeof value === 'string' && value.length > column.maximum)
+		return t('commands/conf:transferErrorTooLong', { name: key.name, maximum: column.maximum });
+	if (column?.kind === 'number' && typeof value === 'number' && (value < column.minimum || value > column.maximum))
+		return t('commands/conf:transferErrorOutOfRange', { name: key.name, minimum: column.minimum, maximum: column.maximum });
+
 	try {
 		const valid = await key.serializer.isValid(value as never, context);
 		return valid ? null : t('commands/conf:transferErrorInvalidValue', { name: key.name });
@@ -136,6 +145,22 @@ async function checkValue(key: SchemaKey, value: unknown, context: Parameters<Sc
 		// The serializers throw the translated reason, as a text or as an error:
 		if (typeof error === 'string') return error;
 		return error instanceof Error ? error.message : t('commands/conf:transferErrorInvalidValue', { name: key.name });
+	}
+}
+
+/**
+ * The words of the filter are compiled into one pattern once they are saved, which a word such as `[z-a]` breaks after
+ * the import was written: it is compiled here, so the file is refused before anything is.
+ */
+function checkWordFilter(settings: ParsedConfiguration['settings'], { t }: ParseConfigurationContext, issues: ConfigurationIssue[]) {
+	const words = settings.find(({ key }) => key.property === 'selfmodFilterRaw')?.value;
+	if (!Array.isArray(words) || words.length === 0) return;
+
+	try {
+		new RegExp(create(words as string[]), 'gi');
+	} catch {
+		const key = settings.find((setting) => setting.key.property === 'selfmodFilterRaw')!.key;
+		issues.push({ path: `settings.${key.name}`, message: t('commands/conf:transferErrorWordFilter', { name: key.name }) });
 	}
 }
 

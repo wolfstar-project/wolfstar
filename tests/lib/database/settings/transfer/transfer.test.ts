@@ -1,7 +1,8 @@
 import type { ReadonlyGuildData } from '#lib/database/settings/types';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
 import { getConfigurableGroups, SerializerStore } from '#lib/database/settings';
-import { createConfigurationFile } from '#lib/database/settings/transfer/format';
+import { getColumnLimit } from '#lib/database/settings/transfer/columns';
+import { createConfigurationFile, getPortableKeys } from '#lib/database/settings/transfer/format';
 import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
 import { getPlannedSettings, planConfigurationImport } from '#lib/database/settings/transfer/plan';
 import { UserSerializer as StringSerializer } from '../../../../../src/serializers/string';
@@ -13,6 +14,7 @@ import { UserSerializer as BooleanSerializer } from '../../../../../src/serializ
 import { container } from '@sapphire/framework';
 import type { TFunction } from '@sapphire/plugin-i18next';
 import { createGuild } from '../../../../mocks/MockInstances';
+import { readFileSync } from 'node:fs';
 
 const guild = createGuild();
 const settings = { ...getDefaultGuildSettings(), id: guild.id } as ReadonlyGuildData;
@@ -105,4 +107,56 @@ it('can restore a complete exported configuration, including Prisma BigInt durat
 	} finally {
 		vi.restoreAllMocks();
 	}
+});
+
+describe('the limits of the columns', () => {
+	const issuesOf = async (values: Record<string, unknown>) => {
+		const result = await parseConfigurationFile(JSON.stringify({ version: 1, settings: values }), context);
+		return result.ok ? [] : result.issues;
+	};
+
+	it('refuses a value longer than its column, instead of failing once the import is confirmed', async () => {
+		expect(await issuesOf({ 'selfmod.filter.raw': ['x'.repeat(33)] })).toEqual([
+			{ path: 'settings.selfmod.filter.raw', message: 'commands/conf:transferErrorTooLong' }
+		]);
+		expect(await issuesOf({ 'selfmod.filter.raw': ['x'.repeat(32)] })).toEqual([]);
+	});
+
+	it('refuses a number its column cannot hold, even when the setting allows it', async () => {
+		// The setting allows five years, the column is a 32-bit integer:
+		expect(await issuesOf({ 'selfmod.attachments.threshold-duration': 157_680_000_000 })).toEqual([
+			{ path: 'settings.selfmod.attachments.threshold-duration', message: 'commands/conf:transferErrorOutOfRange' }
+		]);
+	});
+
+	it('refuses words that do not make a filter, which would break it once saved', async () => {
+		expect(await issuesOf({ 'selfmod.filter.raw': ['[z-a]'] })).toEqual([
+			{ path: 'settings.selfmod.filter.raw', message: 'commands/conf:transferErrorWordFilter' }
+		]);
+		expect(await issuesOf({ 'selfmod.filter.raw': ['bad', '[ab]c'] })).toEqual([]);
+	});
+
+	it('knows the limit of the column of every setting of the file, as the schema has it', () => {
+		const schema = readFileSync('prisma/schema.prisma', 'utf8');
+		const model = schema.slice(schema.indexOf('model Guild {'));
+		const columns = new Map<string, string>();
+		for (const line of model.slice(0, model.indexOf('\n}')).split('\n')) {
+			const match = /^\s+(\w+)\s+(\w+)(\[\])?\??\s(.*)$/.exec(line);
+			if (match) columns.set(match[1], `${match[2]} ${/@db\.(\w+(?:\(\d+\))?)/.exec(match[4])?.[1] ?? ''}`.trim());
+		}
+
+		const expected = (column: string) => {
+			const length = /VarChar\((\d+)\)/.exec(column);
+			if (length) return { kind: 'text', maximum: Number(length[1]) };
+			if (column === 'Int SmallInt') return { kind: 'number', minimum: -32_768, maximum: 32_767 };
+			if (column === 'Int') return { kind: 'number', minimum: -2_147_483_648, maximum: 2_147_483_647 };
+			return null;
+		};
+
+		for (const key of getPortableKeys()) {
+			const column = columns.get(key.property);
+			expect([key.property, column]).not.toContain(undefined);
+			expect([key.property, getColumnLimit(key)]).toEqual([key.property, expected(column!)]);
+		}
+	});
 });

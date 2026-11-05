@@ -1,4 +1,4 @@
-import { syncUpdatesChannelFollow } from '#utils/updates';
+import { reconcileUpdatesChannelFollows, syncUpdatesChannelFollow } from '#utils/updates';
 import { container } from '@sapphire/framework';
 import { WebhookType, Routes } from 'discord-api-types/v10';
 
@@ -70,4 +70,18 @@ it('runs the follows of a server one after the other', async () => {
 	await Promise.all([syncUpdatesChannelFollow('1', 'A', 'B'), syncUpdatesChannelFollow('1', 'B', 'A')]);
 	expect(webhooks.get('A')).toHaveLength(1);
 	expect(webhooks.get('B')).toHaveLength(0);
+});
+
+it('makes the updates channels the servers already have follow the announcements, once the bot is ready', async () => {
+	vi.spyOn(container.prisma.guild, 'findMany').mockResolvedValue([
+		{ id: '1', channelsUpdates: '456' },
+		{ id: '2', channelsUpdates: '789' }
+	] as never);
+	// The bot is no longer in the second server:
+	vi.spyOn(container.client.guilds.cache, 'has').mockImplementation((id) => id === '1');
+	vi.spyOn(container.client.rest, 'get').mockResolvedValue([]);
+	const post = vi.spyOn(container.client.rest, 'post').mockResolvedValue({});
+
+	await reconcileUpdatesChannelFollows();
+	expect(post.mock.calls.map(([, options]) => options?.body)).toEqual([{ webhook_channel_id: '456' }]);
 });

@@ -1,4 +1,5 @@
 import { Events, Schedules } from '#lib/types';
+import { reconcileUpdatesChannelFollows } from '#utils/updates';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, Piece, Store } from '@sapphire/framework';
 import type { TFunction } from '@sapphire/plugin-i18next';
@@ -16,6 +17,9 @@ export class UserListener extends Listener {
 
 			// Setup the stat updating task
 			await this.initPostStatsTask().catch((error) => this.container.logger.fatal(error));
+
+			// Not awaited: it reads the webhooks of every updates channel, which the start of the bot does not wait for.
+			void reconcileUpdatesChannelFollows().catch((error) => this.container.logger.error('[UPDATES] Could not reconcile the follows:', error));
 		} catch (error) {
 			this.container.logger.fatal(error);
 		}
