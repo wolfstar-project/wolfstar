@@ -1,6 +1,7 @@
 import { importSettings } from '#lib/structures/settings-menu/transfer';
 import * as database from '#lib/database/settings';
 import { getDefaultGuildSettings } from '#lib/database/settings/constants';
+import { SerializerStore } from '#lib/database/settings/structures/SerializerStore';
 import { UserSerializer } from '../../../src/serializers/string';
 import { container } from '@sapphire/framework';
 import type { TFunction } from '@sapphire/plugin-i18next';
@@ -9,7 +10,7 @@ import type { ButtonInteraction, Guild } from 'discord.js';
 const t = ((key: string) => key) as TFunction;
 
 beforeEach(() => {
-	const store = new database.SerializerStore();
+	const store = new SerializerStore();
 	container.stores.register(store);
 	store.set('string', new UserSerializer({ name: 'string', root: process.cwd(), path: 'string.ts', store }, { name: 'string' }));
 });
