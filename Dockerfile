@@ -10,7 +10,7 @@
 # manifest entry then contains amd64 binaries (and vice versa), so the container
 # crashes on start with `/usr/bin/dumb-init: Exec format error`. Omitting --platform
 # lets Docker build natively for $TARGETPLATFORM so every binary matches the run arch.
-FROM node:24-alpine AS base
+FROM node:26-alpine AS base
 
 WORKDIR /usr/src/app
 
