@@ -8,7 +8,8 @@ import type { ModerationManager } from '#lib/moderation/managers/ModerationManag
 import type { TranslationKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
 import { withSharedLock } from '#utils/locks';
-import { Colors, Urls } from '#utils/constants';
+import { Colors } from '#utils/constants';
+import { getWebsiteUrl } from '#utils/website';
 import { EmbedBuilder } from '@discordjs/builders';
 import { hyperlink, messageLink, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
@@ -327,7 +328,7 @@ const MaximumFileNameLength = 60;
  * @param index - Its position among the files of the appeal, in the order of its answers.
  */
 export function getAppealFileUrl(guildId: Snowflake, appealId: string, index: number) {
-	return `${Urls.Website}/appeal-files/${guildId}/${appealId}/${index}`;
+	return `${getWebsiteUrl()}/appeal-files/${guildId}/${appealId}/${index}`;
 }
 
 /**

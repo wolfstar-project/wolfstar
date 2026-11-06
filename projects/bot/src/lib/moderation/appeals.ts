@@ -1,7 +1,7 @@
 import { readSettings } from '#lib/database/settings/functions';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { TypeVariation } from '#utils/moderationConstants';
-import { Urls } from '#utils/constants';
+import { getWebsiteUrl } from '#utils/website';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
 import type { Snowflake } from 'discord-api-types/v10';
 import type { ReadonlyGuildData } from 'wolfstar-database';
@@ -61,7 +61,7 @@ export function isAppealable(
  * case does not have its number yet when the message is sent, so the page lists the cases the member can appeal.
  */
 export function getAppealUrl(guildId: Snowflake) {
-	return `${Urls.Website}/appeal/${guildId}`;
+	return `${getWebsiteUrl()}/app/appeal/${guildId}`;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { getSettingName } from '#lib/database';
 import { createTranslator, translateKey } from '#lib/structures/commands/utils';
-import { Colors, Urls } from '#utils/constants';
+import { Colors } from '#utils/constants';
+import { getWebsiteUrl } from '#utils/website';
 import { EmbedBuilder } from '@discordjs/builders';
 import { channelMention, inlineCode, roleMention } from '@discordjs/formatters';
 import type { TFunction } from '@wolfstar/plugin-i18next';
@@ -14,7 +15,7 @@ const Root = JoinGuardRoot;
  * The page of the dashboard of a guild, where its join guard is set up.
  */
 export function getJoinGuardDashboardUrl(guildId: string) {
-	return `${Urls.Website}/guilds/${guildId}/manage`;
+	return `${getWebsiteUrl()}/guilds/${guildId}/manage`;
 }
 
 /**

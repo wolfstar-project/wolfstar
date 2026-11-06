@@ -66,6 +66,6 @@ describe('appeals', () => {
 	});
 
 	test('GIVEN a guild THEN its appeal page is on the website', () => {
-		expect(getAppealUrl('254360814063058944')).toBe('https://wolfstar.rocks/appeal/254360814063058944');
+		expect(getAppealUrl('254360814063058944')).toBe('https://wolfstar.rocks/app/appeal/254360814063058944');
 	});
 });
