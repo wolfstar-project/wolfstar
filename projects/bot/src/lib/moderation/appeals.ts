@@ -61,7 +61,7 @@ export function isAppealable(
  * case does not have its number yet when the message is sent, so the page lists the cases the member can appeal.
  */
 export function getAppealUrl(guildId: Snowflake) {
-	return `${getWebsiteUrl()}/appeal/${guildId}`;
+	return `${getWebsiteUrl()}/app/appeal/${guildId}`;
 }
 
 /**
