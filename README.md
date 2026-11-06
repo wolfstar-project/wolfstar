@@ -166,6 +166,9 @@ contribute to the codebase without having to install anything on your machine:
 
 Thank you to all the people who already contributed to WolfStar Project!
 
+AI-assisted contributions are welcome. Read the [AI policy](AI_POLICY.md) before
+you open a pull request.
+
 <a href="https://github.com/wolfstar-project/wolfstar/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=wolfstar-project/wolfstar" />
 </a>
