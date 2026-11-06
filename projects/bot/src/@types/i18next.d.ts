@@ -2432,17 +2432,21 @@ declare module "i18next" {
         voiceChannelMove: "Moved from {{oldChannel}} to {{newChannel}}";
       };
       "events/guilds-members": {
-        guildMemberAdd: "Member Joined";
+        guildMemberAdd: "User Joined";
+        guildMemberAddDescription: "{{user}} joined Discord {{relativeTime}}";
         guildMemberAddedRoles_other: "**Added roles**: {{addedRoles, list(conjunction)}}";
         guildMemberAddedRoles_one: "**Added role**: {{addedRoles}}";
-        guildMemberAddMute: "Muted Member Joined";
-        guildMemberBanned: "Member Banned";
-        guildMemberKicked: "Member Kicked";
+        guildMemberAddMute: "Muted User joined";
+        guildMemberBanned: "User Banned";
+        guildMemberKicked: "User Kicked";
         guildMemberNoUpdate: "No update detected";
-        guildMemberRemove: "Member Left";
+        guildMemberRemove: "User Left";
+        guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
+        guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
+        guildMemberRemoveRoles: "**Roles**: {{roles}}";
         guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";
-        guildMemberSoftBanned: "Member Softbanned";
+        guildMemberSoftBanned: "User Softbanned";
         nameUpdateNextWasNotSet: "**Next**: Unset";
         nameUpdateNextWasSet: "**Next**: `{{nextName}}`";
         nameUpdatePreviousWasNotSet: "**Previous**: Unset";
@@ -2450,12 +2454,6 @@ declare module "i18next" {
         nicknameUpdate: "Nickname Edited";
         roleUpdate: "Roles Edited";
         usernameUpdate: "Username Edited";
-        accountAge: "Account Age";
-        accountCreated: "Account Created";
-        joinedServer: "Joined Server";
-        memberDuration: "{{duration, duration}}";
-        memberRoles: "Roles";
-        timeInServer: "Time in Server";
       };
       "events/join-guard": {
         logFooter: "Join Guard";

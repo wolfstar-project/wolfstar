@@ -1,10 +1,13 @@
-import { renderMemberEvent } from '#lib/moderation/logs/members';
 import { resolveOnErrorCodes, toErrorCodeResult } from '#common';
+import { seconds } from 'wolfstar-shared';
 import { readSettings, writeSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { Events } from '#lib/types';
-import { getLogPrefix, getLogger, getStickyRoles } from '#utils/functions';
+import { Colors } from '#utils/constants';
+import { getLogPrefix, getLogger, getStickyRoles, getUserMentionWithFlagsString } from '#utils/functions';
+import { getFullEmbedAuthor } from '#utils/util';
 import { getRestoredStickyRoles } from '#lib/roles/sticky';
+import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
 import { isNullish, type Nullish } from '@sapphire/utilities';
 import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
 import type { GuildMember, User } from '@wolfstar/plugin-gateway';
@@ -113,14 +116,22 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 	}
 
 	async #handleMutedMemberNotify(member: GuildMember, user: User, targetChannelId: Snowflake | Nullish) {
-		const occurredAt = Date.now();
 		const logger = await getLogger(member);
 		await logger.send({
 			key: 'logsMemberAdd',
 			channelId: targetChannelId,
 			makeMessage: async () => {
 				const t = await fetchGuildT({ id: member.guildId });
-				return renderMemberEvent(t, user, Number(user.flags.bitField), { type: 'mutedJoined', createdAt: user.createdTimestamp }, occurredAt);
+				const description = t('events/guilds-members:guildMemberAddDescription', {
+					user: getUserMentionWithFlagsString(Number(user.flags.bitField), user.id),
+					relativeTime: time(seconds.fromMilliseconds(user.createdTimestamp), TimestampStyles.RelativeTime)
+				});
+				return new EmbedBuilder()
+					.setColor(Colors.Amber)
+					.setAuthor(getFullEmbedAuthor(user))
+					.setDescription(description)
+					.setFooter({ text: t('events/guilds-members:guildMemberAddMute') })
+					.setTimestamp();
 			}
 		});
 	}
