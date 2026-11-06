@@ -1,5 +1,6 @@
 import type { JoinGuardSignals } from '#lib/moderation/joinguard/conditions';
-import { Colors, Urls } from '#utils/constants';
+import { Colors } from '#utils/constants';
+import { getWebsiteUrl } from '#utils/website';
 import { createLogMessage, type LogMessageOptions } from '#utils/functions';
 import { channelMention, roleMention, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
@@ -11,7 +12,7 @@ const Root = 'events/join-guard';
  * The page of the website where a member stopped by the join guard of a guild verifies their account.
  */
 export function getJoinGuardVerifyUrl(guildId: Snowflake) {
-	return `${Urls.Website}/verify/${guildId}`;
+	return `${getWebsiteUrl()}/verify/${guildId}`;
 }
 
 /**
