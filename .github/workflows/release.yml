@@ -1,0 +1,190 @@
+name: Release
+
+# Tags a release, has the Pullfrog agent draft the Discord announcement from the
+# pull requests merged since the previous tag, and posts it once a maintainer
+# approves the `discord-announcements` environment. Run it from the branch the
+# bot is deployed from (main for WolfStar Alpha).
+run-name: Release v${{ inputs.version }} (${{ inputs.stage }})
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: Version to release, without the v (e.g. 7.0.0-alpha.4)
+                type: string
+                required: true
+            stage:
+                description: Release stage, decides the warning in the announcement
+                type: choice
+                default: alpha
+                options:
+                    - alpha
+                    - beta
+                    - stable
+                    - hotfix
+            from:
+                description: Previous tag or commit (defaults to the latest v* tag)
+                type: string
+                required: false
+            format:
+                description: Discord format
+                type: choice
+                default: auto
+                options:
+                    - auto
+                    - components
+                    - text
+            notes:
+                description: Facts the PRs do not say (deadlines, data resets, migrations)
+                type: string
+                required: false
+            dry-run:
+                description: Draft the announcement without tagging or posting
+                type: boolean
+                default: true
+
+permissions: {}
+
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
+env:
+    HUSKY: 0
+
+jobs:
+    tag:
+        name: 🏷️ Tag and create the GitHub release
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: github.repository == 'wolfstar-project/wolfstar'
+        permissions:
+            contents: write # create the tag and the GitHub release
+        outputs:
+            from: ${{ steps.range.outputs.from }}
+            tag: ${{ steps.range.outputs.tag }}
+            release-url: ${{ steps.range.outputs.release-url }}
+        steps:
+            - name: Checkout Project
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Resolve the release range
+              id: range
+              env:
+                  VERSION: ${{ inputs.version }}
+                  FROM: ${{ inputs.from }}
+              run: |
+                  if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+                    echo "::error::version must look like 7.0.0 or 7.0.0-alpha.4, got '$VERSION'"
+                    exit 1
+                  fi
+                  TAG="v$VERSION"
+                  if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+                    echo "::error::$TAG already exists"
+                    exit 1
+                  fi
+                  if [ -z "$FROM" ]; then
+                    FROM=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+                  fi
+                  if [ -z "$FROM" ]; then
+                    echo "::error::No v* tag yet: pass the commit of the previous release as 'from'"
+                    exit 1
+                  fi
+                  git rev-parse -q --verify "$FROM^{commit}" >/dev/null || { echo "::error::'$FROM' is not a tag or commit"; exit 1; }
+                  {
+                    echo "tag=$TAG"
+                    echo "from=$FROM"
+                    echo "release-url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$TAG"
+                  } >> "$GITHUB_OUTPUT"
+
+            - name: Create the GitHub release
+              if: ${{ !inputs.dry-run }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  TAG: ${{ steps.range.outputs.tag }}
+                  FROM: ${{ steps.range.outputs.from }}
+                  STAGE: ${{ inputs.stage }}
+              run: |
+                  PRERELEASE=()
+                  if [ "$STAGE" = "alpha" ] || [ "$STAGE" = "beta" ]; then PRERELEASE=(--prerelease); fi
+                  gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes --notes-start-tag "$FROM" "${PRERELEASE[@]}"
+
+    draft:
+        name: ✍️ Draft the announcement
+        runs-on: ubuntu-latest
+        timeout-minutes: 25
+        needs: tag
+        permissions:
+            contents: read
+            pull-requests: read
+            id-token: write # Pullfrog authenticates with OIDC
+        outputs:
+            skipped: ${{ steps.announce.outputs.skipped }}
+        steps:
+            - name: Checkout Project
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Draft
+              id: announce
+              uses: wolfstar-project/stars-components/.github/actions/announce@main
+              with:
+                  mode: draft
+                  kind: bot
+                  product: ${{ vars.ANNOUNCE_PRODUCT || 'WolfStar Alpha' }}
+                  version: ${{ needs.tag.outputs.tag }}
+                  from-ref: ${{ needs.tag.outputs.from }}
+                  to-ref: ${{ github.sha }}
+                  stage: ${{ inputs.stage }}
+                  format: ${{ inputs.format }}
+                  notes: ${{ inputs.notes }}
+                  output-dir: ${{ runner.temp }}/announcement
+                  role-id: ${{ vars.DISCORD_ANNOUNCEMENTS_ROLE_ID }}
+                  button-label: ${{ format('Invite {0}', vars.ANNOUNCE_PRODUCT || 'WolfStar Alpha') }}
+                  button-url: ${{ vars.DISCORD_INVITE_URL }}
+                  release-url: ${{ !inputs.dry-run && needs.tag.outputs.release-url || '' }}
+                  callback-url: ${{ secrets.RELEASE_WEBHOOK_URL }}
+                  callback-secret: ${{ secrets.RELEASE_WEBHOOK_SECRET }}
+              env:
+                  # Pullfrog reads the provider key; add the one this repository uses.
+                  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+                  CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+            - name: Keep the draft for the post job
+              if: steps.announce.outputs.skipped != 'true'
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: announcement
+                  path: ${{ runner.temp }}/announcement
+                  retention-days: 7
+
+    post:
+        name: 📣 Post to Discord
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        needs: draft
+        if: ${{ !inputs.dry-run && needs.draft.outputs.skipped != 'true' }}
+        # Add required reviewers to this environment: the run waits here until
+        # one of them reads the preview in the draft job summary and approves.
+        environment: discord-announcements
+        permissions:
+            contents: read
+        steps:
+            - name: Download the draft
+              uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+              with:
+                  name: announcement
+                  path: ${{ runner.temp }}/announcement
+
+            - name: Post
+              uses: wolfstar-project/stars-components/.github/actions/announce@main
+              with:
+                  mode: post
+                  output-dir: ${{ runner.temp }}/announcement
+                  webhook-url: ${{ secrets.DISCORD_ANNOUNCEMENTS_WEBHOOK_URL }}
+                  callback-url: ${{ secrets.RELEASE_WEBHOOK_URL }}
+                  callback-secret: ${{ secrets.RELEASE_WEBHOOK_SECRET }}
