@@ -1,9 +1,12 @@
-import { renderMemberEvent } from '#lib/moderation/logs/members';
+import { seconds } from 'wolfstar-shared';
 import { readSettings } from '#lib/database';
 import { fetchGuildT, fetchMemberRoleIds, formatRoleMentions } from '#lib/moderation/common';
 import { Events } from '#lib/types';
-import { getLogger, getModeration } from '#utils/functions';
+import { Colors } from '#utils/constants';
+import { getLogger, getModeration, getUserMentionWithFlagsString } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
+import { getFullEmbedAuthor } from '#utils/util';
+import { EmbedBuilder, TimestampStyles, time } from '@discordjs/builders';
 import { isNullish } from '@sapphire/utilities';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { Listener } from '@wolfstar/http-framework';
@@ -13,7 +16,6 @@ import type { GatewayGuildMemberRemoveDispatchData } from 'discord-api-types/v10
 @ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.RawMemberRemove })
 export class UserListener extends Listener {
 	public async run(guild: Guild, member: GuildMember | null, { user }: GatewayGuildMemberRemoveDispatchData) {
-		const occurredAt = Date.now();
 		const settings = await readSettings(guild);
 		const targetChannelId = settings.logsMemberRemove;
 		if (isNullish(targetChannelId)) return;
@@ -21,20 +23,39 @@ export class UserListener extends Listener {
 		const isModerationAction = await this.isModerationAction(guild, user);
 
 		const t = await fetchGuildT(guild);
-		const type = isModerationAction.kicked
-			? 'kicked'
+		const footer = isModerationAction.kicked
+			? t('events/guilds-members:guildMemberKicked')
 			: isModerationAction.banned
-				? 'banned'
+				? t('events/guilds-members:guildMemberBanned')
 				: isModerationAction.softbanned
-					? 'softbanned'
-					: 'left';
+					? t('events/guilds-members:guildMemberSoftBanned')
+					: t('events/guilds-members:guildMemberRemove');
+
+		const joinedTimestamp = this.processJoinedTimestamp(member);
 		// The gateway no longer has the roles of the member, they come from the member the cache held:
 		const roles = formatRoleMentions(t, await fetchMemberRoleIds(member));
 		const logger = await getLogger(guild);
 		await logger.send({
 			key: 'logsMemberRemove',
 			channelId: targetChannelId,
-			makeMessage: () => renderMemberEvent(t, user, user.flags ?? 0, { type, joinedAt: member?.joinedTimestamp ?? null, roles }, occurredAt)
+			makeMessage: () => {
+				const key =
+					joinedTimestamp === -1
+						? 'events/guilds-members:guildMemberRemoveDescription'
+						: 'events/guilds-members:guildMemberRemoveDescriptionWithJoinedAt';
+				const joined = t(key, {
+					user: getUserMentionWithFlagsString(user.flags ?? 0, user.id),
+					relativeTime: time(seconds.fromMilliseconds(joinedTimestamp), TimestampStyles.RelativeTime)
+				});
+				const description = roles === null ? joined : `${joined}\n${t('events/guilds-members:guildMemberRemoveRoles', { roles })}`;
+
+				return new EmbedBuilder()
+					.setColor(Colors.Red)
+					.setAuthor(getFullEmbedAuthor(user))
+					.setDescription(description)
+					.setFooter({ text: footer })
+					.setTimestamp();
+			}
 		});
 	}
 
@@ -57,6 +78,12 @@ export class UserListener extends Listener {
 			banned: latestLogForUser.type === TypeVariation.Ban,
 			softbanned: latestLogForUser.type === TypeVariation.Softban
 		};
+	}
+
+	private processJoinedTimestamp(member: GuildMember | null) {
+		if (member === null) return -1;
+		if (member.joinedTimestamp === null) return -1;
+		return member.joinedTimestamp;
 	}
 }
 
