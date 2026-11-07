@@ -174,6 +174,7 @@ overrides:
   '@prisma/orm-target-postgres': 8.0.0-rc.13
 
 patchedDependencies:
+  '@wolfstar/shared-http-pieces@2.1.0': f02eb20b66066a63cc9d5519144f03af6483f142d61c8cc702c46788e1a396d3
   prisma-orm-extension-typed-json: 0d3a5a0b92c2c9f5ec59df4645d5355dd5751077a9322d29179f9e493a4c240a
 
 importers:
@@ -338,7 +339,7 @@ importers:
         version: 2.3.0(@wolfstar/http-framework@6.5.1)(@wolfstar/kit@0.3.1)
       '@wolfstar/shared-http-pieces':
         specifier: ^2.1.0
-        version: 2.1.0(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)
+        version: 2.1.0(patch_hash=f02eb20b66066a63cc9d5519144f03af6483f142d61c8cc702c46788e1a396d3)(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)
       '@wolfstar/shared-influx-pieces':
         specifier: ^1.2.0
         version: 1.2.0(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)
@@ -9859,7 +9860,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@wolfstar/shared-http-pieces@2.1.0(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)':
+  '@wolfstar/shared-http-pieces@2.1.0(patch_hash=f02eb20b66066a63cc9d5519144f03af6483f142d61c8cc702c46788e1a396d3)(@wolfstar/i18next-type-generator@3.1.6)(@wolfstar/kit@0.3.1)(acorn@8.18.0)(dotenv-expand@13.0.0)(esbuild@0.28.2)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.12)(tsdown@0.23.1)(typescript@7.0.2)(varlock@1.23.0)(vite@8.3.4)':
     dependencies:
       '@discordjs/builders': 1.14.1
       '@discordjs/collection': 2.1.1
