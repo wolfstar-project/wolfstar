@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.GuildModeration.dehoist",
+		"label": "Add the setting that dehoists the names of the members",
+		"summary": "Adds column \"dehoist\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, off for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"dehoist\" bool NOT NULL DEFAULT false",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"dehoist\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'dehoist') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

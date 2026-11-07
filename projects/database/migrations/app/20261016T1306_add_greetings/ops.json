@@ -1,0 +1,174 @@
+[
+	{
+		"id": "table.GuildGreetings",
+		"label": "Create table \"GuildGreetings\"",
+		"summary": "Creates table \"GuildGreetings\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildGreetings"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildGreetings\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildGreetings\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildGreetings\"",
+				"sql": "CREATE TABLE \"public\".\"GuildGreetings\" (\n  \"id\" int8 NOT NULL,\n  \"join_channel_id\" int8,\n  \"join_direct\" bool DEFAULT false NOT NULL,\n  \"join_messages\" text[] DEFAULT '{}' NOT NULL,\n  \"leave_channel_id\" int8,\n  \"leave_messages\" text[] DEFAULT '{}' NOT NULL,\n  CONSTRAINT \"GuildGreetings_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildGreetings\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildGreetings\""]
+			}
+		]
+	},
+	{
+		"id": "table.GuildRoleMessage",
+		"label": "Create table \"GuildRoleMessage\"",
+		"summary": "Creates table \"GuildRoleMessage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildRoleMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildRoleMessage\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildRoleMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildRoleMessage\"",
+				"sql": "CREATE TABLE \"public\".\"GuildRoleMessage\" (\n  \"added\" text,\n  \"channel_id\" int8 NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"removed\" text,\n  \"role_id\" int8 NOT NULL,\n  CONSTRAINT \"GuildRoleMessage_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildRoleMessage\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildRoleMessage\""]
+			}
+		]
+	},
+	{
+		"id": "unique.GuildRoleMessage.GuildRoleMessage_guild_id_role_id_key",
+		"label": "Add unique constraint on \"GuildRoleMessage\" (guild_id, role_id)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "GuildRoleMessage_guild_id_role_id_key",
+				"table": "GuildRoleMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildRoleMessage_guild_id_role_id_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleMessage_guild_id_role_id_key", "public", "\"public\".\"GuildRoleMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"GuildRoleMessage_guild_id_role_id_key\"",
+				"sql": "ALTER TABLE \"public\".\"GuildRoleMessage\" ADD CONSTRAINT \"GuildRoleMessage_guild_id_role_id_key\" UNIQUE (\"guild_id\", \"role_id\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildRoleMessage_guild_id_role_id_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleMessage_guild_id_role_id_key", "public", "\"public\".\"GuildRoleMessage\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildGreetings.GuildGreetings_id_fkey",
+		"label": "Add foreign key \"GuildGreetings_id_fkey\" on \"GuildGreetings\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildGreetings_id_fkey",
+				"table": "GuildGreetings"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildGreetings_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildGreetings_id_fkey", "public", "\"public\".\"GuildGreetings\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildGreetings_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildGreetings\"\nADD CONSTRAINT \"GuildGreetings_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"Modules\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildGreetings_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildGreetings_id_fkey", "public", "\"public\".\"GuildGreetings\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildRoleMessage.GuildRoleMessage_guild_id_fkey",
+		"label": "Add foreign key \"GuildRoleMessage_guild_id_fkey\" on \"GuildRoleMessage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildRoleMessage_guild_id_fkey",
+				"table": "GuildRoleMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildRoleMessage_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleMessage_guild_id_fkey", "public", "\"public\".\"GuildRoleMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildRoleMessage_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildRoleMessage\"\nADD CONSTRAINT \"GuildRoleMessage_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildRoleMessage_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildRoleMessage_guild_id_fkey", "public", "\"public\".\"GuildRoleMessage\""]
+			}
+		]
+	}
+]

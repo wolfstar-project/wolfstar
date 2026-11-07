@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.Guild.timezone",
+		"label": "Add the time zone of a guild",
+		"summary": "Adds column \"timezone\" to \"Guild\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Guild"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, with UTC for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"Guild\" ADD COLUMN IF NOT EXISTS \"timezone\" text DEFAULT 'UTC' NOT NULL",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"timezone\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Guild' AND column_name = 'timezone') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

@@ -1,0 +1,20 @@
+{
+	"archiveName": "archive",
+	"archiveDescription": "Save and read the recent messages of members.",
+	"createName": "create",
+	"createDescription": "Save the messages a member sent in the last 14 days.",
+	"listName": "list",
+	"listDescription": "List the latest message histories.",
+	"showName": "show",
+	"showDescription": "Get the file of a message history.",
+	"optionsCaseName": "case",
+	"optionsCaseDescription": "The case the history is for.",
+	"optionsIdName": "id",
+	"optionsIdDescription": "The ID of the history, which /archive list shows.",
+	"created_one": "History {{id}} of {{user}} saved, with {{count}} message.",
+	"created_other": "History {{id}} of {{user}} saved, with {{count}} messages.",
+	"notFound": "There is no history with that ID, or it expired.",
+	"listEmpty": "There are no message histories.",
+	"listLine_one": "{{id}}: {{user}}, {{count}} message, {{time}} by {{moderator}}",
+	"listLine_other": "{{id}}: {{user}}, {{count}} messages, {{time}} by {{moderator}}"
+}

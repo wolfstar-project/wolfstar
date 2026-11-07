@@ -1,0 +1,29 @@
+{
+	"name": "wolfstar-shared",
+	"version": "1.0.0",
+	"description": "Utilities shared by Wolfstar's projects, with no dependency on the bot",
+	"author": "WolfStar Project",
+	"license": "Apache-2.0",
+	"private": true,
+	"main": "dist/index.mjs",
+	"types": "dist/index.d.mts",
+	"exports": {
+		"types": "./dist/index.d.mts",
+		"import": "./dist/index.mjs"
+	},
+	"type": "module",
+	"scripts": {
+		"build": "tsdown",
+		"watch": "tsdown --watch"
+	},
+	"dependencies": {
+		"@sapphire/bitfield": "^1.2.4",
+		"@sapphire/utilities": "^3.18.3",
+		"discord-api-types": "^0.38.56"
+	},
+	"devDependencies": {
+		"@types/node": "^24.19.2",
+		"tsdown": "0.23.1",
+		"typescript": "^7.0.2"
+	}
+}

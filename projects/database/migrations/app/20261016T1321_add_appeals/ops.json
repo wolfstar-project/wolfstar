@@ -1,0 +1,174 @@
+[
+	{
+		"id": "table.Appeal",
+		"label": "Create table \"Appeal\"",
+		"summary": "Creates table \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"Appeal\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"Appeal\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"Appeal\"",
+				"sql": "CREATE TABLE \"public\".\"Appeal\" (\n  \"answers\" text[] DEFAULT '{}' NOT NULL,\n  \"case_id\" int4 NOT NULL,\n  \"created_at\" timestamp(3) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"reason\" text,\n  \"reviewer_id\" int8,\n  \"status\" text DEFAULT 'pending' NOT NULL,\n  \"user_id\" int8 NOT NULL,\n  CONSTRAINT \"Appeal_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"Appeal\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"Appeal\""]
+			}
+		]
+	},
+	{
+		"id": "table.GuildAppeals",
+		"label": "Create table \"GuildAppeals\"",
+		"summary": "Creates table \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAppeals\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAppeals\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildAppeals\"",
+				"sql": "CREATE TABLE \"public\".\"GuildAppeals\" (\n  \"bans\" bool DEFAULT true NOT NULL,\n  \"channel_id\" int8,\n  \"enabled\" bool DEFAULT false NOT NULL,\n  \"id\" int8 NOT NULL,\n  \"mutes\" bool DEFAULT true NOT NULL,\n  \"questions\" text[] DEFAULT '{}' NOT NULL,\n  \"timeouts\" bool DEFAULT true NOT NULL,\n  CONSTRAINT \"GuildAppeals_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAppeals\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAppeals\""]
+			}
+		]
+	},
+	{
+		"id": "unique.Appeal.Appeal_guild_id_case_id_key",
+		"label": "Add unique constraint on \"Appeal\" (guild_id, case_id)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "Appeal_guild_id_case_id_key",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"Appeal_guild_id_case_id_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["Appeal_guild_id_case_id_key", "public", "\"public\".\"Appeal\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"Appeal_guild_id_case_id_key\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ADD CONSTRAINT \"Appeal_guild_id_case_id_key\" UNIQUE (\"guild_id\", \"case_id\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"Appeal_guild_id_case_id_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["Appeal_guild_id_case_id_key", "public", "\"public\".\"Appeal\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.Appeal.Appeal_guild_id_fkey",
+		"label": "Add foreign key \"Appeal_guild_id_fkey\" on \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "Appeal_guild_id_fkey",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"Appeal_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["Appeal_guild_id_fkey", "public", "\"public\".\"Appeal\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"Appeal_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\"\nADD CONSTRAINT \"Appeal_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"Appeal_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["Appeal_guild_id_fkey", "public", "\"public\".\"Appeal\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildAppeals.GuildAppeals_id_fkey",
+		"label": "Add foreign key \"GuildAppeals_id_fkey\" on \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildAppeals_id_fkey",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildAppeals_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAppeals_id_fkey", "public", "\"public\".\"GuildAppeals\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildAppeals_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\"\nADD CONSTRAINT \"GuildAppeals_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"Modules\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildAppeals_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAppeals_id_fkey", "public", "\"public\".\"GuildAppeals\""]
+			}
+		]
+	}
+]

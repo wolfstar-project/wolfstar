@@ -1,0 +1,36 @@
+[
+	{
+		"id": "column.GuildModeration.default_warn_thresholds",
+		"label": "Add the switch of the default thresholds of warnings",
+		"summary": "Adds column \"default_warn_thresholds\" to \"GuildModeration\" when it does not have it, off for the guilds that are there and on for the ones to come",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, off for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"default_warn_thresholds\" bool NOT NULL DEFAULT false",
+				"params": []
+			},
+			{
+				"description": "turn it on for the rows made from now on",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ALTER COLUMN \"default_warn_thresholds\" SET DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"default_warn_thresholds\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'default_warn_thresholds') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

@@ -1,0 +1,332 @@
+[
+	{
+		"id": "dropTable.GuildAutoModerationAttachments",
+		"label": "Drop table \"GuildAutoModerationAttachments\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationAttachments"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationAttachments\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationAttachments\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationAttachments\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationAttachments\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationAttachments\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationAttachments\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationCapitals",
+		"label": "Drop table \"GuildAutoModerationCapitals\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationCapitals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationCapitals\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationCapitals\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationCapitals\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationCapitals\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationCapitals\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationCapitals\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationInvites",
+		"label": "Drop table \"GuildAutoModerationInvites\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationInvites"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationInvites\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationInvites\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationInvites\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationInvites\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationInvites\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationInvites\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationLinks",
+		"label": "Drop table \"GuildAutoModerationLinks\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationLinks"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationLinks\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationLinks\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationLinks\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationLinks\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationLinks\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationLinks\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationMentionsOverrides",
+		"label": "Drop table \"GuildAutoModerationMentionsOverrides\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationMentionsOverrides"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationMentionsOverrides\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationMentionsOverrides\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationMentionsOverrides\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationMentionsOverrides\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationMentionsOverrides\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationMentionsOverrides\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationMentions",
+		"label": "Drop table \"GuildAutoModerationMentions\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationMentions"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationMentions\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationMentions\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationMentions\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationMentions\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationMentions\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationMentions\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationNewlines",
+		"label": "Drop table \"GuildAutoModerationNewlines\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationNewlines"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationNewlines\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationNewlines\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationNewlines\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationNewlines\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationNewlines\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationNewlines\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationNoMentionSpam",
+		"label": "Drop table \"GuildAutoModerationNoMentionSpam\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationNoMentionSpam"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationNoMentionSpam\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationNoMentionSpam\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationNoMentionSpam\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationNoMentionSpam\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationNoMentionSpam\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationNoMentionSpam\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationWords",
+		"label": "Drop table \"GuildAutoModerationWords\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationWords"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationWords\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationWords\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationWords\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationWords\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationWords\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationWords\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildAutoModerationZalgo",
+		"label": "Drop table \"GuildAutoModerationZalgo\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationZalgo"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoModerationZalgo\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationZalgo\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildAutoModerationZalgo\"",
+				"sql": "DROP TABLE \"public\".\"GuildAutoModerationZalgo\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoModerationZalgo\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoModerationZalgo\""]
+			}
+		]
+	}
+]

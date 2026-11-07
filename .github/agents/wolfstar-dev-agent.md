@@ -464,7 +464,7 @@ The project uses:
 
 - **Package**: `@sentry/node` (Node.js integration)
 - **Init Location**: `src/index.ts` - Main initialization with integrations
-- **Environment Variable**: `SENTRY_URL` (DSN for error reporting)
+- **Environment Variable**: `SENTRY_DSN` (DSN for error reporting)
 - **Integrations**: Console, Prisma, HTTP, uncaught exceptions/rejections
 - **Auto-instrumentation**: Errors automatically captured via listeners
 
@@ -476,14 +476,14 @@ WolfStar implements Sentry through dedicated error listeners:
 - **`src/listeners/errors/taskErrorSentry.ts`**: Captures scheduled task errors
 - **Command Errors**: Handled in `src/listeners/commands/_shared.ts` with context tags
 
-All Sentry listeners are conditionally enabled based on `SENTRY_URL` environment variable.
+All Sentry listeners are conditionally enabled based on `SENTRY_DSN` environment variable.
 
 ### Best Practices
 
 - ✅ Always include meaningful error messages and context in commands
 - ✅ Use `captureException` with tags for command/task context
 - ✅ Log errors with `container.logger` alongside Sentry capture
-- ✅ Test error tracking in development with `SENTRY_URL` configured
+- ✅ Test error tracking in development with `SENTRY_DSN` configured
 - ✅ Use tags to categorize errors by command name, entity ID, or piece name
 
 ### Error Handling Pattern
@@ -522,7 +522,7 @@ Ensure `.env` file contains:
 
 ```bash
 # Sentry
-SENTRY_URL='https://your-dsn@sentry.io/project-id'
+SENTRY_DSN='https://your-dsn@sentry.io/project-id'
 ```
 
 ### Sentry Integrations Used

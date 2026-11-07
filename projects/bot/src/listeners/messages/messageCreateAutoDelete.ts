@@ -1,0 +1,66 @@
+import { isWebhookMessage, resolveOnErrorCodes } from '#common';
+import { readSettings } from '#lib/database';
+import { shouldAutoDelete } from '#lib/moderation/cleanup/filters';
+import { readAutoDeletes } from '#lib/moderation/cleanup/store';
+import { describeMessage } from '#utils/debug';
+import { EventGatewayListener, RegisterAsDispatchListener } from '@wolfstar/plugin-gateway';
+import type { Message } from '@wolfstar/plugin-gateway';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
+
+/**
+ * Deletes the messages sent in the channels that have their messages deleted, see `/autodelete` and
+ * `lib/moderation/cleanup`.
+ *
+ * @remarks
+ *
+ * It listens to every message and not to `GuildUserMessage`, which leaves the bots out: a channel can have their
+ * messages deleted too. The messages of the bot itself are never deleted, nor the ones of the system (joins, pins,
+ * boosts). A message that is deleted after a delay is a job of the `autoDeleteMessage` task, so it survives a restart.
+ * Nothing is deleted while `modules.autodelete` is off, which is only read for a channel that has its messages deleted.
+ */
+@RegisterAsDispatchListener('messageCreate')
+export class UserListener extends EventGatewayListener<'messageCreate'> {
+	public async run(message: Message) {
+		const { guildId } = message;
+		if (guildId === null || message.system) return;
+		if (message.author.id === this.container.gatewayClient.user?.id) return;
+
+		const configs = await readAutoDeletes(guildId);
+		const config = configs.find((entry) => entry.channelId === message.channelId);
+		if (config === undefined) return;
+
+		const prefix = `[AutoDelete] ${describeMessage(message)}`;
+		if (!(await readSettings(guildId)).modulesAutodelete) {
+			this.container.logger.debug(`${prefix}: left alone, the module is off`);
+			return;
+		}
+
+		const subject = {
+			content: message.content,
+			// A webhook is not a member either, so it goes with the bots:
+			author: { id: message.author.id, bot: message.author.bot || isWebhookMessage(message) },
+			attachments: message.attachments,
+			embeds: message.embeds
+		};
+		if (!shouldAutoDelete(subject, config)) {
+			this.container.logger.debug(`${prefix}: kept by the filter of the channel`);
+			return;
+		}
+
+		this.container.logger.debug(`${prefix}: deleted after ${config.delay}ms`);
+		if (config.delay > 0) {
+			await this.container.tasks.create(
+				{ name: 'autoDeleteMessage', payload: { guildId, channelId: message.channelId, messageId: message.id } },
+				{ repeated: false, delay: config.delay, customJobOptions: { removeOnComplete: true, removeOnFail: true } }
+			);
+			return;
+		}
+
+		await resolveOnErrorCodes(
+			this.container.gatewayClient.messages.delete(message.channelId, message.id, 'Auto delete'),
+			RESTJSONErrorCodes.UnknownMessage,
+			RESTJSONErrorCodes.MissingAccess,
+			RESTJSONErrorCodes.MissingPermissions
+		);
+	}
+}

@@ -1,0 +1,63 @@
+[
+	{
+		"id": "schema.public",
+		"label": "Create schema \"public\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres"
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "Create schema \"public\"",
+				"sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.GuildAutoModerationHardAction",
+		"label": "Create enum type \"GuildAutoModerationHardAction\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "GuildAutoModerationHardAction"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"GuildAutoModerationHardAction\"",
+				"sql": "CREATE TYPE \"public\".\"GuildAutoModerationHardAction\" AS ENUM ('VoiceKick', 'Warning', 'Timeout', 'Mute', 'Kick', 'Softban', 'Ban')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.ModerationActionType",
+		"label": "Create enum type \"ModerationActionType\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "ModerationActionType"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"ModerationActionType\"",
+				"sql": "CREATE TYPE \"public\".\"ModerationActionType\" AS ENUM ('AddRole', 'RemoveRole', 'Nickname', 'AddWarning', 'RemoveWarning', 'Timeout', 'TimeoutEnd', 'Kick', 'Softban', 'Ban', 'Unban')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	}
+]

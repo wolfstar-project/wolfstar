@@ -1,3 +1,11 @@
 [tools]
 node = "lts"
 pnpm = "12"
+# Standalone varlock binary for the shell hooks below. The project itself runs the varlock installed by pnpm
+# (`varlock/auto-load`), see https://varlock.dev/integrations/mise/
+"github:dmno-dev/varlock" = "latest"
+
+[hooks]
+# Fail fast when the environment of the package you enter is invalid. It only validates: no value is exported to the
+# shell and nothing is printed on success.
+enter = "varlock load > /dev/null"
