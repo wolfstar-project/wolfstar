@@ -46,10 +46,6 @@ on:
 
 permissions: {}
 
-concurrency:
-    group: release-${{ github.ref }}
-    cancel-in-progress: false
-
 env:
     HUSKY: 0
 
@@ -59,6 +55,11 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         if: github.repository == 'wolfstar-project/wolfstar'
+        # Only the tagging is serialised. The announcement can wait days for an
+        # approval, and it must not hold up the next release.
+        concurrency:
+            group: release-${{ github.ref }}
+            cancel-in-progress: false
         permissions:
             contents: write # create the tag and the GitHub release
         outputs:
@@ -124,6 +125,9 @@ jobs:
     announce:
         name: 📣 Announce
         needs: tag
+        concurrency:
+            group: release-announce-${{ needs.tag.outputs.tag }}
+            cancel-in-progress: false
         permissions:
             contents: read
             pull-requests: read # pull request bodies the agent reads
