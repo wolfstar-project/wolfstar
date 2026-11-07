@@ -125,6 +125,21 @@ describe('/honeypot edit and /honeypot disable', () => {
 		expect(settings.honeypotChannels).toEqual([]);
 	});
 
+	test('GIVEN several traps THEN the warning of each is removed and each is named, though the write empties their list', async () => {
+		// The cache hands out one object, which the write changes in place, as `readSettings` does for the real settings:
+		vi.mocked(readSettings).mockImplementation(async () => settings as ReadonlyGuildData);
+		settings.honeypotChannels = ['254360814063058946', '254360814063058948'];
+
+		await disable();
+
+		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, '254360814063058946');
+		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, '254360814063058948');
+		const content = update.mock.calls[0]![0].content;
+		expect(content).toContain('<#254360814063058945>');
+		expect(content).toContain('<#254360814063058946>');
+		expect(content).toContain('<#254360814063058948>');
+	});
+
 	test('GIVEN a disable that runs while an edit does THEN the warning is gone in the end', async () => {
 		const order: string[] = [];
 		vi.mocked(refreshHoneypotNotice).mockImplementation(async () => {
