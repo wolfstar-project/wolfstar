@@ -128,11 +128,14 @@ export interface StickyRole {
 	user: Snowflake;
 }
 
+// Named apart from the namespace member below: inside `PrismaJson` the name would refer to itself, a circular alias in the declarations.
+type AuditEventChangesShape = AuditEventChanges;
+
 declare global {
 	namespace PrismaJson {
 		type PermissionNodeEntries = PermissionsNode[];
 		type UniqueRoleSetEntries = UniqueRoleSet[];
-		type AuditEventChanges = import('./types.js').AuditEventChanges;
+		type AuditEventChanges = AuditEventChangesShape;
 		type AutoModerationRuleOptions = import('./automod/types.js').AutoModerationRuleOptions;
 		type AutoModerationRuleEscalation = import('./automod/types.js').AutoModerationRuleEscalationStep[];
 		type MessageHistoryMessages = import('./histories/storage.js').MessageHistoryMessage[];
