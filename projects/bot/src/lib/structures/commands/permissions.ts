@@ -10,7 +10,8 @@ import { isAccessEntry, resolveAccess, type AccessRole, type PermissionsNode } f
 /**
  * The permission levels a command can require.
  *
- * - `Moderator`: the `rolesModerator` roles, or everybody when none is configured.
+ * - `Moderator`: the `rolesModerator` roles, or everybody when none is configured (only the members with the `fallback`
+ *   permission when one is given, see {@linkcode hasCommandPermissionLevel}).
  * - `Administrator`: the `rolesAdmin` roles, or the `Manage Server` permission when none is configured.
  */
 export enum CommandPermissionLevel {
@@ -34,16 +35,23 @@ export enum CommandPermissionLevel {
  *
  * The guild owner always passes.
  *
+ * Buttons, select menus and modals are not gated by Discord: a member who cannot run a command can still click the
+ * components of a message it sent. A handler that gives moderators actions passes the permission of the command those
+ * components belong to as `fallback`, which an empty `rolesModerator` then requires instead of letting everybody in.
+ *
  * The `permissionNodes` of the guild, managed by `PermissionNodeManager` (legacy rules reviewed through `/commands`), are matched
  * against the name and the category of the http-framework command pieces (see `lib/database/utils/matchers/Command.ts`),
  * but they are not consulted here: this function only applies the Discord permissions and the role configuration.
  *
  * @param interaction - The interaction to check.
  * @param level - The level the command requires.
+ * @param fallback - The Discord permission an empty `rolesModerator` requires, for the interactions Discord did not
+ * gate. Without it, an empty list lets everybody in, relying on the permission Discord checked for the command.
  */
 export async function hasCommandPermissionLevel(
 	interaction: Pick<GuildChatInputInteraction, 'guildId' | 'member'>,
-	level: CommandPermissionLevel
+	level: CommandPermissionLevel,
+	fallback?: bigint
 ): Promise<boolean> {
 	const { member } = interaction;
 	const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
@@ -60,7 +68,9 @@ export async function hasCommandPermissionLevel(
 	if (level === CommandPermissionLevel.Administrator) return isAdministrator;
 
 	const moderatorRoles = settings.rolesModerator;
-	if (moderatorRoles.length === 0) return true;
+	if (moderatorRoles.length === 0) {
+		return fallback === undefined || isAdministrator || (BigInt(member.permissions) & fallback) === fallback;
+	}
 	return isAdministrator || moderatorRoles.some((id: string) => roles.has(id));
 }
 

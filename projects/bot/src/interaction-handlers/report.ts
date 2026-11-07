@@ -23,7 +23,7 @@ import { isNullishOrEmpty } from '@sapphire/utilities';
 import { InteractionHandler, ModalSubmitInteraction, UserError, container } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { MessageFlags, PermissionFlagsBits, RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
 import { closeReport as closeStoredReport, fetchReport, reopenReport, setReportCase, type Report } from 'wolfstar-database';
 
 type ModalInteraction = InteractionHandler.ModalInteraction;
@@ -80,9 +80,15 @@ export class UserInteractionHandler extends InteractionHandler {
 			return this.submit(interaction as ModalInteraction, guildId, action, t);
 		}
 
+		// Discord does not gate the components of a report, so without moderator roles the member needs the permission
+		// `/reports` is registered with, rather than nothing:
 		if (
 			interaction.member === undefined ||
-			!(await hasCommandPermissionLevel({ guildId, member: interaction.member }, CommandPermissionLevel.Moderator))
+			!(await hasCommandPermissionLevel(
+				{ guildId, member: interaction.member },
+				CommandPermissionLevel.Moderator,
+				PermissionFlagsBits.ModerateMembers
+			))
 		) {
 			return fail(t('preconditions:moderator', { command: { name: this.name } }));
 		}
