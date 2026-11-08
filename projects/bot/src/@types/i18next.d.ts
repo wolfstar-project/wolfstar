@@ -2641,6 +2641,13 @@ declare module "i18next" {
         words: "[Auto-Moderation] Triggered word filter, no threshold.";
         wordsWithMaximum: "[Auto-Moderation] Triggered word filter, reached {{amount}} out of {{maximum}} infractions.";
         honeypotLogTimeoutFailed: "I could not apply the preliminary timeout. Check my Moderate Members permission and role position. The main action result is shown above.";
+        nativeAutoModTitle: "Discord AutoMod";
+        nativeAutoModDescription: "**User:** {{user}}\n**Channel:** {{channel}}\n**Rule ID:** {{rule}}\n**Action:** {{action}}";
+        nativeAutoModBlocked: "Message blocked";
+        nativeAutoModAlert: "Alert sent";
+        nativeAutoModTimeout: "Member timed out";
+        nativeAutoModOther: "Action {{type}}";
+        nativeAutoModContent: "Content";
       };
       "events/reactions": {
         reaction: "Reaction Added";

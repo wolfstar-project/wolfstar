@@ -66,7 +66,9 @@ describe('the logs of the members who join and leave', () => {
 		const listener = create(MemberAddListener, 'notMutedMemberAddNotify');
 
 		test('GIVEN a member WHEN they join THEN a green User Joined embed mentions them and when their account was made', async () => {
-			const member = createGuildMember({ user: { id: '266624760782258201', username: 'newcomer' } });
+			const member = createGuildMember({
+				user: { id: '266624760782258201', username: 'newcomer', discriminator: '0', global_name: null, avatar: null }
+			});
 
 			await listener.run(member);
 
@@ -83,7 +85,7 @@ describe('the logs of the members who join and leave', () => {
 
 	describe('a member who leaves', () => {
 		const listener = create(MemberRemoveListener, 'rawMemberRemoveNotify');
-		const user = { id: '266624760782258202', username: 'leaver', discriminator: '0', avatar: null, flags: 0 };
+		const user = { id: '266624760782258202', username: 'leaver', discriminator: '0', global_name: null, avatar: null, flags: 0 };
 
 		function mockLatestCase(type: TypeVariation | null) {
 			vi.mocked(getModeration).mockResolvedValue({

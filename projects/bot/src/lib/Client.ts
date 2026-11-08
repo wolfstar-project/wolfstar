@@ -32,6 +32,7 @@ export function createClient() {
 		discordToken: envParseString('DISCORD_TOKEN'),
 		discordPublicKey: envParseString('DISCORD_PUBLIC_KEY'),
 		intents:
+			GatewayIntentBits.AutoModerationExecution |
 			GatewayIntentBits.GuildModeration |
 			GatewayIntentBits.GuildExpressions |
 			GatewayIntentBits.GuildInvites |
