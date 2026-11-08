@@ -32,9 +32,19 @@ export function checkDashboardWrite(input: DashboardWrite): 'not-administrator' 
 		return [...next.filter((entry) => before.get(entry.id) !== JSON.stringify(entry)), ...previous.filter((entry) => !after.has(entry.id))];
 	};
 	if (changed(changes.permissionsUsers, current.permissionsUsers).some((entry) => entry.id === ownerId)) return 'outranked';
-	const positions = new Map(roles.map((role) => [role.id, role.position]));
-	const highest = roles.reduce((top, role) => (held.has(role.id) ? Math.max(top, role.position) : top), 0);
-	if (changed(changes.permissionsRoles, current.permissionsRoles).some((entry) => (positions.get(entry.id) ?? -1) >= highest)) return 'outranked';
+	const ranksHigher = (a: AccessRole, b: AccessRole) => a.position > b.position || (a.position === b.position && BigInt(a.id) < BigInt(b.id));
+	const highest = roles.reduce<AccessRole | null>(
+		(top, role) => (held.has(role.id) && (top === null || ranksHigher(role, top)) ? role : top),
+		null
+	);
+	const rolesById = new Map(roles.map((role) => [role.id, role]));
+	if (
+		changed(changes.permissionsRoles, current.permissionsRoles).some((entry) => {
+			const target = rolesById.get(entry.id);
+			return target !== undefined && (highest === null || target.id === highest.id || ranksHigher(target, highest));
+		})
+	)
+		return 'outranked';
 	const access = resolveAccess(
 		{ userId, roleIds: [...held] },
 		{ users: changes.permissionsUsers ?? current.permissionsUsers, roles: changes.permissionsRoles ?? current.permissionsRoles },

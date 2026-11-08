@@ -22,6 +22,16 @@ describe('dashboard settings writes', () => {
 	test('an administrator cannot change rules for a role above them', () => {
 		expect(checkDashboardWrite({ ...base, changes: { permissionsRoles: [createAccessEntry('5', 'allow')] } })).toBe('outranked');
 	});
+	test('an administrator may change a lower role at the same position', () => {
+		const roles = base.roles.map((role) => (role.id === '5' ? { ...role, position: 10 } : role));
+		expect(checkDashboardWrite({ ...base, roles, changes: { permissionsRoles: [createAccessEntry('5', 'allow')] } })).toBeNull();
+	});
+	test('an administrator cannot change a higher role at the same position', () => {
+		const roles = base.roles.map((role) => (role.id === '5' ? { ...role, position: 10 } : role));
+		expect(checkDashboardWrite({ ...base, roles, roleIds: ['5'], changes: { permissionsRoles: [createAccessEntry('4', 'allow')] } })).toBe(
+			'outranked'
+		);
+	});
 	test('an administrator cannot deny themselves access', () => {
 		expect(checkDashboardWrite({ ...base, changes: { permissionsUsers: [createAccessEntry('2', 'deny')] } })).toBe('lockout');
 	});
