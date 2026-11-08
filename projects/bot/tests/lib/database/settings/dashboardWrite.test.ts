@@ -32,8 +32,40 @@ describe('dashboard settings writes', () => {
 			'outranked'
 		);
 	});
+	test('an unchanged rule remains unchanged when its properties have a different order', () => {
+		const entry = { id: '5', deny: [], allow: [], dashboard: 'allow' as const };
+		expect(
+			checkDashboardWrite({
+				...base,
+				current: { ...base.current, permissionsRoles: [entry] },
+				changes: { permissionsRoles: [createAccessEntry('5', 'allow')] }
+			})
+		).toBeNull();
+	});
+	test('an administrator cannot change the contents of a higher role rule', () => {
+		const entry = createAccessEntry('5', 'allow');
+		expect(
+			checkDashboardWrite({
+				...base,
+				current: { ...base.current, permissionsRoles: [entry] },
+				changes: { permissionsRoles: [createAccessEntry('5', 'deny')] }
+			})
+		).toBe('outranked');
+	});
 	test('an administrator cannot deny themselves access', () => {
 		expect(checkDashboardWrite({ ...base, changes: { permissionsUsers: [createAccessEntry('2', 'deny')] } })).toBe('lockout');
+	});
+	test('an administrator cannot remove their only administrative access', () => {
+		expect(checkDashboardWrite({ ...base, current: { ...base.current, rolesAdmin: ['4'] }, changes: { rolesAdmin: ['5'] } })).toBe('lockout');
+	});
+	test('a rule that allows the author preserves access after removing their admin role', () => {
+		expect(
+			checkDashboardWrite({
+				...base,
+				current: { ...base.current, rolesAdmin: ['4'], permissionsUsers: [createAccessEntry('2', 'allow')] },
+				changes: { rolesAdmin: ['5'] }
+			})
+		).toBeNull();
 	});
 	test('the owner may change access rules', () => {
 		expect(checkDashboardWrite({ ...base, userId: '1', manageGuild: false, changes: { rolesAdmin: ['5'] } })).toBeNull();
