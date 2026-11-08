@@ -27,9 +27,20 @@ export function checkDashboardWrite(input: DashboardWrite): 'not-administrator' 
 	if (!administrator) return 'not-administrator';
 	const changed = (next: readonly PermissionsNode[] | undefined, previous: readonly PermissionsNode[]) => {
 		if (next === undefined) return [];
-		const before = new Map(previous.map((entry) => [entry.id, JSON.stringify(entry)]));
+		const before = new Map(previous.map((entry) => [entry.id, entry]));
 		const after = new Set(next.map((entry) => entry.id));
-		return [...next.filter((entry) => before.get(entry.id) !== JSON.stringify(entry)), ...previous.filter((entry) => !after.has(entry.id))];
+		return [
+			...next.filter((entry) => {
+				const old = before.get(entry.id);
+				return (
+					old === undefined ||
+					old.dashboard !== entry.dashboard ||
+					JSON.stringify(old.allow) !== JSON.stringify(entry.allow) ||
+					JSON.stringify(old.deny) !== JSON.stringify(entry.deny)
+				);
+			}),
+			...previous.filter((entry) => !after.has(entry.id))
+		];
 	};
 	if (changed(changes.permissionsUsers, current.permissionsUsers).some((entry) => entry.id === ownerId)) return 'outranked';
 	const ranksHigher = (a: AccessRole, b: AccessRole) => a.position > b.position || (a.position === b.position && BigInt(a.id) < BigInt(b.id));
@@ -50,5 +61,9 @@ export function checkDashboardWrite(input: DashboardWrite): 'not-administrator' 
 		{ users: changes.permissionsUsers ?? current.permissionsUsers, roles: changes.permissionsRoles ?? current.permissionsRoles },
 		roles
 	);
-	return access === 'deny' ? 'lockout' : null;
+	if (access === 'deny') return 'lockout';
+	if (access === 'allow') return null;
+	const nextAdminRoles = changes.rolesAdmin ?? current.rolesAdmin;
+	const retainsAdmin = nextAdminRoles.length === 0 ? input.manageGuild : nextAdminRoles.some((id) => held.has(id));
+	return retainsAdmin ? null : 'lockout';
 }
