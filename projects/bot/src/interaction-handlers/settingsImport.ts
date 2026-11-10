@@ -32,20 +32,22 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/conf:menuWrongUser'));
+		// The access check may read the roles from Discord, and the locks and the transaction may take longer than the
+		// three seconds an interaction waits for an answer: the click is answered first, so the import is never taken
+		// by a click Discord already gave up on.
+		const component = interaction as ComponentInteraction;
+		const deferred = await component.deferUpdate();
 		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
-			return fail(t('preconditions:administrator', { command: { name: this.name } }));
+			return component.followup({ content: t('preconditions:administrator', { command: { name: this.name } }), flags: MessageFlags.Ephemeral });
 		}
 
-		const component = interaction as ComponentInteraction;
 		const close = (message: string) => ({ content: message, embeds: [], components: [] });
 
 		// Taking the import is what answers it, so a second click finds nothing, on this process or on another:
 		const parsed = await takePendingImport(guildId, action.ownerId, action.importId);
-		if (action.verb === 'cancel') return component.update(close(t('commands/conf:transferImportCancelled')));
-		if (parsed === null) return component.update(close(t('commands/conf:transferImportExpired')));
+		if (action.verb === 'cancel') return deferred.update(close(t('commands/conf:transferImportCancelled')));
+		if (parsed === null) return deferred.update(close(t('commands/conf:transferImportExpired')));
 
-		// The locks and the transaction may take longer than the three seconds an interaction waits for an answer:
-		const deferred = await component.deferUpdate();
 		try {
 			// The plan is worked out again under the locks, from what the database has now:
 			const done = await applyConfigurationImport(guildId, parsed, interaction.user.id);

@@ -42,7 +42,7 @@ import {
 } from '#lib/structures/commands-menu/restrictions';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { createTranslator } from '#lib/structures/commands/utils';
-import { getModalValue, getModalValues } from 'wolfstar-shared';
+import { getModalValue, getModalValues, hasModalComponent } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply, isMessageStringSelectInteractionData } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -217,6 +217,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const channels = findCommandRestriction([], piece.name);
 		for (const list of CommandChannelLists) channels[list] = getModalValues(interaction.data.components, list);
 		const members = this.readMembers(interaction);
+		if (members === null) return reply(getDefaultExpiredReply());
 		let restriction = channels;
 		for (const rule of CommandMemberRules) restriction = setCommandMembers(restriction, rule, members[rule]);
 		if ((status === CommandOnlyAllowedValue || !isCommandRestrictionEmpty(restriction)) && ProtectedCommands.has(piece.name)) {
@@ -256,7 +257,9 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const channels = findCommandRestriction([], target);
 		for (const list of CommandChannelLists) channels[list] = getModalValues(interaction.data.components, list);
-		const saved = await this.write(interaction.guildId!, target, status, channels, this.readMembers(interaction), revision, interaction.user.id);
+		const members = this.readMembers(interaction);
+		if (members === null) return reply(getDefaultExpiredReply());
+		const saved = await this.write(interaction.guildId!, target, status, channels, members, revision, interaction.user.id);
 		if (!saved) return reply(t('commands/commands:editGroupStale', { target }));
 
 		return reply(t(status === CommandDisabledValue ? 'commands/commands:editGroupDisabledDone' : 'commands/commands:editGroupSaved', { target }));
@@ -265,11 +268,15 @@ export class UserInteractionHandler extends InteractionHandler {
 	/**
 	 * Reads the roles and the users each rule picked: a select menu of both returns their IDs, and the data of the
 	 * interaction says which is which. An ID it does not resolve is neither, and is left out.
+	 *
+	 * @returns `null` when the modal has no select menu of a rule: it was opened before they were added, and saving it
+	 * would read as nobody picked, which clears the members the command has.
 	 */
 	private readMembers(interaction: ModalInteraction) {
 		const { resolved } = interaction.data;
 		const members = {} as Record<CommandMemberRule, { roles: string[]; users: string[] }>;
 		for (const rule of CommandMemberRules) {
+			if (!hasModalComponent(interaction.data.components, getCommandMembersInputId(rule))) return null;
 			const ids = getModalValues(interaction.data.components, getCommandMembersInputId(rule));
 			members[rule] = {
 				roles: ids.filter((id) => resolved?.roles?.[id] !== undefined),
@@ -369,7 +376,10 @@ export class UserInteractionHandler extends InteractionHandler {
 	}
 
 	private async clearLegacy(interaction: ModalInteraction, revision: number, t: ReturnType<typeof createTranslator>) {
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		// The owner check reads the guild and the write waits for the lock of the settings, either can outlast the three
+		// seconds Discord gives to answer:
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+		const reply = (content: string) => deferred.update({ content });
 		const denial = await this.getLegacyOwnerDenial(interaction, t);
 		if (denial !== null) return reply(denial);
 		if (getModalValue(interaction.data.components, 'confirmation') !== 'REMOVE') return reply(t('commands/commands:legacyConfirmationInvalid'));

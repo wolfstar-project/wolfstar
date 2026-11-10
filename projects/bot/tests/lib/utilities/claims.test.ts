@@ -1,4 +1,4 @@
-import { claimOnce, releaseClaim } from '#utils/claims';
+import { claim, claimOnce, releaseClaim } from '#utils/claims';
 import { container } from '@wolfstar/http-framework';
 
 /** A Redis that only knows what a claim uses of it: `SET key value EX seconds NX`. */
@@ -12,7 +12,11 @@ function createRedis(status = 'ready') {
 			store.set(key, value);
 			return Promise.resolve('OK');
 		}),
-		del: vi.fn((key: string) => Promise.resolve(store.delete(key) ? 1 : 0))
+		del: vi.fn((key: string) => Promise.resolve(store.delete(key) ? 1 : 0)),
+		// The release script: deletes the key only when it holds the token.
+		eval: vi.fn((_script: string, _keys: number, key: string, token: string) =>
+			Promise.resolve(store.get(key) === token && store.delete(key) ? 1 : 0)
+		)
 	};
 }
 
@@ -31,7 +35,7 @@ describe('claims', () => {
 		expect(await claimOnce('alert:1', 60)).toBe(true);
 		expect(await claimOnce('alert:1', 60)).toBe(false);
 		expect(await claimOnce('alert:2', 60)).toBe(true);
-		expect(redis.set).toHaveBeenCalledWith('wolfstar:claims:alert:1', '1', 'EX', 60, 'NX');
+		expect(redis.set).toHaveBeenCalledWith('wolfstar:claims:alert:1', expect.any(String), 'EX', 60, 'NX');
 	});
 
 	test('GIVEN no connection THEN the process keeps the claim, until it ends', async () => {
@@ -68,10 +72,29 @@ describe('claims', () => {
 		const redis = createRedis();
 		container.redis = redis as never;
 
+		const token = await claim('release:1', 60);
+		expect(token).not.toBeNull();
+		await releaseClaim('release:1', token!);
+		expect(redis.store.has('wolfstar:claims:release:1')).toBe(false);
 		expect(await claimOnce('release:1', 60)).toBe(true);
-		await releaseClaim('release:1');
-		expect(redis.del).toHaveBeenCalledWith('wolfstar:claims:release:1');
-		expect(await claimOnce('release:1', 60)).toBe(true);
+	});
+
+	test('GIVEN a claim that ended and was claimed again WHEN the first one is released THEN the new claim stays', async () => {
+		vi.useFakeTimers();
+		const redis = createRedis();
+		container.redis = redis as never;
+
+		const first = await claim('slow:1', 60);
+		// The claim ends, in Redis and here, and the next alert claims it:
+		vi.advanceTimersByTime(61_000);
+		redis.store.delete('wolfstar:claims:slow:1');
+		const second = await claim('slow:1', 60);
+		expect(second).not.toBeNull();
+
+		await releaseClaim('slow:1', first!);
+
+		expect(redis.store.get('wolfstar:claims:slow:1')).toBe(second);
+		expect(await claimOnce('slow:1', 60)).toBe(false);
 	});
 
 	test('GIVEN a Redis that fails THEN the process keeps the claim, for the calls made at the same time too', async () => {

@@ -44,6 +44,7 @@ function click(verb: SettingsImportVerb, userId = ownerId) {
 		member: { user: { id: userId }, roles: [], permissions: '0' },
 		reply: async (data: unknown) => void answers.push(['reply', data]),
 		update: async (data: unknown) => void answers.push(['update', data]),
+		followup: async (data: unknown) => void answers.push(['followup', data]),
 		deferUpdate: async () => {
 			answers.push(['defer', null]);
 			return { update: async (data: unknown) => void answers.push(['edit', data]) };
@@ -109,7 +110,10 @@ describe('settingsImport interaction handler', () => {
 		await Promise.all([create().run(first.interaction, first.content), create().run(second.interaction, second.content)]);
 
 		expect(applyConfigurationImport).toHaveBeenCalledTimes(1);
-		expect(second.answers).toEqual([['update', { content: 'commands/conf:transferImportExpired', embeds: [], components: [] }]]);
+		expect(second.answers).toEqual([
+			['defer', null],
+			['edit', { content: 'commands/conf:transferImportExpired', embeds: [], components: [] }]
+		]);
 	});
 
 	test('GIVEN an import that expired THEN nothing is written and the buttons are taken away', async () => {
@@ -117,7 +121,10 @@ describe('settingsImport interaction handler', () => {
 		await create().run(interaction, content);
 
 		expect(applyConfigurationImport).not.toHaveBeenCalled();
-		expect(answers).toEqual([['update', { content: 'commands/conf:transferImportExpired', embeds: [], components: [] }]]);
+		expect(answers).toEqual([
+			['defer', null],
+			['edit', { content: 'commands/conf:transferImportExpired', embeds: [], components: [] }]
+		]);
 	});
 
 	test('GIVEN the import is cancelled THEN it is forgotten, and a later confirmation finds nothing', async () => {
@@ -125,7 +132,10 @@ describe('settingsImport interaction handler', () => {
 
 		const cancel = click('cancel');
 		await create().run(cancel.interaction, cancel.content);
-		expect(cancel.answers).toEqual([['update', { content: 'commands/conf:transferImportCancelled', embeds: [], components: [] }]]);
+		expect(cancel.answers).toEqual([
+			['defer', null],
+			['edit', { content: 'commands/conf:transferImportCancelled', embeds: [], components: [] }]
+		]);
 		expect(stored.size).toBe(0);
 
 		const confirm = click('confirm');
@@ -160,7 +170,8 @@ describe('settingsImport interaction handler', () => {
 		const denied = click('confirm');
 		await create().run(denied.interaction, denied.content);
 
-		expect(denied.answers.map(([kind]) => kind)).toEqual(['reply']);
+		// The click is answered before the access check, which may read the roles from Discord:
+		expect(denied.answers.map(([kind]) => kind)).toEqual(['defer', 'followup']);
 		expect(applyConfigurationImport).not.toHaveBeenCalled();
 		expect(stored.size).toBe(1);
 	});

@@ -50,5 +50,4 @@ minimumReleaseAgeExclude:
 shamefullyHoist: true
 ignoreWorkspaceRootCheck: true
 patchedDependencies:
-    '@wolfstar/shared-http-pieces@2.1.0': patches/@wolfstar__shared-http-pieces.patch
     prisma-orm-extension-typed-json: patches/prisma-orm-extension-typed-json.patch

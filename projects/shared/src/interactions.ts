@@ -41,3 +41,22 @@ export function getModalValues(components: readonly unknown[], customId: string)
 
 	return [];
 }
+
+/**
+ * Whether a submitted modal has a component, which Discord nests in rows or labels. A select menu with nothing picked
+ * is still there, so this tells it apart from a modal built before the component was added.
+ *
+ * @param components - The components of the submitted modal.
+ * @param customId - The custom ID of the component.
+ */
+export function hasModalComponent(components: readonly unknown[], customId: string): boolean {
+	for (const component of components) {
+		if (typeof component !== 'object' || component === null) continue;
+
+		const entry = component as { custom_id?: string; components?: readonly unknown[]; component?: unknown };
+		if (entry.custom_id === customId) return true;
+		if (hasModalComponent([...(entry.components ?? []), ...(entry.component === undefined ? [] : [entry.component])], customId)) return true;
+	}
+
+	return false;
+}

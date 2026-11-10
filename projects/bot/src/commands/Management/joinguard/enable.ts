@@ -17,10 +17,13 @@ const Root = JoinGuardRoot;
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
+		// The write waits for the lock of the settings, and the permissions of the log channel are read from Discord:
+		// either can outlast the three seconds Discord gives to answer.
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const { guildId } = interaction;
 		const { settings, rules } = await readJoinGuardConfig(guildId);
 		if (settings.joinGuardEnabled) {
-			return interaction.reply({ content: translateKey(t, `${Root}:alreadyEnabled`), flags: MessageFlags.Ephemeral });
+			return deferred.update({ content: translateKey(t, `${Root}:alreadyEnabled`) });
 		}
 
 		await writeSettings(guildId, { joinGuardEnabled: true }, interaction.user.id);
@@ -39,6 +42,6 @@ export class UserCommand extends Command {
 			lines.push(translateKey(t, `${Root}:logChannelMissingPermissions`, { channel: channelMention(logs), missing }));
 		}
 
-		return interaction.reply({ content: lines.join('\n'), flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		return deferred.update({ content: lines.join('\n'), allowed_mentions: { parse: [] } });
 	}
 }
