@@ -2437,12 +2437,16 @@ declare module "i18next" {
         guildMemberAddedRoles_other: "**Added roles**: {{addedRoles, list(conjunction)}}";
         guildMemberAddedRoles_one: "**Added role**: {{addedRoles}}";
         guildMemberAddMute: "Muted User joined";
+        guildMemberBanned: "User Banned";
+        guildMemberKicked: "User Kicked";
         guildMemberNoUpdate: "No update detected";
         guildMemberRemove: "User Left";
         guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
         guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
+        guildMemberRemoveRoles: "**Roles**: {{roles}}";
         guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";
+        guildMemberSoftBanned: "User Softbanned";
         nameUpdateNextWasNotSet: "**Next**: Unset";
         nameUpdateNextWasSet: "**Next**: `{{nextName}}`";
         nameUpdatePreviousWasNotSet: "**Previous**: Unset";
