@@ -66,18 +66,29 @@ export function getTitle(t: TFunction<AnyNamespace>, entry: ModerationManager.En
 }
 
 export async function getEmbed(t: TFunction<AnyNamespace>, entry: ModerationManager.Entry) {
-	const [description, moderator] = await Promise.all([getEmbedDescription(t, entry), entry.fetchModerator()]);
+	const [description, moderator, iconURL] = await Promise.all([getEmbedDescription(t, entry), entry.fetchModerator(), getClientAvatarURL()]);
 	const embed = new EmbedBuilder()
 		.setColor(getTypeColor(entry))
 		.setAuthor(getFullEmbedAuthor(moderator))
 		.setDescription(description)
 		.setFooter({
 			text: t('moderation:embedFooter', { caseId: entry.id }),
-			iconURL: container.gatewayClient.user?.displayAvatarURL({ size: 128 })
+			iconURL
 		})
 		.setTimestamp(entry.createdAt);
 
 	return embed;
+}
+
+/**
+ * The avatar of the bot, for the footer of a case log: `moderationEntryEdit` only recognizes a log whose footer has an
+ * icon. A broker worker never gets `READY`, so its client has no user and the avatar comes from the application's ID.
+ */
+async function getClientAvatarURL(): Promise<string | undefined> {
+	const { user, users } = container.gatewayClient;
+	if (user !== null) return user.displayAvatarURL({ size: 128 });
+	const fetched = await users.fetch(process.env.CLIENT_ID).catch(() => null);
+	return fetched?.displayAvatarURL({ size: 128 });
 }
 
 async function getEmbedDescription(t: TFunction<AnyNamespace>, entry: ModerationManager.Entry) {
