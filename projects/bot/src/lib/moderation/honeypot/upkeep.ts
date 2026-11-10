@@ -189,7 +189,7 @@ async function clearHoneypotChannel(guildId: Snowflake, channelId: Snowflake): P
 	const primary = trx.settings.honeypotChannel === channelId;
 	await trx
 		.write({ ...(primary ? { honeypotChannel: null } : {}), honeypotChannels: trx.settings.honeypotChannels.filter((id) => id !== channelId) })
-		.submitWithAudit(container.gatewayClient.user!.id);
+		.submitWithAudit(process.env.CLIENT_ID);
 	await removeHoneypotNotice(guildId, primary ? undefined : channelId);
 	return true;
 }
@@ -224,7 +224,7 @@ async function recreateHoneypotChannel(guildId: string, oldId: string, settings:
 				...(primary ? { honeypotChannel: replacement.id } : {}),
 				honeypotChannels: trx.settings.honeypotChannels.map((id) => (id === oldId ? replacement.id : id))
 			})
-			.submitWithAudit(gatewayClient.user!.id);
+			.submitWithAudit(process.env.CLIENT_ID);
 		saved = true;
 		await resolveOnErrorCodes(gatewayClient.channels.delete(oldId, 'Daily honeypot recreation'), RESTJSONErrorCodes.UnknownChannel);
 	} catch (error) {
@@ -235,7 +235,7 @@ async function recreateHoneypotChannel(guildId: string, oldId: string, settings:
 					...(primary && trx.settings.honeypotChannel === replacement.id ? { honeypotChannel: oldId } : {}),
 					honeypotChannels: trx.settings.honeypotChannels.map((id) => (id === replacement.id ? oldId : id))
 				})
-				.submitWithAudit(gatewayClient.user!.id);
+				.submitWithAudit(process.env.CLIENT_ID);
 		}
 		await gatewayClient.channels.delete(replacement.id, 'Honeypot recreation failed');
 		throw error;

@@ -91,6 +91,10 @@ describe('runHoneypotUpkeep', () => {
 		settings = { ...getDefaultGuildSettings()!, id: guildId, honeypotChannel: channelId, ...overrides } as GuildData;
 	}
 
+	afterEach(() => {
+		vi.unstubAllEnvs();
+	});
+
 	beforeEach(() => {
 		vi.clearAllMocks();
 		audits.length = 0;
@@ -115,6 +119,8 @@ describe('runHoneypotUpkeep', () => {
 			};
 			return trx as never;
 		});
+		// The bot writes the settings as itself, under the ID of the application:
+		vi.stubEnv('CLIENT_ID', botId);
 		Object.assign(container, {
 			gatewayClient: {
 				user: { id: botId },

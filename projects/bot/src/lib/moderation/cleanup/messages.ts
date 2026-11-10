@@ -66,7 +66,7 @@ export async function fetchChannelMessages(channelId: string, options: FetchChan
  */
 export async function bulkDeleteChannelMessages(guildId: string, channelId: string, messages: readonly Pick<Message, 'id'>[]): Promise<number> {
 	const logger = await getLogger(guildId);
-	logger.prune.set(channelId, { userId: container.gatewayClient.user!.id });
+	logger.prune.set(channelId, { userId: process.env.CLIENT_ID });
 
 	const { messages: manager } = container.gatewayClient;
 	const ids = messages.map((message) => message.id);

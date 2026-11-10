@@ -132,7 +132,7 @@ async function runJoinGuardRequest(request: JoinGuardRequest): Promise<JoinGuard
 		case 'Kick':
 			return kickJoinGuardMember(request.guildId, request.userId, request.moderatorId, request.reason, request.requestedAt);
 		case 'PostButton':
-			return postJoinGuardButton(request.guildId, request.moderatorId ?? container.gatewayClient.user!.id);
+			return postJoinGuardButton(request.guildId, request.moderatorId ?? process.env.CLIENT_ID);
 	}
 }
 

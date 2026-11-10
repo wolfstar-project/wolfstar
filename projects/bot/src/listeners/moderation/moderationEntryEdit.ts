@@ -68,7 +68,7 @@ export class UserListener extends Listener {
 				RESTJSONErrorCodes.MissingPermissions
 			);
 		} catch {
-			await writeSettings(entry.guild, { moderationChannel: null }, this.container.gatewayClient.user!.id);
+			await writeSettings(entry.guild, { moderationChannel: null }, process.env.CLIENT_ID);
 		}
 	}
 

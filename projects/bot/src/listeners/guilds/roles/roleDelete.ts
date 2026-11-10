@@ -67,7 +67,7 @@ export class UserListener extends EventGatewayListener<'guildRoleDelete'> {
 			trx.write({ permissionsRoles: await permissionNodes.refresh(trx.settings) });
 		}
 
-		await trx.submitWithAudit(this.container.gatewayClient.user!.id);
+		await trx.submitWithAudit(process.env.CLIENT_ID);
 
 		// The rules that exempted the role forget it:
 		for (const rule of await readAutoModerationRules(guild.id)) {

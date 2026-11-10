@@ -94,7 +94,7 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 		const { guildId } = member;
 		const role = await resolveOnErrorCodes(this.container.gatewayClient.roles.fetch(guildId, mutedRoleId), RESTJSONErrorCodes.UnknownRole);
 		if (isNullish(role)) {
-			await writeSettings(guildId, { rolesMuted: null }, this.container.gatewayClient.user!.id);
+			await writeSettings(guildId, { rolesMuted: null }, process.env.CLIENT_ID);
 		} else {
 			const result = await toErrorCodeResult(member.roles.add(role));
 			await result.inspectErrAsync((code) => this.#handleMutedMemberAddRoleErr(guildId, code));
@@ -107,7 +107,7 @@ export class UserListener extends EventGatewayListener<'guildMemberAdd'> {
 
 		// The role was deleted, remove it from the settings:
 		if (code === RESTJSONErrorCodes.UnknownRole) {
-			await writeSettings(guildId, { rolesMuted: null }, this.container.gatewayClient.user!.id);
+			await writeSettings(guildId, { rolesMuted: null }, process.env.CLIENT_ID);
 			return;
 		}
 

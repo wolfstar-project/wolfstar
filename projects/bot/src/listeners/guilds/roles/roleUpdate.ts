@@ -18,6 +18,6 @@ export class UserListener extends EventGatewayListener<'guildRoleUpdate'> {
 		const nodes = readSettingsPermissionNodes(settings);
 		if (!nodes.has(next.id)) return;
 
-		await writeSettings(next, { permissionsRoles: await nodes.refresh(settings) }, this.container.gatewayClient.user!.id);
+		await writeSettings(next, { permissionsRoles: await nodes.refresh(settings) }, process.env.CLIENT_ID);
 	}
 }

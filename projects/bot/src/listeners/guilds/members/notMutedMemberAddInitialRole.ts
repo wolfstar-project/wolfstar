@@ -54,11 +54,7 @@ export class UserListener extends Listener {
 		}
 
 		if (invalid.size === 0) return;
-		await writeSettings(
-			member,
-			(current) => ({ [key]: current[key].filter((roleId) => !invalid.has(roleId)) }),
-			this.container.gatewayClient.user!.id
-		);
+		await writeSettings(member, (current) => ({ [key]: current[key].filter((roleId) => !invalid.has(roleId)) }), process.env.CLIENT_ID);
 	}
 
 	private async canGiveRoles(member: GuildMember) {

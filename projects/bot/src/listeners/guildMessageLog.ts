@@ -29,7 +29,7 @@ export class UserListener extends Listener {
 		if (isNullish(channel)) {
 			logger.debug(`[Logs] ${key} of the guild ${guild.id}: not sent, the channel ${logChannelId} could not be read`);
 			if (result.isOk() || result.unwrapErr() === RESTJSONErrorCodes.UnknownChannel) {
-				await writeSettings(guild, { [key]: null }, this.container.gatewayClient.user!.id);
+				await writeSettings(guild, { [key]: null }, process.env.CLIENT_ID);
 			}
 			return;
 		}

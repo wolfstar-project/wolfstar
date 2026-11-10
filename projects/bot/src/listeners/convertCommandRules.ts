@@ -19,7 +19,7 @@ export class UserListener extends EventGatewayListener<'clientReady'> {
 		if (isWorker() || (shard !== null && shard.id !== 0)) return;
 
 		const { logger, prisma } = this.container;
-		const actorId = this.container.gatewayClient.user!.id;
+		const actorId = process.env.CLIENT_ID;
 		const guildIds = await fetchGuildIdsWithPermissionNodes(prisma.orm);
 
 		let converted = 0;

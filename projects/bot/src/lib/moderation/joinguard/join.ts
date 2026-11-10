@@ -172,7 +172,7 @@ async function removeMember(
 
 	// The member is told what is done to them only when the bot can do it: the owner, and a member at or above the bot,
 	// are refused before anything is sent.
-	const problem = await getJoinGuardTargetProblem(t, guild, user.id, container.gatewayClient.user!.id);
+	const problem = await getJoinGuardTargetProblem(t, guild, user.id, process.env.CLIENT_ID);
 	if (problem !== null) {
 		errors.push(t(`${Root}:errorTarget`, { action: t(`${Root}:action${kind}`), reason: problem }));
 		await tell('None');

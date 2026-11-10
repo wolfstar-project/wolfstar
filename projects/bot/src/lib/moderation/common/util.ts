@@ -73,7 +73,7 @@ export async function getEmbed(t: TFunction<AnyNamespace>, entry: ModerationMana
 		.setDescription(description)
 		.setFooter({
 			text: t('moderation:embedFooter', { caseId: entry.id }),
-			iconURL: container.gatewayClient.user!.displayAvatarURL({ size: 128 })
+			iconURL: container.gatewayClient.user?.displayAvatarURL({ size: 128 })
 		})
 		.setTimestamp(entry.createdAt);
 

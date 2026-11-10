@@ -101,7 +101,7 @@ export class UserCommand extends Command {
 	}
 
 	private getClientAvatar() {
-		return this.container.gatewayClient.user!.displayAvatarURL({ size: 128 });
+		return this.container.gatewayClient.user?.displayAvatarURL({ size: 128 });
 	}
 
 	private getUserInformation(user: User, extras = ''): string {

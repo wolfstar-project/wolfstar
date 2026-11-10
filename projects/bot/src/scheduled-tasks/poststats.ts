@@ -38,7 +38,7 @@ export class UserTask extends ScheduledTask<'poststats'> {
 		this.processAnalytics(rawGuilds, rawUsers);
 		if (process.env.NODE_ENV !== 'production') return null;
 
-		const clientId = gatewayClient.user!.id;
+		const clientId = process.env.CLIENT_ID;
 		const guilds = rawGuilds.toString();
 		const users = rawUsers.toString();
 		const results = (

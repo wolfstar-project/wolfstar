@@ -37,7 +37,7 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 			await writeSettings(
 				guildId,
 				(current) => ({ moderationLockdownChannels: current.moderationLockdownChannels.filter((channelId) => channelId !== id) }),
-				this.container.gatewayClient.user!.id
+				process.env.CLIENT_ID
 			);
 		} catch (error) {
 			this.container.logger.error(
@@ -94,7 +94,7 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 				);
 				return restrictions === null ? {} : { commandsRestrictions: writeCommandRestrictions(restrictions) as never };
 			},
-			this.container.gatewayClient.user!.id
+			process.env.CLIENT_ID
 		);
 	}
 
@@ -110,11 +110,7 @@ export class UserListener extends EventGatewayListener<'channelDelete'> {
 
 			const settings = await readSettings(guildId);
 			if (settings.joinGuardCheckpointChannel === id) {
-				await writeSettings(
-					guildId,
-					{ joinGuardCheckpointChannel: null, joinGuardCheckpointMessage: null },
-					this.container.gatewayClient.user!.id
-				);
+				await writeSettings(guildId, { joinGuardCheckpointChannel: null, joinGuardCheckpointMessage: null }, process.env.CLIENT_ID);
 				changed = true;
 			}
 
