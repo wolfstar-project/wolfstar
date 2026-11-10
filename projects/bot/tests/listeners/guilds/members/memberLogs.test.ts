@@ -5,7 +5,7 @@ import { UserListener as MemberAddListener } from '#root/listeners/guilds/member
 import { UserListener as MemberRemoveListener } from '#root/listeners/guilds/members/rawMemberRemoveNotify';
 import { getLogger, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
-import type { EmbedBuilder } from '@discordjs/builders';
+import { roleMention, type EmbedBuilder } from '@discordjs/builders';
 import texts_ from '../../../../src/locales/en-US/events/guilds-members.json' with { type: 'json' };
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 
@@ -120,16 +120,31 @@ describe('the logs of the members who join and leave', () => {
 			expect(embed.description).not.toContain('<t:');
 		});
 
-		test('GIVEN a banned member with roles WHEN they leave THEN the description has no roles line', async () => {
-			mockLatestCase(TypeVariation.Ban);
+		test('GIVEN a member with roles WHEN they leave by themselves THEN the roles are a line of the description', async () => {
+			mockLatestCase(null);
 			vi.mocked(fetchMemberRoleIds).mockResolvedValue(['254360814063058970', '254360814063058971']);
 
 			await listener.run(guild, createGuildMember({ user }), { guild_id: guild.id, user });
 
 			const { embed } = await sentEmbed();
-			expect(embed.description).not.toContain('Roles');
-			expect(embed.description!.split('\n')).toHaveLength(1);
+			const lines = embed.description!.split('\n');
+			expect(lines).toHaveLength(2);
+			expect(lines[1]).toBe(`**Roles**: ${roleMention('254360814063058970')} ${roleMention('254360814063058971')}`);
 		});
+
+		test.each([TypeVariation.Kick, TypeVariation.Ban, TypeVariation.Softban] as const)(
+			'GIVEN a member with roles WHEN the latest case is %s THEN the description has no roles line',
+			async (type) => {
+				mockLatestCase(type);
+				vi.mocked(fetchMemberRoleIds).mockResolvedValue(['254360814063058970', '254360814063058971']);
+
+				await listener.run(guild, createGuildMember({ user }), { guild_id: guild.id, user });
+
+				const { embed } = await sentEmbed();
+				expect(embed.description).not.toContain('Roles');
+				expect(embed.description!.split('\n')).toHaveLength(1);
+			}
+		);
 
 		test('GIVEN a member with no roles WHEN they leave THEN the description has no roles line', async () => {
 			mockLatestCase(null);

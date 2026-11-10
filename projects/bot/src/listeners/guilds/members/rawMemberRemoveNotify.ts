@@ -1,6 +1,6 @@
 import { seconds } from 'wolfstar-shared';
 import { readSettings } from '#lib/database';
-import { fetchGuildT } from '#lib/moderation/common';
+import { fetchGuildT, fetchMemberRoleIds, formatRoleMentions } from '#lib/moderation/common';
 import { Events } from '#lib/types';
 import { Colors } from '#utils/constants';
 import { getLogger, getModeration, getUserMentionWithFlagsString } from '#utils/functions';
@@ -30,6 +30,10 @@ export class UserListener extends Listener {
 				: t('events/guilds-members:guildMemberRemove'); // A ban is a member who left, its case says the rest
 
 		const joinedTimestamp = this.processJoinedTimestamp(member);
+		// Only a member who left by themselves lists the roles, a ban, a kick or a softban keeps them in its case. The
+		// gateway no longer has the roles of the member, they come from the member the cache held:
+		const wasModerated = isModerationAction.kicked || isModerationAction.banned || isModerationAction.softbanned;
+		const roles = wasModerated ? null : formatRoleMentions(t, await fetchMemberRoleIds(member));
 		const logger = await getLogger(guild);
 		await logger.send({
 			key: 'logsMemberRemove',
@@ -39,10 +43,11 @@ export class UserListener extends Listener {
 					joinedTimestamp === -1
 						? 'events/guilds-members:guildMemberRemoveDescription'
 						: 'events/guilds-members:guildMemberRemoveDescriptionWithJoinedAt';
-				const description = t(key, {
+				const joined = t(key, {
 					user: getUserMentionWithFlagsString(user.flags ?? 0, user.id),
 					relativeTime: time(seconds.fromMilliseconds(joinedTimestamp), TimestampStyles.RelativeTime)
 				});
+				const description = roles === null ? joined : `${joined}\n${t('events/guilds-members:guildMemberRemoveRoles', { roles })}`;
 
 				return new EmbedBuilder()
 					.setColor(Colors.Red)
