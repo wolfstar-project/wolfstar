@@ -250,7 +250,7 @@ export function getCommandPermissionLevel(
 
 /**
  * Lists the preconditions of a command: `GuildOnly` when it only runs in servers, which Discord checks from its
- * contexts, then the entries of its `preconditions` option. The global preconditions are not listed: every command
+ * contexts, as a group of one entry the website reads, then the entries of its `preconditions` option. The global preconditions are not listed: every command
  * runs them.
  *
  * @param preconditions - The `preconditions` option of the command.
@@ -262,7 +262,14 @@ export function getCommandPreconditions(
 ): FlattenedCommandPreconditions {
 	const container = flattenPreconditions(preconditions ?? [], PreconditionRunCondition.And, PreconditionRunMode.Sequential);
 	const guildOnly = contexts?.length === 1 && contexts[0] === InteractionContextType.Guild;
-	if (guildOnly) container.entries.unshift({ name: GuildOnlyPrecondition, context: {} });
+	// In a group of its own: the website reads the names of the entries of each top-level entry, see `Chips.vue`.
+	if (guildOnly) {
+		container.entries.unshift({
+			entries: [{ name: GuildOnlyPrecondition, context: {} }],
+			mode: PreconditionRunMode.Sequential,
+			runCondition: PreconditionRunCondition.Or
+		});
+	}
 	return container;
 }
 

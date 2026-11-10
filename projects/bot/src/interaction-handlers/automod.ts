@@ -52,6 +52,7 @@ const Root = AutoModerationRoot;
 
 type ModalInteraction = InteractionHandler.ModalInteraction;
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInteraction>;
+type DeferredUpdate = Awaited<ReturnType<(ComponentInteraction | ModalInteraction)['deferUpdate']>>;
 
 /**
  * What a change answers with: what changes in the rule (`null` for nothing), and what to tell the user above it.
@@ -277,6 +278,8 @@ export class UserInteractionHandler extends InteractionHandler {
 	) {
 		const { t } = context;
 		const [channelId] = getSelectValues(interaction);
+		// The channel and the permissions of the bot in it are read from Discord, before the rule is edited:
+		const deferred = await interaction.deferUpdate();
 		let error: string | null = null;
 		if (channelId !== undefined) {
 			const missing = await getMissingAutoModerationLogPermissions(guildId, channelId);
@@ -289,10 +292,17 @@ export class UserInteractionHandler extends InteractionHandler {
 			}
 		}
 
-		return this.change(interaction, guildId, context, action, () => {
-			if (error !== null) throw new InvalidInput(error);
-			return { update: { logChannelId: channelId ?? null } };
-		});
+		return this.change(
+			interaction,
+			guildId,
+			context,
+			action,
+			() => {
+				if (error !== null) throw new InvalidInput(error);
+				return { update: { logChannelId: channelId ?? null } };
+			},
+			deferred
+		);
 	}
 
 	/**
@@ -323,8 +333,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		guildId: Snowflake,
 		context: AutoModerationMenuContext,
 		action: AutoModerationMenuAction,
-		getChange: (rule: AutoModerationRule) => Change
+		getChange: (rule: AutoModerationRule) => Change,
+		deferred?: DeferredUpdate
 	) {
+		// The rule is edited on Discord, which can outlast the three seconds Discord gives to answer: the menu is
+		// acknowledged first, then updated, and an error is told in a message of its own.
+		const response = deferred ?? (await interaction.deferUpdate());
+		const fail = (content: string) => interaction.followup({ content, flags: MessageFlags.Ephemeral });
 		let notice: string | undefined;
 		let rule: AutoModerationRule;
 		try {
@@ -334,15 +349,16 @@ export class UserInteractionHandler extends InteractionHandler {
 				return change.update;
 			});
 		} catch (error) {
-			if (error instanceof InvalidInput) return interaction.reply({ content: error.message, flags: MessageFlags.Ephemeral });
+			if (error instanceof InvalidInput) return fail(error.message);
 			if (error instanceof AutoModerationRuleError && error.code === 'unknown') {
-				return this.showRules(interaction, guildId, context, translateKey(context.t, `${Root}:menuGone`));
+				const rules = await readAutoModerationRules(guildId);
+				return response.update(renderAutoModerationRules(context, rules, { notice: translateKey(context.t, `${Root}:menuGone`) }));
 			}
 
-			return interaction.reply({ content: translateRuleError(context.t, error, action.ruleId), flags: MessageFlags.Ephemeral });
+			return fail(translateRuleError(context.t, error, action.ruleId));
 		}
 
-		return interaction.update(renderAutoModerationRule(context, rule, action.section, { notice }));
+		return response.update(renderAutoModerationRule(context, rule, action.section, { notice }));
 	}
 
 	/**

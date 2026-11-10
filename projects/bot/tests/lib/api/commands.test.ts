@@ -2,7 +2,7 @@ import { getCommandEntries, getCommandPermissionLevel, getCommandPreconditions, 
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
 import { PermissionLevels } from '#lib/types';
 import { Collection } from '@discordjs/collection';
-import type { Command } from '@wolfstar/http-framework';
+import { PreconditionRunCondition, PreconditionRunMode, type Command } from '@wolfstar/http-framework';
 import { clearSubcommandRegistries, subCommandsGroupRegistry, subCommandsRegistry } from '@wolfstar/plugin-subcommands-advanced';
 import { ApplicationCommandOptionType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
@@ -70,7 +70,11 @@ describe('getCommandEntries', () => {
 				permissionLevel: PermissionLevels.Moderator,
 				preconditions: {
 					entries: [
-						{ name: 'GuildOnly', context: {} },
+						{
+							entries: [{ name: 'GuildOnly', context: {} }],
+							mode: PreconditionRunMode.Sequential,
+							runCondition: PreconditionRunCondition.Or
+						},
 						{ name: 'moderator', context: {} }
 					],
 					mode: 0,
@@ -199,7 +203,11 @@ describe('getCommandEntries', () => {
 				permissionLevel: PermissionLevels.Administrator,
 				preconditions: {
 					entries: [
-						{ name: 'GuildOnly', context: {} },
+						{
+							entries: [{ name: 'GuildOnly', context: {} }],
+							mode: PreconditionRunMode.Sequential,
+							runCondition: PreconditionRunCondition.Or
+						},
 						{ name: 'administrator', context: {} }
 					],
 					mode: 0,
@@ -210,7 +218,17 @@ describe('getCommandEntries', () => {
 				name: 'settings user',
 				guarded: true,
 				permissionLevel: PermissionLevels.Everyone,
-				preconditions: { entries: [{ name: 'GuildOnly', context: {} }], mode: 0, runCondition: 0 }
+				preconditions: {
+					entries: [
+						{
+							entries: [{ name: 'GuildOnly', context: {} }],
+							mode: PreconditionRunMode.Sequential,
+							runCondition: PreconditionRunCondition.Or
+						}
+					],
+					mode: 0,
+					runCondition: 0
+				}
 			}
 		]);
 	});
@@ -313,7 +331,7 @@ describe('getCommandPreconditions', () => {
 	test('GIVEN a command of the servers THEN it runs `GuildOnly` before its own preconditions', () => {
 		expect(getCommandPreconditions(['moderator'], [InteractionContextType.Guild])).toEqual({
 			entries: [
-				{ name: 'GuildOnly', context: {} },
+				{ entries: [{ name: 'GuildOnly', context: {} }], mode: PreconditionRunMode.Sequential, runCondition: PreconditionRunCondition.Or },
 				{ name: 'moderator', context: {} }
 			],
 			mode: 0,

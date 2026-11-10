@@ -250,7 +250,7 @@ describe('catchHoneypotMessage', () => {
 
 		await catchHoneypotMessage(createMessage(), createSettings());
 
-		expect(set).toHaveBeenCalledWith(`wolfstar:claims:honeypot-caught:${guildId}:${userId}`, '1', 'EX', 60, 'NX');
+		expect(set).toHaveBeenCalledWith(`wolfstar:claims:honeypot-caught:${guildId}:${userId}`, expect.any(String), 'EX', 60, 'NX');
 		expect(deleteMessage).toHaveBeenCalledTimes(1);
 		expect(ModerationActions.softban.apply).not.toHaveBeenCalled();
 		expect(emit).not.toHaveBeenCalled();

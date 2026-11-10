@@ -60,7 +60,8 @@ function submit(verb: CommandsMenuVerb, revision: number, values: Record<string,
 			resolved,
 			components: Object.entries(values).map(([custom_id, value]) => ({ custom_id, ...(Array.isArray(value) ? { values: value } : { value }) }))
 		},
-		reply: async (data: unknown) => void answers.push(data)
+		reply: async (data: unknown) => void answers.push(data),
+		defer: async () => ({ update: async (data: unknown) => void answers.push(data) })
 	});
 	const content = encodeCommandsMenuId({ ownerId, verb, target, page: revision }).split('.').slice(1);
 	return { interaction, content, answers };
@@ -153,10 +154,25 @@ describe('commands editor', () => {
 	});
 
 	test('a form opened before another save cannot overwrite the new rules', async () => {
-		const stale = submit('save', getCommandRestrictionRevision({ ...stored, allowedUsers: [] }, true), { status: 'enabled' });
+		const stale = submit('save', getCommandRestrictionRevision({ ...stored, allowedUsers: [] }, true), {
+			status: 'enabled',
+			allowedMembers: [],
+			ignoredMembers: []
+		});
 		await handler().run(stale.interaction, stale.content);
 		expect(written).toEqual([]);
 		expect(stale.answers).toMatchObject([{ content: 'commands/commands:editStale' }]);
+	});
+
+	test('a form opened before the members could be picked cannot clear them', async () => {
+		const old = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled', allowedChannels: [], ignoredChannels: [] });
+		await handler().run(old.interaction, old.content);
+		const group = submit('save', 0, { status: 'enabled', allowedChannels: [], ignoredChannels: [] }, ownerId, 'Moderation.*');
+		await handler().run(group.interaction, group.content);
+		expect(written).toEqual([]);
+		expect(old.answers).toHaveLength(1);
+		expect(group.answers).toHaveLength(1);
+		expect(old.answers).not.toMatchObject([{ content: 'commands/commands:editStale' }]);
 	});
 
 	test('a non-administrator or another menu user cannot save', async () => {
@@ -172,7 +188,7 @@ describe('commands editor', () => {
 
 	test('protected commands cannot receive user restrictions', async () => {
 		vi.mocked(findCommandPiece).mockReturnValue({ name: 'commands' } as never);
-		const denied = submit('save', 0, { status: 'enabled', allowedMembers: [userId] });
+		const denied = submit('save', 0, { status: 'enabled', allowedMembers: [userId], ignoredMembers: [] });
 		await handler().run(denied.interaction, denied.content);
 		expect(written).toEqual([]);
 		expect(denied.answers).toMatchObject([{ content: 'commands/commands:editProtectedRestricted' }]);
