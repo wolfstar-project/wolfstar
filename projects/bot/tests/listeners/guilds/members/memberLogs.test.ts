@@ -6,7 +6,6 @@ import { UserListener as MemberRemoveListener } from '#root/listeners/guilds/mem
 import { getLogger, getModeration } from '#utils/functions';
 import { TypeVariation } from '#utils/moderationConstants';
 import type { EmbedBuilder } from '@discordjs/builders';
-import { roleMention } from '@discordjs/builders';
 import texts_ from '../../../../src/locales/en-US/events/guilds-members.json' with { type: 'json' };
 import { getDefaultGuildSettings, type ReadonlyGuildData } from 'wolfstar-database';
 
@@ -94,22 +93,26 @@ describe('the logs of the members who join and leave', () => {
 			} as never);
 		}
 
-		test.each([null, TypeVariation.Kick, TypeVariation.Ban, TypeVariation.Softban] as const)(
-			'GIVEN the latest case %s WHEN a member leaves THEN the footer says User Left, the case tells the rest',
-			async (type) => {
-				mockLatestCase(type);
+		test.each([
+			[null, 'User Left'],
+			[TypeVariation.Kick, 'User Kicked'],
+			[TypeVariation.Ban, 'User Left'],
+			[TypeVariation.Softban, 'User Softbanned']
+		] as const)('GIVEN the latest case %s WHEN a member leaves THEN the footer says %s', async (type, footer) => {
+			mockLatestCase(type);
 
-				await listener.run(guild, createGuildMember({ user }), { guild_id: guild.id, user });
+			await listener.run(guild, createGuildMember({ user }), { guild_id: guild.id, user });
 
-				const { key, channelId, embed } = await sentEmbed();
-				expect(key).toBe('logsMemberRemove');
-				expect(channelId).toBe(logsChannelId);
-				expect(embed.footer?.text).toBe('User Left');
-				expect(embed.description).toMatch(/joined this server <t:\d+:R>/);
-			}
-		);
+			const { key, channelId, embed } = await sentEmbed();
+			expect(key).toBe('logsMemberRemove');
+			expect(channelId).toBe(logsChannelId);
+			expect(embed.footer?.text).toBe(footer);
+			expect(embed.description).toMatch(/joined this server <t:\d+:R>/);
+		});
 
 		test('GIVEN a member the cache did not hold WHEN they leave THEN the description says they joined an unknown time ago', async () => {
+			mockLatestCase(null);
+
 			await listener.run(guild, null, { guild_id: guild.id, user });
 
 			const { embed } = await sentEmbed();
@@ -125,7 +128,16 @@ describe('the logs of the members who join and leave', () => {
 
 			const { embed } = await sentEmbed();
 			expect(embed.description).not.toContain('Roles');
-			expect(embed.description).not.toContain(roleMention('254360814063058970'));
+			expect(embed.description!.split('\n')).toHaveLength(1);
+		});
+
+		test('GIVEN a member with no roles WHEN they leave THEN the description has no roles line', async () => {
+			mockLatestCase(null);
+
+			await listener.run(guild, createGuildMember({ user }), { guild_id: guild.id, user });
+
+			const { embed } = await sentEmbed();
+			expect(embed.description).not.toContain('Roles');
 			expect(embed.description!.split('\n')).toHaveLength(1);
 		});
 
