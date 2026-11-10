@@ -86,10 +86,10 @@ describe('the logs of the members who join and leave', () => {
 		const listener = create(MemberRemoveListener, 'rawMemberRemoveNotify');
 		const user = { id: '266624760782258202', username: 'leaver', discriminator: '0', global_name: null, avatar: null, flags: 0 };
 
-		function mockLatestCase(type: TypeVariation | null) {
+		function mockLatestCase(type: TypeVariation | null, createdAt?: number) {
 			vi.mocked(getModeration).mockResolvedValue({
 				waitLock: vi.fn(async () => undefined),
-				getLatestRecentCachedEntryForUser: vi.fn(() => (type === null ? null : { type }))
+				getLatestRecentCachedEntryForUser: vi.fn(() => (type === null ? null : { type, createdAt }))
 			} as never);
 		}
 
@@ -143,6 +143,24 @@ describe('the logs of the members who join and leave', () => {
 				const { embed } = await sentEmbed();
 				expect(embed.description).not.toContain('Roles');
 				expect(embed.description!.split('\n')).toHaveLength(1);
+			}
+		);
+
+		test.each([
+			['before', -1000, 'User Left', true],
+			['after', 1000, 'User Kicked', false]
+		] as const)(
+			'GIVEN a kick case made %s the member joined WHEN they leave THEN the footer says %s',
+			async (_when, offset, footer, listsRoles) => {
+				const member = createGuildMember({ user });
+				mockLatestCase(TypeVariation.Kick, member.joinedTimestamp! + offset);
+				vi.mocked(fetchMemberRoleIds).mockResolvedValue(['254360814063058970']);
+
+				await listener.run(guild, member, { guild_id: guild.id, user });
+
+				const { embed } = await sentEmbed();
+				expect(embed.footer?.text).toBe(footer);
+				expect(embed.description!.split('\n')).toHaveLength(listsRoles ? 2 : 1);
 			}
 		);
 

@@ -20,7 +20,8 @@ export class UserListener extends Listener {
 		const targetChannelId = settings.logsMemberRemove;
 		if (isNullish(targetChannelId)) return;
 
-		const isModerationAction = await this.isModerationAction(guild, user);
+		const joinedTimestamp = this.processJoinedTimestamp(member);
+		const isModerationAction = await this.isModerationAction(guild, user, joinedTimestamp);
 
 		const t = await fetchGuildT(guild);
 		const footer = isModerationAction.kicked
@@ -29,7 +30,6 @@ export class UserListener extends Listener {
 				? t('events/guilds-members:guildMemberSoftBanned')
 				: t('events/guilds-members:guildMemberRemove'); // A ban is a member who left, its case says the rest
 
-		const joinedTimestamp = this.processJoinedTimestamp(member);
 		// Only a member who left by themselves lists the roles, a ban, a kick or a softban keeps them in its case. The
 		// gateway no longer has the roles of the member, they come from the member the cache held:
 		const wasModerated = isModerationAction.kicked || isModerationAction.banned || isModerationAction.softbanned;
@@ -59,13 +59,19 @@ export class UserListener extends Listener {
 		});
 	}
 
-	private async isModerationAction(guild: Guild, user: GatewayGuildMemberRemoveDispatchData['user']): Promise<IsModerationAction> {
+	private async isModerationAction(
+		guild: Guild,
+		user: GatewayGuildMemberRemoveDispatchData['user'],
+		joinedTimestamp: number
+	): Promise<IsModerationAction> {
 		const moderation = await getModeration(guild);
 		await moderation.waitLock();
 
 		const latestLogForUser = moderation.getLatestRecentCachedEntryForUser(user.id);
 
-		if (latestLogForUser === null) {
+		// A case from before the member joined is of an earlier stay (kicked, joined again, and left): it does not tell
+		// why they leave now. With no join time to compare, the case is trusted:
+		if (latestLogForUser === null || (joinedTimestamp !== -1 && latestLogForUser.createdAt < joinedTimestamp)) {
 			return {
 				kicked: false,
 				banned: false,
