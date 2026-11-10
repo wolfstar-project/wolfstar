@@ -18,6 +18,11 @@ import { startWorkerMessageRelay } from '#lib/sharder/workers';
 import { forwardsDispatches, isWorker } from '#utils/worker';
 import { fileURLToPath } from 'node:url';
 
+/**
+ * What a worker passes as the public key of the application: it has no HTTP server, so no request is ever verified with it.
+ */
+const WorkerDiscordPublicKey = 'unused-by-workers';
+
 export function createClient() {
 	const worker = isWorker();
 	// Set when a shard manager spawned this process (`SHARDER_ENABLED`), it then only connects its own gateway shards:
@@ -30,7 +35,8 @@ export function createClient() {
 	// oxlint-disable-next-line no-new
 	new GatewayClient({
 		discordToken: envParseString('DISCORD_TOKEN'),
-		discordPublicKey: envParseString('DISCORD_PUBLIC_KEY'),
+		// The key verifies the interaction requests, which a worker never serves: the framework still refuses an empty one.
+		discordPublicKey: worker ? WorkerDiscordPublicKey : envParseString('DISCORD_PUBLIC_KEY'),
 		intents:
 			GatewayIntentBits.AutoModerationExecution |
 			GatewayIntentBits.GuildModeration |
