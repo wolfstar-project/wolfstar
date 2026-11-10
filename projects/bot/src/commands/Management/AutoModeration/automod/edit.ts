@@ -11,7 +11,7 @@ import { getMissingAutoModerationLogPermissions } from '#lib/moderation/automod/
 import { parseAutoModerationResponse } from '#lib/moderation/automod/response';
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { channelMention, inlineCode } from '@discordjs/formatters';
-import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
+import { renderAutoModerationRule } from '#lib/structures/automod-menu';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { isNullish } from '@sapphire/utilities';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
@@ -118,13 +118,19 @@ export class UserCommand extends Command {
 			}
 			data.response = response;
 		}
+		if (Object.keys(data).length === 0 && !hasSoftAction && ruleOptions === null && isNullish(options['log-channel']))
+			return this.#reply(interaction, translateKey(t, `${Root}:editNothing`));
+
+		// The log channel is checked on Discord and the rule is edited there, which can outlast the three seconds Discord
+		// gives to answer: the reply is deferred, then written.
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
+		const fail = (content: string) => deferred.update({ content });
 		if (!isNullish(options['log-channel'])) {
 			const channelId = options['log-channel'].id;
 			const missing = await getMissingAutoModerationLogPermissions(interaction.guildId, channelId);
-			if (missing === null) return this.#reply(interaction, translateKey(t, `${Root}:editLogChannelUnknown`));
+			if (missing === null) return fail(translateKey(t, `${Root}:editLogChannelUnknown`));
 			if (missing.length > 0) {
-				return this.#reply(
-					interaction,
+				return fail(
 					translateKey(t, `${Root}:editLogChannelMissingPermissions`, {
 						channel: channelMention(channelId),
 						permissions: missing.map((permission) => inlineCode(permission)).join(', ')
@@ -133,9 +139,6 @@ export class UserCommand extends Command {
 			}
 			data.logChannelId = channelId;
 		}
-
-		if (Object.keys(data).length === 0 && !hasSoftAction && ruleOptions === null)
-			return this.#reply(interaction, translateKey(t, `${Root}:editNothing`));
 
 		let updated: AutoModerationRule;
 		try {
@@ -147,7 +150,7 @@ export class UserCommand extends Command {
 				...(ruleOptions !== null && { options: { ...current.options, ...ruleOptions } as AutoModerationRule['options'] })
 			}));
 		} catch (error) {
-			return this.#reply(interaction, translateRuleError(t, error, options.rule));
+			return fail(translateRuleError(t, error, options.rule));
 		}
 
 		// The rule is opened on what was edited, see the `automod` interaction handler:
@@ -155,7 +158,10 @@ export class UserCommand extends Command {
 			hasSoftAction || 'hardAction' in data || 'hardActionDuration' in data || 'thresholdMaximum' in data || 'thresholdDuration' in data;
 		const changedExtra = 'response' in data || 'logChannelId' in data;
 		const section = ruleOptions !== null ? 'options' : changedExtra && !changedResponse ? 'extra' : changedResponse ? 'response' : 'options';
-		return replyWithAutoModerationRule(interaction, t, updated, section, translateKey(t, `${Root}:editSuccess`, { name: updated.name }));
+		const message = renderAutoModerationRule({ t, ownerId: interaction.user.id }, updated, section, {
+			notice: translateKey(t, `${Root}:editSuccess`, { name: updated.name })
+		});
+		return deferred.update(message);
 	}
 
 	/**

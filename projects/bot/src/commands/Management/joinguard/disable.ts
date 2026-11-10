@@ -16,15 +16,18 @@ const Root = JoinGuardRoot;
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction) {
 		const t = getSupportedUserLanguageT(interaction);
+		// The write waits for the lock of the settings, and the permissions of the log channel are read from Discord:
+		// either can outlast the three seconds Discord gives to answer.
+		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const { guildId } = interaction;
 		const { settings } = await readJoinGuardConfig(guildId);
 		if (!settings.joinGuardEnabled) {
-			return interaction.reply({ content: translateKey(t, `${Root}:alreadyDisabled`), flags: MessageFlags.Ephemeral });
+			return deferred.update({ content: translateKey(t, `${Root}:alreadyDisabled`) });
 		}
 
 		await writeSettings(guildId, { joinGuardEnabled: false }, interaction.user.id);
 		announceJoinGuardChange(guildId);
 
-		return interaction.reply({ content: translateKey(t, `${Root}:disabled`), flags: MessageFlags.Ephemeral });
+		return deferred.update({ content: translateKey(t, `${Root}:disabled`) });
 	}
 }
