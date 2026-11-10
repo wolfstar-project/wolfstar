@@ -15,7 +15,7 @@ import { Events } from '#lib/types/Enums';
 import type { GuildMessage } from '#lib/types';
 import { floatPromise, resolveGuild } from '#common';
 import { minutes, seconds } from 'wolfstar-shared';
-import { claimOnce, releaseClaim } from '#utils/claims';
+import { claim, releaseClaim } from '#utils/claims';
 import { describeMessage } from '#utils/debug';
 import { deleteMessage, getModeration, isModerator } from '#utils/functions';
 import type { createLogMessage } from '#utils/functions';
@@ -371,8 +371,9 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 	 * @param content - What it says.
 	 */
 	private async sendAlertContent(message: GuildMessage, key: string, content: string) {
-		const claim = `automod-alert:${message.guildId}:${message.channelId}:${message.author.id}:${key}`;
-		if (!(await claimOnce(claim, AlertCooldownSeconds))) {
+		const claimKey = `automod-alert:${message.guildId}:${message.channelId}:${message.author.id}:${key}`;
+		const token = await claim(claimKey, AlertCooldownSeconds);
+		if (token === null) {
 			this.debug(message, `alert ${key} left out, the author was told less than ${AlertCooldownSeconds} seconds ago`);
 			return null;
 		}
@@ -380,8 +381,8 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		try {
 			return await this.sendTemporaryMessage(message, content, seconds(AlertCooldownSeconds));
 		} catch (error) {
-			// An alert that could not be sent does not keep the next one out:
-			await releaseClaim(claim);
+			// An alert that could not be sent does not keep the next one out, unless its claim ended and is another's now:
+			await releaseClaim(claimKey, token);
 			throw error;
 		}
 	}

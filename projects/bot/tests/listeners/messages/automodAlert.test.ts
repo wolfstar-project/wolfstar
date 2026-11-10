@@ -40,7 +40,9 @@ describe('the alert of an auto-moderation rule', () => {
 				store.set(key, value);
 				return 'OK';
 			},
-			del: async (key: string) => (store.delete(key) ? 1 : 0)
+			del: async (key: string) => (store.delete(key) ? 1 : 0),
+			// The release script of a claim: deletes the key only when it holds the token.
+			eval: async (_script: string, _keys: number, key: string, token: string) => (store.get(key) === token && store.delete(key) ? 1 : 0)
 		} as never;
 	});
 
