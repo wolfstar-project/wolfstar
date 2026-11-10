@@ -17,7 +17,7 @@ jobs:
         name: Sync translations from Tolgee
         permissions:
             contents: read
-        uses: wolfstar-project/.github/.github/workflows/reusable-tolgee-sync.yml@main
+        uses: wolfstar-project/.github/.github/workflows/reusable-tolgee-sync.yml@0a65e26dd292ea41e046e8d75ae681918a0ec046 # main
         with:
             # `pnpm tolgee:pull` runs the CLI (config: .tolgeerc.cjs) and then
             # scripts/tolgee-pull-remap.ts, which remaps Tolgee language tags
