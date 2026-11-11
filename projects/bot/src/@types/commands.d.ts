@@ -185,6 +185,7 @@ declare module '@wolfstar/http-framework' {
       logs?: TransformedArguments.Channel & { type: Extract<TransformedArguments.Channel['type'], 0 | 5> };
     };
     'honeypot show': {};
+    'info': {};
     'joinguard disable': {};
     'joinguard enable': {};
     'joinguard post-button': {};
