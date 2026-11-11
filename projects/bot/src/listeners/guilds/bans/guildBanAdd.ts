@@ -21,7 +21,7 @@ export class UserListener extends EventGatewayListener<'guildBanAdd'> {
 		const moderation = await getModeration(guild);
 		await moderation.waitLock();
 
-		if (moderation.checkSimilarEntryHasBeenCreated(TypeVariation.Ban, user.id)) {
+		if (await moderation.hasSimilarEntryBeenCreated(TypeVariation.Ban, user.id)) {
 			controller.abort();
 			return;
 		}

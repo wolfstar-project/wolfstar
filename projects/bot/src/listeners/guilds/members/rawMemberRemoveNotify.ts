@@ -67,7 +67,7 @@ export class UserListener extends Listener {
 		const moderation = await getModeration(guild);
 		await moderation.waitLock();
 
-		const latestLogForUser = moderation.getLatestRecentCachedEntryForUser(user.id);
+		const latestLogForUser = await moderation.fetchLatestRecentEntryForUser(user.id);
 
 		// A case from before the member joined is of an earlier stay (kicked, joined again, and left): it does not tell
 		// why they leave now. With no join time to compare, the case is trusted:

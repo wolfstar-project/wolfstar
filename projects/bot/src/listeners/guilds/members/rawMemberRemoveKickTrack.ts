@@ -29,7 +29,7 @@ export class UserListener extends Listener {
 		await moderation.waitLock();
 
 		// The member was banned or kicked by the bot a moment ago, which made its own case:
-		const latest = moderation.getLatestRecentCachedEntryForUser(user.id);
+		const latest = await moderation.fetchLatestRecentEntryForUser(user.id);
 		if (latest !== null && [TypeVariation.Kick, TypeVariation.Ban, TypeVariation.Softban].includes(latest.type)) return;
 
 		const logger = await getLogger(guild);
@@ -39,7 +39,7 @@ export class UserListener extends Listener {
 		// The bot kicked them itself, and the action makes its own case:
 		if (context.userId === process.env.CLIENT_ID) return;
 
-		if (moderation.checkSimilarEntryHasBeenCreated(TypeVariation.Kick, user.id)) return;
+		if (await moderation.hasSimilarEntryBeenCreated(TypeVariation.Kick, user.id)) return;
 
 		const roles = await fetchMemberRoleIds(member);
 		await moderation.insert(

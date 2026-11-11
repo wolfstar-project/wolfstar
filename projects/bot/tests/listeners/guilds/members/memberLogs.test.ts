@@ -89,7 +89,7 @@ describe('the logs of the members who join and leave', () => {
 		function mockLatestCase(type: TypeVariation | null, createdAt?: number) {
 			vi.mocked(getModeration).mockResolvedValue({
 				waitLock: vi.fn(async () => undefined),
-				getLatestRecentCachedEntryForUser: vi.fn(() => (type === null ? null : { type, createdAt }))
+				fetchLatestRecentEntryForUser: vi.fn(async () => (type === null ? null : { type, createdAt }))
 			} as never);
 		}
 

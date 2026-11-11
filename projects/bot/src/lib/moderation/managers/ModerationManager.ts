@@ -13,6 +13,8 @@ import { isNullish } from '@sapphire/utilities';
 import { UserError, container } from '@wolfstar/http-framework';
 import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
+import { randomUUID } from 'node:crypto';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { deleteModerationCaseData, fetchModerationCaseData, fetchModerationCasesData, setModerationCaseData } from 'wolfstar-database';
 
 enum CacheActions {
@@ -20,6 +22,19 @@ enum CacheActions {
 	Fetch,
 	Insert
 }
+
+/**
+ * How long a lock of a moderation action is kept in Redis at most, should the process that took it die before releasing
+ * it, how long another process waits for the locks of a guild, and how often it looks.
+ */
+const SharedLockDuration = seconds(30);
+const SharedLockWait = seconds(10);
+const SharedLockInterval = 50;
+
+/**
+ * How many of the latest cases of a user are read from the database to find a recent one.
+ */
+const RecentCasesLimit = 5;
 
 export class ModerationManager {
 	/**
@@ -97,6 +112,43 @@ export class ModerationManager {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Retrieves the latest recent entry for a given user created in the last 30 seconds, from the cache or, when this
+	 * process has not seen it, from the database.
+	 *
+	 * @remarks
+	 *
+	 * The cache is of this process: a case made by a command on the gateway is not in the cache of the worker that
+	 * handles the event it causes, but it is in the database.
+	 *
+	 * @param userId - The ID of the user.
+	 * @returns The latest recent entry for the user, or `null` if no entry is found.
+	 */
+	public async fetchLatestRecentEntryForUser(userId: string) {
+		const cached = this.getLatestRecentCachedEntryForUser(userId);
+		if (cached !== null) return cached;
+
+		const minimumTime = Date.now() - seconds(30);
+		const entries = await this.#fetchLatestEntriesForUser(userId);
+		return entries.find((entry) => entry.createdAt >= minimumTime) ?? null;
+	}
+
+	/**
+	 * Checks, in the cache and in the database, if a moderation entry has been created for a given type and user within
+	 * the last minute, see {@linkcode checkSimilarEntryHasBeenCreated}.
+	 *
+	 * @param type - The type of moderation action.
+	 * @param userId - The ID of the user.
+	 * @returns A boolean indicating whether a moderation entry has been created.
+	 */
+	public async hasSimilarEntryBeenCreated(type: TypeVariation, userId: Snowflake) {
+		if (this.checkSimilarEntryHasBeenCreated(type, userId)) return true;
+
+		const minimumTime = Date.now() - minutes(1);
+		const entries = await this.#fetchLatestEntriesForUser(userId);
+		return entries.some((entry) => entry.createdAt >= minimumTime && ModerationManager.#isSimilar(type, entry.type));
 	}
 
 	public create<Type extends TypeVariation = TypeVariation>(data: ModerationManager.CreateData<Type>): ModerationManager.Entry<Type> {
@@ -250,9 +302,11 @@ export class ModerationManager {
 		// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 		const lock = createReferPromise<void>();
 		this.#locks.push(lock);
+		const releaseShared = this.#takeSharedLock();
 		floatPromise(
-			lock.promise.finally(() => {
+			lock.promise.finally(async () => {
 				this.#locks.splice(this.#locks.indexOf(lock), 1);
+				await releaseShared();
 			})
 		);
 
@@ -263,8 +317,13 @@ export class ModerationManager {
 		for (const lock of this.#locks) lock.resolve();
 	}
 
-	public waitLock() {
-		return Promise.all(this.#locks.map((lock) => lock.promise));
+	/**
+	 * Waits for the moderation actions that are being made in the guild, by this process and by the others (the
+	 * gateway makes a case that a worker reads the event of).
+	 */
+	public async waitLock() {
+		await Promise.all(this.#locks.map((lock) => lock.promise));
+		await this.#waitSharedLocks();
 	}
 
 	/**
@@ -282,20 +341,87 @@ export class ModerationManager {
 	 */
 	public checkSimilarEntryHasBeenCreated(type: TypeVariation, userId: Snowflake) {
 		const minimumTime = Date.now() - minutes(1);
-		const checkSoftBan = type === TypeVariation.Ban;
 		for (const entry of this.#cache.values()) {
 			// If it's not the same user target or if it's at least 1 minute old, skip:
 			if (userId !== entry.userId || entry.createdAt < minimumTime) continue;
 
-			// If there was a log with the same type in the last minute, return true:
-			if (type === entry.type) return true;
-
-			// If this log is a ban or an unban, but the user was softbanned recently, return true:
-			if (checkSoftBan && entry.type === TypeVariation.Softban) return true;
+			if (ModerationManager.#isSimilar(type, entry.type)) return true;
 		}
 
 		// No similar entry has been created in the last minute:
 		return false;
+	}
+
+	/**
+	 * Whether a case of a type makes a new one of another type a duplicate: one with the same type, or a softban for a
+	 * ban or an unban.
+	 */
+	static #isSimilar(type: TypeVariation, existing: TypeVariation) {
+		return type === existing || (type === TypeVariation.Ban && existing === TypeVariation.Softban);
+	}
+
+	/**
+	 * Registers the lock in Redis, where the other processes see it.
+	 *
+	 * @returns The function that removes it, which never throws.
+	 */
+	#takeSharedLock(): () => Promise<void> {
+		const { redis } = container;
+		if (redis?.status !== 'ready') return async () => {};
+
+		const key = this.#sharedLockKey;
+		const member = randomUUID();
+		const registered = redis
+			.zadd(key, Date.now() + SharedLockDuration, member)
+			.then(() => true)
+			.catch((error: unknown) => {
+				container.logger.error(`[MODERATION] Could not register a lock of ${this.guild.id}:`, error);
+				return false;
+			});
+
+		return async () => {
+			if (!(await registered)) return;
+			await redis
+				.zrem(key, member)
+				.catch((error: unknown) => container.logger.error(`[MODERATION] Could not release a lock of ${this.guild.id}:`, error));
+		};
+	}
+
+	/**
+	 * Waits until no process holds a lock of the guild in Redis. A lock that was not released in time (its process died)
+	 * is not waited for, and neither is a Redis that does not answer.
+	 */
+	async #waitSharedLocks() {
+		const { redis } = container;
+		if (redis?.status !== 'ready') return;
+
+		const key = this.#sharedLockKey;
+		const deadline = Date.now() + SharedLockWait;
+		try {
+			while (true) {
+				await redis.zremrangebyscore(key, '-inf', Date.now());
+				if ((await redis.zcard(key)) === 0 || Date.now() >= deadline) return;
+				await sleep(SharedLockInterval);
+			}
+		} catch (error) {
+			container.logger.error(`[MODERATION] Could not wait for the locks of ${this.guild.id}:`, error);
+		}
+	}
+
+	get #sharedLockKey() {
+		return `wolfstar:moderation-locks:${this.guild.id}`;
+	}
+
+	/**
+	 * The latest cases of a user, from the database, without caching them: they miss the data the table has no column for.
+	 */
+	async #fetchLatestEntriesForUser(userId: Snowflake) {
+		const rows = await this.#table
+			.where({ guildId: this.#guildId, targetId: BigInt(userId) })
+			.orderBy((row) => row.id.desc())
+			.limit(RecentCasesLimit)
+			.all();
+		return rows.map((row) => ModerationManagerEntry.from(this.guild, row));
 	}
 
 	#addToCache(entry: ModerationManagerEntry | null, type: CacheActions): ModerationManagerEntry;
