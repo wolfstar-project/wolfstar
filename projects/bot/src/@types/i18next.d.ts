@@ -2444,9 +2444,8 @@ declare module "i18next" {
         guildMemberKicked: "User Kicked";
         guildMemberNoUpdate: "No update detected";
         guildMemberRemove: "User Left";
-        guildMemberRemoveDescription: "{{user}} joined this server *an unknown time ago*";
-        guildMemberRemoveDescriptionWithJoinedAt: "{{user}} joined this server {{relativeTime}}";
-        guildMemberRemoveLeft: "{{user}} left this server {{relativeTime}}";
+        guildMemberRemoveDescription: "{{user}} left this server, which they joined *an unknown time ago*";
+        guildMemberRemoveDescriptionWithJoinedAt: "{{user}} left this server, which they joined {{relativeTime}}";
         guildMemberRemoveRoles: "**Roles**: {{roles}}";
         guildMemberRemovedRoles_other: "**Removed roles**: {{removedRoles, list(conjunction)}}";
         guildMemberRemovedRoles_one: "**Removed role**: {{removedRoles}}";

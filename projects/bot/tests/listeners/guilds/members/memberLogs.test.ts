@@ -107,8 +107,7 @@ describe('the logs of the members who join and leave', () => {
 			expect(key).toBe('logsMemberRemove');
 			expect(channelId).toBe(logsChannelId);
 			expect(embed.footer?.text).toBe(footer);
-			expect(embed.description).toMatch(/joined this server <t:\d+:R>/);
-			expect(embed.description).toMatch(/left this server <t:\d+:R>/);
+			expect(embed.description).toMatch(/left this server, which they joined <t:\d+:R>/);
 		});
 
 		test('GIVEN a member the cache did not hold WHEN they leave THEN the description says they joined an unknown time ago', async () => {
@@ -117,9 +116,8 @@ describe('the logs of the members who join and leave', () => {
 			await listener.run(guild, null, { guild_id: guild.id, user });
 
 			const { embed } = await sentEmbed();
-			expect(embed.description).toContain('joined this server *an unknown time ago*');
-			expect(embed.description).not.toMatch(/joined this server <t:/);
-			expect(embed.description).toMatch(/left this server <t:\d+:R>/);
+			expect(embed.description).toContain('left this server, which they joined *an unknown time ago*');
+			expect(embed.description).not.toContain('<t:');
 		});
 
 		test('GIVEN a member with roles WHEN they leave by themselves THEN the roles are a line of the description', async () => {
@@ -130,8 +128,8 @@ describe('the logs of the members who join and leave', () => {
 
 			const { embed } = await sentEmbed();
 			const lines = embed.description!.split('\n');
-			expect(lines).toHaveLength(3);
-			expect(lines[2]).toBe(`**Roles**: ${roleMention('254360814063058970')} ${roleMention('254360814063058971')}`);
+			expect(lines).toHaveLength(2);
+			expect(lines[1]).toBe(`**Roles**: ${roleMention('254360814063058970')} ${roleMention('254360814063058971')}`);
 		});
 
 		test.each([TypeVariation.Kick, TypeVariation.Ban, TypeVariation.Softban] as const)(
@@ -144,7 +142,7 @@ describe('the logs of the members who join and leave', () => {
 
 				const { embed } = await sentEmbed();
 				expect(embed.description).not.toContain('Roles');
-				expect(embed.description!.split('\n')).toHaveLength(2);
+				expect(embed.description!.split('\n')).toHaveLength(1);
 			}
 		);
 
@@ -162,7 +160,7 @@ describe('the logs of the members who join and leave', () => {
 
 				const { embed } = await sentEmbed();
 				expect(embed.footer?.text).toBe(footer);
-				expect(embed.description!.split('\n')).toHaveLength(listsRoles ? 3 : 2);
+				expect(embed.description!.split('\n')).toHaveLength(listsRoles ? 2 : 1);
 			}
 		);
 
@@ -173,7 +171,7 @@ describe('the logs of the members who join and leave', () => {
 
 			const { embed } = await sentEmbed();
 			expect(embed.description).not.toContain('Roles');
-			expect(embed.description!.split('\n')).toHaveLength(2);
+			expect(embed.description!.split('\n')).toHaveLength(1);
 		});
 
 		test('GIVEN no channel for the logs WHEN a member leaves THEN nothing is sent', async () => {
