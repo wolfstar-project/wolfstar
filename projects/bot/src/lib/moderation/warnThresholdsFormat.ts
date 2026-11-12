@@ -5,7 +5,6 @@ import type { WarnThreshold, WarnThresholdAction } from 'wolfstar-database';
  * The names of the actions of a threshold of warnings.
  */
 export const WarnThresholdActionKeys = {
-	Timeout: 'commands/warn-thresholds:actionTimeout',
 	Mute: 'commands/warn-thresholds:actionMute',
 	Kick: 'commands/warn-thresholds:actionKick',
 	Softban: 'commands/warn-thresholds:actionSoftban',

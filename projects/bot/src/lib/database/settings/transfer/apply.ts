@@ -2,7 +2,6 @@ import { readSettingsAuditLog, writeSettingsTransaction } from '#lib/database/se
 import type { ParsedConfiguration } from '#lib/database/settings/transfer/parse';
 import {
 	findOversizedRuleLists,
-	findStaleTimeoutRules,
 	getImportedRules,
 	getPlannedRules,
 	getPlannedSettings,
@@ -39,8 +38,7 @@ export class ConfigurationImportStaleError extends Error {
  * @param actorId - The user who confirmed the import, for the audit log.
  * @returns What was done.
  * @throws {@linkcode ConfigurationImportStaleError} When a list of a rule of the file is longer than the limit and than
- * the one the rule of the server has by now, which the file was allowed for when it was read, or when a rule of the
- * file is a Timeout with no duration and the rule of the server no longer is one.
+ * the one the rule of the server has by now, which the file was allowed for when it was read.
  */
 export async function applyConfigurationImport(guildId: Snowflake, parsed: ParsedConfiguration, actorId: string): Promise<ConfigurationPlan> {
 	// The locks are taken in the order the rest of the bot takes them, the settings and then the rules:
@@ -53,7 +51,6 @@ export async function applyConfigurationImport(guildId: Snowflake, parsed: Parse
 		// it now, since the server may have gained rules meanwhile:
 		if ((getImportedRules(rules, parsed)?.length ?? 0) > MaximumAutoModerationRules) throw new ConfigurationImportStaleError();
 		if (findOversizedRuleLists(rules, parsed).length > 0) throw new ConfigurationImportStaleError();
-		if (findStaleTimeoutRules(rules, parsed).length > 0) throw new ConfigurationImportStaleError();
 
 		const plan = planConfigurationImport(transaction.settings, rules, parsed);
 		if (plan.isEmpty) return plan;

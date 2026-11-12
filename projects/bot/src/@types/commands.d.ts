@@ -86,7 +86,7 @@ declare module '@wolfstar/http-framework' {
       maximum?: number;
       minimum?: number;
       period?: number;
-      punishment?: 'None' | 'Warning' | 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
+      punishment?: 'None' | 'Warning' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
       'punishment-duration'?: string;
       rename?: string;
       response?: string;
@@ -611,7 +611,7 @@ declare module '@wolfstar/http-framework' {
       user: TransformedArguments.User;
     };
     'warn-thresholds add': {
-      action: 'Timeout' | 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
+      action: 'Mute' | 'Kick' | 'Softban' | 'Ban' | 'VoiceKick';
       count: number;
       duration?: string;
       period?: string;

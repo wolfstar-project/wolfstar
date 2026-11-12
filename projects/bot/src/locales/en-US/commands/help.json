@@ -32,7 +32,7 @@
 		"examples": [
 			"create name:No invites type:Invites",
 			"add rule:Bad words value:example",
-			"edit rule:No invites punishment:Timeout punishment-duration:1h threshold:3",
+			"edit rule:No invites punishment:Mute punishment-duration:1h threshold:3",
 			"ignore rule:No invites channel:#partners"
 		],
 		"reminder": "A message is held to the first enabled rule of each type it infringes, so the order of the rules of a type decides the punishment. `add` and `remove` edit the list of a rule: its words, or the links and the invites it allows."
@@ -215,8 +215,8 @@
 		"reminder": "It is good practice to warn a member informally before filing a warning."
 	},
 	"/warn-thresholds": {
-		"extendedHelp": "Sets what happens to a member who reaches a number of active warnings: a timeout, a mute, a kick, a softban, a ban or a voice kick, for a `duration` or for good. The warnings can be counted over a `period` only, such as the last 30 days.\nA server can have up to 10 thresholds, and a member reaches each one once, when their count is exactly its number.",
-		"examples": ["add count:3 action:Timeout duration:1h", "add count:5 action:Ban period:30d", "remove count:3"],
+		"extendedHelp": "Sets what happens to a member who reaches a number of active warnings: a mute, a kick, a softban, a ban or a voice kick, for a `duration` or for good. A mute is a timeout of Discord when its duration fits one and `moderation.mute-timeout` is on. The warnings can be counted over a `period` only, such as the last 30 days.\nA server can have up to 10 thresholds, and a member reaches each one once, when their count is exactly its number.",
+		"examples": ["add count:3 action:Mute duration:1h", "add count:5 action:Ban period:30d", "remove count:3"],
 		"reminder": "The action is taken by me, as a case of the moderation log, with no direct message. When several thresholds are reached at once, the one with the highest number is taken."
 	},
 	"/whois": {

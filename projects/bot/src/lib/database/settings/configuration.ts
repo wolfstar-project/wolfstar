@@ -278,6 +278,12 @@ export function getConfiguration() {
 			maximum: 60,
 			default: 0
 		},
+		moderationMuteTimeout: {
+			type: 'boolean',
+			name: 'moderation.mute-timeout',
+			description: 'settings:moderationMuteTimeout',
+			default: true
+		},
 		moderationDehoist: {
 			type: 'boolean',
 			name: 'moderation.dehoist',

@@ -51,7 +51,8 @@ describe('convertLegacyAutomodRules', () => {
 		[3, 'Mute'],
 		[4, 'Softban'],
 		[5, 'Ban'],
-		[6, 'Timeout']
+		// A legacy Timeout is a Mute, which is a timeout while the guild has `moderation.mute-timeout`:
+		[6, 'Mute']
 	])('GIVEN the hard action %i THEN it is %s', (value, action) => {
 		expect(convert({ 'selfmod.attachments.enabled': true, 'selfmod.attachments.hard-action': value }).rules[0]).toMatchObject({
 			hard_action: action

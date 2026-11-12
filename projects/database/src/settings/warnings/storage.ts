@@ -1,5 +1,5 @@
 import type { Database } from '../../index.js';
-import type { AutoModerationHardAction } from '../types.js';
+import { normalizeAutoModerationHardAction, type AutoModerationHardAction } from '../types.js';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
@@ -10,7 +10,7 @@ export const MaximumWarnThresholds = 10;
 /**
  * The actions a threshold of warnings takes, every hard action but another warning, which would count towards itself.
  */
-export const WarnThresholdActions = ['Timeout', 'Mute', 'Kick', 'Softban', 'Ban', 'VoiceKick'] as const satisfies readonly AutoModerationHardAction[];
+export const WarnThresholdActions = ['Mute', 'Kick', 'Softban', 'Ban', 'VoiceKick'] as const satisfies readonly AutoModerationHardAction[];
 export type WarnThresholdAction = (typeof WarnThresholdActions)[number];
 
 /**
@@ -38,6 +38,7 @@ function isWarnThresholdAction(value: string): value is WarnThresholdAction {
 export async function fetchWarnThresholds(db: Database, guildId: Snowflake): Promise<WarnThreshold[]> {
 	const rows = await db.orm.public.GuildWarnThreshold.where({ guildId: BigInt(guildId) }).all();
 	return rows
+		.map((row) => ({ ...row, action: normalizeAutoModerationHardAction(row.action) }))
 		.filter((row) => isWarnThresholdAction(row.action))
 		.map((row) => ({
 			count: row.count,

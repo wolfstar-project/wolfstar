@@ -467,6 +467,7 @@ namespace public {
     trackRoles    Boolean @default(false) @map("track_roles")
     trackKicks    Boolean @default(false) @map("track_kicks")
     confirmRecentMinutes Int @default(0) @map("confirm_recent_minutes")
+    muteTimeout   Boolean @default(true) @map("mute_timeout")
     dehoist       Boolean @default(false)
     directMessage Boolean @default(true) @map("direct_message")
     displayReason Boolean @default(true) @map("display_reason")

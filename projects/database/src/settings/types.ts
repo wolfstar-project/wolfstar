@@ -9,9 +9,24 @@ import type { Access } from './access.js';
 export type SerializedEmoji = string & { __TYPE__: 'SerializedEmoji' };
 
 /**
- * The hard action an auto-moderation rule takes, as the `GuildAutoModerationHardAction` enum stores it.
+ * A hard action as the `GuildAutoModerationHardAction` enum stores it. The enum still has `Timeout`, which a native
+ * enum cannot drop: a mute is a timeout when the guild lets it be one, see {@linkcode normalizeAutoModerationHardAction}.
  */
-export type AutoModerationHardAction = Models.public_GuildAutoModerationRule['hardAction'];
+export type StoredAutoModerationHardAction = Models.public_GuildAutoModerationRule['hardAction'];
+
+/**
+ * The hard action an auto-moderation rule, an escalation step or a threshold of warnings takes. `Timeout` is no longer
+ * one: it is a `Mute`, which times the member out when the guild has `moderationMuteTimeout` and the duration fits.
+ */
+export type AutoModerationHardAction = Exclude<StoredAutoModerationHardAction, 'Timeout'>;
+
+/**
+ * Reads a hard action as it is stored, a `Timeout` saved before it was merged into `Mute` being a `Mute`.
+ * @param action The stored hard action.
+ */
+export function normalizeAutoModerationHardAction(action: StoredAutoModerationHardAction): AutoModerationHardAction {
+	return action === 'Timeout' ? 'Mute' : action;
+}
 
 /**
  * What is done to who writes in the honeypot channel of a guild, as the `HoneypotAction` enum stores it. A `Softban`

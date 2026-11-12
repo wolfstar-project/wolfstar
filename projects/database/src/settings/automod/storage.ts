@@ -1,6 +1,7 @@
 import type { Database, Models } from '../../index.js';
 import type { Snowflake } from 'discord-api-types/v10';
 import { isRowId } from '../ids.js';
+import { normalizeAutoModerationHardAction } from '../types.js';
 import type { DatabaseTransaction } from '../storage.js';
 import {
 	normalizeAutoModerationRuleEscalation,
@@ -20,7 +21,7 @@ function toRule(row: Pick<Row, keyof AutoModerationRuleData | 'id' | 'guildId'>)
 		type: row.type,
 		enabled: row.enabled,
 		softAction: row.softAction,
-		hardAction: row.hardAction,
+		hardAction: normalizeAutoModerationHardAction(row.hardAction),
 		hardActionDuration: row.hardActionDuration,
 		thresholdMaximum: row.thresholdMaximum,
 		thresholdDuration: row.thresholdDuration,

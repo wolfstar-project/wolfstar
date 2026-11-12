@@ -57,7 +57,6 @@ const TypeOptions = [
 			applyLocalizedBuilder(option, `${Root}:optionsPunishment`).setChoices(
 				createLocalizedChoice(`${Root}:punishmentNone`, { value: 'None' }),
 				createLocalizedChoice('moderation:typeWarning', { value: 'Warning' }),
-				createLocalizedChoice('moderation:typeTimeout', { value: 'Timeout' }),
 				createLocalizedChoice('moderation:typeMute', { value: 'Mute' }),
 				createLocalizedChoice('moderation:typeKick', { value: 'Kick' }),
 				createLocalizedChoice('moderation:typeSoftban', { value: 'Softban' }),

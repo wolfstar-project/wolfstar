@@ -1,6 +1,7 @@
 import { readSettings } from '#lib/database';
 import { GuildCache } from '#utils/guildCache';
 import { ModerationActions } from '#lib/moderation/actions';
+import { applyMute } from '#lib/moderation/actions/mute';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
 import { getModeration } from '#utils/functions';
@@ -34,14 +35,12 @@ function readWarnThresholds(guildId: Snowflake): Promise<readonly WarnThreshold[
 
 /**
  * The thresholds every server starts with, while it has none of its own and `moderation.default-warn-thresholds` is
- * on: a mute of half an hour at the third warning, a kick at the fifth and a ban at the seventh. A server with no muted
- * role gets a timeout instead of the mute, since a mute needs the role and the bot would not set one up on its own.
- *
- * @param mutedRoleId - The muted role of the server, `null` when it has none.
+ * on: a mute of half an hour at the third warning, a kick at the fifth and a ban at the seventh. Half an hour fits a
+ * Discord timeout, so the mute is one when the server has `moderation.mute-timeout` on or no muted role.
  */
-export function getDefaultWarnThresholds(mutedRoleId: Snowflake | null): readonly WarnThreshold[] {
+export function getDefaultWarnThresholds(): readonly WarnThreshold[] {
 	return [
-		{ count: 3, period: 0, action: mutedRoleId === null ? 'Timeout' : 'Mute', duration: minutes(30) },
+		{ count: 3, period: 0, action: 'Mute', duration: minutes(30) },
 		{ count: 5, period: 0, action: 'Kick', duration: null },
 		{ count: 7, period: 0, action: 'Ban', duration: null }
 	];
@@ -66,7 +65,7 @@ export async function resolveWarnThresholds(guildId: Snowflake): Promise<Resolve
 
 	const settings = await readSettings(guildId);
 	if (!settings.moderationDefaultWarnThresholds) return { thresholds: own, defaults: false };
-	return { thresholds: getDefaultWarnThresholds(settings.rolesMuted), defaults: true };
+	return { thresholds: getDefaultWarnThresholds(), defaults: true };
 }
 
 // The thresholds are cached by every shard process, so a change in one of them makes the copies of the others stale.
@@ -167,12 +166,8 @@ export async function applyWarnThreshold(guild: Guild, userId: Snowflake, thresh
 	const unlock = (await getModeration(guild)).createLock();
 	try {
 		switch (threshold.action) {
-			case 'Timeout':
-				// Discord takes no timeout without an end:
-				if (duration === null) return null;
-				return await ModerationActions.timeout.apply(guild, { ...options, duration });
 			case 'Mute':
-				return await ModerationActions.mute.apply(guild, { ...options, duration });
+				return await applyMute(guild, { ...options, duration });
 			case 'Kick':
 				return await ModerationActions.kick.apply(guild, options);
 			case 'Softban':
