@@ -47,7 +47,13 @@ export class UserListener extends Listener {
 					user: getUserMentionWithFlagsString(user.flags ?? 0, user.id),
 					relativeTime: time(seconds.fromMilliseconds(joinedTimestamp), TimestampStyles.RelativeTime)
 				});
-				const description = roles === null ? joined : `${joined}\n${t('events/guilds-members:guildMemberRemoveRoles', { roles })}`;
+				const left = t('events/guilds-members:guildMemberRemoveLeft', {
+					user: getUserMentionWithFlagsString(user.flags ?? 0, user.id),
+					relativeTime: time(seconds.fromMilliseconds(Date.now()), TimestampStyles.RelativeTime)
+				});
+				const lines: string[] = [joined, left];
+				if (roles !== null) lines.push(t('events/guilds-members:guildMemberRemoveRoles', { roles }));
+				const description = lines.join('\n');
 
 				return new EmbedBuilder()
 					.setColor(Colors.Red)
