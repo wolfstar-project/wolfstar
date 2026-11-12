@@ -36,7 +36,6 @@ export type AutoModerationRuleType = (typeof AutoModerationRuleTypes)[number];
 export const AutoModerationHardActions = [
 	'None',
 	'Warning',
-	'Timeout',
 	'Mute',
 	'Kick',
 	'Softban',
@@ -274,7 +273,9 @@ export function normalizeAutoModerationRuleEscalation(value: unknown): AutoModer
 	for (const entry of value) {
 		if (typeof entry !== 'object' || entry === null) continue;
 
-		const { action, duration } = entry as { action?: unknown; duration?: unknown };
+		const { action: stored, duration } = entry as { action?: unknown; duration?: unknown };
+		// A step saved as a `Timeout`, before it was merged into `Mute`, is a `Mute`:
+		const action = stored === 'Timeout' ? 'Mute' : stored;
 		if (!AutoModerationEscalationActions.includes(action as AutoModerationEscalationAction)) continue;
 
 		const { maximum } = AutoModerationRuleLimits.hardActionDuration;

@@ -56,7 +56,7 @@ describe('warn thresholds', () => {
 		test('GIVEN several thresholds reached at once THEN the highest count wins', () => {
 			const both = [
 				{ count: 2, period: 0, action: 'Kick' as const, duration: null },
-				{ count: 2, period: day, action: 'Timeout' as const, duration: day }
+				{ count: 2, period: day, action: 'Mute' as const, duration: day }
 			];
 			const entries = [warning(0), warning(0.5)];
 
@@ -67,16 +67,12 @@ describe('warn thresholds', () => {
 	});
 
 	describe('getDefaultWarnThresholds', () => {
-		test('GIVEN a muted role THEN the third warning mutes, the fifth kicks and the seventh bans', () => {
-			expect(getDefaultWarnThresholds('1')).toEqual([
+		test('THEN the third warning mutes for half an hour, the fifth kicks and the seventh bans', () => {
+			expect(getDefaultWarnThresholds()).toEqual([
 				{ count: 3, period: 0, action: 'Mute', duration: 1_800_000 },
 				{ count: 5, period: 0, action: 'Kick', duration: null },
 				{ count: 7, period: 0, action: 'Ban', duration: null }
 			]);
-		});
-
-		test('GIVEN no muted role THEN the third warning times out instead', () => {
-			expect(getDefaultWarnThresholds(null)[0]).toEqual({ count: 3, period: 0, action: 'Timeout', duration: 1_800_000 });
 		});
 	});
 
@@ -96,7 +92,7 @@ describe('warn thresholds', () => {
 			vi.mocked(fetchWarnThresholds).mockResolvedValue([]);
 			vi.mocked(readSettings).mockResolvedValue(settings(true, '1'));
 
-			expect(await resolveWarnThresholds('254360814063058945')).toEqual({ thresholds: getDefaultWarnThresholds('1'), defaults: true });
+			expect(await resolveWarnThresholds('254360814063058945')).toEqual({ thresholds: getDefaultWarnThresholds(), defaults: true });
 		});
 
 		test('GIVEN a server with none that turned the defaults off THEN it has none', async () => {

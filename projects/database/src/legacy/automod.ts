@@ -6,8 +6,8 @@ import {
 } from '../settings/automod/types.js';
 import { readSnowflakes, readTexts, type InsertRow, type LegacyRow } from './types.js';
 
-/** The legacy hard actions, by the integer the `selfmod.*.hard-action` columns hold. */
-const HardActions = ['None', 'Warning', 'Kick', 'Mute', 'Softban', 'Ban', 'Timeout'];
+/** The legacy hard actions, by the integer the `selfmod.*.hard-action` columns hold. A legacy `Timeout` is a `Mute`. */
+const HardActions = ['None', 'Warning', 'Kick', 'Mute', 'Softban', 'Ban', 'Mute'];
 
 const DefaultThreshold = { maximum: 10, duration: 60_000 };
 

@@ -123,11 +123,13 @@ export const AutoModerationMenuEscalationInputs = { steps: 'steps', period: 'per
 
 const EscalationActions = new Map<string, AutoModerationHardAction>([
 	...AutoModerationEscalationActions.map((action) => [action.toLowerCase(), action] as const),
-	['warn', 'Warning']
+	['warn', 'Warning'],
+	// A timeout is a mute, which is one when the server lets it be and the duration fits:
+	['timeout', 'Mute']
 ]);
 
 /**
- * Writes the steps of an escalation the way their modal reads them back, one per line (`Timeout 1h`).
+ * Writes the steps of an escalation the way their modal reads them back, one per line (`Mute 1h`).
  */
 export function formatAutoModerationMenuEscalation(steps: readonly AutoModerationRuleEscalationStep[]): string {
 	return steps.map((step) => `${step.action} ${formatAutoModerationMenuDuration(step.duration)}`.trim()).join('\n');
@@ -135,7 +137,7 @@ export function formatAutoModerationMenuEscalation(steps: readonly AutoModeratio
 
 /**
  * Reads the escalation of a rule from what was written in its modal: a step per line, the name of a hard action then
- * how long it lasts when it is temporary (`timeout 1h`, `kick`, `ban 7d`), and how long a punishment is remembered.
+ * how long it lasts when it is temporary (`mute 1h`, `kick`, `ban 7d`), and how long a punishment is remembered.
  * No step turns the escalation off.
  */
 export function parseAutoModerationMenuEscalation(t: TFunction, read: (key: string) => string | null): Result<AutoModerationRuleUpdate> {
@@ -161,11 +163,6 @@ export function parseAutoModerationMenuEscalation(t: TFunction, read: (key: stri
 
 		const duration = resolveDurationOption(t, rest.join(' '), AutoModerationRuleLimits.hardActionDuration);
 		if (typeof duration === 'object' && duration !== null) return { ok: false, error: duration.error };
-		// A timeout cannot be permanent, Discord takes none without an end:
-		if (action === 'Timeout' && isNullishOrZero(duration)) {
-			return { ok: false, error: translateKey(t, `${Root}:menuDurationTimeout`) };
-		}
-
 		escalation.push({ action, duration: isNullishOrZero(duration) ? null : duration });
 	}
 

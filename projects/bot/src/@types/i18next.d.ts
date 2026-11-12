@@ -424,7 +424,6 @@ declare module "i18next" {
         menuPunishmentPlaceholder: "Select a punishment";
         menuDuration: "Punishment duration";
         menuDurationPermanent: "Permanent";
-        menuDurationTimeout: "A timeout needs a duration, it is not applied without one.";
         menuThreshold: "Threshold";
         menuThresholdValue_one: "{{count, number}} infraction within {{period}}";
         menuThresholdValue_other: "{{count, number}} infractions within {{period}}";
@@ -434,7 +433,7 @@ declare module "i18next" {
         menuEscalationDescription: "What replaces the punishment for the members who keep reaching the threshold.";
         menuEscalationNone: "None, the punishment is the same every time.";
         menuEscalationForget: "A punishment is forgotten {{period}} after the last one.";
-        menuEscalationSteps: "One step per line: timeout 1h, kick, ban 7d";
+        menuEscalationSteps: "One step per line: mute 1h, kick, ban 7d";
         menuEscalationPeriod: "Forget a punishment after";
         menuEscalationInvalid: "`{{line}}` is not a step. Write a punishment ({{actions}}), then how long it lasts when it is temporary.";
         menuEscalationTooMany: "The escalation has at most {{maximum, number}} steps.";
@@ -867,7 +866,7 @@ declare module "i18next" {
           examples: [
             "create name:No invites type:Invites",
             "add rule:Bad words value:example",
-            "edit rule:No invites punishment:Timeout punishment-duration:1h threshold:3",
+            "edit rule:No invites punishment:Mute punishment-duration:1h threshold:3",
             "ignore rule:No invites channel:#partners",
           ];
           reminder: "A message is held to the first enabled rule of each type it infringes, so the order of the rules of a type decides the punishment. `add` and `remove` edit the list of a rule: its words, or the links and the invites it allows.";
@@ -1084,9 +1083,9 @@ declare module "i18next" {
           reminder: "It is good practice to warn a member informally before filing a warning.";
         };
         "/warn-thresholds": {
-          extendedHelp: "Sets what happens to a member who reaches a number of active warnings: a timeout, a mute, a kick, a softban, a ban or a voice kick, for a `duration` or for good. The warnings can be counted over a `period` only, such as the last 30 days.\nA server can have up to 10 thresholds, and a member reaches each one once, when their count is exactly its number.";
+          extendedHelp: "Sets what happens to a member who reaches a number of active warnings: a mute, a kick, a softban, a ban or a voice kick, for a `duration` or for good. A mute is a timeout of Discord when its duration fits one and `moderation.mute-timeout` is on. The warnings can be counted over a `period` only, such as the last 30 days.\nA server can have up to 10 thresholds, and a member reaches each one once, when their count is exactly its number.";
           examples: [
-            "add count:3 action:Timeout duration:1h",
+            "add count:3 action:Mute duration:1h",
             "add count:5 action:Ban period:30d",
             "remove count:3",
           ];
@@ -2191,7 +2190,6 @@ declare module "i18next" {
         optionsDurationDescription: "How long the action lasts, such as 1d. Leave empty for a permanent one.";
         optionsPeriodName: "period";
         optionsPeriodDescription: "Only count the warnings of this period, such as 30d. Leave empty to count every active one.";
-        actionTimeout: "Timeout";
         actionMute: "Mute";
         actionKick: "Kick";
         actionSoftban: "Softban";
@@ -2202,7 +2200,6 @@ declare module "i18next" {
         lineWithin_one: "{{count}} warning within {{period, duration}}";
         lineWithin_other: "{{count}} warnings within {{period, duration}}";
         lineDuration: "{{action}} for {{duration, duration}}";
-        timeoutNeedsDuration: "A timeout needs a duration.";
         added: "Done: {{threshold}}.";
         replaced: "Replaced: {{threshold}}.";
         removed: "The action of {{count}} warnings was removed.";
@@ -3248,6 +3245,7 @@ declare module "i18next" {
         moderationTrackTimeouts: "Whether I should record the timeouts made without using my commands.";
         moderationTrackRoles: "Whether I should record the muted and restriction roles given or taken away without using my commands. A muted role given by hand mutes the member as `/mute add` does: their other roles are taken away and kept, and they are given back when the role is taken away.";
         moderationTrackKicks: "Whether I should record the kicks made without using my commands. It takes a request to the audit log for every member that leaves, so it is off until you turn it on.";
+        moderationMuteTimeout: "Whether a mute is a timeout of Discord when its duration fits one (28 days at most), instead of the muted role. A permanent or longer mute always takes the role, and a server with no muted role always gets a timeout when it fits.";
         moderationConfirmRecentMinutes: "When a member already has a case made within these minutes, I ask the moderator to confirm before taking another action on them, so two moderators acting on one message do not punish twice. 0 never asks.";
         moderationLockdownChannels: "The channels `/lockdown channels:configured` locks down and unlocks together, up to 25: the ones a raid writes in, and not the ones the staff and the bots work in. A deleted channel leaves the list.";
         moderationDefaultWarnThresholds: "Whether the default thresholds of warnings apply while the server has none of its own: 3 warnings mute for 30 minutes (a timeout when there is no muted role), 5 kick and 7 ban. The ones you add with `/warn-thresholds add` replace them.";
@@ -3356,6 +3354,7 @@ declare module "i18next" {
           moderationTrackRoles: "Track Roles";
           moderationTrackKicks: "Track Kicks";
           moderationConfirmRecentMinutes: "Confirm After a Recent Case";
+          moderationMuteTimeout: "Mute With a Timeout";
           moderationDehoist: "Dehoist Names";
           moderationLockdownChannels: "Lockdown Channels";
           moderationDefaultWarnThresholds: "Default Warn Thresholds";

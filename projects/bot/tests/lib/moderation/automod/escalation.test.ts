@@ -26,7 +26,7 @@ function createRule(overrides: Partial<AutoModerationRule> = {}) {
 }
 
 const steps: AutoModerationRuleEscalationStep[] = [
-	{ action: 'Timeout', duration: 3_600_000 },
+	{ action: 'Mute', duration: 3_600_000 },
 	{ action: 'Kick', duration: null },
 	{ action: 'Ban', duration: null }
 ];
@@ -87,15 +87,20 @@ describe('auto-moderation escalation', () => {
 		test('GIVEN steps THEN the ones that are not are dropped, and a duration that is not one makes the step permanent', () => {
 			expect(
 				normalizeAutoModerationRuleEscalation([
-					{ action: 'Timeout', duration: 60_000.9 },
+					{ action: 'Mute', duration: 60_000.9 },
 					{ action: 'Explode' },
 					null,
 					{ action: 'Ban', duration: -5 }
 				])
 			).toEqual([
-				{ action: 'Timeout', duration: 60_000 },
+				{ action: 'Mute', duration: 60_000 },
 				{ action: 'Ban', duration: null }
 			]);
+		});
+
+		// The steps saved before the Timeout was merged into the Mute still have it:
+		test('GIVEN a step that is a Timeout THEN it is a Mute', () => {
+			expect(normalizeAutoModerationRuleEscalation([{ action: 'Timeout', duration: 60_000 }])).toEqual([{ action: 'Mute', duration: 60_000 }]);
 		});
 
 		test('GIVEN something that is not a list, or too many steps THEN it is emptied, or cut', () => {
@@ -108,9 +113,20 @@ describe('auto-moderation escalation', () => {
 
 	describe('parseAutoModerationMenuEscalation', () => {
 		test('GIVEN a step per line THEN each is a hard action and how long it lasts', () => {
-			const parsed = parseAutoModerationMenuEscalation(t, read({ steps: 'timeout 1h\n\n Kick \nBAN', period: '3d' }));
+			const parsed = parseAutoModerationMenuEscalation(t, read({ steps: 'mute 1h\n\n Kick \nBAN', period: '3d' }));
 
 			expect(parsed).toEqual({ ok: true, value: { escalation: steps, escalationDuration: 259_200_000 } });
+		});
+
+		test('GIVEN a step written as a timeout THEN it is a Mute, permanent or not', () => {
+			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'timeout 1h\ntimeout', period: '1d' }))).toMatchObject({
+				value: {
+					escalation: [
+						{ action: 'Mute', duration: 3_600_000 },
+						{ action: 'Mute', duration: null }
+					]
+				}
+			});
 		});
 
 		test('GIVEN no step THEN the escalation is turned off, and the period is kept', () => {
@@ -120,15 +136,14 @@ describe('auto-moderation escalation', () => {
 		test('GIVEN what was formatted THEN it is read back the same', () => {
 			const written = formatAutoModerationMenuEscalation(steps);
 
-			expect(written).toBe('Timeout 1h\nKick\nBan');
+			expect(written).toBe('Mute 1h\nKick\nBan');
 			expect(parseAutoModerationMenuEscalation(t, read({ steps: written, period: '1d' }))).toMatchObject({ value: { escalation: steps } });
 		});
 
 		test('GIVEN what is not a step THEN it is refused', () => {
 			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'explode 1h', period: '1d' })).ok).toBe(false);
 			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'ban soon', period: '1d' })).ok).toBe(false);
-			// A timeout cannot be permanent, and the steps need a period:
-			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'timeout', period: '1d' })).ok).toBe(false);
+			// The steps need a period:
 			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'kick', period: '' })).ok).toBe(false);
 			expect(parseAutoModerationMenuEscalation(t, read({ steps: 'kick\n'.repeat(11), period: '1d' })).ok).toBe(false);
 		});
@@ -158,7 +173,7 @@ describe('auto-moderation escalation', () => {
 		test('GIVEN the modal of the escalation THEN it is filled with the steps of the rule', () => {
 			const modal = renderAutoModerationModal(context, createRule({ escalation: steps }), action)!;
 
-			expect(JSON.stringify(modal)).toContain('Timeout 1h\\nKick\\nBan');
+			expect(JSON.stringify(modal)).toContain('Mute 1h\\nKick\\nBan');
 		});
 	});
 
@@ -169,11 +184,14 @@ describe('auto-moderation escalation', () => {
 				escalationDuration: 3_600_000
 			});
 			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Explode' }] }).errors).toHaveLength(1);
-			// A duration that is not one is refused, not made permanent, and a timeout needs one:
+			// A duration that is not one is refused, not made permanent:
 			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Ban', duration: '1h' }] }).errors).toHaveLength(1);
 			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Ban', duration: -5 }] }).errors).toHaveLength(1);
-			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Timeout' }] }).errors).toHaveLength(1);
-			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Timeout', duration: 0 }] }).errors).toHaveLength(1);
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Mute', duration: 0 }] }).errors).toHaveLength(1);
+			// A client written before the Timeout was merged into the Mute may still send one:
+			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Timeout', duration: 60_000 }] }).data).toEqual({
+				escalation: [{ action: 'Mute', duration: 60_000 }]
+			});
 			expect(parseAutoModerationRulePatch('Links', { escalation: [{ action: 'Kick' }] }).data).toEqual({
 				escalation: [{ action: 'Kick', duration: null }]
 			});

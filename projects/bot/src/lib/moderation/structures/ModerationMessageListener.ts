@@ -9,6 +9,7 @@ import {
 } from '#lib/moderation/automod/rules';
 import type { AdderError } from '#lib/database/utils/Adder';
 import { ModerationActions } from '#lib/moderation/actions/index';
+import { applyMute } from '#lib/moderation/actions/mute';
 import { fetchGuildT } from '#lib/moderation/common';
 import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModerationOnInfraction';
 import { Events } from '#lib/types/Enums';
@@ -21,7 +22,7 @@ import { deleteMessage, getModeration, isModerator } from '#utils/functions';
 import type { createLogMessage } from '#utils/functions';
 import type { EmbedBuilder } from '@discordjs/builders';
 import { channelMention } from '@discordjs/formatters';
-import { isNullishOrZero, type Awaitable, type Nullish } from '@sapphire/utilities';
+import type { Awaitable, Nullish } from '@sapphire/utilities';
 import { Listener } from '@wolfstar/http-framework';
 import { canSendMessages, isTextBasedChannel } from '@wolfstar/http-framework-utilities/gateway';
 import type { Message } from '@wolfstar/plugin-gateway';
@@ -157,13 +158,6 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		const { action, duration } = resolveAutoModerationRulePunishment(rule, strikes);
 		this.debug(message, `hard action ${action} of the rule ${rule.id}, duration ${duration}, strike ${strikes}`);
 
-		// A timeout needs a duration, Discord takes none without an end: nothing is done, so nothing is counted.
-		if (action === 'Timeout' && isNullishOrZero(duration)) {
-			this.debug(message, `the Timeout of the rule ${rule.id} has no duration, nothing is done`);
-			await removeAutoModerationRuleStrike(rule, message.author.id);
-			return;
-		}
-
 		try {
 			switch (action) {
 				case 'None':
@@ -173,9 +167,6 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 					break;
 				case 'Kick':
 					await this.onKick(message, language, points, maximum);
-					break;
-				case 'Timeout':
-					await this.onTimeout(message, language, points, maximum, duration);
 					break;
 				case 'Mute':
 					await this.onMute(message, language, points, maximum, duration);
@@ -214,20 +205,12 @@ export abstract class ModerationMessageListener<T = unknown, Type extends AutoMo
 		);
 	}
 
-	protected async onTimeout(message: GuildMessage, t: TFunction<AnyNamespace>, points: number, maximum: number, duration: number | null) {
-		if (isNullishOrZero(duration)) return;
-		await this.createActionAndSend(message, async () =>
-			ModerationActions.timeout.apply(await this.fetchGuild(message), {
-				user: message.author,
-				reason: this.#getReason(t, points, maximum),
-				duration
-			})
-		);
-	}
-
+	/**
+	 * Mutes the member, with a Discord timeout or the muted role as the guild set it up (see `applyMute`).
+	 */
 	protected async onMute(message: GuildMessage, t: TFunction<AnyNamespace>, points: number, maximum: number, duration: number | null) {
 		await this.createActionAndSend(message, async () =>
-			ModerationActions.mute.apply(await this.fetchGuild(message), {
+			applyMute(await this.fetchGuild(message), {
 				user: message.author,
 				reason: this.#getReason(t, points, maximum),
 				duration

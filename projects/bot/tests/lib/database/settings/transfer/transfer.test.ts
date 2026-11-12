@@ -10,7 +10,6 @@ import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
 import {
 	countPlannedRules,
 	findOversizedRuleLists,
-	findStaleTimeoutRules,
 	getPlannedRules,
 	getPlannedSettings,
 	planConfigurationImport
@@ -170,6 +169,7 @@ describe('configuration file', () => {
 				'moderation.track-roles',
 				'moderation.track-kicks',
 				'moderation.confirm-recent',
+				'moderation.mute-timeout',
 				'moderation.dehoist',
 				'moderation.default-warn-thresholds',
 				'moderation.direct-message',
@@ -545,63 +545,19 @@ describe('configuration file', () => {
 				]);
 			});
 
-			test('GIVEN a Timeout with no duration THEN it is refused, even over a rule of the server that has one', async () => {
-				// The file replaces the rule with the defaults and its own fields, so the duration the rule has does not carry over:
-				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: 60_000 })];
-				const rule = { name: 'No links', type: 'Links', hardAction: 'Timeout' };
+			// A file exported before the Timeout was merged into the Mute still has it:
+			test('GIVEN a rule that is a Timeout THEN it is read as a Mute', async () => {
+				const rule = { name: 'No links', type: 'Links', hardAction: 'Timeout', hardActionDuration: 60_000 };
 
-				const issues = await parseIssues({ version: 2, automod: { rules: [rule] } }, rules);
-				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].hardActionDuration']);
-
-				await expect(parseOk({ version: 2, automod: { rules: [{ ...rule, hardActionDuration: 60_000 }] } }, rules)).resolves.toBeDefined();
+				const parsed = await parseOk({ version: 2, automod: { rules: [rule] } }, []);
+				expect(parsed.rules?.[0]).toMatchObject({ name: 'No links', hardAction: 'Mute', hardActionDuration: 60_000 });
 			});
 
-			// The menu saves the action before it asks for the duration, so a rule can be a Timeout with none, and its backup has to come back:
-			test('GIVEN the export of a rule that is a Timeout with no duration WHEN it is imported back THEN it is accepted and changes nothing', async () => {
-				const settings = createSettings();
-				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: null })];
-				const file = createConfigurationFile(settings, rules);
+			test('GIVEN a Mute with no duration THEN it is accepted, as a mute with the role', async () => {
+				const rule = { name: 'No links', type: 'Links', hardAction: 'Mute', hardActionDuration: null };
 
-				const parsed = await parseOk(file, rules);
-				expect(planConfigurationImport(settings, rules, parsed).isEmpty).toBe(true);
-			});
-
-			// The import is written up to five minutes after its preview, from what the database has by then:
-			test('GIVEN the import of a Timeout with no duration WHEN the rule of the server gained a duration, changed its action or was deleted before it is written THEN it is stale', async () => {
-				const saved = createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: null });
-				const parsed = await parseOk(createConfigurationFile(createSettings(), [saved]), [saved]);
-
-				expect(findStaleTimeoutRules([saved], parsed)).toEqual([]);
-				expect(findStaleTimeoutRules([{ ...saved, hardActionDuration: 60_000 }], parsed)).toEqual(['No links']);
-				expect(findStaleTimeoutRules([{ ...saved, hardAction: 'Ban' }], parsed)).toEqual(['No links']);
-				expect(findStaleTimeoutRules([], parsed)).toEqual(['No links']);
-			});
-
-			test('GIVEN the import of rules that are not a Timeout with no duration THEN none of them is stale', async () => {
-				const rules = [
-					createRule('Links', 'Links', '1', { hardAction: 'Timeout', hardActionDuration: 60_000 }),
-					createRule('Words', 'Words', '2')
-				];
-				const parsed = await parseOk(createConfigurationFile(createSettings(), rules), rules);
-
-				expect(findStaleTimeoutRules([], parsed)).toEqual([]);
-			});
-
-			test('GIVEN a file that writes no duration as zero over a rule that is a Timeout with none THEN it is accepted', async () => {
-				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Timeout', hardActionDuration: null })];
-				const rule = { name: 'No links', type: 'Links', hardAction: 'Timeout', hardActionDuration: 0 };
-
-				await expect(parseOk({ version: 2, automod: { rules: [rule] } }, rules)).resolves.toBeDefined();
-			});
-
-			test('GIVEN a file that turns a rule into a Timeout with no duration THEN it is refused', async () => {
-				const rules = [createRule('Links', 'No links', '1', { hardAction: 'Ban', hardActionDuration: null })];
-
-				const issues = await parseIssues(
-					{ version: 2, automod: { rules: [{ name: 'No links', type: 'Links', hardAction: 'Timeout' }] } },
-					rules
-				);
-				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].hardActionDuration']);
+				const parsed = await parseOk({ version: 2, automod: { rules: [rule] } }, []);
+				expect(parsed.rules?.[0]).toMatchObject({ hardAction: 'Mute', hardActionDuration: null });
 			});
 
 			describe('lists longer than the limit', () => {
@@ -1000,7 +956,8 @@ describe('configuration file', () => {
 					name: 'Links',
 					type: 'Links',
 					enabled: true,
-					hardAction: 'Timeout',
+					// The legacy Timeout (6) is a Mute, a timeout while the server has `moderation.mute-timeout`:
+					hardAction: 'Mute',
 					hardActionDuration: 60_000,
 					options: { allowed: ['wolfstar.rocks'] }
 				},

@@ -1,0 +1,94 @@
+[
+	{
+		"id": "column.GuildModeration.mute_timeout",
+		"label": "Add the setting that makes a mute a Discord timeout when its duration fits one",
+		"summary": "Adds column \"mute_timeout\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, on for the guilds that are there, so their timeouts stay timeouts",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"mute_timeout\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"mute_timeout\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'mute_timeout') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "data.GuildAutoModerationRule.timeout_to_mute",
+		"label": "Make the Timeout of the auto-moderation rules a Mute",
+		"summary": "Sets \"hard_action\" and the actions of \"escalation\" from Timeout to Mute",
+		"operationClass": "data",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoModerationRule"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "make the hard actions a Mute",
+				"sql": "UPDATE \"public\".\"GuildAutoModerationRule\" SET \"hard_action\" = 'Mute' WHERE \"hard_action\" = 'Timeout'",
+				"params": []
+			},
+			{
+				"description": "make the steps of the escalations a Mute, in their order",
+				"sql": "UPDATE \"public\".\"GuildAutoModerationRule\" SET \"escalation\" = (SELECT jsonb_agg(CASE WHEN \"step\"->>'action' = 'Timeout' THEN jsonb_set(\"step\", '{action}', '\"Mute\"') ELSE \"step\" END ORDER BY \"position\") FROM jsonb_array_elements(\"escalation\") WITH ORDINALITY AS \"steps\"(\"step\", \"position\")) WHERE jsonb_typeof(\"escalation\") = 'array' AND \"escalation\" @> '[{\"action\":\"Timeout\"}]'::jsonb",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify no rule takes a Timeout",
+				"sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"GuildAutoModerationRule\" WHERE \"hard_action\" = 'Timeout' OR (jsonb_typeof(\"escalation\") = 'array' AND \"escalation\" @> '[{\"action\":\"Timeout\"}]'::jsonb)) AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "data.GuildWarnThreshold.timeout_to_mute",
+		"label": "Make the Timeout of the thresholds of warnings a Mute",
+		"summary": "Sets \"action\" from Timeout to Mute",
+		"operationClass": "data",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildWarnThreshold"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "make the actions a Mute",
+				"sql": "UPDATE \"public\".\"GuildWarnThreshold\" SET \"action\" = 'Mute' WHERE \"action\" = 'Timeout'",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify no threshold takes a Timeout",
+				"sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"GuildWarnThreshold\" WHERE \"action\" = 'Timeout') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

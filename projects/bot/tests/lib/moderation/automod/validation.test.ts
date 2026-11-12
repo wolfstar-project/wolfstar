@@ -129,80 +129,34 @@ describe('auto-moderation rules', () => {
 			expect(data?.options).toEqual({ minimum: 30, maximum: 80 });
 		});
 
-		describe('a Timeout', () => {
-			// Discord does not take a timeout with no end, so a rule like that would never act:
-			const message = 'hardActionDuration: Expected an integer between 1 and 2147483647, which a Timeout requires.';
-
-			test.each([
-				['a new rule that is a Timeout with no duration', { hardAction: 'Timeout' }, undefined],
-				['a new rule that is a Timeout with a duration of zero', { hardAction: 'Timeout', hardActionDuration: 0 }, undefined],
-				['a rule that becomes a Timeout and has no duration', { hardAction: 'Timeout' }, { hardAction: 'Ban', hardActionDuration: null }],
-				['a Timeout that loses its duration', { hardActionDuration: null }, { hardAction: 'Timeout', hardActionDuration: 60_000 } as const],
-				['a Timeout whose duration is set to zero', { hardActionDuration: 0 }, { hardAction: 'Timeout', hardActionDuration: 60_000 } as const]
-			] as const)('GIVEN %s THEN it is refused with one error about the duration', (_name, input, current) => {
-				const { data, errors } = parseAutoModerationRulePatch('Links', input, current);
-
-				expect(data).toBeUndefined();
-				expect(errors).toEqual([message]);
-			});
-
-			test('GIVEN a Timeout with a duration THEN it is accepted, given in the request or kept by the rule', () => {
+		describe('a Mute', () => {
+			// A client written before the Timeout was merged into the Mute may still send one:
+			test('GIVEN a Timeout THEN it is read as a Mute', () => {
 				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: 60_000 }).data).toEqual({
-					hardAction: 'Timeout',
+					hardAction: 'Mute',
 					hardActionDuration: 60_000
 				});
-				expect(
-					parseAutoModerationRulePatch('Links', { hardAction: 'Timeout' }, { hardAction: 'Ban', hardActionDuration: 60_000 }).data
-				).toEqual({
-					hardAction: 'Timeout'
-				});
-				expect(
-					parseAutoModerationRulePatch('Links', { hardActionDuration: 30_000 }, { hardAction: 'Timeout', hardActionDuration: 60_000 }).data
-				).toEqual({
-					hardActionDuration: 30_000
-				});
 			});
 
-			test('GIVEN a rule that is a Timeout with no duration WHEN it is edited in another way THEN it can be, as it can be saved', () => {
-				const current = { hardAction: 'Timeout', hardActionDuration: null } as const;
-
-				expect(parseAutoModerationRulePatch('Links', { enabled: false }, current).data).toEqual({ enabled: false });
-				expect(parseAutoModerationRulePatch('Links', { name: 'Renamed', softAction: 2 }, current).data).toEqual({
-					name: 'Renamed',
-					softAction: 2
+			// A mute with no end takes the muted role, so it needs no duration:
+			test('GIVEN a Mute with no duration THEN it is accepted', () => {
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Mute' }).data).toEqual({ hardAction: 'Mute' });
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Mute', hardActionDuration: 0 }).data).toEqual({
+					hardAction: 'Mute',
+					hardActionDuration: null
 				});
-			});
-
-			// The dashboard sends the whole rule back when one field changes:
-			test('GIVEN a rule that is a Timeout with no duration WHEN the request gives back the same action and duration THEN it is accepted', () => {
-				const current = { hardAction: 'Timeout', hardActionDuration: null } as const;
-
 				expect(
-					parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: null, enabled: false }, current).data
-				).toEqual({
-					hardAction: 'Timeout',
-					hardActionDuration: null,
-					enabled: false
-				});
-				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: 0 }, current).errors).toBeUndefined();
+					parseAutoModerationRulePatch('Links', { hardActionDuration: null }, { hardAction: 'Mute', hardActionDuration: 60_000 }).data
+				).toEqual({ hardActionDuration: null });
 			});
 
 			test('GIVEN a hard action that is not valid THEN it only has its own error', () => {
 				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Explode' }).errors).toEqual([
 					expect.stringMatching(/^hardAction: Expected one of /)
 				]);
-				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Timeout', hardActionDuration: -5 }).errors).toEqual([
+				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Mute', hardActionDuration: -5 }).errors).toEqual([
 					expect.stringMatching(/^hardActionDuration: Expected null or an integer/)
 				]);
-			});
-
-			test('GIVEN a hard action that is not a Timeout THEN it needs no duration', () => {
-				expect(parseAutoModerationRulePatch('Links', { hardAction: 'Ban' }).data).toEqual({ hardAction: 'Ban' });
-				expect(
-					parseAutoModerationRulePatch('Links', { hardActionDuration: null }, { hardAction: 'Kick', hardActionDuration: 60_000 }).data
-				).toEqual({
-					hardActionDuration: null
-				});
 			});
 		});
 	});

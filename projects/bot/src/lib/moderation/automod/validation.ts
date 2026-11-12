@@ -1,4 +1,4 @@
-import { isNullishOrZero, isObject } from '@sapphire/utilities';
+import { isObject } from '@sapphire/utilities';
 import { remove as removeConfusables } from 'confusables';
 import {
 	AutoModerationEscalationActions,
@@ -6,7 +6,6 @@ import {
 	AutoModerationRuleLimits,
 	AutoModerationRuleOptionLimits,
 	AutoModerationRuleWordLength,
-	getDefaultAutoModerationRule,
 	getDefaultAutoModerationRuleOptions,
 	isAutoModerationRuleWord,
 	MaximumAutoModerationRuleEscalationSteps,
@@ -47,10 +46,8 @@ export type AutoModerationRulePatch = Partial<Omit<AutoModerationRuleData, 'type
  * `normalizeAutoModerationRuleOptions`, on top of the ones of `current`, so a request can give only the ones that
  * change.
  *
- * A Timeout needs a duration, since Discord does not take one with no end and the rule would never act. The action and
- * the duration the rule ends up with are checked when the request changes one of them (gives it a value `current` does
- * not have), on top of what `current` has and, for a rule that does not exist yet, on the defaults of the type. A rule
- * that was saved with a Timeout and no duration can still be renamed or turned off.
+ * A `Timeout`, which a client written before it was merged into `Mute` may still send, is read as a `Mute`: the mute is
+ * a timeout when the guild has `moderation.mute-timeout` and its duration fits one.
  *
  * @param type - The type of the rule, which its options depend on.
  * @param input - The data to read.
@@ -67,9 +64,6 @@ export function parseAutoModerationRulePatch(
 	const body = input as Record<string, unknown>;
 	const data: AutoModerationRulePatch = {};
 	const errors: string[] = [];
-	// A field that is given and not valid has its own error, the Timeout is not checked on top of it:
-	let hardActionValid = true;
-
 	if (body.name !== undefined) {
 		if (typeof body.name === 'string' && body.name.trim().length > 0 && body.name.trim().length <= MaximumAutoModerationRuleNameLength) {
 			data.name = body.name;
@@ -89,10 +83,10 @@ export function parseAutoModerationRulePatch(
 	}
 
 	if (body.hardAction !== undefined) {
-		if (AutoModerationHardActions.includes(body.hardAction as AutoModerationHardAction)) {
-			data.hardAction = body.hardAction as AutoModerationHardAction;
+		const hardAction = readHardAction(body.hardAction);
+		if (AutoModerationHardActions.includes(hardAction as AutoModerationHardAction)) {
+			data.hardAction = hardAction as AutoModerationHardAction;
 		} else {
-			hardActionValid = false;
 			errors.push(`hardAction: Expected one of ${AutoModerationHardActions.join(', ')}.`);
 		}
 	}
@@ -102,27 +96,7 @@ export function parseAutoModerationRulePatch(
 		// Zero and `null` both make the hard action permanent:
 		if (body.hardActionDuration === null || body.hardActionDuration === 0) data.hardActionDuration = null;
 		else if (isInteger(body.hardActionDuration, minimum, maximum)) data.hardActionDuration = body.hardActionDuration;
-		else {
-			hardActionValid = false;
-			errors.push(`hardActionDuration: Expected null or an integer between ${minimum} and ${maximum}.`);
-		}
-	}
-
-	// Only a request that changes the action or the duration is checked, so a rule already saved that way (the menu asks for
-	// the duration after the action) can still be renamed, turned off, or sent back whole with the same values:
-	const changesAction = data.hardAction !== undefined && data.hardAction !== current.hardAction;
-	const changesDuration =
-		data.hardActionDuration !== undefined &&
-		(current.hardActionDuration === undefined || (data.hardActionDuration || null) !== (current.hardActionDuration || null));
-	if (hardActionValid && (changesAction || changesDuration)) {
-		const defaults = getDefaultAutoModerationRule(type);
-		const action = data.hardAction ?? current.hardAction ?? defaults.hardAction;
-		const duration =
-			data.hardActionDuration !== undefined ? data.hardActionDuration : (current.hardActionDuration ?? defaults.hardActionDuration);
-		if (action === 'Timeout' && isNullishOrZero(duration)) {
-			const { maximum } = AutoModerationRuleLimits.hardActionDuration;
-			errors.push(`hardActionDuration: Expected an integer between 1 and ${maximum}, which a Timeout requires.`);
-		}
+		else errors.push(`hardActionDuration: Expected null or an integer between ${minimum} and ${maximum}.`);
 	}
 
 	for (const key of ['thresholdMaximum', 'thresholdDuration'] as const) {
@@ -153,7 +127,7 @@ export function parseAutoModerationRulePatch(
 		} else {
 			const { maximum } = AutoModerationRuleLimits.hardActionDuration;
 			errors.push(
-				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationEscalationActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}, which a Timeout requires.`
+				`escalation: Expected an array of at most ${MaximumAutoModerationRuleEscalationSteps} steps, each an action (${AutoModerationEscalationActions.join(', ')}) and a duration: null, or an integer between 1 and ${maximum}.`
 			);
 		}
 	}
@@ -258,15 +232,22 @@ function checkListEntry(type: AutoModerationRuleType, entry: unknown): string | 
 }
 
 /**
+ * Reads a hard action a request sent, a `Timeout` being a `Mute` since the two were merged.
+ */
+function readHardAction(value: unknown): unknown {
+	return value === 'Timeout' ? 'Mute' : value;
+}
+
+/**
  * Whether a value is a step of an escalation as a request must write it: a hard action, and a duration that is `null`
- * (or left out) for a permanent one or a positive integer within the limits. A timeout cannot be permanent.
+ * (or left out) for a permanent one or a positive integer within the limits.
  */
 function isEscalationStep(value: unknown): boolean {
 	if (!isObject(value)) return false;
 
 	const { action, duration } = value as { action?: unknown; duration?: unknown };
-	if (!AutoModerationEscalationActions.includes(action as AutoModerationEscalationAction)) return false;
-	if (duration === null || duration === undefined) return action !== 'Timeout';
+	if (!AutoModerationEscalationActions.includes(readHardAction(action) as AutoModerationEscalationAction)) return false;
+	if (duration === null || duration === undefined) return true;
 	return isInteger(duration, 1, AutoModerationRuleLimits.hardActionDuration.maximum);
 }
 

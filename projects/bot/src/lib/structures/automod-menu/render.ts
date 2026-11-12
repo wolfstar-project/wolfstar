@@ -491,13 +491,10 @@ function renderCustomResponse(t: TFunction, rule: AutoModerationRule): string {
 }
 
 /**
- * How long the punishment of a rule lasts. A timeout cannot be permanent, so one without a duration says so.
+ * How long the punishment of a rule lasts.
  */
 function renderDuration(t: TFunction, rule: AutoModerationRule): string {
-	if (isNullishOrZero(rule.hardActionDuration)) {
-		const permanent = translateKey(t, `${Root}:menuDurationPermanent`);
-		return rule.hardAction === 'Timeout' ? `${permanent}\n-# ${Emojis.Warning} ${translateKey(t, `${Root}:menuDurationTimeout`)}` : permanent;
-	}
+	if (isNullishOrZero(rule.hardActionDuration)) return translateKey(t, `${Root}:menuDurationPermanent`);
 
 	return translateKey(t, 'globals:durationValue', { value: rule.hardActionDuration });
 }

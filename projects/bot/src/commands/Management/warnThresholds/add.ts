@@ -38,8 +38,6 @@ export class UserCommand extends Command {
 
 		const duration = this.parseDuration(t, options.duration);
 		if (typeof duration === 'string') return reply(duration);
-		// Discord takes no timeout without an end:
-		if (action === 'Timeout' && duration === null) return reply(t(`${Root}:timeoutNeedsDuration`));
 
 		const period = this.parseDuration(t, options.period);
 		if (typeof period === 'string') return reply(period);

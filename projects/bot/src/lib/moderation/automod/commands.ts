@@ -260,8 +260,6 @@ export function getPunishment(punishment: AutoModerationHardAction): { key: Tran
 			return { key: 'moderation:typeBan', emoji: Emojis.Ban };
 		case 'Kick':
 			return { key: 'moderation:typeKick', emoji: Emojis.Kick };
-		case 'Timeout':
-			return { key: 'moderation:typeTimeout', emoji: Emojis.Timeout };
 		case 'Mute':
 			return { key: 'moderation:typeMute', emoji: Emojis.Timeout };
 		case 'VoiceKick':
