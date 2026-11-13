@@ -1,0 +1,68 @@
+[
+	{
+		"id": "dropTable.GuildGreetings",
+		"label": "Drop table \"GuildGreetings\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildGreetings"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildGreetings\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildGreetings\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildGreetings\"",
+				"sql": "DROP TABLE \"public\".\"GuildGreetings\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildGreetings\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildGreetings\""]
+			}
+		]
+	},
+	{
+		"id": "dropTable.GuildRoleMessage",
+		"label": "Drop table \"GuildRoleMessage\"",
+		"operationClass": "destructive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildRoleMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildRoleMessage\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildRoleMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "drop table \"GuildRoleMessage\"",
+				"sql": "DROP TABLE \"public\".\"GuildRoleMessage\""
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildRoleMessage\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildRoleMessage\""]
+			}
+		]
+	}
+]

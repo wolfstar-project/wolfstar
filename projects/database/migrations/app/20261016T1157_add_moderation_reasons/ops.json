@@ -1,0 +1,105 @@
+[
+	{
+		"id": "table.GuildModerationReason",
+		"label": "Create table \"GuildModerationReason\"",
+		"summary": "Creates table \"GuildModerationReason\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModerationReason"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildModerationReason\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildModerationReason\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildModerationReason\"",
+				"sql": "CREATE TABLE \"public\".\"GuildModerationReason\" (\n  \"alias\" text NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"reason\" text NOT NULL,\n  CONSTRAINT \"GuildModerationReason_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildModerationReason\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildModerationReason\""]
+			}
+		]
+	},
+	{
+		"id": "unique.GuildModerationReason.GuildModerationReason_guild_id_alias_key",
+		"label": "Add unique constraint on \"GuildModerationReason\" (guild_id, alias)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "GuildModerationReason_guild_id_alias_key",
+				"table": "GuildModerationReason"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildModerationReason_guild_id_alias_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildModerationReason_guild_id_alias_key", "public", "\"public\".\"GuildModerationReason\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"GuildModerationReason_guild_id_alias_key\"",
+				"sql": "ALTER TABLE \"public\".\"GuildModerationReason\" ADD CONSTRAINT \"GuildModerationReason_guild_id_alias_key\" UNIQUE (\"guild_id\", \"alias\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildModerationReason_guild_id_alias_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildModerationReason_guild_id_alias_key", "public", "\"public\".\"GuildModerationReason\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildModerationReason.GuildModerationReason_guild_id_fkey",
+		"label": "Add foreign key \"GuildModerationReason_guild_id_fkey\" on \"GuildModerationReason\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildModerationReason_guild_id_fkey",
+				"table": "GuildModerationReason"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildModerationReason_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildModerationReason_guild_id_fkey", "public", "\"public\".\"GuildModerationReason\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildModerationReason_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildModerationReason\"\nADD CONSTRAINT \"GuildModerationReason_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildModerationReason_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildModerationReason_guild_id_fkey", "public", "\"public\".\"GuildModerationReason\""]
+			}
+		]
+	}
+]

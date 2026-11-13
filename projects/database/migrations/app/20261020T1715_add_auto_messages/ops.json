@@ -1,0 +1,175 @@
+[
+	{
+		"id": "table.GuildAutoMessage",
+		"label": "Create table \"GuildAutoMessage\"",
+		"summary": "Creates table \"GuildAutoMessage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildAutoMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildAutoMessage\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildAutoMessage\"",
+				"sql": "CREATE TABLE \"public\".\"GuildAutoMessage\" (\n  \"channel_id\" int8 NOT NULL,\n  \"content\" text NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"interval\" int4 NOT NULL,\n  \"last_message_id\" int8,\n  \"mentions\" bool DEFAULT false NOT NULL,\n  \"next_run_at\" timestamp(3) NOT NULL,\n  CONSTRAINT \"GuildAutoMessage_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildAutoMessage\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoMessage\""]
+			}
+		]
+	},
+	{
+		"id": "unique.GuildAutoMessage.GuildAutoMessage_channel_id_key",
+		"label": "Add unique constraint on \"GuildAutoMessage\" (channel_id)",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "unique",
+				"name": "GuildAutoMessage_channel_id_key",
+				"table": "GuildAutoMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure constraint \"GuildAutoMessage_channel_id_key\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoMessage_channel_id_key", "public", "\"public\".\"GuildAutoMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add unique constraint \"GuildAutoMessage_channel_id_key\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoMessage\" ADD CONSTRAINT \"GuildAutoMessage_channel_id_key\" UNIQUE (\"channel_id\")"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify constraint \"GuildAutoMessage_channel_id_key\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoMessage_channel_id_key", "public", "\"public\".\"GuildAutoMessage\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildAutoMessage.GuildAutoMessage_guild_id_idx",
+		"label": "Create index \"GuildAutoMessage_guild_id_idx\" on \"GuildAutoMessage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoMessage_guild_id_idx",
+				"table": "GuildAutoMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoMessage_guild_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoMessage_guild_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildAutoMessage_guild_id_idx\"",
+				"sql": "CREATE INDEX \"GuildAutoMessage_guild_id_idx\" ON \"public\".\"GuildAutoMessage\" (\"guild_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoMessage_guild_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoMessage_guild_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildAutoMessage.GuildAutoMessage_next_run_at_idx",
+		"label": "Create index \"GuildAutoMessage_next_run_at_idx\" on \"GuildAutoMessage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildAutoMessage_next_run_at_idx",
+				"table": "GuildAutoMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildAutoMessage_next_run_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoMessage_next_run_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildAutoMessage_next_run_at_idx\"",
+				"sql": "CREATE INDEX \"GuildAutoMessage_next_run_at_idx\" ON \"public\".\"GuildAutoMessage\" (\"next_run_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildAutoMessage_next_run_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildAutoMessage_next_run_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildAutoMessage.GuildAutoMessage_guild_id_fkey",
+		"label": "Add foreign key \"GuildAutoMessage_guild_id_fkey\" on \"GuildAutoMessage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildAutoMessage_guild_id_fkey",
+				"table": "GuildAutoMessage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildAutoMessage_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoMessage_guild_id_fkey", "public", "\"public\".\"GuildAutoMessage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildAutoMessage_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAutoMessage\"\nADD CONSTRAINT \"GuildAutoMessage_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildAutoMessage_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildAutoMessage_guild_id_fkey", "public", "\"public\".\"GuildAutoMessage\""]
+			}
+		]
+	}
+]

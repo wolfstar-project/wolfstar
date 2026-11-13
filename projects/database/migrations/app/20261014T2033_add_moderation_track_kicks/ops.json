@@ -1,0 +1,31 @@
+[
+	{
+		"id": "column.GuildModeration.track_kicks",
+		"label": "Add the setting that records the kicks made by hand",
+		"summary": "Adds column \"track_kicks\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, off for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"track_kicks\" bool NOT NULL DEFAULT false",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"track_kicks\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'track_kicks') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

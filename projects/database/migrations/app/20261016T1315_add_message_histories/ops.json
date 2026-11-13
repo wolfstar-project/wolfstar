@@ -1,0 +1,106 @@
+[
+	{
+		"id": "table.MessageHistory",
+		"label": "Create table \"MessageHistory\"",
+		"summary": "Creates table \"MessageHistory\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "MessageHistory"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"MessageHistory\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"MessageHistory\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"MessageHistory\"",
+				"sql": "CREATE TABLE \"public\".\"MessageHistory\" (\n  \"case_id\" int4,\n  \"created_at\" timestamp(3) NOT NULL,\n  \"expires_at\" timestamp(3) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"messages\" \"jsonb\" DEFAULT ('[]'::jsonb) NOT NULL,\n  \"moderator_id\" int8 NOT NULL,\n  \"user_id\" int8 NOT NULL,\n  CONSTRAINT \"MessageHistory_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"MessageHistory\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"MessageHistory\""]
+			}
+		]
+	},
+	{
+		"id": "index.MessageHistory.MessageHistory_guild_id_idx",
+		"label": "Create index \"MessageHistory_guild_id_idx\" on \"MessageHistory\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "MessageHistory_guild_id_idx",
+				"table": "MessageHistory"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"MessageHistory_guild_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"MessageHistory_guild_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"MessageHistory_guild_id_idx\"",
+				"sql": "CREATE INDEX \"MessageHistory_guild_id_idx\" ON \"public\".\"MessageHistory\" (\"guild_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"MessageHistory_guild_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"MessageHistory_guild_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.MessageHistory.MessageHistory_guild_id_fkey",
+		"label": "Add foreign key \"MessageHistory_guild_id_fkey\" on \"MessageHistory\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "MessageHistory_guild_id_fkey",
+				"table": "MessageHistory"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"MessageHistory_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["MessageHistory_guild_id_fkey", "public", "\"public\".\"MessageHistory\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"MessageHistory_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"MessageHistory\"\nADD CONSTRAINT \"MessageHistory_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"MessageHistory_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["MessageHistory_guild_id_fkey", "public", "\"public\".\"MessageHistory\""]
+			}
+		]
+	}
+]

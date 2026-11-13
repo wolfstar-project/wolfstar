@@ -1,0 +1,1102 @@
+import { getConfigurableKeys, Serializer, SerializerStore } from '#lib/database';
+import {
+	ConfigurationFileVersion,
+	createConfigurationFile,
+	findPortableKey,
+	getPortableKeys,
+	isPortableKey
+} from '#lib/database/settings/transfer/format';
+import { parseConfigurationFile } from '#lib/database/settings/transfer/parse';
+import {
+	countPlannedRules,
+	findOversizedRuleLists,
+	getPlannedRules,
+	getPlannedSettings,
+	planConfigurationImport
+} from '#lib/database/settings/transfer/plan';
+import { renderConfigurationIssues, renderConfigurationPreview } from '#lib/database/settings/transfer/render';
+import { UserSerializer as AppealThreadSerializer } from '#root/serializers/appealThread';
+import { UserSerializer as BooleanSerializer } from '#root/serializers/boolean';
+import { UserSerializer as HoneypotActionSerializer } from '#root/serializers/honeypotAction';
+import { UserSerializer as JoinGuardTimeoutSerializer } from '#root/serializers/joinGuardTimeout';
+import { UserSerializer as TimezoneSerializer } from '#root/serializers/timezone';
+import { UserSerializer as MessageUpdateStyleSerializer } from '#root/serializers/messageUpdateStyle';
+import { UserSerializer as NumberSerializer } from '#root/serializers/number';
+import { UserSerializer as StringSerializer } from '#root/serializers/string';
+import { container } from '@wolfstar/http-framework';
+import legacyFile from './__fixtures__/legacy-v1.json' with { type: 'json' };
+import type { Guild } from '@wolfstar/plugin-gateway';
+import {
+	getDefaultAutoModerationRule,
+	getDefaultGuildSettings,
+	MaximumAutoModerationRuleListLength,
+	MaximumAutoModerationRules,
+	type AutoModerationRule,
+	type AutoModerationRuleType,
+	type ReadonlyGuildData
+} from 'wolfstar-database';
+
+const guildId = '254360814063058944';
+
+// Echoes the key and its options, the translations are not what is tested here:
+const t = (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key);
+
+/** Accepts the names that start with `ok`, what the real one asks of the command store is not what is tested here. */
+class CommandMatchSerializer extends Serializer<string> {
+	public parse(input: string) {
+		return this.ok(input);
+	}
+
+	public isValid(value: string) {
+		if (!value.startsWith('ok')) throw `not a command: ${value}`;
+		return true;
+	}
+}
+
+class LanguageSerializer extends Serializer<string> {
+	public parse(input: string) {
+		return this.ok(input);
+	}
+
+	public isValid(value: string) {
+		return ['en-US', 'it'].includes(value);
+	}
+}
+
+function createSettings(overrides: Partial<ReadonlyGuildData> = {}) {
+	return { ...getDefaultGuildSettings(), id: guildId, ...overrides } as ReadonlyGuildData;
+}
+
+function createRule<Type extends AutoModerationRuleType>(type: Type, name: string, id = '1', overrides: Partial<AutoModerationRule> = {}) {
+	return { ...getDefaultAutoModerationRule(type), id, guildId, name, ...overrides } as AutoModerationRule;
+}
+
+const context = (rules: readonly AutoModerationRule[] = []) => ({
+	settings: createSettings(),
+	rules,
+	guild: { id: guildId } as Guild,
+	t: t as never
+});
+const parse = (file: unknown, rules: readonly AutoModerationRule[] = []) =>
+	parseConfigurationFile(typeof file === 'string' ? file : JSON.stringify(file), context(rules));
+
+async function parseOk(file: unknown, rules: readonly AutoModerationRule[] = []) {
+	const result = await parse(file, rules);
+	if (!result.ok) throw new Error(`Expected a valid file: ${JSON.stringify(result.issues)}`);
+	return result.value;
+}
+
+async function parseIssues(file: unknown, rules: readonly AutoModerationRule[] = []) {
+	const result = await parse(file, rules);
+	if (result.ok) throw new Error('Expected the file to be refused.');
+	return result.issues;
+}
+
+beforeAll(async () => {
+	container.stores.register(new SerializerStore());
+	const pieces = {
+		appealThread: AppealThreadSerializer,
+		boolean: BooleanSerializer,
+		number: NumberSerializer,
+		string: StringSerializer,
+		commandMatch: CommandMatchSerializer,
+		language: LanguageSerializer,
+		honeypotAction: HoneypotActionSerializer,
+		joinGuardTimeout: JoinGuardTimeoutSerializer,
+		timezone: TimezoneSerializer,
+		messageUpdateStyle: MessageUpdateStyleSerializer
+	};
+	for (const [name, piece] of Object.entries(pieces)) {
+		await container.stores.loadPiece({ store: 'serializers', name, piece: piece as never });
+	}
+	// The pieces registered by hand are constructed when the store loads:
+	await container.stores.get('serializers').loadAll();
+});
+
+describe('configuration file', () => {
+	describe('portable settings', () => {
+		test('GIVEN the settings THEN only the ones that do not depend on the server are portable', () => {
+			// A new setting of one of these types has to be looked at: this list is what a file carries across servers.
+			expect(getPortableKeys().map((key) => key.name)).toEqual([
+				'language',
+				'timezone',
+				'modules.automod',
+				'modules.moderation',
+				'modules.logs',
+				'modules.roles',
+				'modules.autodelete',
+				'modules.autopurge',
+				'modules.automessage',
+				'modules.reports',
+				'modules.honeypot',
+				'automod.track-native',
+				'commands.disabled',
+				'honeypot.reinvite',
+				'honeypot.recreate',
+				'honeypot.action',
+				'honeypot.direct-message',
+				'honeypot.warning',
+				'honeypot.random-name',
+				'honeypot.keep-active',
+				'honeypot.forward-message',
+				'honeypot.timeout-first',
+				'honeypot.recent-delete',
+				'honeypot.chaos-name',
+				'honeypot.ensure-deletion',
+				'join-guard.enabled',
+				'join-guard.direct-message',
+				'join-guard.direct-message-content',
+				'join-guard.checkpoint',
+				'join-guard.checkpoint-timeout',
+				'join-guard.minimum-trust',
+				'join-guard.captcha',
+				'join-guard.connections',
+				'join-guard.shared-bans',
+				'appeals.enabled',
+				'appeals.bans',
+				'appeals.mutes',
+				'appeals.timeouts',
+				'appeals.anonymous',
+				'appeals.thread',
+				'appeals.cooldown-days',
+				'appeals.max-active',
+				'appeals.block-on-denial',
+				'logs.message-update-style',
+				'logs.reaction-emoji-include-twemoji',
+				'logs.webhooks',
+				'moderation.track-bans',
+				'moderation.track-timeouts',
+				'moderation.track-roles',
+				'moderation.track-kicks',
+				'moderation.confirm-recent',
+				'moderation.mute-timeout',
+				'moderation.dehoist',
+				'moderation.default-warn-thresholds',
+				'moderation.direct-message',
+				'moderation.display-reason',
+				'moderation.display-message',
+				'moderation.display-moderator',
+				'moderation.response-ban',
+				'moderation.response-unban',
+				'moderation.response-softban',
+				'moderation.response-kick',
+				'moderation.response-mute',
+				'moderation.response-unmute',
+				'reports.anonymous',
+				'reports.notify',
+				'roles.remove-initial'
+			]);
+		});
+
+		test('GIVEN a setting of a role, a channel or a user THEN it is not portable', () => {
+			for (const property of ['rolesAdmin', 'rolesMuted', 'logsMemberAdd', 'automodChannel', 'reportsBlockedUsers', 'permissionsRoles']) {
+				expect(isPortableKey(getConfigurableKeys().get(property as never)!)).toBe(false);
+			}
+		});
+
+		test('GIVEN a name THEN the setting is found by it, and by nothing else', () => {
+			expect(findPortableKey('modules.automod')?.property).toBe('modulesAutomod');
+			expect(findPortableKey('modulesAutomod')).toBeNull();
+			expect(findPortableKey('roles.admin')).toBeNull();
+		});
+	});
+
+	describe('createConfigurationFile', () => {
+		const now = new Date('2026-10-11T08:30:00.000Z');
+
+		test('GIVEN a server THEN the file has the version, the date, the portable settings and the rules', () => {
+			const settings = createSettings({
+				language: 'it',
+				modulesModeration: false,
+				commandsDisabled: ['ping'],
+				rolesAdmin: ['1'],
+				logsMemberAdd: '2'
+			});
+			const file = createConfigurationFile(settings, [createRule('Links', 'No links')], now);
+
+			expect(file.version).toBe(ConfigurationFileVersion);
+			expect(file.exportedAt).toBe('2026-10-11T08:30:00.000Z');
+			expect(file.settings).toMatchObject({ language: 'it', 'modules.moderation': false, 'commands.disabled': ['ping'] });
+			expect(Object.keys(file.settings)).toHaveLength(getPortableKeys().length);
+			expect(JSON.stringify(file)).not.toContain('"roles.admin"');
+			expect(file.automod.rules).toHaveLength(1);
+		});
+
+		test('GIVEN a rule with exempt roles and channels THEN they are not in the file, nor are its IDs', () => {
+			const rule = createRule('Links', 'No links', '77', { ignoredRoles: ['100000000000000001'], ignoredChannels: ['100000000000000002'] });
+			const [entry] = createConfigurationFile(createSettings(), [rule], now).automod.rules;
+
+			expect(entry).not.toHaveProperty('ignoredRoles');
+			expect(entry).not.toHaveProperty('ignoredChannels');
+			expect(entry).not.toHaveProperty('id');
+			expect(entry).not.toHaveProperty('guildId');
+			expect(entry).toMatchObject({ name: 'No links', type: 'Links', enabled: true });
+		});
+
+		test('GIVEN the file THEN it is read back as it is', async () => {
+			const settings = createSettings({ modulesModeration: false, commandsDisabled: ['ok-ping'] });
+			const rules = [createRule('Words', 'Bad words', '1', { options: { words: ['spam'] } })];
+			const file = createConfigurationFile(settings, rules, now);
+
+			const parsed = await parseOk(JSON.parse(JSON.stringify(file)));
+			const plan = planConfigurationImport(settings, rules, parsed);
+			expect(plan.isEmpty).toBe(true);
+		});
+	});
+
+	describe('parseConfigurationFile', () => {
+		const valid = { version: 2, settings: { 'modules.moderation': false }, automod: { rules: [] } };
+
+		test('GIVEN a valid file THEN it is read', async () => {
+			const parsed = await parseOk(valid);
+
+			expect(parsed.settings).toEqual([{ key: findPortableKey('modules.moderation'), value: false }]);
+			expect(parsed.rules).toEqual([]);
+		});
+
+		test('GIVEN a file exported with a setting the bot no longer has THEN it is left out', async () => {
+			const parsed = await parseOk({ ...valid, settings: { ...valid.settings, 'modules.commands': true } });
+
+			expect(parsed.settings).toEqual([{ key: findPortableKey('modules.moderation'), value: false }]);
+		});
+
+		test('GIVEN a file without the sections THEN they are left out', async () => {
+			const parsed = await parseOk({ version: 2 });
+
+			expect(parsed.settings).toEqual([]);
+			expect(parsed.rules).toBeNull();
+		});
+
+		test('GIVEN text that is not JSON THEN it is refused', async () => {
+			expect(await parseIssues('{ nope')).toEqual([{ path: '', message: 'commands/conf:transferErrorJson' }]);
+			expect((await parseIssues('[]'))[0].message).toBe('commands/conf:transferErrorObject');
+			expect((await parseIssues('"text"'))[0].message).toBe('commands/conf:transferErrorObject');
+		});
+
+		test('GIVEN no version, or another one THEN it is refused', async () => {
+			expect((await parseIssues({ settings: {} }))[0]).toMatchObject({ path: 'version', message: 'commands/conf:transferErrorVersion' });
+			expect((await parseIssues({ version: '1' }))[0].path).toBe('version');
+			expect((await parseIssues({ version: 3 }))[0].message).toContain('transferErrorVersionUnsupported');
+		});
+
+		test('GIVEN a file of version 1 THEN it is read and upgraded', async () => {
+			const parsed = await parseOk({
+				version: 1,
+				settings: { 'modules.commands': false },
+				automod: { rules: [{ name: 'Mentions', type: 'NoMentionSpam' }] }
+			});
+			expect(parsed.rules?.[0]).toMatchObject({ type: 'MentionsCooldown', hardAction: 'Ban' });
+		});
+
+		test('GIVEN a field that is not of the file THEN it is refused', async () => {
+			expect(await parseIssues({ version: 2, roles: [] })).toMatchObject([{ path: 'roles' }]);
+			expect(await parseIssues({ version: 2, automod: { rules: [], extra: 1 } })).toMatchObject([{ path: 'automod.extra' }]);
+		});
+
+		test('GIVEN a setting that depends on the server, or does not exist, THEN the file is refused instead of ignoring it', async () => {
+			const issues = await parseIssues({ version: 2, settings: { 'roles.admin': ['1'], 'logs.member-add': '2', 'no.such': true } });
+
+			expect(issues.map((issue) => issue.path)).toEqual(['settings.roles.admin', 'settings.logs.member-add', 'settings.no.such']);
+		});
+
+		test('GIVEN values of the wrong type THEN they are refused', async () => {
+			const issues = await parseIssues({
+				version: 2,
+				settings: { 'modules.moderation': 'yes', language: 3, 'commands.disabled': 'ok-ping', 'reports.notify': [true] }
+			});
+
+			expect(issues.map((issue) => issue.path)).toEqual([
+				'settings.modules.moderation',
+				'settings.language',
+				'settings.commands.disabled',
+				'settings.reports.notify'
+			]);
+			expect(issues[0].message).toContain('transferErrorWrongType');
+			expect(issues[2].message).toContain('transferErrorExpectedArray');
+			expect(issues[3].message).toContain('transferErrorExpectedValue');
+		});
+
+		test('GIVEN a value its serializer does not accept THEN it is refused with its reason', async () => {
+			const issues = await parseIssues({ version: 2, settings: { language: 'xx', 'commands.disabled': ['ok-ping', 'nope'] } });
+
+			expect(issues[0].message).toContain('transferErrorInvalidValue');
+			expect(issues[1]).toEqual({ path: 'settings.commands.disabled', message: 'not a command: nope' });
+		});
+
+		test('GIVEN a list THEN its duplicates are dropped and its maximum holds', async () => {
+			const parsed = await parseOk({ version: 2, settings: { 'commands.disabled': ['ok-a', 'ok-b', 'ok-a'] } });
+			expect(parsed.settings[0].value).toEqual(['ok-a', 'ok-b']);
+
+			const tooMany = Array.from({ length: 33 }, (_, index) => `ok-${index}`);
+			const issues = await parseIssues({ version: 2, settings: { 'commands.disabled': tooMany } });
+			expect(issues[0].message).toContain('menuTooManyValues');
+		});
+
+		test('GIVEN every problem THEN every one is reported, and the file is not partly accepted', async () => {
+			const issues = await parseIssues({
+				version: 2,
+				settings: { language: 'xx', 'modules.moderation': false },
+				automod: { rules: [{ type: 'Links', name: '' }] }
+			});
+
+			expect(issues.map((issue) => issue.path)).toEqual(['settings.language', 'automod.rules[0].name']);
+		});
+
+		describe('rules', () => {
+			test('GIVEN a rule with only a name and a type THEN the rest takes the defaults of the type', async () => {
+				const parsed = await parseOk({ version: 2, automod: { rules: [{ name: ' Links ', type: 'Links' }] } });
+				// What names something of the server is not in the file:
+				const { ignoredRoles, ignoredChannels, logChannelId, ...defaults } = getDefaultAutoModerationRule('Links');
+
+				expect(ignoredRoles).toEqual([]);
+				expect(ignoredChannels).toEqual([]);
+				expect(logChannelId).toBeNull();
+				expect(parsed.rules).toEqual([{ ...defaults, name: 'Links' }]);
+			});
+
+			test('GIVEN the options of a rule THEN they are read as the API reads them', async () => {
+				const parsed = await parseOk({
+					version: 2,
+					automod: { rules: [{ name: 'Words', type: 'Words', options: { words: [' BadWord ', 'BADWORD'] } }] }
+				});
+
+				expect(parsed.rules?.[0].options).toEqual({ words: ['badword'] });
+			});
+
+			test('GIVEN some of the options of a rule THEN the others take the defaults of the type', async () => {
+				const parsed = await parseOk({ version: 2, automod: { rules: [{ name: 'Caps', type: 'Capitals', options: { minimum: 30 } }] } });
+
+				expect(parsed.rules?.[0].options).toEqual({ minimum: 30, maximum: 50 });
+			});
+
+			test('GIVEN options of the wrong type THEN the file is refused instead of taking their defaults', async () => {
+				const rule = (type: string, options: unknown) => ({ name: `Rule ${type}`, type, options });
+				const issues = await parseIssues({
+					version: 2,
+					automod: {
+						rules: [
+							rule('Words', { words: 'spam' }),
+							rule('Links', { allowed: { 0: 'example.com' } }),
+							rule('Capitals', { minimum: '30', maximum: null }),
+							rule('MessageSpam', { perChannel: 'yes' }),
+							rule('Invites', 'none')
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual([
+					'automod.rules[0].options.words',
+					'automod.rules[1].options.allowed',
+					'automod.rules[2].options.minimum',
+					'automod.rules[2].options.maximum',
+					'automod.rules[3].options.perChannel',
+					'automod.rules[4].options'
+				]);
+			});
+
+			test('GIVEN a rule with a custom response THEN it is kept, and a log channel is not a field of the file', async () => {
+				const parsed = await parseOk({ version: 2, automod: { rules: [{ name: 'Slurs', type: 'Words', response: '{user}, no.' }] } });
+				expect(parsed.rules?.[0]).toMatchObject({ name: 'Slurs', response: '{user}, no.' });
+				expect(parsed.rules?.[0]).not.toHaveProperty('logChannelId');
+
+				const issues = await parseIssues({
+					version: 2,
+					automod: { rules: [{ name: 'Slurs', type: 'Words', logChannelId: '254360814063058945' }] }
+				});
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].logChannelId']);
+			});
+
+			test('GIVEN a mention spam rule of an older file THEN it is imported as a mentions cooldown rule that bans', async () => {
+				const parsed = await parseOk({
+					version: 2,
+					automod: {
+						rules: [
+							{
+								name: 'Pings',
+								type: 'NoMentionSpam',
+								softAction: 0b010,
+								hardAction: 'Warning',
+								thresholdMaximum: 5,
+								options: { alerts: true, mentionsAllowed: 15, timePeriod: 1200 }
+							}
+						]
+					}
+				});
+
+				expect(parsed.rules?.[0]).toMatchObject({
+					name: 'Pings',
+					type: 'MentionsCooldown',
+					options: { maximum: 15, timePeriod: 1200, weighted: true },
+					softAction: 0b110,
+					hardAction: 'Ban',
+					hardActionDuration: null,
+					thresholdMaximum: 0,
+					escalation: []
+				});
+			});
+
+			test('GIVEN a mention spam rule that left an option out THEN it takes the default of the old rule, as the migration does', async () => {
+				const parsed = await parseOk({ version: 2, automod: { rules: [{ name: 'Pings', type: 'NoMentionSpam' }] } });
+
+				expect(parsed.rules?.[0].options).toEqual({ maximum: 20, timePeriod: 8, weighted: true });
+				expect(parsed.rules?.[0].softAction).toBe(0b100);
+			});
+
+			test('GIVEN a mention spam rule that is broken THEN the file is refused instead of it being repaired', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: {
+						rules: [
+							{ name: 'Options', type: 'NoMentionSpam', options: 'broken' },
+							{ name: 'Soft', type: 'NoMentionSpam', softAction: 'bad' }
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options', 'automod.rules[1].softAction']);
+			});
+
+			test('GIVEN a mention spam rule with a wrong option THEN it is reported as the option it became', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: { rules: [{ name: 'Pings', type: 'NoMentionSpam', options: { mentionsAllowed: 'many' } }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options.maximum']);
+			});
+
+			test('GIVEN a number out of its limits THEN the file is refused instead of bringing it within them', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: { rules: [{ name: 'Caps', type: 'Capitals', options: { minimum: 1, maximum: 50.5 } }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options.minimum', 'automod.rules[0].options.maximum']);
+				expect(issues[0].message).toContain('between 5 and 2000');
+			});
+
+			test('GIVEN an entry of a list that is not valid THEN the file is refused instead of dropping it', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: {
+						rules: [
+							{ name: 'Words', type: 'Words', options: { words: ['spam', 'x', 5, 'a'.repeat(33)] } },
+							{ name: 'Links', type: 'Links', options: { allowed: ['example.com', '  ', null] } }
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual([
+					'automod.rules[0].options.words[1]',
+					'automod.rules[0].options.words[2]',
+					'automod.rules[0].options.words[3]',
+					'automod.rules[1].options.allowed[1]',
+					'automod.rules[1].options.allowed[2]'
+				]);
+			});
+
+			test('GIVEN an option the type does not have THEN the file is refused instead of ignoring it', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: { rules: [{ name: 'Links', type: 'Links', options: { allowed: [], words: ['spam'] } }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].options.words']);
+			});
+
+			test('GIVEN a broken file THEN it cannot empty the list of a rule of the server', async () => {
+				const rules = [createRule('Words', 'Words', '1', { options: { words: ['spam', 'scam'] } })];
+				const result = await parse({ version: 2, automod: { rules: [{ name: 'Words', type: 'Words', options: { words: 'spam' } }] } });
+
+				expect(result.ok).toBe(false);
+				// The rule of the server is only ever planned from a file that was read:
+				expect(rules[0].options).toEqual({ words: ['spam', 'scam'] });
+			});
+
+			test('GIVEN exempt roles and channels THEN they are refused, since they depend on the server', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: { rules: [{ name: 'Links', type: 'Links', ignoredRoles: ['100000000000000001'], id: '5' }] }
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual(['automod.rules[0].ignoredRoles', 'automod.rules[0].id']);
+			});
+
+			test('GIVEN a rule that is not valid THEN it is refused', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: {
+						rules: [
+							'text',
+							{ name: 'No type' },
+							{ name: '12345', type: 'Links' },
+							{ name: 'Bad action', type: 'Links', hardAction: 'Explode' },
+							{ name: 'Bad threshold', type: 'Links', thresholdMaximum: 1001 }
+						]
+					}
+				});
+
+				expect(issues.map((issue) => issue.path)).toEqual([
+					'automod.rules[0]',
+					'automod.rules[1].type',
+					'automod.rules[2].name',
+					'automod.rules[3].hardAction',
+					'automod.rules[4].thresholdMaximum'
+				]);
+			});
+
+			// A file exported before the Timeout was merged into the Mute still has it:
+			test('GIVEN a rule that is a Timeout THEN it is read as a Mute', async () => {
+				const rule = { name: 'No links', type: 'Links', hardAction: 'Timeout', hardActionDuration: 60_000 };
+
+				const parsed = await parseOk({ version: 2, automod: { rules: [rule] } }, []);
+				expect(parsed.rules?.[0]).toMatchObject({ name: 'No links', hardAction: 'Mute', hardActionDuration: 60_000 });
+			});
+
+			test('GIVEN a Mute with no duration THEN it is accepted, as a mute with the role', async () => {
+				const rule = { name: 'No links', type: 'Links', hardAction: 'Mute', hardActionDuration: null };
+
+				const parsed = await parseOk({ version: 2, automod: { rules: [rule] } }, []);
+				expect(parsed.rules?.[0]).toMatchObject({ hardAction: 'Mute', hardActionDuration: null });
+			});
+
+			describe('lists longer than the limit', () => {
+				const words = (length: number) => Array.from({ length }, (_, index) => `word${index}`);
+				const over = MaximumAutoModerationRuleListLength + 1;
+				const file = (length: number, name = 'Words') => ({
+					version: 2,
+					automod: { rules: [{ name, type: 'Words', options: { words: words(length) } }] }
+				});
+
+				test('GIVEN a list at the limit THEN it is read in any server', async () => {
+					const parsed = await parseOk(file(MaximumAutoModerationRuleListLength));
+
+					expect(parsed.rules?.[0].options).toEqual({ words: words(MaximumAutoModerationRuleListLength) });
+				});
+
+				test('GIVEN the backup of a rule that holds more THEN it is restored on that rule, whole', async () => {
+					const rules = [createRule('Words', 'words', '1', { options: { words: words(over) } })];
+					const parsed = await parseOk(file(over), rules);
+
+					expect(parsed.rules?.[0].options).toEqual({ words: words(over) });
+					expect(planConfigurationImport(createSettings(), rules, parsed).rules).toMatchObject({ update: [{ fields: ['name'] }] });
+				});
+
+				test('GIVEN a rule that holds more than the file THEN the list of the file can be shorter and still over the limit', async () => {
+					const rules = [createRule('Words', 'Words', '1', { options: { words: words(over + 10) } })];
+					const parsed = await parseOk(file(over), rules);
+
+					expect(parsed.rules?.[0].options).toEqual({ words: words(over) });
+				});
+
+				test('GIVEN no rule of that name and type, or one that holds less, THEN the file cannot make the list grow', async () => {
+					const expected = [{ path: 'automod.rules[0].options.words' }];
+
+					expect(await parseIssues(file(over))).toMatchObject(expected);
+					expect(await parseIssues(file(over), [createRule('Words', 'Other', '1', { options: { words: words(over) } })])).toMatchObject(
+						expected
+					);
+					expect(await parseIssues(file(over), [createRule('Links', 'Words', '1')])).toMatchObject(expected);
+					expect(await parseIssues(file(over), [createRule('Words', 'Words', '1', { options: { words: words(over - 1) } })])).toMatchObject(
+						expected
+					);
+					expect(await parseIssues(file(over + 1), [createRule('Words', 'Words', '1', { options: { words: words(over) } })])).toMatchObject(
+						expected
+					);
+				});
+
+				test('GIVEN every list of the options THEN each has the allowance', async () => {
+					const entries = (prefix: string) => Array.from({ length: over }, (_, index) => `${prefix}${index}`);
+					const invites = { allowedCodes: entries('code'), allowedGuilds: entries('10000000000000') };
+					const links = { allowed: entries('host').map((host) => `${host}.com`) };
+					const rules = [
+						{ name: 'Invites', type: 'Invites', options: invites },
+						{ name: 'Links', type: 'Links', options: links },
+						{ name: 'Phishing', type: 'Phishing', options: links }
+					];
+					const server = [
+						createRule('Invites', 'Invites', '1', { options: invites }),
+						createRule('Links', 'Links', '2', { options: links }),
+						createRule('Phishing', 'Phishing', '3', { options: links })
+					];
+
+					const parsed = await parseOk({ version: 2, automod: { rules } }, server);
+					expect(planConfigurationImport(createSettings(), server, parsed).isEmpty).toBe(true);
+
+					const issues = await parseIssues({ version: 2, automod: { rules } });
+					expect(issues.map((issue) => issue.path)).toEqual([
+						'automod.rules[0].options.allowedCodes',
+						'automod.rules[0].options.allowedGuilds',
+						'automod.rules[1].options.allowed',
+						'automod.rules[2].options.allowed'
+					]);
+				});
+
+				test('GIVEN the rule lost entries after the file was read THEN the list of the file is found too long', async () => {
+					const rule = createRule('Words', 'Words', '1', { options: { words: words(over) } });
+					const parsed = await parseOk(file(over), [rule]);
+
+					expect(findOversizedRuleLists([rule], parsed)).toEqual([]);
+					expect(findOversizedRuleLists([{ ...rule, options: { words: words(5) } }], parsed)).toEqual([{ rule: 'Words', option: 'words' }]);
+					expect(findOversizedRuleLists([], parsed)).toEqual([{ rule: 'Words', option: 'words' }]);
+				});
+			});
+
+			test('GIVEN two rules with the same name, whatever the case, THEN the file is refused', async () => {
+				const issues = await parseIssues({
+					version: 2,
+					automod: {
+						rules: [
+							{ name: 'Links', type: 'Links' },
+							{ name: 'links', type: 'Invites' }
+						]
+					}
+				});
+
+				expect(issues).toMatchObject([{ path: 'automod.rules[1]' }]);
+				expect(issues[0].message).toContain('transferErrorRuleNameTaken');
+			});
+
+			test('GIVEN more rules than a server holds THEN the file is refused', async () => {
+				const rules = Array.from({ length: MaximumAutoModerationRules + 1 }, (_, index) => ({ name: `Rule ${index}`, type: 'Links' }));
+				const issues = await parseIssues({ version: 2, automod: { rules } });
+
+				expect(issues).toMatchObject([{ path: 'automod.rules' }]);
+				expect(issues[0].message).toContain(`"maximum":${MaximumAutoModerationRules}`);
+
+				const allowed = await parseOk({ version: 2, automod: { rules: rules.slice(0, MaximumAutoModerationRules) } });
+				expect(allowed.rules).toHaveLength(MaximumAutoModerationRules);
+			});
+
+			test('GIVEN a rules section that is not a list THEN the file is refused', async () => {
+				expect(await parseIssues({ version: 2, automod: {} })).toMatchObject([{ path: 'automod.rules' }]);
+				expect(await parseIssues({ version: 2, automod: { rules: {} } })).toMatchObject([{ path: 'automod.rules' }]);
+				expect(await parseIssues({ version: 2, automod: [] })).toMatchObject([{ path: 'automod' }]);
+			});
+		});
+	});
+
+	describe('planConfigurationImport', () => {
+		const file = (rules: unknown[] | undefined, settings: Record<string, unknown> = {}) =>
+			parseOk({ version: 2, settings, ...(rules ? { automod: { rules } } : {}) });
+
+		test('GIVEN settings THEN only the ones that differ are changed', async () => {
+			const settings = createSettings({ modulesModeration: false });
+			const parsed = await file(undefined, { 'modules.moderation': false, 'modules.roles': false, 'commands.disabled': ['ok-a'] });
+			const plan = planConfigurationImport(settings, [], parsed);
+
+			expect(plan.settings.map((change) => change.key.property)).toEqual(['modulesRoles', 'commandsDisabled']);
+			expect(plan.settings[0]).toMatchObject({ before: true, after: false });
+			expect(getPlannedSettings(plan)).toEqual({ modulesRoles: false, commandsDisabled: ['ok-a'] });
+			expect(plan.isEmpty).toBe(false);
+		});
+
+		test('GIVEN no rules section THEN the rules of the server are left alone', async () => {
+			const rules = [createRule('Links', 'Links')];
+			const plan = planConfigurationImport(createSettings(), rules, await file(undefined));
+
+			expect(plan.rules).toEqual({ create: [], update: [], remove: [], unchanged: 0 });
+			expect(plan.isEmpty).toBe(true);
+		});
+
+		test('GIVEN rules THEN the rules of the server become the ones of the file', async () => {
+			const rules = [
+				createRule('Links', 'Links', '1'),
+				createRule('Words', 'Words', '2', { options: { words: ['a1'] } }),
+				createRule('Emojis', 'Emojis', '3'),
+				createRule('Invites', 'Old rule', '4')
+			];
+			const parsed = await file([
+				{ name: 'links', type: 'Links' },
+				{ name: 'Words', type: 'Words', options: { words: ['spam'] }, enabled: false },
+				{ name: 'Emojis', type: 'Capitals' },
+				{ name: 'New rule', type: 'Newlines' }
+			]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			// The name only differs in its case, which is the same rule:
+			expect(plan.rules.update.map(({ rule, fields }) => [rule.id, fields])).toEqual([
+				['1', ['name']],
+				['2', ['enabled', 'options']]
+			]);
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, data.type, replaces])).toEqual([
+				['Emojis', 'Capitals', null],
+				['New rule', 'Newlines', null]
+			]);
+			// A rule of another type is made again, since its options depend on it:
+			expect(plan.rules.remove.map((rule) => rule.id)).toEqual(['3', '4']);
+			expect(plan.rules.unchanged).toBe(0);
+		});
+
+		test('GIVEN the plan THEN a rule is edited with what differs, and its exempt roles and channels are not touched', async () => {
+			const rules = [createRule('Links', 'Links', '1', { ignoredRoles: ['100000000000000001'], ignoredChannels: ['100000000000000002'] })];
+			const plan = planConfigurationImport(createSettings(), rules, await file([{ name: 'Links', type: 'Links', enabled: false }]));
+			const { create, update, remove } = getPlannedRules(plan);
+
+			expect(update).toEqual([{ id: '1', data: { enabled: false } }]);
+			expect(create).toEqual([]);
+			expect(remove).toEqual([]);
+		});
+
+		test('GIVEN a rule that is created THEN it has no exempt roles and channels', async () => {
+			const plan = planConfigurationImport(createSettings(), [], await file([{ name: 'Links', type: 'Links' }]));
+			const [created] = getPlannedRules(plan).create;
+
+			expect(created).toMatchObject({ name: 'Links', type: 'Links', ignoredRoles: [], ignoredChannels: [] });
+		});
+
+		test('GIVEN a server that already is as the file says THEN there is nothing to do', async () => {
+			const rules = [createRule('Links', 'Links')];
+			const plan = planConfigurationImport(createSettings(), rules, await file([{ name: 'Links', type: 'Links' }]));
+
+			expect(plan.rules.unchanged).toBe(1);
+			expect(plan.isEmpty).toBe(true);
+		});
+	});
+
+	describe('the order of the rules', () => {
+		const file = (rules: unknown[]) => parseOk({ version: 2, automod: { rules } });
+		const words = (name: string, extra: Record<string, unknown> = {}) => ({ name, type: 'Words', ...extra });
+
+		/**
+		 * The rules of a server after a plan is written, as the database gives them: by their ID, the rules that are
+		 * created taking the next ones in the order they are created.
+		 */
+		function write(rules: readonly AutoModerationRule[], parsed: Awaited<ReturnType<typeof file>>) {
+			const { create, update, remove } = getPlannedRules(planConfigurationImport(createSettings(), rules, parsed));
+			let nextId = Math.max(0, ...rules.map((rule) => Number(rule.id))) + 1;
+
+			const kept = rules
+				.filter((rule) => !remove.includes(rule.id))
+				.map((rule) => ({ ...rule, ...update.find((entry) => entry.id === rule.id)?.data }) as AutoModerationRule);
+			const created = create.map((data) => ({ ...data, id: String(nextId++), guildId }) as AutoModerationRule);
+			return [...kept, ...created].sort((a, b) => Number(a.id) - Number(b.id));
+		}
+
+		const names = (rules: readonly AutoModerationRule[], type: AutoModerationRuleType) =>
+			rules.filter((rule) => rule.type === type).map((rule) => rule.name);
+
+		test('GIVEN the rules of a type in another order THEN the ones out of place are made again, after the ones that stay', async () => {
+			const rules = [createRule('Words', 'Ban', '1', { hardAction: 'Ban' }), createRule('Words', 'Warn', '2')];
+			const parsed = await file([words('Warn'), words('Ban', { hardAction: 'Ban' })]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			expect(plan.isEmpty).toBe(false);
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, replaces?.id])).toEqual([['Ban', '1']]);
+			expect(plan.rules).toMatchObject({ update: [], remove: [], unchanged: 1 });
+			expect(getPlannedRules(plan).remove).toEqual(['1']);
+
+			// The warning is the first rule of the type now, as in the file, so it is the one a message is held to:
+			const after = write(rules, parsed);
+			expect(names(after, 'Words')).toEqual(['Warn', 'Ban']);
+			expect(after.map((rule) => rule.id)).toEqual(['2', '3']);
+		});
+
+		test('GIVEN the import was written THEN importing the file again does nothing', async () => {
+			const rules = [createRule('Words', 'Ban', '1'), createRule('Words', 'Warn', '2'), createRule('Words', 'Mute', '3')];
+			const parsed = await file([words('Mute'), words('Warn'), words('New'), words('Ban')]);
+
+			const after = write(rules, parsed);
+			expect(names(after, 'Words')).toEqual(['Mute', 'Warn', 'New', 'Ban']);
+			expect(planConfigurationImport(createSettings(), after, parsed).isEmpty).toBe(true);
+		});
+
+		test('GIVEN a new rule before the ones the server has THEN the ones of its type after it are made again', async () => {
+			const rules = [createRule('Words', 'First', '1'), createRule('Words', 'Second', '2'), createRule('Links', 'Links', '3')];
+			const parsed = await file([words('First'), words('New'), { name: 'Links', type: 'Links' }, words('Second')]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, replaces?.id])).toEqual([
+				['New', undefined],
+				['Second', '2']
+			]);
+			// The rule of another type is not held to any message the others are, so it stays where it is:
+			expect(plan.rules.unchanged).toBe(2);
+			expect(names(write(rules, parsed), 'Words')).toEqual(['First', 'New', 'Second']);
+		});
+
+		test('GIVEN a rule that takes a type THEN the rules of that type after it are made again', async () => {
+			const rules = [createRule('Links', 'Changed', '1'), createRule('Words', 'Words', '2')];
+			const parsed = await file([words('Changed'), words('Words')]);
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+
+			expect(plan.rules.remove.map((rule) => rule.id)).toEqual(['1']);
+			expect(plan.rules.create.map(({ data, replaces }) => [data.name, replaces?.id])).toEqual([
+				['Changed', undefined],
+				['Words', '2']
+			]);
+			expect(names(write(rules, parsed), 'Words')).toEqual(['Changed', 'Words']);
+		});
+
+		test('GIVEN the rules of different types in another order THEN nothing moves, since no message is held to both', async () => {
+			const rules = [createRule('Links', 'Links', '1'), createRule('Words', 'Words', '2')];
+			const plan = planConfigurationImport(createSettings(), rules, await file([words('Words'), { name: 'Links', type: 'Links' }]));
+
+			expect(plan.isEmpty).toBe(true);
+		});
+
+		test('GIVEN a rule that is made again THEN it takes what the file says and keeps its exempt roles and channels', async () => {
+			const exempt = { ignoredRoles: ['100000000000000001'], ignoredChannels: ['100000000000000002'] };
+			const rules = [createRule('Words', 'Ban', '1', exempt), createRule('Words', 'Warn', '2')];
+			const parsed = await file([words('Warn'), words('Ban', { enabled: false, options: { words: ['spam'] } })]);
+			const { create } = getPlannedRules(planConfigurationImport(createSettings(), rules, parsed));
+
+			expect(create).toEqual([
+				{ ...getDefaultAutoModerationRule('Words'), ...exempt, name: 'Ban', enabled: false, options: { words: ['spam'] } }
+			]);
+		});
+
+		test('GIVEN IDs of different lengths THEN they are compared as numbers', async () => {
+			const rules = [createRule('Words', 'Nine', '9'), createRule('Words', 'Ten', '10')];
+			const plan = planConfigurationImport(createSettings(), rules, await file([words('Nine'), words('Ten')]));
+
+			expect(plan.isEmpty).toBe(true);
+		});
+
+		test('GIVEN a plan THEN the rules that move are counted apart from the ones created and deleted', async () => {
+			const rules = [createRule('Words', 'Ban', '1'), createRule('Words', 'Warn', '2'), createRule('Links', 'Gone', '3')];
+			const parsed = await file([words('Warn', { enabled: false }), words('Ban'), words('New')]);
+
+			expect(countPlannedRules(planConfigurationImport(createSettings(), rules, parsed))).toEqual({
+				created: 1,
+				updated: 1,
+				moved: 1,
+				removed: 1,
+				unchanged: 0
+			});
+		});
+	});
+
+	describe('a file of the bot before V7', () => {
+		/** The file the export of the bot before V7 writes for a server that changed nothing, with the given settings. */
+		const legacy = (settings: Record<string, unknown> = {}) => ({ ...legacyFile, settings: { ...legacyFile.settings, ...settings } });
+		const valueOf = (parsed: { settings: { key: unknown; value: unknown }[] }, name: string) =>
+			parsed.settings.find((setting) => setting.key === findPortableKey(name))?.value;
+
+		test('GIVEN a file of a server that changed nothing THEN it is read with nothing to tell', async () => {
+			const parsed = await parseOk(legacy());
+
+			expect(parsed.notices).toEqual([]);
+			expect(parsed.rules).toBeNull();
+			// The bot before V7 sent no direct message by default, which this one does: the server keeps what it had.
+			expect(planConfigurationImport(createSettings(), [], parsed).settings.map(({ key, after }) => [key.name, after])).toEqual([
+				['moderation.direct-message', false]
+			]);
+		});
+
+		test('GIVEN the settings that were renamed THEN they take their name here', async () => {
+			const parsed = await parseOk(
+				legacy({
+					'messages.moderation-dm': true,
+					'messages.moderator-name-display': false,
+					'events.ban-add': false,
+					'events.ban-remove': true,
+					'events.timeout': true,
+					'events.twemoji-reactions': true,
+					'disabled-commands': ['okPing'],
+					language: 'it'
+				})
+			);
+
+			expect(parsed.notices).toEqual([]);
+			expect(valueOf(parsed, 'moderation.direct-message')).toBe(true);
+			expect(valueOf(parsed, 'moderation.display-moderator')).toBe(false);
+			expect(valueOf(parsed, 'moderation.track-bans')).toBe(true);
+			expect(valueOf(parsed, 'moderation.track-timeouts')).toBe(true);
+			expect(valueOf(parsed, 'logs.reaction-emoji-include-twemoji')).toBe(true);
+			expect(valueOf(parsed, 'commands.disabled')).toEqual(['okPing']);
+			expect(valueOf(parsed, 'language')).toBe('it');
+		});
+
+		test('GIVEN a value that cannot be converted THEN the rest is imported and it says how to set it by hand', async () => {
+			const parsed = await parseOk(
+				legacy({ 'messages.moderation-dm': 'yes', 'disabled-commands': ['okPing', 'gone'], 'events.timeout': true })
+			);
+
+			expect(valueOf(parsed, 'moderation.track-timeouts')).toBe(true);
+			expect(valueOf(parsed, 'moderation.direct-message')).toBeUndefined();
+			expect(valueOf(parsed, 'commands.disabled')).toEqual(['okPing']);
+			expect(parsed.notices).toMatchObject([
+				{ path: 'settings.disabled-commands', message: expect.stringContaining('"target":"commands.disabled"') },
+				{ path: 'settings.messages.moderation-dm', message: expect.stringContaining('"target":"moderation.direct-message"') }
+			]);
+			expect(parsed.notices[0].message).toContain('transferLegacySettingFailed');
+			expect(parsed.notices[0].message).toContain('gone');
+		});
+
+		test('GIVEN a setting this bot has nothing for THEN it is told only when it was changed', async () => {
+			const parsed = await parseOk(
+				legacy({ prefix: '!', 'events.include-bots': false, 'selfmod.reactions.enabled': true, 'selfmod.reactions.maximum': 3 })
+			);
+
+			expect(parsed.notices.map((notice) => notice.message.split(' ')[0])).toEqual([
+				'commands/conf:transferLegacyNoEquivalent',
+				'commands/conf:transferLegacyReactionFilter'
+			]);
+			expect(parsed.notices[0].path).toBe('settings.prefix');
+		});
+
+		test('GIVEN filters that were changed THEN they become rules, added to the ones of the server', async () => {
+			const rules = [createRule('Words', 'Mine', '1')];
+			const parsed = await parseOk(
+				legacy({
+					'selfmod.links.enabled': true,
+					'selfmod.links.allowed': ['wolfstar.rocks'],
+					'selfmod.links.hard-action': 6,
+					'selfmod.links.hard-action-duration': 60_000,
+					'no-mention-spam.enabled': true
+				}),
+				rules
+			);
+
+			expect(parsed.notices).toEqual([]);
+			expect(parsed.rules).toBeNull();
+			expect(parsed.addedRules).toMatchObject([
+				{
+					name: 'Links',
+					type: 'Links',
+					enabled: true,
+					// The legacy Timeout (6) is a Mute, a timeout while the server has `moderation.mute-timeout`:
+					hardAction: 'Mute',
+					hardActionDuration: 60_000,
+					options: { allowed: ['wolfstar.rocks'] }
+				},
+				{ name: 'Mention spam', type: 'MentionsCooldown', enabled: true, hardAction: 'Ban' }
+			]);
+
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+			expect(countPlannedRules(plan)).toEqual({ created: 2, updated: 0, moved: 0, removed: 0, unchanged: 1 });
+		});
+
+		test('GIVEN a rule the server gained after the file was read THEN the import keeps it', async () => {
+			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true }), [createRule('Words', 'Mine', '1')]);
+
+			const now = [createRule('Words', 'Mine', '1'), createRule('Words', 'Added since', '2')];
+			const plan = planConfigurationImport(createSettings(), now, parsed);
+			expect(countPlannedRules(plan)).toEqual({ created: 1, updated: 0, moved: 0, removed: 0, unchanged: 2 });
+		});
+
+		test('GIVEN a file with a few settings and no filter THEN it makes no rule, not even a Mention spam that is off', async () => {
+			const parsed = await parseOk(legacy({ 'messages.moderation-dm': true }));
+
+			expect(parsed.addedRules).toEqual([]);
+			const plan = planConfigurationImport(createSettings(), [createRule('MentionsCooldown', 'Mention spam', '1')], parsed);
+			expect(countPlannedRules(plan)).toMatchObject({ created: 0, removed: 0, updated: 0 });
+		});
+
+		test('GIVEN a filter that cannot become a rule and another that can THEN the other is still made', async () => {
+			const parsed = await parseOk(
+				legacy({ 'selfmod.invites.enabled': true, 'selfmod.invites.ignored-guilds': ['not a server'], 'selfmod.links.enabled': true })
+			);
+
+			expect(parsed.notices.map((notice) => notice.message.split(' ')[0])).toEqual(['commands/conf:transferLegacyRuleFailed']);
+			expect(parsed.addedRules).toMatchObject([{ name: 'Links', type: 'Links', enabled: true }]);
+		});
+
+		test('GIVEN a filter the server already has as a rule THEN that rule is edited instead of made twice', async () => {
+			const rules = [createRule('Links', 'Links', '1')];
+			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true }), rules);
+
+			const plan = planConfigurationImport(createSettings(), rules, parsed);
+			expect(countPlannedRules(plan)).toMatchObject({ created: 0, removed: 0 });
+		});
+
+		test('GIVEN a filter that cannot become a rule THEN the rest is imported and it says to create the rule by hand', async () => {
+			const parsed = await parseOk(
+				legacy({ 'selfmod.invites.enabled': true, 'selfmod.invites.ignored-guilds': ['not a server'], 'events.timeout': true })
+			);
+
+			expect(valueOf(parsed, 'moderation.track-timeouts')).toBe(true);
+			expect(parsed.rules).toBeNull();
+			expect(parsed.notices).toHaveLength(1);
+			expect(parsed.notices[0]).toMatchObject({ path: 'settings.selfmod.invites.ignored-guilds' });
+			expect(parsed.notices[0].message).toContain('transferLegacyRuleFailed');
+			expect(parsed.notices[0].message).toContain('"rule":"Invites"');
+		});
+
+		test('GIVEN a filter the limits of this bot changed THEN the rule is made and the change is told', async () => {
+			const parsed = await parseOk(legacy({ 'selfmod.links.enabled': true, 'selfmod.links.threshold-maximum': 5000 }));
+
+			expect(parsed.addedRules).toHaveLength(1);
+			expect(parsed.notices).toHaveLength(1);
+			expect(parsed.notices[0].message).toContain('transferLegacyRuleAdjusted');
+		});
+
+		test('GIVEN an option the limits changed THEN the notice names the rule, not the option', async () => {
+			const parsed = await parseOk(legacy({ 'selfmod.capitals.enabled': true, 'selfmod.capitals.maximum': 100000 }));
+
+			expect(parsed.notices[0].message).toContain('"rule":"Capitals"');
+			expect(parsed.notices[0].path).toBe('settings.selfmod.capitals');
+		});
+
+		test('GIVEN a setting nobody has THEN the file is still refused', async () => {
+			expect(await parseIssues(legacy({ 'no.such': true }))).toMatchObject([{ path: 'settings.no.such' }]);
+		});
+
+		test('GIVEN a setting of the bot before V7 in a file of version 2 THEN it is refused', async () => {
+			expect(await parseIssues({ version: 2, settings: { 'messages.moderation-dm': true } })).toMatchObject([
+				{ path: 'settings.messages.moderation-dm' }
+			]);
+		});
+
+		test('GIVEN what was not imported THEN the preview lists it', async () => {
+			const parsed = await parseOk(legacy({ prefix: '!', 'events.timeout': true }));
+			const embed = await renderConfigurationPreview(planConfigurationImport(createSettings(), [], parsed), context(), parsed.notices);
+
+			expect(embed.description).toContain('commands/conf:transferLegacyNotices {"count":1}');
+			expect(embed.description).toContain('transferLegacyNoEquivalent');
+		});
+	});
+
+	describe('rendering', () => {
+		test('GIVEN a plan THEN the preview lists the settings and the rules it changes', async () => {
+			const settings = createSettings();
+			const rules = [createRule('Links', 'Links', '1'), createRule('Invites', 'Old', '2')];
+			const parsed = await parseOk({
+				version: 2,
+				settings: { 'modules.moderation': false, language: 'it' },
+				automod: {
+					rules: [
+						{ name: 'Links', type: 'Links', enabled: false },
+						{ name: 'New', type: 'Newlines' }
+					]
+				}
+			});
+			const embed = await renderConfigurationPreview(planConfigurationImport(settings, rules, parsed), { ...context(), settings });
+
+			expect(embed.title).toBe('commands/conf:transferPreviewTitle');
+			expect(embed.description).toContain('"count":2');
+			expect(embed.description).toContain('"created":1,"updated":1,"moved":0,"removed":1');
+			expect(embed.description).not.toContain('transferPreviewMoved');
+			expect(embed.description).toContain('+ **New**');
+			expect(embed.description).toContain('~ **Links**: `enabled`');
+			expect(embed.description).toContain('- **Old**');
+		});
+
+		test('GIVEN a rule that changes place THEN the preview says it moves, and what that costs', async () => {
+			const rules = [createRule('Words', 'Ban', '1'), createRule('Words', 'Warn', '2')];
+			const parsed = await parseOk({
+				version: 2,
+				automod: {
+					rules: [
+						{ name: 'Warn', type: 'Words' },
+						{ name: 'Ban', type: 'Words' }
+					]
+				}
+			});
+			const embed = await renderConfigurationPreview(planConfigurationImport(createSettings(), rules, parsed), context());
+
+			expect(embed.description).toContain('"created":0,"updated":0,"moved":1,"removed":0,"unchanged":1');
+			expect(embed.description).toContain('↕ **Ban**');
+			expect(embed.description).toContain('transferPreviewMoved');
+		});
+
+		test('GIVEN many problems THEN the message keeps to the limit of a message', () => {
+			const issues = Array.from({ length: 100 }, (_, index) => ({ path: `settings.key${index}`, message: 'x'.repeat(300) }));
+			const content = renderConfigurationIssues(issues, t as never);
+
+			expect(content.length).toBeLessThanOrEqual(2000);
+			expect(content).toContain('"count":100');
+		});
+	});
+});

@@ -21,18 +21,19 @@ jobs:
         with:
             # `pnpm tolgee:pull` runs the CLI (config: .tolgeerc.cjs) and then
             # scripts/tolgee-pull-remap.ts, which remaps Tolgee language tags
-            # (es, pt, zh-Hans, …) onto the Discord locale directories and merges
-            # the export onto the committed files (en-US is never written).
+            # (es, pt, zh-Hans, …) onto the Discord locale directories under
+            # projects/bot/src/locales and merges the export onto the committed
+            # files (en-US is never written).
             pull-command: pnpm tolgee:pull
-            # tests/vitest.setup.ts boots #lib/setup, which needs the generated client;
+            # projects/bot/tests/setup.ts boots #lib/setup, which needs the generated client;
             # the install skips lifecycle scripts, so generate it explicitly. Then a
             # structural gate on the merged tree: no nulls, no `name[0]` keys, no raw ICU
             # shells, placeholders consistent with en-US. A corrupt export fails the job
             # here instead of reaching a pull request.
             validate-command: |
-                pnpm prisma:generate
+                pnpm --filter wolfstar-database prisma:generate
                 pnpm vitest run tests/languages
-            paths: src/languages
+            paths: projects/bot/src/locales
         secrets:
             TOLGEE_API_KEY: ${{ secrets.TOLGEE_API_KEY }}
             WOLFSTAR_TOKEN: ${{ secrets.WOLFSTAR_TOKEN }}

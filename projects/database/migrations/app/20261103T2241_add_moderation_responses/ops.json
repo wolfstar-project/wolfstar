@@ -1,0 +1,176 @@
+[
+	{
+		"id": "column.GuildModeration.response_ban",
+		"label": "Add the custom response of the ban commands",
+		"summary": "Adds column \"response_ban\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"response_ban\" text",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response_ban\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'response_ban') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.response_unban",
+		"label": "Add the custom response of the unban commands",
+		"summary": "Adds column \"response_unban\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"response_unban\" text",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response_unban\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'response_unban') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.response_softban",
+		"label": "Add the custom response of the softban commands",
+		"summary": "Adds column \"response_softban\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"response_softban\" text",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response_softban\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'response_softban') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.response_kick",
+		"label": "Add the custom response of the kick commands",
+		"summary": "Adds column \"response_kick\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"response_kick\" text",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response_kick\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'response_kick') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.response_mute",
+		"label": "Add the custom response of the mute commands",
+		"summary": "Adds column \"response_mute\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"response_mute\" text",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response_mute\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'response_mute') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.response_unmute",
+		"label": "Add the custom response of the unmute commands",
+		"summary": "Adds column \"response_unmute\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, empty for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"response_unmute\" text",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"response_unmute\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'response_unmute') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

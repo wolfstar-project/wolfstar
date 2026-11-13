@@ -1,0 +1,62 @@
+[
+	{
+		"id": "index.ModerationAction.ModerationAction_guild_id_created_at_id_idx",
+		"label": "Index the cases of a guild by their date",
+		"summary": "Creates index \"ModerationAction_guild_id_created_at_id_idx\" on \"ModerationAction\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "ModerationAction_guild_id_created_at_id_idx",
+				"table": "ModerationAction"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create index \"ModerationAction_guild_id_created_at_id_idx\"",
+				"sql": "CREATE INDEX IF NOT EXISTS \"ModerationAction_guild_id_created_at_id_idx\" ON \"public\".\"ModerationAction\" (\"guild_id\", \"created_at\", \"id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"ModerationAction_guild_id_created_at_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationAction_guild_id_created_at_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.ModerationAction.ModerationAction_guild_id_target_id_created_at_idx",
+		"label": "Index the cases of a member by their date",
+		"summary": "Creates index \"ModerationAction_guild_id_target_id_created_at_idx\" on \"ModerationAction\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "ModerationAction_guild_id_target_id_created_at_idx",
+				"table": "ModerationAction"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create index \"ModerationAction_guild_id_target_id_created_at_idx\"",
+				"sql": "CREATE INDEX IF NOT EXISTS \"ModerationAction_guild_id_target_id_created_at_idx\" ON \"public\".\"ModerationAction\" (\"guild_id\", \"target_id\", \"created_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"ModerationAction_guild_id_target_id_created_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationAction_guild_id_target_id_created_at_idx\""]
+			}
+		]
+	}
+]

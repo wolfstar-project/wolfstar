@@ -1,0 +1,118 @@
+[
+	{
+		"id": "column.GuildModeration.direct_message",
+		"label": "Add the setting of direct messages to the members",
+		"summary": "Adds column \"direct_message\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, with its default for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"direct_message\" bool NOT NULL DEFAULT false",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"direct_message\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'direct_message') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.display_reason",
+		"label": "Add the setting of showing the reason",
+		"summary": "Adds column \"display_reason\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, with its default for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"display_reason\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"display_reason\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'display_reason') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.display_message",
+		"label": "Add the setting of answering in the channel",
+		"summary": "Adds column \"display_message\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, with its default for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"display_message\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"display_message\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'display_message') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "column.GuildModeration.display_moderator",
+		"label": "Add the setting of showing the moderator",
+		"summary": "Adds column \"display_moderator\" to \"GuildModeration\" when it does not have it",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildModeration"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "add the column, with its default for the guilds that are there",
+				"sql": "ALTER TABLE \"public\".\"GuildModeration\" ADD COLUMN IF NOT EXISTS \"display_moderator\" bool NOT NULL DEFAULT true",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"display_moderator\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'GuildModeration' AND column_name = 'display_moderator') AS \"result\"",
+				"params": []
+			}
+		]
+	}
+]

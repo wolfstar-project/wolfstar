@@ -1,0 +1,71 @@
+[
+	{
+		"id": "table.ModerationCaseData",
+		"label": "Create table \"ModerationCaseData\"",
+		"summary": "Creates table \"ModerationCaseData\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "ModerationCaseData"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"ModerationCaseData\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationCaseData\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"ModerationCaseData\"",
+				"sql": "CREATE TABLE \"public\".\"ModerationCaseData\" (\n  \"case_id\" int4 NOT NULL,\n  \"channel_id\" int8,\n  \"extra_data\" jsonb,\n  \"guild_id\" int8 NOT NULL,\n  \"message_id\" int8,\n  CONSTRAINT \"ModerationCaseData_pkey\" PRIMARY KEY (\"case_id\", \"guild_id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"ModerationCaseData\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationCaseData\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.ModerationCaseData.ModerationCaseData_guild_id_fkey",
+		"label": "Add foreign key \"ModerationCaseData_guild_id_fkey\" on \"ModerationCaseData\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "ModerationCaseData_guild_id_fkey",
+				"table": "ModerationCaseData"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"ModerationCaseData_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["ModerationCaseData_guild_id_fkey", "public", "\"public\".\"ModerationCaseData\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"ModerationCaseData_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"ModerationCaseData\"\nADD CONSTRAINT \"ModerationCaseData_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"ModerationCaseData_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["ModerationCaseData_guild_id_fkey", "public", "\"public\".\"ModerationCaseData\""]
+			}
+		]
+	}
+]

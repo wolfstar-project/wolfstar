@@ -1,0 +1,37 @@
+[
+	{
+		"id": "table.LegacyMigratedGuild",
+		"label": "Create table \"LegacyMigratedGuild\"",
+		"summary": "Creates table \"LegacyMigratedGuild\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "LegacyMigratedGuild"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"LegacyMigratedGuild\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"LegacyMigratedGuild\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"LegacyMigratedGuild\"",
+				"sql": "CREATE TABLE \"public\".\"LegacyMigratedGuild\" (\n  \"followed_up_at\" timestamp(3),\n  \"guild_id\" int8 NOT NULL,\n  \"migrated_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  CONSTRAINT \"LegacyMigratedGuild_pkey\" PRIMARY KEY (\"guild_id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"LegacyMigratedGuild\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"LegacyMigratedGuild\""]
+			}
+		]
+	}
+]

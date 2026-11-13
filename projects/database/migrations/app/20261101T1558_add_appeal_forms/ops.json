@@ -1,0 +1,784 @@
+[
+	{
+		"id": "createNativeEnumType.AppealRequestKind",
+		"label": "Create enum type \"AppealRequestKind\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "AppealRequestKind"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"AppealRequestKind\"",
+				"sql": "CREATE TYPE \"public\".\"AppealRequestKind\" AS ENUM ('Approve', 'Deny', 'Block', 'Unblock')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "table.AppealBlock",
+		"label": "Create table \"AppealBlock\"",
+		"summary": "Creates table \"AppealBlock\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "AppealBlock"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"AppealBlock\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"AppealBlock\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"AppealBlock\"",
+				"sql": "CREATE TABLE \"public\".\"AppealBlock\" (\n  \"automatic\" bool DEFAULT false NOT NULL,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"moderator_id\" int8,\n  \"reason\" text,\n  \"user_id\" int8 NOT NULL,\n  CONSTRAINT \"AppealBlock_pkey\" PRIMARY KEY (\"guild_id\", \"user_id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"AppealBlock\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"AppealBlock\""]
+			}
+		]
+	},
+	{
+		"id": "table.AppealForm",
+		"label": "Create table \"AppealForm\"",
+		"summary": "Creates table \"AppealForm\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "AppealForm"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"AppealForm\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"AppealForm\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"AppealForm\"",
+				"sql": "CREATE TABLE \"public\".\"AppealForm\" (\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"enabled\" bool DEFAULT true NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"icon\" text,\n  \"id\" BIGSERIAL NOT NULL,\n  \"lock_reason\" text,\n  \"name\" text NOT NULL,\n  \"position\" int4 DEFAULT 0 NOT NULL,\n  \"questions\" \"jsonb\" DEFAULT ('[]'::jsonb) NOT NULL,\n  \"required_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"restricted_roles\" int8[] DEFAULT '{}' NOT NULL,\n  \"types\" int4[] DEFAULT '{}' NOT NULL,\n  \"updated_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  CONSTRAINT \"AppealForm_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"AppealForm\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"AppealForm\""]
+			}
+		]
+	},
+	{
+		"id": "table.AppealRequest",
+		"label": "Create table \"AppealRequest\"",
+		"summary": "Creates table \"AppealRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "AppealRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"AppealRequest\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"AppealRequest\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"AppealRequest\"",
+				"sql": "CREATE TABLE \"public\".\"AppealRequest\" (\n  \"appeal_id\" int8,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"error\" text,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"kind\" \"AppealRequestKind\" NOT NULL,\n  \"moderator_id\" int8 NOT NULL,\n  \"processed_at\" timestamp(3),\n  \"reason\" text,\n  \"user_id\" int8,\n  CONSTRAINT \"AppealRequest_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"AppealRequest\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"AppealRequest\""]
+			}
+		]
+	},
+	{
+		"id": "column.public.Appeal.decided_at",
+		"label": "Add column \"decided_at\" to \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "decided_at",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"decided_at\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "decided_at"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"decided_at\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ADD COLUMN \"decided_at\" timestamp(3)"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"decided_at\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "decided_at"]
+			}
+		]
+	},
+	{
+		"id": "column.public.Appeal.form_id",
+		"label": "Add column \"form_id\" to \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "form_id",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"form_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "form_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"form_id\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ADD COLUMN \"form_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"form_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "form_id"]
+			}
+		]
+	},
+	{
+		"id": "column.public.Appeal.thread_id",
+		"label": "Add column \"thread_id\" to \"Appeal\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "thread_id",
+				"table": "Appeal"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"thread_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "thread_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"thread_id\"",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ADD COLUMN \"thread_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"thread_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "Appeal", "thread_id"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.anonymous",
+		"label": "Add column \"anonymous\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "anonymous",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"anonymous\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "anonymous"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"anonymous\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"anonymous\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"anonymous\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "anonymous"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.block_on_denial",
+		"label": "Add column \"block_on_denial\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "block_on_denial",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"block_on_denial\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "block_on_denial"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"block_on_denial\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"block_on_denial\" bool DEFAULT false NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"block_on_denial\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "block_on_denial"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.cooldown_days",
+		"label": "Add column \"cooldown_days\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "cooldown_days",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"cooldown_days\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "cooldown_days"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"cooldown_days\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"cooldown_days\" int4 DEFAULT 7 NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"cooldown_days\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "cooldown_days"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.manager_roles",
+		"label": "Add column \"manager_roles\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "manager_roles",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"manager_roles\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "manager_roles"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"manager_roles\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"manager_roles\" int8[] DEFAULT '{}' NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"manager_roles\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "manager_roles"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.max_active",
+		"label": "Add column \"max_active\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "max_active",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"max_active\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "max_active"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"max_active\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"max_active\" int4 DEFAULT 1 NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"max_active\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "max_active"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.ping_roles",
+		"label": "Add column \"ping_roles\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "ping_roles",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"ping_roles\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "ping_roles"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"ping_roles\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"ping_roles\" int8[] DEFAULT '{}' NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"ping_roles\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "ping_roles"]
+			}
+		]
+	},
+	{
+		"id": "column.public.GuildAppeals.thread",
+		"label": "Add column \"thread\" to \"GuildAppeals\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "thread",
+				"table": "GuildAppeals"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"thread\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "thread"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"thread\"",
+				"sql": "ALTER TABLE \"public\".\"GuildAppeals\" ADD COLUMN \"thread\" text DEFAULT 'public' NOT NULL"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"thread\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "GuildAppeals", "thread"]
+			}
+		]
+	},
+	{
+		"id": "column.Appeal.answers.jsonb",
+		"label": "Keep the answers of an appeal as JSON",
+		"summary": "Changes \"Appeal\".\"answers\" from text[] to jsonb",
+		"operationClass": "data",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Appeal"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "drop the default",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ALTER COLUMN \"answers\" DROP DEFAULT",
+				"params": []
+			},
+			{
+				"description": "change the type",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ALTER COLUMN \"answers\" TYPE jsonb USING to_jsonb(\"answers\")",
+				"params": []
+			},
+			{
+				"description": "set the default",
+				"sql": "ALTER TABLE \"public\".\"Appeal\" ALTER COLUMN \"answers\" SET DEFAULT '[]'::jsonb",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify the column is jsonb",
+				"sql": "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'Appeal' AND column_name = 'answers' AND data_type = 'jsonb') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "index.AppealForm.AppealForm_guild_id_position_idx",
+		"label": "Create index \"AppealForm_guild_id_position_idx\" on \"AppealForm\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "AppealForm_guild_id_position_idx",
+				"table": "AppealForm"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"AppealForm_guild_id_position_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"AppealForm_guild_id_position_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"AppealForm_guild_id_position_idx\"",
+				"sql": "CREATE INDEX \"AppealForm_guild_id_position_idx\" ON \"public\".\"AppealForm\" (\"guild_id\", \"position\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"AppealForm_guild_id_position_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"AppealForm_guild_id_position_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.AppealRequest.AppealRequest_guild_id_created_at_idx",
+		"label": "Create index \"AppealRequest_guild_id_created_at_idx\" on \"AppealRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "AppealRequest_guild_id_created_at_idx",
+				"table": "AppealRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"AppealRequest_guild_id_created_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"AppealRequest_guild_id_created_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"AppealRequest_guild_id_created_at_idx\"",
+				"sql": "CREATE INDEX \"AppealRequest_guild_id_created_at_idx\" ON \"public\".\"AppealRequest\" (\"guild_id\", \"created_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"AppealRequest_guild_id_created_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"AppealRequest_guild_id_created_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.AppealBlock.AppealBlock_guild_id_fkey",
+		"label": "Add foreign key \"AppealBlock_guild_id_fkey\" on \"AppealBlock\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "AppealBlock_guild_id_fkey",
+				"table": "AppealBlock"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"AppealBlock_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["AppealBlock_guild_id_fkey", "public", "\"public\".\"AppealBlock\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"AppealBlock_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"AppealBlock\"\nADD CONSTRAINT \"AppealBlock_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"AppealBlock_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["AppealBlock_guild_id_fkey", "public", "\"public\".\"AppealBlock\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.AppealForm.AppealForm_guild_id_fkey",
+		"label": "Add foreign key \"AppealForm_guild_id_fkey\" on \"AppealForm\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "AppealForm_guild_id_fkey",
+				"table": "AppealForm"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"AppealForm_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["AppealForm_guild_id_fkey", "public", "\"public\".\"AppealForm\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"AppealForm_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"AppealForm\"\nADD CONSTRAINT \"AppealForm_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"AppealForm_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["AppealForm_guild_id_fkey", "public", "\"public\".\"AppealForm\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.AppealRequest.AppealRequest_guild_id_fkey",
+		"label": "Add foreign key \"AppealRequest_guild_id_fkey\" on \"AppealRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "AppealRequest_guild_id_fkey",
+				"table": "AppealRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"AppealRequest_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["AppealRequest_guild_id_fkey", "public", "\"public\".\"AppealRequest\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"AppealRequest_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"AppealRequest\"\nADD CONSTRAINT \"AppealRequest_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"AppealRequest_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["AppealRequest_guild_id_fkey", "public", "\"public\".\"AppealRequest\""]
+			}
+		]
+	},
+	{
+		"id": "index.AppealForm.AppealForm_guild_id_name_key",
+		"label": "Create the index AppealForm_guild_id_name_key",
+		"summary": "Creates AppealForm_guild_id_name_key on \"AppealForm\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "AppealForm"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create AppealForm_guild_id_name_key",
+				"sql": "CREATE UNIQUE INDEX \"AppealForm_guild_id_name_key\" ON \"public\".\"AppealForm\" (\"guild_id\", lower(\"name\"))",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify AppealForm_guild_id_name_key exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname = 'AppealForm_guild_id_name_key') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "index.AppealRequest.AppealRequest_created_at_pending_idx",
+		"label": "Create the index AppealRequest_created_at_pending_idx",
+		"summary": "Creates AppealRequest_created_at_pending_idx on \"AppealRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "AppealRequest"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create AppealRequest_created_at_pending_idx",
+				"sql": "CREATE INDEX \"AppealRequest_created_at_pending_idx\" ON \"public\".\"AppealRequest\" (\"created_at\") WHERE \"processed_at\" IS NULL",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify AppealRequest_created_at_pending_idx exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname = 'AppealRequest_created_at_pending_idx') AS \"result\"",
+				"params": []
+			}
+		]
+	},
+	{
+		"id": "data.GuildAppeals.questions",
+		"label": "Make the first form of the guilds that set questions",
+		"summary": "Inserts one \"AppealForm\" per guild with questions",
+		"operationClass": "data",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "AppealForm"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "insert the forms",
+				"sql": "WITH \"lines\" AS (\n        SELECT \"g\".\"id\", btrim(\"q\".\"line\", E' \\t\\n\\r') AS \"line\", row_number() OVER (PARTITION BY \"g\".\"id\" ORDER BY \"q\".\"position\") AS \"number\"\n        FROM \"public\".\"GuildAppeals\" AS \"g\", unnest(\"g\".\"questions\") WITH ORDINALITY AS \"q\"(\"line\", \"position\")\n        WHERE btrim(\"q\".\"line\", E' \\t\\n\\r') <> ''\n      )\n      INSERT INTO \"public\".\"AppealForm\" (\"guild_id\", \"name\", \"questions\")\n      SELECT \"id\", 'Appeal', jsonb_agg(\n        jsonb_build_object('id', 'q' || \"number\", 'kind', 'text', 'label', left(\"line\", 100), 'long', true, 'maxLength', 1000, 'required', true)\n        ORDER BY \"number\"\n      )\n      FROM \"lines\" WHERE \"number\" <= 5 GROUP BY \"id\"",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "data.Appeal.answers",
+		"label": "Turn the answers of the appeals into objects",
+		"summary": "Rewrites \"Appeal\".\"answers\" as one object per answer",
+		"operationClass": "data",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "Appeal"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "rewrite the answers",
+				"sql": "UPDATE \"public\".\"Appeal\" AS \"a\" SET\n        \"form_id\" = \"f\".\"id\",\n        \"answers\" = (\n          SELECT jsonb_agg(\n            jsonb_build_object(\n              'questionId', 'q' || \"e\".\"position\", 'kind', 'text',\n              'label', coalesce(\"f\".\"questions\" -> (\"e\".\"position\"::int - 1) ->> 'label', '#' || \"e\".\"position\"),\n              'value', \"e\".\"answer\"\n            )\n            ORDER BY \"e\".\"position\"\n          )\n          FROM jsonb_array_elements_text(\"a\".\"answers\") WITH ORDINALITY AS \"e\"(\"answer\", \"position\")\n        )\n      FROM (SELECT \"a2\".\"id\" AS \"appeal\", \"f2\".\"id\", \"f2\".\"questions\" FROM \"public\".\"Appeal\" AS \"a2\" LEFT JOIN \"public\".\"AppealForm\" AS \"f2\" ON \"f2\".\"guild_id\" = \"a2\".\"guild_id\") AS \"f\"\n      WHERE \"f\".\"appeal\" = \"a\".\"id\" AND jsonb_array_length(\"a\".\"answers\") > 0",
+				"params": []
+			}
+		],
+		"postcheck": []
+	}
+]
