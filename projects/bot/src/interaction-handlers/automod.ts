@@ -41,9 +41,8 @@ import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, type Snowflake } from 'discord-api-types/v10';
 import {
-	AutoModerationHardActions,
 	isAutoModerationRuleType,
-	type AutoModerationHardAction,
+	parseAutoModerationHardAction,
 	type AutoModerationRule,
 	MaximumAutoModerationRuleResponseLength
 } from 'wolfstar-database';
@@ -124,11 +123,10 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'clear':
 				return this.change(component, guildId, context, action, (rule) => ({ update: clearAutoModerationMenuList(rule) }));
 			case 'punishment':
-				return this.change(component, guildId, context, action, () => ({
-					update: AutoModerationHardActions.includes(value as AutoModerationHardAction)
-						? { hardAction: value as AutoModerationHardAction }
-						: null
-				}));
+				return this.change(component, guildId, context, action, () => {
+					const hardAction = parseAutoModerationHardAction(value);
+					return { update: hardAction === null ? null : { hardAction } };
+				});
 			case 'roles':
 				return this.exempt(component, guildId, context, action, 'ignoredRoles');
 			case 'channels':

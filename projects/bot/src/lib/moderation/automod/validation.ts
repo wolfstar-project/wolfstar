@@ -14,8 +14,8 @@ import {
 	MaximumAutoModerationRuleResponseLength,
 	normalizeAutoModerationRuleEscalation,
 	normalizeAutoModerationRuleOptions,
+	parseAutoModerationHardAction,
 	type AutoModerationEscalationAction,
-	type AutoModerationHardAction,
 	type AutoModerationRuleData,
 	type AutoModerationRuleType
 } from 'wolfstar-database';
@@ -83,9 +83,9 @@ export function parseAutoModerationRulePatch(
 	}
 
 	if (body.hardAction !== undefined) {
-		const hardAction = readHardAction(body.hardAction);
-		if (AutoModerationHardActions.includes(hardAction as AutoModerationHardAction)) {
-			data.hardAction = hardAction as AutoModerationHardAction;
+		const hardAction = parseAutoModerationHardAction(body.hardAction);
+		if (hardAction !== null) {
+			data.hardAction = hardAction;
 		} else {
 			errors.push(`hardAction: Expected one of ${AutoModerationHardActions.join(', ')}.`);
 		}
@@ -232,13 +232,6 @@ function checkListEntry(type: AutoModerationRuleType, entry: unknown): string | 
 }
 
 /**
- * Reads a hard action a request sent, a `Timeout` being a `Mute` since the two were merged.
- */
-function readHardAction(value: unknown): unknown {
-	return value === 'Timeout' ? 'Mute' : value;
-}
-
-/**
  * Whether a value is a step of an escalation as a request must write it: a hard action, and a duration that is `null`
  * (or left out) for a permanent one or a positive integer within the limits.
  */
@@ -246,7 +239,8 @@ function isEscalationStep(value: unknown): boolean {
 	if (!isObject(value)) return false;
 
 	const { action, duration } = value as { action?: unknown; duration?: unknown };
-	if (!AutoModerationEscalationActions.includes(readHardAction(action) as AutoModerationEscalationAction)) return false;
+	const hardAction = parseAutoModerationHardAction(action);
+	if (hardAction === null || !AutoModerationEscalationActions.includes(hardAction as AutoModerationEscalationAction)) return false;
 	if (duration === null || duration === undefined) return true;
 	return isInteger(duration, 1, AutoModerationRuleLimits.hardActionDuration.maximum);
 }

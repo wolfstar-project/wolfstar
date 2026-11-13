@@ -44,6 +44,15 @@ export const AutoModerationHardActions = [
 ] as const satisfies readonly AutoModerationHardAction[];
 
 /**
+ * Reads a hard action that a person or a client sent, or `null` when it is not one. `Timeout` is a `Mute`: it was a
+ * hard action of its own, which a menu sent before the change, the API or a configuration file still sends.
+ */
+export function parseAutoModerationHardAction(value: unknown): AutoModerationHardAction | null {
+	const action = value === 'Timeout' ? 'Mute' : value;
+	return (AutoModerationHardActions as readonly unknown[]).includes(action) ? (action as AutoModerationHardAction) : null;
+}
+
+/**
  * The hard actions the escalation of a rule can step up to: every one, but taking none.
  */
 export const AutoModerationEscalationActions = AutoModerationHardActions.filter((action) => action !== 'None');
