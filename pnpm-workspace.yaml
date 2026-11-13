@@ -15,15 +15,15 @@ allowBuilds:
 overrides:
     # shared-http-pieces 2.0.7 pins plugin-i18next 2.0.3, whose peer range stops at
     # http-framework ^3: dedupe it onto the bot's copy, which accepts ^5.
-    '@wolfstar/shared-http-pieces>@wolfstar/plugin-i18next': ^2.1.1
+    '@wolfstar/shared-http-pieces>@wolfstar/plugin-i18next': ^2.3.1
     ansi-regex: ^5.0.1
     discord-api-types: ^0.38.56
     minimist: ^1.2.8
-    vite: ^8.3.2
+    vite: ^8.3.7
     # prisma-orm-extension-typed-json is only published for rc.5: run it on the rc.13 packs the contract needs.
-    prisma-orm-extension-typed-json>@prisma/orm-family-sql: 8.0.0-rc.13
-    prisma-orm-extension-typed-json>@prisma/orm-framework: 8.0.0-rc.13
-    '@prisma/orm-target-postgres': 8.0.0-rc.13
+    prisma-orm-extension-typed-json>@prisma/orm-family-sql: 8.0.0-rc.23
+    prisma-orm-extension-typed-json>@prisma/orm-framework: 8.0.0-rc.23
+    '@prisma/orm-target-postgres': 8.0.0-rc.23
 
 dedupePeers: true
 

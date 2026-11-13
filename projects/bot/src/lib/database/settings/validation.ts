@@ -66,7 +66,7 @@ export async function validateSettingsChanges(
 }
 
 async function validateArray(value: unknown, context: Serializer.UpdateContext) {
-	if (!Array.isArray(value)) throw new Error('Expected an array.');
+	if (!Array.isArray(value)) throw new TypeError('Expected an array.');
 
 	const { serializer } = context.entry;
 	// Every value has to be valid, an array of results is always truthy:
