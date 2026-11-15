@@ -58,7 +58,7 @@
 		"@wolfstar/plugin-opentelemetry": "^0.1.0",
 		"@wolfstar/plugin-scheduled-tasks": "^0.3.0",
 		"@wolfstar/plugin-sharder": "^0.3.0",
-		"@wolfstar/plugin-subcommands-advanced": "^2.3.0",
+		"@wolfstar/plugin-subcommands-advanced": "^3.0.1",
 		"@wolfstar/shared-http-pieces": "^2.1.1",
 		"@wolfstar/shared-influx-pieces": "^1.2.0",
 		"@wolfstar/start-banner": "^2.1.3",
