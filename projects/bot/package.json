@@ -49,7 +49,7 @@
 		"@wolfstar/http-framework": "^6.5.1",
 		"@wolfstar/http-framework-utilities": "^0.1.2",
 		"@wolfstar/kit": "^0.3.1",
-		"@wolfstar/plugin-api": "^2.2.0",
+		"@wolfstar/plugin-api": "^3.0.1",
 		"@wolfstar/plugin-broker": "^0.7.0",
 		"@wolfstar/plugin-cache": "^0.8.1",
 		"@wolfstar/plugin-gateway": "0.16.2-next-20261102131414",
