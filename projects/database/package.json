@@ -12,9 +12,6 @@
 		"import": "./dist/index.mjs"
 	},
 	"type": "module",
-	"imports": {
-		"#lib/*": "./dist/lib/*.js"
-	},
 	"scripts": {
 		"build": "tsdown",
 		"dev": "pnpm build && pnpm start",
@@ -25,11 +22,11 @@
 		"migrate:deploy": "node scripts/deploy.ts"
 	},
 	"dependencies": {
-		"@prisma/orm-postgres": "8.0.0-rc.23",
+		"@prisma/orm-postgres": "8.0.0-rc.13",
 		"@sapphire/utilities": "^3.18.3",
 		"discord-api-types": "^0.38.56",
 		"pg": "^8.23.1",
-		"prisma": "8.0.0-rc.33",
+		"prisma": "8.0.0-rc.19",
 		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
 		"varlock": "^1.24.0"
 	},

@@ -6,6 +6,11 @@
 			{
 				"matchPackagePatterns": ["@types/node"],
 				"enabled": false
+			},
+			{
+				"description": "prisma-orm-extension-typed-json is only published for rc.5 and is patched for the rc.13 packs: rc.23 changes the contract and codec APIs it relies on.",
+				"matchPackageNames": ["prisma", "@prisma/**"],
+				"enabled": false
 			}
 		]
 	}

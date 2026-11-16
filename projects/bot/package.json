@@ -9,10 +9,8 @@
 	"type": "module",
 	"imports": {
 		"#types": "./dist/lib/types/index.mjs",
-		"#types/*": "./dist/lib/types/*.mjs",
 		"#lib/*": "./dist/lib/*.mjs",
 		"#common": "./dist/lib/common/index.mjs",
-		"#common/*": "./dist/lib/common/*.mjs",
 		"#utils/*": "./dist/lib/utilities/*.mjs",
 		"#root/*": "./dist/*.mjs"
 	},
