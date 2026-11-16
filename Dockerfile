@@ -42,8 +42,10 @@ COPY --chown=node:node projects/shared/package.json projects/shared/package.json
 
 # Install the pnpm version pinned in package.json `packageManager` into a Corepack cache
 # every user can read; otherwise the unprivileged `node` user re-downloads pnpm on each start.
+# Node 25 and later no longer ship Corepack, so it is installed from npm first.
 ENV COREPACK_HOME="/usr/local/share/corepack"
-RUN corepack enable \
+RUN npm install --global corepack@0.36.0 \
+    && corepack enable \
     && corepack install \
     && chmod -R a+rX "$COREPACK_HOME"
 
