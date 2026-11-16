@@ -12,9 +12,6 @@
 		"import": "./dist/index.mjs"
 	},
 	"type": "module",
-	"imports": {
-		"#lib/*": "./dist/lib/*.js"
-	},
 	"scripts": {
 		"build": "tsdown",
 		"dev": "pnpm build && pnpm start",
@@ -31,12 +28,12 @@
 		"pg": "^8.23.1",
 		"prisma": "8.0.0-rc.19",
 		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
-		"varlock": "^1.23.0"
+		"varlock": "^1.24.0"
 	},
 	"devDependencies": {
-		"@rollup/plugin-alias": "6.0.0",
-		"@types/pg": "^8.20.4",
-		"tsdown": "0.23.1",
+		"@rollup/plugin-alias": "6.0.1",
+		"@types/pg": "^8.23.1",
+		"tsdown": "0.23.7",
 		"typescript": "^7.0.2"
 	}
 }

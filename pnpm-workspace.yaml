@@ -19,7 +19,7 @@ overrides:
     ansi-regex: ^5.0.1
     discord-api-types: ^0.38.56
     minimist: ^1.2.8
-    vite: ^8.3.2
+    vite: ^8.3.7
     # prisma-orm-extension-typed-json is only published for rc.5: run it on the rc.13 packs the contract needs.
     prisma-orm-extension-typed-json>@prisma/orm-family-sql: 8.0.0-rc.13
     prisma-orm-extension-typed-json>@prisma/orm-framework: 8.0.0-rc.13
