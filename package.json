@@ -63,7 +63,7 @@
 	},
 	"nano-staged": {
 		"*": "oxfmt --no-error-on-unmatched-pattern",
-		"*.{mjs,js,ts}": "oxlint --fix"
+		"*.{mjs,js,ts}": "oxlint --fix --no-error-on-unmatched-pattern"
 	},
 	"config": {
 		"commitizen": {
