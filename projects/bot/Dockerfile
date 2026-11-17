@@ -39,14 +39,12 @@ COPY --chown=node:node projects/bot/package.json projects/bot/package.json
 COPY --chown=node:node projects/database/package.json projects/database/package.json
 COPY --chown=node:node projects/shared/package.json projects/shared/package.json
 
-# Install the pnpm version pinned in package.json `packageManager` into a Corepack cache
-# every user can read; otherwise the unprivileged `node` user re-downloads pnpm on each start.
-# Node 25 and later no longer ship Corepack, so it is installed from npm first.
-ENV COREPACK_HOME="/usr/local/share/corepack"
-RUN npm install --global corepack@0.36.0 \
-    && corepack enable \
-    && corepack install \
-    && chmod -R a+rX "$COREPACK_HOME"
+# pnpm comes from its official image: a standalone binary, pinned to `packageManager` in
+# package.json, readable by every user. The unprivileged `node` user runs `pnpm start` with it
+# and downloads nothing on start. Node 25 and later no longer ship Corepack, which this replaces.
+# Keep the tag and `packageManager` in step.
+COPY --from=ghcr.io/pnpm/pnpm:12.18.0-alpine /opt/pnpm /opt/pnpm
+ENV PATH="/opt/pnpm:$PATH"
 
 # Populate the pnpm store from the lockfile only, so this layer stays cached
 # until dependencies change and later installs can resolve from it.
