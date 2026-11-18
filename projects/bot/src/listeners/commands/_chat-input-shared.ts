@@ -1,4 +1,5 @@
-import { makeInteraction, type ClientEventCommandContext, type UserError } from '@wolfstar/http-framework';
+import { makeInteraction, type ClientEventCommandContext } from '@wolfstar/http-framework';
+import type { UserError } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags } from 'discord-api-types/v10';
 import { flattenError, generateUnexpectedErrorMessage, resolveError } from './_shared.js';
