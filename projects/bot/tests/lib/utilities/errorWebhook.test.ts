@@ -1,6 +1,5 @@
-import { formatCommandErrorReport, getErrorWebhook, isReportableCommandError } from '#utils/errorWebhook';
-import { ResultError } from '@sapphire/result';
-import { UserError } from '@wolfstar/http-framework';
+import { formatCommandErrorReport, getErrorWebhook, redactRequestUrl } from '#utils/errorWebhook';
+import { DiscordAPIError } from '@discordjs/rest';
 import { ApplicationCommandOptionType, ApplicationCommandType, type APIApplicationCommandInteraction } from 'discord-api-types/v10';
 
 describe('getErrorWebhook', () => {
@@ -18,17 +17,18 @@ describe('getErrorWebhook', () => {
 	});
 });
 
-describe('isReportableCommandError', () => {
-	it('leaves out what the user is answered with', () => {
-		expect(isReportableCommandError('errors:something')).toBe(false);
-		expect(isReportableCommandError(new UserError({ identifier: 'x' }))).toBe(false);
-		expect(isReportableCommandError(new ResultError('failed', new UserError({ identifier: 'x' })))).toBe(false);
-		expect(isReportableCommandError(Object.assign(new Error('aborted'), { name: 'AbortError' }))).toBe(false);
+describe('redactRequestUrl', () => {
+	it('hides the token of an interaction or a webhook', () => {
+		expect(redactRequestUrl('https://discord.com/api/v10/webhooks/123/aW50ZXJhY3Rpb24.token/messages/@original')).toBe(
+			'https://discord.com/api/v10/webhooks/123/<redacted>/messages/@original'
+		);
+		expect(redactRequestUrl('https://discord.com/api/v10/interactions/456/secret-token/callback?with_response=true')).toBe(
+			'https://discord.com/api/v10/interactions/456/<redacted>/callback'
+		);
 	});
 
-	it('reports the bugs', () => {
-		expect(isReportableCommandError(new TypeError('boom'))).toBe(true);
-		expect(isReportableCommandError({ unknown: true })).toBe(true);
+	it('leaves the other routes alone', () => {
+		expect(redactRequestUrl('https://discord.com/api/v10/channels/1/messages')).toBe('https://discord.com/api/v10/channels/1/messages');
 	});
 });
 
@@ -58,6 +58,20 @@ describe('formatCommandErrorReport', () => {
 		expect(report).toContain('**Where**: 10/20 | **User**: 30');
 		expect(report).toContain('`/ban add user:"40" reason:"spam"`');
 		expect(report).toContain('Error: boom');
+	});
+
+	it('never shows the token of a failed follow-up', () => {
+		const error = new DiscordAPIError(
+			{ code: 10008, message: 'Unknown Message' },
+			10008,
+			404,
+			'PATCH',
+			'https://discord.com/api/v10/webhooks/123/interaction-token/messages/@original',
+			{ body: undefined, files: undefined }
+		);
+		const report = formatCommandErrorReport(error, interaction);
+		expect(report).toContain('**Path**: PATCH https://discord.com/api/v10/webhooks/123/<redacted>/messages/@original');
+		expect(report).not.toContain('interaction-token/');
 	});
 
 	it('fits an embed description', () => {

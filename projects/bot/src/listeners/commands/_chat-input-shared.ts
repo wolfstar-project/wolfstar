@@ -1,4 +1,4 @@
-import { makeInteraction, type ClientEventCommandContext } from '@wolfstar/http-framework';
+import { makeInteraction, type ClientEventCommandContext, type UserError } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags } from 'discord-api-types/v10';
 import { flattenError, generateUnexpectedErrorMessage, resolveError } from './_shared.js';
@@ -13,11 +13,16 @@ import { flattenError, generateUnexpectedErrorMessage, resolveError } from './_s
  *
  * A response that ended was either replied or deferred, which the framework does not tell apart. A follow-up covers
  * both: the first follow-up of a deferred interaction edits its "thinking" message.
+ *
+ * @param resolved - What {@linkcode flattenError} made of the error, when the caller already asked it.
  */
-export async function handleCommandError(error: unknown, context: ClientEventCommandContext) {
+export async function handleCommandError(
+	error: unknown,
+	context: ClientEventCommandContext,
+	resolved: UserError | string | null = flattenError(context.command, error)
+) {
 	const interaction = makeInteraction(context.response, context.interaction);
 	const t = getSupportedUserLanguageT(interaction);
-	const resolved = flattenError(context.command, error);
 	const content = resolved ? resolveError(t, resolved) : generateUnexpectedErrorMessage(interaction.user.id, context.command, t, error);
 
 	try {

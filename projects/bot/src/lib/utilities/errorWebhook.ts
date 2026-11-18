@@ -1,8 +1,7 @@
 import { codeBlock, EmbedBuilder } from '@discordjs/builders';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
-import { ResultError } from '@sapphire/result';
 import { cutText } from '@sapphire/utilities';
-import { container, UserError, type ClientEventCommandContext } from '@wolfstar/http-framework';
+import { container, type ClientEventCommandContext } from '@wolfstar/http-framework';
 import { envParseString } from '@wolfstar/env-utilities';
 import {
 	ApplicationCommandOptionType,
@@ -23,23 +22,13 @@ export function getErrorWebhook(): { id: string; token: string } | null {
 }
 
 /**
- * Whether an error of a command is a bug worth reporting: not a string nor a `UserError`, which the user is answered
- * with, nor an aborted request, which the user is told to try again.
- */
-export function isReportableCommandError(error: unknown): boolean {
-	if (error instanceof ResultError) return isReportableCommandError(error.value);
-	if (typeof error === 'string' || error instanceof UserError) return false;
-	return !(error instanceof Error && error.name === 'AbortError');
-}
-
-/**
- * Sends an unexpected error of a command to the error webhook, as the bot did before V7. Does nothing when the webhook
- * is not set or the error is not a bug, and only logs a failure, without the error: the URL of the request holds the
- * token of the webhook.
+ * Sends an unexpected error of a command to the error webhook, as the bot did before V7. The caller decides what is
+ * unexpected: what `flattenError` could not turn into an answer for the user. Does nothing when the webhook is not set,
+ * and only logs a failure, without the error: the URL of the request holds the token of the webhook.
  */
 export async function reportCommandErrorToWebhook(error: unknown, context: ClientEventCommandContext): Promise<void> {
 	const webhook = getErrorWebhook();
-	if (webhook === null || !isReportableCommandError(error)) return;
+	if (webhook === null) return;
 
 	try {
 		const embed = new EmbedBuilder().setColor(Colors.Red).setDescription(formatCommandErrorReport(error, context.interaction)).setTimestamp();
@@ -57,7 +46,7 @@ export async function reportCommandErrorToWebhook(error: unknown, context: Clien
 export function formatCommandErrorReport(error: unknown, interaction: APIApplicationCommandInteraction): string {
 	const lines = [getLocationLine(interaction), `**Command**: ${getCommandLine(interaction)}`];
 	if (error instanceof DiscordAPIError || error instanceof HTTPError) {
-		lines.push(`**Path**: ${error.method.toUpperCase()} ${error.url}`);
+		lines.push(`**Path**: ${error.method.toUpperCase()} ${redactRequestUrl(error.url)}`);
 		lines.push(`**Code**: ${error instanceof DiscordAPIError ? error.code : error.status}`);
 	}
 
@@ -66,6 +55,15 @@ export function formatCommandErrorReport(error: unknown, interaction: APIApplica
 	// 4096 minus the head, the label and the fences of the code block:
 	const room = 4096 - head.length - '\n**Error**: '.length - '```js\n\n```'.length;
 	return `${head}\n**Error**: ${codeBlock('js', cutText(stack, Math.max(room, 0)))}`;
+}
+
+/**
+ * Hides the token of a request made through a webhook or an interaction (`/webhooks/<id>/<token>`,
+ * `/interactions/<id>/<token>`): the token of an interaction stays valid for 15 minutes, and the one of a webhook for
+ * good. The query is dropped too.
+ */
+export function redactRequestUrl(url: string): string {
+	return url.replace(/\?.*$/s, '').replace(/\/(webhooks|interactions)\/(\d+)\/[^/]+/g, '/$1/$2/<redacted>');
 }
 
 function getLocationLine(interaction: APIApplicationCommandInteraction): string {
