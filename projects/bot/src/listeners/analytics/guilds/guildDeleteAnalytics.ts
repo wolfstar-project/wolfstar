@@ -20,11 +20,15 @@ export class UserAnalyticsEvent extends AnalyticsListener {
 			.tag(Tags.Action, Actions.Subtraction)
 			// TODO: Adjust for traditional sharding
 			.intField('value', await this.container.gatewayClient.guilds.cache.getSize());
+		const count = await fetchApproximateUserCount(this.container.gatewayClient.api.users);
+		// Discord is down: the guild count is written alone, the next sync writes the users.
+		if (count._tag === 'Unavailable') return this.writePoints([guilds]);
+
 		const users = new Point(Points.Users)
 			.tag(Tags.Shard, shardId)
 			.tag(Tags.Action, Actions.Subtraction)
 			// TODO: Adjust for traditional sharding
-			.intField('value', await fetchApproximateUserCount());
+			.intField('value', count.users);
 
 		return this.writePoints([guilds, users]);
 	}
