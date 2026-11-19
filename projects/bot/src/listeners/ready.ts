@@ -25,7 +25,15 @@ export class UserListener extends EventGatewayListener<'clientReady'> {
 	private async initAnalytics() {
 		if (!isInfluxInitialized()) return;
 
-		const { client, gatewayClient } = this.container;
-		client.emit(Events.AnalyticsSync, await gatewayClient.guilds.cache.getSize(), await fetchApproximateUserCount());
+		const { client, gatewayClient, logger } = this.container;
+		const guilds = await gatewayClient.guilds.cache.getSize();
+		const count = await fetchApproximateUserCount(gatewayClient.api.users);
+		// Discord is down, the `poststats` task writes the counts in ten minutes:
+		if (count._tag === 'Unavailable') {
+			logger.warn(`[Startup] Skipped the first analytics sync: Discord answered the user count with ${count.status}`);
+			return;
+		}
+
+		client.emit(Events.AnalyticsSync, guilds, count.users);
 	}
 }

@@ -33,7 +33,14 @@ export class UserTask extends ScheduledTask<'poststats'> {
 		const { logger, gatewayClient } = this.container;
 
 		const rawGuilds = await gatewayClient.guilds.cache.getSize();
-		const rawUsers = await fetchApproximateUserCount();
+		const count = await fetchApproximateUserCount(gatewayClient.api.users);
+		if (count._tag === 'Unavailable') {
+			// Discord is down, the next run in ten minutes posts the counts:
+			logger.warn(`${header} Skipped: Discord answered the user count with ${count.status}`);
+			return null;
+		}
+
+		const rawUsers = count.users;
 
 		this.processAnalytics(rawGuilds, rawUsers);
 		if (process.env.NODE_ENV !== 'production') return null;
