@@ -3,6 +3,7 @@
 
 import { runLegacyMigration } from '#lib/database/legacy';
 import { loadApplicationEmojis } from '#utils/emojis';
+import { traceClientListeners } from '#utils/listenerTracing';
 import { getLoggerOptions } from '#utils/logger';
 import { envParseBoolean, envParseInteger, envParseString } from '@wolfstar/env-utilities';
 import { container } from '@wolfstar/http-framework';
@@ -110,6 +111,9 @@ export function createClient() {
 		});
 		forwardGatewayDispatches(container.gatewayClient, broker);
 	}
+
+	// A span for every run of a listener of the client, before the pieces are loaded:
+	traceClientListeners();
 
 	const srcFolderURL = new URL('..', import.meta.url);
 	container.stores.registerPath(fileURLToPath(srcFolderURL));

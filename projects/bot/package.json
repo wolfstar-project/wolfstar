@@ -74,6 +74,8 @@
 		"wolfstar-shared": "workspace:^"
 	},
 	"devDependencies": {
+		"@opentelemetry/context-async-hooks": "^3.0.0",
+		"@opentelemetry/sdk-trace": "^3.0.0",
 		"@rollup/plugin-alias": "6.0.1",
 		"@types/pg": "^8.23.1",
 		"@wolfstar/i18next-type-generator": "^3.1.6",
