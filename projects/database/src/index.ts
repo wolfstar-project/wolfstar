@@ -7,8 +7,18 @@ import contractJson from './generated/prisma/contract.json' with { type: 'json' 
 
 const connectionString = process.env.DATABASE_URL ?? '';
 
+/**
+ * How long a connection of the pool stays open unused before it is closed.
+ *
+ * @remarks The default of the runtime (30 seconds) is shorter than the gap between most commands and between the runs
+ * of the tasks that poll every minute, so they kept opening new connections: 32ms each at the median and 336ms at the
+ * 95th percentile on Railway, where a query on an open one takes 2ms.
+ */
+const PoolIdleTimeout = 10 * 60 * 1000;
+
 export const db = postgres<Contract>({
 	url: connectionString,
+	poolOptions: { idleTimeoutMillis: PoolIdleTimeout },
 	contractJson,
 	extensions: [typedRuntimeDescriptor],
 	// Refuses a `DELETE` or an `UPDATE` without a `WHERE` before it reaches the database:
