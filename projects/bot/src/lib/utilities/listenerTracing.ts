@@ -99,19 +99,22 @@ export function createTracedListener(event: string, name: string, listener: List
 	return (...args) =>
 		tracer.startActiveSpan(`listener ${event} ${name}`, { attributes }, (span) => {
 			let result: unknown;
+			let pending: boolean;
 			try {
 				result = listener(...args);
+				// Inside the `try`: reading `then` can run a getter that throws.
+				pending = isPromiseLike(result);
 			} catch (error) {
 				endWithError(span, error);
 				throw error;
 			}
 
-			if (!isPromiseLike(result)) {
+			if (!pending) {
 				endWithSuccess(span);
 				return result;
 			}
 
-			return Promise.resolve(result).then(
+			return Promise.resolve(result as PromiseLike<unknown>).then(
 				(value) => {
 					endWithSuccess(span);
 					return value;

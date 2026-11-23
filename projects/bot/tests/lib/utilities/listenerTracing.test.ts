@@ -101,6 +101,20 @@ describe('createTracedListener', () => {
 		expect(spans[0]?.attributes[ListenerAttributes.Outcome]).toBe('error');
 	});
 
+	it('ends the span when reading the then of the result throws', () => {
+		const error = new Error('getter');
+		const result = {
+			// oxlint-disable-next-line unicorn/no-thenable -- a `then` whose getter throws is what this test is about
+			get then() {
+				throw error;
+			}
+		};
+		const traced = createTracedListener('userMessage', 'automod', () => result);
+
+		expect(() => traced()).toThrow(error);
+		expect(spans[0]).toMatchObject({ status: SpanStatusCode.ERROR, exceptions: [error], ended: true });
+	});
+
 	it('marks the span as an error and rejects when the listener rejects', async () => {
 		const error = new Error('late boom');
 		const traced = createTracedListener('userMessage', 'automod', () => Promise.reject(error));
