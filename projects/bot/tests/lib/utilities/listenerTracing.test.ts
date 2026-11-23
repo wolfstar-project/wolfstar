@@ -122,6 +122,11 @@ describe('traceClientListeners', () => {
 		const otherPiece = { emitter: other, event: 'tracingTest', name: 'untraced', _listener: onOther } as unknown as Listener;
 		await store.strategy.onLoad(store, clientPiece);
 		await store.strategy.onLoad(store, otherPiece);
+		const rawPiece = { emitter: container.client, event: 'raw', name: 'rawDebug', _listener: vi.fn() } as unknown as Listener;
+		const rawListener: unknown = Reflect.get(rawPiece, '_listener');
+		await store.strategy.onLoad(store, rawPiece);
+		expect(Reflect.get(rawPiece, '_listener')).toBe(rawListener);
+		await store.strategy.onUnload(store, rawPiece);
 
 		container.client.emit('tracingTest', 1);
 		expect(onClient).toHaveBeenCalledWith(1);

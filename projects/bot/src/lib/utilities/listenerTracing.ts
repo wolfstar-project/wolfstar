@@ -32,6 +32,12 @@ export const ListenerAttributes = {
 type ListenerFunction = (...args: readonly unknown[]) => unknown;
 
 /**
+ * The events every dispatch of Discord is emitted with, before the one of its type: a span for each of their listeners
+ * would add a trace to every dispatch the gateway receives, almost all of them for a listener that returns at once.
+ */
+const UntracedEvents: ReadonlySet<string> = new Set(['raw', 'dispatch']);
+
+/**
  * The pieces whose function was already wrapped, so a piece loaded again is not traced twice.
  */
 const traced = new WeakSet<ListenerPiece>();
@@ -48,6 +54,9 @@ const traced = new WeakSet<ListenerPiece>();
  * `commandSuccess`, runs inside the span of the command. Without the OpenTelemetry SDK (no OTLP endpoint) the spans are
  * no-ops.
  *
+ * Each run is a trace of its own: a dispatch has no span, so the listeners of one `messageCreate` are not under a
+ * common parent. The listeners of `raw` and `dispatch` are left out ({@linkcode UntracedEvents}).
+ *
  * It wraps the store's loading strategy, so it has to run before the pieces are loaded.
  */
 export function traceClientListeners(): void {
@@ -55,7 +64,7 @@ export function traceClientListeners(): void {
 	const onLoad = strategy.onLoad.bind(strategy);
 
 	strategy.onLoad = (store, piece) => {
-		if (piece.emitter === container.client) wrapListener(piece);
+		if (piece.emitter === container.client && !UntracedEvents.has(piece.event)) wrapListener(piece);
 		return onLoad(store, piece);
 	};
 }
