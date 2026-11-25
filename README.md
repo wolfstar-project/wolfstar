@@ -178,9 +178,8 @@ you open a pull request.
 
 ## ❤️ Sponsors
 
-WolfStar is free, open-source and self-hosted, but the servers, database and
-CI/CD it runs on have real costs. Sponsorships go directly to hosting, tooling
-and maintenance.
+WolfStar is free and open-source, but the servers, database and CI/CD it runs on
+have real costs. Sponsorships go directly to hosting, tooling and maintenance.
 
 ### How to sponsor
 
