@@ -1,0 +1,208 @@
+[
+	{
+		"id": "table.ModerationCaseEdit",
+		"label": "Create table \"ModerationCaseEdit\"",
+		"summary": "Creates table \"ModerationCaseEdit\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "ModerationCaseEdit"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"ModerationCaseEdit\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationCaseEdit\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"ModerationCaseEdit\"",
+				"sql": "CREATE TABLE \"public\".\"ModerationCaseEdit\" (\n  \"case_id\" int4 NOT NULL,\n  \"changes\" \"jsonb\" DEFAULT ('[]'::jsonb) NOT NULL,\n  \"created_at\" timestamp(3) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"moderator_id\" int8 NOT NULL,\n  CONSTRAINT \"ModerationCaseEdit_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"ModerationCaseEdit\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationCaseEdit\""]
+			}
+		]
+	},
+	{
+		"id": "column.public.ModerationCaseData.proof_channel_id",
+		"label": "Add column \"proof_channel_id\" to \"ModerationCaseData\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "proof_channel_id",
+				"table": "ModerationCaseData"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"proof_channel_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "ModerationCaseData", "proof_channel_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"proof_channel_id\"",
+				"sql": "ALTER TABLE \"public\".\"ModerationCaseData\" ADD COLUMN \"proof_channel_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"proof_channel_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "ModerationCaseData", "proof_channel_id"]
+			}
+		]
+	},
+	{
+		"id": "column.public.ModerationCaseData.proof_message_id",
+		"label": "Add column \"proof_message_id\" to \"ModerationCaseData\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "proof_message_id",
+				"table": "ModerationCaseData"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"proof_message_id\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "ModerationCaseData", "proof_message_id"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"proof_message_id\"",
+				"sql": "ALTER TABLE \"public\".\"ModerationCaseData\" ADD COLUMN \"proof_message_id\" int8"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"proof_message_id\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "ModerationCaseData", "proof_message_id"]
+			}
+		]
+	},
+	{
+		"id": "column.public.ModerationCaseData.staff_note",
+		"label": "Add column \"staff_note\" to \"ModerationCaseData\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "column",
+				"name": "staff_note",
+				"table": "ModerationCaseData"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure column \"staff_note\" is missing",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "ModerationCaseData", "staff_note"]
+			}
+		],
+		"execute": [
+			{
+				"description": "add column \"staff_note\"",
+				"sql": "ALTER TABLE \"public\".\"ModerationCaseData\" ADD COLUMN \"staff_note\" text"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify column \"staff_note\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+				"params": ["public", "ModerationCaseData", "staff_note"]
+			}
+		]
+	},
+	{
+		"id": "index.ModerationCaseEdit.ModerationCaseEdit_guild_id_case_id_idx",
+		"label": "Create index \"ModerationCaseEdit_guild_id_case_id_idx\" on \"ModerationCaseEdit\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "ModerationCaseEdit_guild_id_case_id_idx",
+				"table": "ModerationCaseEdit"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"ModerationCaseEdit_guild_id_case_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationCaseEdit_guild_id_case_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"ModerationCaseEdit_guild_id_case_id_idx\"",
+				"sql": "CREATE INDEX \"ModerationCaseEdit_guild_id_case_id_idx\" ON \"public\".\"ModerationCaseEdit\" (\"guild_id\", \"case_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"ModerationCaseEdit_guild_id_case_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"ModerationCaseEdit_guild_id_case_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.ModerationCaseEdit.ModerationCaseEdit_guild_id_fkey",
+		"label": "Add foreign key \"ModerationCaseEdit_guild_id_fkey\" on \"ModerationCaseEdit\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "ModerationCaseEdit_guild_id_fkey",
+				"table": "ModerationCaseEdit"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"ModerationCaseEdit_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["ModerationCaseEdit_guild_id_fkey", "public", "\"public\".\"ModerationCaseEdit\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"ModerationCaseEdit_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"ModerationCaseEdit\"\nADD CONSTRAINT \"ModerationCaseEdit_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"ModerationCaseEdit_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["ModerationCaseEdit_guild_id_fkey", "public", "\"public\".\"ModerationCaseEdit\""]
+			}
+		]
+	}
+]

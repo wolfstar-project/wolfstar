@@ -8,7 +8,12 @@ import {
 	encodeCaseListTarget,
 	encodeCaseMenuId,
 	filterCaseEntries,
+	CaseHistoryEntries,
+	CaseInputIds,
+	renderCaseCloseModal,
 	renderCaseDeletePrompt,
+	renderCaseEditModal,
+	renderCaseHistory,
 	renderCaseList,
 	renderCaseView,
 	type CaseListContext
@@ -242,6 +247,93 @@ describe('case menu', () => {
 				['deleteConfirm', '7'],
 				['deleteCancel', '7']
 			]);
+		});
+	});
+
+	describe('details', () => {
+		const details = {
+			staffNote: 'Second time this week',
+			proof: { channelId: '1', messageId: '2' },
+			proofFile: { url: 'https://cdn.discordapp.com/a.png', contentType: 'image/png' }
+		};
+
+		test('GIVEN what the moderators added THEN the case shows their note and the proof with its file', () => {
+			const message = renderCaseView(createContext(), createEntry(), details);
+			const gallery = flatten(message.components!).find((component) => component.type === ComponentType.MediaGallery) as unknown as {
+				items: { media: { url: string } }[];
+			};
+
+			expect(getText(message.components!)).toContain('> Second time this week');
+			expect(getText(message.components!)).toContain(`https://discord.com/channels/${guild.id}/1/2`);
+			expect(gallery.items[0].media.url).toBe(details.proofFile.url);
+		});
+
+		test('GIVEN a case with nothing added THEN it shows neither', () => {
+			const message = renderCaseView(createContext(), createEntry(), { staffNote: null, proof: null, proofFile: null });
+
+			expect(getText(message.components!)).not.toContain('commands/case:viewStaffNote');
+			expect(flatten(message.components!).some((component) => component.type === ComponentType.MediaGallery)).toBe(false);
+		});
+	});
+
+	describe('modals', () => {
+		const getFields = (modal: { components: unknown[] }) =>
+			(modal.components as { component: { custom_id: string; value?: string; default?: boolean } }[]).map((label) => label.component);
+
+		test('GIVEN a case with no duration to edit THEN its modal asks for the reason, the note, the proof and the notice', () => {
+			const modal = renderCaseEditModal(createContext(), createEntry({ id: 7, reason: 'Spam' }), 'Note', true);
+			const fields = getFields(modal);
+
+			expect(decodeCaseMenuId(modal.custom_id.split('.').slice(1))).toMatchObject({ verb: 'editSubmit', target: '7' });
+			expect(fields.map((field) => field.custom_id)).toEqual([
+				CaseInputIds.Reason,
+				CaseInputIds.StaffNote,
+				CaseInputIds.Proof,
+				CaseInputIds.Notify
+			]);
+			expect(fields[0].value).toBe('Spam');
+			expect(fields[1].value).toBe('Note');
+			expect(fields[3].default).toBe(true);
+		});
+
+		test('GIVEN a case in course whose type takes a duration THEN its modal asks for it too', () => {
+			const modal = renderCaseEditModal(createContext(), createEntry({ type: TypeVariation.Mute }), null, false);
+
+			expect(getFields(modal).map((field) => field.custom_id)).toContain(CaseInputIds.Duration);
+			expect(modal.components.length).toBeLessThanOrEqual(5);
+		});
+
+		test('GIVEN the modal that closes a case THEN it asks why and whether to tell the user', () => {
+			const modal = renderCaseCloseModal(createContext(), 7, false);
+
+			expect(decodeCaseMenuId(modal.custom_id.split('.').slice(1))).toMatchObject({ verb: 'closeSubmit', target: '7' });
+			expect(getFields(modal).map((field) => field.custom_id)).toEqual([CaseInputIds.Reason, CaseInputIds.Notify]);
+		});
+	});
+
+	describe('history', () => {
+		const edit = (index: number) => ({
+			id: String(index),
+			caseId: 7,
+			moderatorId: ownerId,
+			createdAt: 1_700_000_000_000 + index,
+			changes: [{ field: 'reason' as const, before: null, after: `Reason ${index}` }]
+		});
+
+		test('GIVEN the edits of a case THEN each says who made it and what it changed', () => {
+			const text = getText(renderCaseHistory(t, 7, [edit(1)]).components!);
+
+			expect(text).toContain(`<@${ownerId}>`);
+			expect(text).toContain('"field":"commands/case:fieldReason","before":"commands/case:historyNone","after":"Reason 1"');
+		});
+
+		test('GIVEN more edits than the history shows THEN it says how many are left out', () => {
+			const edits = Array.from({ length: CaseHistoryEntries + 3 }, (_, index) => edit(index));
+			const text = getText(renderCaseHistory(t, 7, edits).components!);
+
+			expect(text).toContain(`Reason ${CaseHistoryEntries - 1}`);
+			expect(text).not.toContain(`Reason ${CaseHistoryEntries}"`);
+			expect(text).toContain('commands/case:historyMore {"count":3}');
 		});
 	});
 });

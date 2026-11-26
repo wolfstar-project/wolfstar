@@ -1,5 +1,5 @@
 import type { GuildChatInputInteraction } from '#lib/structures/commands';
-import { renderCaseView } from '#lib/structures/case-menu';
+import { fetchCaseViewDetails, renderCaseView } from '#lib/structures/case-menu';
 import { getCase, getDisplayT, handleCase } from '#lib/structures/commands/moderationCase';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -21,7 +21,11 @@ export class UserCommand extends Command {
 			const entry = await getCase(interaction, options.case);
 			const show = options.show ?? false;
 
-			return interaction.reply(renderCaseView({ t: getDisplayT(interaction, show), ownerId: interaction.user.id, ephemeral: !show }, entry));
+			// The note of the moderators and the proof are only shown to the moderator:
+			const details = show ? null : await fetchCaseViewDetails(interaction.guildId, entry.id);
+			return interaction.reply(
+				renderCaseView({ t: getDisplayT(interaction, show), ownerId: interaction.user.id, ephemeral: !show }, entry, details)
+			);
 		});
 	}
 }

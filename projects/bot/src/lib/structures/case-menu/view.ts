@@ -1,4 +1,5 @@
 import type { ModerationManager } from '#lib/moderation';
+import { canEditCaseDuration, MaximumCaseReasonLength, MaximumCaseStaffNoteLength } from '#lib/moderation/caseEdits';
 import { getTranslationKey } from '#lib/moderation/common/util';
 import { encodeCaseMenuId, type CaseMenuVerb } from '#lib/structures/case-menu/ids';
 import { caseMenuButton, getCaseTypeEmojiKey, type CaseMenuMessage } from '#lib/structures/case-menu/list';
@@ -6,8 +7,46 @@ import { Emojis, getEmojiComponent } from '#utils/emojis';
 import { blockQuote, messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText, isNullishOrEmpty, isNullishOrZero } from '@sapphire/utilities';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
-import { ButtonStyle, ComponentType, MessageFlags, type APIComponentInContainer, type Snowflake } from 'discord-api-types/v10';
+import {
+	ButtonStyle,
+	ComponentType,
+	MessageFlags,
+	TextInputStyle,
+	type APIComponentInContainer,
+	type APILabelComponent,
+	type APIModalInteractionResponseCallbackData,
+	type Snowflake
+} from 'discord-api-types/v10';
+import type { ModerationCaseChange, ModerationCaseData, ModerationCaseEdit } from 'wolfstar-database';
 import { seconds } from 'wolfstar-shared';
+
+/**
+ * The custom IDs of the fields of the modals of a case.
+ */
+export const CaseInputIds = {
+	Reason: 'reason',
+	Duration: 'duration',
+	StaffNote: 'staffNote',
+	Proof: 'proof',
+	Notify: 'notify'
+} as const;
+
+/**
+ * How many edits the history of a case shows, the latest ones.
+ */
+export const CaseHistoryEntries = 8;
+
+/**
+ * What the moderators added to a case, which is shown with it.
+ */
+export interface CaseViewDetails {
+	staffNote: string | null;
+	proof: ModerationCaseData['proof'];
+	/**
+	 * The file of the proof, read from its message, `null` when it could not be read.
+	 */
+	proofFile: { url: string; contentType: string | null } | null;
+}
 
 export interface CaseViewContext {
 	/**
@@ -39,8 +78,9 @@ export function getCaseStatusKey(entry: ModerationManager.Entry) {
  *
  * @param context - The context of the case.
  * @param entry - The case.
+ * @param details - What the moderators added to the case. A case everybody sees is rendered without it.
  */
-export function renderCaseView(context: CaseViewContext, entry: ModerationManager.Entry): CaseMenuMessage {
+export function renderCaseView(context: CaseViewContext, entry: ModerationManager.Entry, details: CaseViewDetails | null = null): CaseMenuMessage {
 	const { t, ownerId } = context;
 	const id = (verb: CaseMenuVerb) => encodeCaseMenuId({ ownerId, verb, target: entry.id.toString(), page: 0 });
 
@@ -75,9 +115,20 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 		lines.push(t('commands/case:viewMessage', { url: messageLink(reference.channelId, reference.messageId, entry.guild.id) }));
 	}
 
+	if (details !== null && !isNullishOrEmpty(details.staffNote)) {
+		lines.push(t('commands/case:viewStaffNote'), blockQuote(cutText(details.staffNote, 1000)));
+	}
+
+	if (details !== null && details.proof !== null) {
+		lines.push(t('commands/case:viewProof', { url: messageLink(details.proof.channelId, details.proof.messageId, entry.guild.id) }));
+	}
+
 	const createdAt = seconds.fromMilliseconds(entry.createdAt);
-	const body: APIComponentInContainer[] = [
-		{ type: ComponentType.TextDisplay, content: lines.join('\n') },
+	const body: APIComponentInContainer[] = [{ type: ComponentType.TextDisplay, content: lines.join('\n') }];
+	// A gallery only shows images and videos, which is what a proof is:
+	if (details?.proofFile) body.push({ type: ComponentType.MediaGallery, items: [{ media: { url: details.proofFile.url } }] });
+
+	body.push(
 		{ type: ComponentType.Separator },
 		{
 			type: ComponentType.TextDisplay,
@@ -96,7 +147,7 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 				caseMenuButton(id('delete'), { label: t('commands/case:buttonDelete'), emoji: getEmojiComponent('Delete') })
 			]
 		}
-	];
+	);
 
 	return {
 		components: [{ type: ComponentType.Container, components: body }],
@@ -136,6 +187,191 @@ export function renderCaseDeletePrompt(context: CaseViewContext, caseId: number)
 			}
 		],
 		flags: context.ephemeral ? MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral : MessageFlags.IsComponentsV2,
+		allowed_mentions: { parse: [] }
+	};
+}
+
+/**
+ * The modal that edits a case: its reason, its duration when the case takes one, the note of the moderators, a proof,
+ * and whether the user is told.
+ *
+ * @param context - The context of the case.
+ * @param entry - The case.
+ * @param staffNote - The note the case has.
+ * @param notify - Whether the checkbox that tells the user starts ticked, which is what the server does for its cases.
+ */
+export function renderCaseEditModal(
+	context: Pick<CaseViewContext, 't' | 'ownerId'>,
+	entry: ModerationManager.Entry,
+	staffNote: string | null,
+	notify: boolean
+): APIModalInteractionResponseCallbackData {
+	const { t, ownerId } = context;
+	const components: APILabelComponent[] = [
+		{
+			type: ComponentType.Label,
+			label: cutText(t('commands/case:editReasonLabel'), 45),
+			component: {
+				type: ComponentType.TextInput,
+				custom_id: CaseInputIds.Reason,
+				style: TextInputStyle.Paragraph,
+				required: false,
+				max_length: MaximumCaseReasonLength,
+				...(isNullishOrEmpty(entry.reason) ? {} : { value: cutText(entry.reason, MaximumCaseReasonLength) })
+			}
+		}
+	];
+
+	if (canEditCaseDuration(entry)) {
+		components.push({
+			type: ComponentType.Label,
+			label: cutText(t('commands/case:editDurationLabel'), 45),
+			description: cutText(t('commands/case:editDurationDescription'), 100),
+			component: {
+				type: ComponentType.TextInput,
+				custom_id: CaseInputIds.Duration,
+				style: TextInputStyle.Short,
+				required: false,
+				max_length: 50
+			}
+		});
+	}
+
+	components.push(
+		{
+			type: ComponentType.Label,
+			label: cutText(t('commands/case:editStaffNoteLabel'), 45),
+			description: cutText(t('commands/case:editStaffNoteDescription'), 100),
+			component: {
+				type: ComponentType.TextInput,
+				custom_id: CaseInputIds.StaffNote,
+				style: TextInputStyle.Paragraph,
+				required: false,
+				max_length: MaximumCaseStaffNoteLength,
+				...(isNullishOrEmpty(staffNote) ? {} : { value: cutText(staffNote, MaximumCaseStaffNoteLength) })
+			}
+		},
+		{
+			type: ComponentType.Label,
+			label: cutText(t('commands/case:editProofLabel'), 45),
+			description: cutText(t('commands/case:editProofDescription'), 100),
+			component: { type: ComponentType.FileUpload, custom_id: CaseInputIds.Proof, required: false, min_values: 0, max_values: 1 }
+		},
+		renderNotifyField(t, notify)
+	);
+
+	return {
+		custom_id: encodeCaseMenuId({ ownerId, verb: 'editSubmit', target: entry.id.toString(), page: 0 }),
+		title: cutText(t('commands/case:editTitle', { caseId: entry.id }), 45),
+		components
+	};
+}
+
+/**
+ * The modal that closes a case: why, and whether the user is told.
+ *
+ * @param context - The context of the case.
+ * @param caseId - The ID of the case.
+ * @param notify - Whether the checkbox that tells the user starts ticked.
+ */
+export function renderCaseCloseModal(
+	context: Pick<CaseViewContext, 't' | 'ownerId'>,
+	caseId: number,
+	notify: boolean
+): APIModalInteractionResponseCallbackData {
+	const { t, ownerId } = context;
+	return {
+		custom_id: encodeCaseMenuId({ ownerId, verb: 'closeSubmit', target: caseId.toString(), page: 0 }),
+		title: cutText(t('commands/case:closeTitle', { caseId }), 45),
+		components: [
+			{
+				type: ComponentType.Label,
+				label: cutText(t('commands/case:closeReasonLabel'), 45),
+				component: {
+					type: ComponentType.TextInput,
+					custom_id: CaseInputIds.Reason,
+					style: TextInputStyle.Short,
+					required: false,
+					max_length: 200,
+					value: cutText(t('commands/case:closeReasonDefault'), 200)
+				}
+			},
+			renderNotifyField(t, notify)
+		]
+	};
+}
+
+function renderNotifyField(t: TFunction<AnyNamespace>, notify: boolean): APILabelComponent {
+	return {
+		type: ComponentType.Label,
+		label: cutText(t('commands/case:notifyLabel'), 45),
+		component: { type: ComponentType.Checkbox, custom_id: CaseInputIds.Notify, default: notify }
+	};
+}
+
+const CaseChangeFieldKeys = {
+	reason: 'commands/case:fieldReason',
+	duration: 'commands/case:fieldDuration',
+	staffNote: 'commands/case:fieldStaffNote',
+	proof: 'commands/case:fieldProof',
+	status: 'commands/case:fieldStatus',
+	closeReason: 'commands/case:fieldCloseReason'
+} as const satisfies Record<ModerationCaseChange['field'], string>;
+
+/**
+ * Writes a value of a change of the history as it is read: a duration as a time span, a status by its name.
+ */
+function formatCaseChangeValue(t: TFunction<AnyNamespace>, field: ModerationCaseChange['field'], value: string | null): string {
+	if (value === null) return t('commands/case:historyNone');
+	if (field === 'duration') return t('commands/case:historyDuration', { duration: Number(value) as unknown as string });
+	if (field === 'status') return t(value === 'closed' ? 'commands/case:statusClosed' : 'commands/case:statusOpen');
+	if (field === 'proof') return value;
+	return cutText(value.replaceAll('\n', ' '), 200);
+}
+
+/**
+ * Renders the history of a case: who edited it, when, and what each edit changed, the latest first.
+ *
+ * @param t - The function to translate with.
+ * @param caseId - The ID of the case.
+ * @param edits - The edits of the case, the latest first. It must have one, a case with none is told with a status.
+ */
+export function renderCaseHistory(t: TFunction<AnyNamespace>, caseId: number, edits: readonly ModerationCaseEdit[]): CaseMenuMessage {
+	const body: APIComponentInContainer[] = [
+		{ type: ComponentType.TextDisplay, content: `## ${Emojis.History} ${t('commands/case:historyTitle', { caseId })}` }
+	];
+
+	for (const edit of edits.slice(0, CaseHistoryEntries)) {
+		const createdAt = seconds.fromMilliseconds(edit.createdAt);
+		const lines = edit.changes.map((change) =>
+			t('commands/case:historyChange', {
+				field: t(CaseChangeFieldKeys[change.field]),
+				before: formatCaseChangeValue(t, change.field, change.before),
+				after: formatCaseChangeValue(t, change.field, change.after)
+			})
+		);
+		body.push(
+			{ type: ComponentType.Separator },
+			{
+				type: ComponentType.TextDisplay,
+				content: [
+					`${userMention(edit.moderatorId)} • ${time(createdAt, TimestampStyles.ShortDateTime)} (${time(createdAt, TimestampStyles.RelativeTime)})`,
+					...lines
+				].join('\n')
+			}
+		);
+	}
+
+	if (edits.length > CaseHistoryEntries) {
+		body.push(
+			{ type: ComponentType.Separator },
+			{ type: ComponentType.TextDisplay, content: `-# ${t('commands/case:historyMore', { count: edits.length - CaseHistoryEntries })}` }
+		);
+	}
+
+	return {
+		components: [{ type: ComponentType.Container, components: body }],
+		flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
 		allowed_mentions: { parse: [] }
 	};
 }

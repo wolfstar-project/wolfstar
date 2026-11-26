@@ -15,7 +15,14 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { deleteModerationCaseData, fetchModerationCaseData, fetchModerationCasesData, setModerationCaseData } from 'wolfstar-database';
+import {
+	clearModerationCaseData,
+	deleteModerationCaseData,
+	deleteModerationCaseEdits,
+	fetchModerationCaseData,
+	fetchModerationCasesData,
+	setModerationCaseData
+} from 'wolfstar-database';
 
 enum CacheActions {
 	None,
@@ -239,6 +246,7 @@ export class ModerationManager {
 		// Delete the entry from the DB and the cache
 		await this.#table.where({ id: entry.id, guildId: this.#guildId }).deleteAndCount();
 		await deleteModerationCaseData(container.prisma, this.guild.id, entry.id);
+		await deleteModerationCaseEdits(container.prisma, this.guild.id, entry.id);
 		this.#cache.delete(entry.id);
 
 		return entry;
@@ -544,7 +552,8 @@ export class ModerationManager {
 
 		try {
 			if (!hasExtraData && reference === null) {
-				await deleteModerationCaseData(container.prisma, this.guild.id, entry.id);
+				// The note of the moderators and the proof of the case stay, they are not of the entry:
+				await clearModerationCaseData(container.prisma, this.guild.id, entry.id);
 				return;
 			}
 
