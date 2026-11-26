@@ -3,7 +3,7 @@ import { getCase, handleCase } from '#lib/structures/commands/moderationCase';
 import { getModeration } from '#utils/functions';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
+import { renderStatus } from '#utils/status';
 
 /**
  * `/case archive`, see the `case` parent command.
@@ -18,7 +18,7 @@ export class UserCommand extends Command {
 			const entry = await getCase(interaction, options.case);
 			await (await getModeration(interaction.guildId)).archive(entry);
 
-			return interaction.reply({ content: t('commands/case:archiveSuccess', { caseId: entry.id }), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('success', t('commands/case:archiveSuccess', { caseId: entry.id })));
 		});
 	}
 }

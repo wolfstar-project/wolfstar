@@ -481,25 +481,13 @@ declare module "i18next" {
         optionsUserDescription: "The user to filter the moderation cases by.";
         optionsOverviewName: "overview";
         optionsOverviewDescription: "Whether or not to show the overview of the moderation cases.";
-        optionsTypeName: "type";
-        optionsTypeDescription: "The type to filter the moderation cases by.";
-        optionsPendingOnlyName: "pending-only";
-        optionsPendingOnlyDescription: "Whether or not to show only the pending moderation cases.";
         optionsShowName: "show";
         optionsShowDescription: "Whether or not to show the response publicly.";
-        optionsPageName: "page";
-        optionsPageDescription: "The page of the list to display (default: 1).";
-        listDetailsPage: "Page {{page}} of {{pages}}";
         timeNotAllowed: "The type of the moderation case (**{{type}}**) does not allow for a duration.";
         timeNotAllowedInCompletedEntries: "The moderation case `{{caseId}}` has already been completed and cannot be edited.";
         timeEditNotSupported: "The type of the moderation case (**{{type}}**) does not allow editing the duration.";
         timeTooEarly: "The duration of the moderation case would end before it starts ({{time}}). The duration starts at {{start}}.";
         listEmpty: "There are no moderation cases with the selected filters.";
-        listDetailsTitle_one: "There is 1 entry.";
-        listDetailsTitle_other: "There are {{count}} entries.";
-        listDetailsModerator: "{{emoji}} **Moderator:** {{mention}} ({{userId}})";
-        listDetailsUser: "{{emoji}} **User:** {{mention}} ({{userId}})";
-        listDetailsExpires: "{{emoji}} **Expires {{time}}**";
         listOverviewFooter: "This server has {{warnings}}, {{mutes}}, {{timeouts}}, {{kicks}}, and {{bans}}";
         listOverviewFooterUser: "This user has {{warnings}}, {{mutes}}, {{timeouts}}, {{kicks}}, and {{bans}}";
         listOverviewFooterWarning_one: "{{count}} warning";
@@ -512,9 +500,35 @@ declare module "i18next" {
         listOverviewFooterKicks_other: "{{count}} kicks";
         listOverviewFooterBans_one: "{{count}} ban";
         listOverviewFooterBans_other: "{{count}} bans";
-        editSuccess: "Successfully edited case {{caseId}}.";
-        archiveSuccess: "Successfully archived case {{caseId}}.";
-        deleteSuccess: "Successfully deleted case {{caseId}}.";
+        editSuccess: "Case **{{caseId}}** edited successfully.";
+        archiveSuccess: "Case **{{caseId}}** closed successfully.";
+        deleteSuccess: "Case **{{caseId}}** deleted successfully.";
+        listTitle: "Server Moderation Cases";
+        listUser: "Cases of {{user}}";
+        listRow: "{{type}} by {{moderator}} • {{time}}";
+        listFooter_one: "Page {{page}} of {{pages}} • {{count}} case";
+        listFooter_other: "Page {{page}} of {{pages}} • {{count}} cases";
+        filterAll: "All Cases";
+        filterPending: "Temporary cases in course";
+        statusOpen: "Open";
+        statusClosed: "Closed";
+        statusCompleted: "Completed";
+        viewTitle: "Case {{caseId}} - {{type}}";
+        viewUser: "**Target User:** {{mention}} ({{userId}})";
+        viewModerator: "**Moderator:** {{mention}} ({{userId}})";
+        viewStatus: "**Status:** {{status}}";
+        viewUndo: "**Undoes an earlier case.**";
+        viewDuration: "**Duration:** {{duration, duration}} • Expires {{time}}";
+        viewReason: "**Reason:**";
+        viewReasonNone: "No reason provided";
+        viewMessage: "**Message:** {{url}}";
+        buttonEdit: "Edit";
+        buttonClose: "Close";
+        buttonHistory: "History";
+        buttonDelete: "Delete";
+        buttonCancel: "Cancel";
+        deletePrompt: "Delete case **{{caseId}}**? A deleted case cannot be brought back.";
+        menuWrongUser: "This menu is not for you, run the command to open your own.";
       };
       "commands/cleanup": {
         autopurgeName: "autopurge";
@@ -890,10 +904,10 @@ declare module "i18next" {
           reminder: "The `reason` can be the alias of a predefined reason of `/reasons`.";
         };
         "/case": {
-          extendedHelp: "Reads and edits the cases of the moderation log. `view` shows a case, `list` lists them (of a user, of a type, only the ones in course, or as an overview), and `edit` changes the reason or the duration of a case.\n`archive` keeps a case but stops counting it, as a warning or as a recent case, and `delete` removes it for good, with the end that was scheduled for it.";
+          extendedHelp: "Reads and edits the cases of the moderation log. `list` opens a menu of the cases (of a user, or as an overview): its select menu filters them by type or to the temporary ones in course, and the button of a case opens it. `view` shows a case with the buttons that edit it, close it, show its history and delete it, and `edit` changes the reason or the duration of a case.\n`archive` keeps a case but stops counting it, as a warning or as a recent case, and `delete` removes it for good, with the end that was scheduled for it.";
           examples: [
             "view case:42",
-            "list user:@Pete type:Warning",
+            "list user:@Pete",
             "edit case:42 reason:Spam in the help channel duration:2d",
           ];
         };

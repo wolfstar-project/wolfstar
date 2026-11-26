@@ -9,7 +9,7 @@ import { TimestampStyles, time } from '@discordjs/builders';
 import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
+import { renderStatus } from '#utils/status';
 
 /**
  * `/case edit`, see the `case` parent command.
@@ -54,7 +54,7 @@ export class UserCommand extends Command {
 				duration: isNullish(duration) ? entry.duration : duration || null
 			});
 
-			return interaction.reply({ content: t('commands/case:editSuccess', { caseId: entry.id }), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('success', t('commands/case:editSuccess', { caseId: entry.id })));
 		});
 	}
 }

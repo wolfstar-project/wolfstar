@@ -149,10 +149,7 @@ declare module '@wolfstar/http-framework' {
     };
     'case list': {
       overview?: boolean;
-      page?: number;
-      'pending-only'?: boolean;
       show?: boolean;
-      type?: 12 | 0 | 1 | 2 | 16 | 13 | 9 | 8 | 14 | 7 | 10 | 11 | 3 | 15 | 4 | 5 | 6;
       user?: TransformedArguments.User;
     };
     'case view': {

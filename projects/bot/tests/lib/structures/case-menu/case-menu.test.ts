@@ -1,0 +1,247 @@
+import { ModerationManagerEntry } from '#lib/moderation/managers/ModerationManagerEntry';
+import type { ModerationRecord } from '#lib/moderation/managers/ModerationRecord';
+import {
+	CasesPerPage,
+	decodeCaseListTarget,
+	decodeCaseMenuCaseId,
+	decodeCaseMenuId,
+	encodeCaseListTarget,
+	encodeCaseMenuId,
+	filterCaseEntries,
+	renderCaseDeletePrompt,
+	renderCaseList,
+	renderCaseView,
+	type CaseListContext
+} from '#lib/structures/case-menu';
+import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
+import { guild } from '#mocks/MockInstances';
+import { ComponentType, MessageFlags } from 'discord-api-types/v10';
+
+const ownerId = '266624760782258186';
+const userId = '266624760782258187';
+
+// Echoes the key and its options, the translations are not what is tested here:
+const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)) as never;
+
+const record: ModerationRecord = {
+	id: 1,
+	createdAt: 1_700_000_000_000,
+	duration: null,
+	guildId: guild.id,
+	moderatorId: ownerId,
+	userId,
+	reason: null,
+	type: TypeVariation.Warning,
+	metadata: TypeMetadata.None
+};
+
+function createEntry(overrides: Partial<ModerationRecord> = {}) {
+	return ModerationManagerEntry.from(guild, { ...record, ...overrides });
+}
+
+function createContext(overrides: Partial<CaseListContext> = {}): CaseListContext {
+	return { t, ownerId, ephemeral: true, ...overrides };
+}
+
+interface AnyComponent {
+	type: ComponentType;
+	content?: string;
+	custom_id?: string;
+	disabled?: boolean;
+	options?: { value: string; default?: boolean }[];
+	accessory?: AnyComponent;
+	components?: AnyComponent[];
+}
+
+function flatten(components: readonly unknown[]): AnyComponent[] {
+	return (components as AnyComponent[]).flatMap((component) => [
+		component,
+		...flatten(component.components ?? []),
+		...flatten(component.accessory ? [component.accessory] : [])
+	]);
+}
+
+function getText(components: readonly unknown[]) {
+	return flatten(components)
+		.filter((component) => component.type === ComponentType.TextDisplay)
+		.map((component) => component.content)
+		.join('\n');
+}
+
+function getButtons(components: readonly unknown[]) {
+	return flatten(components)
+		.filter((component) => component.type === ComponentType.Button)
+		.map((component) => ({ ...decodeCaseMenuId(component.custom_id!.split('.').slice(1))!, disabled: component.disabled === true }));
+}
+
+describe('case menu', () => {
+	describe('custom IDs', () => {
+		test('GIVEN an action THEN it survives the round trip the framework parser does', () => {
+			const action = { ownerId, verb: 'list', target: encodeCaseListTarget({ filter: TypeVariation.Mute, userId }), page: 3 } as const;
+			const id = encodeCaseMenuId(action);
+
+			expect(id).toBe(`caseMenu.${ownerId}.list:${TypeVariation.Mute}/${userId}:3`);
+			expect(decodeCaseMenuId(id.split('.').slice(1))).toEqual(action);
+		});
+
+		test('GIVEN something else THEN it decodes to null', () => {
+			expect(decodeCaseMenuId(null)).toBeNull();
+			expect(decodeCaseMenuId([ownerId, 'explode:1:0'])).toBeNull();
+			expect(decodeCaseMenuId([ownerId, 'view:1:-1'])).toBeNull();
+			expect(decodeCaseMenuId([ownerId, 'view:1'])).toBeNull();
+		});
+
+		test('GIVEN the target of a list THEN its filter and its user are read back', () => {
+			expect(decodeCaseListTarget(encodeCaseListTarget({ filter: 'all', userId: null }))).toEqual({ filter: 'all', userId: null });
+			expect(decodeCaseListTarget(encodeCaseListTarget({ filter: 'pending', userId }))).toEqual({ filter: 'pending', userId });
+			expect(decodeCaseListTarget(`${TypeVariation.Ban}/-`)).toEqual({ filter: TypeVariation.Ban, userId: null });
+		});
+
+		test('GIVEN a target that is not one of a list THEN it decodes to null', () => {
+			expect(decodeCaseListTarget('all')).toBeNull();
+			expect(decodeCaseListTarget('99/-')).toBeNull();
+			expect(decodeCaseListTarget('all/somebody')).toBeNull();
+			expect(decodeCaseListTarget('all/-/more')).toBeNull();
+		});
+
+		test('GIVEN the target of a case THEN only a positive ID is read', () => {
+			expect(decodeCaseMenuCaseId('12')).toBe(12);
+			expect(decodeCaseMenuCaseId('0')).toBeNull();
+			expect(decodeCaseMenuCaseId('all/-')).toBeNull();
+		});
+	});
+
+	describe('filters', () => {
+		const entries = [
+			createEntry({ id: 1 }),
+			createEntry({ id: 2, type: TypeVariation.Mute, duration: 60_000, createdAt: Date.now(), metadata: TypeMetadata.Temporary }),
+			createEntry({
+				id: 3,
+				type: TypeVariation.Mute,
+				duration: 60_000,
+				createdAt: Date.now(),
+				metadata: TypeMetadata.Temporary | TypeMetadata.Completed
+			}),
+			createEntry({ id: 4, type: TypeVariation.Ban })
+		];
+
+		test('GIVEN every case THEN the newest is first', () => {
+			expect(filterCaseEntries(entries, 'all').map((entry) => entry.id)).toEqual([4, 3, 2, 1]);
+		});
+
+		test('GIVEN a type THEN only its cases are shown', () => {
+			expect(filterCaseEntries(entries, TypeVariation.Mute).map((entry) => entry.id)).toEqual([3, 2]);
+		});
+
+		test('GIVEN the temporary cases in course THEN a completed one is left out', () => {
+			expect(filterCaseEntries(entries, 'pending').map((entry) => entry.id)).toEqual([2]);
+		});
+	});
+
+	describe('list', () => {
+		const entries = Array.from({ length: 12 }, (_, index) => createEntry({ id: index + 1 }));
+
+		test('GIVEN the cases THEN a page shows the newest ones with a button that opens each', () => {
+			const message = renderCaseList(createContext(), { filter: 'all', userId: null, page: 0 }, entries);
+			const text = getText(message.components!);
+			const views = getButtons(message.components!).filter((button) => button.verb === 'view');
+
+			expect(message.flags).toBe(MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral);
+			expect(text).toContain(`**#12** <@${userId}>`);
+			expect(text).not.toContain(`**#${12 - CasesPerPage}** `);
+			expect(views.map((button) => button.target)).toEqual(['12', '11', '10', '9', '8']);
+			expect(text).toContain('"page":1,"pages":3,"count":12');
+		});
+
+		test('GIVEN a list everybody sees THEN it is not ephemeral', () => {
+			const message = renderCaseList(createContext({ ephemeral: false }), { filter: 'all', userId: null, page: 0 }, entries);
+
+			expect(message.flags).toBe(MessageFlags.IsComponentsV2);
+		});
+
+		test('GIVEN a page out of range THEN the last one is rendered', () => {
+			const text = getText(renderCaseList(createContext(), { filter: 'all', userId: null, page: 99 }, entries).components!);
+
+			expect(text).toContain('"page":3,"pages":3');
+			expect(text).toContain('**#1** ');
+		});
+
+		test('GIVEN any page THEN no two components share a custom ID', () => {
+			for (const page of [0, 1, 2]) {
+				const message = renderCaseList(createContext(), { filter: 'all', userId, page }, entries);
+				const ids = flatten(message.components!)
+					.map((component) => component.custom_id)
+					.filter((id) => id !== undefined);
+
+				expect(new Set(ids).size).toBe(ids.length);
+			}
+		});
+
+		test('GIVEN the middle of the list THEN it goes to the first, previous, next and last page with what the list shows', () => {
+			const message = renderCaseList(createContext(), { filter: TypeVariation.Warning, userId, page: 1 }, entries);
+			const pages = getButtons(message.components!).filter((button) => button.verb === 'list');
+			const target = encodeCaseListTarget({ filter: TypeVariation.Warning, userId });
+
+			// The first one reads the same page again:
+			expect(pages.map((button) => [button.target, button.page, button.disabled])).toEqual([
+				[target, 1, false],
+				[target, 0, false],
+				[target, 0, false],
+				[target, 2, false],
+				[target, 2, false]
+			]);
+		});
+
+		test('GIVEN a filter THEN its option is the selected one', () => {
+			const message = renderCaseList(createContext(), { filter: 'pending', userId: null, page: 0 }, entries);
+			const select = flatten(message.components!).find((component) => component.type === ComponentType.StringSelect)!;
+
+			expect(select.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['pending']);
+		});
+
+		test('GIVEN no case THEN the list says so and has no pages', () => {
+			const message = renderCaseList(createContext(), { filter: 'all', userId: null, page: 0 }, []);
+
+			expect(getText(message.components!)).toContain('commands/case:listEmpty');
+			expect(getButtons(message.components!).map((button) => button.verb)).toEqual(['list']);
+		});
+	});
+
+	describe('case', () => {
+		test('GIVEN a case THEN it shows who it is about and the buttons that act on it', () => {
+			const message = renderCaseView(createContext(), createEntry({ id: 7, reason: 'Spam' }));
+			const text = getText(message.components!);
+
+			expect(text).toContain(`"mention":"<@${userId}>","userId":"${userId}"`);
+			expect(text).toContain('commands/case:statusOpen');
+			expect(text).toContain('> Spam');
+			expect(getButtons(message.components!).map((button) => [button.verb, button.target, button.disabled])).toEqual([
+				['edit', '7', false],
+				['close', '7', false],
+				['history', '7', false],
+				['delete', '7', false]
+			]);
+		});
+
+		test('GIVEN a case with no reason THEN it says none was given', () => {
+			expect(getText(renderCaseView(createContext(), createEntry()).components!)).toContain('> commands/case:viewReasonNone');
+		});
+
+		test('GIVEN a closed case THEN it cannot be closed again', () => {
+			const message = renderCaseView(createContext(), createEntry({ metadata: TypeMetadata.Archived }));
+			const close = getButtons(message.components!).find((button) => button.verb === 'close')!;
+
+			expect(getText(message.components!)).toContain('commands/case:statusClosed');
+			expect(close.disabled).toBe(true);
+		});
+
+		test('GIVEN the question before a case is deleted THEN it confirms or goes back to the case', () => {
+			const message = renderCaseDeletePrompt(createContext(), 7);
+
+			expect(getButtons(message.components!).map((button) => [button.verb, button.target])).toEqual([
+				['deleteConfirm', '7'],
+				['deleteCancel', '7']
+			]);
+		});
+	});
+});
