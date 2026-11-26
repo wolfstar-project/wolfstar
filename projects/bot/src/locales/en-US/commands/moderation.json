@@ -24,7 +24,7 @@
 	"kickNotKickable": "The target is not kickable for me.",
 	"muteMuted": "The target user is already muted.",
 	"muteUserNotMuted": "This user is not muted.",
-	"restrictLowlevel": "{{REDCROSS}} I'm sorry, there is no restriction role configured. Please ask an Administrator or the server owner to set it up.",
+	"restrictLowlevel": "I'm sorry, there is no restriction role configured. Please ask an Administrator or the server owner to set it up.",
 	"pruneAlert_one": "Successfully deleted {{count}} message from {{total}}.",
 	"pruneAlert_other": "Successfully deleted {{count}} messages from {{total}}.",
 	"pruneInvalidPosition": "{{REDCROSS}} Position must be one of \"before\" or \"after\".",

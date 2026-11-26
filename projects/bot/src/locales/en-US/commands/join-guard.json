@@ -47,7 +47,7 @@
 	"postButtonEdited": "I updated the checkpoint button in {{channel}}.",
 	"postButtonNoChannel": "The join guard has no checkpoint channel: set `join-guard.checkpoint-channel` in {{command}} or on the dashboard.",
 	"postButtonFailed": "I could not post the checkpoint button: {{error}}",
-	"verifyDone": "{{GREENTICK}} {{user}} is let in.",
+	"verifyDone": "{{user}} is let in.",
 	"verifyNothing": "{{user}} does not wait at the checkpoint, and the join guard has no pending or verified role to change.",
 	"verifyFailed": "I could not let {{user}} in: {{error}}"
 }
