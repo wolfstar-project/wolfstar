@@ -1,5 +1,5 @@
 import { Colors } from '#utils/constants';
-import { renderStatus } from '#utils/status';
+import { renderStatus, renderStatusUpdate } from '#utils/status';
 import { ComponentType, MessageFlags } from 'discord-api-types/v10';
 
 describe('renderStatus', () => {
@@ -28,5 +28,14 @@ describe('renderStatus', () => {
 
 	test('GIVEN a message everybody sees THEN it is not ephemeral', () => {
 		expect(renderStatus('success', 'Done.', { ephemeral: false }).flags).toBe(MessageFlags.IsComponentsV2);
+	});
+});
+
+describe('renderStatusUpdate', () => {
+	test('GIVEN a message that had a content and embeds THEN the status empties both', () => {
+		const message = renderStatusUpdate('error', 'Cancelled.');
+
+		expect(message).toMatchObject({ content: '', embeds: [], flags: MessageFlags.IsComponentsV2 });
+		expect(message.components[0].accent_color).toBe(Colors.Red);
 	});
 });

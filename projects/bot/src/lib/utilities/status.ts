@@ -70,3 +70,17 @@ export function renderStatus(kind: StatusKind, text: string, options: StatusOpti
 		allowed_mentions: { parse: [] }
 	};
 }
+
+/**
+ * What takes the place of a message that was sent with a `content`, embeds or its own components, such as a prompt,
+ * when its outcome is told in the same message.
+ *
+ * @remarks A message of components only holds neither a `content` nor an embed, so both are emptied with the edit.
+ * Whether the message is ephemeral is not changed by an edit.
+ *
+ * @param kind - What the message tells.
+ * @param text - The text, already translated.
+ */
+export function renderStatusUpdate(kind: StatusKind, text: string): StatusMessage & { content: ''; embeds: [] } {
+	return { ...renderStatus(kind, text, { ephemeral: false }), content: '', embeds: [] };
+}
