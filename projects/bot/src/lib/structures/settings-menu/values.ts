@@ -27,7 +27,7 @@ export const ModulesGroupPath = 'modules';
  * The switches of the modules that have a table of their own, not a flag of `Modules`. The page of the modules lists
  * them after the flags, as the dashboard does.
  */
-export const OwnTableModuleSwitches = ['appealsEnabled', 'joinGuardEnabled'] as const satisfies readonly SchemaDataKey[];
+export const OwnTableModuleSwitches = ['appealsEnabled', 'joinGuardEnabled', 'onboardingEnabled'] as const satisfies readonly SchemaDataKey[];
 
 /**
  * The keys of {@linkcode OwnTableModuleSwitches}.

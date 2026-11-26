@@ -38,7 +38,7 @@ export function parseDashboardSettingsUpdate(payload: string): DashboardSettings
 
 /**
  * The messages that drop a cache of the rows the dashboard writes next to the settings (the auto-moderation rules, the
- * automatic deletions, the reasons, the thresholds of warnings, the role rules, the join guard). The payload names
+ * automatic deletions, the reasons, the thresholds of warnings, the role rules, the join guard, the onboarding). The payload names
  * the keys of the settings only, so a write of the dashboard drops them all for its guild.
  */
 const DerivedCacheMessages = [
@@ -47,7 +47,8 @@ const DerivedCacheMessages = [
 	'moderationReasonsUpdate',
 	'warnThresholdsUpdate',
 	'roleRulesUpdate',
-	'joinGuardUpdate'
+	'joinGuardUpdate',
+	'onboardingUpdate'
 ] as const satisfies readonly ShardMessageType[];
 
 /**
