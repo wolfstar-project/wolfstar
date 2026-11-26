@@ -588,7 +588,8 @@ export function withSettingsExpiry<Component extends APIMessageTopLevelComponent
 
 /**
  * Writes what a click on a settings menu that expired is answered with: that it closed, and the command that opens it
- * again, as a mention when Discord gave the command an ID, so a click writes it.
+ * again, as a mention when Discord gave the command an ID, so a click writes it. It is the text of an `error` status
+ * message, see `renderStatus`, which writes the emoji.
  *
  * @param t - The function to translate with.
  * @param subcommand - The subcommand of `/settings` that opens the menu again.
@@ -597,7 +598,7 @@ export function renderSettingsExpired(t: Translator, subcommand: 'server' | 'use
 	const id = container.applicationCommandRegistry?.getLoadedChatInputCommands().get('settings')?.getGlobalId();
 	// The mention of a subcommand takes its path as it is written, group included:
 	const command = isNullish(id) ? inlineCode(`/settings ${subcommand}`) : chatInputApplicationCommandMention(`settings ${subcommand}`, id);
-	return `${Emojis.Hourglass} ${t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command })}`;
+	return t('commands/conf:menuExpired', { minutes: SettingsMenuLifetime / 60_000, command });
 }
 
 function text(content: string): APITextDisplayComponent {
