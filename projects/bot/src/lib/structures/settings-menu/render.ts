@@ -80,7 +80,7 @@ const ModuleEmojis: Record<string, EmojiKey> = {
  */
 function getModuleEmoji(module: string): EmojiComponent {
 	const key = ModuleEmojis[module];
-	return key === undefined ? { name: '📁' } : getEmojiComponent(key);
+	return getEmojiComponent(key ?? 'Folder');
 }
 
 export interface SettingsMenuContext {
@@ -140,14 +140,14 @@ export function renderSettingsGroup(context: SettingsMenuContext, group: SchemaG
 		encodeSettingsMenuId({ ownerId: context.ownerId, verb, target, page: targetPage });
 
 	const body: APIComponentInContainer[] = [];
-	if (!isRoot && group.parent!.parent !== null) body.push(text(`### 📁 ${getPathTitle(t, group)}`));
+	if (!isRoot && group.parent!.parent !== null) body.push(text(`### ${Emojis.Folder} ${getPathTitle(t, group)}`));
 
 	for (const entry of entries.slice(current * EntriesPerPage, (current + 1) * EntriesPerPage)) {
 		if (isSchemaGroup(entry)) {
 			const count = getVisibleKeys(entry, true).length;
 			body.push(
 				section(
-					`**📁 ${getSettingTitle(entry)}**\n${t('commands/conf:menuGroupCount', { count })}`,
+					`**${Emojis.Folder} ${getSettingTitle(entry)}**\n${t('commands/conf:menuGroupCount', { count })}`,
 					button(id('view', getSchemaPath(entry), 0), { emoji: getEmojiComponent('ArrowRight') })
 				)
 			);
@@ -476,7 +476,7 @@ function renderKeyButton(
 			});
 		}
 		case 'readonly':
-			return button(id('edit'), { emoji: '🔒', disabled: true });
+			return button(id('edit'), { emoji: getEmojiComponent('Lock'), disabled: true });
 		default:
 			return button(id('edit'), { emoji: getEmojiComponent('Edit') });
 	}

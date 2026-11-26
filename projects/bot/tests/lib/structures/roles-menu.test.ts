@@ -43,11 +43,16 @@ interface AnyComponent {
 	custom_id?: string;
 	disabled?: boolean;
 	accent_color?: number;
+	accessory?: AnyComponent;
 	components?: AnyComponent[];
 }
 
 function flatten(components: readonly unknown[]): AnyComponent[] {
-	return (components as AnyComponent[]).flatMap((component) => [component, ...flatten(component.components ?? [])]);
+	return (components as AnyComponent[]).flatMap((component) => [
+		component,
+		...flatten(component.accessory ? [component.accessory] : []),
+		...flatten(component.components ?? [])
+	]);
 }
 
 function getText(components: readonly unknown[]) {
@@ -104,16 +109,16 @@ describe('roles menu', () => {
 			expect(text).toContain(`**17.** <@&${roles[16].id}>`);
 		});
 
-		test('GIVEN the middle of the list THEN it can go to the first, previous, next and last page, ask for one and pick a role', () => {
+		test('GIVEN the middle of the list THEN it can pick a role from the top right, and go to the first, previous, next and last page or ask for one', () => {
 			const actions = getActions(renderRolesList(createContext(), 1).components!);
 
 			expect(actions.map((action) => [action.verb, action.page, action.disabled])).toEqual([
+				['pick', 1, false],
 				['list', 0, false],
 				['list', 0, false],
 				['jump', 1, false],
 				['list', 2, false],
-				['list', 2, false],
-				['pick', 1, false]
+				['list', 2, false]
 			]);
 		});
 

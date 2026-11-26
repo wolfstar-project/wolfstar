@@ -167,7 +167,7 @@ const CategoryEmojis: Record<string, EmojiKey> = {
  */
 function getCategoryEmoji(category: string): EmojiComponent {
 	const key = CategoryEmojis[category];
-	return key === undefined ? { name: '📁' } : getEmojiComponent(key);
+	return getEmojiComponent(key ?? 'Folder');
 }
 
 /**
@@ -175,7 +175,7 @@ function getCategoryEmoji(category: string): EmojiComponent {
  */
 function formatCategoryEmoji(category: string): string {
 	const key = CategoryEmojis[category];
-	return key === undefined ? '📁' : Emojis[key];
+	return Emojis[key ?? 'Folder'];
 }
 
 export interface CommandsMenuContext {
@@ -284,7 +284,7 @@ export function renderCommandsResults(context: CommandsMenuContext, query: strin
 	const entries = searchCatalogEntries(listCatalogEntries(context.commands), query);
 	return renderPage(context, {
 		subtitle: t('commands/commands:menuQuery', { query: inlineCode(query) }),
-		title: `🔍 ${t('commands/commands:menuSearchResults')}`,
+		title: `${Emojis.Search} ${t('commands/commands:menuSearchResults')}`,
 		entries,
 		page,
 		verb: 'results',
@@ -319,8 +319,10 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 	const header: APIComponentInContainer[] = [
 		{
 			type: ComponentType.Section,
-			components: [{ type: ComponentType.TextDisplay, content: `## ⌘ ${t('commands/commands:menuTitle')}\n${options.subtitle}` }],
-			accessory: button(id('search', ''), { emoji: '🔍' })
+			components: [
+				{ type: ComponentType.TextDisplay, content: `## ${Emojis.ModuleCommands} ${t('commands/commands:menuTitle')}\n${options.subtitle}` }
+			],
+			accessory: button(id('search', ''), { emoji: getEmojiComponent('Search') })
 		}
 	];
 	if (context.hasLegacyPermissions)

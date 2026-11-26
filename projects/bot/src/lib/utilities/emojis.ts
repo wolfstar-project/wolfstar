@@ -87,6 +87,13 @@ export const EmojiDefinitions = {
 	// The clock of the list of the cases and of the history of a case, the lock of what closes one:
 	History: emoji('history', '🕘'),
 	Lock: emoji('lock', '🔒'),
+	// The magnifying glass of a search, the folder of a group of settings or commands, the chart of an escalation, the
+	// bubble of a response and the minus of what takes an entry out of a list:
+	Search: emoji('search', '🔍'),
+	Folder: emoji('folder', '📁'),
+	Chart: emoji('chart', '📈'),
+	Chat: emoji('chat', '💬'),
+	Remove: emoji('remove', '➖'),
 	// The return arrow of a button that goes back to where the user came from:
 	Back: emoji('back', '↩️'),
 	// The flask of what is experimental, next to a setting or in its note:
