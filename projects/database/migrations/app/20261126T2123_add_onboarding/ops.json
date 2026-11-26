@@ -1,0 +1,507 @@
+[
+	{
+		"id": "createNativeEnumType.OnboardingChallenge",
+		"label": "Create enum type \"OnboardingChallenge\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "OnboardingChallenge"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"OnboardingChallenge\"",
+				"sql": "CREATE TYPE \"public\".\"OnboardingChallenge\" AS ENUM ('Button', 'Emoji', 'Question', 'Captcha')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.OnboardingFailureAction",
+		"label": "Create enum type \"OnboardingFailureAction\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "OnboardingFailureAction"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"OnboardingFailureAction\"",
+				"sql": "CREATE TYPE \"public\".\"OnboardingFailureAction\" AS ENUM ('None', 'Kick', 'Timeout')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.OnboardingStageTrigger",
+		"label": "Create enum type \"OnboardingStageTrigger\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "OnboardingStageTrigger"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"OnboardingStageTrigger\"",
+				"sql": "CREATE TYPE \"public\".\"OnboardingStageTrigger\" AS ENUM ('Join', 'NativeOnboarding')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "createNativeEnumType.OnboardingVerificationStatus",
+		"label": "Create enum type \"OnboardingVerificationStatus\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "type",
+				"name": "OnboardingVerificationStatus"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create enum type \"OnboardingVerificationStatus\"",
+				"sql": "CREATE TYPE \"public\".\"OnboardingVerificationStatus\" AS ENUM ('Waiting', 'Passed', 'Failed', 'Left')",
+				"params": []
+			}
+		],
+		"postcheck": []
+	},
+	{
+		"id": "table.GuildOnboarding",
+		"label": "Create table \"GuildOnboarding\"",
+		"summary": "Creates table \"GuildOnboarding\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildOnboarding"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildOnboarding\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboarding\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildOnboarding\"",
+				"sql": "CREATE TABLE \"public\".\"GuildOnboarding\" (\n  \"channel_id\" int8,\n  \"enabled\" bool DEFAULT false NOT NULL,\n  \"id\" int8 NOT NULL,\n  \"log_channel_id\" int8,\n  \"message_id\" int8,\n  \"revision\" int4 DEFAULT 0 NOT NULL,\n  CONSTRAINT \"GuildOnboarding_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildOnboarding\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboarding\""]
+			}
+		]
+	},
+	{
+		"id": "table.GuildOnboardingStage",
+		"label": "Create table \"GuildOnboardingStage\"",
+		"summary": "Creates table \"GuildOnboardingStage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "GuildOnboardingStage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"GuildOnboardingStage\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboardingStage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"GuildOnboardingStage\"",
+				"sql": "CREATE TABLE \"public\".\"GuildOnboardingStage\" (\n  \"answers\" text[] DEFAULT '{}' NOT NULL,\n  \"challenge\" \"OnboardingChallenge\" NOT NULL,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"enabled\" bool DEFAULT true NOT NULL,\n  \"failure_action\" \"OnboardingFailureAction\" DEFAULT 'None'::\"OnboardingFailureAction\" NOT NULL,\n  \"failure_timeout\" int4,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"max_attempts\" int4 DEFAULT 3 NOT NULL,\n  \"name\" text NOT NULL,\n  \"position\" int4 NOT NULL,\n  \"question\" text,\n  \"role_id\" int8,\n  \"time_limit\" int4 DEFAULT 600 NOT NULL,\n  \"trigger\" \"OnboardingStageTrigger\" NOT NULL,\n  CONSTRAINT \"GuildOnboardingStage_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"GuildOnboardingStage\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboardingStage\""]
+			}
+		]
+	},
+	{
+		"id": "table.OnboardingVerification",
+		"label": "Create table \"OnboardingVerification\"",
+		"summary": "Creates table \"OnboardingVerification\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "OnboardingVerification"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"OnboardingVerification\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"OnboardingVerification\"",
+				"sql": "CREATE TABLE \"public\".\"OnboardingVerification\" (\n  \"attempts\" int4 DEFAULT 0 NOT NULL,\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"resolved_at\" timestamp(3),\n  \"stage_id\" int8,\n  \"stage_name\" text NOT NULL,\n  \"status\" \"OnboardingVerificationStatus\" NOT NULL,\n  \"user_id\" int8 NOT NULL,\n  CONSTRAINT \"OnboardingVerification_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"OnboardingVerification\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildOnboardingStage.GuildOnboardingStage_guild_id_position_idx",
+		"label": "Create index \"GuildOnboardingStage_guild_id_position_idx\" on \"GuildOnboardingStage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildOnboardingStage_guild_id_position_idx",
+				"table": "GuildOnboardingStage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildOnboardingStage_guild_id_position_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboardingStage_guild_id_position_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildOnboardingStage_guild_id_position_idx\"",
+				"sql": "CREATE INDEX \"GuildOnboardingStage_guild_id_position_idx\" ON \"public\".\"GuildOnboardingStage\" (\"guild_id\", \"position\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildOnboardingStage_guild_id_position_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboardingStage_guild_id_position_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.OnboardingVerification.OnboardingVerification_guild_id_created_at_idx",
+		"label": "Create index \"OnboardingVerification_guild_id_created_at_idx\" on \"OnboardingVerification\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "OnboardingVerification_guild_id_created_at_idx",
+				"table": "OnboardingVerification"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"OnboardingVerification_guild_id_created_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification_guild_id_created_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"OnboardingVerification_guild_id_created_at_idx\"",
+				"sql": "CREATE INDEX \"OnboardingVerification_guild_id_created_at_idx\" ON \"public\".\"OnboardingVerification\" (\"guild_id\", \"created_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"OnboardingVerification_guild_id_created_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification_guild_id_created_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.OnboardingVerification.OnboardingVerification_guild_id_user_id_idx",
+		"label": "Create index \"OnboardingVerification_guild_id_user_id_idx\" on \"OnboardingVerification\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "OnboardingVerification_guild_id_user_id_idx",
+				"table": "OnboardingVerification"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"OnboardingVerification_guild_id_user_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification_guild_id_user_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"OnboardingVerification_guild_id_user_id_idx\"",
+				"sql": "CREATE INDEX \"OnboardingVerification_guild_id_user_id_idx\" ON \"public\".\"OnboardingVerification\" (\"guild_id\", \"user_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"OnboardingVerification_guild_id_user_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification_guild_id_user_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "index.OnboardingVerification.OnboardingVerification_stage_id_idx",
+		"label": "Create index \"OnboardingVerification_stage_id_idx\" on \"OnboardingVerification\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "OnboardingVerification_stage_id_idx",
+				"table": "OnboardingVerification"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"OnboardingVerification_stage_id_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification_stage_id_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"OnboardingVerification_stage_id_idx\"",
+				"sql": "CREATE INDEX \"OnboardingVerification_stage_id_idx\" ON \"public\".\"OnboardingVerification\" (\"stage_id\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"OnboardingVerification_stage_id_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingVerification_stage_id_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildOnboarding.GuildOnboarding_id_fkey",
+		"label": "Add foreign key \"GuildOnboarding_id_fkey\" on \"GuildOnboarding\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildOnboarding_id_fkey",
+				"table": "GuildOnboarding"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildOnboarding_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildOnboarding_id_fkey", "public", "\"public\".\"GuildOnboarding\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildOnboarding_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildOnboarding\"\nADD CONSTRAINT \"GuildOnboarding_id_fkey\"\nFOREIGN KEY (\"id\")\nREFERENCES \"public\".\"Modules\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildOnboarding_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildOnboarding_id_fkey", "public", "\"public\".\"GuildOnboarding\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.GuildOnboardingStage.GuildOnboardingStage_guild_id_fkey",
+		"label": "Add foreign key \"GuildOnboardingStage_guild_id_fkey\" on \"GuildOnboardingStage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "GuildOnboardingStage_guild_id_fkey",
+				"table": "GuildOnboardingStage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"GuildOnboardingStage_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildOnboardingStage_guild_id_fkey", "public", "\"public\".\"GuildOnboardingStage\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"GuildOnboardingStage_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"GuildOnboardingStage\"\nADD CONSTRAINT \"GuildOnboardingStage_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"GuildOnboardingStage_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["GuildOnboardingStage_guild_id_fkey", "public", "\"public\".\"GuildOnboardingStage\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.OnboardingVerification.OnboardingVerification_guild_id_fkey",
+		"label": "Add foreign key \"OnboardingVerification_guild_id_fkey\" on \"OnboardingVerification\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "OnboardingVerification_guild_id_fkey",
+				"table": "OnboardingVerification"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"OnboardingVerification_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["OnboardingVerification_guild_id_fkey", "public", "\"public\".\"OnboardingVerification\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"OnboardingVerification_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"OnboardingVerification\"\nADD CONSTRAINT \"OnboardingVerification_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"OnboardingVerification_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["OnboardingVerification_guild_id_fkey", "public", "\"public\".\"OnboardingVerification\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.OnboardingVerification.OnboardingVerification_stage_id_fkey",
+		"label": "Add foreign key \"OnboardingVerification_stage_id_fkey\" on \"OnboardingVerification\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "OnboardingVerification_stage_id_fkey",
+				"table": "OnboardingVerification"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"OnboardingVerification_stage_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["OnboardingVerification_stage_id_fkey", "public", "\"public\".\"OnboardingVerification\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"OnboardingVerification_stage_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"OnboardingVerification\"\nADD CONSTRAINT \"OnboardingVerification_stage_id_fkey\"\nFOREIGN KEY (\"stage_id\")\nREFERENCES \"public\".\"GuildOnboardingStage\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"OnboardingVerification_stage_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["OnboardingVerification_stage_id_fkey", "public", "\"public\".\"OnboardingVerification\""]
+			}
+		]
+	},
+	{
+		"id": "index.GuildOnboardingStage.GuildOnboardingStage_guild_id_name_key",
+		"label": "Create the unique index on the lowercase name of a stage",
+		"summary": "Creates index \"GuildOnboardingStage_guild_id_name_key\" on \"GuildOnboardingStage\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "GuildOnboardingStage_guild_id_name_key",
+				"table": "GuildOnboardingStage"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"GuildOnboardingStage_guild_id_name_key\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboardingStage_guild_id_name_key\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"GuildOnboardingStage_guild_id_name_key\"",
+				"sql": "CREATE UNIQUE INDEX \"GuildOnboardingStage_guild_id_name_key\" ON \"public\".\"GuildOnboardingStage\" (\"guild_id\", lower(\"name\"))",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"GuildOnboardingStage_guild_id_name_key\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"GuildOnboardingStage_guild_id_name_key\""]
+			}
+		]
+	}
+]
