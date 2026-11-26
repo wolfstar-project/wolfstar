@@ -1,18 +1,21 @@
 import { getAppealUrl, shouldLinkAppeal } from '#lib/moderation/appeals';
 import type { TypeVariation } from '#utils/moderationConstants';
-import { fetchGuildT, getTitle, getTranslationKey } from '#lib/moderation/common';
+import { fetchGuildT, getTranslationKey } from '#lib/moderation/common';
 import type { TranslationMappings } from '#lib/moderation/common/constants';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { seconds, years } from 'wolfstar-shared';
 import { getCodeStyle, getLogPrefix, getModeration } from '#utils/functions';
 import { TypeMetadata } from '#utils/moderationConstants';
-import { getFullEmbedAuthor } from '#utils/util';
-import { EmbedBuilder } from '@discordjs/builders';
+import { getTypeColor } from '#lib/moderation/common/constants';
+import { getCaseTypeEmojiKey, getModerationDirectMessageTitle } from '#lib/moderation/common/wording';
+import { createTranslator } from '#lib/structures/commands/utils';
+import { Emojis } from '#utils/emojis';
+import { blockQuote, userMention } from '@discordjs/formatters';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
-import { isNullish, isNullishOrEmpty, isNullishOrZero, type Awaitable } from '@sapphire/utilities';
+import { cutText, isNullish, isNullishOrEmpty, isNullishOrZero, type Awaitable } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { Guild, User } from '@wolfstar/plugin-gateway';
-import { RESTJSONErrorCodes, type Snowflake } from 'discord-api-types/v10';
+import { ComponentType, MessageFlags, RESTJSONErrorCodes, type RESTPostAPIChannelMessageJSONBody, type Snowflake } from 'discord-api-types/v10';
 
 export abstract class ModerationAction<ContextType = never, Type extends TypeVariation = TypeVariation> {
 	/**
@@ -349,8 +352,7 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 
 		try {
 			const target = await entry.fetchUser();
-			const embed = await this.#buildEmbed(guild, entry, data);
-			await target.send({ embeds: [embed] });
+			await target.send(await this.#buildDirectMessage(guild, entry, data));
 			container.logger.debug(`${this.logPrefix} Direct message sent to ${entry.userId}`);
 		} catch (error) {
 			container.logger.debug(`${this.logPrefix} Direct message to ${entry.userId} not delivered: ${(error as Error).message}`);
@@ -376,36 +378,50 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 			: t(undo ? 'moderationActions:revokeReason' : 'moderationActions:applyReason', { action, reason });
 	}
 
-	async #buildEmbed(guild: Guild, entry: ModerationManager.Entry, data: ModerationAction.Data<ContextType>) {
-		const t = await fetchGuildT(guild);
-		const title = getTitle(t, entry);
-		const values = { guild: guild.name, title };
-		// The `{{duration, duration}}` placeholders are formatted by i18next, which the typed options do not model:
-		const duration = entry.duration!;
-		const description = (
-			entry.reason
-				? entry.duration
-					? t('commands/moderation:moderationDmDescriptionWithReasonWithDuration', { ...values, reason: entry.reason, duration } as never)
-					: t('commands/moderation:moderationDmDescriptionWithReason', { ...values, reason: entry.reason })
-				: entry.duration
-					? t('commands/moderation:moderationDmDescriptionWithDuration', { ...values, duration } as never)
-					: t('commands/moderation:moderationDmDescription', values)
-		) as string;
-		const embed = new EmbedBuilder() //
-			.setDescription(description)
-			.setFooter({ text: t('commands/moderation:moderationDmFooter') });
+	/**
+	 * The direct message the user of a case gets, as Flamey sends it: a container with the colour of the type, what was
+	 * done to them and where, who did it when the server shows it, the duration, the reason, and how to appeal.
+	 *
+	 * @remarks The case has no number yet: the message is sent before the case is written, since a ban or a kick leaves
+	 * the user with no server in common with the bot, which then cannot write to them.
+	 */
+	async #buildDirectMessage(guild: Guild, entry: ModerationManager.Entry, data: ModerationAction.Data<ContextType>) {
+		const guildT = await fetchGuildT(guild);
+		const t = createTranslator(guildT as unknown as Parameters<typeof createTranslator>[0]);
+		const undo = entry.isUndo();
+		const lines = [`## ${Emojis[getCaseTypeEmojiKey(entry.type)]} ${getModerationDirectMessageTitle(t, entry.type, undo, guild.name)}`];
+		if (data.moderator) lines.push(t('commands/moderation:moderationDmBy', { moderator: userMention(data.moderator.id) }));
 
-		if (data.reinviteUrl)
-			embed.addFields({ name: t('commands/honeypot:showTitle'), value: t('commands/honeypot:reinviteMessage', { url: data.reinviteUrl }) });
-		if (data.moderator) embed.setAuthor(getFullEmbedAuthor(data.moderator));
-		// The case can be appealed on the website, when the guild takes appeals for its type:
-		if (await shouldLinkAppeal(guild.id, entry.type, entry.isUndo())) {
-			embed.addFields({
-				name: t('commands/moderation:moderationDmAppealTitle'),
-				value: t('commands/moderation:moderationDmAppeal', { url: getAppealUrl(guild.id) })
-			});
+		// Only an action that can be temporary reads as permanent without a duration, the others have none:
+		if (!isNullishOrZero(entry.duration)) {
+			lines.push(t('commands/moderation:moderationDmDuration', { duration: t('globals:durationValue', { value: entry.duration }) }));
+		} else if (this.isUndoActionAvailable && !undo) {
+			lines.push(t('commands/moderation:moderationDmDuration', { duration: t('commands/moderation:moderationDmPermanent') }));
 		}
-		return embed;
+
+		lines.push(
+			t('commands/moderation:moderationDmReason'),
+			blockQuote(isNullishOrEmpty(entry.reason) ? t('commands/moderation:moderationDmNoReason') : cutText(entry.reason, 1500))
+		);
+
+		if (data.reinviteUrl) lines.push(t('commands/honeypot:reinviteMessage', { url: data.reinviteUrl }));
+		// The case can be appealed on the website, when the guild takes appeals for its type:
+		if (await shouldLinkAppeal(guild.id, entry.type, undo)) {
+			lines.push(t('commands/moderation:moderationDmAppeal', { url: getAppealUrl(guild.id) }));
+		}
+
+		lines.push(`-# ${t('commands/moderation:moderationDmFooter')}`);
+		return {
+			components: [
+				{
+					type: ComponentType.Container,
+					accent_color: getTypeColor(entry),
+					components: [{ type: ComponentType.TextDisplay, content: lines.join('\n') }]
+				}
+			],
+			flags: MessageFlags.IsComponentsV2,
+			allowed_mentions: { parse: [] }
+		} satisfies RESTPostAPIChannelMessageJSONBody;
 	}
 
 	#handleDirectMessageError(error: Error) {

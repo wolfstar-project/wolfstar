@@ -7,13 +7,16 @@ import { findRecentCase, renderRecentCasePrompt, savePendingRecentCaseCommand } 
 import { getModeration } from '#utils/functions';
 import { archiveMemberMessages, linkMessageHistory } from '#lib/moderation/histories';
 import { renderStatus, type StatusMessage } from '#utils/status';
+import { addCaseDetails, MaximumCaseStaffNoteLength } from '#lib/moderation/caseEdits';
+import { getCaseTypeEmojiKey, getModerationDoneSentence } from '#lib/moderation/common/wording';
+import { Emojis } from '#utils/emojis';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
 import { ModerationCommandPrompt, type RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey as Key, type Translator } from '#lib/structures/commands/utils';
-import type { TypeVariation } from '#utils/moderationConstants';
+import { TypeVariation } from '#utils/moderationConstants';
 import { userMention } from '@discordjs/formatters';
 import { isNullishOrZero } from '@sapphire/utilities';
 import { resolveTimeSpan } from '#utils/resolvers';
@@ -28,6 +31,7 @@ import {
 	MessageFlags,
 	PermissionFlagsBits,
 	type Permissions,
+	type APIAttachment,
 	type Snowflake
 } from 'discord-api-types/v10';
 
@@ -192,7 +196,9 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 				try {
 					const log = await this.handle(interaction, handled);
 					if (history !== null) await linkMessageHistory(guild.id, history.id, log.id).catch(() => null);
-					answer = this.formatOutput(t, settings, target, log, handled.directMessageUndelivered);
+					// The note and the proof are kept next to the case, so it has to exist first:
+					const warnings = await addCaseDetails(log, { staffNote: args.note, proof: args.proof }, t);
+					answer = this.formatOutput(t, settings, target, log, handled.directMessageUndelivered, warnings);
 				} catch (error) {
 					// No case was made for the copy to stand under:
 					if (forwardedId !== null) await deleteForwardedCaseMessage(guild, forwardedId);
@@ -405,10 +411,10 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 			// The `authored` option has priority over the setting, `false` hides the name and `true` shows it:
 			moderator: (args.authored ?? settings.moderatorNameDisplay) ? context.moderator : null,
 			sendDirectMessage:
-				// `dm: false` disables
-				args.dm !== false &&
-				// `dm: true` and the guild setting enable
-				(args.dm === true || settings.moderationDm) &&
+				// `notify: false` disables
+				args.notify !== false &&
+				// `notify: true` and the guild setting enable
+				(args.notify === true || settings.moderationDm) &&
 				// user settings
 				(await this.fetchUserModerationDmEnabled(target.id)),
 			context: actionContext
@@ -525,7 +531,8 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 		settings: ModerationCommand.MessageSettings,
 		target: User,
 		log: ModerationManager.Entry,
-		undelivered: boolean
+		undelivered: boolean,
+		warnings: readonly string[] = []
 	): ModerationCommand.Answer {
 		// The custom response of the action, when the server wrote one, takes the place of the sentence of the bot. A
 		// reason the server hides stays hidden, whatever the response says; and only an action that can be temporary
@@ -546,20 +553,30 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 								? t('commands/moderation:moderationOutputPermanent')
 								: ''
 					});
-		return renderModerationOutput(t, { id: log.id, tag: target.tag, reason: settings.reasonDisplay ? log.reason : null, undelivered, response });
+		return renderModerationOutput(t, {
+			id: log.id,
+			type: this.action.type,
+			undo: this.isUndoAction,
+			userId: target.id,
+			duration: log.duration,
+			reason: settings.reasonDisplay ? log.reason : null,
+			undelivered,
+			response,
+			warnings
+		});
 	}
 
 	private formatFailureAnswer(t: Translator, target: User, error: unknown): ModerationCommand.Answer {
 		return renderModerationFailure(this.formatFailure(t, target, error));
 	}
 
-	private formatFailure(t: Translator, target: User, error: unknown) {
-		const message =
-			error instanceof UserError
-				? t(error.identifier as Key, error.context as Record<string, unknown>)
-				: String(error instanceof Error ? error.message : error);
-		const users = [`- ${target.tag} → ${message}`];
-		return t('commands/moderation:moderationFailed', { users: users.join('\n'), count: users.length });
+	/**
+	 * Why the action was not taken, as the answer says it: the command acts on one user, who the moderator just named.
+	 */
+	private formatFailure(t: Translator, _target: User, error: unknown) {
+		return error instanceof UserError
+			? t(error.identifier as Key, error.context as Record<string, unknown>)
+			: String(error instanceof Error ? error.message : error);
 	}
 }
 
@@ -666,7 +683,7 @@ export type ModerationBuilder = SlashCommandOptionsOnlyBuilder | SlashCommandSub
  * | `authored` | boolean    | the user can be told about the action                       |
  *
  * Their names and descriptions are the `commands/shared:optionsUser`, `optionsDuration`, `optionsReason`,
- * `optionsMessage`, `optionsDm` and `optionsAuthored` keys (`…Name` and `…Description`).
+ * `optionsMessage`, `optionsProof`, `optionsNote`, `optionsNotify` and `optionsAuthored` keys (`…Name` and `…Description`).
  *
  * @param builder - The builder to apply the data to.
  * @param options - The data to apply.
@@ -699,6 +716,8 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 	const requiredDuration = action.durationRequired && !isUndoAction;
 	const supportsSchedule = action.isUndoActionAvailable && !isUndoAction;
 
+	// The order is the one of Flamey: who, why, how long, the proof, the note, whether to tell them; then what only some
+	// commands take. A required option must come before every optional one, so a required duration stays up front:
 	let result = builder.addUserOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsUser').setRequired(true));
 
 	if (requiredDuration) {
@@ -707,13 +726,26 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 
 	if (options.requiredOptions) result = options.requiredOptions(result);
 
+	result = result.addStringOption((option) =>
+		applyLocalizedBuilder(option, 'commands/shared:optionsReason').setMaxLength(500).setRequired(false).setAutocomplete(true)
+	);
+
 	if (supportsSchedule && !requiredDuration) {
 		result = result.addStringOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDuration').setRequired(false));
 	}
 
-	result = result.addStringOption((option) =>
-		applyLocalizedBuilder(option, 'commands/shared:optionsReason').setMaxLength(500).setRequired(false).setAutocomplete(true)
-	);
+	result = result.addAttachmentOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsProof').setRequired(false));
+	// The reason of a note is already a note only the moderators read:
+	if (action.type !== TypeVariation.Note) {
+		result = result.addStringOption((option) =>
+			applyLocalizedBuilder(option, 'commands/shared:optionsNote').setMaxLength(MaximumCaseStaffNoteLength).setRequired(false)
+		);
+	}
+
+	// `notify` and `authored` only shape the direct message, which an action that never sends one has no use for:
+	if (action.isDirectMessageAvailable) {
+		result = result.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsNotify').setRequired(false));
+	}
 
 	if (options.optionalOptions) result = options.optionalOptions(result);
 
@@ -723,12 +755,8 @@ function applyModerationOptions(builder: ModerationBuilder, options: ModerationB
 		result = result.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsArchive').setRequired(false));
 	}
 
-	// `dm` and `authored` only shape the direct message, which an action that never sends one has no use for:
 	if (!action.isDirectMessageAvailable) return result;
-
-	return result
-		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsDm').setRequired(false))
-		.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
+	return result.addBooleanOption((option) => applyLocalizedBuilder(option, 'commands/shared:optionsAuthored').setRequired(false));
 }
 
 /**
@@ -746,34 +774,40 @@ export function isModerationReplyPublic(
 }
 
 /**
- * What a moderation command answers with when it made a case: a status message that says the case it created, the
- * user, and the reason when the server wants it shown. It is a success, and a warning when the case was made but the
- * user could not be sent the direct message, which it says. With a custom response of the server
- * (`moderation.response-*`, already written out), the response takes the place of the sentence, and the case and the
- * reason stay under it, since the case is how a moderator finds it later.
+ * What a moderation command answers with when it made a case, as Flamey does: the emoji of the type and a sentence
+ * that says what was done to the user ("Successfully muted @user for 28d."), the reason when the server wants it
+ * shown, and the case under them. It has no colour bar; it is a warning, yellow, when the user could not be sent the
+ * direct message or a note or a proof could not be kept, which it says. With a custom response of the server
+ * (`moderation.response-*`, already written out), the response takes the place of the sentence.
  *
  * @remarks The answer always edits the deferred response, whose visibility `chatInputRun` already chose (see
- * {@linkcode isModerationReplyPublic}), so it carries no ephemeral flag.
+ * {@linkcode isModerationReplyPublic}), so it carries no ephemeral flag. It pings nobody.
  *
  * @param t - The function to translate with.
- * @param output - The case that was made: its number, the tag of the user, the reason to show, whether the user could
- * not be sent the direct message, and the custom response of the server when it has one.
+ * @param output - The case that was made and what went wrong around it.
  */
-export function renderModerationOutput(
-	t: Translator,
-	output: { id: number; tag: string; reason: string | null; undelivered?: boolean; response?: string | null }
-): StatusMessage {
+export function renderModerationOutput(t: Translator, output: ModerationCommand.Output): StatusMessage {
 	const lines: string[] = [];
 	if (output.response) {
-		lines.push(output.response, t('commands/moderation:moderationOutputCase', { range: output.id }));
-		if (output.reason) lines.push(t('commands/moderation:moderationOutputReason', { reason: output.reason }));
+		lines.push(output.response);
 	} else {
-		const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
-		lines.push(t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason }));
+		const sentence = getModerationDoneSentence(t, output.type, output.undo, userMention(output.userId));
+		lines.push(
+			isNullishOrZero(output.duration)
+				? t('commands/moderation:moderationOutputSentence', { sentence })
+				: t('commands/moderation:moderationOutputDuration', { sentence, duration: t('globals:durationValue', { value: output.duration }) })
+		);
 	}
-	if (output.undelivered) lines.push(t('commands/moderation:moderationOutputUndelivered'));
 
-	return renderStatus(output.undelivered ? 'warning' : 'success', lines.join('\n'), { ephemeral: false });
+	if (output.reason) lines.push(t('commands/moderation:moderationOutputReason', { reason: output.reason }));
+	const warnings = [...(output.undelivered ? [t('commands/moderation:moderationOutputUndelivered')] : []), ...(output.warnings ?? [])];
+	lines.push(...warnings, t('commands/moderation:moderationOutputCase', { range: output.id }));
+
+	// The undo of an action reads as the check of Flamey, the action itself as the emoji of its type:
+	const emoji = output.undo ? Emojis.GreenTick : Emojis[getCaseTypeEmojiKey(output.type)];
+	return warnings.length === 0
+		? renderStatus('success', lines.join('\n'), { ephemeral: false, emoji, accent: false })
+		: renderStatus('warning', lines.join('\n'), { ephemeral: false, emoji });
 }
 
 /**
@@ -856,8 +890,32 @@ export declare namespace ModerationCommand {
 		duration?: string;
 		reason?: string;
 		message?: string;
-		dm?: boolean;
+		notify?: boolean;
 		authored?: boolean;
+		/** The file the moderator gives as the proof of the case. */
+		proof?: APIAttachment;
+		/** The note only the moderators read. */
+		note?: string;
+	}
+
+	/**
+	 * What {@linkcode renderModerationOutput} says about a case that was made.
+	 */
+	interface Output {
+		id: number;
+		type: TypeVariation;
+		/** Whether the command undid the action. */
+		undo: boolean;
+		userId: Snowflake;
+		duration: number | null;
+		/** The reason to show, `null` when the server hides it. */
+		reason: string | null;
+		/** Whether the user could not be sent the direct message. */
+		undelivered?: boolean;
+		/** The custom response of the server, already written out. */
+		response?: string | null;
+		/** What else could not be done, already translated. */
+		warnings?: readonly string[];
 	}
 
 	/**

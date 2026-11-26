@@ -7,7 +7,8 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { renderStatus, renderStatusUpdate } from '#utils/status';
+import { renderStatus } from '#utils/status';
+import { MessageFlags } from 'discord-api-types/v10';
 
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionHandler.ModalInteraction>;
 
@@ -28,13 +29,14 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (interaction.user.id !== action.ownerId) return fail(t('moderationActions:recentCaseWrongUser'));
 
 		const component = interaction as ComponentInteraction;
-		// The prompt is a message with a `content` and buttons, which its outcome takes the place of, see `renderStatusUpdate`:
+		// The prompt is a status message with its buttons, which its outcome takes the place of:
+		const update = (kind: 'info' | 'error', text: string) => component.update(renderStatus(kind, text, { ephemeral: false }));
 		const pending = await takePendingRecentCaseCommand(guildId, action.ownerId, action.promptId);
-		if (action.verb === 'cancel') return component.update(renderStatusUpdate('info', t('moderationActions:recentCaseCancelled')));
-		if (pending === null) return component.update(renderStatusUpdate('error', t('moderationActions:recentCaseExpired')));
+		if (action.verb === 'cancel') return update('info', t('moderationActions:recentCaseCancelled'));
+		if (pending === null) return update('error', t('moderationActions:recentCaseExpired'));
 
 		const command = container.stores.get('commands').find((piece) => piece.name === pending.command);
-		if (!command?.isModerationCommand()) return component.update(renderStatusUpdate('error', t('moderationActions:recentCaseExpired')));
+		if (!command?.isModerationCommand()) return update('error', t('moderationActions:recentCaseExpired'));
 
 		// The action may take longer than Discord waits for an answer:
 		const deferred = await component.deferUpdate();
@@ -45,12 +47,17 @@ export class UserInteractionHandler extends InteractionHandler {
 				pending.args as unknown as ModerationCommand.Arguments,
 				{ confirmed: true }
 			);
-			// A prompt (a role to set up) is a classic message as this one is, and a status message empties what it had:
-			if (isModerationPromptAnswer(answer)) return deferred.update({ components: [], embeds: [], ...answer, content: answer.content ?? '' });
-			return deferred.update({ ...answer, content: '', embeds: [] });
+			// The prompt of a role to set up is a classic message, which a message of components cannot become: it is sent
+			// apart, under this one. It only comes when the role was deleted since the command was run.
+			if (isModerationPromptAnswer(answer)) {
+				await deferred.update(renderStatus('info', t('moderationActions:recentCaseFollowUp'), { ephemeral: false }));
+				return interaction.followup({ ...answer, flags: MessageFlags.Ephemeral });
+			}
+
+			return deferred.update(answer);
 		} catch (error) {
 			this.container.logger.error('[Moderation] Could not run the command that was confirmed:', error);
-			return deferred.update(renderStatusUpdate('error', t('events/errors:unexpectedError')));
+			return deferred.update(renderStatus('error', t('events/errors:unexpectedError'), { ephemeral: false }));
 		}
 	}
 }

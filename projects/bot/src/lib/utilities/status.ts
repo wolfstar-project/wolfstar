@@ -30,7 +30,23 @@ const StatusColors = {
  */
 export type StatusMessage = Pick<APIInteractionResponseCallbackData, 'allowed_mentions' | 'flags'> & { components: [APIContainerComponent] };
 
-export interface StatusOptions {
+/**
+ * How a status message looks, when it is not the default of its kind.
+ */
+export interface StatusLook {
+	/**
+	 * The emoji in front of the text, written as in a message, in place of the one of the kind. A moderation action shows
+	 * the emoji of its type.
+	 */
+	emoji?: string;
+	/**
+	 * Whether the container has the bar of the colour of its kind, `true` by default. A moderation action that worked has
+	 * none, as the answers of Flamey.
+	 */
+	accent?: boolean;
+}
+
+export interface StatusOptions extends StatusLook {
 	/**
 	 * Whether only the user who is answered sees the message, `true` by default.
 	 */
@@ -42,13 +58,14 @@ export interface StatusOptions {
  *
  * @param kind - What the message tells.
  * @param text - The text, already translated.
+ * @param look - Another emoji, or no bar.
  */
-export function renderStatusContainer(kind: StatusKind, text: string): APIContainerComponent {
-	const color = StatusColors[kind];
+export function renderStatusContainer(kind: StatusKind, text: string, look: StatusLook = {}): APIContainerComponent {
+	const color = look.accent === false ? null : StatusColors[kind];
 	return {
 		type: ComponentType.Container,
 		...(color === null ? {} : { accent_color: color }),
-		components: [{ type: ComponentType.TextDisplay, content: `${Emojis[StatusEmojis[kind]]} ${text}` }]
+		components: [{ type: ComponentType.TextDisplay, content: `${look.emoji ?? Emojis[StatusEmojis[kind]]} ${text}` }]
 	};
 }
 
@@ -60,12 +77,12 @@ export function renderStatusContainer(kind: StatusKind, text: string): APIContai
  *
  * @param kind - What the message tells.
  * @param text - The text, already translated.
- * @param options - Whether the message is ephemeral.
+ * @param options - Whether the message is ephemeral, and how it looks.
  */
 export function renderStatus(kind: StatusKind, text: string, options: StatusOptions = {}): StatusMessage {
 	const ephemeral = options.ephemeral ?? true;
 	return {
-		components: [renderStatusContainer(kind, text)],
+		components: [renderStatusContainer(kind, text, options)],
 		flags: ephemeral ? MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral : MessageFlags.IsComponentsV2,
 		allowed_mentions: { parse: [] }
 	};

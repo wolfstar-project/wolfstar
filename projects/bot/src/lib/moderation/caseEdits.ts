@@ -6,7 +6,7 @@ import { getModeration } from '#utils/functions';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { renderStatusContainer } from '#utils/status';
 import { messageLink, time, TimestampStyles } from '@discordjs/formatters';
-import { isNullish, isNullishOrEmpty } from '@sapphire/utilities';
+import { cutText, isNullish, isNullishOrEmpty } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import {
@@ -339,4 +339,45 @@ async function notifyCaseUser(
 		container.logger.debug(`[MODERATION] Direct message about case ${entry.id} to ${entry.userId} not delivered: ${(error as Error).message}`);
 		return false;
 	}
+}
+
+/**
+ * Keeps what a moderator gave with the command that made a case: the note only the moderators read, and a proof.
+ *
+ * @remarks It is not an edit, so it is not in the history of the case. A proof that cannot be kept, or a note that
+ * cannot be written, does not undo the case: it is told as a warning.
+ *
+ * @param entry - The case the command made.
+ * @param details - The `note` and the `proof` options of the command.
+ * @param t - The language of the moderator, for what they are warned about.
+ * @returns What could not be kept, already translated.
+ */
+export async function addCaseDetails(
+	entry: ModerationManager.Entry,
+	details: { staffNote?: string | null; proof?: APIAttachment | null },
+	t: (key: ProofFailureKey | 'commands/moderation:moderationDetailsNote') => string
+): Promise<string[]> {
+	const warnings: string[] = [];
+	const staffNote = details.staffNote?.trim() || null;
+
+	let proof: CaseEditValues['proof'] | undefined;
+	if (details.proof) {
+		const stored = await storeCaseProof(entry, details.proof);
+		if (stored.ok) proof = stored.value;
+		else warnings.push(t(stored.key));
+	}
+
+	if (staffNote === null && proof === undefined) return warnings;
+
+	try {
+		await setModerationCaseDetails(container.prisma, entry.guild.id, entry.id, {
+			...(staffNote === null ? {} : { staffNote: cutText(staffNote, MaximumCaseStaffNoteLength) }),
+			...(proof === undefined ? {} : { proof })
+		});
+	} catch (error) {
+		container.logger.error(`[MODERATION] Could not keep the details of case ${entry.id} of ${entry.guild.id}:`, error);
+		warnings.push(t('commands/moderation:moderationDetailsNote'));
+	}
+
+	return warnings;
 }

@@ -1,4 +1,8 @@
-import { decodeRecentCaseId, encodeRecentCaseId, findRecentCase } from '#lib/moderation/structures/RecentCasePrompt';
+import { ModerationManagerEntry } from '#lib/moderation/managers/ModerationManagerEntry';
+import { decodeRecentCaseId, encodeRecentCaseId, findRecentCase, renderRecentCasePrompt } from '#lib/moderation/structures/RecentCasePrompt';
+import { TypeMetadata, TypeVariation } from '#utils/moderationConstants';
+import { guild } from '#mocks/MockInstances';
+import { ButtonStyle, MessageFlags } from 'discord-api-types/v10';
 
 describe('RecentCasePrompt', () => {
 	const now = Date.UTC(2026, 9, 16, 12);
@@ -43,5 +47,35 @@ describe('RecentCasePrompt', () => {
 			expect(decodeRecentCaseId([ownerId, 'confirm:abc'])).toBeNull();
 			expect(decodeRecentCaseId([ownerId, 'confirm'])).toBeNull();
 		});
+	});
+});
+
+describe('renderRecentCasePrompt', () => {
+	const t = ((key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key)) as never;
+	const action = { ownerId: '266624760782258186', promptId: '1575577244007399424' };
+
+	test('GIVEN a recent mute THEN it asks in one container whether to go on, with a red button and a cancel', () => {
+		const entry = ModerationManagerEntry.from(guild, {
+			id: 4,
+			createdAt: 1_700_000_000_000,
+			duration: null,
+			guildId: guild.id,
+			moderatorId: action.ownerId,
+			userId: '266624760782258187',
+			reason: null,
+			type: TypeVariation.Mute,
+			metadata: TypeMetadata.None
+		});
+		const message = renderRecentCasePrompt(t, action, entry);
+		const [container] = message.components;
+		const [text, row] = container.components as unknown as [{ content: string }, { components: { custom_id: string; style: ButtonStyle }[] }];
+
+		expect(message.flags).toBe(MessageFlags.IsComponentsV2);
+		expect(text.content).toContain('moderationActions:recentVerb.mute');
+		expect(text.content).toContain('<t:1700000000:R>');
+		expect(row.components.map((button) => [decodeRecentCaseId(button.custom_id.split('.').slice(1))?.verb, button.style])).toEqual([
+			['confirm', ButtonStyle.Danger],
+			['cancel', ButtonStyle.Secondary]
+		]);
 	});
 });

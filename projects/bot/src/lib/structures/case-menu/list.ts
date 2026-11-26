@@ -1,7 +1,8 @@
 import type { ModerationManager } from '#lib/moderation';
 import { getTitle, getTranslationKey } from '#lib/moderation/common/util';
 import { encodeCaseMenuId, type CaseMenuVerb } from '#lib/structures/case-menu/ids';
-import { Emojis, getEmojiComponent, type EmojiComponent, type EmojiKey } from '#utils/emojis';
+import { getCaseTypeEmojiKey } from '#lib/moderation/common/wording';
+import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import { TypeVariation } from '#utils/moderationConstants';
 import { time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText, isNullishOrZero } from '@sapphire/utilities';
@@ -123,24 +124,7 @@ export function filterCaseEntries(entries: readonly ModerationManager.Entry[], f
 	return shown.sort((a, b) => desc(a.id, b.id));
 }
 
-const CaseTypeEmojis: Partial<Record<TypeVariation, EmojiKey>> = {
-	[TypeVariation.Ban]: 'Ban',
-	[TypeVariation.Kick]: 'Kick',
-	[TypeVariation.Mute]: 'Mute',
-	[TypeVariation.Softban]: 'Softban',
-	[TypeVariation.VoiceKick]: 'Kick',
-	[TypeVariation.VoiceMute]: 'Mute',
-	[TypeVariation.Warning]: 'Warning',
-	[TypeVariation.Timeout]: 'Timeout',
-	[TypeVariation.Note]: 'Note'
-};
-
-/**
- * The emoji of a type of case, the shield of the moderators for the ones that have none of their own.
- */
-export function getCaseTypeEmojiKey(type: TypeVariation): EmojiKey {
-	return CaseTypeEmojis[type] ?? 'Moderator';
-}
+export { getCaseTypeEmojiKey } from '#lib/moderation/common/wording';
 
 export interface CaseListContext {
 	/**

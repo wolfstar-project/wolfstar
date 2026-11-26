@@ -179,7 +179,7 @@ export function renderRolesList(context: RolesMenuContext, page: number): RolesM
 		row([button(id('pick'), { label: t('commands/management:rolesBrowsePick'), emoji: '🔎', style: ButtonStyle.Primary })])
 	];
 
-	return toMessage([{ type: ComponentType.Container, accent_color: BrandingColors.Primary, components: body }]);
+	return toMessage([{ type: ComponentType.Container, components: body }]);
 }
 
 /**
@@ -215,7 +215,7 @@ export function renderRolesPicker(context: RolesMenuContext, page: number): Role
 		])
 	];
 
-	return toMessage([{ type: ComponentType.Container, accent_color: BrandingColors.Primary, components: body }]);
+	return toMessage([{ type: ComponentType.Container, components: body }]);
 }
 
 /**
