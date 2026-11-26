@@ -231,7 +231,6 @@ declare module '@wolfstar/http-framework' {
     };
     'note': {
       message?: string;
-      note?: string;
       proof?: TransformedArguments.Attachment;
       reason?: string;
       user: TransformedArguments.User;
