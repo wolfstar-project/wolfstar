@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -20,7 +21,7 @@ export class UserCommand extends Command {
 		const guild = await this.container.gatewayClient.guilds.fetch(interaction.guildId);
 		const sticky = await (await getStickyRoles(guild)).fetch(user.id);
 		if (sticky.length === 0) {
-			return interaction.reply({ content: translateKey(t, 'commands/management:stickyRolesShowEmpty'), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('info', translateKey(t, 'commands/management:stickyRolesShowEmpty')));
 		}
 
 		const { roles } = this.container.gatewayClient;

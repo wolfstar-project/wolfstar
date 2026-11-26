@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { getLegacyPermissions, getLegacyPermissionRevision, keepAccessEntries } from '#lib/structures/commands-menu/legacy';
 import { readSettings, writeSettingsTransaction } from '#lib/database';
 import {
@@ -61,7 +62,7 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInterac
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const action = decodeCommandsMenuId(content);
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null) return fail(getDefaultExpiredReply());
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
@@ -143,14 +144,14 @@ export class UserInteractionHandler extends InteractionHandler {
 	 */
 	private async edit(interaction: ComponentInteraction, ownerId: string, path: string, t: ReturnType<typeof createTranslator>) {
 		const denial = await this.getDenial(interaction, t);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 
 		const context = await createCommandsMenuContext(interaction, ownerId);
 		const [name] = path.split(' ');
 		const command = context.commands.find((entry) => entry.name === name);
 		const piece = command === undefined ? null : findCommandPiece(command.name);
 		// A command that was removed since the menu was opened:
-		if (command === undefined || piece === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (command === undefined || piece === null) return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 
 		const settings = await readSettings(interaction.guildId!);
 		const rules = readCommandRestrictions(settings.commandsRestrictions, interaction.guildId!);
@@ -176,11 +177,11 @@ export class UserInteractionHandler extends InteractionHandler {
 	 */
 	private async editGroup(interaction: ComponentInteraction, ownerId: string, target: string, t: ReturnType<typeof createTranslator>) {
 		const denial = await this.getDenial(interaction, t);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 
 		const subCategory = this.getCategory(interaction);
 		const group = isCommandGroupTarget(target) ? target : subCategory === '' ? null : `${target}.${subCategory}.*`;
-		if (group === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (group === null) return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 
 		const settings = await readSettings(interaction.guildId!);
 		const restriction = findCommandRestriction(readCommandRestrictions(settings.commandsRestrictions, interaction.guildId!), group);
@@ -201,7 +202,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * @param t - The function to translate with.
 	 */
 	private async save(interaction: ModalInteraction, name: string, revision: number, t: ReturnType<typeof createTranslator>) {
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const reply = (content: string, kind: 'error' | 'success' | 'warning' = 'error') => interaction.reply(renderStatus(kind, content));
 		const denial = await this.getDenial(interaction, t);
 		if (denial !== null) return reply(denial);
 
@@ -230,13 +231,13 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (!saved) return reply(t('commands/commands:editStale', { name }));
 
 		const restrictions = t('commands/commands:editRestrictionsSaved');
-		if (disable) return reply(`${t('commands/commands:editDisabledDone', { name })}\n${restrictions}`);
+		if (disable) return reply(`${t('commands/commands:editDisabledDone', { name })}\n${restrictions}`, 'success');
 
 		// The command can still be disabled by its category or by `*`, which this does not take out:
 		const settings = await readSettings(guildId);
 		const rule = findDisabledBy(settings.commandsDisabled, piece);
 		const done = rule === null ? t('commands/commands:editEnabledDone', { name }) : t('commands/commands:editStillDisabled', { name, rule });
-		return reply(`${done}\n${restrictions}`);
+		return reply(`${done}\n${restrictions}`, rule === null ? 'success' : 'warning');
 	}
 
 	/**
@@ -252,7 +253,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * edit the settings are never restricted nor disabled whatever names them, see `ProtectedCommands`.
 	 */
 	private async saveGroup(interaction: ModalInteraction, target: string, revision: number, t: ReturnType<typeof createTranslator>) {
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const reply = (content: string, kind: 'error' | 'success' | 'warning' = 'error') => interaction.reply(renderStatus(kind, content));
 		const status = this.getStatus(interaction);
 		if (status === null) return reply(getDefaultExpiredReply());
 
@@ -263,7 +264,10 @@ export class UserInteractionHandler extends InteractionHandler {
 		const saved = await this.write(interaction.guildId!, target, status, channels, members, revision, interaction.user.id);
 		if (!saved) return reply(t('commands/commands:editGroupStale', { target }));
 
-		return reply(t(status === CommandDisabledValue ? 'commands/commands:editGroupDisabledDone' : 'commands/commands:editGroupSaved', { target }));
+		return reply(
+			t(status === CommandDisabledValue ? 'commands/commands:editGroupDisabledDone' : 'commands/commands:editGroupSaved', { target }),
+			'success'
+		);
 	}
 
 	/**
@@ -330,7 +334,7 @@ export class UserInteractionHandler extends InteractionHandler {
 
 	private async legacy(interaction: ComponentInteraction, t: ReturnType<typeof createTranslator>) {
 		const denial = await this.getDenial(interaction, t);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 		// The nodes and their file can take a moment, which the three seconds of the first answer may not have:
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		const settings = await readSettings(interaction.guildId!);
@@ -380,7 +384,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		// The owner check reads the guild and the write waits for the lock of the settings, either can outlast the three
 		// seconds Discord gives to answer:
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
-		const reply = (content: string) => deferred.update({ content });
+		const reply = (content: string, kind: 'error' | 'success' = 'error') => deferred.update(renderStatus(kind, content));
 		const denial = await this.getLegacyOwnerDenial(interaction, t);
 		if (denial !== null) return reply(denial);
 		if (getModalValue(interaction.data.components, 'confirmation') !== 'REMOVE') return reply(t('commands/commands:legacyConfirmationInvalid'));
@@ -393,7 +397,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				permissionsRoles: keepAccessEntries(trx.settings.permissionsRoles)
 			})
 			.submitWithAudit(interaction.user.id);
-		return reply(t('commands/commands:legacyRemoved'));
+		return reply(t('commands/commands:legacyRemoved'), 'success');
 	}
 
 	/**

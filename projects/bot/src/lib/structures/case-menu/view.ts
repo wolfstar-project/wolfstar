@@ -1,4 +1,6 @@
 import type { ModerationManager } from '#lib/moderation';
+import { getAction } from '#lib/moderation/actions';
+import { formatCaseRoleMentions } from '#lib/moderation/common/roles';
 import { canEditCaseDuration, MaximumCaseReasonLength, MaximumCaseStaffNoteLength } from '#lib/moderation/caseEdits';
 import { getTranslationKey } from '#lib/moderation/common/util';
 import { encodeCaseMenuId, type CaseMenuVerb } from '#lib/structures/case-menu/ids';
@@ -111,6 +113,8 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 	);
 
 	const reference = entry.messageReference;
+	const roles = formatCaseRoleMentions(t, entry);
+	if (roles !== null) lines.push(t('moderation:embedRoles', { roles }));
 	if (reference !== null) {
 		lines.push(t('commands/case:viewMessage', { url: messageLink(reference.channelId, reference.messageId, entry.guild.id) }));
 	}
@@ -256,9 +260,9 @@ export function renderCaseEditModal(
 			label: cutText(t('commands/case:editProofLabel'), 45),
 			description: cutText(t('commands/case:editProofDescription'), 100),
 			component: { type: ComponentType.FileUpload, custom_id: CaseInputIds.Proof, required: false, min_values: 0, max_values: 1 }
-		},
-		renderNotifyField(t, notify)
+		}
 	);
+	if (getAction(entry.type).isDirectMessageAvailable) components.push(renderNotifyField(t, notify));
 
 	return {
 		custom_id: encodeCaseMenuId({ ownerId, verb: 'editSubmit', target: entry.id.toString(), page: 0 }),
@@ -271,15 +275,16 @@ export function renderCaseEditModal(
  * The modal that closes a case: why, and whether the user is told.
  *
  * @param context - The context of the case.
- * @param caseId - The ID of the case.
+ * @param entry - The case to close.
  * @param notify - Whether the checkbox that tells the user starts ticked.
  */
 export function renderCaseCloseModal(
 	context: Pick<CaseViewContext, 't' | 'ownerId'>,
-	caseId: number,
+	entry: ModerationManager.Entry,
 	notify: boolean
 ): APIModalInteractionResponseCallbackData {
 	const { t, ownerId } = context;
+	const caseId = entry.id;
 	return {
 		custom_id: encodeCaseMenuId({ ownerId, verb: 'closeSubmit', target: caseId.toString(), page: 0 }),
 		title: cutText(t('commands/case:closeTitle', { caseId }), 45),
@@ -296,7 +301,7 @@ export function renderCaseCloseModal(
 					value: cutText(t('commands/case:closeReasonDefault'), 200)
 				}
 			},
-			renderNotifyField(t, notify)
+			...(getAction(entry.type).isDirectMessageAvailable ? [renderNotifyField(t, notify)] : [])
 		]
 	};
 }
@@ -337,9 +342,10 @@ function formatCaseChangeValue(t: TFunction<AnyNamespace>, field: ModerationCase
  * @param edits - The edits of the case, the latest first. It must have one, a case with none is told with a status.
  */
 export function renderCaseHistory(t: TFunction<AnyNamespace>, caseId: number, edits: readonly ModerationCaseEdit[]): CaseMenuMessage {
-	const body: APIComponentInContainer[] = [
-		{ type: ComponentType.TextDisplay, content: `## ${Emojis.History} ${t('commands/case:historyTitle', { caseId })}` }
-	];
+	const title = cutText(`## ${Emojis.History} ${t('commands/case:historyTitle', { caseId })}`, 200);
+	const body: APIComponentInContainer[] = [{ type: ComponentType.TextDisplay, content: title }];
+	let remaining = 3700 - title.length;
+	let shown = 0;
 
 	for (const edit of edits.slice(0, CaseHistoryEntries)) {
 		const createdAt = seconds.fromMilliseconds(edit.createdAt);
@@ -350,22 +356,27 @@ export function renderCaseHistory(t: TFunction<AnyNamespace>, caseId: number, ed
 				after: formatCaseChangeValue(t, change.field, change.after)
 			})
 		);
+		const content = [
+			`${userMention(edit.moderatorId)} • ${time(createdAt, TimestampStyles.ShortDateTime)} (${time(createdAt, TimestampStyles.RelativeTime)})`,
+			...lines
+		].join('\n');
+		if (content.length > remaining && shown > 0) break;
+		const fitted = cutText(content, remaining);
+		remaining -= fitted.length;
+		shown++;
 		body.push(
 			{ type: ComponentType.Separator },
 			{
 				type: ComponentType.TextDisplay,
-				content: [
-					`${userMention(edit.moderatorId)} • ${time(createdAt, TimestampStyles.ShortDateTime)} (${time(createdAt, TimestampStyles.RelativeTime)})`,
-					...lines
-				].join('\n')
+				content: fitted
 			}
 		);
 	}
 
-	if (edits.length > CaseHistoryEntries) {
+	if (edits.length > shown) {
 		body.push(
 			{ type: ComponentType.Separator },
-			{ type: ComponentType.TextDisplay, content: `-# ${t('commands/case:historyMore', { count: edits.length - CaseHistoryEntries })}` }
+			{ type: ComponentType.TextDisplay, content: cutText(`-# ${t('commands/case:historyMore', { count: edits.length - shown })}`, 250) }
 		);
 	}
 

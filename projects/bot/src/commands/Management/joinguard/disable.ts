@@ -2,6 +2,7 @@ import { writeSettings } from '#lib/database';
 import { JoinGuardRoot } from '#lib/moderation/joinguard/commands';
 import { announceJoinGuardChange, readJoinGuardConfig } from '#lib/moderation/joinguard/store';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -22,12 +23,12 @@ export class UserCommand extends Command {
 		const { guildId } = interaction;
 		const { settings } = await readJoinGuardConfig(guildId);
 		if (!settings.joinGuardEnabled) {
-			return deferred.update({ content: translateKey(t, `${Root}:alreadyDisabled`) });
+			return deferred.update(renderStatus('info', translateKey(t, `${Root}:alreadyDisabled`)));
 		}
 
 		await writeSettings(guildId, { joinGuardEnabled: false }, interaction.user.id);
 		announceJoinGuardChange(guildId);
 
-		return deferred.update({ content: translateKey(t, `${Root}:disabled`) });
+		return deferred.update(renderStatus('success', translateKey(t, `${Root}:disabled`)));
 	}
 }

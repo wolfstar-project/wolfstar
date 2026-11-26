@@ -4,6 +4,7 @@ import { AppealSettleErrorKeys, settleAppeal } from '#lib/moderation/appealServi
 import { getTitle } from '#lib/moderation/common/util';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
+import { renderStatus } from '#utils/status';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT, type AnyNamespace, type TFunction } from '@wolfstar/plugin-i18next';
@@ -50,15 +51,17 @@ export async function readAppealOption(guildId: Snowflake, value: string) {
 export async function runAppealDecision(interaction: GuildChatInputInteraction, options: { appeal: string; reason?: string }, accept: boolean) {
 	const t = createTranslator(getSupportedUserLanguageT(interaction));
 	const appeal = await readAppealOption(interaction.guildId, options.appeal);
-	if (appeal === null) return interaction.reply({ content: t('commands/appeal:notFound'), flags: MessageFlags.Ephemeral });
+	if (appeal === null) return interaction.reply(renderStatus('error', t('commands/appeal:notFound')));
 
 	const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 	const guild = await container.gatewayClient.guilds.fetch(interaction.guildId);
 	const result = await settleAppeal(guild, appeal, accept, interaction.user.id, options.reason?.trim() || null);
-	if ('error' in result) return deferred.update({ content: t(AppealSettleErrorKeys[result.error]) });
+	// The deferred response is already ephemeral, which an edit does not change:
+	if ('error' in result) return deferred.update(renderStatus('error', t(AppealSettleErrorKeys[result.error]), { ephemeral: false }));
 
 	await updateAppealMessage(interaction.guildId, appeal, result.message);
-	return deferred.update({ content: t(accept ? 'commands/appeal:approved' : 'commands/appeal:denied', { case: appeal.caseId }) });
+	const text = t(accept ? 'commands/appeal:approved' : 'commands/appeal:denied', { case: appeal.caseId });
+	return deferred.update(renderStatus('success', text, { ephemeral: false }));
 }
 
 /**

@@ -38,6 +38,7 @@ import { getModalValue, getModalValues } from 'wolfstar-shared';
 import { TimeZoneGroups, type TimeZoneGroup } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { MessagePrompter, getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
+import { renderStatus } from '#utils/status';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { MessageFlags, Routes, type Snowflake } from 'discord-api-types/v10';
 
@@ -64,10 +65,10 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeSettingsMenuId(content);
-		if (action === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (action === null) return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 
 		if (interaction.user.id !== action.ownerId) return fail(t('commands/conf:menuWrongUser'));
 
@@ -143,7 +144,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * Flips a setting of the user, then shows their settings again.
 	 */
 	private async toggleUser(interaction: ComponentInteraction, action: SettingsMenuAction, t: Translator) {
-		if (action.target !== 'report') return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (action.target !== 'report') return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 
 		await toggleUserReportEnabled(interaction.user.id);
 		const report = await fetchUserReportEnabled(interaction.user.id);
@@ -194,15 +195,14 @@ export class UserInteractionHandler extends InteractionHandler {
 			);
 			// Nothing was chosen, the zone stays as it is:
 			if (picked.length === 0) return interaction.update(renderSettingsGroup(context, this.getGroup(key), action.page));
-			if (picked.length > 1)
-				return interaction.reply({ content: context.t('commands/conf:menuTimezoneMultiple'), flags: MessageFlags.Ephemeral });
+			if (picked.length > 1) return interaction.reply(renderStatus('error', context.t('commands/conf:menuTimezoneMultiple')));
 			input = picked[0];
 		} else {
 			input = getModalValue(interaction.data.components, SettingsModalInputId) ?? '';
 		}
 
 		const parsed = await parseSettingInput(this.getSerializerContext(context, key), input);
-		if (!parsed.ok) return interaction.reply({ content: parsed.error, flags: MessageFlags.Ephemeral });
+		if (!parsed.ok) return interaction.reply(renderStatus('error', parsed.error));
 
 		return this.commit(interaction, guildId, action, key, () => ({ [key.property]: parsed.value }), context.t);
 	}
@@ -213,7 +213,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async pick(interaction: ComponentInteraction, guildId: Snowflake, action: SettingsMenuAction, key: SchemaKey) {
 		const context = await createSettingsMenuContext(interaction, guildId, action.ownerId);
 		const parsed = await validateSettingPick(this.getSerializerContext(context, key), getSelectValues(interaction));
-		if (!parsed.ok) return interaction.reply({ content: parsed.error, flags: MessageFlags.Ephemeral });
+		if (!parsed.ok) return interaction.reply(renderStatus('error', parsed.error));
 
 		return this.write(interaction, guildId, action, key, () => parsed.value);
 	}
@@ -270,11 +270,12 @@ export class UserInteractionHandler extends InteractionHandler {
 		// The permissions are read and the warning is sent, which may take longer than Discord waits for an answer:
 		const deferred = await interaction.deferUpdate();
 		const written = await writeHoneypotSettings(guildId, getData as never, interaction.user.id, t);
-		if (!written.ok) return interaction.followup({ content: written.error, flags: MessageFlags.Ephemeral });
+		if (!written.ok) return interaction.followup(renderStatus('error', written.error));
 
 		await deferred.update(renderSettingsGroup(await createSettingsMenuContext(interaction, guildId, action.ownerId), group, action.page));
 		if (written.notes.length === 0) return null;
-		return interaction.followup({ content: written.notes.join('\n'), flags: MessageFlags.Ephemeral });
+		// The setting was written, but something the honeypot does alongside it was not:
+		return interaction.followup(renderStatus('warning', written.notes.join('\n')));
 	}
 
 	/**
@@ -294,7 +295,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async importFile(interaction: ModalInteraction, guildId: Snowflake, t: Translator) {
 		const submission = readSettingsImportSubmission(interaction.data);
 
-		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const fail = (content: string) => interaction.reply(renderStatus('error', content));
 		if (submission === null) return fail(t('commands/conf:menuImportMissing'));
 		if (submission.type === 'file' && submission.attachment.size > MaximumConfigurationFileSize) {
 			return fail(t('commands/conf:transferErrorTooLarge', { maximum: `${MaximumConfigurationFileSize / 1024} KiB` }));
@@ -304,7 +305,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 
 		const text = submission.type === 'text' ? submission.text : await downloadConfigurationFile(submission.attachment);
-		if (text === null) return deferred.update({ content: t('commands/conf:transferErrorDownload') });
+		if (text === null) return deferred.update(renderStatus('error', t('commands/conf:transferErrorDownload')));
 
 		const message = await createConfigurationImportMessage({ guildId, ownerId: interaction.user.id, importId: interaction.id, text, t });
 		return deferred.update(message);
@@ -332,14 +333,14 @@ export class UserInteractionHandler extends InteractionHandler {
 			reply: (data) => interaction.reply({ ...data, flags: MessageFlags.Ephemeral })
 		});
 		if (confirmed === null) return null;
-		if (!confirmed) return interaction.followup({ content: t('commands/conf:menuResetCancelled'), flags: MessageFlags.Ephemeral });
+		if (!confirmed) return interaction.followup(renderStatus('info', t('commands/conf:menuResetCancelled')));
 
 		// A reset of the honeypot takes the warning off its channel, as `/honeypot disable` does:
 		const data = Object.assign({}, ...keys.map((key) => reset(key))) as Partial<ReadonlyGuildData>;
 		let notes: string[] = [];
 		if (isHoneypotSettingsWrite(Object.keys(data))) {
 			const written = await writeHoneypotSettings(guildId, data as never, interaction.user.id, t);
-			if (!written.ok) return interaction.followup({ content: written.error, flags: MessageFlags.Ephemeral });
+			if (!written.ok) return interaction.followup(renderStatus('error', written.error));
 			notes = written.notes;
 		} else {
 			await writeSettings(guildId, data, interaction.user.id);
@@ -352,8 +353,9 @@ export class UserInteractionHandler extends InteractionHandler {
 			.patch(Routes.channelMessage(message.channel_id, message.id), { body: renderSettingsGroup(context, group, action.page) })
 			.catch((error: unknown) => container.logger.warn('[Settings] Could not refresh the menu after a reset:', error));
 
+		// The settings were reset, but what the honeypot does alongside it may not have been done:
 		const content = [t('commands/conf:menuResetDone', { module }), ...notes].join('\n');
-		return interaction.followup({ content, flags: MessageFlags.Ephemeral });
+		return interaction.followup(renderStatus(notes.length === 0 ? 'success' : 'warning', content));
 	}
 
 	/**

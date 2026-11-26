@@ -1,9 +1,9 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { getAction } from '#lib/moderation/actions';
 import type { RoleModerationAction } from '#lib/moderation/actions/base/RoleModerationAction';
-// Loading it is what gives every command `isModerationCommand`:
 import type { ModerationCommand } from '#lib/moderation/structures/ModerationCommand';
-import '#lib/moderation/structures/ModerationCommand';
+// Loading it is also what gives every command `isModerationCommand`:
+import { isModerationPromptAnswer } from '#lib/moderation/structures/ModerationCommand';
 import { decodeRoleSetupId, takePendingRoleSetupCommand } from '#lib/moderation/structures/RoleSetupPrompt';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { createTranslator, type TranslationKey, type Translator } from '#lib/structures/commands/utils';
@@ -12,7 +12,8 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction, UserError, container } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags, type Snowflake } from 'discord-api-types/v10';
+import { renderStatus, renderStatusUpdate } from '#utils/status';
+import type { Snowflake } from 'discord-api-types/v10';
 
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionHandler.ModalInteraction>;
 
@@ -31,7 +32,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeRoleSetupId(content);
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null || guildId === undefined || interaction instanceof ModalSubmitInteraction) return fail(getDefaultExpiredReply());
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
@@ -49,7 +50,8 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'cancel':
 				// The command that waited for the answer is forgotten:
 				await takePendingRoleSetupCommand(guildId, action.ownerId, action.type);
-				return component.update({ content: t('commands/management:commandHandlerAborted'), components: [], allowed_mentions: { parse: [] } });
+				// The prompt is a message with a `content` and its components, which the outcome takes the place of:
+				return component.update(renderStatusUpdate('info', t('commands/management:commandHandlerAborted')));
 			default:
 				return fail(getDefaultExpiredReply());
 		}
@@ -89,7 +91,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async create(interaction: ComponentInteraction, guildId: Snowflake, action: RoleModerationAction, t: Translator) {
 		// Every channel is edited, which takes longer than Discord waits for an answer:
 		const deferred = await interaction.deferUpdate();
-		const close = (message: string) => deferred.update({ content: message, components: [], allowed_mentions: { parse: [] } });
+		const close = (message: string) => deferred.update(renderStatusUpdate('error', message));
 
 		try {
 			const guild = await container.gatewayClient.guilds.fetch(guildId);
@@ -111,16 +113,12 @@ export class UserInteractionHandler extends InteractionHandler {
 	 * Runs the command that opened the prompt, with the options it was given, now that its role is set up.
 	 *
 	 * @param done - What was set up, which the answer of the command follows.
-	 * @returns The message the prompt becomes. When the command is not there anymore (it waited too long, or it is gone
-	 * after an update), or when it asks again, the administrator is told to run it again.
+	 * @returns The message the prompt becomes, which empties its `content` and its components. When the command is not
+	 * there anymore (it waited too long, or it is gone after an update), or when it asks again, the administrator is told
+	 * to run it again.
 	 */
 	private async resume(interaction: ComponentInteraction, guildId: Snowflake, type: TypeVariation, t: Translator, done: string) {
-		const close = (message: string) => ({
-			content: message === '' ? done : `${done}\n${message}`,
-			components: [],
-			allowed_mentions: { parse: [] }
-		});
-		const again = () => close(t('moderationActions:sharedRoleSetupRunAgain'));
+		const again = () => renderStatusUpdate('warning', `${done}\n${t('moderationActions:sharedRoleSetupRunAgain')}`);
 
 		const pending = await takePendingRoleSetupCommand(guildId, interaction.user.id, type);
 		if (pending === null) return again();
@@ -134,10 +132,11 @@ export class UserInteractionHandler extends InteractionHandler {
 				interaction as unknown as ModerationCommand.Interaction,
 				pending.args as unknown as ModerationCommand.Arguments
 			);
-			if (answer.components?.length) return again();
+			if (isModerationPromptAnswer(answer)) return again();
 
-			// What the command did follows what was set up, as the embed of its case:
-			return { ...close(answer.content ?? ''), embeds: answer.embeds ?? [] };
+			// What the command did follows what was set up, as a status of its own:
+			const setUp = renderStatusUpdate('success', done);
+			return { ...setUp, components: [...setUp.components, ...answer.components] };
 		} catch (error) {
 			this.container.logger.error('[Role setup] Could not run the command that asked for the role:', error);
 			return again();

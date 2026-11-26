@@ -1,3 +1,4 @@
+import { statusContaining, messageText } from '../mocks/status';
 import { applyConfigurationImport, ConfigurationImportStaleError } from '#lib/database/settings/transfer/apply';
 import type { ParsedConfiguration } from '#lib/database/settings/transfer/parse';
 import { encodeSettingsImportId, savePendingImport, type SettingsImportVerb } from '#lib/database/settings/transfer/pending';
@@ -97,8 +98,8 @@ describe('settingsImport interaction handler', () => {
 
 		expect(vi.mocked(applyConfigurationImport).mock.calls).toEqual([[guildId, parsed, ownerId]]);
 		expect(answers.map(([kind]) => kind)).toEqual(['defer', 'edit']);
-		expect(answers[1][1]).toMatchObject({ embeds: [], components: [] });
-		expect((answers[1][1] as { content: string }).content).toContain('transferImportDone {"settings":1,"created":0,"updated":0,"moved":0');
+		expect(answers[1][1]).toMatchObject({ content: '', embeds: [] });
+		expect(messageText(answers[1][1])).toContain('transferImportDone {"settings":1,"created":0,"updated":0,"moved":0');
 	});
 
 	test('GIVEN two clicks THEN the import is written once, and the second one is told it is gone', async () => {
@@ -112,7 +113,7 @@ describe('settingsImport interaction handler', () => {
 		expect(applyConfigurationImport).toHaveBeenCalledTimes(1);
 		expect(second.answers).toEqual([
 			['defer', null],
-			['edit', { content: 'commands/conf:transferImportExpired', embeds: [], components: [] }]
+			['edit', statusContaining('commands/conf:transferImportExpired')]
 		]);
 	});
 
@@ -123,7 +124,7 @@ describe('settingsImport interaction handler', () => {
 		expect(applyConfigurationImport).not.toHaveBeenCalled();
 		expect(answers).toEqual([
 			['defer', null],
-			['edit', { content: 'commands/conf:transferImportExpired', embeds: [], components: [] }]
+			['edit', statusContaining('commands/conf:transferImportExpired')]
 		]);
 	});
 
@@ -134,7 +135,7 @@ describe('settingsImport interaction handler', () => {
 		await create().run(cancel.interaction, cancel.content);
 		expect(cancel.answers).toEqual([
 			['defer', null],
-			['edit', { content: 'commands/conf:transferImportCancelled', embeds: [], components: [] }]
+			['edit', statusContaining('commands/conf:transferImportCancelled')]
 		]);
 		expect(stored.size).toBe(0);
 
@@ -150,7 +151,7 @@ describe('settingsImport interaction handler', () => {
 		const { interaction, content, answers } = click('confirm');
 		await create().run(interaction, content);
 
-		expect(answers.at(-1)).toEqual(['edit', { content: 'commands/conf:transferNothing', embeds: [], components: [] }]);
+		expect(answers.at(-1)).toEqual(['edit', statusContaining('commands/conf:transferNothing')]);
 	});
 
 	test('GIVEN the file no longer fits the server THEN the administrator is told to run the command again', async () => {
@@ -160,7 +161,7 @@ describe('settingsImport interaction handler', () => {
 		const { interaction, content, answers } = click('confirm');
 		await create().run(interaction, content);
 
-		expect(answers.at(-1)).toEqual(['edit', { content: 'commands/conf:transferImportStale', embeds: [], components: [] }]);
+		expect(answers.at(-1)).toEqual(['edit', statusContaining('commands/conf:transferImportStale')]);
 	});
 
 	test('GIVEN an administrator a dashboard access rule keeps out THEN the import is left waiting', async () => {

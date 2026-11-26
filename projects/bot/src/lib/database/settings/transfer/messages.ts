@@ -10,6 +10,7 @@ import { resolveGuild } from '#common';
 import { cutText } from '@sapphire/utilities';
 import { seconds } from 'wolfstar-shared';
 import { Emojis } from '#utils/emojis';
+import { renderStatus, type StatusMessage } from '#utils/status';
 import { time, TimestampStyles } from '@discordjs/formatters';
 import type { RawFile } from '@discordjs/rest';
 import type { APIActionRowComponent, APIButtonComponent, APIEmbed, Snowflake } from 'discord-api-types/v10';
@@ -46,11 +47,13 @@ export async function createConfigurationExportMessage(guildId: Snowflake, t: Tr
  * The message an import is answered with: why the file was refused, that it changes nothing, or the preview of what it
  * changes with the buttons that confirm it.
  */
-export interface ConfigurationImportMessage {
-	content: string;
-	embeds: APIEmbed[];
-	components: APIActionRowComponent<APIButtonComponent>[];
-}
+export type ConfigurationImportMessage =
+	| StatusMessage
+	| {
+			content: string;
+			embeds: APIEmbed[];
+			components: APIActionRowComponent<APIButtonComponent>[];
+	  };
 
 export interface ConfigurationImportOptions {
 	guildId: Snowflake;
@@ -87,17 +90,16 @@ export interface ConfigurationImportOptions {
  */
 export async function createConfigurationImportMessage(options: ConfigurationImportOptions): Promise<ConfigurationImportMessage> {
 	const { guildId, ownerId, importId, text, t } = options;
-	const reply = (content: string): ConfigurationImportMessage => ({ content, embeds: [], components: [] });
 
 	const [settings, guild, rules] = await Promise.all([readSettings(guildId), resolveGuild(guildId), readAutoModerationRules(guildId)]);
 	const parsed = await parseConfigurationFile(text, { settings, rules, guild, t });
-	if (!parsed.ok) return reply(renderConfigurationIssues(parsed.issues, t));
+	if (!parsed.ok) return renderStatus('error', renderConfigurationIssues(parsed.issues, t));
 
 	const plan = planConfigurationImport(settings, rules, parsed.value);
 	const { notices } = parsed.value;
 	if (plan.isEmpty) {
 		const nothing = t('commands/conf:transferNothing');
-		return reply(notices.length === 0 ? nothing : cutText(`${nothing}\n\n${renderConfigurationNotices(notices, t)}`, 2000));
+		return renderStatus('info', notices.length === 0 ? nothing : cutText(`${nothing}\n\n${renderConfigurationNotices(notices, t)}`, 2000));
 	}
 
 	// What the file holds waits in Redis for the click, which may reach another process than this one:

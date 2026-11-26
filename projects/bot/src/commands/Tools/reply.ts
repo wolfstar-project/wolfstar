@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { MaximumAppealMessageLength } from '#lib/moderation/appeals';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { createTranslator } from '#lib/structures/commands/utils';
@@ -32,7 +33,7 @@ function getReplyValue(appeal: Appeal) {
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: Command.ChatInputInteraction, options: Command.OptionsOf<'reply'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const fail = (content: string) => interaction.reply(renderStatus('error', content));
 
 		const pending = await fetchPendingAppeals(container.prisma, interaction.user.id);
 		if (pending.length === 0) return fail(t('commands/reply:none'));
@@ -53,11 +54,11 @@ export class UserCommand extends Command {
 				message: cutText(options.message, MaximumAppealMessageLength)
 			});
 			await container.gatewayClient.api.channels.createMessage(appeal.threadId!, { content, allowed_mentions: { parse: [] } });
-			return await deferred.update({ content: t('commands/reply:sent') });
+			return await deferred.update(renderStatus('success', t('commands/reply:sent')));
 		} catch (error) {
 			// The server may be gone, or the staff deleted the thread:
 			container.logger.debug(`[Appeals] A reply of ${appeal.userId} to the appeal ${appeal.id} did not arrive:`, error);
-			return deferred.update({ content: t('commands/reply:failed') });
+			return deferred.update(renderStatus('error', t('commands/reply:failed')));
 		}
 	}
 

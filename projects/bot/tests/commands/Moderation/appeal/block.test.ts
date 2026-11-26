@@ -1,3 +1,4 @@
+import { statusContaining } from '../../../mocks/status';
 import { UserCommand as BlockCommand } from '#root/commands/Moderation/appeal/block';
 import { UserCommand as UnblockCommand } from '#root/commands/Moderation/appeal/unblock';
 import { container } from '@wolfstar/http-framework';
@@ -34,7 +35,8 @@ describe('/appeal block and /appeal unblock', () => {
 		await BlockCommand.prototype.chatInputRun.call({} as never, interaction, { user, reason: 'Spam' } as never);
 
 		expect(createAppealBlock).toHaveBeenCalledWith(container.prisma, guildId, { userId, reason: 'Spam', moderatorId, automatic: false });
-		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ content: 'commands/appeal:blocked', flags: MessageFlags.Ephemeral }));
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/appeal:blocked'));
+		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 }));
 	});
 
 	test('GIVEN a user who is blocked already THEN it says so', async () => {
@@ -42,7 +44,7 @@ describe('/appeal block and /appeal unblock', () => {
 
 		await BlockCommand.prototype.chatInputRun.call({} as never, interaction, { user } as never);
 
-		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ content: 'commands/appeal:blockedAlready' }));
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/appeal:blockedAlready'));
 	});
 
 	test.each([
@@ -53,6 +55,6 @@ describe('/appeal block and /appeal unblock', () => {
 
 		await UnblockCommand.prototype.chatInputRun.call({} as never, interaction, { user } as never);
 
-		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ content }));
+		expect(reply).toHaveBeenCalledWith(statusContaining(content));
 	});
 });

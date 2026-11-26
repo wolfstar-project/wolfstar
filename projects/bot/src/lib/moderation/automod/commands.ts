@@ -10,10 +10,10 @@ import { AutoModerationOnInfraction } from '#lib/moderation/structures/AutoModer
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { Emojis } from '#utils/emojis';
 import { resolveTimeSpan } from '#utils/resolvers';
+import { renderStatus } from '#utils/status';
 import type { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { isNullishOrEmpty } from '@sapphire/utilities';
 import { applyLocalizedBuilder, type TFunction } from '@wolfstar/plugin-i18next';
-import { MessageFlags } from 'discord-api-types/v10';
 import {
 	AutoModerationRuleWordLength,
 	isAutoModerationRuleWord,
@@ -101,7 +101,7 @@ export async function resolveCommandRule(interaction: GuildChatInputInteraction,
 	const rule = findAutoModerationRule(await readAutoModerationRules(interaction.guildId), query);
 	if (rule !== null) return rule;
 
-	await interaction.reply({ content: translateKey(t, `${Root}:errorUnknown`, { rule: query }), flags: MessageFlags.Ephemeral });
+	await interaction.reply(renderStatus('error', translateKey(t, `${Root}:errorUnknown`, { rule: query })));
 	return null;
 }
 

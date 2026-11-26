@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { toErrorCodeResult } from '#common';
 import { DiscordAPIError } from '@discordjs/rest';
@@ -111,7 +112,7 @@ type LockdownTarget =
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'lockdown'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const fail = (content: string) => interaction.reply(renderStatus('error', content));
 
 		let duration: number | null = null;
 		if (args.action === 'lock' && args.duration !== undefined) {
@@ -137,7 +138,7 @@ export class UserCommand extends Command {
 			args.action === 'lock'
 				? await this.lock(t, interaction.guildId, user, roleId, target, duration)
 				: await this.unlock(t, interaction.guildId, user, roleId, target);
-		return deferred.update({ content });
+		return deferred.update(content);
 	}
 
 	private lock(
@@ -158,7 +159,10 @@ export class UserCommand extends Command {
 				return this.lockThread(t, user.id, target.channel, reason, duration);
 			case 'channel':
 				return this.lockChannel(user.id, target.channel, roleId, reason, duration).then((outcome) =>
-					describeLockdownChannelOutcome(t, 'lock', outcome, target.channel.id, roleId)
+					renderStatus(
+						outcome === 'done' ? 'success' : outcome === 'already' ? 'info' : 'error',
+						describeLockdownChannelOutcome(t, 'lock', outcome, target.channel.id, roleId)
+					)
 				);
 		}
 	}
@@ -174,7 +178,10 @@ export class UserCommand extends Command {
 				return this.unlockThread(t, guildId, user.id, target.channel, reason);
 			case 'channel':
 				return this.unlockChannel(user.id, target.channel, roleId, reason).then((outcome) =>
-					describeLockdownChannelOutcome(t, 'unlock', outcome, target.channel.id, roleId)
+					renderStatus(
+						outcome === 'done' ? 'success' : outcome === 'already' ? 'info' : 'error',
+						describeLockdownChannelOutcome(t, 'unlock', outcome, target.channel.id, roleId)
+					)
 				);
 		}
 	}
@@ -184,11 +191,11 @@ export class UserCommand extends Command {
 	private async lockGuild(t: Translator, guildId: Snowflake, userId: Snowflake, roleId: Snowflake, reason: string, duration: number | null) {
 		const role = await this.fetchRole(guildId, roleId);
 		const mention = roleMention(roleId);
-		if (role === null) return t(`${Root}:guildUnknownRole`, { role: mention });
+		if (role === null) return renderStatus('error', t(`${Root}:guildUnknownRole`, { role: mention }));
 
 		// Locked means none of the permissions is left:
 		const permissionsOriginal = role.permissions.bitField & LockdownGuildPermissions;
-		if (permissionsOriginal === 0n) return t(`${Root}:guildLocked`, { role: mention });
+		if (permissionsOriginal === 0n) return renderStatus('info', t(`${Root}:guildLocked`, { role: mention }));
 
 		// What the lockdown changes is remembered, and its release scheduled, before anything is changed: if either
 		// fails, nobody is locked out without a way back.
@@ -208,15 +215,16 @@ export class UserCommand extends Command {
 			return this.guildError(t, role, result.unwrapErr(), 'guildLockFailed');
 		}
 
-		return t(`${Root}:successGuild`, { role: mention });
+		return renderStatus('success', t(`${Root}:successGuild`, { role: mention }));
 	}
 
 	private async unlockGuild(t: Translator, guildId: Snowflake, userId: Snowflake, roleId: Snowflake, reason: string) {
 		const role = await this.fetchRole(guildId, roleId);
 		const mention = roleMention(roleId);
-		if (role === null) return t(`${Root}:guildUnknownRole`, { role: mention });
+		if (role === null) return renderStatus('error', t(`${Root}:guildUnknownRole`, { role: mention }));
 
-		if ((role.permissions.bitField & LockdownGuildPermissions) === LockdownGuildPermissions) return t(`${Root}:guildUnlocked`, { role: mention });
+		if ((role.permissions.bitField & LockdownGuildPermissions) === LockdownGuildPermissions)
+			return renderStatus('info', t(`${Root}:guildUnlocked`, { role: mention }));
 
 		// Without what the lockdown changed, give all of them back:
 		const data: LockdownData = (await lockdowns.get({ type: LockdownType.Guild, guildId, roleId })) ?? {
@@ -230,26 +238,26 @@ export class UserCommand extends Command {
 		const result = await toErrorCodeResult(lockdowns.release(data, reason));
 		if (result.isErr()) return this.guildError(t, role, result.unwrapErr(), 'guildUnlockFailed');
 
-		return t(`${Root}:successGuild`, { role: mention });
+		return renderStatus('success', t(`${Root}:successGuild`, { role: mention }));
 	}
 
 	private guildError(t: Translator, role: Role, code: RESTJSONErrorCodes, failed: 'guildLockFailed' | 'guildUnlockFailed') {
 		const mention = roleMention(role.id);
-		if (code === RESTJSONErrorCodes.UnknownRole) return t(`${Root}:guildUnknownRole`, { role: mention });
+		if (code === RESTJSONErrorCodes.UnknownRole) return renderStatus('error', t(`${Root}:guildUnknownRole`, { role: mention }));
 		if (code === RESTJSONErrorCodes.MissingPermissions || code === RESTJSONErrorCodes.MissingAccess)
-			return t(`${Root}:guildUnmanageable`, { role: mention });
+			return renderStatus('error', t(`${Root}:guildUnmanageable`, { role: mention }));
 
 		container.logger.error(`[Lockdown] Discord answered ${code} while changing the role ${role.id}`);
-		return t(`${Root}:${failed}`, { role: mention });
+		return renderStatus('error', t(`${Root}:${failed}`, { role: mention }));
 	}
 
 	// Threads
 
 	private async lockThread(t: Translator, userId: Snowflake, channel: AnyThreadChannel, reason: string, duration: number | null) {
 		const mention = channelMention(channel.id);
-		if (channel.locked) return t(`${Root}:threadLocked`, { channel: mention });
+		if (channel.locked) return renderStatus('info', t(`${Root}:threadLocked`, { channel: mention }));
 		if (!(await this.canManage(channel.guildId, channel, PermissionFlagsBits.ManageThreads)))
-			return t(`${Root}:threadUnmanageable`, { channel: mention });
+			return renderStatus('error', t(`${Root}:threadUnmanageable`, { channel: mention }));
 
 		// Remembered before the thread is locked, see `lockGuild`:
 		const data: LockdownData = { type: LockdownType.Thread, guildId: channel.guildId, userId, channelId: channel.id };
@@ -261,20 +269,20 @@ export class UserCommand extends Command {
 			return this.channelError(t, mention, result.unwrapErr(), 'threadLockFailed');
 		}
 
-		return t(`${Root}:successThread`, { channel: mention });
+		return renderStatus('success', t(`${Root}:successThread`, { channel: mention }));
 	}
 
 	private async unlockThread(t: Translator, guildId: Snowflake, userId: Snowflake, channel: AnyThreadChannel, reason: string) {
 		const mention = channelMention(channel.id);
-		if (!channel.locked) return t(`${Root}:threadUnlocked`, { channel: mention });
+		if (!channel.locked) return renderStatus('info', t(`${Root}:threadUnlocked`, { channel: mention }));
 		if (!(await this.canManage(guildId, channel, PermissionFlagsBits.ManageThreads)))
-			return t(`${Root}:threadUnmanageable`, { channel: mention });
+			return renderStatus('error', t(`${Root}:threadUnmanageable`, { channel: mention }));
 
 		const data: LockdownData = { type: LockdownType.Thread, guildId, userId, channelId: channel.id };
 		const result = await toErrorCodeResult(lockdowns.release(data, reason));
 		if (result.isErr()) return this.channelError(t, mention, result.unwrapErr(), 'threadUnlockFailed');
 
-		return t(`${Root}:successThread`, { channel: mention });
+		return renderStatus('success', t(`${Root}:successThread`, { channel: mention }));
 	}
 
 	// Channels
@@ -295,7 +303,7 @@ export class UserCommand extends Command {
 	) {
 		const settings = await readSettings(guildId);
 		const channelIds = settings.moderationLockdownChannels;
-		if (channelIds.length === 0) return t(`${Root}:configuredEmpty`);
+		if (channelIds.length === 0) return renderStatus('info', t(`${Root}:configuredEmpty`));
 
 		const results: LockdownChannelResult[] = [];
 		for (const channelId of channelIds) {
@@ -320,7 +328,10 @@ export class UserCommand extends Command {
 		container.logger.debug(
 			`[Lockdown] ${action} of the configured channels of ${guildId} for ${roleId}: ${results.map((result) => `${result.channelId}=${result.outcome}`).join(', ')}`
 		);
-		return summarizeLockdownChannels(t, action, roleId, results);
+		const failed = results.filter(({ outcome }) => outcome !== 'done' && outcome !== 'already').length;
+		const changed = results.some(({ outcome }) => outcome === 'done');
+		const kind = failed === results.length ? 'error' : failed > 0 ? 'warning' : changed ? 'success' : 'info';
+		return renderStatus(kind, summarizeLockdownChannels(t, action, roleId, results));
 	}
 
 	private async lockChannel(
@@ -404,12 +415,12 @@ export class UserCommand extends Command {
 	}
 
 	private channelError(t: Translator, mention: string, code: RESTJSONErrorCodes, failed: 'threadLockFailed' | 'threadUnlockFailed') {
-		if (code === RESTJSONErrorCodes.UnknownChannel) return t(`${Root}:threadUnknownChannel`, { channel: mention });
+		if (code === RESTJSONErrorCodes.UnknownChannel) return renderStatus('error', t(`${Root}:threadUnknownChannel`, { channel: mention }));
 		if (code === RESTJSONErrorCodes.MissingPermissions || code === RESTJSONErrorCodes.MissingAccess)
-			return t(`${Root}:threadUnmanageable`, { channel: mention });
+			return renderStatus('error', t(`${Root}:threadUnmanageable`, { channel: mention }));
 
 		container.logger.error(`[Lockdown] Discord answered ${code} while changing ${mention}`);
-		return t(`${Root}:${failed}`, { channel: mention });
+		return renderStatus('error', t(`${Root}:${failed}`, { channel: mention }));
 	}
 
 	// Resolution

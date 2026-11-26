@@ -76,7 +76,7 @@ function getText(components: readonly unknown[]) {
 function getButtons(components: readonly unknown[]) {
 	return flatten(components)
 		.filter((component) => component.type === ComponentType.Button)
-		.map((component) => ({ ...decodeCaseMenuId(component.custom_id!.split('.').slice(1))!, disabled: component.disabled === true }));
+		.map((component) => Object.assign(decodeCaseMenuId(component.custom_id!.split('.').slice(1))!, { disabled: component.disabled === true }));
 }
 
 describe('case menu', () => {
@@ -213,6 +213,14 @@ describe('case menu', () => {
 	});
 
 	describe('case', () => {
+		test('shows saved roles for a departed member', () => {
+			const entry = ModerationManagerEntry.from(
+				guild,
+				{ ...record, type: TypeVariation.Ban },
+				{ extraData: ['266624760782258188'], message: null }
+			);
+			expect(getText(renderCaseView(createContext(), entry).components!)).toContain('<@&266624760782258188>');
+		});
 		test('GIVEN a case THEN it shows who it is about and the buttons that act on it', () => {
 			const message = renderCaseView(createContext(), createEntry({ id: 7, reason: 'Spam' }));
 			const text = getText(message.components!);
@@ -277,6 +285,10 @@ describe('case menu', () => {
 	});
 
 	describe('modals', () => {
+		test('does not offer to send a private note to its target', () => {
+			const modal = renderCaseEditModal(createContext(), createEntry({ type: TypeVariation.Note }), null, true);
+			expect(getFields(modal).map((field) => field.custom_id)).not.toContain(CaseInputIds.Notify);
+		});
 		const getFields = (modal: { components: unknown[] }) =>
 			(modal.components as { component: { custom_id: string; value?: string; default?: boolean } }[]).map((label) => label.component);
 
@@ -304,7 +316,7 @@ describe('case menu', () => {
 		});
 
 		test('GIVEN the modal that closes a case THEN it asks why and whether to tell the user', () => {
-			const modal = renderCaseCloseModal(createContext(), 7, false);
+			const modal = renderCaseCloseModal(createContext(), createEntry({ id: 7 }), false);
 
 			expect(decodeCaseMenuId(modal.custom_id.split('.').slice(1))).toMatchObject({ verb: 'closeSubmit', target: '7' });
 			expect(getFields(modal).map((field) => field.custom_id)).toEqual([CaseInputIds.Reason, CaseInputIds.Notify]);
@@ -312,6 +324,22 @@ describe('case menu', () => {
 	});
 
 	describe('history', () => {
+		test('fits long edits within the Discord message text limit', () => {
+			const edits = Array.from({ length: 50 }, (_, index) => ({
+				id: String(index),
+				caseId: 7,
+				moderatorId: ownerId,
+				createdAt: 1_700_000_000_000,
+				changes: ['reason', 'staffNote'].map((field) => ({
+					field: field as 'reason' | 'staffNote',
+					before: 'a'.repeat(1000),
+					after: 'b'.repeat(1000)
+				}))
+			}));
+			const text = getText(renderCaseHistory(t, 7, edits).components!);
+			expect(text.length).toBeLessThanOrEqual(4000);
+			expect(text).toContain('commands/case:historyMore');
+		});
 		const edit = (index: number) => ({
 			id: String(index),
 			caseId: 7,

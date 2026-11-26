@@ -36,7 +36,7 @@ type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInterac
  * @remarks What a component does is read from its custom ID, so there is no state to keep between the clicks. Only the
  * moderator who opened the menu can use it.
  */
-@ApplyOptions<InteractionHandler.Options>({ preconditions: ['moderator'] })
+@ApplyOptions<InteractionHandler.Options>({ preconditions: ['commandsEnabled', 'moderator'] })
 export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
@@ -79,7 +79,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			}
 			case 'close':
 				if (entry.isArchived()) return component.reply(renderStatus('info', t('commands/case:closeAlready', { caseId: entry.id })));
-				return component.showModal(renderCaseCloseModal({ t, ownerId: action.ownerId }, entry.id, await this.getNotifyDefault(guildId)));
+				return component.showModal(renderCaseCloseModal({ t, ownerId: action.ownerId }, entry, await this.getNotifyDefault(guildId)));
 			case 'history': {
 				const edits = await fetchModerationCaseEdits(container.prisma.orm, guildId, entry.id);
 				return component.reply(
@@ -93,7 +93,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			case 'deleteCancel':
 				return component.update(await this.renderView(component, action, entry));
 			case 'deleteConfirm':
-				return this.delete(component, moderation, entry, t);
+				return this.delete(component, moderation, entry, this.getViewContext(component, action).t);
 			default:
 				return component.reply(renderStatus('error', getDefaultExpiredReply()));
 		}

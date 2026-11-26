@@ -6,9 +6,7 @@ import { replyModerationReasonAutocomplete, resolveModerationReason } from '#lib
 import { findRecentCase, renderRecentCasePrompt, savePendingRecentCaseCommand } from '#lib/moderation/structures/RecentCasePrompt';
 import { getModeration } from '#utils/functions';
 import { archiveMemberMessages, linkMessageHistory } from '#lib/moderation/histories';
-import { Colors } from '#utils/constants';
-import { Emojis } from '#utils/emojis';
-import { EmbedBuilder } from '@discordjs/builders';
+import { renderStatus, type StatusMessage } from '#utils/status';
 import { deleteForwardedCaseMessage, forwardCaseMessage } from '#lib/moderation/common/util';
 import type { ModerationAction } from '#lib/moderation/actions/base/ModerationAction';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
@@ -29,7 +27,6 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	PermissionFlagsBits,
-	type APIInteractionResponseCallbackData,
 	type Permissions,
 	type Snowflake
 } from 'discord-api-types/v10';
@@ -136,7 +133,7 @@ export abstract class ModerationCommand<Type extends TypeVariation, ValueType> e
 
 	public override async chatInputRun(interaction: ModerationCommand.Interaction, args: ModerationCommand.Arguments) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 
 		const settings = await this.readMessageSettings(interaction.guildId);
 
@@ -749,11 +746,14 @@ export function isModerationReplyPublic(
 }
 
 /**
- * What a moderation command answers with when it made a case: a small embed that says the case it created, the user,
- * and the reason when the server wants it shown. It is green, as a success is, and yellow when the case was made but
- * the user could not be sent the direct message, which it says. With a custom response of the server
+ * What a moderation command answers with when it made a case: a status message that says the case it created, the
+ * user, and the reason when the server wants it shown. It is a success, and a warning when the case was made but the
+ * user could not be sent the direct message, which it says. With a custom response of the server
  * (`moderation.response-*`, already written out), the response takes the place of the sentence, and the case and the
  * reason stay under it, since the case is how a moderator finds it later.
+ *
+ * @remarks The answer always edits the deferred response, whose visibility `chatInputRun` already chose (see
+ * {@linkcode isModerationReplyPublic}), so it carries no ephemeral flag.
  *
  * @param t - The function to translate with.
  * @param output - The case that was made: its number, the tag of the user, the reason to show, whether the user could
@@ -762,7 +762,7 @@ export function isModerationReplyPublic(
 export function renderModerationOutput(
 	t: Translator,
 	output: { id: number; tag: string; reason: string | null; undelivered?: boolean; response?: string | null }
-): ModerationCommand.Answer {
+): StatusMessage {
 	const lines: string[] = [];
 	if (output.response) {
 		lines.push(output.response, t('commands/moderation:moderationOutputCase', { range: output.id }));
@@ -771,22 +771,30 @@ export function renderModerationOutput(
 		const key = output.reason ? 'commands/moderation:moderationOutputWithReason' : 'commands/moderation:moderationOutput';
 		lines.push(t(key, { count: 1, range: output.id, users: [`\`${output.tag}\``], reason: output.reason }));
 	}
-	if (output.undelivered) lines.push(`${Emojis.Warning} ${t('commands/moderation:moderationOutputUndelivered')}`);
+	if (output.undelivered) lines.push(t('commands/moderation:moderationOutputUndelivered'));
 
-	return toEmbedAnswer(lines.join('\n'), output.undelivered ? Colors.Yellow : Colors.Green);
+	return renderStatus(output.undelivered ? 'warning' : 'success', lines.join('\n'), { ephemeral: false });
 }
 
 /**
- * What a moderation command answers with when it could not make a case: the reason, in a small red embed.
+ * What a moderation command answers with when it could not make a case: the reason, in an error status message.
+ *
+ * @remarks As {@linkcode renderModerationOutput}, it edits the deferred response and carries no ephemeral flag.
  *
  * @param description - The text of the failure, already translated.
  */
-export function renderModerationFailure(description: string): ModerationCommand.Answer {
-	return toEmbedAnswer(description, Colors.Red);
+export function renderModerationFailure(description: string): StatusMessage {
+	return renderStatus('error', description, { ephemeral: false });
 }
 
-function toEmbedAnswer(description: string, color: Colors): ModerationCommand.Answer {
-	return { embeds: [new EmbedBuilder().setColor(color).setDescription(description).toJSON()], allowed_mentions: { parse: [] } };
+/**
+ * Whether the answer of a moderation command is the prompt it needs answered, a classic message with its own
+ * components, and not a status message.
+ *
+ * @param answer - The answer of {@linkcode ModerationCommand.execute}.
+ */
+export function isModerationPromptAnswer(answer: ModerationCommand.Answer): answer is RoleSetupMessage {
+	return !('flags' in answer);
 }
 
 declare module '@wolfstar/http-framework' {
@@ -834,16 +842,15 @@ export declare namespace ModerationCommand {
 	}
 
 	/**
+	 * What a moderation command answers with: a status message (a success when it made a case, a warning when it could
+	 * not tell the user, an error when it failed), or the prompt it needs answered, see {@linkcode RoleSetupMessage}.
+	 * {@linkcode isModerationPromptAnswer} tells them apart.
+	 */
+	type Answer = RoleSetupMessage | StatusMessage;
+
+	/**
 	 * The options the slash command receives, see {@linkcode applyModerationBuilder}.
 	 */
-	/**
-	 * What a moderation command answers with: a small embed (green when it made a case, yellow when it could not tell
-	 * the user, red when it failed), or the prompt it needs answered, see {@linkcode RoleSetupMessage}.
-	 */
-	type Answer =
-		| RoleSetupMessage
-		| (Pick<APIInteractionResponseCallbackData, 'content' | 'embeds' | 'allowed_mentions'> & { components?: undefined });
-
 	interface Arguments {
 		user: TransformedArguments.User;
 		duration?: string;

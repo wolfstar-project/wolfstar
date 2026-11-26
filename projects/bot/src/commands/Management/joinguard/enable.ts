@@ -3,6 +3,7 @@ import { getJoinGuardDashboardUrl, JoinGuardRoot } from '#lib/moderation/joingua
 import { getMissingJoinGuardChannelPermissions } from '#lib/moderation/joinguard/permissions';
 import { announceJoinGuardChange, readJoinGuardConfig } from '#lib/moderation/joinguard/store';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -23,7 +24,7 @@ export class UserCommand extends Command {
 		const { guildId } = interaction;
 		const { settings, rules } = await readJoinGuardConfig(guildId);
 		if (settings.joinGuardEnabled) {
-			return deferred.update({ content: translateKey(t, `${Root}:alreadyEnabled`) });
+			return deferred.update(renderStatus('info', translateKey(t, `${Root}:alreadyEnabled`)));
 		}
 
 		await writeSettings(guildId, { joinGuardEnabled: true }, interaction.user.id);
@@ -42,6 +43,8 @@ export class UserCommand extends Command {
 			lines.push(translateKey(t, `${Root}:logChannelMissingPermissions`, { channel: channelMention(logs), missing }));
 		}
 
-		return deferred.update({ content: lines.join('\n'), allowed_mentions: { parse: [] } });
+		// The guard is on either way, a guard with no rule or with logs it cannot post is a caveat:
+		const kind = rules.length === 0 || lines.length > 1 ? 'warning' : 'success';
+		return deferred.update(renderStatus(kind, lines.join('\n')));
 	}
 }

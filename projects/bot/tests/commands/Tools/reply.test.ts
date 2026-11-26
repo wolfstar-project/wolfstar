@@ -1,3 +1,4 @@
+import { statusContaining } from '../../mocks/status';
 import { UserCommand } from '#root/commands/Tools/reply';
 import { container } from '@wolfstar/http-framework';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -42,7 +43,8 @@ describe('/reply', () => {
 
 		await run();
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/reply:none', flags: MessageFlags.Ephemeral });
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/reply:none'));
+		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 }));
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -51,7 +53,7 @@ describe('/reply', () => {
 
 		await run();
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/reply:noThread', flags: MessageFlags.Ephemeral });
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/reply:noThread'));
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -59,7 +61,7 @@ describe('/reply', () => {
 		await run({ message: 'Hello @everyone' });
 
 		expect(createMessage).toHaveBeenCalledWith('19', { content: expect.stringContaining('Hello @everyone'), allowed_mentions: { parse: [] } });
-		expect(update).toHaveBeenCalledWith({ content: 'commands/reply:sent' });
+		expect(update).toHaveBeenCalledWith(statusContaining('commands/reply:sent'));
 	});
 
 	test('GIVEN several pending appeals and no option THEN it asks which, and nothing is posted', async () => {
@@ -67,7 +69,7 @@ describe('/reply', () => {
 
 		await run();
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/reply:choose', flags: MessageFlags.Ephemeral });
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/reply:choose'));
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -82,7 +84,7 @@ describe('/reply', () => {
 	test('GIVEN the option of an appeal that is not theirs THEN it is refused', async () => {
 		await run({ appeal: '7:7' });
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/reply:notFound', flags: MessageFlags.Ephemeral });
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/reply:notFound'));
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 
@@ -91,7 +93,7 @@ describe('/reply', () => {
 
 		await run();
 
-		expect(update).toHaveBeenCalledWith({ content: 'commands/reply:failed' });
+		expect(update).toHaveBeenCalledWith(statusContaining('commands/reply:failed'));
 	});
 
 	test('GIVEN a server the bot left THEN the member is told, and nothing throws', async () => {
@@ -99,7 +101,7 @@ describe('/reply', () => {
 
 		await run();
 
-		expect(update).toHaveBeenCalledWith({ content: 'commands/reply:failed' });
+		expect(update).toHaveBeenCalledWith(statusContaining('commands/reply:failed'));
 		expect(createMessage).not.toHaveBeenCalled();
 	});
 

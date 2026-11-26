@@ -1,8 +1,8 @@
+import { renderStatus } from '#utils/status';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 
 /**
  * `/sticky-roles reset`, see the `sticky-roles` parent command.
@@ -22,12 +22,12 @@ export class UserCommand extends Command {
 		const roles = await stickyRoles.fetch(user.id);
 		if (roles.length === 0) {
 			const content = translateKey(t, 'commands/management:stickyRolesNotExists', { user: user.user.username });
-			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('info', content));
 		}
 
 		await stickyRoles.clear(user.id);
 
 		const content = translateKey(t, 'commands/management:stickyRolesReset', { user: user.user.username });
-		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		return interaction.reply(renderStatus('success', content));
 	}
 }

@@ -3,10 +3,10 @@ import { resolveDurationOption } from '#lib/moderation/automod/commands';
 import { CleanupFilterKeys, CleanupRoot, getMissingCleanupPermissions } from '#lib/moderation/cleanup/commands';
 import { CleanupLimitError, enableAutoDelete } from '#lib/moderation/cleanup/store';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 import { AutoDeleteAllowKinds, AutoDeleteDelayLimits } from 'wolfstar-database';
 
 const Root = CleanupRoot;
@@ -34,15 +34,15 @@ const Root = CleanupRoot;
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'autodelete enable'>) {
 		const t = getSupportedUserLanguageT(interaction);
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		const fail = (content: string) => interaction.reply(renderStatus('error', content));
 
 		const delay = resolveDurationOption(t, options.delay, AutoDeleteDelayLimits);
-		if (typeof delay === 'object' && delay !== null) return reply(delay.error);
+		if (typeof delay === 'object' && delay !== null) return fail(delay.error);
 
 		const channel = channelMention(options.channel.id);
 		const missing = await getMissingCleanupPermissions(interaction.guildId, options.channel.id);
-		if (missing === null) return reply(translateKey(t, `${Root}:channelUnknown`));
-		if (missing.length > 0) return reply(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
+		if (missing === null) return fail(translateKey(t, `${Root}:channelUnknown`));
+		if (missing.length > 0) return fail(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
 
 		const allow = AutoDeleteAllowKinds.filter((kind) => options[kind] === true);
 		const bots = options.bots === true;
@@ -50,7 +50,7 @@ export class UserCommand extends Command {
 			await enableAutoDelete(interaction.guildId, { channelId: options.channel.id, delay: delay ?? 0, allow, bots });
 		} catch (error) {
 			if (!(error instanceof CleanupLimitError)) throw error;
-			return reply(translateKey(t, `${Root}:autodeleteLimit`, { maximum: error.maximum }));
+			return fail(translateKey(t, `${Root}:autodeleteLimit`, { maximum: error.maximum }));
 		}
 
 		const lines = [
@@ -61,7 +61,7 @@ export class UserCommand extends Command {
 		if (allow.length > 0)
 			lines.push(translateKey(t, `${Root}:autodeleteKept`, { kinds: allow.map((kind) => translateKey(t, CleanupFilterKeys[kind])) }));
 		lines.push(translateKey(t, bots ? `${Root}:autodeleteBotsDeleted` : `${Root}:autodeleteBotsKept`));
-		return reply(lines.join('\n'));
+		return interaction.reply(renderStatus('success', lines.join('\n')));
 	}
 }
 

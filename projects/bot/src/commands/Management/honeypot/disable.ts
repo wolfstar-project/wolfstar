@@ -2,6 +2,7 @@ import { readSettings, writeSettings } from '#lib/database';
 import { removeHoneypotNotice, withHoneypotLock } from '#lib/moderation/honeypot/channel';
 import { HoneypotRoot } from '#lib/moderation/honeypot/commands';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { channelMention, inlineCode } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -25,7 +26,7 @@ export class UserCommand extends Command {
 		let disabledChannels: string[] = [];
 		if (channelId === null && settings.honeypotChannels.length === 0) {
 			const content = translateKey(t, `${Root}:notSetUp`, { command: inlineCode('/honeypot setup') });
-			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('info', content));
 		}
 
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
@@ -40,11 +41,7 @@ export class UserCommand extends Command {
 			for (const id of additionalChannels) await removeHoneypotNotice(guildId, id);
 		});
 
-		return deferred.update({
-			content: translateKey(t, `${Root}:disabled`, {
-				channel: disabledChannels.map(channelMention).join(', ')
-			}),
-			allowed_mentions: { parse: [] }
-		});
+		const content = translateKey(t, `${Root}:disabled`, { channel: disabledChannels.map(channelMention).join(', ') });
+		return deferred.update(renderStatus('success', content));
 	}
 }

@@ -4,7 +4,7 @@ import { userMention } from '@discordjs/formatters';
 import { container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
+import { renderStatus } from '#utils/status';
 import { createAppealBlock } from 'wolfstar-database';
 
 /**
@@ -24,6 +24,6 @@ export class UserCommand extends Command {
 		const created = await createAppealBlock(container.prisma, interaction.guildId, data);
 
 		const key = created ? 'commands/appeal:blocked' : 'commands/appeal:blockedAlready';
-		return interaction.reply({ content: t(key, { user: userMention(id) }), flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		return interaction.reply(renderStatus(created ? 'success' : 'info', t(key, { user: userMention(id) })));
 	}
 }

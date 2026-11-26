@@ -190,7 +190,7 @@ export async function editCase(request: CaseEditRequest): Promise<CaseEditOutcom
 
 	await addModerationCaseEdit(container.prisma, guildId, { caseId: entry.id, moderatorId: request.moderatorId, changes });
 
-	if (request.notify && (changed.has('reason') || changed.has('duration'))) {
+	if (request.notify && getAction(entry.type).isDirectMessageAvailable && (changed.has('reason') || changed.has('duration'))) {
 		const delivered = await notifyCaseUser(entry, 'commands/case:dmEdited');
 		if (!delivered) warnings.push(t('commands/case:notifyUndelivered'));
 	}
@@ -227,7 +227,7 @@ export async function closeCase(request: CaseCloseRequest): Promise<CaseEditOutc
 	await addModerationCaseEdit(container.prisma, entry.guild.id, { caseId: entry.id, moderatorId: request.moderatorId, changes });
 
 	const warnings: string[] = [];
-	if (request.notify) {
+	if (request.notify && getAction(entry.type).isDirectMessageAvailable) {
 		const delivered = await notifyCaseUser(entry, 'commands/case:dmClosed', request.reason);
 		if (!delivered) warnings.push(t('commands/case:notifyUndelivered'));
 	}

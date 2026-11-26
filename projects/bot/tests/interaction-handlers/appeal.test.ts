@@ -1,3 +1,4 @@
+import { statusContaining } from '../mocks/status';
 import { settleAppeal } from '#lib/moderation/appealService';
 import { UserInteractionHandler } from '#root/interaction-handlers/appeal';
 import { ModalSubmitInteraction } from '@wolfstar/http-framework';
@@ -57,7 +58,8 @@ describe('the modal of a decision', () => {
 
 		await run();
 
-		expect(followup).toHaveBeenCalledWith({ content: 'already-decided', flags: MessageFlags.Ephemeral });
+		expect(followup).toHaveBeenCalledWith(statusContaining('already-decided'));
+		expect(followup).toHaveBeenCalledWith(expect.objectContaining({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 }));
 		expect(update).not.toHaveBeenCalled();
 	});
 });

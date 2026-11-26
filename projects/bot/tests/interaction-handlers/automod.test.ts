@@ -1,3 +1,4 @@
+import { statusContaining } from '../mocks/status';
 import { writeSettings } from '#lib/database';
 import { readAutoModerationRules } from '#lib/moderation/automod/rules';
 import { encodeAutoModerationMenuId, type AutoModerationMenuVerb } from '#lib/structures/automod-menu';
@@ -67,6 +68,6 @@ describe('auto-moderation menu', () => {
 		await handler().run(interaction, content);
 
 		expect(writeSettings).not.toHaveBeenCalled();
-		expect(answers.reply).toMatchObject([{ content: 'preconditions:administrator' }]);
+		expect(answers.reply).toMatchObject([statusContaining('preconditions:administrator')]);
 	});
 });

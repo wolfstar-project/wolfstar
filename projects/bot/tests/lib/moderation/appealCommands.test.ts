@@ -1,3 +1,4 @@
+import { statusContaining } from '../../mocks/status';
 import { filterAppealChoices, getAppealChoices, runAppealDecision } from '#lib/moderation/appealCommands';
 import { settleAppeal } from '#lib/moderation/appealService';
 import { getModeration } from '#utils/functions';
@@ -67,7 +68,7 @@ describe('/appeal approve and /appeal deny', () => {
 	test.each(['nope', '0'])('GIVEN the option %j, which is not a case THEN nothing is decided', async (appeal) => {
 		await run({ appeal });
 
-		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ content: 'commands/appeal:notFound' }));
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/appeal:notFound'));
 		expect(settleAppeal).not.toHaveBeenCalled();
 	});
 
@@ -76,7 +77,7 @@ describe('/appeal approve and /appeal deny', () => {
 
 		await run({ appeal: '12' });
 
-		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ content: 'commands/appeal:notFound' }));
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/appeal:notFound'));
 		expect(settleAppeal).not.toHaveBeenCalled();
 	});
 
@@ -104,7 +105,7 @@ describe('/appeal approve and /appeal deny', () => {
 			'254360814063058946',
 			expect.objectContaining({ ...message, allowed_mentions: { parse: [] } })
 		);
-		expect(update).toHaveBeenCalledWith({ content });
+		expect(update).toHaveBeenCalledWith(statusContaining(content));
 	});
 
 	test('GIVEN a message sent after the appeal was read THEN it stops asking for a decision too', async () => {
@@ -121,7 +122,7 @@ describe('/appeal approve and /appeal deny', () => {
 		await run({ appeal: '12' });
 
 		expect(editMessage).not.toHaveBeenCalled();
-		expect(update).toHaveBeenCalledWith({ content: 'commands/appeal:approved' });
+		expect(update).toHaveBeenCalledWith(statusContaining('commands/appeal:approved'));
 	});
 
 	test('GIVEN the appeal cannot be read again THEN the decision stands and is told', async () => {
@@ -131,7 +132,7 @@ describe('/appeal approve and /appeal deny', () => {
 		await run({ appeal: '12' });
 
 		expect(warn).toHaveBeenCalledOnce();
-		expect(update).toHaveBeenCalledWith({ content: 'commands/appeal:approved' });
+		expect(update).toHaveBeenCalledWith(statusContaining('commands/appeal:approved'));
 	});
 
 	test('GIVEN a message that cannot be changed THEN the decision stands and is told', async () => {
@@ -141,7 +142,7 @@ describe('/appeal approve and /appeal deny', () => {
 		await run({ appeal: '12' });
 
 		expect(warn).toHaveBeenCalledOnce();
-		expect(update).toHaveBeenCalledWith({ content: 'commands/appeal:approved' });
+		expect(update).toHaveBeenCalledWith(statusContaining('commands/appeal:approved'));
 	});
 
 	test.each([
@@ -154,7 +155,7 @@ describe('/appeal approve and /appeal deny', () => {
 		await run({ appeal: '12' });
 
 		expect(editMessage).not.toHaveBeenCalled();
-		expect(update).toHaveBeenCalledWith({ content });
+		expect(update).toHaveBeenCalledWith(statusContaining(content));
 	});
 });
 

@@ -144,7 +144,7 @@ export async function addModerationCaseEdit(
 		guildId: BigInt(guildId),
 		caseId: edit.caseId,
 		moderatorId: BigInt(edit.moderatorId),
-		createdAt: formatTimestamp(createdAt),
+		createdAt: formatTimestamp(createdAt) as Models.public_ModerationCaseEdit['createdAt'],
 		changes: edit.changes
 	});
 

@@ -4,6 +4,7 @@ import { claimReport, releaseReport, ReportCooldownSeconds, type ReportSubject }
 import { renderReport, ReportContentMaximumLength } from '#lib/moderation/reports/render';
 import { createTranslator, type Translator } from '#lib/structures/commands/utils';
 import { getLogger } from '#utils/functions';
+import type { StatusKind } from '#utils/status';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
@@ -35,6 +36,14 @@ export async function getReportDenial(t: Translator, guildId: Snowflake, reporte
 }
 
 /**
+ * What the member who sent a report is answered with: the translated text, and the kind of status message it is.
+ */
+export interface ReportSubmission {
+	kind: StatusKind;
+	text: string;
+}
+
+/**
  * Sends a report to the reports channel of a guild.
  *
  * @param t - The function to translate with, in the language of the member who reports.
@@ -47,17 +56,35 @@ export async function submitReport(
 	subject: ReportSubject,
 	reason: string
 ): Promise<string> {
+	const submission = await submitReportOutcome(t, guildId, reporterId, subject, reason);
+	return submission.text;
+}
+
+/**
+ * Sends a report to the reports channel of a guild, as {@linkcode submitReport} does.
+ *
+ * @param t - The function to translate with, in the language of the member who reports.
+ * @returns What to answer the member with, and whether the report was sent.
+ */
+export async function submitReportOutcome(
+	t: Translator,
+	guildId: Snowflake,
+	reporterId: Snowflake,
+	subject: ReportSubject,
+	reason: string
+): Promise<ReportSubmission> {
 	const denial = await getReportDenial(t, guildId, reporterId, subject.targetId);
 	if (denial !== null) {
 		container.logger.debug(`[REPORTS] ${reporterId} of ${guildId} was refused a report of ${subject.targetId}`);
-		return denial;
+		return { kind: 'error', text: denial };
 	}
 
 	const messageId = subject.message?.id ?? null;
 	const claim = await claimReport(guildId, reporterId, messageId);
 	if (claim === 'duplicate' || claim === 'cooldown') container.logger.debug(`[REPORTS] ${reporterId} of ${guildId}: ${claim}`);
-	if (claim === 'duplicate') return t('commands/report:duplicate');
-	if (claim === 'cooldown') return t('commands/report:cooldown', { seconds: ReportCooldownSeconds });
+	// The message is already in the hands of the moderators, so nothing went wrong:
+	if (claim === 'duplicate') return { kind: 'info', text: t('commands/report:duplicate') };
+	if (claim === 'cooldown') return { kind: 'error', text: t('commands/report:cooldown', { seconds: ReportCooldownSeconds }) };
 
 	const settings = await readSettings(guildId);
 	const { prisma } = container;
@@ -98,10 +125,10 @@ export async function submitReport(
 	if (!sent) {
 		// The member is not made to wait, nor the message kept from another report, for a report nobody received:
 		await Promise.all([deleteReport(prisma, guildId, report.id), releaseReport(guildId, reporterId, messageId)]);
-		return t('commands/report:failed');
+		return { kind: 'error', text: t('commands/report:failed') };
 	}
 
-	return t('commands/report:success');
+	return { kind: 'success', text: t('commands/report:success') };
 }
 
 /**

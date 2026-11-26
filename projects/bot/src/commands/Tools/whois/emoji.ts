@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
 import { seconds } from 'wolfstar-shared';
@@ -25,7 +26,7 @@ const Root = 'commands/tools';
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'whois emoji'>) {
 		const t = getSupportedUserLanguageT(interaction);
-		const fail = (key: TranslationKey) => interaction.reply({ content: translateKey(t, key), flags: MessageFlags.Ephemeral });
+		const fail = (key: TranslationKey) => interaction.reply(renderStatus('error', translateKey(t, key)));
 
 		const parsed = parseEmoji(options.emoji);
 		if (parsed === null) return fail(`${Root}:whoisEmojiInvalid`);

@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { writeSettings } from '#lib/database';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
@@ -39,7 +40,7 @@ import { channelMention, inlineCode } from '@discordjs/formatters';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags, type Snowflake } from 'discord-api-types/v10';
+import { type Snowflake } from 'discord-api-types/v10';
 import {
 	isAutoModerationRuleType,
 	parseAutoModerationHardAction,
@@ -77,7 +78,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeAutoModerationMenuId(content);
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null || guildId === undefined) return fail(getDefaultExpiredReply());
 
 		const t = getSupportedUserLanguageT(interaction);
@@ -163,10 +164,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		// These are settings of the server, which a dashboard access rule can keep an administrator out of:
 		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
 			const t = getSupportedUserLanguageT(interaction);
-			return interaction.reply({
-				content: translateKey(t, 'preconditions:administrator', { command: { name: this.name } }),
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(renderStatus('error', translateKey(t, 'preconditions:administrator', { command: { name: this.name } })));
 		}
 
 		const actorId = interaction.user.id;
@@ -181,7 +179,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				await writeSettings(guildId, { automodChannel: channelId ?? null }, actorId);
 				break;
 			default:
-				return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+				return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 		}
 
 		return this.showRules(interaction, guildId, context);
@@ -211,7 +209,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (rule === null) return this.showRules(interaction, guildId, context, translateKey(context.t, `${Root}:menuGone`));
 
 		const modal = renderAutoModerationModal(context, rule, action);
-		if (modal === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (modal === null) return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 		return interaction.showModal(modal);
 	}
 
@@ -337,7 +335,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		// The rule is edited on Discord, which can outlast the three seconds Discord gives to answer: the menu is
 		// acknowledged first, then updated, and an error is told in a message of its own.
 		const response = deferred ?? (await interaction.deferUpdate());
-		const fail = (content: string) => interaction.followup({ content, flags: MessageFlags.Ephemeral });
+		const fail = (content: string) => interaction.followup(renderStatus('error', content));
 		let notice: string | undefined;
 		let rule: AutoModerationRule;
 		try {
@@ -364,13 +362,13 @@ export class UserInteractionHandler extends InteractionHandler {
 	 */
 	private async create(interaction: ModalInteraction, guildId: Snowflake, context: AutoModerationMenuContext, type: string, name: string) {
 		const { t } = context;
-		if (!isAutoModerationRuleType(type)) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (!isAutoModerationRuleType(type)) return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 
 		let rule: AutoModerationRule;
 		try {
 			rule = await createAutoModerationRule(guildId, name, type);
 		} catch (error) {
-			return interaction.reply({ content: translateRuleError(t, error, name), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', translateRuleError(t, error, name)));
 		}
 
 		return interaction.update(renderAutoModerationRule(context, rule, 'options', { notice: translateKey(t, `${Root}:menuCreated`) }));
