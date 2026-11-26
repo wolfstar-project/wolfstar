@@ -86,3 +86,16 @@ const CaseTypeEmojis: Partial<Record<TypeVariation, EmojiKey>> = {
 export function getCaseTypeEmojiKey(type: TypeVariation): EmojiKey {
 	return CaseTypeEmojis[type] ?? 'Moderator';
 }
+
+/**
+ * Quotes a text line by line (`> `), so the lines written after it are not quoted too: Discord quotes the whole rest
+ * of a message after a `>>> `, which also makes a second `>>> ` read as text.
+ *
+ * @param text - The text to quote.
+ */
+export function quoteLines(text: string): string {
+	return text
+		.split('\n')
+		.map((line) => `> ${line}`)
+		.join('\n');
+}

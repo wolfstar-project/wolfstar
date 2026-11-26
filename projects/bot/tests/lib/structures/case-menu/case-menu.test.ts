@@ -272,6 +272,8 @@ describe('case menu', () => {
 			};
 
 			expect(getText(message.components!)).toContain('> Second time this week');
+			// A `>>> ` quotes the rest of the message, which would quote the note under the reason and show the second one as text:
+			expect(getText(message.components!)).not.toContain('>>>');
 			expect(getText(message.components!)).toContain(`https://discord.com/channels/${guild.id}/1/2`);
 			expect(gallery.items[0].media.url).toBe(details.proofFile.url);
 		});

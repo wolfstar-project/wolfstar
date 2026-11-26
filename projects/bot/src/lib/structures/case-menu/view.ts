@@ -3,10 +3,11 @@ import { getAction } from '#lib/moderation/actions';
 import { formatCaseRoleMentions } from '#lib/moderation/common/roles';
 import { canEditCaseDuration, MaximumCaseReasonLength, MaximumCaseStaffNoteLength } from '#lib/moderation/caseEdits';
 import { getTranslationKey } from '#lib/moderation/common/util';
+import { quoteLines } from '#lib/moderation/common/wording';
 import { encodeCaseMenuId, type CaseMenuVerb } from '#lib/structures/case-menu/ids';
 import { caseMenuButton, getCaseTypeEmojiKey, type CaseMenuMessage } from '#lib/structures/case-menu/list';
 import { Emojis, getEmojiComponent } from '#utils/emojis';
-import { blockQuote, messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
+import { messageLink, time, TimestampStyles, userMention } from '@discordjs/formatters';
 import { cutText, isNullishOrEmpty, isNullishOrZero } from '@sapphire/utilities';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import {
@@ -109,7 +110,7 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 
 	lines.push(
 		t('commands/case:viewReason'),
-		blockQuote(isNullishOrEmpty(entry.reason) ? t('commands/case:viewReasonNone') : cutText(entry.reason, 1000))
+		quoteLines(isNullishOrEmpty(entry.reason) ? t('commands/case:viewReasonNone') : cutText(entry.reason, 1000))
 	);
 
 	const reference = entry.messageReference;
@@ -120,7 +121,7 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 	}
 
 	if (details !== null && !isNullishOrEmpty(details.staffNote)) {
-		lines.push(t('commands/case:viewStaffNote'), blockQuote(cutText(details.staffNote, 1000)));
+		lines.push(t('commands/case:viewStaffNote'), quoteLines(cutText(details.staffNote, 1000)));
 	}
 
 	if (details !== null && details.proof !== null) {

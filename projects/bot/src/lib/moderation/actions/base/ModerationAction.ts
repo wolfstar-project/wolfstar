@@ -7,10 +7,10 @@ import { seconds, years } from 'wolfstar-shared';
 import { getCodeStyle, getLogPrefix, getModeration } from '#utils/functions';
 import { TypeMetadata } from '#utils/moderationConstants';
 import { getTypeColor } from '#lib/moderation/common/constants';
-import { getCaseTypeEmojiKey, getModerationDirectMessageTitle } from '#lib/moderation/common/wording';
+import { getCaseTypeEmojiKey, getModerationDirectMessageTitle, quoteLines } from '#lib/moderation/common/wording';
 import { createTranslator } from '#lib/structures/commands/utils';
 import { Emojis } from '#utils/emojis';
-import { blockQuote, userMention } from '@discordjs/formatters';
+import { userMention } from '@discordjs/formatters';
 import { DiscordAPIError, HTTPError } from '@discordjs/rest';
 import { cutText, isNullish, isNullishOrEmpty, isNullishOrZero, type Awaitable } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
@@ -401,7 +401,7 @@ export abstract class ModerationAction<ContextType = never, Type extends TypeVar
 
 		lines.push(
 			t('commands/moderation:moderationDmReason'),
-			blockQuote(isNullishOrEmpty(entry.reason) ? t('commands/moderation:moderationDmNoReason') : cutText(entry.reason, 1500))
+			quoteLines(isNullishOrEmpty(entry.reason) ? t('commands/moderation:moderationDmNoReason') : cutText(entry.reason, 1500))
 		);
 
 		if (data.reinviteUrl) lines.push(t('commands/honeypot:reinviteMessage', { url: data.reinviteUrl }));
