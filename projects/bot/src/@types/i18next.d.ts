@@ -2278,7 +2278,7 @@ declare module "i18next" {
       };
       "events/errors": {
         string: "{{REDCROSS}} Dear {{mention}}, {{message}}";
-        unexpectedError: "{{REDCROSS}} I found an unexpected error, please report the steps you have taken to my developers!";
+        unexpectedError: "I found an unexpected error, please report the steps you have taken to my developers!";
         unexpectedErrorWithContext: "$t(events/errors:unexpectedError)\nYou may add `{{report}}` to the report so they can look what error was triggered.";
       };
       "events/guilds-logs": {
@@ -3037,7 +3037,7 @@ declare module "i18next" {
         administrator: "You need administrator privileges to run `{{command.name}}`!";
         disabledGlobal: "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>";
         disabledGuild: "This command has been disabled by an admin in this server!";
-        disabledModuleModeration: "⚠️ The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.";
+        disabledModuleModeration: "The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.";
         disabledModuleReports: "The reports module is turned off in this server, an admin can turn it back on with `/settings server`.";
         restrictedChannel: "This command cannot be used in this channel!";
         restrictedRole: "Your roles do not let you use this command in this server!";
