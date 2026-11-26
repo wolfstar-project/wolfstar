@@ -156,9 +156,7 @@ declare module '@wolfstar/http-framework' {
       case: number;
       show?: boolean;
     };
-    'commands': {
-      command?: string;
-    };
+    'commands': {};
     'dehoist': {};
     'honeypot disable': {};
     'honeypot edit': {

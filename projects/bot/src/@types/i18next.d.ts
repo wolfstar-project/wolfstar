@@ -654,9 +654,7 @@ declare module "i18next" {
       };
       "commands/commands": {
         name: "commands";
-        description: "Browse and search what I can do.";
-        optionsCommandName: "command";
-        optionsCommandDescription: "A command to show, or what to search for.";
+        description: "Browse what I can do.";
         menuTitle: "Command Browser";
         menuSubtitle: "Select a category to view commands.";
         menuCategoryPlaceholder: "Select a category";
@@ -667,10 +665,7 @@ declare module "i18next" {
         menuFooter_one: "Page {{page, number}} of {{total, number}} • {{count, number}} command";
         menuFooter_other: "Page {{page, number}} of {{total, number}} • {{count, number}} commands";
         menuSearchResults: "Search Results";
-        menuBack: "Back";
-        menuResults_one: "{{count, number}} command matches {{query}}.";
-        menuResults_other: "{{count, number}} commands match {{query}}.";
-        menuNoResults: "No command matches that. Try another word, or go back to browse them by category.";
+        menuNoResults: "No related commands found.";
         menuWrongUser: "This menu is not for you, run the command to open your own.";
         editTitle: "Edit /{{name}}";
         editStatusLabel: "Status";
@@ -711,11 +706,6 @@ declare module "i18next" {
         gotoInvalid: "That is not a page number, write a number from 1.";
         searchTitle: "Search Commands";
         searchLabel: "Command name or keyword";
-        viewPermissions: "**Shown to members with:** {{permissions}}";
-        viewPermissionsNone: "everybody";
-        viewContextMenus: "**In the Apps menu:** {{names}}";
-        viewSubcommands_one: "{{count, number}} subcommand";
-        viewSubcommands_other: "{{count, number}} subcommands";
         legacyNotice: "Legacy permission nodes are still stored. They were not converted into command rules; review them.";
         legacyReview: "Review legacy rules";
         legacyExplanation: "The attached file lists the legacy permission nodes that were not converted into command rules, each with why: a command the bot no longer has (`unknownCommand`), `/settings` or `/commands`, which cannot be restricted (`protectedCommand`), an allowed name that covers a more specific denied one, which the command rules would read the other way (`meaningChanges`), or a name that reaches `/settings` such as `*`, which still decides who manages the server (`settingsAccess`). A node with no reason has not been converted yet. Recreate the rules you need through /commands; once reviewed, the server owner can remove the nodes. The dashboard access rules stay.";
@@ -726,6 +716,7 @@ declare module "i18next" {
         legacyConfirmationInvalid: "Nothing was removed. Type REMOVE exactly to confirm.";
         legacyStale: "The legacy rules changed since you downloaded them. Review them again before removing them.";
         legacyRemoved: "Legacy permission nodes removed. The command rules and the dashboard access rules were kept.";
+        menuQuery: "Query: {{query}}";
       };
       "commands/conf": {
         menuName: "menu";
@@ -952,8 +943,8 @@ declare module "i18next" {
           ];
         };
         "/commands": {
-          extendedHelp: "Opens the commands menu: every command and subcommand, five to a page, with a search and their categories. Administrators edit the rules of a command, of a category (and its sub-categories) or of every command from there: the status and the channels, and the roles and users allowed or ignored.\nA member's own rule decides first, then the rule of their highest role, and of two rules the most specific target wins (a command over its category over every command). An allowed role or user is an exception that runs the command over an ignored role below it; to keep a command to some roles, allow them and set its status to `Only the allowed roles and users`. Discord permissions and moderator or administrator requirements still apply: a rule never grants a command. `/settings` and `/commands` cannot be disabled or restricted.";
-          examples: ["", "command:ban"];
+          extendedHelp: "Opens the commands menu, which everybody in the channel sees and only you use: every command and subcommand, five to a page, with their categories. Its search button answers with what it finds in a message only you see. Administrators edit the rules of a command, of a category (and its sub-categories) or of every command from there: the status and the channels, and the roles and users allowed or ignored.\nA member's own rule decides first, then the rule of their highest role, and of two rules the most specific target wins (a command over its category over every command). An allowed role or user is an exception that runs the command over an ignored role below it; to keep a command to some roles, allow them and set its status to `Only the allowed roles and users`. Discord permissions and moderator or administrator requirements still apply: a rule never grants a command. `/settings` and `/commands` cannot be disabled or restricted.";
+          examples: [""];
           reminder: "Administrators bypass channel, role and user rules. Legacy permission nodes that were not converted can be downloaded for review, and only the server owner can remove them.";
         };
         "/dehoist": {

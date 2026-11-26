@@ -74,7 +74,8 @@ export class UserInteractionHandler extends InteractionHandler {
 			if (action.verb === 'query') {
 				const context = await createCommandsMenuContext(modal, action.ownerId, { legacy: true });
 				const query = normalizeCommandQuery(getModalValue(modal.data.components, CommandsSearchInputId) ?? '');
-				return modal.update(renderCommandsResults(context, query, 0));
+				// What a search finds is a message of its own under the menu, which stays as it is:
+				return modal.reply(renderCommandsResults(context, query, 0));
 			}
 
 			if (action.verb === 'goto') {
