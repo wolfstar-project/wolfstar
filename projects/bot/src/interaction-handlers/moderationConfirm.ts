@@ -7,7 +7,7 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction, container } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { renderStatus } from '#utils/status';
+import { renderStatus, renderStatusUpdate } from '#utils/status';
 import { MessageFlags } from 'discord-api-types/v10';
 
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionHandler.ModalInteraction>;
@@ -29,8 +29,12 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (interaction.user.id !== action.ownerId) return fail(t('moderationActions:recentCaseWrongUser'));
 
 		const component = interaction as ComponentInteraction;
-		// The prompt is a status message with its buttons, which its outcome takes the place of:
-		const update = (kind: 'info' | 'error', text: string) => component.update(renderStatus(kind, text, { ephemeral: false }));
+		// The prompt is a status message with its buttons, which its outcome takes the place of. A prompt sent before it was
+		// one is a classic message with a `content`, which the status has to empty:
+		const legacy = ((component.message.flags ?? 0) & MessageFlags.IsComponentsV2) === 0;
+		const status = (kind: 'info' | 'error', text: string) =>
+			legacy ? renderStatusUpdate(kind, text) : renderStatus(kind, text, { ephemeral: false });
+		const update = (kind: 'info' | 'error', text: string) => component.update(status(kind, text));
 		const pending = await takePendingRecentCaseCommand(guildId, action.ownerId, action.promptId);
 		if (action.verb === 'cancel') return update('info', t('moderationActions:recentCaseCancelled'));
 		if (pending === null) return update('error', t('moderationActions:recentCaseExpired'));
@@ -50,14 +54,14 @@ export class UserInteractionHandler extends InteractionHandler {
 			// The prompt of a role to set up is a classic message, which a message of components cannot become: it is sent
 			// apart, under this one. It only comes when the role was deleted since the command was run.
 			if (isModerationPromptAnswer(answer)) {
-				await deferred.update(renderStatus('info', t('moderationActions:recentCaseFollowUp'), { ephemeral: false }));
+				await deferred.update(status('info', t('moderationActions:recentCaseFollowUp')));
 				return interaction.followup({ ...answer, flags: MessageFlags.Ephemeral });
 			}
 
-			return deferred.update(answer);
+			return deferred.update(legacy ? { ...answer, content: '', embeds: [] } : answer);
 		} catch (error) {
 			this.container.logger.error('[Moderation] Could not run the command that was confirmed:', error);
-			return deferred.update(renderStatus('error', t('events/errors:unexpectedError'), { ephemeral: false }));
+			return deferred.update(status('error', t('events/errors:unexpectedError')));
 		}
 	}
 }

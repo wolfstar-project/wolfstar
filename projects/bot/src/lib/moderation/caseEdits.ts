@@ -1,4 +1,5 @@
 import { readSettings } from '#lib/database';
+import { withSharedLock } from '#utils/locks';
 import { getAction } from '#lib/moderation/actions';
 import { fetchGuildT, getTitle, getTranslationKey } from '#lib/moderation/common/util';
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
@@ -149,7 +150,12 @@ export interface CaseEditOutcome {
  *
  * @remarks The user is only told about a new reason or duration. The note of the moderators is never told.
  */
-export async function editCase(request: CaseEditRequest): Promise<CaseEditOutcome> {
+export function editCase(request: CaseEditRequest): Promise<CaseEditOutcome> {
+	// Two moderators, on two processes, would both read the old value and both record it in the history:
+	return withCaseLock(request.entry, () => editCaseLocked(request));
+}
+
+async function editCaseLocked(request: CaseEditRequest): Promise<CaseEditOutcome> {
 	const { entry, t } = request;
 	const guildId = entry.guild.id;
 	const warnings: string[] = [];
@@ -215,7 +221,11 @@ export interface CaseCloseRequest {
  *
  * @returns The same as {@linkcode editCase}: no change when the case was already closed.
  */
-export async function closeCase(request: CaseCloseRequest): Promise<CaseEditOutcome> {
+export function closeCase(request: CaseCloseRequest): Promise<CaseEditOutcome> {
+	return withCaseLock(request.entry, () => closeCaseLocked(request));
+}
+
+async function closeCaseLocked(request: CaseCloseRequest): Promise<CaseEditOutcome> {
 	const { entry, t } = request;
 	if (entry.isArchived()) return { changes: [], warnings: [] };
 
@@ -380,4 +390,12 @@ export async function addCaseDetails(
 	}
 
 	return warnings;
+}
+
+/**
+ * Runs what reads a case and writes it back under the shared lock of the case, `case:<guildId>:<caseId>`, so an edit
+ * made on another process at the same time is not overwritten nor recorded twice.
+ */
+function withCaseLock<T>(entry: ModerationManager.Entry, callback: () => Promise<T>): Promise<T> {
+	return withSharedLock(`case:${entry.guild.id}:${entry.id}`, callback);
 }

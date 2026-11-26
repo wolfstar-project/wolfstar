@@ -110,7 +110,8 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 
 	lines.push(
 		t('commands/case:viewReason'),
-		quoteLines(isNullishOrEmpty(entry.reason) ? t('commands/case:viewReasonNone') : cutText(entry.reason, 1000))
+		// Cut once quoted, since quoting adds two characters to every line, so the case fits the 4000 of a message:
+		cutText(quoteLines(isNullishOrEmpty(entry.reason) ? t('commands/case:viewReasonNone') : entry.reason), 1000)
 	);
 
 	const reference = entry.messageReference;
@@ -121,7 +122,7 @@ export function renderCaseView(context: CaseViewContext, entry: ModerationManage
 	}
 
 	if (details !== null && !isNullishOrEmpty(details.staffNote)) {
-		lines.push(t('commands/case:viewStaffNote'), quoteLines(cutText(details.staffNote, 1000)));
+		lines.push(t('commands/case:viewStaffNote'), cutText(quoteLines(details.staffNote), 1000));
 	}
 
 	if (details !== null && details.proof !== null) {

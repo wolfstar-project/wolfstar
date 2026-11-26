@@ -278,6 +278,15 @@ describe('case menu', () => {
 			expect(gallery.items[0].media.url).toBe(details.proofFile.url);
 		});
 
+		test('GIVEN a long reason and a note of blank lines THEN the case still fits the 4000 characters of a message', () => {
+			const message = renderCaseView(createContext(), createEntry({ reason: 'a\n'.repeat(250) }), {
+				...details,
+				staffNote: '\n'.repeat(999)
+			});
+
+			expect(getText(message.components!).length).toBeLessThanOrEqual(4000);
+		});
+
 		test('GIVEN a case with nothing added THEN it shows neither', () => {
 			const message = renderCaseView(createContext(), createEntry(), { staffNote: null, proof: null, proofFile: null });
 
