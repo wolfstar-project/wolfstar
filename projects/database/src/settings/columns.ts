@@ -14,6 +14,7 @@ export const Tables = [
 	'GuildCommands',
 	'GuildHoneypot',
 	'GuildJoinGuard',
+	'GuildOnboarding',
 	'GuildLogs',
 	'GuildLogsOptions',
 	'GuildModeration',
@@ -147,6 +148,11 @@ export const Columns = {
 		joinGuardSharedBans: ['sharedBans', 'value'],
 		joinGuardAllowedUsers: ['allowedUsers', 'snowflakes'],
 		joinGuardAllowedRoles: ['allowedRoles', 'snowflakes']
+	}),
+	// Only the switch: the log channel, the message and the stages are written with the revision of the row, see
+	// `settings/onboarding/storage.ts`.
+	...columns('GuildOnboarding', {
+		onboardingEnabled: ['enabled', 'value']
 	}),
 	...columns('GuildLogs', {
 		logsMemberAdd: ['memberAdd', 'snowflake'],
