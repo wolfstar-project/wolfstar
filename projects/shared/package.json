@@ -17,7 +17,7 @@
 		"watch": "tsdown --watch"
 	},
 	"dependencies": {
-		"@sapphire/bitfield": "^1.2.4",
+		"@sapphire/bitfield": "^2.0.0",
 		"@sapphire/utilities": "^3.18.3",
 		"discord-api-types": "^0.38.56"
 	},
