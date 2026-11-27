@@ -3,8 +3,8 @@ import type { EmojiKey } from '#utils/emojis';
 import { TypeVariation } from '#utils/moderationConstants';
 
 /**
- * The name of each type of case in the keys of its sentences: `commands/moderation:done.ban`,
- * `commands/moderation:dmTitle.mute`, `moderationActions:recentVerb.warning`.
+ * The name of each type of case in the keys of its sentences: `commands/moderation:doneBan`,
+ * `commands/moderation:dmTitleMute`, `moderationActions:recentVerb.warning`.
  */
 const WordingNames = {
 	[TypeVariation.Ban]: 'ban',
@@ -34,6 +34,17 @@ export function getWordingName(type: TypeVariation): string {
 }
 
 /**
+ * The name of a type of case as the end of a flat key: `Ban` in `commands/moderation:doneBan`.
+ *
+ * @remarks The sentences of `commands/moderation` are flat keys and not an object of the types: an object makes every
+ * key typed as `TranslationKey` translate to an object too, which a `Translator` does not return.
+ */
+function getWordingSuffix(type: TypeVariation): string {
+	const name = getWordingName(type);
+	return `${name[0].toUpperCase()}${name.slice(1)}`;
+}
+
+/**
  * The sentence a moderation command answers with when the action worked: "Successfully muted @user".
  *
  * @param t - The function to translate with.
@@ -42,7 +53,7 @@ export function getWordingName(type: TypeVariation): string {
  * @param user - How the user is written, a mention.
  */
 export function getModerationDoneSentence(t: Translator, type: TypeVariation, undo: boolean, user: string): string {
-	return t(`commands/moderation:${undo ? 'undone' : 'done'}.${getWordingName(type)}` as TranslationKey, { user });
+	return t(`commands/moderation:${undo ? 'undone' : 'done'}${getWordingSuffix(type)}` as TranslationKey, { user });
 }
 
 /**
@@ -54,7 +65,7 @@ export function getModerationDoneSentence(t: Translator, type: TypeVariation, un
  * @param guild - The name of the guild.
  */
 export function getModerationDirectMessageTitle(t: Translator, type: TypeVariation, undo: boolean, guild: string): string {
-	return t(`commands/moderation:${undo ? 'dmUndoneTitle' : 'dmTitle'}.${getWordingName(type)}` as TranslationKey, { guild });
+	return t(`commands/moderation:${undo ? 'dmUndoneTitle' : 'dmTitle'}${getWordingSuffix(type)}` as TranslationKey, { guild });
 }
 
 /**

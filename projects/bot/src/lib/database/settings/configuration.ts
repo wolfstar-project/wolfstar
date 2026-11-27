@@ -156,6 +156,9 @@ export function getConfiguration() {
 		},
 		joinGuardAllowedRoles: { type: 'role', name: 'join-guard.allowed-roles', description: 'settings:joinGuardAllowedRoles', array: true },
 
+		// Onboarding. The stages, the log channel and the verification message are rows of their own, which `/settings onboarding` and the dashboard edit:
+		onboardingEnabled: { type: 'boolean', name: 'onboarding.enabled', description: 'settings:onboardingEnabled' },
+
 		// Appeals
 		appealsEnabled: { type: 'boolean', name: 'appeals.enabled', description: 'settings:appealsEnabled' },
 		appealsChannel: { type: 'guildTextChannel', name: 'appeals.channel', description: 'settings:appealsChannel' },

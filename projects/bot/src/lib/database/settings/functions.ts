@@ -2,6 +2,7 @@ import { resolveGuildId } from '#common';
 import { deleteSettingsContext, getSettingsContext, updateSettingsContext } from '#lib/database/settings/context/functions';
 import { getLogWebhookChannels, releaseUnusedLogWebhooks } from '#lib/moderation/logs/webhooks';
 import { broadcastShardMessage, onShardMessage } from '#lib/sharder/messages';
+import { Events } from '#lib/types/Enums';
 import { acquireSharedLock } from '#utils/locks';
 import { syncUpdatesChannelFollow } from '#utils/updates';
 import {
@@ -159,6 +160,7 @@ export class Transaction {
 
 			const webhookChannels = getLogWebhookChannels(this.settings);
 			const updatesChannel = this.settings.updatesChannel;
+			const onboardingEnabled = this.settings.onboardingEnabled;
 			container.logger.debug(`[Settings] Written for ${this.settings.id}: ${Object.keys(this.#changes).join(', ')}`);
 			Object.assign(this.settings, this.#changes);
 			this.#hasChanges = false;
@@ -168,6 +170,10 @@ export class Transaction {
 			void releaseUnusedLogWebhooks(webhookChannels, getLogWebhookChannels(this.settings));
 			// The updates channel follows the announcements of the support server, see `syncUpdatesChannelFollow`:
 			void syncUpdatesChannelFollow(updatesChannel, this.settings.updatesChannel);
+			// The members who waited while the onboarding was off get their time limit again once it is on:
+			if (onboardingEnabled !== this.settings.onboardingEnabled) {
+				container.client.emit(Events.OnboardingSwitch, this.settings.id, onboardingEnabled, this.settings.onboardingEnabled);
+			}
 			updateSettingsContext(this.settings, this.#changes);
 			broadcastShardMessage({ type: 'settingsUpdate', guildId: this.settings.id });
 		} finally {

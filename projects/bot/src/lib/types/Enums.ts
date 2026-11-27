@@ -28,6 +28,11 @@ export const enum Events {
 	MessageDeleteBulk = 'messageDeleteBulk',
 	MessageUpdate = 'messageUpdate',
 	ModerationEntryAdd = 'moderationEntryAdd',
+	/**
+	 * A write of the bot switched the onboarding of a guild on or off, `(guildId, previous, next)`. The dashboard's writes
+	 * are told by {@linkcode Events.DashboardSettingsUpdate} instead.
+	 */
+	OnboardingSwitch = 'onboardingSwitch',
 	ModerationEntryEdit = 'moderationEntryEdit',
 	NotMutedMemberAdd = 'notMutedMemberAdd',
 	Raw = 'raw',

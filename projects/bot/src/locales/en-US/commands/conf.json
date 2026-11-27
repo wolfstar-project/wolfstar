@@ -98,6 +98,8 @@
 	"settingsDescription": "Open the settings menu of the server or your own.",
 	"settingsServerName": "server",
 	"settingsServerDescription": "Open the settings menu of the server.",
+	"settingsOnboardingName": "onboarding",
+	"settingsOnboardingDescription": "Open the onboarding panel: the stages new members pass before they are in.",
 	"settingsUserName": "user",
 	"settingsUserDescription": "Open your own settings.",
 	"menuUserTitle": "Your settings",

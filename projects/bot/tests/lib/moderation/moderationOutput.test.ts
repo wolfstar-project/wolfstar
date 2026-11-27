@@ -20,7 +20,7 @@ test('GIVEN a case THEN it says what was done to the mentioned user, with the em
 	const answer = renderModerationOutput(t, { ...base, reason: 'spam' });
 
 	expect(text(answer)).toMatch(new RegExp(`^${Emojis.Mute.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} commands/moderation:moderationOutputSentence`));
-	expect(text(answer)).toContain(`commands/moderation:done.mute {\\"user\\":\\"<@${userId}>\\"}`);
+	expect(text(answer)).toContain(`commands/moderation:doneMute {\\"user\\":\\"<@${userId}>\\"}`);
 	expect(text(answer)).toContain('"reason":"spam"');
 	expect(text(answer)).toContain('commands/moderation:moderationOutputCase {"range":12}');
 	expect(answer.components[0]).not.toHaveProperty('accent_color');
@@ -39,7 +39,7 @@ test('GIVEN the undo of an action THEN it says so with the check', () => {
 	const answer = renderModerationOutput(t, { ...base, undo: true });
 
 	expect(text(answer)).toContain(`${Emojis.GreenTick} `);
-	expect(text(answer)).toContain('commands/moderation:undone.mute');
+	expect(text(answer)).toContain('commands/moderation:undoneMute');
 });
 
 test('GIVEN a direct message that was not delivered or a detail that was not kept THEN it is a yellow warning that says them', () => {

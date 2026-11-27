@@ -52,6 +52,11 @@ export interface ShardMessages {
 	joinGuardUpdate: { guildId: string };
 
 	/**
+	 * The bot changed the onboarding of a guild (its switch, log channel, message or stages), the others drop their cached copy.
+	 */
+	onboardingUpdate: { guildId: string };
+
+	/**
 	 * The website asked the join guard for something, which the shard manager hears and hands to the first shard.
 	 */
 	joinGuardRequest: { requestId: string };

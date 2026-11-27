@@ -512,6 +512,7 @@ declare module '@wolfstar/http-framework' {
       sticky?: boolean;
       user: TransformedArguments.User;
     };
+    'settings onboarding': {};
     'settings server': {};
     'settings user': {};
     'slowmode': {

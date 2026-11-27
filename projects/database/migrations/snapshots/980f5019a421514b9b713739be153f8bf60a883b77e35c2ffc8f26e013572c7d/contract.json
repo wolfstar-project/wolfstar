@@ -951,6 +951,96 @@
 							"table": "GuildModerationReason"
 						}
 					},
+					"GuildOnboarding": {
+						"fields": {
+							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"enabled": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"logChannelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"messageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"revision": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } }
+						},
+						"relations": {
+							"modules": {
+								"cardinality": "N:1",
+								"nullable": false,
+								"on": { "localFields": ["id"], "targetFields": ["id"] },
+								"to": { "model": "Modules", "namespace": "public" }
+							}
+						},
+						"storage": {
+							"fields": {
+								"channelId": { "column": "channel_id" },
+								"enabled": { "column": "enabled" },
+								"id": { "column": "id" },
+								"logChannelId": { "column": "log_channel_id" },
+								"messageId": { "column": "message_id" },
+								"revision": { "column": "revision" }
+							},
+							"namespaceId": "public",
+							"table": "GuildOnboarding"
+						}
+					},
+					"GuildOnboardingStage": {
+						"fields": {
+							"answers": { "many": true, "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"challenge": {
+								"nullable": false,
+								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "OnboardingChallenge" } }
+							},
+							"createdAt": {
+								"nullable": false,
+								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
+							},
+							"enabled": { "nullable": false, "type": { "codecId": "pg/bool@1", "kind": "scalar" } },
+							"failureAction": {
+								"nullable": false,
+								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "OnboardingFailureAction" } }
+							},
+							"failureTimeout": { "nullable": true, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"maxAttempts": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"name": { "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"position": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"question": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"roleId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"timeLimit": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"trigger": {
+								"nullable": false,
+								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "OnboardingStageTrigger" } }
+							}
+						},
+						"relations": {
+							"guild": {
+								"cardinality": "N:1",
+								"nullable": false,
+								"on": { "localFields": ["guildId"], "targetFields": ["id"] },
+								"to": { "model": "Guild", "namespace": "public" }
+							}
+						},
+						"storage": {
+							"fields": {
+								"answers": { "column": "answers" },
+								"challenge": { "column": "challenge" },
+								"createdAt": { "column": "created_at" },
+								"enabled": { "column": "enabled" },
+								"failureAction": { "column": "failure_action" },
+								"failureTimeout": { "column": "failure_timeout" },
+								"guildId": { "column": "guild_id" },
+								"id": { "column": "id" },
+								"maxAttempts": { "column": "max_attempts" },
+								"name": { "column": "name" },
+								"position": { "column": "position" },
+								"question": { "column": "question" },
+								"roleId": { "column": "role_id" },
+								"timeLimit": { "column": "time_limit" },
+								"trigger": { "column": "trigger" }
+							},
+							"namespaceId": "public",
+							"table": "GuildOnboardingStage"
+						}
+					},
 					"GuildPermissions": {
 						"fields": {
 							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
@@ -1379,10 +1469,7 @@
 							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"extraData": { "nullable": true, "type": { "codecId": "pg/jsonb@1", "kind": "scalar" } },
 							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"messageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"proofChannelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"proofMessageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"staffNote": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } }
+							"messageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
 						},
 						"relations": {
 							"guild": {
@@ -1398,46 +1485,10 @@
 								"channelId": { "column": "channel_id" },
 								"extraData": { "column": "extra_data" },
 								"guildId": { "column": "guild_id" },
-								"messageId": { "column": "message_id" },
-								"proofChannelId": { "column": "proof_channel_id" },
-								"proofMessageId": { "column": "proof_message_id" },
-								"staffNote": { "column": "staff_note" }
+								"messageId": { "column": "message_id" }
 							},
 							"namespaceId": "public",
 							"table": "ModerationCaseData"
-						}
-					},
-					"ModerationCaseEdit": {
-						"fields": {
-							"caseId": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
-							"changes": { "nullable": false, "type": { "codecId": "typed/json@1", "kind": "scalar" } },
-							"createdAt": {
-								"nullable": false,
-								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
-							},
-							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"moderatorId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
-						},
-						"relations": {
-							"guild": {
-								"cardinality": "N:1",
-								"nullable": false,
-								"on": { "localFields": ["guildId"], "targetFields": ["id"] },
-								"to": { "model": "Guild", "namespace": "public" }
-							}
-						},
-						"storage": {
-							"fields": {
-								"caseId": { "column": "case_id" },
-								"changes": { "column": "changes" },
-								"createdAt": { "column": "created_at" },
-								"guildId": { "column": "guild_id" },
-								"id": { "column": "id" },
-								"moderatorId": { "column": "moderator_id" }
-							},
-							"namespaceId": "public",
-							"table": "ModerationCaseEdit"
 						}
 					},
 					"Modules": {
@@ -1478,6 +1529,57 @@
 							},
 							"namespaceId": "public",
 							"table": "Modules"
+						}
+					},
+					"OnboardingVerification": {
+						"fields": {
+							"attempts": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"createdAt": {
+								"nullable": false,
+								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
+							},
+							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"resolvedAt": {
+								"nullable": true,
+								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
+							},
+							"stageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"stageName": { "nullable": false, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
+							"status": {
+								"nullable": false,
+								"type": { "codecId": "pg/enum@1", "kind": "scalar", "typeParams": { "typeName": "OnboardingVerificationStatus" } }
+							},
+							"userId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
+						},
+						"relations": {
+							"guild": {
+								"cardinality": "N:1",
+								"nullable": false,
+								"on": { "localFields": ["guildId"], "targetFields": ["id"] },
+								"to": { "model": "Guild", "namespace": "public" }
+							},
+							"stage": {
+								"cardinality": "N:1",
+								"nullable": true,
+								"on": { "localFields": ["stageId"], "targetFields": ["id"] },
+								"to": { "model": "GuildOnboardingStage", "namespace": "public" }
+							}
+						},
+						"storage": {
+							"fields": {
+								"attempts": { "column": "attempts" },
+								"createdAt": { "column": "created_at" },
+								"guildId": { "column": "guild_id" },
+								"id": { "column": "id" },
+								"resolvedAt": { "column": "resolved_at" },
+								"stageId": { "column": "stage_id" },
+								"stageName": { "column": "stage_name" },
+								"status": { "column": "status" },
+								"userId": { "column": "user_id" }
+							},
+							"namespaceId": "public",
+							"table": "OnboardingVerification"
 						}
 					},
 					"Report": {
@@ -1644,6 +1746,8 @@
 		"GuildLogsOptions": { "model": "GuildLogsOptions", "namespace": "public" },
 		"GuildModeration": { "model": "GuildModeration", "namespace": "public" },
 		"GuildModerationReason": { "model": "GuildModerationReason", "namespace": "public" },
+		"GuildOnboarding": { "model": "GuildOnboarding", "namespace": "public" },
+		"GuildOnboardingStage": { "model": "GuildOnboardingStage", "namespace": "public" },
 		"GuildPermissions": { "model": "GuildPermissions", "namespace": "public" },
 		"GuildReports": { "model": "GuildReports", "namespace": "public" },
 		"GuildRoleRule": { "model": "GuildRoleRule", "namespace": "public" },
@@ -1656,8 +1760,8 @@
 		"MessageHistory": { "model": "MessageHistory", "namespace": "public" },
 		"ModerationAction": { "model": "ModerationAction", "namespace": "public" },
 		"ModerationCaseData": { "model": "ModerationCaseData", "namespace": "public" },
-		"ModerationCaseEdit": { "model": "ModerationCaseEdit", "namespace": "public" },
 		"Modules": { "model": "Modules", "namespace": "public" },
+		"OnboardingVerification": { "model": "OnboardingVerification", "namespace": "public" },
 		"Report": { "model": "Report", "namespace": "public" },
 		"StickyNickname": { "model": "StickyNickname", "namespace": "public" },
 		"StickyRole": { "model": "StickyRole", "namespace": "public" },
@@ -1746,6 +1850,26 @@
 								"Unban"
 							],
 							"typeName": "ModerationActionType"
+						},
+						"OnboardingChallenge": {
+							"kind": "postgres-enum",
+							"members": ["Button", "Emoji", "Question", "Captcha"],
+							"typeName": "OnboardingChallenge"
+						},
+						"OnboardingFailureAction": {
+							"kind": "postgres-enum",
+							"members": ["None", "Kick", "Timeout"],
+							"typeName": "OnboardingFailureAction"
+						},
+						"OnboardingStageTrigger": {
+							"kind": "postgres-enum",
+							"members": ["Join", "NativeOnboarding"],
+							"typeName": "OnboardingStageTrigger"
+						},
+						"OnboardingVerificationStatus": {
+							"kind": "postgres-enum",
+							"members": ["Waiting", "Passed", "Failed", "Left"],
+							"typeName": "OnboardingVerificationStatus"
 						},
 						"ReportStatus": { "kind": "postgres-enum", "members": ["Open", "Actioned", "Dismissed"], "typeName": "ReportStatus" }
 					},
@@ -3008,6 +3132,138 @@
 							"primaryKey": { "columns": ["id"], "name": "GuildModerationReason_pkey" },
 							"uniques": [{ "columns": ["guild_id", "alias"], "name": "GuildModerationReason_guild_id_alias_key" }]
 						},
+						"GuildOnboarding": {
+							"columns": {
+								"channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"enabled": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": false },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"log_channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"revision": {
+									"codecId": "pg/int4@1",
+									"default": { "kind": "literal", "value": 0 },
+									"nativeType": "int4",
+									"nullable": false
+								}
+							},
+							"foreignKeys": [
+								{
+									"name": "GuildOnboarding_id_fkey",
+									"onDelete": "cascade",
+									"onUpdate": "cascade",
+									"source": { "columns": ["id"], "namespaceId": "public", "tableName": "GuildOnboarding" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Modules" }
+								}
+							],
+							"indexes": [],
+							"primaryKey": { "columns": ["id"], "name": "GuildOnboarding_pkey" },
+							"uniques": []
+						},
+						"GuildOnboardingStage": {
+							"columns": {
+								"answers": {
+									"codecId": "pg/text@1",
+									"default": { "kind": "literal", "value": [] },
+									"many": true,
+									"nativeType": "text",
+									"noCheck": ["elementNotNull"],
+									"nullable": false
+								},
+								"challenge": {
+									"codecId": "pg/enum@1",
+									"nativeType": "OnboardingChallenge",
+									"nullable": false,
+									"typeParams": { "typeName": "OnboardingChallenge" },
+									"valueSet": {
+										"entityKind": "valueSet",
+										"entityName": "OnboardingChallenge",
+										"namespaceId": "public",
+										"plane": "storage"
+									}
+								},
+								"created_at": {
+									"codecId": "pg/timestamp-string@1",
+									"default": { "expression": "now()", "kind": "function" },
+									"nativeType": "timestamp",
+									"nullable": false,
+									"typeParams": { "precision": 3 }
+								},
+								"enabled": {
+									"codecId": "pg/bool@1",
+									"default": { "kind": "literal", "value": true },
+									"nativeType": "bool",
+									"nullable": false
+								},
+								"failure_action": {
+									"codecId": "pg/enum@1",
+									"default": { "kind": "literal", "value": "None" },
+									"nativeType": "OnboardingFailureAction",
+									"nullable": false,
+									"typeParams": { "typeName": "OnboardingFailureAction" },
+									"valueSet": {
+										"entityKind": "valueSet",
+										"entityName": "OnboardingFailureAction",
+										"namespaceId": "public",
+										"plane": "storage"
+									}
+								},
+								"failure_timeout": { "codecId": "pg/int4@1", "nativeType": "int4", "nullable": true },
+								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"id": {
+									"codecId": "pg/int8@1",
+									"default": { "expression": "autoincrement()", "kind": "function" },
+									"nativeType": "int8",
+									"nullable": false
+								},
+								"max_attempts": {
+									"codecId": "pg/int4@1",
+									"default": { "kind": "literal", "value": 3 },
+									"nativeType": "int4",
+									"nullable": false
+								},
+								"name": { "codecId": "pg/text@1", "nativeType": "text", "nullable": false },
+								"position": { "codecId": "pg/int4@1", "nativeType": "int4", "nullable": false },
+								"question": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
+								"role_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"time_limit": {
+									"codecId": "pg/int4@1",
+									"default": { "kind": "literal", "value": 600 },
+									"nativeType": "int4",
+									"nullable": false
+								},
+								"trigger": {
+									"codecId": "pg/enum@1",
+									"nativeType": "OnboardingStageTrigger",
+									"nullable": false,
+									"typeParams": { "typeName": "OnboardingStageTrigger" },
+									"valueSet": {
+										"entityKind": "valueSet",
+										"entityName": "OnboardingStageTrigger",
+										"namespaceId": "public",
+										"plane": "storage"
+									}
+								}
+							},
+							"foreignKeys": [
+								{
+									"name": "GuildOnboardingStage_guild_id_fkey",
+									"onDelete": "cascade",
+									"onUpdate": "cascade",
+									"source": { "columns": ["guild_id"], "namespaceId": "public", "tableName": "GuildOnboardingStage" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Guild" }
+								}
+							],
+							"indexes": [
+								{ "columns": ["guild_id", "position"], "name": "GuildOnboardingStage_guild_id_position_idx", "unique": false }
+							],
+							"primaryKey": { "columns": ["id"], "name": "GuildOnboardingStage_pkey" },
+							"uniques": []
+						},
 						"GuildPermissions": {
 							"columns": {
 								"id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
@@ -3565,10 +3821,7 @@
 								"channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
 								"extra_data": { "codecId": "pg/jsonb@1", "nativeType": "jsonb", "nullable": true },
 								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
-								"proof_channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
-								"proof_message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
-								"staff_note": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true }
+								"message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true }
 							},
 							"foreignKeys": [
 								{
@@ -3581,44 +3834,6 @@
 							],
 							"indexes": [],
 							"primaryKey": { "columns": ["case_id", "guild_id"], "name": "ModerationCaseData_pkey" },
-							"uniques": []
-						},
-						"ModerationCaseEdit": {
-							"columns": {
-								"case_id": { "codecId": "pg/int4@1", "nativeType": "int4", "nullable": false },
-								"changes": {
-									"codecId": "typed/json@1",
-									"default": { "expression": "'[]'::jsonb", "kind": "function" },
-									"nativeType": "jsonb",
-									"nullable": false,
-									"typeRef": "ModerationCaseEditChanges"
-								},
-								"created_at": {
-									"codecId": "pg/timestamp-string@1",
-									"nativeType": "timestamp",
-									"nullable": false,
-									"typeParams": { "precision": 3 }
-								},
-								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"id": {
-									"codecId": "pg/int8@1",
-									"default": { "expression": "autoincrement()", "kind": "function" },
-									"nativeType": "int8",
-									"nullable": false
-								},
-								"moderator_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false }
-							},
-							"foreignKeys": [
-								{
-									"name": "ModerationCaseEdit_guild_id_fkey",
-									"onDelete": "cascade",
-									"onUpdate": "cascade",
-									"source": { "columns": ["guild_id"], "namespaceId": "public", "tableName": "ModerationCaseEdit" },
-									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Guild" }
-								}
-							],
-							"indexes": [{ "columns": ["guild_id", "case_id"], "name": "ModerationCaseEdit_guild_id_case_id_idx", "unique": false }],
-							"primaryKey": { "columns": ["id"], "name": "ModerationCaseEdit_pkey" },
 							"uniques": []
 						},
 						"Modules": {
@@ -3697,6 +3912,74 @@
 							],
 							"indexes": [],
 							"primaryKey": { "columns": ["id"], "name": "Modules_pkey" },
+							"uniques": []
+						},
+						"OnboardingVerification": {
+							"columns": {
+								"attempts": {
+									"codecId": "pg/int4@1",
+									"default": { "kind": "literal", "value": 0 },
+									"nativeType": "int4",
+									"nullable": false
+								},
+								"created_at": {
+									"codecId": "pg/timestamp-string@1",
+									"default": { "expression": "now()", "kind": "function" },
+									"nativeType": "timestamp",
+									"nullable": false,
+									"typeParams": { "precision": 3 }
+								},
+								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"id": {
+									"codecId": "pg/int8@1",
+									"default": { "expression": "autoincrement()", "kind": "function" },
+									"nativeType": "int8",
+									"nullable": false
+								},
+								"resolved_at": {
+									"codecId": "pg/timestamp-string@1",
+									"nativeType": "timestamp",
+									"nullable": true,
+									"typeParams": { "precision": 3 }
+								},
+								"stage_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"stage_name": { "codecId": "pg/text@1", "nativeType": "text", "nullable": false },
+								"status": {
+									"codecId": "pg/enum@1",
+									"nativeType": "OnboardingVerificationStatus",
+									"nullable": false,
+									"typeParams": { "typeName": "OnboardingVerificationStatus" },
+									"valueSet": {
+										"entityKind": "valueSet",
+										"entityName": "OnboardingVerificationStatus",
+										"namespaceId": "public",
+										"plane": "storage"
+									}
+								},
+								"user_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false }
+							},
+							"foreignKeys": [
+								{
+									"name": "OnboardingVerification_guild_id_fkey",
+									"onDelete": "cascade",
+									"onUpdate": "cascade",
+									"source": { "columns": ["guild_id"], "namespaceId": "public", "tableName": "OnboardingVerification" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Guild" }
+								},
+								{
+									"name": "OnboardingVerification_stage_id_fkey",
+									"onDelete": "setNull",
+									"onUpdate": "cascade",
+									"source": { "columns": ["stage_id"], "namespaceId": "public", "tableName": "OnboardingVerification" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "GuildOnboardingStage" }
+								}
+							],
+							"indexes": [
+								{ "columns": ["guild_id", "created_at"], "name": "OnboardingVerification_guild_id_created_at_idx", "unique": false },
+								{ "columns": ["guild_id", "user_id"], "name": "OnboardingVerification_guild_id_user_id_idx", "unique": false },
+								{ "columns": ["stage_id"], "name": "OnboardingVerification_stage_id_idx", "unique": false }
+							],
+							"primaryKey": { "columns": ["id"], "name": "OnboardingVerification_pkey" },
 							"uniques": []
 						},
 						"Report": {
@@ -3886,6 +4169,10 @@
 								"Unban"
 							]
 						},
+						"OnboardingChallenge": { "kind": "valueSet", "values": ["Button", "Emoji", "Question", "Captcha"] },
+						"OnboardingFailureAction": { "kind": "valueSet", "values": ["None", "Kick", "Timeout"] },
+						"OnboardingStageTrigger": { "kind": "valueSet", "values": ["Join", "NativeOnboarding"] },
+						"OnboardingVerificationStatus": { "kind": "valueSet", "values": ["Waiting", "Passed", "Failed", "Left"] },
 						"ReportStatus": { "kind": "valueSet", "values": ["Open", "Actioned", "Dismissed"] }
 					}
 				},
@@ -3893,7 +4180,7 @@
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "e242366eeac3fad7d656e33cfdbdf2282dd5b850d088bb883e36f93871eecd98",
+		"storageHash": "980f5019a421514b9b713739be153f8bf60a883b77e35c2ffc8f26e013572c7d",
 		"types": {
 			"AppealAnswers": {
 				"codecId": "typed/json@1",
@@ -3930,12 +4217,6 @@
 				"kind": "codec-instance",
 				"nativeType": "jsonb",
 				"typeParams": { "tsType": "PrismaJson.MessageHistoryMessages" }
-			},
-			"ModerationCaseEditChanges": {
-				"codecId": "typed/json@1",
-				"kind": "codec-instance",
-				"nativeType": "jsonb",
-				"typeParams": { "tsType": "PrismaJson.ModerationCaseEditChanges" }
 			},
 			"PermissionNodeEntries": {
 				"codecId": "typed/json@1",

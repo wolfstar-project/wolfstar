@@ -419,6 +419,62 @@ namespace public {
     @@index([userId], map: "JoinGuardSharedBan_user_id_idx")
   }
 
+  // The settings of the onboarding, the stages a new member passes before they are in (wolfstar#418). The dashboard
+  // writes them too, with the same names. `revision` grows by one on every change of the log channel, the message or a
+  // stage, and a write only goes through with the revision its editor read (`UPDATE … WHERE revision = $read`).
+  model GuildOnboarding {
+    id           BigInt  @id(map: "GuildOnboarding_pkey")
+    enabled      Boolean @default(false)
+    logChannelId BigInt? @map("log_channel_id")
+    channelId    BigInt? @map("channel_id")
+    messageId    BigInt? @map("message_id")
+    revision     Int     @default(0)
+    modules      Modules @relation(fields:[id], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildOnboarding_id_fkey")
+  }
+
+  // A stage of the onboarding, up to 5 per guild, run in `position` order then `id`. The names are unique per guild
+  // whatever their case, by an index made by hand (`add_onboarding`).
+  model GuildOnboardingStage {
+    id             BigInt                           @id(map: "GuildOnboardingStage_pkey") @default(autoincrement())
+    guildId        BigInt                           @map("guild_id")
+    position       Int
+    name           String
+    enabled        Boolean                          @default(true)
+    trigger        pg.enum(OnboardingStageTrigger)
+    challenge      pg.enum(OnboardingChallenge)
+    question       String?
+    answers        String[]                         @default([]) @noCheck(elementNotNull)
+    maxAttempts    Int                              @default(3) @map("max_attempts")
+    timeLimit      Int                              @default(600) @map("time_limit")
+    roleId         BigInt?                          @map("role_id")
+    failureAction  pg.enum(OnboardingFailureAction) @default("None") @map("failure_action")
+    failureTimeout Int?                             @map("failure_timeout")
+    createdAt      TimestampString(3)               @default(now()) @map("created_at")
+    guild          Guild                            @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "GuildOnboardingStage_guild_id_fkey", index: false)
+
+    @@index([guildId, position], map: "GuildOnboardingStage_guild_id_position_idx")
+  }
+
+  // A member and a stage of the onboarding, written by the bot only. The stage's name is kept for the log, since the
+  // stage may be deleted (`stageId` is then null).
+  model OnboardingVerification {
+    id         BigInt                                @id(map: "OnboardingVerification_pkey") @default(autoincrement())
+    guildId    BigInt                                @map("guild_id")
+    userId     BigInt                                @map("user_id")
+    stageId    BigInt?                               @map("stage_id")
+    stageName  String                                @map("stage_name")
+    status     pg.enum(OnboardingVerificationStatus)
+    attempts   Int                                   @default(0)
+    createdAt  TimestampString(3)                    @default(now()) @map("created_at")
+    resolvedAt TimestampString(3)?                   @map("resolved_at")
+    guild      Guild                                 @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "OnboardingVerification_guild_id_fkey", index: false)
+    stage      GuildOnboardingStage?                 @relation(fields:[stageId], references:[id], onDelete: SetNull, onUpdate: Cascade, map: "OnboardingVerification_stage_id_fkey", index: false)
+
+    @@index([guildId, createdAt], map: "OnboardingVerification_guild_id_created_at_idx")
+    @@index([guildId, userId], map: "OnboardingVerification_guild_id_user_id_idx")
+    @@index([stageId], map: "OnboardingVerification_stage_id_idx")
+  }
+
   model GuildLogs {
     id                     BigInt   @id(map: "GuildLogs_pkey")
     memberAdd              BigInt?  @map("member_add")
@@ -758,6 +814,31 @@ namespace public {
   native_enum JoinGuardSharedBanSource {
     JoinGuard = "JoinGuard"
     Honeypot = "Honeypot"
+  }
+
+  native_enum OnboardingStageTrigger {
+    Join = "Join"
+    NativeOnboarding = "NativeOnboarding"
+  }
+
+  native_enum OnboardingChallenge {
+    Button = "Button"
+    Emoji = "Emoji"
+    Question = "Question"
+    Captcha = "Captcha"
+  }
+
+  native_enum OnboardingFailureAction {
+    None = "None"
+    Kick = "Kick"
+    Timeout = "Timeout"
+  }
+
+  native_enum OnboardingVerificationStatus {
+    Waiting = "Waiting"
+    Passed = "Passed"
+    Failed = "Failed"
+    Left = "Left"
   }
 
   native_enum MessageUpdateStyle {

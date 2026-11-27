@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'e242366eeac3fad7d656e33cfdbdf2282dd5b850d088bb883e36f93871eecd98'>;
+export type StorageHash = StorageHashBase<'980f5019a421514b9b713739be153f8bf60a883b77e35c2ffc8f26e013572c7d'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -555,6 +555,31 @@ export type FieldOutputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly reason: CodecTypes['pg/text@1']['output'];
 		};
+		readonly GuildOnboarding: {
+			readonly channelId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly enabled: CodecTypes['pg/bool@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly logChannelId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly messageId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly revision: CodecTypes['pg/int4@1']['output'];
+		};
+		readonly GuildOnboardingStage: {
+			readonly answers: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+			readonly challenge: 'Button' | 'Emoji' | 'Question' | 'Captcha';
+			readonly createdAt: TimestampString<3>;
+			readonly enabled: CodecTypes['pg/bool@1']['output'];
+			readonly failureAction: 'None' | 'Kick' | 'Timeout';
+			readonly failureTimeout: CodecTypes['pg/int4@1']['output'] | null;
+			readonly guildId: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly maxAttempts: CodecTypes['pg/int4@1']['output'];
+			readonly name: CodecTypes['pg/text@1']['output'];
+			readonly position: CodecTypes['pg/int4@1']['output'];
+			readonly question: CodecTypes['pg/text@1']['output'] | null;
+			readonly roleId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly timeLimit: CodecTypes['pg/int4@1']['output'];
+			readonly trigger: 'Join' | 'NativeOnboarding';
+		};
 		readonly GuildPermissions: {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly roles: PrismaJson.PermissionNodeEntries;
@@ -685,17 +710,6 @@ export type FieldOutputTypes = {
 			readonly extraData: CodecTypes['pg/jsonb@1']['output'] | null;
 			readonly guildId: CodecTypes['pg/int8@1']['output'];
 			readonly messageId: CodecTypes['pg/int8@1']['output'] | null;
-			readonly proofChannelId: CodecTypes['pg/int8@1']['output'] | null;
-			readonly proofMessageId: CodecTypes['pg/int8@1']['output'] | null;
-			readonly staffNote: CodecTypes['pg/text@1']['output'] | null;
-		};
-		readonly ModerationCaseEdit: {
-			readonly caseId: CodecTypes['pg/int4@1']['output'];
-			readonly changes: PrismaJson.ModerationCaseEditChanges;
-			readonly createdAt: TimestampString<3>;
-			readonly guildId: CodecTypes['pg/int8@1']['output'];
-			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly moderatorId: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['output'];
@@ -709,6 +723,17 @@ export type FieldOutputTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
 			readonly reports: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
+		};
+		readonly OnboardingVerification: {
+			readonly attempts: CodecTypes['pg/int4@1']['output'];
+			readonly createdAt: TimestampString<3>;
+			readonly guildId: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly resolvedAt: TimestampString<3> | null;
+			readonly stageId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly stageName: CodecTypes['pg/text@1']['output'];
+			readonly status: 'Waiting' | 'Passed' | 'Failed' | 'Left';
+			readonly userId: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly Report: {
 			readonly action: CodecTypes['pg/text@1']['output'] | null;
@@ -1062,6 +1087,31 @@ export type FieldInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly reason: CodecTypes['pg/text@1']['input'];
 		};
+		readonly GuildOnboarding: {
+			readonly channelId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly enabled: CodecTypes['pg/bool@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly logChannelId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly messageId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly revision: CodecTypes['pg/int4@1']['input'];
+		};
+		readonly GuildOnboardingStage: {
+			readonly answers: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+			readonly challenge: 'Button' | 'Emoji' | 'Question' | 'Captcha';
+			readonly createdAt: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly enabled: CodecTypes['pg/bool@1']['input'];
+			readonly failureAction: 'None' | 'Kick' | 'Timeout';
+			readonly failureTimeout: CodecTypes['pg/int4@1']['input'] | null;
+			readonly guildId: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly maxAttempts: CodecTypes['pg/int4@1']['input'];
+			readonly name: CodecTypes['pg/text@1']['input'];
+			readonly position: CodecTypes['pg/int4@1']['input'];
+			readonly question: CodecTypes['pg/text@1']['input'] | null;
+			readonly roleId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly timeLimit: CodecTypes['pg/int4@1']['input'];
+			readonly trigger: 'Join' | 'NativeOnboarding';
+		};
 		readonly GuildPermissions: {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly roles: CodecTypes['typed/json@1']['input'];
@@ -1192,17 +1242,6 @@ export type FieldInputTypes = {
 			readonly extraData: CodecTypes['pg/jsonb@1']['input'] | null;
 			readonly guildId: CodecTypes['pg/int8@1']['input'];
 			readonly messageId: CodecTypes['pg/int8@1']['input'] | null;
-			readonly proofChannelId: CodecTypes['pg/int8@1']['input'] | null;
-			readonly proofMessageId: CodecTypes['pg/int8@1']['input'] | null;
-			readonly staffNote: CodecTypes['pg/text@1']['input'] | null;
-		};
-		readonly ModerationCaseEdit: {
-			readonly caseId: CodecTypes['pg/int4@1']['input'];
-			readonly changes: CodecTypes['typed/json@1']['input'];
-			readonly createdAt: CodecTypes['pg/timestamp-string@1']['input'];
-			readonly guildId: CodecTypes['pg/int8@1']['input'];
-			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly moderatorId: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['input'];
@@ -1216,6 +1255,17 @@ export type FieldInputTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
 			readonly reports: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
+		};
+		readonly OnboardingVerification: {
+			readonly attempts: CodecTypes['pg/int4@1']['input'];
+			readonly createdAt: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly guildId: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly resolvedAt: CodecTypes['pg/timestamp-string@1']['input'] | null;
+			readonly stageId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly stageName: CodecTypes['pg/text@1']['input'];
+			readonly status: 'Waiting' | 'Passed' | 'Failed' | 'Left';
+			readonly userId: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly Report: {
 			readonly action: CodecTypes['pg/text@1']['input'] | null;
@@ -1569,6 +1619,31 @@ export type StorageColumnTypes = {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly reason: CodecTypes['pg/text@1']['output'];
 		};
+		readonly GuildOnboarding: {
+			readonly channel_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly enabled: CodecTypes['pg/bool@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly log_channel_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly message_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly revision: CodecTypes['pg/int4@1']['output'];
+		};
+		readonly GuildOnboardingStage: {
+			readonly answers: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+			readonly challenge: 'Button' | 'Emoji' | 'Question' | 'Captcha';
+			readonly created_at: TimestampString<3>;
+			readonly enabled: CodecTypes['pg/bool@1']['output'];
+			readonly failure_action: 'None' | 'Kick' | 'Timeout';
+			readonly failure_timeout: CodecTypes['pg/int4@1']['output'] | null;
+			readonly guild_id: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly max_attempts: CodecTypes['pg/int4@1']['output'];
+			readonly name: CodecTypes['pg/text@1']['output'];
+			readonly position: CodecTypes['pg/int4@1']['output'];
+			readonly question: CodecTypes['pg/text@1']['output'] | null;
+			readonly role_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly time_limit: CodecTypes['pg/int4@1']['output'];
+			readonly trigger: 'Join' | 'NativeOnboarding';
+		};
 		readonly GuildPermissions: {
 			readonly id: CodecTypes['pg/int8@1']['output'];
 			readonly roles: PrismaJson.PermissionNodeEntries;
@@ -1699,17 +1774,6 @@ export type StorageColumnTypes = {
 			readonly extra_data: CodecTypes['pg/jsonb@1']['output'] | null;
 			readonly guild_id: CodecTypes['pg/int8@1']['output'];
 			readonly message_id: CodecTypes['pg/int8@1']['output'] | null;
-			readonly proof_channel_id: CodecTypes['pg/int8@1']['output'] | null;
-			readonly proof_message_id: CodecTypes['pg/int8@1']['output'] | null;
-			readonly staff_note: CodecTypes['pg/text@1']['output'] | null;
-		};
-		readonly ModerationCaseEdit: {
-			readonly case_id: CodecTypes['pg/int4@1']['output'];
-			readonly changes: PrismaJson.ModerationCaseEditChanges;
-			readonly created_at: TimestampString<3>;
-			readonly guild_id: CodecTypes['pg/int8@1']['output'];
-			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly moderator_id: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['output'];
@@ -1723,6 +1787,17 @@ export type StorageColumnTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
 			readonly reports: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
+		};
+		readonly OnboardingVerification: {
+			readonly attempts: CodecTypes['pg/int4@1']['output'];
+			readonly created_at: TimestampString<3>;
+			readonly guild_id: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly resolved_at: TimestampString<3> | null;
+			readonly stage_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly stage_name: CodecTypes['pg/text@1']['output'];
+			readonly status: 'Waiting' | 'Passed' | 'Failed' | 'Left';
+			readonly user_id: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly Report: {
 			readonly action: CodecTypes['pg/text@1']['output'] | null;
@@ -2076,6 +2151,31 @@ export type StorageColumnInputTypes = {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly reason: CodecTypes['pg/text@1']['input'];
 		};
+		readonly GuildOnboarding: {
+			readonly channel_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly enabled: CodecTypes['pg/bool@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly log_channel_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly message_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly revision: CodecTypes['pg/int4@1']['input'];
+		};
+		readonly GuildOnboardingStage: {
+			readonly answers: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+			readonly challenge: 'Button' | 'Emoji' | 'Question' | 'Captcha';
+			readonly created_at: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly enabled: CodecTypes['pg/bool@1']['input'];
+			readonly failure_action: 'None' | 'Kick' | 'Timeout';
+			readonly failure_timeout: CodecTypes['pg/int4@1']['input'] | null;
+			readonly guild_id: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly max_attempts: CodecTypes['pg/int4@1']['input'];
+			readonly name: CodecTypes['pg/text@1']['input'];
+			readonly position: CodecTypes['pg/int4@1']['input'];
+			readonly question: CodecTypes['pg/text@1']['input'] | null;
+			readonly role_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly time_limit: CodecTypes['pg/int4@1']['input'];
+			readonly trigger: 'Join' | 'NativeOnboarding';
+		};
 		readonly GuildPermissions: {
 			readonly id: CodecTypes['pg/int8@1']['input'];
 			readonly roles: CodecTypes['typed/json@1']['input'];
@@ -2206,17 +2306,6 @@ export type StorageColumnInputTypes = {
 			readonly extra_data: CodecTypes['pg/jsonb@1']['input'] | null;
 			readonly guild_id: CodecTypes['pg/int8@1']['input'];
 			readonly message_id: CodecTypes['pg/int8@1']['input'] | null;
-			readonly proof_channel_id: CodecTypes['pg/int8@1']['input'] | null;
-			readonly proof_message_id: CodecTypes['pg/int8@1']['input'] | null;
-			readonly staff_note: CodecTypes['pg/text@1']['input'] | null;
-		};
-		readonly ModerationCaseEdit: {
-			readonly case_id: CodecTypes['pg/int4@1']['input'];
-			readonly changes: CodecTypes['typed/json@1']['input'];
-			readonly created_at: CodecTypes['pg/timestamp-string@1']['input'];
-			readonly guild_id: CodecTypes['pg/int8@1']['input'];
-			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly moderator_id: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['input'];
@@ -2230,6 +2319,17 @@ export type StorageColumnInputTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
 			readonly reports: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
+		};
+		readonly OnboardingVerification: {
+			readonly attempts: CodecTypes['pg/int4@1']['input'];
+			readonly created_at: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly guild_id: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly resolved_at: CodecTypes['pg/timestamp-string@1']['input'] | null;
+			readonly stage_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly stage_name: CodecTypes['pg/text@1']['input'];
+			readonly status: 'Waiting' | 'Passed' | 'Failed' | 'Left';
+			readonly user_id: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly Report: {
 			readonly action: CodecTypes['pg/text@1']['input'] | null;
@@ -2625,6 +2725,35 @@ export namespace Models {
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
 	};
+	export type public_GuildOnboarding = {
+		channelId: CodecTypes['pg/int8@1']['output'] | null;
+		enabled: CodecTypes['pg/bool@1']['output'];
+		id: CodecTypes['pg/int8@1']['output'];
+		logChannelId: CodecTypes['pg/int8@1']['output'] | null;
+		messageId: CodecTypes['pg/int8@1']['output'] | null;
+		revision: CodecTypes['pg/int4@1']['output'];
+		modules: public_Modules;
+		readonly [RelationKeys]?: 'modules';
+	};
+	export type public_GuildOnboardingStage = {
+		answers: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+		challenge: 'Button' | 'Emoji' | 'Question' | 'Captcha';
+		createdAt: TimestampString<3>;
+		enabled: CodecTypes['pg/bool@1']['output'];
+		failureAction: 'None' | 'Kick' | 'Timeout';
+		failureTimeout: CodecTypes['pg/int4@1']['output'] | null;
+		guildId: CodecTypes['pg/int8@1']['output'];
+		id: CodecTypes['pg/int8@1']['output'];
+		maxAttempts: CodecTypes['pg/int4@1']['output'];
+		name: CodecTypes['pg/text@1']['output'];
+		position: CodecTypes['pg/int4@1']['output'];
+		question: CodecTypes['pg/text@1']['output'] | null;
+		roleId: CodecTypes['pg/int8@1']['output'] | null;
+		timeLimit: CodecTypes['pg/int4@1']['output'];
+		trigger: 'Join' | 'NativeOnboarding';
+		guild: public_Guild;
+		readonly [RelationKeys]?: 'guild';
+	};
 	export type public_GuildPermissions = {
 		id: CodecTypes['pg/int8@1']['output'];
 		roles: PrismaJson.PermissionNodeEntries;
@@ -2776,19 +2905,6 @@ export namespace Models {
 		extraData: CodecTypes['pg/jsonb@1']['output'] | null;
 		guildId: CodecTypes['pg/int8@1']['output'];
 		messageId: CodecTypes['pg/int8@1']['output'] | null;
-		proofChannelId: CodecTypes['pg/int8@1']['output'] | null;
-		proofMessageId: CodecTypes['pg/int8@1']['output'] | null;
-		staffNote: CodecTypes['pg/text@1']['output'] | null;
-		guild: public_Guild;
-		readonly [RelationKeys]?: 'guild';
-	};
-	export type public_ModerationCaseEdit = {
-		caseId: CodecTypes['pg/int4@1']['output'];
-		changes: PrismaJson.ModerationCaseEditChanges;
-		createdAt: TimestampString<3>;
-		guildId: CodecTypes['pg/int8@1']['output'];
-		id: CodecTypes['pg/int8@1']['output'];
-		moderatorId: CodecTypes['pg/int8@1']['output'];
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
 	};
@@ -2806,6 +2922,20 @@ export namespace Models {
 		roles: CodecTypes['pg/bool@1']['output'];
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
+	};
+	export type public_OnboardingVerification = {
+		attempts: CodecTypes['pg/int4@1']['output'];
+		createdAt: TimestampString<3>;
+		guildId: CodecTypes['pg/int8@1']['output'];
+		id: CodecTypes['pg/int8@1']['output'];
+		resolvedAt: TimestampString<3> | null;
+		stageId: CodecTypes['pg/int8@1']['output'] | null;
+		stageName: CodecTypes['pg/text@1']['output'];
+		status: 'Waiting' | 'Passed' | 'Failed' | 'Left';
+		userId: CodecTypes['pg/int8@1']['output'];
+		guild: public_Guild;
+		stage: public_GuildOnboardingStage | null;
+		readonly [RelationKeys]?: 'guild' | 'stage';
 	};
 	export type public_Report = {
 		action: CodecTypes['pg/text@1']['output'] | null;
@@ -2873,6 +3003,8 @@ export declare const models: {
 		GuildLogsOptions: Models.public_GuildLogsOptions;
 		GuildModeration: Models.public_GuildModeration;
 		GuildModerationReason: Models.public_GuildModerationReason;
+		GuildOnboarding: Models.public_GuildOnboarding;
+		GuildOnboardingStage: Models.public_GuildOnboardingStage;
 		GuildPermissions: Models.public_GuildPermissions;
 		GuildReports: Models.public_GuildReports;
 		GuildRoleRule: Models.public_GuildRoleRule;
@@ -2885,8 +3017,8 @@ export declare const models: {
 		MessageHistory: Models.public_MessageHistory;
 		ModerationAction: Models.public_ModerationAction;
 		ModerationCaseData: Models.public_ModerationCaseData;
-		ModerationCaseEdit: Models.public_ModerationCaseEdit;
 		Modules: Models.public_Modules;
+		OnboardingVerification: Models.public_OnboardingVerification;
 		Report: Models.public_Report;
 		StickyNickname: Models.public_StickyNickname;
 		StickyRole: Models.public_StickyRole;
@@ -5165,6 +5297,204 @@ type ContractBase = Omit<
 								}
 							];
 						};
+						readonly GuildOnboarding: {
+							columns: {
+								readonly channel_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly enabled: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+									};
+								};
+								readonly id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly log_channel_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly message_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly revision: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+									};
+								};
+							};
+							primaryKey: {
+								readonly columns: readonly ['id'];
+								readonly name: 'GuildOnboarding_pkey';
+							};
+							uniques: readonly [];
+							indexes: readonly [];
+							foreignKeys: readonly [
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'GuildOnboarding';
+										readonly columns: readonly ['id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Modules';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'GuildOnboarding_id_fkey';
+								}
+							];
+						};
+						readonly GuildOnboardingStage: {
+							columns: {
+								readonly answers: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
+									};
+								};
+								readonly challenge: {
+									readonly nativeType: 'OnboardingChallenge';
+									readonly codecId: 'pg/enum@1';
+									readonly nullable: false;
+									readonly typeParams: { readonly typeName: 'OnboardingChallenge' };
+								};
+								readonly created_at: {
+									readonly nativeType: 'timestamp';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly nullable: false;
+									readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+									readonly typeParams: { readonly precision: 3 };
+								};
+								readonly enabled: {
+									readonly nativeType: 'bool';
+									readonly codecId: 'pg/bool@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+									};
+								};
+								readonly failure_action: {
+									readonly nativeType: 'OnboardingFailureAction';
+									readonly codecId: 'pg/enum@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/enum@1', 'None'>;
+									};
+									readonly typeParams: { readonly typeName: 'OnboardingFailureAction' };
+								};
+								readonly failure_timeout: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: true;
+								};
+								readonly guild_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'function';
+										readonly expression: 'autoincrement()';
+									};
+								};
+								readonly max_attempts: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int4@1', 3>;
+									};
+								};
+								readonly name: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: false;
+								};
+								readonly position: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: false;
+								};
+								readonly question: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
+								readonly role_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly time_limit: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int4@1', 600>;
+									};
+								};
+								readonly trigger: {
+									readonly nativeType: 'OnboardingStageTrigger';
+									readonly codecId: 'pg/enum@1';
+									readonly nullable: false;
+									readonly typeParams: { readonly typeName: 'OnboardingStageTrigger' };
+								};
+							};
+							primaryKey: {
+								readonly columns: readonly ['id'];
+								readonly name: 'GuildOnboardingStage_pkey';
+							};
+							uniques: readonly [];
+							indexes: readonly [
+								{
+									readonly name: 'GuildOnboardingStage_guild_id_position_idx';
+									readonly columns: readonly ['guild_id', 'position'];
+									readonly unique: false;
+								}
+							];
+							foreignKeys: readonly [
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'GuildOnboardingStage';
+										readonly columns: readonly ['guild_id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Guild';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'GuildOnboardingStage_guild_id_fkey';
+								}
+							];
+						};
 						readonly GuildPermissions: {
 							columns: {
 								readonly id: {
@@ -6079,21 +6409,6 @@ type ContractBase = Omit<
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: true;
 								};
-								readonly proof_channel_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: true;
-								};
-								readonly proof_message_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: true;
-								};
-								readonly staff_note: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
 							};
 							primaryKey: {
 								readonly columns: readonly ['case_id', 'guild_id'];
@@ -6114,77 +6429,6 @@ type ContractBase = Omit<
 										readonly columns: readonly ['id'];
 									};
 									readonly name: 'ModerationCaseData_guild_id_fkey';
-								}
-							];
-						};
-						readonly ModerationCaseEdit: {
-							columns: {
-								readonly case_id: {
-									readonly nativeType: 'int4';
-									readonly codecId: 'pg/int4@1';
-									readonly nullable: false;
-								};
-								readonly changes: {
-									readonly nativeType: 'jsonb';
-									readonly codecId: 'typed/json@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'function';
-										readonly expression: "'[]'::jsonb";
-									};
-									readonly typeRef: 'ModerationCaseEditChanges';
-								};
-								readonly created_at: {
-									readonly nativeType: 'timestamp';
-									readonly codecId: 'pg/timestamp-string@1';
-									readonly nullable: false;
-									readonly typeParams: { readonly precision: 3 };
-								};
-								readonly guild_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-								};
-								readonly id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'function';
-										readonly expression: 'autoincrement()';
-									};
-								};
-								readonly moderator_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-								};
-							};
-							primaryKey: {
-								readonly columns: readonly ['id'];
-								readonly name: 'ModerationCaseEdit_pkey';
-							};
-							uniques: readonly [];
-							indexes: readonly [
-								{
-									readonly name: 'ModerationCaseEdit_guild_id_case_id_idx';
-									readonly columns: readonly ['guild_id', 'case_id'];
-									readonly unique: false;
-								}
-							];
-							foreignKeys: readonly [
-								{
-									readonly source: {
-										readonly namespaceId: 'public' & NamespaceId;
-										readonly tableName: 'ModerationCaseEdit';
-										readonly columns: readonly ['guild_id'];
-									};
-									readonly target: {
-										readonly namespaceId: 'public' & NamespaceId;
-										readonly tableName: 'Guild';
-										readonly columns: readonly ['id'];
-									};
-									readonly name: 'ModerationCaseEdit_guild_id_fkey';
 								}
 							];
 						};
@@ -6302,6 +6546,117 @@ type ContractBase = Omit<
 										readonly columns: readonly ['id'];
 									};
 									readonly name: 'Modules_id_fkey';
+								}
+							];
+						};
+						readonly OnboardingVerification: {
+							columns: {
+								readonly attempts: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'literal';
+										readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+									};
+								};
+								readonly created_at: {
+									readonly nativeType: 'timestamp';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly nullable: false;
+									readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+									readonly typeParams: { readonly precision: 3 };
+								};
+								readonly guild_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'function';
+										readonly expression: 'autoincrement()';
+									};
+								};
+								readonly resolved_at: {
+									readonly nativeType: 'timestamp';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly nullable: true;
+									readonly typeParams: { readonly precision: 3 };
+								};
+								readonly stage_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly stage_name: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: false;
+								};
+								readonly status: {
+									readonly nativeType: 'OnboardingVerificationStatus';
+									readonly codecId: 'pg/enum@1';
+									readonly nullable: false;
+									readonly typeParams: { readonly typeName: 'OnboardingVerificationStatus' };
+								};
+								readonly user_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+							};
+							primaryKey: {
+								readonly columns: readonly ['id'];
+								readonly name: 'OnboardingVerification_pkey';
+							};
+							uniques: readonly [];
+							indexes: readonly [
+								{
+									readonly name: 'OnboardingVerification_guild_id_created_at_idx';
+									readonly columns: readonly ['guild_id', 'created_at'];
+									readonly unique: false;
+								},
+								{
+									readonly name: 'OnboardingVerification_guild_id_user_id_idx';
+									readonly columns: readonly ['guild_id', 'user_id'];
+									readonly unique: false;
+								},
+								{
+									readonly name: 'OnboardingVerification_stage_id_idx';
+									readonly columns: readonly ['stage_id'];
+									readonly unique: false;
+								}
+							];
+							foreignKeys: readonly [
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'OnboardingVerification';
+										readonly columns: readonly ['guild_id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Guild';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'OnboardingVerification_guild_id_fkey';
+								},
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'OnboardingVerification';
+										readonly columns: readonly ['stage_id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'GuildOnboardingStage';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'OnboardingVerification_stage_id_fkey';
 								}
 							];
 						};
@@ -6622,6 +6977,22 @@ type ContractBase = Omit<
 								'Unban'
 							];
 						};
+						readonly OnboardingChallenge: {
+							readonly kind: 'valueSet';
+							readonly values: readonly ['Button', 'Emoji', 'Question', 'Captcha'];
+						};
+						readonly OnboardingFailureAction: {
+							readonly kind: 'valueSet';
+							readonly values: readonly ['None', 'Kick', 'Timeout'];
+						};
+						readonly OnboardingStageTrigger: {
+							readonly kind: 'valueSet';
+							readonly values: readonly ['Join', 'NativeOnboarding'];
+						};
+						readonly OnboardingVerificationStatus: {
+							readonly kind: 'valueSet';
+							readonly values: readonly ['Waiting', 'Passed', 'Failed', 'Left'];
+						};
 						readonly ReportStatus: {
 							readonly kind: 'valueSet';
 							readonly values: readonly ['Open', 'Actioned', 'Dismissed'];
@@ -6666,12 +7037,6 @@ type ContractBase = Omit<
 				readonly codecId: 'typed/json@1';
 				readonly nativeType: 'jsonb';
 				readonly typeParams: { readonly tsType: 'PrismaJson.MessageHistoryMessages' };
-			};
-			readonly ModerationCaseEditChanges: {
-				readonly kind: 'codec-instance';
-				readonly codecId: 'typed/json@1';
-				readonly nativeType: 'jsonb';
-				readonly typeParams: { readonly tsType: 'PrismaJson.ModerationCaseEditChanges' };
 			};
 			readonly PermissionNodeEntries: {
 				readonly kind: 'codec-instance';
@@ -6772,6 +7137,14 @@ type ContractBase = Omit<
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'GuildModerationReason';
 		};
+		readonly GuildOnboarding: {
+			readonly namespace: 'public' & NamespaceId;
+			readonly model: 'GuildOnboarding';
+		};
+		readonly GuildOnboardingStage: {
+			readonly namespace: 'public' & NamespaceId;
+			readonly model: 'GuildOnboardingStage';
+		};
 		readonly GuildPermissions: {
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'GuildPermissions';
@@ -6820,11 +7193,11 @@ type ContractBase = Omit<
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'ModerationCaseData';
 		};
-		readonly ModerationCaseEdit: {
-			readonly namespace: 'public' & NamespaceId;
-			readonly model: 'ModerationCaseEdit';
-		};
 		readonly Modules: { readonly namespace: 'public' & NamespaceId; readonly model: 'Modules' };
+		readonly OnboardingVerification: {
+			readonly namespace: 'public' & NamespaceId;
+			readonly model: 'OnboardingVerification';
+		};
 		readonly Report: { readonly namespace: 'public' & NamespaceId; readonly model: 'Report' };
 		readonly StickyNickname: {
 			readonly namespace: 'public' & NamespaceId;
@@ -8680,6 +9053,176 @@ type ContractBase = Omit<
 							};
 						};
 					};
+					readonly GuildOnboarding: {
+						readonly fields: {
+							readonly channelId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly enabled: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly id: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly logChannelId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly messageId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly revision: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+						};
+						readonly relations: {
+							readonly modules: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'Modules';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: false;
+								readonly on: {
+									readonly localFields: readonly ['id'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+						};
+						readonly storage: {
+							readonly table: 'GuildOnboarding';
+							readonly namespaceId: 'public';
+							readonly fields: {
+								readonly channelId: { readonly column: 'channel_id' };
+								readonly enabled: { readonly column: 'enabled' };
+								readonly id: { readonly column: 'id' };
+								readonly logChannelId: { readonly column: 'log_channel_id' };
+								readonly messageId: { readonly column: 'message_id' };
+								readonly revision: { readonly column: 'revision' };
+							};
+						};
+					};
+					readonly GuildOnboardingStage: {
+						readonly fields: {
+							readonly answers: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+								readonly many: true;
+							};
+							readonly challenge: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/enum@1';
+									readonly typeParams: { readonly typeName: 'OnboardingChallenge' };
+								};
+							};
+							readonly createdAt: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly typeParams: { readonly precision: 3 };
+								};
+							};
+							readonly enabled: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+							};
+							readonly failureAction: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/enum@1';
+									readonly typeParams: { readonly typeName: 'OnboardingFailureAction' };
+								};
+							};
+							readonly failureTimeout: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly guildId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly id: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly maxAttempts: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly name: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly position: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly question: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly roleId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly timeLimit: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly trigger: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/enum@1';
+									readonly typeParams: { readonly typeName: 'OnboardingStageTrigger' };
+								};
+							};
+						};
+						readonly relations: {
+							readonly guild: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'Guild';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: false;
+								readonly on: {
+									readonly localFields: readonly ['guildId'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+						};
+						readonly storage: {
+							readonly table: 'GuildOnboardingStage';
+							readonly namespaceId: 'public';
+							readonly fields: {
+								readonly answers: { readonly column: 'answers' };
+								readonly challenge: { readonly column: 'challenge' };
+								readonly createdAt: { readonly column: 'created_at' };
+								readonly enabled: { readonly column: 'enabled' };
+								readonly failureAction: { readonly column: 'failure_action' };
+								readonly failureTimeout: { readonly column: 'failure_timeout' };
+								readonly guildId: { readonly column: 'guild_id' };
+								readonly id: { readonly column: 'id' };
+								readonly maxAttempts: { readonly column: 'max_attempts' };
+								readonly name: { readonly column: 'name' };
+								readonly position: { readonly column: 'position' };
+								readonly question: { readonly column: 'question' };
+								readonly roleId: { readonly column: 'role_id' };
+								readonly timeLimit: { readonly column: 'time_limit' };
+								readonly trigger: { readonly column: 'trigger' };
+							};
+						};
+					};
 					readonly GuildPermissions: {
 						readonly fields: {
 							readonly id: {
@@ -9489,18 +10032,6 @@ type ContractBase = Omit<
 								readonly nullable: true;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 							};
-							readonly proofChannelId: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly proofMessageId: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly staffNote: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
 						};
 						readonly relations: {
 							readonly guild: {
@@ -9525,67 +10056,6 @@ type ContractBase = Omit<
 								readonly extraData: { readonly column: 'extra_data' };
 								readonly guildId: { readonly column: 'guild_id' };
 								readonly messageId: { readonly column: 'message_id' };
-								readonly proofChannelId: { readonly column: 'proof_channel_id' };
-								readonly proofMessageId: { readonly column: 'proof_message_id' };
-								readonly staffNote: { readonly column: 'staff_note' };
-							};
-						};
-					};
-					readonly ModerationCaseEdit: {
-						readonly fields: {
-							readonly caseId: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-							};
-							readonly changes: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'typed/json@1' };
-							};
-							readonly createdAt: {
-								readonly nullable: false;
-								readonly type: {
-									readonly kind: 'scalar';
-									readonly codecId: 'pg/timestamp-string@1';
-									readonly typeParams: { readonly precision: 3 };
-								};
-							};
-							readonly guildId: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly id: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly moderatorId: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-						};
-						readonly relations: {
-							readonly guild: {
-								readonly to: {
-									readonly namespace: 'public' & NamespaceId;
-									readonly model: 'Guild';
-								};
-								readonly cardinality: 'N:1';
-								readonly nullable: false;
-								readonly on: {
-									readonly localFields: readonly ['guildId'];
-									readonly targetFields: readonly ['id'];
-								};
-							};
-						};
-						readonly storage: {
-							readonly table: 'ModerationCaseEdit';
-							readonly namespaceId: 'public';
-							readonly fields: {
-								readonly caseId: { readonly column: 'case_id' };
-								readonly changes: { readonly column: 'changes' };
-								readonly createdAt: { readonly column: 'created_at' };
-								readonly guildId: { readonly column: 'guild_id' };
-								readonly id: { readonly column: 'id' };
-								readonly moderatorId: { readonly column: 'moderator_id' };
 							};
 						};
 					};
@@ -9665,6 +10135,99 @@ type ContractBase = Omit<
 								readonly moderation: { readonly column: 'moderation' };
 								readonly reports: { readonly column: 'reports' };
 								readonly roles: { readonly column: 'roles' };
+							};
+						};
+					};
+					readonly OnboardingVerification: {
+						readonly fields: {
+							readonly attempts: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly createdAt: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly typeParams: { readonly precision: 3 };
+								};
+							};
+							readonly guildId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly id: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly resolvedAt: {
+								readonly nullable: true;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly typeParams: { readonly precision: 3 };
+								};
+							};
+							readonly stageId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly stageName: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
+							readonly status: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/enum@1';
+									readonly typeParams: { readonly typeName: 'OnboardingVerificationStatus' };
+								};
+							};
+							readonly userId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+						};
+						readonly relations: {
+							readonly guild: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'Guild';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: false;
+								readonly on: {
+									readonly localFields: readonly ['guildId'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+							readonly stage: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'GuildOnboardingStage';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: true;
+								readonly on: {
+									readonly localFields: readonly ['stageId'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+						};
+						readonly storage: {
+							readonly table: 'OnboardingVerification';
+							readonly namespaceId: 'public';
+							readonly fields: {
+								readonly attempts: { readonly column: 'attempts' };
+								readonly createdAt: { readonly column: 'created_at' };
+								readonly guildId: { readonly column: 'guild_id' };
+								readonly id: { readonly column: 'id' };
+								readonly resolvedAt: { readonly column: 'resolved_at' };
+								readonly stageId: { readonly column: 'stage_id' };
+								readonly stageName: { readonly column: 'stage_name' };
+								readonly status: { readonly column: 'status' };
+								readonly userId: { readonly column: 'user_id' };
 							};
 						};
 					};

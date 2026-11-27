@@ -152,6 +152,7 @@ describe('configuration file', () => {
 				'join-guard.captcha',
 				'join-guard.connections',
 				'join-guard.shared-bans',
+				'onboarding.enabled',
 				'appeals.enabled',
 				'appeals.bans',
 				'appeals.mutes',
