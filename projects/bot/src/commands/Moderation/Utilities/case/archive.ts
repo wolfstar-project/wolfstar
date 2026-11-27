@@ -23,6 +23,7 @@ export class UserCommand extends Command {
 			// Closing waits for the lock of the case, which may take longer than Discord waits for an answer:
 			const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 			const outcome = await closeCase({ entry, moderatorId: interaction.user.id, t, reason: null, notify: false });
+			if (outcome === null) return deferred.update(renderStatus('error', t('arguments:caseUnknownEntry', { parameter: entry.id })));
 
 			const closed = outcome.changes.length > 0;
 			return deferred.update(

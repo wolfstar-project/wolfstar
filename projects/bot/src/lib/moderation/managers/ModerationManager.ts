@@ -292,6 +292,25 @@ export class ModerationManager {
 		return this.#cache;
 	}
 
+	/**
+	 * Reads a moderation entry from the database again, past the cache, and caches what it read.
+	 *
+	 * @remarks Each process caches the entries it read, so the one in the cache may be older than an edit another
+	 * process made. What writes an entry back under the lock of its case reads it with this first.
+	 *
+	 * @param id - The case number.
+	 * @returns The entry, `null` when it does not exist anymore.
+	 */
+	public async refetch(id: number): Promise<ModerationManager.Entry | null> {
+		const entry = await this.#fetchSingle(id);
+		if (entry === null) {
+			this.#cache.delete(id);
+			return null;
+		}
+
+		return this.#addToCache(entry, CacheActions.None);
+	}
+
 	public async getCurrentId(): Promise<number> {
 		if (this.#latest === null) {
 			const result = await this.#table.where({ guildId: this.#guildId }).aggregate((aggregate) => ({

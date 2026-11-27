@@ -66,11 +66,14 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		const component = interaction as ComponentInteraction;
 		switch (action.verb) {
-			case 'view':
-				// A case is opened in a message of its own, which only the moderator sees, so the list stays as it is:
-				return component.reply(
+			case 'view': {
+				// A case is opened in a message of its own, which only the moderator sees, so the list stays as it is. Its
+				// proof is read from its message, which may take longer than Discord waits for an answer:
+				const deferred = await component.defer({ flags: MessageFlags.Ephemeral });
+				return deferred.update(
 					renderCaseView({ t, ownerId: action.ownerId, ephemeral: true }, entry, await fetchCaseViewDetails(guildId, entry.id))
 				);
+			}
 			case 'edit': {
 				const stored = await fetchModerationCaseData(container.prisma.orm, guildId, entry.id);
 				return component.showModal(
@@ -90,8 +93,10 @@ export class UserInteractionHandler extends InteractionHandler {
 			}
 			case 'delete':
 				return component.update(renderCaseDeletePrompt(this.getViewContext(component, action), entry.id));
-			case 'deleteCancel':
-				return component.update(await this.renderView(component, action, entry));
+			case 'deleteCancel': {
+				const deferred = await component.deferUpdate();
+				return deferred.update(await this.renderView(component, action, entry));
+			}
 			case 'deleteConfirm':
 				return this.delete(component, moderation, entry, this.getViewContext(component, action).t);
 			default:
@@ -136,24 +141,29 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		// The proof is downloaded and sent again, which may take longer than Discord waits for an answer:
 		const deferred = await interaction.deferUpdate();
-		const outcome = await editCase({
-			entry,
-			moderatorId: interaction.user.id,
-			t,
-			values: {
-				reason: getModalValue(components, CaseInputIds.Reason)?.trim() || null,
-				// A modal that was opened for a case with no duration has no such field:
-				...(duration === undefined ? {} : { duration }),
-				...(hasModalComponent(components, CaseInputIds.StaffNote)
-					? { staffNote: getModalValue(components, CaseInputIds.StaffNote)?.trim() || null }
-					: {})
-			},
-			proof,
-			notify: getModalChecked(components, CaseInputIds.Notify) ?? false
-		});
+		try {
+			const outcome = await editCase({
+				entry,
+				moderatorId: interaction.user.id,
+				t,
+				values: {
+					reason: getModalValue(components, CaseInputIds.Reason)?.trim() || null,
+					// A modal that was opened for a case with no duration has no such field:
+					...(duration === undefined ? {} : { duration }),
+					...(hasModalComponent(components, CaseInputIds.StaffNote)
+						? { staffNote: getModalValue(components, CaseInputIds.StaffNote)?.trim() || null }
+						: {})
+				},
+				proof,
+				notify: getModalChecked(components, CaseInputIds.Notify) ?? false
+			});
+			if (outcome === null) return await deferred.update(this.renderGone(t, entry.id));
 
-		await deferred.update(await this.renderView(interaction, action, entry));
-		return interaction.followup(this.renderOutcome(t, outcome, 'commands/case:editSuccess', 'commands/case:editUnchanged', entry.id));
+			await deferred.update(await this.renderView(interaction, action, outcome.entry));
+			return await interaction.followup(this.renderOutcome(t, outcome, 'commands/case:editSuccess', 'commands/case:editUnchanged', entry.id));
+		} catch (error) {
+			return this.failAfterDefer(interaction, t, entry.id, error);
+		}
 	}
 
 	/**
@@ -162,16 +172,37 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async close(interaction: ModalInteraction, action: CaseMenuAction, entry: ModerationManager.Entry, t: TFunction<AnyNamespace>) {
 		const { components } = interaction.data;
 		const deferred = await interaction.deferUpdate();
-		const outcome = await closeCase({
-			entry,
-			moderatorId: interaction.user.id,
-			t,
-			reason: getModalValue(components, CaseInputIds.Reason)?.trim() || null,
-			notify: getModalChecked(components, CaseInputIds.Notify) ?? false
-		});
+		try {
+			const outcome = await closeCase({
+				entry,
+				moderatorId: interaction.user.id,
+				t,
+				reason: getModalValue(components, CaseInputIds.Reason)?.trim() || null,
+				notify: getModalChecked(components, CaseInputIds.Notify) ?? false
+			});
+			if (outcome === null) return await deferred.update(this.renderGone(t, entry.id));
 
-		await deferred.update(await this.renderView(interaction, action, entry));
-		return interaction.followup(this.renderOutcome(t, outcome, 'commands/case:archiveSuccess', 'commands/case:closeAlready', entry.id));
+			await deferred.update(await this.renderView(interaction, action, outcome.entry));
+			return await interaction.followup(this.renderOutcome(t, outcome, 'commands/case:archiveSuccess', 'commands/case:closeAlready', entry.id));
+		} catch (error) {
+			return this.failAfterDefer(interaction, t, entry.id, error);
+		}
+	}
+
+	/**
+	 * What takes the place of a case that was deleted while the moderator edited it.
+	 */
+	private renderGone(t: TFunction<AnyNamespace>, caseId: number) {
+		return renderStatus('error', t('arguments:caseUnknownEntry', { parameter: caseId }));
+	}
+
+	/**
+	 * Tells the moderator that an edit failed after the modal was acknowledged, which leaves no reply to answer with: the
+	 * message of the case stays as it was.
+	 */
+	private async failAfterDefer(interaction: ModalInteraction, t: TFunction<AnyNamespace>, caseId: number, error: unknown) {
+		this.container.logger.error(`[MODERATION] Could not edit the case ${caseId} from the case menu:`, error);
+		return interaction.followup(renderStatus('error', t('events/errors:unexpectedError')));
 	}
 
 	/**

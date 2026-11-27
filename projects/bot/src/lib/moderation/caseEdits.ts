@@ -1,4 +1,4 @@
-import { readSettings } from '#lib/database';
+import { fetchUserReportEnabled, readSettings } from '#lib/database';
 import { withSharedLock } from '#utils/locks';
 import { getAction } from '#lib/moderation/actions';
 import { fetchGuildT, getTitle, getTranslationKey } from '#lib/moderation/common/util';
@@ -138,6 +138,8 @@ export interface CaseEditRequest {
 }
 
 export interface CaseEditOutcome {
+	/** The case as the edit left it, read again from the database under the lock. */
+	entry: ModerationManager.Entry;
 	/** What the edit changed, empty when the case already was as asked. */
 	changes: ModerationCaseChange[];
 	/** What could not be done, already translated: a proof that could not be kept, a direct message that was not delivered. */
@@ -148,18 +150,39 @@ export interface CaseEditOutcome {
  * Edits a case: its reason and its duration in its row, the note of the moderators and the proof next to it, and the
  * edit in the history of the case.
  *
- * @remarks The user is only told about a new reason or duration. The note of the moderators is never told.
+ * @remarks
+ *
+ * The proof is downloaded and sent again before the lock of the case is taken, since it may take longer than the lock
+ * is held, and the user is told after it is released. Under the lock the case is read again from the database: the
+ * entry of the caller comes from the cache of its process, which another process may have edited since.
+ *
+ * The user is only told about a new reason or duration. The note of the moderators is never told.
+ *
+ * @returns `null` when the case was deleted meanwhile.
  */
-export function editCase(request: CaseEditRequest): Promise<CaseEditOutcome> {
+export async function editCase(request: CaseEditRequest): Promise<CaseEditOutcome | null> {
+	const proof = request.proof === undefined ? undefined : await storeCaseProof(request.entry, request.proof);
+
 	// Two moderators, on two processes, would both read the old value and both record it in the history:
-	return withCaseLock(request.entry, () => editCaseLocked(request));
+	const outcome = await withCaseLock(request.entry, () => editCaseLocked(request, proof));
+	if (outcome === null) return null;
+
+	const changed = new Set(outcome.changes.map((change) => change.field));
+	if (request.notify && (changed.has('reason') || changed.has('duration'))) {
+		await notifyCaseUserWithWarning(outcome, request.t, 'commands/case:dmEdited');
+	}
+
+	return outcome;
 }
 
-async function editCaseLocked(request: CaseEditRequest): Promise<CaseEditOutcome> {
-	const { entry, t } = request;
-	const guildId = entry.guild.id;
-	const warnings: string[] = [];
+async function editCaseLocked(request: CaseEditRequest, proof: ProofResult | undefined): Promise<CaseEditOutcome | null> {
+	const { t } = request;
+	const guildId = request.entry.guild.id;
+	const moderation = await getModeration(guildId);
+	const entry = await moderation.refetch(request.entry.id);
+	if (entry === null) return null;
 
+	const warnings: string[] = [];
 	const stored = await fetchModerationCaseData(container.prisma.orm, guildId, entry.id);
 	const before: CaseEditValues = {
 		reason: entry.reason,
@@ -169,18 +192,16 @@ async function editCaseLocked(request: CaseEditRequest): Promise<CaseEditOutcome
 	};
 
 	const after: Partial<CaseEditValues> = { ...request.values };
-	if (request.proof !== undefined) {
-		const proof = await storeCaseProof(entry, request.proof);
+	if (proof !== undefined) {
 		if (proof.ok) after.proof = proof.value;
 		else warnings.push(t(proof.key));
 	}
 
 	const changes = getCaseChanges(guildId, before, after);
-	if (changes.length === 0) return { changes, warnings };
+	if (changes.length === 0) return { entry, changes, warnings };
 
 	const changed = new Set(changes.map((change) => change.field));
 	if (changed.has('reason') || changed.has('duration')) {
-		const moderation = await getModeration(guildId);
 		await moderation.edit(entry, {
 			reason: after.reason === undefined ? entry.reason : after.reason,
 			duration: after.duration === undefined ? entry.duration : after.duration
@@ -195,13 +216,7 @@ async function editCaseLocked(request: CaseEditRequest): Promise<CaseEditOutcome
 	}
 
 	await addModerationCaseEdit(container.prisma, guildId, { caseId: entry.id, moderatorId: request.moderatorId, changes });
-
-	if (request.notify && getAction(entry.type).isDirectMessageAvailable && (changed.has('reason') || changed.has('duration'))) {
-		const delivered = await notifyCaseUser(entry, 'commands/case:dmEdited');
-		if (!delivered) warnings.push(t('commands/case:notifyUndelivered'));
-	}
-
-	return { changes, warnings };
+	return { entry, changes, warnings };
 }
 
 export interface CaseCloseRequest {
@@ -219,30 +234,51 @@ export interface CaseCloseRequest {
 /**
  * Closes a case: it is archived, so it stops counting, and its history says who closed it and why.
  *
- * @returns The same as {@linkcode editCase}: no change when the case was already closed.
+ * @remarks The case is read again under its lock, as {@linkcode editCase} does, so a flag another process set on it
+ * since it was cached is kept.
+ *
+ * @returns The same as {@linkcode editCase}: no change when the case was already closed, `null` when it was deleted.
  */
-export function closeCase(request: CaseCloseRequest): Promise<CaseEditOutcome> {
-	return withCaseLock(request.entry, () => closeCaseLocked(request));
+export async function closeCase(request: CaseCloseRequest): Promise<CaseEditOutcome | null> {
+	const outcome = await withCaseLock(request.entry, () => closeCaseLocked(request));
+	if (outcome === null) return null;
+
+	if (request.notify && outcome.changes.length > 0) {
+		await notifyCaseUserWithWarning(outcome, request.t, 'commands/case:dmClosed', request.reason);
+	}
+
+	return outcome;
 }
 
-async function closeCaseLocked(request: CaseCloseRequest): Promise<CaseEditOutcome> {
-	const { entry, t } = request;
-	if (entry.isArchived()) return { changes: [], warnings: [] };
+async function closeCaseLocked(request: CaseCloseRequest): Promise<CaseEditOutcome | null> {
+	const moderation = await getModeration(request.entry.guild.id);
+	const entry = await moderation.refetch(request.entry.id);
+	if (entry === null) return null;
+	if (entry.isArchived()) return { entry, changes: [], warnings: [] };
 
-	const moderation = await getModeration(entry.guild.id);
 	await moderation.archive(entry);
 
 	const changes: ModerationCaseChange[] = [{ field: 'status', before: 'open', after: 'closed' }];
 	if (request.reason !== null) changes.push({ field: 'closeReason', before: null, after: request.reason });
 	await addModerationCaseEdit(container.prisma, entry.guild.id, { caseId: entry.id, moderatorId: request.moderatorId, changes });
 
-	const warnings: string[] = [];
-	if (request.notify && getAction(entry.type).isDirectMessageAvailable) {
-		const delivered = await notifyCaseUser(entry, 'commands/case:dmClosed', request.reason);
-		if (!delivered) warnings.push(t('commands/case:notifyUndelivered'));
-	}
+	return { entry, changes, warnings: [] };
+}
 
-	return { changes, warnings };
+/**
+ * Tells the user of a case what was done to it, and adds to the warnings of the outcome why they were not told.
+ */
+async function notifyCaseUserWithWarning(
+	outcome: CaseEditOutcome,
+	t: TFunction<AnyNamespace>,
+	key: 'commands/case:dmEdited' | 'commands/case:dmClosed',
+	closeReason: string | null = null
+) {
+	if (!getAction(outcome.entry.type).isDirectMessageAvailable) return;
+
+	const result = await notifyCaseUser(outcome.entry, key, closeReason);
+	if (result === 'optedOut') outcome.warnings.push(t('commands/case:notifyOptedOut'));
+	else if (result === 'failed') outcome.warnings.push(t('commands/case:notifyUndelivered'));
 }
 
 type ProofFailureKey =
@@ -320,14 +356,17 @@ export async function fetchCaseProofFile(proof: NonNullable<CaseEditValues['proo
 /**
  * Tells the user of a case, in a direct message in the language of the guild, that the case was edited or closed.
  *
- * @returns Whether the message was delivered: a user who closed their direct messages gets none.
+ * @returns How it went: `optedOut` when the user turned off the direct messages of the moderation (`/settings user`),
+ * as the moderation actions read it, and `failed` when they could not be sent one, such as a user who closed them.
  */
 async function notifyCaseUser(
 	entry: ModerationManager.Entry,
 	key: 'commands/case:dmEdited' | 'commands/case:dmClosed',
 	closeReason: string | null = null
-): Promise<boolean> {
+): Promise<'sent' | 'optedOut' | 'failed'> {
 	try {
+		if (!(await fetchUserReportEnabled(entry.userId))) return 'optedOut';
+
 		const t = await fetchGuildT(entry.guild);
 		const lines: string[] = [
 			t(key, { caseId: entry.id, guild: entry.guild.name }),
@@ -344,10 +383,10 @@ async function notifyCaseUser(
 			flags: MessageFlags.IsComponentsV2,
 			allowed_mentions: { parse: [] }
 		});
-		return true;
+		return 'sent';
 	} catch (error) {
 		container.logger.debug(`[MODERATION] Direct message about case ${entry.id} to ${entry.userId} not delivered: ${(error as Error).message}`);
-		return false;
+		return 'failed';
 	}
 }
 

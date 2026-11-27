@@ -546,6 +546,7 @@ declare module "i18next" {
         editUnchanged: "Case **{{caseId}}** already was as you wrote it, nothing was changed.";
         closeAlready: "Case **{{caseId}}** is already closed.";
         notifyUndelivered: "I could not send the direct message to the user.";
+        notifyOptedOut: "The user turned off the direct messages about moderation, so I did not send one.";
         proofNoChannel: "I could not keep the proof: set the moderation log channel first, the file is kept there.";
         proofTooLarge: "I could not keep the proof: the file is larger than 10 MB.";
         proofInvalidType: "I could not keep the proof: the file is neither an image nor a video.";

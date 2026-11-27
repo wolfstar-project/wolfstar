@@ -38,6 +38,7 @@ export class UserCommand extends Command {
 				},
 				notify: false
 			});
+			if (outcome === null) return deferred.update(renderStatus('error', t('arguments:caseUnknownEntry', { parameter: entry.id })));
 
 			const key = outcome.changes.length === 0 ? 'commands/case:editUnchanged' : 'commands/case:editSuccess';
 			return deferred.update(renderStatus(outcome.changes.length === 0 ? 'info' : 'success', t(key, { caseId: entry.id })));
