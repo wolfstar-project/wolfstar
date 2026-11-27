@@ -182,8 +182,11 @@ async function cancelOnboardingTimeLimit(stage: Pick<OnboardingStage, 'timeLimit
  */
 export async function syncOnboardingTimeLimits(guildId: Snowflake): Promise<{ scheduled: number; left: number }> {
 	const { orm } = container.prisma;
-	const stages = await fetchOnboardingStages(orm, guildId);
+	// The rows are read before the stages: a member starts a stage only once it exists, so the stage of every row read
+	// is in the stages read after, unless it was deleted. Read the other way, a stage created in between, and started,
+	// would look deleted, and its member would be marked as left.
 	const rows = await fetchWaitingOnboardingVerifications(orm, guildId);
+	const stages = await fetchOnboardingStages(orm, guildId);
 
 	let scheduled = 0;
 	let left = 0;

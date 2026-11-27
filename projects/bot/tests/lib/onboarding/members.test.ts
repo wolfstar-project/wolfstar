@@ -13,6 +13,7 @@ import {
 import { DiscordAPIError } from '@discordjs/rest';
 import { container } from '@wolfstar/http-framework';
 import type { Guild, GuildMember } from '@wolfstar/plugin-gateway';
+import { fetchOnboardingStages, fetchWaitingOnboardingVerifications } from 'wolfstar-database';
 import type { OnboardingConfig, OnboardingStage, OnboardingVerification, OnboardingVerificationStatus } from 'wolfstar-database';
 
 // The rows of the members and the configuration, in place of the tables, with what the database guarantees: a row
@@ -322,6 +323,32 @@ describe('syncOnboardingTimeLimits', () => {
 			].sort()
 		);
 		expect(table.get(orphan.id)!.status).toBe('Left');
+	});
+});
+
+describe('syncOnboardingTimeLimits under concurrent writes', () => {
+	test('GIVEN a stage created and started while the time limits are synced THEN its member still waits', async () => {
+		const created = createStage('2');
+		let row: OnboardingVerification | undefined;
+		// Another administrator creates a stage, and a member starts it, between the two reads of the sync:
+		const commit = () => {
+			if (row !== undefined) return;
+			setConfig([createStage('1'), created]);
+			row = addRow({ stageId: '2', userId: '4' });
+		};
+		vi.mocked(fetchOnboardingStages).mockImplementationOnce(async () => {
+			const stages = [...state.config.stages];
+			commit();
+			return stages;
+		});
+		vi.mocked(fetchWaitingOnboardingVerifications).mockImplementationOnce(async (_orm, id) => {
+			const rows = [...table.values()].filter((entry) => entry.guildId === id && entry.status === 'Waiting');
+			commit();
+			return rows;
+		});
+
+		await syncOnboardingTimeLimits(guildId);
+		expect(table.get(row!.id)!.status).toBe('Waiting');
 	});
 });
 
