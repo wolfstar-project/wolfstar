@@ -6,9 +6,11 @@ import { Listener } from '@wolfstar/http-framework';
 import type { Snowflake } from 'discord-api-types/v10';
 
 /**
- * The key the dashboard names when it writes the stages of the onboarding, which are rows and not keys of the settings.
+ * The keys the dashboard names when it writes the onboarding: `onboarding` for the stages, which are rows and not keys
+ * of the settings, and `onboardingEnabled` for the module's switch, since a module switched on again gives the members
+ * who wait their time limit back.
  */
-const OnboardingDashboardKey = 'onboarding';
+const OnboardingDashboardKeys = ['onboarding', 'onboardingEnabled'];
 
 /**
  * Makes the time limits the dashboard saved apply to the members who wait, see `syncOnboardingTimeLimits`: a limit made
@@ -17,7 +19,7 @@ const OnboardingDashboardKey = 'onboarding';
 @ApplyOptions<Listener.Options>({ emitter: 'client', event: Events.DashboardSettingsUpdate })
 export class UserListener extends Listener {
 	public async run(guildId: Snowflake, keys: readonly string[]) {
-		if (!keys.includes(OnboardingDashboardKey)) return;
+		if (!OnboardingDashboardKeys.some((key) => keys.includes(key))) return;
 
 		try {
 			const { scheduled, left } = await syncOnboardingTimeLimits(guildId);

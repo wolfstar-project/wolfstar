@@ -203,6 +203,29 @@ export async function syncOnboardingTimeLimits(guildId: Snowflake): Promise<{ sc
 }
 
 /**
+ * Gives the members who wait their deadline again when the module is switched on. A job that ran while the module
+ * was off did nothing and scheduled no other, see `runOnboardingTimeLimit`, so these members would otherwise wait
+ * with no time limit until they press the button.
+ *
+ * @remarks Every write of the settings calls it, whatever wrote the switch: the panel, `/conf`, the settings menu
+ * or an import. The dashboard's writes reach the bot by its notification instead.
+ *
+ * @param guildId - The guild whose settings were written.
+ * @param previous - Whether the module was on before the write.
+ * @param next - Whether the module is on after it.
+ */
+export async function resumeOnboardingTimeLimits(guildId: Snowflake, previous: boolean, next: boolean): Promise<void> {
+	if (previous || !next) return;
+
+	try {
+		const { scheduled, left } = await syncOnboardingTimeLimits(guildId);
+		container.logger.debug(`[Onboarding] The module of ${guildId} is on again: ${scheduled} time limits scheduled, ${left} rows left`);
+	} catch (error) {
+		container.logger.error(`[Onboarding] Could not give the members who wait in ${guildId} their time limit again:`, error);
+	}
+}
+
+/**
  * What a member answering a stage right led to:
  * - `Passed`: the row is passed, and `next` is where they are now.
  * - `RoleRefused`: Discord refused the stage's role, so the row still waits: the member answers again to get it.
@@ -402,7 +425,8 @@ export async function runOnboardingTimeLimit(verificationId: string, runAt: numb
 		const member = await fetchOnboardingMember(guildId, userId);
 		if (member === null || selectCurrentStay([current], member.joinedTimestamp).length === 0) return leaveOnboardingRow(current.id);
 
-		// What is off acts on nobody. The member is checked again when they press the button, or when the stages are written:
+		// What is off acts on nobody. The member is checked again when they press the button, when the stages are written,
+		// or when the module is switched on again (`resumeOnboardingTimeLimits`):
 		if (!config.settings.enabled || !stage.enabled) return 'Off';
 
 		const reason = getOnboardingFailureReason(stage, current, Date.now());

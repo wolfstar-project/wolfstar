@@ -5,6 +5,7 @@ import {
 	failOnboardingStageLocked,
 	getOnboardingTimeLimitTaskId,
 	passOnboardingStageLocked,
+	resumeOnboardingTimeLimits,
 	runOnboardingTimeLimit,
 	startOnboardingStage,
 	syncOnboardingTimeLimits
@@ -321,5 +322,26 @@ describe('syncOnboardingTimeLimits', () => {
 			].sort()
 		);
 		expect(table.get(orphan.id)!.status).toBe('Left');
+	});
+});
+
+describe('resumeOnboardingTimeLimits', () => {
+	test('GIVEN the module switched on THEN the members who wait get their deadline again', async () => {
+		const stage = createStage('1');
+		const row = addRow();
+
+		await resumeOnboardingTimeLimits(guildId, false, true);
+		expect(scheduledJobIds()).toEqual([getOnboardingTimeLimitTaskId(row.id, deadlineOf(row, stage))]);
+	});
+
+	test.each([
+		[true, true],
+		[true, false],
+		[false, false]
+	])('GIVEN the module that was %s and is %s THEN no deadline is scheduled', async (previous, next) => {
+		addRow();
+
+		await resumeOnboardingTimeLimits(guildId, previous, next);
+		expect(createTask).not.toHaveBeenCalled();
 	});
 });
