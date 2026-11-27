@@ -57,6 +57,7 @@ export * from './settings/constants.js';
 export * from './settings/honeypot/storage.js';
 export * from './settings/joinguard/storage.js';
 export * from './settings/joinguard/types.js';
+export * from './settings/onboarding/requests.js';
 export * from './settings/onboarding/storage.js';
 export * from './settings/onboarding/types.js';
 export * from './settings/onboarding/validation.js';

@@ -1,0 +1,106 @@
+[
+	{
+		"id": "table.OnboardingRequest",
+		"label": "Create table \"OnboardingRequest\"",
+		"summary": "Creates table \"OnboardingRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "table",
+				"name": "OnboardingRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure table \"OnboardingRequest\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingRequest\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create table \"OnboardingRequest\"",
+				"sql": "CREATE TABLE \"public\".\"OnboardingRequest\" (\n  \"created_at\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"error\" text,\n  \"guild_id\" int8 NOT NULL,\n  \"id\" BIGSERIAL NOT NULL,\n  \"processed_at\" timestamp(3),\n  \"user_id\" int8 NOT NULL,\n  \"verification_id\" int8 NOT NULL,\n  CONSTRAINT \"OnboardingRequest_pkey\" PRIMARY KEY (\"id\")\n)",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify table \"OnboardingRequest\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingRequest\""]
+			}
+		]
+	},
+	{
+		"id": "index.OnboardingRequest.OnboardingRequest_guild_id_created_at_idx",
+		"label": "Create index \"OnboardingRequest_guild_id_created_at_idx\" on \"OnboardingRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "OnboardingRequest_guild_id_created_at_idx",
+				"table": "OnboardingRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure index \"OnboardingRequest_guild_id_created_at_idx\" does not exist",
+				"sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingRequest_guild_id_created_at_idx\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "create index \"OnboardingRequest_guild_id_created_at_idx\"",
+				"sql": "CREATE INDEX \"OnboardingRequest_guild_id_created_at_idx\" ON \"public\".\"OnboardingRequest\" (\"guild_id\", \"created_at\")",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify index \"OnboardingRequest_guild_id_created_at_idx\" exists",
+				"sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+				"params": ["\"public\".\"OnboardingRequest_guild_id_created_at_idx\""]
+			}
+		]
+	},
+	{
+		"id": "foreignKey.OnboardingRequest.OnboardingRequest_guild_id_fkey",
+		"label": "Add foreign key \"OnboardingRequest_guild_id_fkey\" on \"OnboardingRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "foreignKey",
+				"name": "OnboardingRequest_guild_id_fkey",
+				"table": "OnboardingRequest"
+			}
+		},
+		"precheck": [
+			{
+				"description": "ensure FK \"OnboardingRequest_guild_id_fkey\" does not exist",
+				"sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["OnboardingRequest_guild_id_fkey", "public", "\"public\".\"OnboardingRequest\""]
+			}
+		],
+		"execute": [
+			{
+				"description": "add FK \"OnboardingRequest_guild_id_fkey\"",
+				"sql": "ALTER TABLE \"public\".\"OnboardingRequest\"\nADD CONSTRAINT \"OnboardingRequest_guild_id_fkey\"\nFOREIGN KEY (\"guild_id\")\nREFERENCES \"public\".\"Guild\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify FK \"OnboardingRequest_guild_id_fkey\" exists",
+				"sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+				"params": ["OnboardingRequest_guild_id_fkey", "public", "\"public\".\"OnboardingRequest\""]
+			}
+		]
+	}
+]

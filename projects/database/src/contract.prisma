@@ -474,6 +474,22 @@ namespace public {
     @@index([stageId], map: "OnboardingVerification_stage_id_idx")
   }
 
+  // A member who passed the captcha of a `Captcha` stage on the website's `/verify` page, which the bot passes them for,
+  // announced with `NOTIFY onboarding_request, '<id>'` in the transaction that inserts it. `verificationId` is the
+  // `Waiting` row the page read. The bot writes `processedAt` once, and `error` as `<code>: <detail>` when it could not.
+  model OnboardingRequest {
+    id             BigInt              @id(map: "OnboardingRequest_pkey") @default(autoincrement())
+    guildId        BigInt              @map("guild_id")
+    userId         BigInt              @map("user_id")
+    verificationId BigInt              @map("verification_id")
+    createdAt      TimestampString(3)  @default(now()) @map("created_at")
+    processedAt    TimestampString(3)? @map("processed_at")
+    error          String?
+    guild          Guild               @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "OnboardingRequest_guild_id_fkey", index: false)
+
+    @@index([guildId, createdAt], map: "OnboardingRequest_guild_id_created_at_idx")
+  }
+
   model GuildLogs {
     id                     BigInt   @id(map: "GuildLogs_pkey")
     memberAdd              BigInt?  @map("member_add")
