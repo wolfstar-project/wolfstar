@@ -20,7 +20,8 @@ const RelayedTypes: ReadonlySet<ShardMessageType> = new Set<ShardMessageType>([
 	'moderationReasonsUpdate',
 	'warnThresholdsUpdate',
 	'roleRulesUpdate',
-	'joinGuardUpdate'
+	'joinGuardUpdate',
+	'onboardingUpdate'
 ]);
 
 /**

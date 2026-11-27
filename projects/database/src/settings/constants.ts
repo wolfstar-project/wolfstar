@@ -56,6 +56,7 @@ export function getDefaultGuildSettings() {
 		joinGuardSharedBans: true,
 		joinGuardAllowedUsers: [],
 		joinGuardAllowedRoles: [],
+		onboardingEnabled: false,
 		logsMemberAdd: null,
 		logsMemberRemove: null,
 		logsMemberNicknameUpdate: null,
