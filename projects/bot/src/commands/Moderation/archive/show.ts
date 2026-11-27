@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { getMessageHistoryFile } from '#lib/moderation/historyReply';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
@@ -19,7 +20,7 @@ export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'archive show'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const history = await fetchMessageHistory(this.container.prisma, interaction.guildId, options.id.trim());
-		if (history === null) return interaction.reply({ content: t(`${Root}:notFound`), flags: MessageFlags.Ephemeral });
+		if (history === null) return interaction.reply(renderStatus('error', t(`${Root}:notFound`)));
 
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 		return deferred.update({ files: [await getMessageHistoryFile(history)] });

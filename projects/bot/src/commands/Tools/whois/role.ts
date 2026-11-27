@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { CommandPermissionLevel, getCommandPermissionDenial } from '#lib/structures/commands/permissions';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { PermissionsBits } from 'wolfstar-shared';
@@ -6,7 +7,7 @@ import { EmbedBuilder } from '@discordjs/builders';
 import { container, type TransformedArguments } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
 /**
  * The data of a role the command displays, whether it comes from the `role` option or from the roles of the member.
@@ -33,7 +34,7 @@ interface RoleData {
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'whois role'>) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 
 		const t = getSupportedUserLanguageT(interaction);
 		const role = options.role === undefined ? await this.getHighestRole(interaction) : this.fromApi(options.role);

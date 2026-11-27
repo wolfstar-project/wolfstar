@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { getSettingName, writeSettings } from '#lib/database';
 import { ModerationActions } from '#lib/moderation/actions';
 import { CommandPermissionLevel, RequiresCommandPermissionLevel } from '#lib/structures/commands/permissions';
@@ -34,7 +35,7 @@ export class UserCommand extends Command {
 				key: getSettingName(createTranslator(t), 'rolesMuted'),
 				response: role.name
 			});
-			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('info', content));
 		}
 
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
@@ -43,12 +44,14 @@ export class UserCommand extends Command {
 			await ModerationActions.mute.setup({ guild, author: interaction.user, confirm: () => true });
 		} catch (error) {
 			if (error instanceof UserError) {
-				return deferred.update({ content: translateKey(t, error.identifier as TranslationKey, error.context as Record<string, unknown>) });
+				return deferred.update(
+					renderStatus('error', translateKey(t, error.identifier as TranslationKey, error.context as Record<string, unknown>))
+				);
 			}
 			throw error;
 		}
 
-		return deferred.update({ content: translateKey(t, 'moderation:success') });
+		return deferred.update(renderStatus('success', translateKey(t, 'moderation:success')));
 	}
 }
 

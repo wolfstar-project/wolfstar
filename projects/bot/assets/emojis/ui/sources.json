@@ -1,0 +1,16 @@
+{
+	"file": "mENlr6NioJQolUsV3FI7eX",
+	"note": "The 400 square of the Glyph of each cell of the Grid of the Emoji page, rendered at 128 px in #80848E at an opacity of 0.7647. The glyphs of search, history, lock and chart are the ones of the Discord assets file (Z3PFMvgHo95bNq2IdAZNNr); mute is drawn in its style, with the knockout band of its slashed icons.",
+	"emojis": {
+		"search": { "cell": "Search", "node": "2122:30" },
+		"history": { "cell": "History", "node": "2122:36" },
+		"lock": { "cell": "Lock", "node": "2122:42" },
+		"chart": { "cell": "Chart", "node": "2122:48" },
+		"mute": { "cell": "Microphone Off", "node": "2122:54" },
+		"info": { "cell": "Info", "node": "2067:143" },
+		"note": { "cell": "State", "node": "2067:152" },
+		"folder": { "cell": "Folder", "node": "2067:109" },
+		"chat": { "cell": "Chat", "node": "2067:148" },
+		"remove": { "cell": "Divisor", "note": "Drawn as a minus two units high, the cell is a thicker bar" }
+	}
+}

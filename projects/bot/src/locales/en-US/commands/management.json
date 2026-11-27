@@ -10,8 +10,8 @@
 	"commandModeThresholdDuration": "The time in which infractions will accumulate before taking action, instantly if unset.",
 	"commandModeReminder": "`Action Log` requires `channel.moderation-logs` to be set up.",
 	"commandHandlerAborted": "Aborted",
-	"permissionNodesNodeNotExists": "{{REDCROSS}} The selected permission node does not exist.",
-	"permissionNodesCommandNotExists": "{{REDCROSS}} The selected command does not exist in the permision node.",
+	"permissionNodesNodeNotExists": "The selected permission node does not exist.",
+	"permissionNodesCommandNotExists": "The selected command does not exist in the permision node.",
 	"guildInfoTitles": {
 		"CHANNELS": "Channels",
 		"MEMBERS": "Members",

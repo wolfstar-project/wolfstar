@@ -105,7 +105,7 @@ const MaximumListLength = 1500;
  */
 function getSectionEmoji(section: AutoModerationMenuSection): EmojiComponent {
 	if (section === 'response') return getEmojiComponent('ModuleAutomod');
-	return { name: section === 'options' ? '📝' : section === 'exempt' ? '📜' : '🧩' };
+	return getEmojiComponent(section === 'options' ? 'Note' : section === 'exempt' ? 'ShieldMember' : 'ModuleModules');
 }
 
 export interface AutoModerationMenuContext {
@@ -304,7 +304,11 @@ export function renderAutoModerationRule(
 		body.push(
 			text(`${Emojis.Warning} ${translateKey(t, `${Root}:menuDeleteConfirm`, { name: rule.name })}`),
 			row([
-				button(id('confirm'), { label: translateKey(t, `${Root}:menuDeleteConfirmButton`), emoji: '🗑️', style: ButtonStyle.Danger }),
+				button(id('confirm'), {
+					label: translateKey(t, `${Root}:menuDeleteConfirmButton`),
+					emoji: getEmojiComponent('Delete'),
+					style: ButtonStyle.Danger
+				}),
 				button(id('view'), { label: translateKey(t, `${Root}:menuCancel`) })
 			])
 		);
@@ -316,7 +320,7 @@ export function renderAutoModerationRule(
 					emoji: getEmojiComponent('Back')
 				}),
 				button(id('view'), { emoji: getEmojiComponent('Refresh') }),
-				button(id('delete'), { label: translateKey(t, `${Root}:menuDelete`), emoji: '🗑️', style: ButtonStyle.Danger })
+				button(id('delete'), { label: translateKey(t, `${Root}:menuDelete`), emoji: getEmojiComponent('Delete'), style: ButtonStyle.Danger })
 			])
 		);
 	}
@@ -360,10 +364,14 @@ function renderOptions({ t }: AutoModerationMenuContext, rule: AutoModerationRul
 					style: ButtonStyle.Secondary,
 					disabled: list.length >= MaximumAutoModerationRuleListLength
 				}),
-				button(id('edit', 'remove'), { label: translateKey(t, `${Root}:menuListRemove`), emoji: '➖', disabled: list.length === 0 }),
+				button(id('edit', 'remove'), {
+					label: translateKey(t, `${Root}:menuListRemove`),
+					emoji: getEmojiComponent('Remove'),
+					disabled: list.length === 0
+				}),
 				button(id('clear'), {
 					label: translateKey(t, `${Root}:menuListClear`),
-					emoji: '🗑️',
+					emoji: getEmojiComponent('Delete'),
 					style: ButtonStyle.Danger,
 					disabled: list.length === 0
 				})
@@ -443,11 +451,11 @@ function renderResponse({ t }: AutoModerationMenuContext, rule: AutoModerationRu
 		),
 		block(
 			`**${translateKey(t, `${Root}:menuThreshold`)}**\n${renderThreshold(t, rule)}\n-# ${translateKey(t, `${Root}:menuThresholdDescription`)}`,
-			button(id('edit', 'threshold'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '🔢' })
+			button(id('edit', 'threshold'), { label: translateKey(t, `${Root}:menuEdit`), emoji: getEmojiComponent('AutoModCharacters') })
 		),
 		block(
 			`**${translateKey(t, `${Root}:menuEscalation`)}**\n${renderEscalation(t, rule)}\n-# ${translateKey(t, `${Root}:menuEscalationDescription`)}`,
-			button(id('edit', 'escalation'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '📈' })
+			button(id('edit', 'escalation'), { label: translateKey(t, `${Root}:menuEdit`), emoji: getEmojiComponent('Chart') })
 		)
 	);
 	return body;
@@ -461,7 +469,7 @@ function renderExtra({ t }: AutoModerationMenuContext, rule: AutoModerationRule,
 	return [
 		block(
 			`**${translateKey(t, `${Root}:menuCustomResponse`)}**\n${renderCustomResponse(t, rule)}\n-# ${translateKey(t, `${Root}:menuCustomResponseDescription`)}`,
-			button(id('edit', 'response'), { label: translateKey(t, `${Root}:menuEdit`), emoji: '💬' })
+			button(id('edit', 'response'), { label: translateKey(t, `${Root}:menuEdit`), emoji: getEmojiComponent('Chat') })
 		),
 		text(
 			`**${translateKey(t, `${Root}:menuLogChannel`)}**\n${rule.logChannelId === null ? translateKey(t, `${Root}:menuLogChannelDefault`) : channelMention(rule.logChannelId)}\n-# ${translateKey(t, `${Root}:menuLogChannelDescription`)}`

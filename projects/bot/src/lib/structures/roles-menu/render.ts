@@ -1,7 +1,7 @@
 import type { Translator } from '#lib/structures/commands/utils';
 import { PermissionsBits } from 'wolfstar-shared';
 import { BrandingColors } from '#utils/constants';
-import { getEmojiComponent, type EmojiComponent } from '#utils/emojis';
+import { Emojis, getEmojiComponent, type EmojiComponent } from '#utils/emojis';
 import { inlineCode, roleMention } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
@@ -157,8 +157,15 @@ export function renderRolesList(context: RolesMenuContext, page: number): RolesM
 
 	const body: APIComponentInContainer[] = [
 		{
-			type: ComponentType.TextDisplay,
-			content: `## 🏷️ ${t('commands/management:rolesBrowseTitle')}\n${t('commands/management:rolesBrowseSubtitle', { server: context.guildName, count: roles.length })}`
+			type: ComponentType.Section,
+			components: [
+				{
+					type: ComponentType.TextDisplay,
+					content: `## ${Emojis.ModuleRoles} ${t('commands/management:rolesBrowseTitle')}\n${t('commands/management:rolesBrowseSubtitle', { server: context.guildName, count: roles.length })}`
+				}
+			],
+			// The search of a role is up on the right of the title, as the search of the commands menu is:
+			accessory: button(id('pick'), { emoji: getEmojiComponent('Search') })
 		},
 		{ type: ComponentType.Separator, divider: true, spacing: SeparatorSpacingSize.Small },
 		{ type: ComponentType.TextDisplay, content: lines.length === 0 ? t('commands/management:rolesBrowseEmpty') : lines.join('\n') },
@@ -175,11 +182,10 @@ export function renderRolesList(context: RolesMenuContext, page: number): RolesM
 				button(id('list', Math.min(pages - 1, current + 1)), { emoji: getEmojiComponent('ArrowRight'), disabled: current >= pages - 1 }),
 				button(id('list', pages - 1), { emoji: getEmojiComponent('ArrowRightFast'), disabled: current >= pages - 1 })
 			])
-		),
-		row([button(id('pick'), { label: t('commands/management:rolesBrowsePick'), emoji: '🔎', style: ButtonStyle.Primary })])
+		)
 	];
 
-	return toMessage([{ type: ComponentType.Container, accent_color: BrandingColors.Primary, components: body }]);
+	return toMessage([{ type: ComponentType.Container, components: body }]);
 }
 
 /**
@@ -193,7 +199,7 @@ export function renderRolesPicker(context: RolesMenuContext, page: number): Role
 	const body: APIComponentInContainer[] = [
 		{
 			type: ComponentType.TextDisplay,
-			content: `## 🔎 ${t('commands/management:rolesBrowsePickTitle')}\n${t('commands/management:rolesBrowsePickSubtitle')}`
+			content: `## ${Emojis.Search} ${t('commands/management:rolesBrowsePickTitle')}\n${t('commands/management:rolesBrowsePickSubtitle')}`
 		},
 		{
 			type: ComponentType.ActionRow,
@@ -215,7 +221,7 @@ export function renderRolesPicker(context: RolesMenuContext, page: number): Role
 		])
 	];
 
-	return toMessage([{ type: ComponentType.Container, accent_color: BrandingColors.Primary, components: body }]);
+	return toMessage([{ type: ComponentType.Container, components: body }]);
 }
 
 /**
@@ -256,8 +262,7 @@ export function renderRoleView(context: RolesMenuContext, role: RolesMenuRole, p
 			}),
 			button(encodeRolesMenuId({ ownerId, verb: 'pick', page }), {
 				label: t('commands/management:rolesBrowsePick'),
-				emoji: '🔎',
-				style: ButtonStyle.Primary
+				emoji: getEmojiComponent('Search')
 			})
 		])
 	];

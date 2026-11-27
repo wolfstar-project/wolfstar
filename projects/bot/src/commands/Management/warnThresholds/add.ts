@@ -4,9 +4,9 @@ import { resolveTimeSpan } from '#utils/resolvers';
 import { days } from 'wolfstar-shared';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 import { WarnThresholdActions, type WarnThresholdAction } from 'wolfstar-database';
 import { formatWarnThreshold, WarnThresholdActionKeys } from '#lib/moderation/warnThresholdsFormat';
+import { renderStatus, type StatusKind } from '#utils/status';
 
 const Root = 'commands/warn-thresholds';
 
@@ -33,22 +33,22 @@ const MaximumDuration = days(365);
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'warn-thresholds add'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		const reply = (kind: StatusKind, content: string) => interaction.reply(renderStatus(kind, content));
 		const action = options.action as WarnThresholdAction;
 
 		const duration = this.parseDuration(t, options.duration);
-		if (typeof duration === 'string') return reply(duration);
+		if (typeof duration === 'string') return reply('error', duration);
 
 		const period = this.parseDuration(t, options.period);
-		if (typeof period === 'string') return reply(period);
+		if (typeof period === 'string') return reply('error', period);
 
 		const threshold = { count: options.count, action, duration, period: period ?? 0 };
 		try {
 			const created = await addWarnThreshold(interaction.guildId, threshold);
 			const line = formatWarnThreshold(t, threshold);
-			return reply(t(created ? `${Root}:added` : `${Root}:replaced`, { threshold: line }));
+			return reply('success', t(created ? `${Root}:added` : `${Root}:replaced`, { threshold: line }));
 		} catch (error) {
-			if (error instanceof WarnThresholdLimitError) return reply(t(`${Root}:limit`, { maximum: error.maximum }));
+			if (error instanceof WarnThresholdLimitError) return reply('error', t(`${Root}:limit`, { maximum: error.maximum }));
 			throw error;
 		}
 	}

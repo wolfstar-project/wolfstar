@@ -2,6 +2,7 @@ import { AutoModerationRoot, AutoModerationRuleTypeKeys, translateRuleError } fr
 import { createAutoModerationRule } from '#lib/moderation/automod/rules';
 import { renderAutoModerationRule } from '#lib/structures/automod-menu';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -31,7 +32,7 @@ export class UserCommand extends Command {
 		try {
 			rule = await createAutoModerationRule(interaction.guildId, options.name, options.type);
 		} catch (error) {
-			return interaction.reply({ content: translateRuleError(t, error, options.name), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', translateRuleError(t, error, options.name)));
 		}
 
 		// The rule is opened in the menu it is configured in, see the `automod` interaction handler:

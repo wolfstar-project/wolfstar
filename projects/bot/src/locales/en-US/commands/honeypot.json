@@ -49,7 +49,7 @@
 	"editNothing": "Tell me what to change with at least one option.",
 	"editDone": "{{GREENTICK}} The honeypot was updated.",
 	"notSetUp": "The honeypot is not set up. Set it up with {{command}}.",
-	"disabled": "{{GREENTICK}} {{channel}} is no longer a honeypot channel, nobody is caught for writing there. I did not delete it.",
+	"disabled": "{{channel}} is no longer a honeypot channel, nobody is caught for writing there. I did not delete it.",
 	"showTitle": "Honeypot",
 	"showOff": "The honeypot is off, nobody is caught. Set it up with {{command}}.",
 	"showLine": "**{{name}}**: {{value}}",

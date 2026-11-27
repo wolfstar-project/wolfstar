@@ -3,6 +3,7 @@ import { MaximumAppealMessageLength } from '#lib/moderation/appeals';
 import { sendAppealDirectMessage } from '#lib/moderation/appealService';
 import { fetchGuildT } from '#lib/moderation/common/util';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { userMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -28,11 +29,11 @@ export class UserCommand extends Command {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const threaded = await fetchAppealByThread(this.container.prisma, interaction.guildId, interaction.channelId);
 		if (threaded === null && options.appeal === undefined) {
-			return interaction.reply({ content: t('commands/appeal:sendNotThread'), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', t('commands/appeal:sendNotThread')));
 		}
 
 		const appeal = options.appeal === undefined ? threaded : await readAppealOption(interaction.guildId, options.appeal);
-		if (appeal === null) return interaction.reply({ content: t('commands/appeal:notFound'), flags: MessageFlags.Ephemeral });
+		if (appeal === null) return interaction.reply(renderStatus('error', t('commands/appeal:notFound')));
 
 		// Reaching the member takes a few requests, which can be longer than Discord waits for an answer:
 		const inItsThread = threaded?.id === appeal.id;
@@ -52,6 +53,7 @@ export class UserCommand extends Command {
 				.catch((error: unknown) => this.container.logger.warn(`[Appeals] Could not post in the thread of the appeal ${appeal.id}:`, error));
 		}
 
-		return deferred.update({ content, allowed_mentions: { parse: [] } });
+		// Whether the answer is public was decided by the defer, which an edit does not change:
+		return deferred.update(renderStatus(sent ? 'success' : 'error', content, { ephemeral: false }));
 	}
 }

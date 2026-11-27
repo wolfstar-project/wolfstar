@@ -1469,7 +1469,10 @@
 							"channelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
 							"extraData": { "nullable": true, "type": { "codecId": "pg/jsonb@1", "kind": "scalar" } },
 							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"messageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
+							"messageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"proofChannelId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"proofMessageId": { "nullable": true, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"staffNote": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } }
 						},
 						"relations": {
 							"guild": {
@@ -1485,10 +1488,46 @@
 								"channelId": { "column": "channel_id" },
 								"extraData": { "column": "extra_data" },
 								"guildId": { "column": "guild_id" },
-								"messageId": { "column": "message_id" }
+								"messageId": { "column": "message_id" },
+								"proofChannelId": { "column": "proof_channel_id" },
+								"proofMessageId": { "column": "proof_message_id" },
+								"staffNote": { "column": "staff_note" }
 							},
 							"namespaceId": "public",
 							"table": "ModerationCaseData"
+						}
+					},
+					"ModerationCaseEdit": {
+						"fields": {
+							"caseId": { "nullable": false, "type": { "codecId": "pg/int4@1", "kind": "scalar" } },
+							"changes": { "nullable": false, "type": { "codecId": "typed/json@1", "kind": "scalar" } },
+							"createdAt": {
+								"nullable": false,
+								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
+							},
+							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
+							"moderatorId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
+						},
+						"relations": {
+							"guild": {
+								"cardinality": "N:1",
+								"nullable": false,
+								"on": { "localFields": ["guildId"], "targetFields": ["id"] },
+								"to": { "model": "Guild", "namespace": "public" }
+							}
+						},
+						"storage": {
+							"fields": {
+								"caseId": { "column": "case_id" },
+								"changes": { "column": "changes" },
+								"createdAt": { "column": "created_at" },
+								"guildId": { "column": "guild_id" },
+								"id": { "column": "id" },
+								"moderatorId": { "column": "moderator_id" }
+							},
+							"namespaceId": "public",
+							"table": "ModerationCaseEdit"
 						}
 					},
 					"Modules": {
@@ -1529,44 +1568,6 @@
 							},
 							"namespaceId": "public",
 							"table": "Modules"
-						}
-					},
-					"OnboardingRequest": {
-						"fields": {
-							"createdAt": {
-								"nullable": false,
-								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
-							},
-							"error": { "nullable": true, "type": { "codecId": "pg/text@1", "kind": "scalar" } },
-							"guildId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"id": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"processedAt": {
-								"nullable": true,
-								"type": { "codecId": "pg/timestamp-string@1", "kind": "scalar", "typeParams": { "precision": 3 } }
-							},
-							"userId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } },
-							"verificationId": { "nullable": false, "type": { "codecId": "pg/int8@1", "kind": "scalar" } }
-						},
-						"relations": {
-							"guild": {
-								"cardinality": "N:1",
-								"nullable": false,
-								"on": { "localFields": ["guildId"], "targetFields": ["id"] },
-								"to": { "model": "Guild", "namespace": "public" }
-							}
-						},
-						"storage": {
-							"fields": {
-								"createdAt": { "column": "created_at" },
-								"error": { "column": "error" },
-								"guildId": { "column": "guild_id" },
-								"id": { "column": "id" },
-								"processedAt": { "column": "processed_at" },
-								"userId": { "column": "user_id" },
-								"verificationId": { "column": "verification_id" }
-							},
-							"namespaceId": "public",
-							"table": "OnboardingRequest"
 						}
 					},
 					"OnboardingVerification": {
@@ -1798,8 +1799,8 @@
 		"MessageHistory": { "model": "MessageHistory", "namespace": "public" },
 		"ModerationAction": { "model": "ModerationAction", "namespace": "public" },
 		"ModerationCaseData": { "model": "ModerationCaseData", "namespace": "public" },
+		"ModerationCaseEdit": { "model": "ModerationCaseEdit", "namespace": "public" },
 		"Modules": { "model": "Modules", "namespace": "public" },
-		"OnboardingRequest": { "model": "OnboardingRequest", "namespace": "public" },
 		"OnboardingVerification": { "model": "OnboardingVerification", "namespace": "public" },
 		"Report": { "model": "Report", "namespace": "public" },
 		"StickyNickname": { "model": "StickyNickname", "namespace": "public" },
@@ -3860,7 +3861,10 @@
 								"channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
 								"extra_data": { "codecId": "pg/jsonb@1", "nativeType": "jsonb", "nullable": true },
 								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true }
+								"message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"proof_channel_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"proof_message_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": true },
+								"staff_note": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true }
 							},
 							"foreignKeys": [
 								{
@@ -3873,6 +3877,44 @@
 							],
 							"indexes": [],
 							"primaryKey": { "columns": ["case_id", "guild_id"], "name": "ModerationCaseData_pkey" },
+							"uniques": []
+						},
+						"ModerationCaseEdit": {
+							"columns": {
+								"case_id": { "codecId": "pg/int4@1", "nativeType": "int4", "nullable": false },
+								"changes": {
+									"codecId": "typed/json@1",
+									"default": { "expression": "'[]'::jsonb", "kind": "function" },
+									"nativeType": "jsonb",
+									"nullable": false,
+									"typeRef": "ModerationCaseEditChanges"
+								},
+								"created_at": {
+									"codecId": "pg/timestamp-string@1",
+									"nativeType": "timestamp",
+									"nullable": false,
+									"typeParams": { "precision": 3 }
+								},
+								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
+								"id": {
+									"codecId": "pg/int8@1",
+									"default": { "expression": "autoincrement()", "kind": "function" },
+									"nativeType": "int8",
+									"nullable": false
+								},
+								"moderator_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false }
+							},
+							"foreignKeys": [
+								{
+									"name": "ModerationCaseEdit_guild_id_fkey",
+									"onDelete": "cascade",
+									"onUpdate": "cascade",
+									"source": { "columns": ["guild_id"], "namespaceId": "public", "tableName": "ModerationCaseEdit" },
+									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Guild" }
+								}
+							],
+							"indexes": [{ "columns": ["guild_id", "case_id"], "name": "ModerationCaseEdit_guild_id_case_id_idx", "unique": false }],
+							"primaryKey": { "columns": ["id"], "name": "ModerationCaseEdit_pkey" },
 							"uniques": []
 						},
 						"Modules": {
@@ -3951,47 +3993,6 @@
 							],
 							"indexes": [],
 							"primaryKey": { "columns": ["id"], "name": "Modules_pkey" },
-							"uniques": []
-						},
-						"OnboardingRequest": {
-							"columns": {
-								"created_at": {
-									"codecId": "pg/timestamp-string@1",
-									"default": { "expression": "now()", "kind": "function" },
-									"nativeType": "timestamp",
-									"nullable": false,
-									"typeParams": { "precision": 3 }
-								},
-								"error": { "codecId": "pg/text@1", "nativeType": "text", "nullable": true },
-								"guild_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"id": {
-									"codecId": "pg/int8@1",
-									"default": { "expression": "autoincrement()", "kind": "function" },
-									"nativeType": "int8",
-									"nullable": false
-								},
-								"processed_at": {
-									"codecId": "pg/timestamp-string@1",
-									"nativeType": "timestamp",
-									"nullable": true,
-									"typeParams": { "precision": 3 }
-								},
-								"user_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false },
-								"verification_id": { "codecId": "pg/int8@1", "nativeType": "int8", "nullable": false }
-							},
-							"foreignKeys": [
-								{
-									"name": "OnboardingRequest_guild_id_fkey",
-									"onDelete": "cascade",
-									"onUpdate": "cascade",
-									"source": { "columns": ["guild_id"], "namespaceId": "public", "tableName": "OnboardingRequest" },
-									"target": { "columns": ["id"], "namespaceId": "public", "tableName": "Guild" }
-								}
-							],
-							"indexes": [
-								{ "columns": ["guild_id", "created_at"], "name": "OnboardingRequest_guild_id_created_at_idx", "unique": false }
-							],
-							"primaryKey": { "columns": ["id"], "name": "OnboardingRequest_pkey" },
 							"uniques": []
 						},
 						"OnboardingVerification": {
@@ -4260,7 +4261,7 @@
 				"kind": "postgres-schema"
 			}
 		},
-		"storageHash": "fe05809351ab28fff50787605a5eb6005622ebd489a8eaf10458bc4da6ada3c0",
+		"storageHash": "8058a0d5a801e52165cffbe3a6a0d05c6a1b67fc6334c8c3ae3cc882821aac52",
 		"types": {
 			"AppealAnswers": {
 				"codecId": "typed/json@1",
@@ -4297,6 +4298,12 @@
 				"kind": "codec-instance",
 				"nativeType": "jsonb",
 				"typeParams": { "tsType": "PrismaJson.MessageHistoryMessages" }
+			},
+			"ModerationCaseEditChanges": {
+				"codecId": "typed/json@1",
+				"kind": "codec-instance",
+				"nativeType": "jsonb",
+				"typeParams": { "tsType": "PrismaJson.ModerationCaseEditChanges" }
 			},
 			"PermissionNodeEntries": {
 				"codecId": "typed/json@1",

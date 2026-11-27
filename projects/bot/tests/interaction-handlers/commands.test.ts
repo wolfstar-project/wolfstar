@@ -1,3 +1,4 @@
+import { statusContaining } from '../mocks/status';
 import { readSettings, writeSettingsTransaction } from '#lib/database';
 import {
 	decodeCommandsMenuId,
@@ -161,7 +162,7 @@ describe('commands editor', () => {
 		});
 		await handler().run(stale.interaction, stale.content);
 		expect(written).toEqual([]);
-		expect(stale.answers).toMatchObject([{ content: 'commands/commands:editStale' }]);
+		expect(stale.answers).toMatchObject([statusContaining('commands/commands:editStale')]);
 	});
 
 	test('a form opened before the members could be picked cannot clear them', async () => {
@@ -172,7 +173,7 @@ describe('commands editor', () => {
 		expect(written).toEqual([]);
 		expect(old.answers).toHaveLength(1);
 		expect(group.answers).toHaveLength(1);
-		expect(old.answers).not.toMatchObject([{ content: 'commands/commands:editStale' }]);
+		expect(old.answers).not.toMatchObject([statusContaining('commands/commands:editStale')]);
 	});
 
 	test('a non-administrator or another menu user cannot save', async () => {
@@ -182,8 +183,8 @@ describe('commands editor', () => {
 		const other = submit('save', getCommandRestrictionRevision(stored, true), { status: 'enabled' }, userId);
 		await handler().run(other.interaction, other.content);
 		expect(written).toEqual([]);
-		expect(denied.answers).toMatchObject([{ content: 'preconditions:administrator' }]);
-		expect(other.answers).toMatchObject([{ content: 'commands/commands:menuWrongUser' }]);
+		expect(denied.answers).toMatchObject([statusContaining('preconditions:administrator')]);
+		expect(other.answers).toMatchObject([statusContaining('commands/commands:menuWrongUser')]);
 	});
 
 	test('protected commands cannot receive user restrictions', async () => {
@@ -191,7 +192,7 @@ describe('commands editor', () => {
 		const denied = submit('save', 0, { status: 'enabled', allowedMembers: [userId], ignoredMembers: [] });
 		await handler().run(denied.interaction, denied.content);
 		expect(written).toEqual([]);
-		expect(denied.answers).toMatchObject([{ content: 'commands/commands:editProtectedRestricted' }]);
+		expect(denied.answers).toMatchObject([statusContaining('commands/commands:editProtectedRestricted')]);
 	});
 
 	test('the rules of a category and of a sub-category open in a form of their own', async () => {
@@ -257,7 +258,7 @@ describe('commands editor', () => {
 		await handler().run(save.interaction, save.content);
 
 		expect(written).toEqual([]);
-		expect(save.answers).toMatchObject([{ content: 'commands/commands:editProtectedRestricted' }]);
+		expect(save.answers).toMatchObject([statusContaining('commands/commands:editProtectedRestricted')]);
 	});
 
 	test('saving the form of a sub-category with nothing picked removes its rule', async () => {
@@ -325,14 +326,14 @@ describe('commands editor', () => {
 		const revision = getLegacyPermissionRevision(settings);
 		const invalid = submit('confirmLegacy', revision, { confirmation: 'remove' });
 		await handler().run(invalid.interaction, invalid.content);
-		expect(invalid.answers).toMatchObject([{ content: 'commands/commands:legacyConfirmationInvalid' }]);
+		expect(invalid.answers).toMatchObject([statusContaining('commands/commands:legacyConfirmationInvalid')]);
 		const stale = submit('confirmLegacy', revision + 1, { confirmation: 'REMOVE' });
 		await handler().run(stale.interaction, stale.content);
-		expect(stale.answers).toMatchObject([{ content: 'commands/commands:legacyStale' }]);
+		expect(stale.answers).toMatchObject([statusContaining('commands/commands:legacyStale')]);
 		fetch.mockResolvedValueOnce({ ownerId: userId } as never);
 		const nonOwner = submit('confirmLegacy', revision, { confirmation: 'REMOVE' });
 		await handler().run(nonOwner.interaction, nonOwner.content);
-		expect(nonOwner.answers).toMatchObject([{ content: 'commands/commands:legacyOwnerOnly' }]);
+		expect(nonOwner.answers).toMatchObject([statusContaining('commands/commands:legacyOwnerOnly')]);
 		expect(written).toEqual([]);
 		const confirmed = submit('confirmLegacy', revision, { confirmation: 'REMOVE' });
 		await handler().run(confirmed.interaction, confirmed.content);

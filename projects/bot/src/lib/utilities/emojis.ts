@@ -79,6 +79,21 @@ export const EmojiDefinitions = {
 	Edit: emoji('edit', '✏️'),
 	// The triangle of what the user is warned about:
 	Warning: emoji('warning', '⚠️'),
+	// The circle of what the user is only told, see `renderStatus`:
+	Info: emoji('info', 'ℹ️'),
+	// The types of case the list of `/case list` has no other emoji for:
+	Mute: emoji('mute', '🔇'),
+	Note: emoji('note', '📝'),
+	// The clock of the list of the cases and of the history of a case, the lock of what closes one:
+	History: emoji('history', '🕘'),
+	Lock: emoji('lock', '🔒'),
+	// The magnifying glass of a search, the folder of a group of settings or commands, the chart of an escalation, the
+	// bubble of a response and the minus of what takes an entry out of a list:
+	Search: emoji('search', '🔍'),
+	Folder: emoji('folder', '📁'),
+	Chart: emoji('chart', '📈'),
+	Chat: emoji('chat', '💬'),
+	Remove: emoji('remove', '➖'),
 	// The return arrow of a button that goes back to where the user came from:
 	Back: emoji('back', '↩️'),
 	// The flask of what is experimental, next to a setting or in its note:

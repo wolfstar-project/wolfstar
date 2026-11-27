@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { decodeLogUserId } from '#lib/moderation/logs/messageButtons';
 import { InteractionHandler } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
@@ -13,7 +14,7 @@ import { MessageFlags } from 'discord-api-types/v10';
 export class UserInteractionHandler extends InteractionHandler {
 	public override run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const userId = decodeLogUserId(content);
-		if (userId === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+		if (userId === null) return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 
 		return interaction.reply({ content: userId, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
 	}

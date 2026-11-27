@@ -3,9 +3,9 @@ import { readAutoMessage } from '#lib/automessages/store';
 import { AutoMessageRoot, renderAutoMessageModal } from '#lib/automessages/render';
 import { resolveDurationOption } from '#lib/moderation/automod/commands';
 import { createTranslator, translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 import { AutoMessageIntervalLimits } from 'wolfstar-database';
 
 const Root = AutoMessageRoot;
@@ -30,7 +30,7 @@ export class UserCommand extends Command {
 		const interval = resolveDurationOption(t, options.interval, AutoMessageIntervalLimits);
 		if (interval === null || typeof interval === 'object') {
 			const content = interval === null ? translateKey(t, 'arguments:timeSpan') : interval.error;
-			return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', content));
 		}
 
 		// The modal opens with the text the channel sends already, so enabling it again edits it:

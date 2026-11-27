@@ -1,3 +1,4 @@
+import { statusContaining } from '../mocks/status';
 import { readSettings, writeSettings } from '#lib/database';
 import { encodeSettingsMenuId, ModulesGroupPath } from '#lib/structures/settings-menu';
 import { canManageServerSettingsFrom, hasCommandPermissionLevel } from '#lib/structures/commands/permissions';
@@ -59,7 +60,7 @@ describe('conf interaction handler', () => {
 		await handler().run(interaction, content);
 
 		expect(modals).toEqual([]);
-		expect(answers).toMatchObject([{ content: 'preconditions:administrator' }]);
+		expect(answers).toMatchObject([statusContaining('preconditions:administrator')]);
 	});
 
 	test('GIVEN an administrator THEN the import opens', async () => {

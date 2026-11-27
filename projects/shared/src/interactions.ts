@@ -60,3 +60,24 @@ export function hasModalComponent(components: readonly unknown[], customId: stri
 
 	return false;
 }
+
+/**
+ * Finds whether a checkbox of a submitted modal was ticked, which Discord nests in a label.
+ *
+ * @param components - The components of the submitted modal.
+ * @param customId - The custom ID of the checkbox.
+ * @returns Whether it was ticked, or `null` when the modal has no such checkbox.
+ */
+export function getModalChecked(components: readonly unknown[], customId: string): boolean | null {
+	for (const component of components) {
+		if (typeof component !== 'object' || component === null) continue;
+
+		const entry = component as { custom_id?: string; value?: unknown; components?: readonly unknown[]; component?: unknown };
+		if (entry.custom_id === customId && typeof entry.value === 'boolean') return entry.value;
+
+		const nested = getModalChecked([...(entry.components ?? []), ...(entry.component === undefined ? [] : [entry.component])], customId);
+		if (nested !== null) return nested;
+	}
+
+	return null;
+}

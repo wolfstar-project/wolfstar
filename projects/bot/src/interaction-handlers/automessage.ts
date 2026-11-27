@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { decodeAutoMessageModalId } from '#lib/automessages/ids';
 import { AutoMessageContentInputId, AutoMessageRoot } from '#lib/automessages/render';
 import { AutoMessagePermissions } from '#lib/automessages/send';
@@ -11,7 +12,7 @@ import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-frame
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { computePermissionsIn } from '@wolfstar/plugin-gateway';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags, RESTJSONErrorCodes } from 'discord-api-types/v10';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 import { MaximumAutoMessageLength } from 'wolfstar-database';
 
 const Root = AutoMessageRoot;
@@ -25,7 +26,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeAutoMessageModalId(content);
-		const reply = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		const reply = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null || guildId === undefined || !(interaction instanceof ModalSubmitInteraction)) return reply(getDefaultExpiredReply());
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
@@ -50,7 +51,12 @@ export class UserInteractionHandler extends InteractionHandler {
 		}
 
 		const interval = t('globals:durationValue', { value: action.interval });
-		return reply(t(action.mentions ? `${Root}:automessageEnabledWithMentions` : `${Root}:automessageEnabled`, { channel, interval }));
+		return interaction.reply(
+			renderStatus(
+				'success',
+				t(action.mentions ? `${Root}:automessageEnabledWithMentions` : `${Root}:automessageEnabled`, { channel, interval })
+			)
+		);
 	}
 
 	/**

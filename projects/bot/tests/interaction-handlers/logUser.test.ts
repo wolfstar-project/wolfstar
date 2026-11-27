@@ -1,3 +1,4 @@
+import { statusContaining } from '../mocks/status';
 import { UserInteractionHandler } from '#root/interaction-handlers/logUser';
 import { MessageFlags } from 'discord-api-types/v10';
 
@@ -20,6 +21,7 @@ describe('the Get User ID button of a log', () => {
 	test('GIVEN a custom ID that is not the button of a log THEN it says it expired', async () => {
 		await handler.run(interaction, ['not-an-id', 'id']);
 
-		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ flags: MessageFlags.Ephemeral, content: expect.stringContaining('expired') }));
+		expect(reply).toHaveBeenCalledWith(statusContaining('expired'));
+		expect(reply).toHaveBeenCalledWith(expect.objectContaining({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 }));
 	});
 });

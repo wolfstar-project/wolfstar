@@ -13,6 +13,7 @@ import { HoneypotActionKeys, HoneypotRoot, renderHoneypotSummary } from '#lib/mo
 import { sendHoneypotIntro } from '#lib/moderation/honeypot/intro';
 import { detectHoneypotProblems, renderHoneypotProblems } from '#lib/moderation/honeypot/problems';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -51,7 +52,8 @@ export class UserCommand extends Command {
 		const t = getSupportedUserLanguageT(interaction);
 		const { guildId } = interaction;
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
-		const update = (content: string) => deferred.update({ content, allowed_mentions: { parse: [] } });
+		// A refusal is a status. What worked is told with the summary of the honeypot, see the end.
+		const fail = (content: string) => deferred.update(renderStatus('error', content));
 
 		return withHoneypotLock(guildId, async () => {
 			const settings = await readSettings(guildId);
@@ -60,14 +62,14 @@ export class UserCommand extends Command {
 
 			let channelId = options.channel?.id ?? settings.honeypotChannel;
 			if ((channelId !== null && channelId === logs) || settings.honeypotChannels.includes(logs ?? ''))
-				return update(translateKey(t, `${Root}:logsSameChannel`));
+				return fail(translateKey(t, `${Root}:logsSameChannel`));
 
 			// A channel the bot cannot write in would be saved, and every report dropped without a word:
 			if (options.logs !== undefined) {
 				const lacking = await getMissingHoneypotLogPermissions(guildId, options.logs.id);
-				if (lacking === null) return update(translateKey(t, `${Root}:channelUnknown`));
+				if (lacking === null) return fail(translateKey(t, `${Root}:channelUnknown`));
 				if (lacking.length > 0) {
-					return update(translateKey(t, `${Root}:logsMissingPermissions`, { channel: channelMention(options.logs.id), missing: lacking }));
+					return fail(translateKey(t, `${Root}:logsMissingPermissions`, { channel: channelMention(options.logs.id), missing: lacking }));
 				}
 			}
 
@@ -77,22 +79,22 @@ export class UserCommand extends Command {
 			if (missing === null && options.channel === undefined) {
 				// What the bot lacks in the guild it lacks in a new channel too, which is known before there is one:
 				const lacking = await getMissingHoneypotGuildPermissions(guildId, action);
-				if (lacking.length > 0) return update(translateKey(t, `${Root}:setupMissingPermissions`, { missing: lacking }));
+				if (lacking.length > 0) return fail(translateKey(t, `${Root}:setupMissingPermissions`, { missing: lacking }));
 
 				channelId = await createHoneypotChannel(guildId);
-				if (channelId === null) return update(translateKey(t, `${Root}:channelCannotCreate`));
+				if (channelId === null) return fail(translateKey(t, `${Root}:channelCannotCreate`));
 
 				created = true;
 			}
 
-			if (channelId === null) return update(translateKey(t, `${Root}:channelUnknown`));
+			if (channelId === null) return fail(translateKey(t, `${Root}:channelUnknown`));
 			const channel = channelMention(channelId);
 
 			let saved = false;
 			try {
 				if (created) missing = await getMissingHoneypotPermissions(guildId, channelId, action);
-				if (missing === null) return await update(translateKey(t, `${Root}:channelUnknown`));
-				if (missing.length > 0) return await update(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
+				if (missing === null) return await fail(translateKey(t, `${Root}:channelUnknown`));
+				if (missing.length > 0) return await fail(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
 
 				await writeSettings(guildId, { honeypotChannel: channelId, honeypotAction: action, honeypotLogChannel: logs }, interaction.user.id);
 				saved = true;

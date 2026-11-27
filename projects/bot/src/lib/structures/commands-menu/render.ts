@@ -27,7 +27,6 @@ import {
 	ComponentType,
 	SelectMenuDefaultValueType,
 	MessageFlags,
-	PermissionFlagsBits,
 	TextInputStyle,
 	type APIActionRowComponent,
 	type APILabelComponent,
@@ -139,8 +138,6 @@ export function decodeCommandsMenuId(content: unknown): CommandsMenuAction | nul
  */
 const CommandsPerPage = 5;
 
-const AccentColor = 0x5865f2;
-
 /**
  * The value of the option of the category select menu that shows every command.
  */
@@ -170,7 +167,7 @@ const CategoryEmojis: Record<string, EmojiKey> = {
  */
 function getCategoryEmoji(category: string): EmojiComponent {
 	const key = CategoryEmojis[category];
-	return key === undefined ? { name: '📁' } : getEmojiComponent(key);
+	return getEmojiComponent(key ?? 'Folder');
 }
 
 /**
@@ -178,7 +175,7 @@ function getCategoryEmoji(category: string): EmojiComponent {
  */
 function formatCategoryEmoji(category: string): string {
 	const key = CategoryEmojis[category];
-	return key === undefined ? '📁' : Emojis[key];
+	return Emojis[key ?? 'Folder'];
 }
 
 export interface CommandsMenuContext {
@@ -276,7 +273,7 @@ export function renderCommandsList(context: CommandsMenuContext, category: strin
 }
 
 /**
- * Renders a page of the results of a search.
+ * Renders a page of the results of a search: a message of its own, which only who searched sees, under the menu.
  *
  * @param context - The context of the menu.
  * @param query - The query, normalized with `normalizeCommandQuery`.
@@ -286,14 +283,13 @@ export function renderCommandsResults(context: CommandsMenuContext, query: strin
 	const { t } = context;
 	const entries = searchCatalogEntries(listCatalogEntries(context.commands), query);
 	return renderPage(context, {
-		subtitle: t('commands/commands:menuResults', { count: entries.length, query: inlineCode(query) }),
-		title: `🔍 ${t('commands/commands:menuSearchResults')}`,
+		subtitle: t('commands/commands:menuQuery', { query: inlineCode(query) }),
+		title: `${Emojis.Search} ${t('commands/commands:menuSearchResults')}`,
 		entries,
 		page,
 		verb: 'results',
 		target: query,
-		empty: t('commands/commands:menuNoResults'),
-		back: true
+		empty: t('commands/commands:menuNoResults')
 	});
 }
 
@@ -306,7 +302,6 @@ interface PageOptions {
 	target: string;
 	select?: APIStringSelectComponent;
 	empty: string;
-	back?: boolean;
 	/** The group whose rules the title edits, `*` or `Category.*`; none for the results of a search. */
 	group?: string;
 	/** The sub-categories of the category of the list, which a select menu edits the rules of. */
@@ -319,11 +314,15 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 	const current = Math.min(options.page, pages - 1);
 	const id = (verb: CommandsMenuVerb, target: string, page = current) => encodeCommandsMenuId({ ownerId, verb, target, page });
 
+	// The results of a search are one container, the query under its title, with no menu around them:
+	const isList = options.verb === 'list';
 	const header: APIComponentInContainer[] = [
 		{
 			type: ComponentType.Section,
-			components: [{ type: ComponentType.TextDisplay, content: `## ⌘ ${t('commands/commands:menuTitle')}\n${options.subtitle}` }],
-			accessory: button(id('search', ''), { emoji: '🔍' })
+			components: [
+				{ type: ComponentType.TextDisplay, content: `## ${Emojis.ModuleCommands} ${t('commands/commands:menuTitle')}\n${options.subtitle}` }
+			],
+			accessory: button(id('search', ''), { emoji: getEmojiComponent('Search') })
 		}
 	];
 	if (context.hasLegacyPermissions)
@@ -335,7 +334,10 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 	if (options.select !== undefined) header.push({ type: ComponentType.ActionRow, components: [options.select] });
 
 	const first = current * CommandsPerPage;
-	const title: APITextDisplayComponent = { type: ComponentType.TextDisplay, content: `## ${options.title}` };
+	const title: APITextDisplayComponent = {
+		type: ComponentType.TextDisplay,
+		content: isList ? `## ${options.title}` : `## ${options.title}\n${options.subtitle}`
+	};
 	const body: APIComponentInContainer[] = [
 		options.group === undefined
 			? title
@@ -367,7 +369,8 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 			components: [
 				{
 					type: ComponentType.TextDisplay,
-					content: `**${first + index + 1}. ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}**\n-# ${cutText(entry.description, 150)}`
+					// Only the number is bold: Discord draws an empty line between a line that is all bold and the small one under it.
+					content: `**${first + index + 1}.** ${mentionCommand(context, entry.command, entry.subcommand ?? undefined)}\n-# ${cutText(entry.description, 150)}`
 				}
 			],
 			accessory: button(id('edit', entry.path), { emoji: getEmojiComponent('Edit') })
@@ -387,72 +390,27 @@ function renderPage(context: CommandsMenuContext, options: PageOptions): Command
 		button(id(options.verb, options.target, pages - 1), { emoji: getEmojiComponent('ArrowRightFast'), disabled: current >= pages - 1 })
 	];
 
-	body.push(
-		{ type: ComponentType.Separator },
-		{
-			type: ComponentType.TextDisplay,
-			content: `-# ${t('commands/commands:menuFooter', { page: current + 1, total: pages, count: options.entries.length })}`
-		},
-		row(deduplicate(navigation))
-	);
-	if (options.back) body.push(row([button(id('list', '', 0), { label: t('commands/commands:menuBack'), emoji: getEmojiComponent('Back') })]));
-
-	return toMessage([
-		{ type: ComponentType.Container, accent_color: AccentColor, components: header },
-		{ type: ComponentType.Container, accent_color: AccentColor, components: body }
-	]);
-}
-
-/**
- * Renders a command: what it does, its subcommands, the context menu commands it comes with, and the permissions
- * Discord asks of a member to show it.
- *
- * @param context - The context of the menu.
- * @param command - The command to render.
- */
-export function renderCommand(context: CommandsMenuContext, command: CatalogCommand): CommandsMenuMessage {
-	const { t, ownerId } = context;
-	const lines = [
-		`## ${mentionCommand(context, command)} · ${command.category}`,
-		command.description,
-		'',
-		t('commands/commands:viewPermissions', {
-			permissions: command.permissions === null ? t('commands/commands:viewPermissionsNone') : formatPermissions(t, command.permissions)
-		})
-	];
-	if (command.contextMenus.length > 0) {
-		lines.push(t('commands/commands:viewContextMenus', { names: command.contextMenus.map((name) => inlineCode(name)).join(', ') }));
-	}
-
-	const body: APIComponentInContainer[] = [{ type: ComponentType.TextDisplay, content: lines.join('\n') }];
-	if (command.subcommands.length > 0) {
-		const subcommands = command.subcommands.map(
-			(subcommand) => `${mentionCommand(context, command, subcommand.name)}\n-# ${cutText(subcommand.description, 110)}`
-		);
+	// A search that finds nothing, or a single page of results, has nowhere to go:
+	if (isList || pages > 1) {
 		body.push(
 			{ type: ComponentType.Separator },
 			{
 				type: ComponentType.TextDisplay,
-				content: cutText(`### ${t('commands/commands:viewSubcommands', { count: subcommands.length })}\n${subcommands.join('\n')}`, 3500)
-			}
+				content: `-# ${t('commands/commands:menuFooter', { page: current + 1, total: pages, count: options.entries.length })}`
+			},
+			row(deduplicate(navigation))
 		);
 	}
 
-	body.push(
-		{ type: ComponentType.Separator },
-		row([
-			button(encodeCommandsMenuId({ ownerId, verb: 'list', target: command.category, page: 0 }), {
-				label: t('commands/commands:menuBack'),
-				emoji: getEmojiComponent('Back')
-			}),
-			button(encodeCommandsMenuId({ ownerId, verb: 'search', target: '', page: 0 }), {
-				emoji: '🔍',
-				style: ButtonStyle.Primary
-			})
-		])
-	);
+	if (!isList) return toMessage([{ type: ComponentType.Container, components: body }], true);
 
-	return toMessage([{ type: ComponentType.Container, accent_color: AccentColor, components: body }]);
+	return toMessage(
+		[
+			{ type: ComponentType.Container, components: header },
+			{ type: ComponentType.Container, components: body }
+		],
+		false
+	);
 }
 
 /**
@@ -741,15 +699,15 @@ function mentionCommand(context: CommandsMenuContext, command: CatalogCommand, s
 	return chatInputApplicationCommandMention(path, id);
 }
 
-function formatPermissions(t: Translator, permissions: bigint): string {
-	const names = Object.entries(PermissionFlagsBits)
-		.filter(([, bit]) => (permissions & bit) === bit)
-		.map(([name]) => inlineCode(t(`permissions:${name}` as never)));
-	return names.length === 0 ? t('commands/commands:viewPermissionsNone') : names.join(', ');
-}
-
-function toMessage(components: APIMessageTopLevelComponent[]): CommandsMenuMessage {
-	return { components, flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral, allowed_mentions: { parse: [] } };
+/**
+ * @param ephemeral - Whether only who asked sees the message: the results of a search are, the menu is not.
+ */
+function toMessage(components: APIMessageTopLevelComponent[], ephemeral: boolean): CommandsMenuMessage {
+	return {
+		components,
+		flags: ephemeral ? MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral : MessageFlags.IsComponentsV2,
+		allowed_mentions: { parse: [] }
+	};
 }
 
 function row(components: APIButtonComponentWithCustomId[]): APIActionRowComponent<APIButtonComponentWithCustomId> {

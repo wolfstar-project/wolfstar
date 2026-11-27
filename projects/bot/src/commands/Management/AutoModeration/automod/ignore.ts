@@ -2,11 +2,11 @@ import { AutoModerationRoot, applyRuleOption, resolveCommandRule, translateRuleE
 import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { replyWithAutoModerationRule } from '#lib/structures/automod-menu';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { GuildMessageChannelTypes } from '#utils/channelTypes';
 import { channelMention, roleMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 import type { AutoModerationRule } from 'wolfstar-database';
 
 const Root = AutoModerationRoot;
@@ -28,7 +28,7 @@ export class UserCommand extends Command {
 		if (rule === null) return;
 
 		const { role, channel } = options;
-		if (!role && !channel) return interaction.reply({ content: translateKey(t, `${Root}:ignoreNothing`), flags: MessageFlags.Ephemeral });
+		if (!role && !channel) return interaction.reply(renderStatus('error', translateKey(t, `${Root}:ignoreNothing`)));
 
 		const lines: string[] = [];
 		const toggle = (list: readonly string[], id: string, target: string) => {
@@ -45,7 +45,7 @@ export class UserCommand extends Command {
 				...(channel && { ignoredChannels: toggle(current.ignoredChannels, channel.id, channelMention(channel.id)) })
 			}));
 		} catch (error) {
-			return interaction.reply({ content: translateRuleError(t, error, options.rule), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', translateRuleError(t, error, options.rule)));
 		}
 
 		// The rule is opened on what it leaves alone, see the `automod` interaction handler:

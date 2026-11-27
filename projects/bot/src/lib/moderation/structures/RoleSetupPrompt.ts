@@ -1,4 +1,5 @@
 import type { Translator } from '#lib/structures/commands/utils';
+import type { StatusMessage } from '#utils/status';
 import type { TypeVariation } from '#utils/moderationConstants';
 import { minutes } from 'wolfstar-shared';
 import { cutText } from '@sapphire/utilities';
@@ -119,7 +120,11 @@ export function renderRoleSetupPrompt(t: Translator, ownerId: Snowflake, type: T
  * `ModerationCommand#chatInputRun`.
  */
 export class ModerationCommandPrompt {
-	public constructor(public readonly message: RoleSetupMessage) {}
+	/**
+	 * @param message - The prompt: the one of the role, a classic message, or the one of a recent case, a status message
+	 * with its buttons.
+	 */
+	public constructor(public readonly message: RoleSetupMessage | StatusMessage) {}
 }
 
 /**

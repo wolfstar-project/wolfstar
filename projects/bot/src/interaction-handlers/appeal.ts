@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { decodeAppealId, encodeAppealId, MaximumAppealReasonLength } from '#lib/moderation/appeals';
 import { AppealSettleErrorKeys, settleAppeal } from '#lib/moderation/appealService';
 import { createTranslator } from '#lib/structures/commands/utils';
@@ -7,7 +8,7 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { ComponentType, MessageFlags, TextInputStyle } from 'discord-api-types/v10';
+import { ComponentType, TextInputStyle } from 'discord-api-types/v10';
 import { fetchAppeal } from 'wolfstar-database';
 
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionHandler.ModalInteraction>;
@@ -27,7 +28,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeAppealId(content);
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null || guildId === undefined) return fail(getDefaultExpiredReply());
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
@@ -61,7 +62,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const guild = await this.container.gatewayClient.guilds.fetch(guildId);
 		const reason = getModalValue(interaction.data.components, ReasonInputId)?.trim() || null;
 		const result = await settleAppeal(guild, appeal, action.verb === 'accept', interaction.user.id, reason);
-		if ('error' in result) return interaction.followup({ content: t(AppealSettleErrorKeys[result.error]), flags: MessageFlags.Ephemeral });
+		if ('error' in result) return interaction.followup(renderStatus('error', t(AppealSettleErrorKeys[result.error])));
 
 		return deferred.update({ ...result.message, allowed_mentions: { parse: [] } });
 	}

@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { getHoneypotChannels } from '#lib/moderation/honeypot/channels';
 import { readSettings } from '#lib/database';
 import { HoneypotActionKeys } from '#lib/moderation/honeypot/commands';
@@ -19,7 +20,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		const decoded = decodeCustomIdContent(content);
 		const guildId = interaction.guildId ?? null;
 		if (decoded === null || decoded.action !== 'show' || guildId === null || decoded.sessionId !== guildId) {
-			return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 		}
 
 		const t = getSupportedUserLanguageT(interaction);

@@ -24,7 +24,7 @@ import type { CodecTypes as TypedJsonTypes } from 'prisma-orm-extension-typed-js
 import type { ContractWithTypeMaps, RelationKeys, TypeMaps as TypeMapsType } from '@prisma/orm-postgres/family-contract/types';
 import type { Contract as ContractType, ExecutionHashBase, NamespaceId, ProfileHashBase, StorageHashBase } from '@prisma/orm-postgres/contract/types';
 
-export type StorageHash = StorageHashBase<'fe05809351ab28fff50787605a5eb6005622ebd489a8eaf10458bc4da6ada3c0'>;
+export type StorageHash = StorageHashBase<'8058a0d5a801e52165cffbe3a6a0d05c6a1b67fc6334c8c3ae3cc882821aac52'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash = ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -710,6 +710,17 @@ export type FieldOutputTypes = {
 			readonly extraData: CodecTypes['pg/jsonb@1']['output'] | null;
 			readonly guildId: CodecTypes['pg/int8@1']['output'];
 			readonly messageId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly proofChannelId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly proofMessageId: CodecTypes['pg/int8@1']['output'] | null;
+			readonly staffNote: CodecTypes['pg/text@1']['output'] | null;
+		};
+		readonly ModerationCaseEdit: {
+			readonly caseId: CodecTypes['pg/int4@1']['output'];
+			readonly changes: PrismaJson.ModerationCaseEditChanges;
+			readonly createdAt: TimestampString<3>;
+			readonly guildId: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly moderatorId: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['output'];
@@ -723,15 +734,6 @@ export type FieldOutputTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
 			readonly reports: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
-		};
-		readonly OnboardingRequest: {
-			readonly createdAt: TimestampString<3>;
-			readonly error: CodecTypes['pg/text@1']['output'] | null;
-			readonly guildId: CodecTypes['pg/int8@1']['output'];
-			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly processedAt: TimestampString<3> | null;
-			readonly userId: CodecTypes['pg/int8@1']['output'];
-			readonly verificationId: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly OnboardingVerification: {
 			readonly attempts: CodecTypes['pg/int4@1']['output'];
@@ -1251,6 +1253,17 @@ export type FieldInputTypes = {
 			readonly extraData: CodecTypes['pg/jsonb@1']['input'] | null;
 			readonly guildId: CodecTypes['pg/int8@1']['input'];
 			readonly messageId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly proofChannelId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly proofMessageId: CodecTypes['pg/int8@1']['input'] | null;
+			readonly staffNote: CodecTypes['pg/text@1']['input'] | null;
+		};
+		readonly ModerationCaseEdit: {
+			readonly caseId: CodecTypes['pg/int4@1']['input'];
+			readonly changes: CodecTypes['typed/json@1']['input'];
+			readonly createdAt: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly guildId: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly moderatorId: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['input'];
@@ -1264,15 +1277,6 @@ export type FieldInputTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
 			readonly reports: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
-		};
-		readonly OnboardingRequest: {
-			readonly createdAt: CodecTypes['pg/timestamp-string@1']['input'];
-			readonly error: CodecTypes['pg/text@1']['input'] | null;
-			readonly guildId: CodecTypes['pg/int8@1']['input'];
-			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly processedAt: CodecTypes['pg/timestamp-string@1']['input'] | null;
-			readonly userId: CodecTypes['pg/int8@1']['input'];
-			readonly verificationId: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly OnboardingVerification: {
 			readonly attempts: CodecTypes['pg/int4@1']['input'];
@@ -1792,6 +1796,17 @@ export type StorageColumnTypes = {
 			readonly extra_data: CodecTypes['pg/jsonb@1']['output'] | null;
 			readonly guild_id: CodecTypes['pg/int8@1']['output'];
 			readonly message_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly proof_channel_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly proof_message_id: CodecTypes['pg/int8@1']['output'] | null;
+			readonly staff_note: CodecTypes['pg/text@1']['output'] | null;
+		};
+		readonly ModerationCaseEdit: {
+			readonly case_id: CodecTypes['pg/int4@1']['output'];
+			readonly changes: PrismaJson.ModerationCaseEditChanges;
+			readonly created_at: TimestampString<3>;
+			readonly guild_id: CodecTypes['pg/int8@1']['output'];
+			readonly id: CodecTypes['pg/int8@1']['output'];
+			readonly moderator_id: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['output'];
@@ -1805,15 +1820,6 @@ export type StorageColumnTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['output'];
 			readonly reports: CodecTypes['pg/bool@1']['output'];
 			readonly roles: CodecTypes['pg/bool@1']['output'];
-		};
-		readonly OnboardingRequest: {
-			readonly created_at: TimestampString<3>;
-			readonly error: CodecTypes['pg/text@1']['output'] | null;
-			readonly guild_id: CodecTypes['pg/int8@1']['output'];
-			readonly id: CodecTypes['pg/int8@1']['output'];
-			readonly processed_at: TimestampString<3> | null;
-			readonly user_id: CodecTypes['pg/int8@1']['output'];
-			readonly verification_id: CodecTypes['pg/int8@1']['output'];
 		};
 		readonly OnboardingVerification: {
 			readonly attempts: CodecTypes['pg/int4@1']['output'];
@@ -2333,6 +2339,17 @@ export type StorageColumnInputTypes = {
 			readonly extra_data: CodecTypes['pg/jsonb@1']['input'] | null;
 			readonly guild_id: CodecTypes['pg/int8@1']['input'];
 			readonly message_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly proof_channel_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly proof_message_id: CodecTypes['pg/int8@1']['input'] | null;
+			readonly staff_note: CodecTypes['pg/text@1']['input'] | null;
+		};
+		readonly ModerationCaseEdit: {
+			readonly case_id: CodecTypes['pg/int4@1']['input'];
+			readonly changes: CodecTypes['typed/json@1']['input'];
+			readonly created_at: CodecTypes['pg/timestamp-string@1']['input'];
+			readonly guild_id: CodecTypes['pg/int8@1']['input'];
+			readonly id: CodecTypes['pg/int8@1']['input'];
+			readonly moderator_id: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly Modules: {
 			readonly autodelete: CodecTypes['pg/bool@1']['input'];
@@ -2346,15 +2363,6 @@ export type StorageColumnInputTypes = {
 			readonly moderation: CodecTypes['pg/bool@1']['input'];
 			readonly reports: CodecTypes['pg/bool@1']['input'];
 			readonly roles: CodecTypes['pg/bool@1']['input'];
-		};
-		readonly OnboardingRequest: {
-			readonly created_at: CodecTypes['pg/timestamp-string@1']['input'];
-			readonly error: CodecTypes['pg/text@1']['input'] | null;
-			readonly guild_id: CodecTypes['pg/int8@1']['input'];
-			readonly id: CodecTypes['pg/int8@1']['input'];
-			readonly processed_at: CodecTypes['pg/timestamp-string@1']['input'] | null;
-			readonly user_id: CodecTypes['pg/int8@1']['input'];
-			readonly verification_id: CodecTypes['pg/int8@1']['input'];
 		};
 		readonly OnboardingVerification: {
 			readonly attempts: CodecTypes['pg/int4@1']['input'];
@@ -2941,6 +2949,19 @@ export namespace Models {
 		extraData: CodecTypes['pg/jsonb@1']['output'] | null;
 		guildId: CodecTypes['pg/int8@1']['output'];
 		messageId: CodecTypes['pg/int8@1']['output'] | null;
+		proofChannelId: CodecTypes['pg/int8@1']['output'] | null;
+		proofMessageId: CodecTypes['pg/int8@1']['output'] | null;
+		staffNote: CodecTypes['pg/text@1']['output'] | null;
+		guild: public_Guild;
+		readonly [RelationKeys]?: 'guild';
+	};
+	export type public_ModerationCaseEdit = {
+		caseId: CodecTypes['pg/int4@1']['output'];
+		changes: PrismaJson.ModerationCaseEditChanges;
+		createdAt: TimestampString<3>;
+		guildId: CodecTypes['pg/int8@1']['output'];
+		id: CodecTypes['pg/int8@1']['output'];
+		moderatorId: CodecTypes['pg/int8@1']['output'];
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
 	};
@@ -2956,17 +2977,6 @@ export namespace Models {
 		moderation: CodecTypes['pg/bool@1']['output'];
 		reports: CodecTypes['pg/bool@1']['output'];
 		roles: CodecTypes['pg/bool@1']['output'];
-		guild: public_Guild;
-		readonly [RelationKeys]?: 'guild';
-	};
-	export type public_OnboardingRequest = {
-		createdAt: TimestampString<3>;
-		error: CodecTypes['pg/text@1']['output'] | null;
-		guildId: CodecTypes['pg/int8@1']['output'];
-		id: CodecTypes['pg/int8@1']['output'];
-		processedAt: TimestampString<3> | null;
-		userId: CodecTypes['pg/int8@1']['output'];
-		verificationId: CodecTypes['pg/int8@1']['output'];
 		guild: public_Guild;
 		readonly [RelationKeys]?: 'guild';
 	};
@@ -3064,8 +3074,8 @@ export declare const models: {
 		MessageHistory: Models.public_MessageHistory;
 		ModerationAction: Models.public_ModerationAction;
 		ModerationCaseData: Models.public_ModerationCaseData;
+		ModerationCaseEdit: Models.public_ModerationCaseEdit;
 		Modules: Models.public_Modules;
-		OnboardingRequest: Models.public_OnboardingRequest;
 		OnboardingVerification: Models.public_OnboardingVerification;
 		Report: Models.public_Report;
 		StickyNickname: Models.public_StickyNickname;
@@ -6457,6 +6467,21 @@ type ContractBase = Omit<
 									readonly codecId: 'pg/int8@1';
 									readonly nullable: true;
 								};
+								readonly proof_channel_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly proof_message_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: true;
+								};
+								readonly staff_note: {
+									readonly nativeType: 'text';
+									readonly codecId: 'pg/text@1';
+									readonly nullable: true;
+								};
 							};
 							primaryKey: {
 								readonly columns: readonly ['case_id', 'guild_id'];
@@ -6477,6 +6502,77 @@ type ContractBase = Omit<
 										readonly columns: readonly ['id'];
 									};
 									readonly name: 'ModerationCaseData_guild_id_fkey';
+								}
+							];
+						};
+						readonly ModerationCaseEdit: {
+							columns: {
+								readonly case_id: {
+									readonly nativeType: 'int4';
+									readonly codecId: 'pg/int4@1';
+									readonly nullable: false;
+								};
+								readonly changes: {
+									readonly nativeType: 'jsonb';
+									readonly codecId: 'typed/json@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'function';
+										readonly expression: "'[]'::jsonb";
+									};
+									readonly typeRef: 'ModerationCaseEditChanges';
+								};
+								readonly created_at: {
+									readonly nativeType: 'timestamp';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly nullable: false;
+									readonly typeParams: { readonly precision: 3 };
+								};
+								readonly guild_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+								readonly id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+									readonly default: {
+										readonly kind: 'function';
+										readonly expression: 'autoincrement()';
+									};
+								};
+								readonly moderator_id: {
+									readonly nativeType: 'int8';
+									readonly codecId: 'pg/int8@1';
+									readonly nullable: false;
+								};
+							};
+							primaryKey: {
+								readonly columns: readonly ['id'];
+								readonly name: 'ModerationCaseEdit_pkey';
+							};
+							uniques: readonly [];
+							indexes: readonly [
+								{
+									readonly name: 'ModerationCaseEdit_guild_id_case_id_idx';
+									readonly columns: readonly ['guild_id', 'case_id'];
+									readonly unique: false;
+								}
+							];
+							foreignKeys: readonly [
+								{
+									readonly source: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'ModerationCaseEdit';
+										readonly columns: readonly ['guild_id'];
+									};
+									readonly target: {
+										readonly namespaceId: 'public' & NamespaceId;
+										readonly tableName: 'Guild';
+										readonly columns: readonly ['id'];
+									};
+									readonly name: 'ModerationCaseEdit_guild_id_fkey';
 								}
 							];
 						};
@@ -6594,79 +6690,6 @@ type ContractBase = Omit<
 										readonly columns: readonly ['id'];
 									};
 									readonly name: 'Modules_id_fkey';
-								}
-							];
-						};
-						readonly OnboardingRequest: {
-							columns: {
-								readonly created_at: {
-									readonly nativeType: 'timestamp';
-									readonly codecId: 'pg/timestamp-string@1';
-									readonly nullable: false;
-									readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-									readonly typeParams: { readonly precision: 3 };
-								};
-								readonly error: {
-									readonly nativeType: 'text';
-									readonly codecId: 'pg/text@1';
-									readonly nullable: true;
-								};
-								readonly guild_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-								};
-								readonly id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-									readonly default: {
-										readonly kind: 'function';
-										readonly expression: 'autoincrement()';
-									};
-								};
-								readonly processed_at: {
-									readonly nativeType: 'timestamp';
-									readonly codecId: 'pg/timestamp-string@1';
-									readonly nullable: true;
-									readonly typeParams: { readonly precision: 3 };
-								};
-								readonly user_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-								};
-								readonly verification_id: {
-									readonly nativeType: 'int8';
-									readonly codecId: 'pg/int8@1';
-									readonly nullable: false;
-								};
-							};
-							primaryKey: {
-								readonly columns: readonly ['id'];
-								readonly name: 'OnboardingRequest_pkey';
-							};
-							uniques: readonly [];
-							indexes: readonly [
-								{
-									readonly name: 'OnboardingRequest_guild_id_created_at_idx';
-									readonly columns: readonly ['guild_id', 'created_at'];
-									readonly unique: false;
-								}
-							];
-							foreignKeys: readonly [
-								{
-									readonly source: {
-										readonly namespaceId: 'public' & NamespaceId;
-										readonly tableName: 'OnboardingRequest';
-										readonly columns: readonly ['guild_id'];
-									};
-									readonly target: {
-										readonly namespaceId: 'public' & NamespaceId;
-										readonly tableName: 'Guild';
-										readonly columns: readonly ['id'];
-									};
-									readonly name: 'OnboardingRequest_guild_id_fkey';
 								}
 							];
 						};
@@ -7159,6 +7182,12 @@ type ContractBase = Omit<
 				readonly nativeType: 'jsonb';
 				readonly typeParams: { readonly tsType: 'PrismaJson.MessageHistoryMessages' };
 			};
+			readonly ModerationCaseEditChanges: {
+				readonly kind: 'codec-instance';
+				readonly codecId: 'typed/json@1';
+				readonly nativeType: 'jsonb';
+				readonly typeParams: { readonly tsType: 'PrismaJson.ModerationCaseEditChanges' };
+			};
 			readonly PermissionNodeEntries: {
 				readonly kind: 'codec-instance';
 				readonly codecId: 'typed/json@1';
@@ -7314,11 +7343,11 @@ type ContractBase = Omit<
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'ModerationCaseData';
 		};
-		readonly Modules: { readonly namespace: 'public' & NamespaceId; readonly model: 'Modules' };
-		readonly OnboardingRequest: {
+		readonly ModerationCaseEdit: {
 			readonly namespace: 'public' & NamespaceId;
-			readonly model: 'OnboardingRequest';
+			readonly model: 'ModerationCaseEdit';
 		};
+		readonly Modules: { readonly namespace: 'public' & NamespaceId; readonly model: 'Modules' };
 		readonly OnboardingVerification: {
 			readonly namespace: 'public' & NamespaceId;
 			readonly model: 'OnboardingVerification';
@@ -10157,6 +10186,18 @@ type ContractBase = Omit<
 								readonly nullable: true;
 								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
 							};
+							readonly proofChannelId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly proofMessageId: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly staffNote: {
+								readonly nullable: true;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+							};
 						};
 						readonly relations: {
 							readonly guild: {
@@ -10181,6 +10222,67 @@ type ContractBase = Omit<
 								readonly extraData: { readonly column: 'extra_data' };
 								readonly guildId: { readonly column: 'guild_id' };
 								readonly messageId: { readonly column: 'message_id' };
+								readonly proofChannelId: { readonly column: 'proof_channel_id' };
+								readonly proofMessageId: { readonly column: 'proof_message_id' };
+								readonly staffNote: { readonly column: 'staff_note' };
+							};
+						};
+					};
+					readonly ModerationCaseEdit: {
+						readonly fields: {
+							readonly caseId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+							};
+							readonly changes: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'typed/json@1' };
+							};
+							readonly createdAt: {
+								readonly nullable: false;
+								readonly type: {
+									readonly kind: 'scalar';
+									readonly codecId: 'pg/timestamp-string@1';
+									readonly typeParams: { readonly precision: 3 };
+								};
+							};
+							readonly guildId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly id: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+							readonly moderatorId: {
+								readonly nullable: false;
+								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+							};
+						};
+						readonly relations: {
+							readonly guild: {
+								readonly to: {
+									readonly namespace: 'public' & NamespaceId;
+									readonly model: 'Guild';
+								};
+								readonly cardinality: 'N:1';
+								readonly nullable: false;
+								readonly on: {
+									readonly localFields: readonly ['guildId'];
+									readonly targetFields: readonly ['id'];
+								};
+							};
+						};
+						readonly storage: {
+							readonly table: 'ModerationCaseEdit';
+							readonly namespaceId: 'public';
+							readonly fields: {
+								readonly caseId: { readonly column: 'case_id' };
+								readonly changes: { readonly column: 'changes' };
+								readonly createdAt: { readonly column: 'created_at' };
+								readonly guildId: { readonly column: 'guild_id' };
+								readonly id: { readonly column: 'id' };
+								readonly moderatorId: { readonly column: 'moderator_id' };
 							};
 						};
 					};
@@ -10260,73 +10362,6 @@ type ContractBase = Omit<
 								readonly moderation: { readonly column: 'moderation' };
 								readonly reports: { readonly column: 'reports' };
 								readonly roles: { readonly column: 'roles' };
-							};
-						};
-					};
-					readonly OnboardingRequest: {
-						readonly fields: {
-							readonly createdAt: {
-								readonly nullable: false;
-								readonly type: {
-									readonly kind: 'scalar';
-									readonly codecId: 'pg/timestamp-string@1';
-									readonly typeParams: { readonly precision: 3 };
-								};
-							};
-							readonly error: {
-								readonly nullable: true;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-							};
-							readonly guildId: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly id: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly processedAt: {
-								readonly nullable: true;
-								readonly type: {
-									readonly kind: 'scalar';
-									readonly codecId: 'pg/timestamp-string@1';
-									readonly typeParams: { readonly precision: 3 };
-								};
-							};
-							readonly userId: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-							readonly verificationId: {
-								readonly nullable: false;
-								readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-							};
-						};
-						readonly relations: {
-							readonly guild: {
-								readonly to: {
-									readonly namespace: 'public' & NamespaceId;
-									readonly model: 'Guild';
-								};
-								readonly cardinality: 'N:1';
-								readonly nullable: false;
-								readonly on: {
-									readonly localFields: readonly ['guildId'];
-									readonly targetFields: readonly ['id'];
-								};
-							};
-						};
-						readonly storage: {
-							readonly table: 'OnboardingRequest';
-							readonly namespaceId: 'public';
-							readonly fields: {
-								readonly createdAt: { readonly column: 'created_at' };
-								readonly error: { readonly column: 'error' };
-								readonly guildId: { readonly column: 'guild_id' };
-								readonly id: { readonly column: 'id' };
-								readonly processedAt: { readonly column: 'processed_at' };
-								readonly userId: { readonly column: 'user_id' };
-								readonly verificationId: { readonly column: 'verification_id' };
 							};
 						};
 					};

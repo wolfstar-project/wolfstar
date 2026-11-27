@@ -1,10 +1,10 @@
 import { addRoleRule, RoleRuleError } from '#lib/roles/rules';
 import { formatRoleRule } from '#lib/roles/format';
 import { createTranslator, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus, type StatusKind } from '#utils/status';
 import { roleMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 
 const Root = 'commands/role-rules';
 
@@ -27,7 +27,7 @@ const Root = 'commands/role-rules';
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'role-rules add'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		const reply = (kind: StatusKind, content: string) => interaction.reply(renderStatus(kind, content));
 		const ids = (...roles: ({ id: string } | undefined)[]) => [...new Set(roles.filter((role) => role !== undefined).map((role) => role.id))];
 
 		const rule = {
@@ -36,18 +36,18 @@ export class UserCommand extends Command {
 			anyRoles: ids(options['any-of'], options['any-of-2'], options['any-of-3']),
 			forbiddenRoles: ids(options.without, options['without-2'])
 		};
-		if (rule.requiredRoles.length + rule.anyRoles.length + rule.forbiddenRoles.length === 0) return reply(t(`${Root}:noConditions`));
+		if (rule.requiredRoles.length + rule.anyRoles.length + rule.forbiddenRoles.length === 0) return reply('error', t(`${Root}:noConditions`));
 		// `@everyone` is every member's, a rule on it would give or take it from everybody:
-		if (rule.roleId === interaction.guildId) return reply(t(`${Root}:everyone`));
+		if (rule.roleId === interaction.guildId) return reply('error', t(`${Root}:everyone`));
 
 		try {
 			const created = await addRoleRule(interaction.guildId, rule);
-			return reply(t(created ? `${Root}:added` : `${Root}:replaced`, { rule: formatRoleRule(t, rule) }));
+			return reply('success', t(created ? `${Root}:added` : `${Root}:replaced`, { rule: formatRoleRule(t, rule) }));
 		} catch (error) {
 			if (!(error instanceof RoleRuleError)) throw error;
-			if (error.reason === 'limit') return reply(t(`${Root}:limit`));
-			if (error.reason === 'self') return reply(t(`${Root}:self`));
-			return reply(t(`${Root}:chained`, { role: roleMention(error.roleId ?? '') }));
+			if (error.reason === 'limit') return reply('error', t(`${Root}:limit`));
+			if (error.reason === 'self') return reply('error', t(`${Root}:self`));
+			return reply('error', t(`${Root}:chained`, { role: roleMention(error.roleId ?? '') }));
 		}
 	}
 }

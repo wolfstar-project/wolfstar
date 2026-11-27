@@ -1,3 +1,4 @@
+import { statusContaining, messageText } from '../../../mocks/status';
 import { sendAppealDirectMessage } from '#lib/moderation/appealService';
 import { UserCommand } from '#root/commands/Moderation/appeal/send';
 import { container } from '@wolfstar/http-framework';
@@ -52,7 +53,7 @@ describe('/appeal send', () => {
 
 		await run();
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/appeal:sendNotThread', flags: MessageFlags.Ephemeral });
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/appeal:sendNotThread'));
 		expect(defer).not.toHaveBeenCalled();
 		expect(sendAppealDirectMessage).not.toHaveBeenCalled();
 	});
@@ -92,7 +93,7 @@ describe('/appeal send', () => {
 
 		await run('Tell us more', '12');
 
-		expect(reply).toHaveBeenCalledWith({ content: 'commands/appeal:notFound', flags: MessageFlags.Ephemeral });
+		expect(reply).toHaveBeenCalledWith(statusContaining('commands/appeal:notFound'));
 		expect(sendAppealDirectMessage).not.toHaveBeenCalled();
 	});
 
@@ -114,8 +115,8 @@ describe('/appeal send', () => {
 
 		const [answer] = update.mock.calls[0] as [{ content: string; allowed_mentions: unknown }];
 		expect(defer).toHaveBeenCalledWith(undefined);
-		expect(answer.content).toContain('Tell us more @everyone');
-		expect(answer.content).toContain(`<@${moderatorId}>`);
+		expect(messageText(answer)).toContain('Tell us more @everyone');
+		expect(messageText(answer)).toContain(`<@${moderatorId}>`);
 		expect(answer.allowed_mentions).toEqual({ parse: [] });
 	});
 
@@ -125,7 +126,7 @@ describe('/appeal send', () => {
 		await run('Tell us more');
 
 		const [answer] = update.mock.calls[0] as [{ content: string }];
-		expect(answer.content).toContain('commands/appeal:sendFailed');
-		expect(answer.content).not.toContain('Tell us more');
+		expect(messageText(answer)).toContain('commands/appeal:sendFailed');
+		expect(messageText(answer)).not.toContain('Tell us more');
 	});
 });

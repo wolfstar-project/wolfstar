@@ -1,8 +1,6 @@
 {
 	"name": "commands",
-	"description": "Browse and search what I can do.",
-	"optionsCommandName": "command",
-	"optionsCommandDescription": "A command to show, or what to search for.",
+	"description": "Browse what I can do.",
 	"menuTitle": "Command Browser",
 	"menuSubtitle": "Select a category to view commands.",
 	"menuCategoryPlaceholder": "Select a category",
@@ -13,10 +11,7 @@
 	"menuFooter_one": "Page {{page, number}} of {{total, number}} • {{count, number}} command",
 	"menuFooter_other": "Page {{page, number}} of {{total, number}} • {{count, number}} commands",
 	"menuSearchResults": "Search Results",
-	"menuBack": "Back",
-	"menuResults_one": "{{count, number}} command matches {{query}}.",
-	"menuResults_other": "{{count, number}} commands match {{query}}.",
-	"menuNoResults": "No command matches that. Try another word, or go back to browse them by category.",
+	"menuNoResults": "No related commands found.",
 	"menuWrongUser": "This menu is not for you, run the command to open your own.",
 	"editTitle": "Edit /{{name}}",
 	"editStatusLabel": "Status",
@@ -57,11 +52,6 @@
 	"gotoInvalid": "That is not a page number, write a number from 1.",
 	"searchTitle": "Search Commands",
 	"searchLabel": "Command name or keyword",
-	"viewPermissions": "**Shown to members with:** {{permissions}}",
-	"viewPermissionsNone": "everybody",
-	"viewContextMenus": "**In the Apps menu:** {{names}}",
-	"viewSubcommands_one": "{{count, number}} subcommand",
-	"viewSubcommands_other": "{{count, number}} subcommands",
 	"legacyNotice": "Legacy permission nodes are still stored. They were not converted into command rules; review them.",
 	"legacyReview": "Review legacy rules",
 	"legacyExplanation": "The attached file lists the legacy permission nodes that were not converted into command rules, each with why: a command the bot no longer has (`unknownCommand`), `/settings` or `/commands`, which cannot be restricted (`protectedCommand`), an allowed name that covers a more specific denied one, which the command rules would read the other way (`meaningChanges`), or a name that reaches `/settings` such as `*`, which still decides who manages the server (`settingsAccess`). A node with no reason has not been converted yet. Recreate the rules you need through /commands; once reviewed, the server owner can remove the nodes. The dashboard access rules stay.",
@@ -71,5 +61,6 @@
 	"legacyOwnerOnly": "Only the server owner can remove the legacy permission nodes.",
 	"legacyConfirmationInvalid": "Nothing was removed. Type REMOVE exactly to confirm.",
 	"legacyStale": "The legacy rules changed since you downloaded them. Review them again before removing them.",
-	"legacyRemoved": "Legacy permission nodes removed. The command rules and the dashboard access rules were kept."
+	"legacyRemoved": "Legacy permission nodes removed. The command rules and the dashboard access rules were kept.",
+	"menuQuery": "Query: {{query}}"
 }

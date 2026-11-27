@@ -33,7 +33,7 @@ const moderationCommands = [
 ];
 const otherCommands = [createCommand('reasons', 'Management'), createCommand('report', 'Moderation'), createCommand('settings', 'Management')];
 
-const interaction = { guildId: guild.id, member: { user: { id: '1' }, roles: [], permissions: '0' }, channel: { id: '2' } } as never;
+const interaction = { guildId: guild.id, member: { user: { id: '266624760782258186' }, roles: [], permissions: '0' }, channel: { id: '2' } } as never;
 
 function mockSettings(modulesModeration: boolean) {
 	vi.mocked(readSettings).mockResolvedValue({ ...getDefaultGuildSettings()!, id: guild.id, modulesModeration } as ReadonlyGuildData);
@@ -51,6 +51,23 @@ async function check(commands: readonly Command[]) {
 }
 
 describe('commandsEnabled precondition', () => {
+	test.each([
+		[{ commandsDisabled: ['case'] }, 'preconditions:disabledGuild'],
+		[{ modulesModeration: false }, 'preconditions:disabledModuleModeration'],
+		[{ commandsRestrictions: [{ command: 'case', ignoredUsers: ['266624760782258186'] }, { format: 2 }] }, 'preconditions:restrictedUser']
+	])('rechecks current restrictions for an old case menu: %j', async (settings, identifier) => {
+		const commands = container.stores.get('commands');
+		const previous = commands.get('case');
+		commands.set('case', moderationCommands[0]);
+		vi.mocked(readSettings).mockResolvedValue({ ...getDefaultGuildSettings()!, id: guild.id, ...settings } as never);
+		try {
+			const result = await precondition.interactionHandlerRun(interaction, { name: 'caseMenu' } as never);
+			expect(result.unwrapErr()).toMatchObject({ identifier });
+		} finally {
+			if (previous) commands.set('case', previous);
+			else commands.delete('case');
+		}
+	});
 	beforeEach(() => vi.mocked(readSettings).mockReset());
 
 	test('GIVEN modules.moderation off THEN the commands of the module are denied with preconditions:disabledModuleModeration, and /reasons, /report and /settings are not', async () => {

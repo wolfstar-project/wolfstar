@@ -1,3 +1,4 @@
+import { messageText } from '../../../mocks/status';
 import { readSettings, writeSettings } from '#lib/database';
 import {
 	getMissingHoneypotLogPermissions,
@@ -96,7 +97,7 @@ describe('/honeypot edit and /honeypot disable', () => {
 		await edit({ logs: { id: logChannelId } });
 
 		expect(writeSettings).not.toHaveBeenCalled();
-		expect(update.mock.calls.at(-1)![0].content).toBe(
+		expect(messageText(update.mock.calls.at(-1)![0])).toContain(
 			`commands/honeypot:logsMissingPermissions {"channel":"<#${logChannelId}>","missing":["SendMessages","EmbedLinks"]}`
 		);
 	});
@@ -134,7 +135,7 @@ describe('/honeypot edit and /honeypot disable', () => {
 
 		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, '254360814063058946');
 		expect(removeHoneypotNotice).toHaveBeenCalledWith(guildId, '254360814063058948');
-		const content = update.mock.calls[0]![0].content;
+		const content = messageText(update.mock.calls[0]![0]);
 		expect(content).toContain('<#254360814063058945>');
 		expect(content).toContain('<#254360814063058946>');
 		expect(content).toContain('<#254360814063058948>');

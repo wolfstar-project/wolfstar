@@ -4,7 +4,6 @@ import {
 	getCommandCategories,
 	listCatalogEntries,
 	normalizeCommandQuery,
-	renderCommand,
 	renderCommandEditModal,
 	renderCommandsList,
 	renderCommandsPageModal,
@@ -214,7 +213,8 @@ describe('commands menu', () => {
 					expect(flatten(message.components!).length).toBeLessThanOrEqual(40);
 					expect(new Set(ids).size).toBe(ids.length);
 					expect(ids.every((id) => id.length <= 100)).toBe(true);
-					expect(message.flags).toBe(MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral);
+					// Everybody in the channel sees the menu:
+					expect(message.flags).toBe(MessageFlags.IsComponentsV2);
 				}
 			}
 		});
@@ -275,11 +275,10 @@ describe('commands menu', () => {
 			const text = getText(message.components!);
 			const edits = getCustomIds(message.components!).filter((id) => id.includes('.edit:'));
 
-			expect(text).toContain('**1. `/automod create`**');
-			// The description is small text under the command:
-			expect(text).toContain('`/automod create`**\n-# Create an auto-moderation rule');
-			expect(text).toContain('**2. `/automod delete`**');
-			expect(text).toContain('**3. `/ban`**');
+			// Only the number is bold, and the description is small text right under the command:
+			expect(text).toContain('**1.** `/automod create`\n-# Create an auto-moderation rule');
+			expect(text).toContain('**2.** `/automod delete`');
+			expect(text).toContain('**3.** `/ban`');
 			expect(edits).toHaveLength(5);
 			expect(edits[0]).toBe(`commands.${ownerId}.edit:automod create:0`);
 			expect(edits[1]).toBe(`commands.${ownerId}.edit:automod delete:0`);
@@ -463,19 +462,26 @@ describe('commands menu', () => {
 			expect(select.default_values).toHaveLength(25);
 		});
 
-		test('GIVEN the results of a search THEN they can be paged and left', () => {
+		test('GIVEN the results of a search THEN they are one container only who searched sees, with the query and the pages', () => {
 			const message = renderCommandsResults(createContext(), 'extra', 1);
 			const verbs = getCustomIds(message.components!).map((id) => decodeCommandsMenuId(id.split('.').slice(1))?.verb);
 
-			expect(getText(message.components!)).toContain('commands/commands:menuResults');
+			expect(message.flags).toBe(MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral);
+			expect(message.components).toHaveLength(1);
+			expect(getText(message.components!)).toContain('commands/commands:menuQuery {"query":"`extra`"}');
 			expect(verbs.filter((verb) => verb === 'results')).toHaveLength(4);
 			expect(verbs).toContain('jump');
-			expect(verbs).toContain('list');
+			// It is a message of its own, so it has neither the menu to go back to nor its search and its categories:
+			expect(verbs).not.toContain('list');
+			expect(verbs).not.toContain('search');
 			expect(flatten(message.components!).some((component) => component.type === ComponentType.StringSelect)).toBe(false);
 		});
 
-		test('GIVEN a search that finds nothing THEN it says so', () => {
-			expect(getText(renderCommandsResults(createContext(), 'zzz', 0).components!)).toContain('commands/commands:menuNoResults');
+		test('GIVEN a search that finds nothing THEN it says so and has no pages', () => {
+			const message = renderCommandsResults(createContext(), 'zzz', 0);
+
+			expect(getText(message.components!)).toContain('commands/commands:menuNoResults');
+			expect(getCustomIds(message.components!)).toEqual([]);
 		});
 
 		test('GIVEN the IDs of the commands THEN a command that can be run is mentioned, and a parent is not', () => {
@@ -483,19 +489,6 @@ describe('commands menu', () => {
 
 			expect(getText(renderCommandsList(context, '', 0).components!)).toContain('</ban:111111111111111111>');
 			expect(getText(renderCommandsList(context, '', 0).components!)).toContain('</automod create:222222222222222222>');
-			expect(getText(renderCommand(context, commands[0]).components!)).not.toContain('`/automod`\n');
-			expect(getText(renderCommand(context, commands[0]).components!)).toContain('</automod create:222222222222222222>');
-		});
-
-		test('GIVEN a command THEN its view has its subcommands, its context menu commands and its permissions', () => {
-			const automod = getText(renderCommand(createContext(), commands[0]).components!);
-			const report = getText(renderCommand(createContext(), commands[2]).components!);
-
-			expect(automod).toContain('`/automod create`');
-			expect(automod).toContain('Delete an auto-moderation rule');
-			expect(automod).toContain('permissions:ManageGuild');
-			expect(report).toContain('`Report Message`, `Report User`');
-			expect(report).toContain('commands/commands:viewPermissionsNone');
 		});
 
 		test('GIVEN the search THEN its modal asks for one short text', () => {
