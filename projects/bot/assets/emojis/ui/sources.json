@@ -1,6 +1,6 @@
 {
 	"file": "mENlr6NioJQolUsV3FI7eX",
-	"note": "The 400 square of the Glyph of each cell of the Grid of the Emoji page, rendered at 128 px in #80848E at an opacity of 0.7647. The glyphs of search, history, lock and chart are the ones of the Discord assets file (Z3PFMvgHo95bNq2IdAZNNr); mute is drawn in its style, with the knockout band of its slashed icons.",
+	"note": "The 400 square of the Glyph of each cell of the Grid of the Emoji page, rendered at 128 px in #80848E at an opacity of 0.7647. The glyphs of search, history, lock and chart are the ones of the Discord assets file (Z3PFMvgHo95bNq2IdAZNNr); mute is drawn in its style, with the knockout band of its slashed icons. The types of case (2026-11-27) take their glyphs from the Discord assets too, and the slashed ones are cut as Discord cuts a slashed icon: a band cut away between x + y = 333 and 467 of the 400 square and a slash 33 wide with round caps. The paperclip and the chain are mirrored, so the slash crosses them instead of running along them.",
 	"emojis": {
 		"search": { "cell": "Search", "node": "2122:30" },
 		"history": { "cell": "History", "node": "2122:36" },
@@ -11,6 +11,22 @@
 		"note": { "cell": "State", "node": "2067:152" },
 		"folder": { "cell": "Folder", "node": "2067:109" },
 		"chat": { "cell": "Chat", "node": "2067:148" },
-		"remove": { "cell": "Divisor", "note": "Drawn as a minus two units high, the cell is a thicker bar" }
+		"remove": { "cell": "Divisor", "note": "Drawn as a minus two units high, the cell is a thicker bar" },
+		"restricted_attachment": {
+			"cell": "Restricted Attachment",
+			"node": "2129:146",
+			"note": "The paperclip of AutoMod Attachments, mirrored, slashed"
+		},
+		"restricted_embed": {
+			"cell": "Restricted Embed",
+			"node": "2129:99",
+			"note": "The chain of the Link of the Discord assets, mirrored, slashed"
+		},
+		"restricted_emoji": { "cell": "Restricted Emoji", "node": "2128:54", "note": "The Emojis glyph of the Discord assets, slashed" },
+		"restricted_reaction": { "cell": "Restricted Reaction", "node": "2128:83", "note": "A heart, slashed" },
+		"restricted_voice": { "cell": "Restricted Voice", "node": "2128:69", "note": "The voice speaker of the Discord assets, slashed" },
+		"set_nickname": { "cell": "Nickname", "node": "2129:109", "note": "The pencil of edit profile of the Discord assets" },
+		"role_add": { "cell": "Role Add", "node": "2129:120", "note": "The flag of create role of the Discord assets, in one colour" },
+		"role_remove": { "cell": "Role Remove", "node": "2129:131", "note": "The flag of remove role of the Discord assets, in one colour" }
 	}
 }

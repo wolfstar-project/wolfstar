@@ -94,6 +94,16 @@ export const EmojiDefinitions = {
 	Chart: emoji('chart', '📈'),
 	Chat: emoji('chat', '💬'),
 	Remove: emoji('remove', '➖'),
+	// The rest of the types of case, in the select menu of the list of the cases and where a case is shown; the ones that
+	// restrict something have a slash, as Discord draws it:
+	RestrictedAttachment: emoji('restricted_attachment', '📎'),
+	RestrictedEmbed: emoji('restricted_embed', '🔗'),
+	RestrictedEmoji: emoji('restricted_emoji', '😶'),
+	RestrictedReaction: emoji('restricted_reaction', '💔'),
+	RestrictedVoice: emoji('restricted_voice', '🔈'),
+	SetNickname: emoji('set_nickname', '✏️'),
+	RoleAdd: emoji('role_add', '➕'),
+	RoleRemove: emoji('role_remove', '➖'),
 	// The return arrow of a button that goes back to where the user came from:
 	Back: emoji('back', '↩️'),
 	// The flask of what is experimental, next to a setting or in its note:
