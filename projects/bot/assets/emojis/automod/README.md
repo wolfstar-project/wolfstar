@@ -9,8 +9,8 @@ The editable icons are in the `Normal` grid on the `Emoji` page of
 They reuse WolfStar glyphs and symbols from the
 [Discord icon sheet](https://www.figma.com/design/Z3PFMvgHo95bNq2IdAZNNr?node-id=1-448).
 Attachments, capitals, duplicates, phishing and zalgo have purpose-drawn glyphs,
-and message duplicates is the copy of duplicates with the bubble of message
-spam; cooldown rules add a clock.
+message duplicates is two speech bubbles, one over the other, drawn larger than
+the others so it reads at the size of a select menu; cooldown rules add a clock.
 
 The dark circle behind each glyph is only there in Figma, to see the grey glyph
 on something. The PNGs are exported without it, as a transparent image with the
