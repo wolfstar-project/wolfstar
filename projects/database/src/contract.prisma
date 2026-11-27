@@ -29,6 +29,7 @@ types {
   AutoModerationRuleOptions = typed.Json("PrismaJson.AutoModerationRuleOptions")
   AutoModerationRuleEscalation = typed.Json("PrismaJson.AutoModerationRuleEscalation")
   MessageHistoryMessages = typed.Json("PrismaJson.MessageHistoryMessages")
+  ModerationCaseEditChanges = typed.Json("PrismaJson.ModerationCaseEditChanges")
   AppealFormQuestions = typed.Json("PrismaJson.AppealFormQuestions")
   AppealAnswers = typed.Json("PrismaJson.AppealAnswers")
 }
@@ -697,9 +698,24 @@ namespace public {
     extraData Jsonb?  @map("extra_data")
     channelId BigInt? @map("channel_id")
     messageId BigInt? @map("message_id")
+    staffNote      String? @map("staff_note")
+    proofChannelId BigInt? @map("proof_channel_id")
+    proofMessageId BigInt? @map("proof_message_id")
     guild     Guild   @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "ModerationCaseData_guild_id_fkey", index: false)
 
     @@id([caseId, guildId], map: "ModerationCaseData_pkey")
+  }
+
+  model ModerationCaseEdit {
+    id          BigInt                    @id(map: "ModerationCaseEdit_pkey") @default(autoincrement())
+    guildId     BigInt                    @map("guild_id")
+    caseId      Int                       @map("case_id")
+    moderatorId BigInt                    @map("moderator_id")
+    createdAt   TimestampString(3)        @map("created_at")
+    changes     ModerationCaseEditChanges @default(sql`'[]'::jsonb`)
+    guild       Guild                     @relation(fields:[guildId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "ModerationCaseEdit_guild_id_fkey", index: false)
+
+    @@index([guildId, caseId], map: "ModerationCaseEdit_guild_id_case_id_idx")
   }
 
   model StickyNickname {

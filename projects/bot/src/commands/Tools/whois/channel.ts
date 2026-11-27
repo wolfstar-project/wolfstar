@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { translateKey, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands/utils';
 import { resolveOnErrorCodes } from '#common';
 import { seconds } from 'wolfstar-shared';
@@ -43,7 +44,7 @@ const TypeNames: Partial<Record<ChannelType, string>> = {
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'whois channel'>) {
 		const t = getSupportedUserLanguageT(interaction);
-		const fail = (key: TranslationKey) => interaction.reply({ content: translateKey(t, key), flags: MessageFlags.Ephemeral });
+		const fail = (key: TranslationKey) => interaction.reply(renderStatus('error', translateKey(t, key)));
 
 		const { channel } = options;
 		if (channel !== undefined && (BigInt(channel.permissions ?? 0) & PermissionFlagsBits.ViewChannel) === 0n) {

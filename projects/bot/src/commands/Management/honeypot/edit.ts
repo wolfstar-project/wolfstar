@@ -8,6 +8,7 @@ import {
 } from '#lib/moderation/honeypot/channel';
 import { HoneypotActionKeys, HoneypotRoot, renderHoneypotSummary } from '#lib/moderation/honeypot/commands';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -55,7 +56,8 @@ export class UserCommand extends Command {
 		const t = getSupportedUserLanguageT(interaction);
 		const { guildId } = interaction;
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
-		const update = (content: string) => deferred.update({ content, allowed_mentions: { parse: [] } });
+		// A refusal is a status. What worked is told with the summary of the honeypot, see the end.
+		const fail = (content: string) => deferred.update(renderStatus('error', content));
 
 		const changes: Partial<GuildData> = {};
 		if (options.reinvite !== undefined) changes.honeypotReinvite = options.reinvite;
@@ -71,28 +73,27 @@ export class UserCommand extends Command {
 		if (options['recent-delete'] !== undefined) changes.honeypotRecentDelete = options['recent-delete'];
 		if (options['chaos-name'] !== undefined) changes.honeypotChaosName = options['chaos-name'];
 		if (options['ensure-deletion'] !== undefined) changes.honeypotEnsureDeletion = options['ensure-deletion'];
-		if (Object.keys(changes).length === 0) return update(translateKey(t, `${Root}:editNothing`));
+		if (Object.keys(changes).length === 0) return fail(translateKey(t, `${Root}:editNothing`));
 
 		// A channel the bot cannot write in would be saved, and every report dropped without a word:
 		if (options.logs !== undefined) {
 			const lacking = await getMissingHoneypotLogPermissions(guildId, options.logs.id);
-			if (lacking === null) return update(translateKey(t, `${Root}:channelUnknown`));
+			if (lacking === null) return fail(translateKey(t, `${Root}:channelUnknown`));
 			if (lacking.length > 0) {
-				return update(translateKey(t, `${Root}:logsMissingPermissions`, { channel: channelMention(options.logs.id), missing: lacking }));
+				return fail(translateKey(t, `${Root}:logsMissingPermissions`, { channel: channelMention(options.logs.id), missing: lacking }));
 			}
 		}
 
 		return withHoneypotLock(guildId, async () => {
 			const settings = await readSettings(guildId);
 			for (const channelId of getHoneypotChannels(settings)) {
-				if (getHoneypotChannels(settings).includes(changes.honeypotLogChannel ?? ''))
-					return update(translateKey(t, `${Root}:logsSameChannel`));
+				if (getHoneypotChannels(settings).includes(changes.honeypotLogChannel ?? '')) return fail(translateKey(t, `${Root}:logsSameChannel`));
 
 				// Another action needs another permission, which is asked for before the honeypot stops working:
 				if (changes.honeypotAction !== undefined) {
 					const missing = (await getMissingHoneypotPermissions(guildId, channelId, changes.honeypotAction)) ?? [];
 					if (missing.length > 0) {
-						return update(translateKey(t, `${Root}:missingPermissions`, { channel: channelMention(channelId), missing }));
+						return fail(translateKey(t, `${Root}:missingPermissions`, { channel: channelMention(channelId), missing }));
 					}
 				}
 			}

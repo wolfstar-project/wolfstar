@@ -10,10 +10,10 @@ import {
 import { MaximumAutoPurgeMessages } from '#lib/moderation/cleanup/purge';
 import { CleanupLimitError, enableAutoPurge } from '#lib/moderation/cleanup/store';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { channelMention } from '@discordjs/formatters';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 import { AutoPurgeIntervalLimits, CleanupFilterKinds, MaximumCleanupValueLength } from 'wolfstar-database';
 
 const Root = CleanupRoot;
@@ -40,35 +40,34 @@ const Root = CleanupRoot;
 export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'autopurge enable'>) {
 		const t = getSupportedUserLanguageT(interaction);
-		const reply = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		const fail = (content: string) => interaction.reply(renderStatus('error', content));
 
 		const interval = resolveDurationOption(t, options.interval, AutoPurgeIntervalLimits);
 		if (interval === null || typeof interval === 'object')
-			return reply(interval === null ? translateKey(t, 'arguments:timeSpan') : interval.error);
+			return fail(interval === null ? translateKey(t, 'arguments:timeSpan') : interval.error);
 
 		const filter = options.filter ?? 'any';
 		const value = resolveCleanupValue(t, filter, options.value);
-		if (typeof value === 'object' && value !== null) return reply(value.error);
+		if (typeof value === 'object' && value !== null) return fail(value.error);
 
 		const channel = channelMention(options.channel.id);
 		const missing = await getMissingCleanupPermissions(interaction.guildId, options.channel.id);
-		if (missing === null) return reply(translateKey(t, `${Root}:channelUnknown`));
-		if (missing.length > 0) return reply(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
+		if (missing === null) return fail(translateKey(t, `${Root}:channelUnknown`));
+		if (missing.length > 0) return fail(translateKey(t, `${Root}:missingPermissions`, { channel, missing }));
 
 		try {
 			await enableAutoPurge(interaction.guildId, { channelId: options.channel.id, interval, filter, value });
 		} catch (error) {
 			if (!(error instanceof CleanupLimitError)) throw error;
-			return reply(translateKey(t, `${Root}:autopurgeLimit`, { maximum: error.maximum }));
+			return fail(translateKey(t, `${Root}:autopurgeLimit`, { maximum: error.maximum }));
 		}
 
-		return reply(
-			translateKey(t, `${Root}:autopurgeEnabled`, {
-				channel,
-				interval: translateKey(t, 'globals:durationValue', { value: interval }),
-				filter: describeCleanupFilter(t, filter, value),
-				maximum: MaximumAutoPurgeMessages
-			})
-		);
+		const content = translateKey(t, `${Root}:autopurgeEnabled`, {
+			channel,
+			interval: translateKey(t, 'globals:durationValue', { value: interval }),
+			filter: describeCleanupFilter(t, filter, value),
+			maximum: MaximumAutoPurgeMessages
+		});
+		return interaction.reply(renderStatus('success', content));
 	}
 }

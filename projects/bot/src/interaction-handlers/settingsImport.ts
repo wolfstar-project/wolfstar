@@ -1,3 +1,4 @@
+import { renderStatus, renderStatusUpdate } from '#utils/status';
 import { applyConfigurationImport, ConfigurationImportStaleError } from '#lib/database/settings/transfer/apply';
 import { decodeSettingsImportId, takePendingImport } from '#lib/database/settings/transfer/pending';
 import { countPlannedRules } from '#lib/database/settings/transfer/plan';
@@ -7,7 +8,6 @@ import { ApplyOptions } from '@wolfstar/decorators';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags } from 'discord-api-types/v10';
 
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, InteractionHandler.ModalInteraction>;
 
@@ -27,7 +27,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeSettingsImportId(content);
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null || guildId === undefined || interaction instanceof ModalSubmitInteraction) return fail(getDefaultExpiredReply());
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
@@ -38,14 +38,14 @@ export class UserInteractionHandler extends InteractionHandler {
 		const component = interaction as ComponentInteraction;
 		const deferred = await component.deferUpdate();
 		if (interaction.member === undefined || !(await canManageServerSettingsFrom({ guildId, member: interaction.member }))) {
-			return component.followup({ content: t('preconditions:administrator', { command: { name: this.name } }), flags: MessageFlags.Ephemeral });
+			return component.followup(renderStatus('error', t('preconditions:administrator', { command: { name: this.name } })));
 		}
 
-		const close = (message: string) => ({ content: message, embeds: [], components: [] });
+		const close = (message: string, kind: 'info' | 'success' | 'error' = 'error') => renderStatusUpdate(kind, message);
 
 		// Taking the import is what answers it, so a second click finds nothing, on this process or on another:
 		const parsed = await takePendingImport(guildId, action.ownerId, action.importId);
-		if (action.verb === 'cancel') return deferred.update(close(t('commands/conf:transferImportCancelled')));
+		if (action.verb === 'cancel') return deferred.update(close(t('commands/conf:transferImportCancelled'), 'info'));
 		if (parsed === null) return deferred.update(close(t('commands/conf:transferImportExpired')));
 
 		try {
@@ -55,7 +55,7 @@ export class UserInteractionHandler extends InteractionHandler {
 				? t('commands/conf:transferNothing')
 				: t('commands/conf:transferImportDone', { settings: done.settings.length, ...countPlannedRules(done) });
 
-			return await deferred.update(close(message));
+			return await deferred.update(close(message, done.isEmpty ? 'info' : 'success'));
 		} catch (error) {
 			if (error instanceof ConfigurationImportStaleError) return deferred.update(close(t('commands/conf:transferImportStale')));
 

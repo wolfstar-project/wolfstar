@@ -13,6 +13,7 @@ import { updateAutoModerationRule } from '#lib/moderation/automod/rules';
 import { channelMention, inlineCode } from '@discordjs/formatters';
 import { renderAutoModerationRule } from '#lib/structures/automod-menu';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { isNullish } from '@sapphire/utilities';
 import { applyLocalizedBuilder, createLocalizedChoice, getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
@@ -123,7 +124,7 @@ export class UserCommand extends Command {
 		// The log channel is checked on Discord and the rule is edited there, which can outlast the three seconds Discord
 		// gives to answer: the reply is deferred, then written.
 		const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
-		const fail = (content: string) => deferred.update({ content });
+		const fail = (content: string) => deferred.update(renderStatus('error', content));
 		if (!isNullish(options['log-channel'])) {
 			const channelId = options['log-channel'].id;
 			const missing = await getMissingAutoModerationLogPermissions(interaction.guildId, channelId);
@@ -200,6 +201,6 @@ export class UserCommand extends Command {
 	}
 
 	#reply(interaction: GuildChatInputInteraction, content: string) {
-		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		return interaction.reply(renderStatus('error', content));
 	}
 }

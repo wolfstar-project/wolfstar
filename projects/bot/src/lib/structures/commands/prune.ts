@@ -6,6 +6,7 @@ import { createTranslator, type GuildChatInputInteraction } from '#lib/structure
 import { urlRegex } from 'wolfstar-shared';
 import { deleteMessage } from '#utils/functions';
 import { resolveTimeSpan } from '#utils/resolvers';
+import { renderStatus } from '#utils/status';
 import { getImageUrl } from '#utils/util';
 import type { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { container, type TransformedArguments } from '@wolfstar/http-framework';
@@ -215,10 +216,10 @@ export abstract class PruneCommand extends Command {
 
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: PruneArguments) {
 		const denial = await getCommandPermissionDenial(interaction, CommandPermissionLevel.Moderator);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
-		const fail = (content: string) => interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const fail = (content: string) => interaction.reply(renderStatus('error', content));
 
 		const channelId = interaction.channel.id;
 
@@ -255,7 +256,8 @@ export abstract class PruneCommand extends Command {
 
 		const filters = this.getFilters(interaction, args, maximumAge, pattern);
 		const messages = await fetchChannelMessages(channelId, { limit: args.amount, position, positionId, filter: filters });
-		if (messages.length === 0) return deferred.update({ content: t('commands/moderation:pruneNoDeletes') });
+		// The deferred response already is public or ephemeral, which an edit does not change:
+		if (messages.length === 0) return deferred.update(renderStatus('info', t('commands/moderation:pruneNoDeletes'), { ephemeral: false }));
 
 		// Perform a bulk delete, ignoring the messages that were deleted in the meantime, and log the deleted messages:
 		const deleted = await bulkDeleteChannelMessages(interaction.guildId, channelId, messages);
@@ -266,7 +268,7 @@ export abstract class PruneCommand extends Command {
 		}
 
 		const content = t('commands/moderation:pruneAlert', { count: deleted, total: args.amount });
-		await deferred.update({ content });
+		await deferred.update(renderStatus('success', content, { ephemeral: false }));
 		floatPromise(deleteMessage(deferred, seconds(10)));
 		return null;
 	}

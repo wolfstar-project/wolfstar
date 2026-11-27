@@ -1,6 +1,7 @@
 import { readSettings, writeSettings } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { BrandingColors } from '#utils/constants';
+import { renderStatus, type StatusKind } from '#utils/status';
 import { EmbedBuilder } from '@discordjs/builders';
 import { container, type TransformedArguments } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT, type TFunction } from '@wolfstar/plugin-i18next';
@@ -8,6 +9,13 @@ import { MessageFlags } from 'discord-api-types/v10';
 
 const Root = 'commands/management';
 const MaximumDescriptionLength = 4096;
+
+/**
+ * The status that edits the deferred response, which is already ephemeral: an edit does not change it.
+ */
+function status(kind: StatusKind, text: string) {
+	return renderStatus(kind, text, { ephemeral: false });
+}
 
 /**
  * Lists the public roles of the server in one embed, cut at the limit of the description of an embed, and removes the
@@ -19,7 +27,7 @@ export async function listPublicRoles(interaction: GuildChatInputInteraction) {
 
 	const settings = await readSettings(interaction.guildId);
 	const { rolesPublic } = settings;
-	if (rolesPublic.length === 0) return deferred.update({ content: translateKey(t, `${Root}:rolesListEmpty`) });
+	if (rolesPublic.length === 0) return deferred.update(status('info', translateKey(t, `${Root}:rolesListEmpty`)));
 
 	const guildRoles = await container.gatewayClient.roles.fetchAll(interaction.guildId);
 	const names = new Map(guildRoles.map((role) => [role.id, role.name] as const));
@@ -39,7 +47,7 @@ export async function listPublicRoles(interaction: GuildChatInputInteraction) {
 
 	// There's the possibility all roles could be inexistent, therefore the system
 	// would filter and remove them all, causing this to be empty.
-	if (roles.length === 0) return deferred.update({ content: translateKey(t, `${Root}:rolesListEmpty`) });
+	if (roles.length === 0) return deferred.update(status('info', translateKey(t, `${Root}:rolesListEmpty`)));
 
 	const embed = new EmbedBuilder()
 		.setColor(BrandingColors.Secondary)
@@ -58,17 +66,17 @@ export async function claimPublicRole(interaction: GuildChatInputInteraction, ro
 
 	const settings = await readSettings(interaction.guildId);
 	const rolesPublic = settings.rolesPublic;
-	if (rolesPublic.length === 0) return deferred.update({ content: translateKey(t, `${Root}:rolesListEmpty`) });
+	if (rolesPublic.length === 0) return deferred.update(status('info', translateKey(t, `${Root}:rolesListEmpty`)));
 
 	if (!rolesPublic.includes(role.id)) {
-		return deferred.update({ content: translateKey(t, `${Root}:rolesNotPublic`, { roles: role.name }) });
+		return deferred.update(status('error', translateKey(t, `${Root}:rolesNotPublic`, { roles: role.name })));
 	}
 
 	const guildId = interaction.guildId;
 	const me = await container.gatewayClient.members.fetchMe(guildId);
 	const highest = await me.roles.highest;
 	if ((highest?.position ?? 0) <= role.position) {
-		return deferred.update({ content: translateKey(t, `${Root}:rolesNotManageable`, { roles: role.name }) });
+		return deferred.update(status('error', translateKey(t, `${Root}:rolesNotManageable`, { roles: role.name })));
 	}
 
 	// Remove the everyone role
@@ -77,9 +85,9 @@ export async function claimPublicRole(interaction: GuildChatInputInteraction, ro
 
 	const hasRole = memberRoles.has(role.id);
 	if (claim === hasRole) {
-		return deferred.update({
-			content: translateKey(t, claim ? `${Root}:rolesAlreadyClaimed` : `${Root}:rolesNotClaimed`, { roles: role.name })
-		});
+		return deferred.update(
+			status('info', translateKey(t, claim ? `${Root}:rolesAlreadyClaimed` : `${Root}:rolesNotClaimed`, { roles: role.name }))
+		);
 	}
 
 	const removedRoles: string[] = [];
@@ -131,7 +139,7 @@ export async function claimPublicRole(interaction: GuildChatInputInteraction, ro
 	const member = await container.gatewayClient.members.fetch(guildId, interaction.user.id);
 	await member.roles.set([...memberRoles], translateKey(t, `${Root}:rolesAuditlog`));
 
-	return deferred.update({ content: formatOutput(t, removedRoles, addedRoles) });
+	return deferred.update(status('success', formatOutput(t, removedRoles, addedRoles)));
 }
 
 function formatOutput(t: TFunction, removedRoles: readonly string[], addedRoles: readonly string[]) {

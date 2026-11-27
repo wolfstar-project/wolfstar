@@ -3,6 +3,7 @@ import { renderAppealView } from '#lib/moderation/appealService';
 import { getDisplayT } from '#lib/structures/commands/moderationCase';
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getModeration } from '#utils/functions';
+import { renderStatus } from '#utils/status';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
 import { MessageFlags } from 'discord-api-types/v10';
@@ -21,7 +22,7 @@ export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, options: Command.OptionsOf<'appeal view'>) {
 		const t = getDisplayT(interaction, false);
 		const appeal = await readAppealOption(interaction.guildId, options.appeal);
-		if (appeal === null) return interaction.reply({ content: t('commands/appeal:notFound'), flags: MessageFlags.Ephemeral });
+		if (appeal === null) return interaction.reply(renderStatus('error', t('commands/appeal:notFound')));
 
 		const moderation = await getModeration(interaction.guildId);
 		const entry = await moderation.fetch(appeal.caseId);

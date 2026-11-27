@@ -11,7 +11,7 @@ import { CommandPermissionLevel, hasCommandPermissionLevel } from '#lib/structur
 import type { GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { isNullish } from '@sapphire/utilities';
 import { AllFlowsPrecondition, container } from '@wolfstar/http-framework';
-import type { Command, Precondition } from '@wolfstar/http-framework';
+import type { Command, Precondition, InteractionHandler } from '@wolfstar/http-framework';
 
 /**
  * What the precondition reads of an interaction: the guild, where it was used and by whom.
@@ -41,6 +41,13 @@ export class UserPrecondition extends AllFlowsPrecondition {
 	}
 
 	public override contextMenuRun(interaction: Precondition.ContextMenuInteraction, command: Command) {
+		return this.check(interaction, command);
+	}
+
+	public override async interactionHandlerRun(interaction: Precondition.InteractionHandlerInteraction, handler: InteractionHandler) {
+		if (handler.name !== 'caseMenu') return this.ok();
+		const command = container.stores.get('commands').get('case');
+		if (!command) return this.error({ identifier: 'preconditions:disabledGuild' });
 		return this.check(interaction, command);
 	}
 

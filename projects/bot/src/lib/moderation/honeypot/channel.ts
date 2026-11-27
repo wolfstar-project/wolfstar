@@ -1,4 +1,5 @@
 import { resolveOnErrorCodes } from '#common';
+import { getEmojiComponent } from '#utils/emojis';
 import { readSettings } from '#lib/database';
 import { readHoneypotStats } from '#lib/moderation/honeypot/stats';
 import { claimOnce } from '#utils/claims';
@@ -215,7 +216,7 @@ export function renderHoneypotNotice(t: TFunction<AnyNamespace>, action: Honeypo
 								type: ComponentType.Button,
 								style: ButtonStyle.Secondary,
 								label: t('commands/honeypot:noticeCatches', { count: stats.catches }),
-								emoji: { name: '🍯' },
+								emoji: getEmojiComponent('ModuleHoneypot'),
 								custom_id: encodeCustomId(HoneypotStatsHandlerName, stats.guildId, 'show')
 							}
 						]

@@ -15,7 +15,14 @@ import type { Guild } from '@wolfstar/plugin-gateway';
 import type { Snowflake } from 'discord-api-types/v10';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { deleteModerationCaseData, fetchModerationCaseData, fetchModerationCasesData, setModerationCaseData } from 'wolfstar-database';
+import {
+	clearModerationCaseData,
+	deleteModerationCaseData,
+	deleteModerationCaseEdits,
+	fetchModerationCaseData,
+	fetchModerationCasesData,
+	setModerationCaseData
+} from 'wolfstar-database';
 
 enum CacheActions {
 	None,
@@ -239,6 +246,7 @@ export class ModerationManager {
 		// Delete the entry from the DB and the cache
 		await this.#table.where({ id: entry.id, guildId: this.#guildId }).deleteAndCount();
 		await deleteModerationCaseData(container.prisma, this.guild.id, entry.id);
+		await deleteModerationCaseEdits(container.prisma, this.guild.id, entry.id);
 		this.#cache.delete(entry.id);
 
 		return entry;
@@ -282,6 +290,25 @@ export class ModerationManager {
 		}
 
 		return this.#cache;
+	}
+
+	/**
+	 * Reads a moderation entry from the database again, past the cache, and caches what it read.
+	 *
+	 * @remarks Each process caches the entries it read, so the one in the cache may be older than an edit another
+	 * process made. What writes an entry back under the lock of its case reads it with this first.
+	 *
+	 * @param id - The case number.
+	 * @returns The entry, `null` when it does not exist anymore.
+	 */
+	public async refetch(id: number): Promise<ModerationManager.Entry | null> {
+		const entry = await this.#fetchSingle(id);
+		if (entry === null) {
+			this.#cache.delete(id);
+			return null;
+		}
+
+		return this.#addToCache(entry, CacheActions.None);
 	}
 
 	public async getCurrentId(): Promise<number> {
@@ -544,7 +571,8 @@ export class ModerationManager {
 
 		try {
 			if (!hasExtraData && reference === null) {
-				await deleteModerationCaseData(container.prisma, this.guild.id, entry.id);
+				// The note of the moderators and the proof of the case stay, they are not of the entry:
+				await clearModerationCaseData(container.prisma, this.guild.id, entry.id);
 				return;
 			}
 

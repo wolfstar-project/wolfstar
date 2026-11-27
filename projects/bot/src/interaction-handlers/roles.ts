@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { createTranslator } from '#lib/structures/commands/utils';
 import {
 	createRolesMenuContext,
@@ -12,7 +13,6 @@ import { getModalValue } from 'wolfstar-shared';
 import { InteractionHandler, ModalSubmitInteraction } from '@wolfstar/http-framework';
 import { getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags } from 'discord-api-types/v10';
 
 type ModalInteraction = InteractionHandler.ModalInteraction;
 type ComponentInteraction = Exclude<InteractionHandler.Interaction, ModalInteraction>;
@@ -27,7 +27,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	public override async run(interaction: InteractionHandler.Interaction, content: unknown) {
 		const { guildId } = interaction;
 		const action = decodeRolesMenuId(content);
-		const fail = (message: string) => interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
+		const fail = (message: string) => interaction.reply(renderStatus('error', message));
 		if (action === null || guildId === undefined) return fail(getDefaultExpiredReply());
 
 		const t = createTranslator(getSupportedUserLanguageT(interaction));

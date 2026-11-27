@@ -1,8 +1,9 @@
+import { renderStatus } from '#utils/status';
 import { resolveOnErrorCodes } from '#common';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { container, InteractionHandler } from '@wolfstar/http-framework';
 import { decodeCustomIdContent, getDefaultExpiredReply } from '@wolfstar/http-framework-utilities';
-import { MessageFlags, RESTJSONErrorCodes } from 'discord-api-types/v10';
+import { RESTJSONErrorCodes } from 'discord-api-types/v10';
 
 /**
  * Handles the `Delete now` button of the intro of a honeypot channel (`honeypotIntro.<guildId>.dismiss`): it deletes
@@ -21,7 +22,7 @@ export class UserInteractionHandler extends InteractionHandler {
 			interaction.message === undefined ||
 			interaction.channelId === undefined
 		) {
-			return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', getDefaultExpiredReply()));
 		}
 
 		const deferred = await interaction.deferUpdate();

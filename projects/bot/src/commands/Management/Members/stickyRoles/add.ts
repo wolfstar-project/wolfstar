@@ -1,8 +1,8 @@
+import { renderStatus } from '#utils/status';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { getStickyRoles } from '#utils/functions';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
-import { MessageFlags } from 'discord-api-types/v10';
 
 /**
  * `/sticky-roles add`, see the `sticky-roles` parent command.
@@ -21,6 +21,6 @@ export class UserCommand extends Command {
 
 		const t = getSupportedUserLanguageT(interaction);
 		const content = translateKey(t, 'commands/management:stickyRolesAdd', { user: user.user.username });
-		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		return interaction.reply(renderStatus('success', content));
 	}
 }

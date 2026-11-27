@@ -1,11 +1,11 @@
 import { makeInteraction, type ClientEventCommandContext } from '@wolfstar/http-framework';
 import type { UserError } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags } from 'discord-api-types/v10';
+import { renderStatus } from '#utils/status';
 import { flattenError, generateUnexpectedErrorMessage, resolveError } from './_shared.js';
 
 /**
- * Replies to the user with the reason their command failed.
+ * Replies to the user with the reason their command failed, in an ephemeral status message.
  *
  * @remarks
  *
@@ -27,7 +27,7 @@ export async function handleCommandError(
 	const content = resolved ? resolveError(t, resolved) : generateUnexpectedErrorMessage(interaction.user.id, context.command, t, error);
 
 	try {
-		if (interaction.replied) await interaction.followup({ content, flags: MessageFlags.Ephemeral });
-		else await interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		if (interaction.replied) await interaction.followup(renderStatus('error', content));
+		else await interaction.reply(renderStatus('error', content));
 	} catch {}
 }

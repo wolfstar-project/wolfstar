@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey, type Translator } from '#lib/structures/commands';
 import { PermissionsBits, PermissionsBitsList } from 'wolfstar-shared';
@@ -64,7 +65,7 @@ export class UserCommand extends Command {
 		show: boolean
 	) {
 		const t = createTranslator(show ? getSupportedLanguageT(interaction) : getSupportedUserLanguageT(interaction));
-		if (rawPermissions === undefined) return interaction.reply({ content: t('errors:userNotInGuild'), flags: MessageFlags.Ephemeral });
+		if (rawPermissions === undefined) return interaction.reply(renderStatus('error', t('errors:userNotInGuild')));
 
 		let content: string;
 		const permissions = BigInt(rawPermissions);

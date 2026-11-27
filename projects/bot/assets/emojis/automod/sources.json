@@ -81,6 +81,12 @@
 			"emojiName": "automod_message_spam"
 		},
 		{
+			"type": "MessageDuplicates",
+			"nodeId": "2124:143",
+			"file": "messageDuplicates.png",
+			"emojiName": "automod_message_duplicates"
+		},
+		{
 			"type": "Newlines",
 			"nodeId": "2097:80",
 			"file": "newlines.png",

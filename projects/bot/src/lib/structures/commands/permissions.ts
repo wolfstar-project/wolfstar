@@ -1,10 +1,11 @@
 import { readSettings, readSettingsPermissionNodes } from '#lib/database';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
+import { renderStatus } from '#utils/status';
 import { createFunctionPrecondition } from '@wolfstar/decorators';
 import { isNullish } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags, PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
+import { PermissionFlagsBits, type Snowflake } from 'discord-api-types/v10';
 import { isAccessEntry, resolveAccess, type AccessRole, type PermissionsNode } from 'wolfstar-database';
 
 /**
@@ -216,8 +217,7 @@ const ChatInputPermissionLevels = new WeakMap<object, CommandPermissionLevel>();
 export function RequiresCommandPermissionLevel(level: CommandPermissionLevel): MethodDecorator {
 	const decorator = createFunctionPrecondition(
 		(interaction: GuildChatInputInteraction) => hasCommandPermissionLevel(interaction, level),
-		(interaction: GuildChatInputInteraction) =>
-			interaction.reply({ content: getCommandPermissionDenialMessage(interaction, level), flags: MessageFlags.Ephemeral })
+		(interaction: GuildChatInputInteraction) => interaction.reply(renderStatus('error', getCommandPermissionDenialMessage(interaction, level)))
 	);
 
 	return (target, propertyKey, descriptor) => {
@@ -253,10 +253,7 @@ export function RequiresServerSettingsManagement(): MethodDecorator {
 	const decorator = createFunctionPrecondition(
 		(interaction: GuildChatInputInteraction) => canManageServerSettingsFrom(interaction),
 		(interaction: GuildChatInputInteraction) =>
-			interaction.reply({
-				content: getCommandPermissionDenialMessage(interaction, CommandPermissionLevel.Administrator),
-				flags: MessageFlags.Ephemeral
-			})
+			interaction.reply(renderStatus('error', getCommandPermissionDenialMessage(interaction, CommandPermissionLevel.Administrator)))
 	);
 
 	return (target, propertyKey, descriptor) => {

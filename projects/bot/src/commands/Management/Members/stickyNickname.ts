@@ -1,8 +1,9 @@
+import { renderStatus } from '#utils/status';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { Command, RegisterCommand } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { ApplicationIntegrationType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { ApplicationIntegrationType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 import { fetchStickyNickname } from 'wolfstar-database';
 
 /**
@@ -27,6 +28,6 @@ export class UserCommand extends Command {
 			nickname === null
 				? translateKey(t, 'commands/management:stickyNicknameEmpty', { user: user.user.username })
 				: translateKey(t, 'commands/management:stickyNicknameSingle', { user: user.user.username, nickname });
-		return interaction.reply({ content, flags: MessageFlags.Ephemeral, allowed_mentions: { parse: [] } });
+		return interaction.reply(renderStatus('info', content));
 	}
 }

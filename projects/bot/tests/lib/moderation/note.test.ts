@@ -81,22 +81,51 @@ describe('note', () => {
 	});
 
 	describe('builder', () => {
-		test('GIVEN the note command THEN it has the user, the reason and the message and cannot notify the user', () => {
+		test('GIVEN the note command THEN it has the user, the reason, the proof and the message and cannot notify the user', () => {
 			const builder = applyModerationBuilder(new SlashCommandBuilder(), { root: 'commands/moderation:note', type: TypeVariation.Note });
 			const options = builder.toJSON().options ?? [];
 
-			expect(options.map((option) => option.name)).toEqual(['user', 'reason', 'message']);
+			expect(options.map((option) => option.name)).toEqual(['user', 'reason', 'proof', 'message']);
 			expect(options.map((option) => option.type)).toEqual([
 				ApplicationCommandOptionType.User,
 				ApplicationCommandOptionType.String,
+				ApplicationCommandOptionType.Attachment,
 				ApplicationCommandOptionType.String
 			]);
 		});
 
-		test('GIVEN the kick command THEN it keeps the dm and authored options', () => {
+		test('GIVEN the kick command THEN its options follow Flamey: the reason, the proof, the note and notify come first', () => {
 			const builder = applyModerationBuilder(new SlashCommandBuilder(), { root: 'commands/moderation:kick', type: TypeVariation.Kick });
 
-			expect((builder.toJSON().options ?? []).map((option) => option.name)).toEqual(['user', 'reason', 'message', 'dm', 'authored']);
+			expect((builder.toJSON().options ?? []).map((option) => option.name)).toEqual([
+				'user',
+				'reason',
+				'proof',
+				'note',
+				'notify',
+				'message',
+				'authored'
+			]);
+		});
+
+		test('GIVEN a command that takes a duration and options of its own THEN they come after notify', () => {
+			const builder = applyModerationBuilder(new SlashCommandBuilder(), {
+				root: 'commands/moderation:ban',
+				type: TypeVariation.Ban,
+				optionalOptions: (result) => result.addIntegerOption((option) => option.setName('delete-days').setDescription('Days.'))
+			});
+
+			expect((builder.toJSON().options ?? []).map((option) => option.name)).toEqual([
+				'user',
+				'reason',
+				'duration',
+				'proof',
+				'note',
+				'notify',
+				'delete-days',
+				'message',
+				'authored'
+			]);
 		});
 	});
 

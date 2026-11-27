@@ -1,7 +1,7 @@
 import { Listener, makeInteraction } from '@wolfstar/http-framework';
 import type { ClientEventInteractionHandlerContext, UserError } from '@wolfstar/http-framework';
 import { getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { MessageFlags } from 'discord-api-types/v10';
+import { renderStatus } from '#utils/status';
 import { resolveError } from './_shared.js';
 
 /**
@@ -16,7 +16,7 @@ export class UserListener extends Listener {
 		const content = resolveError(getSupportedUserLanguageT(interaction), error);
 
 		try {
-			await interaction.reply({ content, flags: MessageFlags.Ephemeral });
+			await interaction.reply(renderStatus('error', content));
 		} catch {}
 	}
 }

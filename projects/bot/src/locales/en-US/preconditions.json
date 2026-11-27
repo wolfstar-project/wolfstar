@@ -14,7 +14,7 @@
 	"administrator": "You need administrator privileges to run `{{command.name}}`!",
 	"disabledGlobal": "This command has been globally disabled by the bot owners. Want to know why and find out when it will be back? Join the official WolfStar server: <https://join.wolfstar.rocks>",
 	"disabledGuild": "This command has been disabled by an admin in this server!",
-	"disabledModuleModeration": "⚠️ The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.",
+	"disabledModuleModeration": "The moderation module is turned off in this server, an admin can turn it back on with `/settings server`.",
 	"disabledModuleReports": "The reports module is turned off in this server, an admin can turn it back on with `/settings server`.",
 	"restrictedChannel": "This command cannot be used in this channel!",
 	"restrictedRole": "Your roles do not let you use this command in this server!",
@@ -30,5 +30,5 @@
 	"missingMessageHandler": "This should never happen, one of the preconditions this command requires is missing a message handler.",
 	"missingChatInputHandler": "This should never happen, one of the preconditions this command requires is missing a slash command handler.",
 	"missingContextMenuHandler": "This should never happen, one of the preconditions this command requires is missing a context menu handler.",
-	"restrictedUser": "{{REDCROSS}} You cannot use this command with the user rules configured for this server."
+	"restrictedUser": "You cannot use this command with the user rules configured for this server."
 }

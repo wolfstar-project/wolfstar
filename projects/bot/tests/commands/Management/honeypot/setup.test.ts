@@ -1,3 +1,4 @@
+import { messageText } from '../../../mocks/status';
 import { readSettings, writeSettings } from '#lib/database';
 import {
 	createHoneypotChannel,
@@ -55,7 +56,7 @@ describe('/honeypot setup', () => {
 	}
 
 	function readAnswer() {
-		return update.mock.calls.at(-1)![0].content;
+		return messageText(update.mock.calls.at(-1)![0]);
 	}
 
 	beforeEach(() => {
@@ -91,7 +92,7 @@ describe('/honeypot setup', () => {
 		expect(getMissingHoneypotGuildPermissions).toHaveBeenCalledWith(guildId, 'Softban');
 		expect(createHoneypotChannel).not.toHaveBeenCalled();
 		expect(writeSettings).not.toHaveBeenCalled();
-		expect(readAnswer()).toBe('commands/honeypot:setupMissingPermissions {"missing":["BanMembers"]}');
+		expect(readAnswer()).toContain('commands/honeypot:setupMissingPermissions {"missing":["BanMembers"]}');
 	});
 
 	test('GIVEN a created channel the honeypot cannot run in THEN it is deleted and nothing is saved', async () => {
@@ -139,6 +140,6 @@ describe('/honeypot setup', () => {
 		expect(getMissingHoneypotLogPermissions).toHaveBeenCalledWith(guildId, logChannelId);
 		expect(createHoneypotChannel).not.toHaveBeenCalled();
 		expect(writeSettings).not.toHaveBeenCalled();
-		expect(readAnswer()).toBe(`commands/honeypot:logsMissingPermissions {"channel":"<#${logChannelId}>","missing":["EmbedLinks"]}`);
+		expect(readAnswer()).toContain(`commands/honeypot:logsMissingPermissions {"channel":"<#${logChannelId}>","missing":["EmbedLinks"]}`);
 	});
 });

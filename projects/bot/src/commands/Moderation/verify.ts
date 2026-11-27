@@ -1,3 +1,4 @@
+import { renderStatus } from '#utils/status';
 import { admitJoinGuardMember } from '#lib/moderation/joinguard/checkpoint';
 import { JoinGuardRoot } from '#lib/moderation/joinguard/commands';
 import { translateKey, type GuildChatInputInteraction } from '#lib/structures/commands/utils';
@@ -34,6 +35,8 @@ export class UserCommand extends Command {
 				? translateKey(t, `${Root}:verifyNothing`, { user })
 				: translateKey(t, `${Root}:verifyDone`, { user })
 			: translateKey(t, `${Root}:verifyFailed`, { user, error: result.error.detail });
-		return deferred.update({ content, allowed_mentions: { parse: [] } });
+		return deferred.update(
+			renderStatus(result.ok ? (result.value.checkpoint === null && !result.value.changedRoles ? 'info' : 'success') : 'error', content)
+		);
 	}
 }

@@ -1,13 +1,14 @@
 import type { ModerationManager } from '#lib/moderation/managers/ModerationManager';
-import type { RoleSetupMessage } from '#lib/moderation/structures/RoleSetupPrompt';
-import { getTranslationKey } from '#lib/moderation/common/util';
-import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
+import { getRecentCaseVerb } from '#lib/moderation/common/wording';
+import type { Translator } from '#lib/structures/commands/utils';
+import { Emojis } from '#utils/emojis';
+import type { StatusMessage } from '#utils/status';
 import { minutes } from 'wolfstar-shared';
-import { time, TimestampStyles, userMention } from '@discordjs/formatters';
+import { time, TimestampStyles } from '@discordjs/formatters';
 import { cutText } from '@sapphire/utilities';
 import { container } from '@wolfstar/http-framework';
 import { decodeCustomIdContent, encodeCustomId } from '@wolfstar/http-framework-utilities';
-import { ButtonStyle, ComponentType, type Snowflake } from 'discord-api-types/v10';
+import { ButtonStyle, ComponentType, MessageFlags, type Snowflake } from 'discord-api-types/v10';
 
 /**
  * The name of the interaction handler of the prompt that confirms a punishment, which is also the first part of its
@@ -81,45 +82,48 @@ export function findRecentCase<Entry extends Pick<ModerationManager.Entry, 'id' 
 }
 
 /**
- * Renders the prompt a moderator gets when the member already has a recent case: what the case is, and buttons to take
- * the action anyway or to cancel.
+ * Renders the prompt a moderator gets when the member already has a recent case, as Flamey asks it: what was done to the
+ * member and when, then a red button to take the action anyway and one to cancel. It is a status message with the
+ * buttons in its container, so its answer takes its place with no `content` to empty.
  *
  * @param t - The function to translate with, in the language of the moderator.
  * @param action - Who answers and what waits for the answer, its verb is set per button.
  * @param entry - The recent case.
  */
-export function renderRecentCasePrompt(t: Translator, action: Omit<RecentCaseAction, 'verb'>, entry: ModerationManager.Entry): RoleSetupMessage {
+export function renderRecentCasePrompt(t: Translator, action: Omit<RecentCaseAction, 'verb'>, entry: ModerationManager.Entry): StatusMessage {
 	const id = (verb: RecentCaseVerb) => encodeRecentCaseId({ ...action, verb });
 	const content = t('moderationActions:recentCasePrompt', {
-		user: userMention(entry.userId),
-		case: entry.id,
-		type: t(getTranslationKey(entry.type) as TranslationKey),
-		moderator: userMention(entry.moderatorId),
-		time: time(Math.floor(entry.createdAt / 1000), TimestampStyles.RelativeTime),
-		reason: entry.reason ?? t('moderationActions:recentCaseNoReason')
+		action: getRecentCaseVerb(t, entry.type, entry.isUndo()),
+		time: time(Math.floor(entry.createdAt / 1000), TimestampStyles.RelativeTime)
 	});
 
 	return {
-		content: cutText(content, 2000),
 		components: [
 			{
-				type: ComponentType.ActionRow,
+				type: ComponentType.Container,
 				components: [
+					{ type: ComponentType.TextDisplay, content: `${Emojis.Warning} ${cutText(content, 3900)}` },
 					{
-						type: ComponentType.Button,
-						custom_id: id('confirm'),
-						style: ButtonStyle.Danger,
-						label: cutText(t('moderationActions:recentCaseConfirm'), 80)
-					},
-					{
-						type: ComponentType.Button,
-						custom_id: id('cancel'),
-						style: ButtonStyle.Secondary,
-						label: cutText(t('moderationActions:recentCaseCancel'), 80)
+						type: ComponentType.ActionRow,
+						components: [
+							{
+								type: ComponentType.Button,
+								custom_id: id('confirm'),
+								style: ButtonStyle.Danger,
+								label: cutText(t('moderationActions:recentCaseConfirm'), 80)
+							},
+							{
+								type: ComponentType.Button,
+								custom_id: id('cancel'),
+								style: ButtonStyle.Secondary,
+								label: cutText(t('moderationActions:recentCaseCancel'), 80)
+							}
+						]
 					}
 				]
 			}
 		],
+		flags: MessageFlags.IsComponentsV2,
 		allowed_mentions: { parse: [] }
 	};
 }

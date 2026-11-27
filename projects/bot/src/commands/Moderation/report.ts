@@ -1,12 +1,14 @@
+import { submitReportOutcome } from '#lib/moderation/reports/submit';
+import { renderStatus } from '#utils/status';
 import type { ReportSubject } from '#lib/moderation/reports/pending';
 import { savePendingReport } from '#lib/moderation/reports/pending';
 import { renderReportModal, ReportReasonMaximumLength } from '#lib/moderation/reports/render';
-import { getReportDenial, submitReport } from '#lib/moderation/reports/submit';
+import { getReportDenial } from '#lib/moderation/reports/submit';
 import { createTranslator, type GuildChatInputInteraction, type Translator } from '#lib/structures/commands/utils';
 import { getTag } from '#utils/util';
 import { Command, RegisterCommand, RegisterMessageCommand, RegisterUserCommand, type TransformedArguments } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, applyNameLocalizedBuilder, getSupportedUserLanguageT } from '@wolfstar/plugin-i18next';
-import { ApplicationCommandType, ApplicationIntegrationType, InteractionContextType, MessageFlags, type APIUser } from 'discord-api-types/v10';
+import { ApplicationCommandType, ApplicationIntegrationType, InteractionContextType, type APIUser } from 'discord-api-types/v10';
 
 type InGuild<Interaction> = Interaction & { guildId: string };
 
@@ -39,8 +41,8 @@ export class UserCommand extends Command {
 	public override async chatInputRun(interaction: GuildChatInputInteraction, args: Command.OptionsOf<'report'>) {
 		const t = createTranslator(getSupportedUserLanguageT(interaction));
 		const subject = this.#getSubject(args.user.user);
-		const content = await submitReport(t, interaction.guildId, interaction.user.id, subject, args.reason);
-		return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+		const outcome = await submitReportOutcome(t, interaction.guildId, interaction.user.id, subject, args.reason);
+		return interaction.reply(renderStatus(outcome.kind, outcome.text));
 	}
 
 	@RegisterUserCommand((builder) =>
@@ -66,7 +68,7 @@ export class UserCommand extends Command {
 
 		// A webhook is not a member, there is nobody the moderators could act on:
 		if (message.webhook_id !== undefined) {
-			return interaction.reply({ content: t('commands/report:targetWebhook'), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', t('commands/report:targetWebhook')));
 		}
 
 		return this.#askReason(interaction, t, {
@@ -85,7 +87,7 @@ export class UserCommand extends Command {
 	 */
 	async #askReason(interaction: InGuild<Command.UserInteraction | Command.MessageInteraction>, t: Translator, subject: ReportSubject) {
 		const denial = await getReportDenial(t, interaction.guildId, interaction.user.id, subject.targetId);
-		if (denial !== null) return interaction.reply({ content: denial, flags: MessageFlags.Ephemeral });
+		if (denial !== null) return interaction.reply(renderStatus('error', denial));
 
 		await savePendingReport(interaction.guildId, interaction.user.id, subject);
 		return interaction.showModal(renderReportModal(t, subject));

@@ -1,10 +1,11 @@
+import { renderStatus } from '#utils/status';
 import { ApplyOptions } from '@wolfstar/decorators';
 import { createTranslator, type GuildChatInputInteraction, type TranslationKey } from '#lib/structures/commands';
 import { hours, seconds } from 'wolfstar-shared';
 import { resolveTimeSpan } from '#utils/resolvers';
 import { Command, RegisterCommand, container } from '@wolfstar/http-framework';
 import { applyLocalizedBuilder, getSupportedUserLanguageT, type AnyNamespace, type TFunction } from '@wolfstar/plugin-i18next';
-import { ApplicationIntegrationType, ChannelType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord-api-types/v10';
+import { ApplicationIntegrationType, ChannelType, InteractionContextType, PermissionFlagsBits } from 'discord-api-types/v10';
 
 const MaximumDuration = hours(6);
 
@@ -31,16 +32,13 @@ export class UserCommand extends Command {
 
 		const channel = interaction.channel;
 		if (channel.type !== ChannelType.GuildText) {
-			return interaction.reply({ content: t('preconditions:guildTextOnly'), flags: MessageFlags.Ephemeral });
+			return interaction.reply(renderStatus('error', t('preconditions:guildTextOnly')));
 		}
 
 		// `app_permissions` are the permissions of the bot in the channel, Discord already applied the overwrites:
 		const appPermissions = interaction.applicationPermissions;
 		if (appPermissions !== undefined && (appPermissions & PermissionFlagsBits.ManageChannels) === 0n) {
-			return interaction.reply({
-				content: t('preconditions:clientPermissions', { missing: ['ManageChannels'] }),
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(renderStatus('error', t('preconditions:clientPermissions', { missing: ['ManageChannels'] })));
 		}
 
 		const resetOptions = (rawT as unknown as TFunction<AnyNamespace>)('arguments:resetPossibles', {
@@ -53,7 +51,7 @@ export class UserCommand extends Command {
 			const result = resolveTimeSpan(args.duration, { minimum: 0, maximum: MaximumDuration });
 			if (result.isErr()) {
 				const content = t(result.unwrapErr() as TranslationKey, { parameter: args.duration, minimum: 0, maximum: MaximumDuration });
-				return interaction.reply({ content, flags: MessageFlags.Ephemeral });
+				return interaction.reply(renderStatus('error', content));
 			}
 
 			cooldown = result.unwrap();
@@ -62,6 +60,6 @@ export class UserCommand extends Command {
 		await container.gatewayClient.channels.edit(channel.id, { rateLimitPerUser: seconds.fromMilliseconds(cooldown) });
 
 		const content = cooldown === 0 ? t('commands/moderation:slowmodeReset') : t('commands/moderation:slowmodeSet', { cooldown });
-		return interaction.reply({ content });
+		return interaction.reply(renderStatus('success', content, { ephemeral: false }));
 	}
 }
