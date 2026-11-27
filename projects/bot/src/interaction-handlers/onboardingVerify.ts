@@ -1,4 +1,4 @@
-import { getOnboardingEmojiChallenge, isOnboardingExpired, type OnboardingStep } from '#lib/onboarding/flow';
+import { getOnboardingEmojiChallenge, getOnboardingFailureReason, type OnboardingFailureReason, type OnboardingStep } from '#lib/onboarding/flow';
 import { decodeOnboardingVerifyId, encodeOnboardingVerifyId, type OnboardingVerifyAction } from '#lib/onboarding/ids';
 import { OnboardingEventsRoot } from '#lib/onboarding/log';
 import {
@@ -111,14 +111,13 @@ export class UserInteractionHandler extends InteractionHandler {
 				return reply(`${Root}:stale`);
 			}
 
+			// A stage switched off since the challenge was shown takes no answer, as its start button does not start it:
 			const stage = config.stages.find((entry) => entry.id === verification.stageId);
-			if (stage === undefined) return reply(`${Root}:stale`);
+			if (stage === undefined || !stage.enabled) return reply(`${Root}:stale`);
 
 			const guild = await this.container.gatewayClient.guilds.fetch(guildId);
-			if (isOnboardingExpired(stage, verification, Date.now())) {
-				await failOnboardingStageLocked(guild, config, stage, verification, 'TimeLimit');
-				return reply(`${Root}:expired`);
-			}
+			const failure = getOnboardingFailureReason(stage, verification, Date.now());
+			if (failure !== null) return this.fail(guild, config, stage, verification, failure, t);
 
 			switch (action.verb) {
 				case 'ask':
@@ -162,10 +161,8 @@ export class UserInteractionHandler extends InteractionHandler {
 
 			const { stage, verification } = step;
 			const guild = await this.container.gatewayClient.guilds.fetch(member.guildId);
-			if (isOnboardingExpired(stage, verification, Date.now())) {
-				await failOnboardingStageLocked(guild, config, stage, verification, 'TimeLimit');
-				return reply(`${Root}:expired`);
-			}
+			const failure = getOnboardingFailureReason(stage, verification, Date.now());
+			if (failure !== null) return this.fail(guild, config, stage, verification, failure, t);
 
 			switch (stage.challenge) {
 				case 'Button':
@@ -178,6 +175,23 @@ export class UserInteractionHandler extends InteractionHandler {
 					return reply(`${Root}:captchaUnavailable`);
 			}
 		});
+	}
+
+	/**
+	 * Fails a member whose time ran out, or who used every attempt while Discord refused the failure action, which is
+	 * tried again. Called under the lock of the member.
+	 */
+	private async fail(
+		guild: Guild,
+		config: OnboardingConfig,
+		stage: OnboardingStage,
+		verification: OnboardingVerification,
+		reason: OnboardingFailureReason,
+		t: Translator
+	): Promise<Answer> {
+		const result = await failOnboardingStageLocked(guild, config, stage, verification, reason);
+		const key: TranslationKey = result === 'Stale' ? `${Root}:stale` : reason === 'TimeLimit' ? `${Root}:expired` : `${Root}:failedFinal`;
+		return { kind: 'Reply', body: renderOnboardingNotice(t(key, { stage: stage.name })) };
 	}
 
 	/**
@@ -201,9 +215,14 @@ export class UserInteractionHandler extends InteractionHandler {
 				: { kind: 'Reply', body: renderOnboardingNotice(content, button) };
 
 		if (correct) {
-			const { passed, next } = await passOnboardingStageLocked(member, config, stage, verification);
-			if (!passed) return respond(t(`${Root}:stale`));
-			return respond(...this.describeNext(t, stage, next));
+			const result = await passOnboardingStageLocked(member, config, stage, verification);
+			if (result.kind === 'Stale') return respond(t(`${Root}:stale`));
+			if (result.kind === 'RoleRefused') {
+				// The row still waits: the button shows the challenge again, so the member answers once the role can be given.
+				const button = { label: t(`${Root}:answerAgain`), customId: encodeOnboardingVerifyId({ verb: 'start', guildId: stage.guildId }) };
+				return respond(t(`${Root}:roleRefused`, { stage: stage.name }), button);
+			}
+			return respond(...this.describeNext(t, stage, result.next));
 		}
 
 		const left = await recordWrongOnboardingAnswerLocked(guild, config, stage, verification);

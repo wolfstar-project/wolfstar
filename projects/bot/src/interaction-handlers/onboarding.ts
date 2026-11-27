@@ -5,6 +5,7 @@ import { getJoinGuardRoleProblem } from '#lib/moderation/joinguard/permissions';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { getOnboardingChannelProblem } from '#lib/onboarding/discord';
 import { decodeOnboardingPanelId, parseOnboardingToggleTarget, type OnboardingPanelAction } from '#lib/onboarding/ids';
+import { syncOnboardingTimeLimits } from '#lib/onboarding/members';
 import {
 	createOnboardingStageInput,
 	describeOnboardingProblems,
@@ -161,6 +162,7 @@ export class UserInteractionHandler extends InteractionHandler {
 
 		await after?.(result.value);
 		announceOnboardingChange(guildId);
+		await this.syncTimeLimits(guildId);
 		const panel = await loadOnboardingPanel(guildId, action.ownerId, t);
 		return deferred.update(this.render(panel, typeof page === 'function' ? page(result.value) : page, t(`${Root}:saved`)));
 	}
@@ -187,6 +189,19 @@ export class UserInteractionHandler extends InteractionHandler {
 			},
 			{ kind: 'Stage', stageId: action.stageId }
 		);
+	}
+
+	/**
+	 * Makes the time limits as they are saved now apply to the members who wait, see `syncOnboardingTimeLimits`. The
+	 * write is saved already, and a member who presses the button gets their job again, so a failure is only logged.
+	 */
+	private async syncTimeLimits(guildId: Snowflake) {
+		try {
+			const { scheduled, left } = await syncOnboardingTimeLimits(guildId);
+			this.container.logger.debug(`[Onboarding] Time limits of ${guildId}: ${scheduled} scheduled, ${left} rows of deleted stages left`);
+		} catch (error) {
+			this.container.logger.error(`[Onboarding] Could not apply the time limits of ${guildId} to the members who wait:`, error);
+		}
 	}
 
 	/**

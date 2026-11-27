@@ -312,6 +312,17 @@ export async function fetchOnboardingVerifications(orm: Orm, guildId: Snowflake,
 }
 
 /**
+ * Reads the rows of a guild whose members wait on a stage now, oldest first: their time limits follow the stages when
+ * those are written.
+ */
+export async function fetchWaitingOnboardingVerifications(orm: Orm, guildId: Snowflake): Promise<OnboardingVerification[]> {
+	const rows = await orm.public.OnboardingVerification.where({ guildId: BigInt(guildId), status: 'Waiting' })
+		.orderBy((row) => row.id.asc())
+		.all();
+	return rows.map((row) => toVerification(row));
+}
+
+/**
  * Reads a row by its ID, whatever its guild: the job of a time limit only knows that.
  */
 export async function fetchOnboardingVerification(orm: Orm, verificationId: string): Promise<OnboardingVerification | null> {

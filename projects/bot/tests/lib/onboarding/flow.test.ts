@@ -1,5 +1,6 @@
 import {
 	decideOnboardingAnswer,
+	getOnboardingFailureReason,
 	getOnboardingEmojiChallenge,
 	getOnboardingStep,
 	isOnboardingExpired,
@@ -167,5 +168,19 @@ describe('getOnboardingEmojiChallenge', () => {
 		expect(new Set(options.map((option) => option.emoji)).size).toBe(OnboardingEmojiOptions);
 		expect(target).toBeGreaterThanOrEqual(0);
 		expect(target).toBeLessThan(OnboardingEmojiOptions);
+	});
+});
+
+describe('getOnboardingFailureReason', () => {
+	test('GIVEN a member with attempts left and time left THEN nothing fails them', () => {
+		expect(getOnboardingFailureReason({ maxAttempts: 3, timeLimit: 60 }, { attempts: 2, createdAt: 0 }, 59_999)).toBeNull();
+	});
+
+	test('GIVEN a member whose time ran out THEN they fail by the time limit', () => {
+		expect(getOnboardingFailureReason({ maxAttempts: 3, timeLimit: 60 }, { attempts: 0, createdAt: 0 }, 60_000)).toBe('TimeLimit');
+	});
+
+	test('GIVEN a member who used every attempt, whose failure action did not go through THEN they still fail by the attempts', () => {
+		expect(getOnboardingFailureReason({ maxAttempts: 3, timeLimit: 0 }, { attempts: 3, createdAt: 0 }, 0)).toBe('Attempts');
 	});
 });

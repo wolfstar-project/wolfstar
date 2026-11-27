@@ -112,6 +112,26 @@ export function isOnboardingExpired(
 }
 
 /**
+ * Why a member failed a stage: too many wrong answers, or the time limit ran out.
+ */
+export type OnboardingFailureReason = 'Attempts' | 'TimeLimit';
+
+/**
+ * Why a member who waits on a stage fails it now, `null` when they can still pass it.
+ *
+ * @remarks A member who used every attempt still waits when Discord refused the failure action: the row is resolved
+ * only once the action is taken, so it can be tried again. Such a member is never shown the challenge again.
+ */
+export function getOnboardingFailureReason(
+	stage: Pick<OnboardingStage, 'maxAttempts' | 'timeLimit'>,
+	verification: Pick<OnboardingVerification, 'attempts' | 'createdAt'>,
+	now: number
+): OnboardingFailureReason | null {
+	if (verification.attempts >= stage.maxAttempts) return 'Attempts';
+	return isOnboardingExpired(stage, verification, now) ? 'TimeLimit' : null;
+}
+
+/**
  * The emojis an `Emoji` stage picks from, with the name the member is asked for.
  */
 export const OnboardingEmojis = [

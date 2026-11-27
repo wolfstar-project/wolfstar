@@ -2786,6 +2786,7 @@ declare module "i18next" {
         passedNext: "You passed **{{stage}}**. Next: **{{next}}**.";
         passedAwaitNative: "You passed **{{stage}}**. Complete the onboarding of the server, then press the button again for **{{next}}**.";
         continue: "Continue";
+        roleRefused: "Your answer is right, but I could not give you the role of **{{stage}}**. Tell the moderators, then answer again.";
         reasonPassed: "[Onboarding] Passed the stage {{stage}}.";
         reasonFailed: "[Onboarding] Failed the stage {{stage}}.";
         actionRole: "Give the role";
@@ -2794,13 +2795,13 @@ declare module "i18next" {
         logFooter: "Onboarding";
         logPassed: "{{user}} passed the stage **{{stage}}**.";
         logRoleGiven: "Role given: {{role}}.";
-        logError: "⚠️ {{error}}";
+        logRoleRefused: "⚠️ {{user}} answered the stage **{{stage}}** right, but I could not give them {{role}}: {{error}}. The stage stays open, and they can answer again.";
         logFailedAttempts: "{{user}} failed the stage **{{stage}}**: too many wrong answers.";
         logFailedTimeLimit: "{{user}} failed the stage **{{stage}}**: the time limit ran out.";
         logOutcomeNone: "They can press the button again.";
         logOutcomeKicked: "Kicked, case #{{caseId}}.";
         logOutcomeTimedOut: "Timed out, case #{{caseId}}.";
-        logOutcomeRefused: "⚠️ {{action}} failed: {{error}}";
+        logOutcomeRefused: "⚠️ {{action}} failed: {{error}}. The member still waits, and I try again later.";
       };
       "events/reactions": {
         reaction: "Reaction Added";

@@ -1,3 +1,4 @@
+import type { OnboardingFailureReason } from '#lib/onboarding/flow';
 import { Colors } from '#utils/constants';
 import { createLogMessage, type LogMessageOptions } from '#utils/functions';
 import { roleMention, userMention } from '@discordjs/formatters';
@@ -9,11 +10,6 @@ export const OnboardingEventsRoot = 'events/onboarding';
 const Root = OnboardingEventsRoot;
 
 /**
- * Why a member failed a stage: too many wrong answers, or the time limit ran out.
- */
-export type OnboardingFailureReason = 'Attempts' | 'TimeLimit';
-
-/**
  * What was done to a member who failed a stage.
  */
 export type OnboardingFailureOutcome =
@@ -23,10 +19,14 @@ export type OnboardingFailureOutcome =
 	| { readonly kind: 'Refused'; readonly action: 'Kick' | 'Timeout'; readonly error: string };
 
 /**
- * What a log of the onboarding tells.
+ * What a log of the onboarding tells:
+ * - `Passed`: the member passed a stage, and got its role.
+ * - `RoleRefused`: the member answered right, but Discord refused the role, so the stage is not passed yet.
+ * - `Failed`: the member failed a stage.
  */
 export type OnboardingLogEntry =
-	| { readonly kind: 'Passed'; readonly stage: string; readonly roleId: Snowflake | null; readonly errors: readonly string[] }
+	| { readonly kind: 'Passed'; readonly stage: string; readonly roleId: Snowflake | null }
+	| { readonly kind: 'RoleRefused'; readonly stage: string; readonly roleId: Snowflake; readonly error: string }
 	| {
 			readonly kind: 'Failed';
 			readonly stage: string;
@@ -43,22 +43,29 @@ export type OnboardingLogEntry =
  */
 export function renderOnboardingLog(t: TFunction<AnyNamespace>, user: LogMessageOptions['author'], entry: OnboardingLogEntry) {
 	const mention = `${userMention(user.id)} (${user.id})`;
-	const lines =
-		entry.kind === 'Passed'
-			? [
-					t(`${Root}:logPassed`, { user: mention, stage: entry.stage }),
-					...(entry.roleId === null ? [] : [t(`${Root}:logRoleGiven`, { role: roleMention(entry.roleId) })]),
-					...entry.errors.map((error) => t(`${Root}:logError`, { error }))
-				]
-			: [
-					t(entry.reason === 'Attempts' ? `${Root}:logFailedAttempts` : `${Root}:logFailedTimeLimit`, {
-						user: mention,
-						stage: entry.stage
-					}),
-					renderFailureOutcome(t, entry.outcome)
-				];
+	return createLogMessage({
+		color: getLogColor(entry),
+		author: user,
+		content: renderLogLines(t, mention, entry).join('\n'),
+		footer: t(`${Root}:logFooter`)
+	});
+}
 
-	return createLogMessage({ color: getLogColor(entry), author: user, content: lines.join('\n'), footer: t(`${Root}:logFooter`) });
+function renderLogLines(t: TFunction<AnyNamespace>, mention: string, entry: OnboardingLogEntry): string[] {
+	switch (entry.kind) {
+		case 'Passed':
+			return [
+				t(`${Root}:logPassed`, { user: mention, stage: entry.stage }),
+				...(entry.roleId === null ? [] : [t(`${Root}:logRoleGiven`, { role: roleMention(entry.roleId) })])
+			];
+		case 'RoleRefused':
+			return [t(`${Root}:logRoleRefused`, { user: mention, stage: entry.stage, role: roleMention(entry.roleId), error: entry.error })];
+		case 'Failed':
+			return [
+				t(entry.reason === 'Attempts' ? `${Root}:logFailedAttempts` : `${Root}:logFailedTimeLimit`, { user: mention, stage: entry.stage }),
+				renderFailureOutcome(t, entry.outcome)
+			];
+	}
 }
 
 function renderFailureOutcome(t: TFunction<AnyNamespace>, outcome: OnboardingFailureOutcome): string {
@@ -75,7 +82,8 @@ function renderFailureOutcome(t: TFunction<AnyNamespace>, outcome: OnboardingFai
 }
 
 function getLogColor(entry: OnboardingLogEntry): number {
-	if (entry.kind === 'Passed') return entry.errors.length === 0 ? Colors.Green : Colors.Amber;
+	if (entry.kind === 'Passed') return Colors.Green;
+	if (entry.kind === 'RoleRefused') return Colors.Amber;
 	return entry.outcome.kind === 'Refused' ? Colors.Amber : Colors.Red;
 }
 
