@@ -30,7 +30,7 @@ vi.mock('wolfstar-database', async (importOriginal) => ({
 const guildId = '254360814063058944';
 const userId = '266624760782258186';
 const guild = { id: guildId };
-const member = { guildId, id: userId };
+const member = { guildId, id: userId, joinedTimestamp: null };
 
 const stage: OnboardingStage = {
 	id: '7',
@@ -123,6 +123,15 @@ describe('handleOnboardingRequest', () => {
 
 		expect(await handleOnboardingRequest('1')).toBe('Failed');
 		expect(passOnboardingStageLocked).not.toHaveBeenCalled();
+		expect(completeOnboardingRequest).toHaveBeenCalledWith(container.prisma, '1', expect.stringMatching(/^stale: /));
+	});
+
+	test('GIVEN a row of an earlier stay, before the member left and joined again THEN nobody passes', async () => {
+		vi.mocked(fetchOnboardingMember).mockResolvedValue({ ...member, joinedTimestamp: Date.now() - 1000 } as never);
+
+		expect(await handleOnboardingRequest('1')).toBe('Failed');
+		expect(passOnboardingStageLocked).not.toHaveBeenCalled();
+		expect(failOnboardingStageLocked).not.toHaveBeenCalled();
 		expect(completeOnboardingRequest).toHaveBeenCalledWith(container.prisma, '1', expect.stringMatching(/^stale: /));
 	});
 

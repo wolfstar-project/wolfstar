@@ -102,5 +102,35 @@
 				"params": ["OnboardingRequest_guild_id_fkey", "public", "\"public\".\"OnboardingRequest\""]
 			}
 		]
+	},
+	{
+		"id": "index.OnboardingRequest.OnboardingRequest_created_at_pending_idx",
+		"label": "Create the index OnboardingRequest_created_at_pending_idx",
+		"summary": "Creates OnboardingRequest_created_at_pending_idx on \"OnboardingRequest\"",
+		"operationClass": "additive",
+		"target": {
+			"id": "postgres",
+			"details": {
+				"schema": "public",
+				"objectType": "index",
+				"name": "OnboardingRequest_created_at_pending_idx",
+				"table": "OnboardingRequest"
+			}
+		},
+		"precheck": [],
+		"execute": [
+			{
+				"description": "create OnboardingRequest_created_at_pending_idx",
+				"sql": "CREATE INDEX \"OnboardingRequest_created_at_pending_idx\" ON \"public\".\"OnboardingRequest\" (\"created_at\") WHERE \"processed_at\" IS NULL",
+				"params": []
+			}
+		],
+		"postcheck": [
+			{
+				"description": "verify OnboardingRequest_created_at_pending_idx exists",
+				"sql": "SELECT EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname = 'OnboardingRequest_created_at_pending_idx') AS \"result\"",
+				"params": []
+			}
+		]
 	}
 ]

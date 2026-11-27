@@ -1,4 +1,4 @@
-import { getOnboardingFailureReason } from '#lib/onboarding/flow';
+import { getOnboardingFailureReason, selectCurrentStay } from '#lib/onboarding/flow';
 import { failOnboardingStageLocked, fetchOnboardingMember, passOnboardingStageLocked } from '#lib/onboarding/members';
 import { readOnboardingConfig, withOnboardingMemberLock } from '#lib/onboarding/store';
 import { leaseRequest } from '#utils/requestQueue';
@@ -38,7 +38,7 @@ const FailureDetails: Readonly<Record<OnboardingRequestFailureCode, string>> = {
 
 /**
  * Passes the member of a request, under the lock of the member, as the button of the verification message does: the
- * row the website read must still wait, at an enabled `Captcha` stage, in time.
+ * row the website read must still wait, of the member's current stay, at an enabled `Captcha` stage, in time.
  *
  * @returns Why it could not be done, `null` when it was.
  */
@@ -47,14 +47,16 @@ async function runOnboardingRequest(request: OnboardingRequest): Promise<Onboard
 	const config = await readOnboardingConfig(guildId);
 	if (!config.settings.enabled) return 'off';
 
-	const member = await fetchOnboardingMember(guildId, userId);
-	if (member === null) return 'notMember';
-
 	return withOnboardingMemberLock(guildId, userId, async () => {
+		const member = await fetchOnboardingMember(guildId, userId);
+		if (member === null) return 'notMember';
+
 		const verification = await fetchOnboardingVerification(container.prisma.orm, request.verificationId);
 		if (verification === null || verification.guildId !== guildId || verification.userId !== userId || verification.status !== 'Waiting') {
 			return 'stale';
 		}
+		// A row written before the member's current join is of a stay that ended, whose leave the bot may have missed:
+		if (selectCurrentStay([verification], member.joinedTimestamp).length === 0) return 'stale';
 
 		const stage = config.stages.find((entry) => entry.id === verification.stageId);
 		if (stage === undefined || !stage.enabled || stage.challenge !== 'Captcha') return 'stale';
