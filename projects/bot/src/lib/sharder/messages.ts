@@ -65,6 +65,11 @@ export interface ShardMessages {
 	 * The dashboard asked for something to be done with the appeals, which goes the same way.
 	 */
 	appealRequest: { requestId: string };
+
+	/**
+	 * A member passed the captcha of the onboarding on the website, which goes the same way.
+	 */
+	onboardingRequest: { requestId: string };
 }
 
 export type ShardMessageType = keyof ShardMessages;

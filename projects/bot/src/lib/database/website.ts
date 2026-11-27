@@ -15,6 +15,8 @@ export interface WebsiteNotificationTarget {
 	joinGuardRequest(requestId: string): void;
 	/** The dashboard asked for something to be done with the appeals. */
 	appealRequest(requestId: string): void;
+	/** A member passed the captcha of a `Captcha` stage of the onboarding on the website. */
+	onboardingRequest(requestId: string): void;
 }
 
 interface Logger {
@@ -34,7 +36,7 @@ export function createWebsiteClient(): NotificationClient {
 
 /**
  * Creates the one connection of the bot that hears the website, see {@linkcode DatabaseNotificationListener}: the
- * writes of the dashboard to the settings, and the requests to the join guard and the appeals. Every time it listens, the first time
+ * writes of the dashboard to the settings, and the requests to the join guard, the appeals and the onboarding. Every time it listens, the first time
  * included, every cached copy of the settings is dropped, since a write made while it did not is lost.
  *
  * @param target - Where what it hears goes.
@@ -57,7 +59,8 @@ export function createWebsiteListener(
 				target.settingsUpdate(update);
 			},
 			[DatabaseNotificationChannels.JoinGuardRequest]: (payload) => target.joinGuardRequest(payload.trim()),
-			[DatabaseNotificationChannels.AppealRequest]: (payload) => target.appealRequest(payload.trim())
+			[DatabaseNotificationChannels.AppealRequest]: (payload) => target.appealRequest(payload.trim()),
+			[DatabaseNotificationChannels.OnboardingRequest]: (payload) => target.onboardingRequest(payload.trim())
 		},
 		onListen: () => target.invalidateAllSettings()
 	});
@@ -69,16 +72,19 @@ export function createWebsiteListener(
  *
  * @param enqueue - Queues a request of the join guard, see `RequestQueue`.
  * @param enqueueAppeal - Queues a request of the appeals.
+ * @param enqueueOnboarding - Queues a request of the onboarding.
  */
 export function createLocalWebsiteTarget(
 	enqueue: (requestId: string) => unknown,
-	enqueueAppeal: (requestId: string) => unknown
+	enqueueAppeal: (requestId: string) => unknown,
+	enqueueOnboarding: (requestId: string) => unknown
 ): WebsiteNotificationTarget {
 	return {
 		settingsUpdate: ({ guildId, keys }) => dispatchShardMessage({ type: 'settingsUpdate', guildId, keys }),
 		invalidateAllSettings: () => dispatchShardMessage({ type: 'settingsInvalidateAll' }),
 		joinGuardRequest: (requestId) => void enqueue(requestId),
-		appealRequest: (requestId) => void enqueueAppeal(requestId)
+		appealRequest: (requestId) => void enqueueAppeal(requestId),
+		onboardingRequest: (requestId) => void enqueueOnboarding(requestId)
 	};
 }
 
@@ -107,6 +113,7 @@ export function createShardManagerWebsiteTarget(manager: ShardMessenger, logger:
 		settingsUpdate: ({ guildId, keys }) => send({ type: 'settingsUpdate', guildId, keys }, null),
 		invalidateAllSettings: () => send({ type: 'settingsInvalidateAll' }, null),
 		joinGuardRequest: (requestId) => send({ type: 'joinGuardRequest', requestId }, 0),
-		appealRequest: (requestId) => send({ type: 'appealRequest', requestId }, 0)
+		appealRequest: (requestId) => send({ type: 'appealRequest', requestId }, 0),
+		onboardingRequest: (requestId) => send({ type: 'onboardingRequest', requestId }, 0)
 	};
 }

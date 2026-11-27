@@ -1,10 +1,10 @@
 import type { OnboardingStage } from 'wolfstar-database';
 
 /**
- * Whether the website's `/verify` page serves the `Captcha` challenge of the onboarding. Until it does, the panel does
- * not offer it, and a stage that has it is blocked.
+ * Whether the website's `/verify` page serves the `Captcha` challenge of the onboarding: it does since
+ * wolfstar.rocks checks it with Turnstile and asks the bot to pass the member (`OnboardingRequest`).
  */
-export const OnboardingCaptchaAvailable = false;
+export const OnboardingCaptchaAvailable = true;
 
 /**
  * What keeps a stage from working. The dashboard shows the same, with the same names.

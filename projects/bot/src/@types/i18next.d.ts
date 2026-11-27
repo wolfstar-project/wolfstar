@@ -2880,7 +2880,8 @@ declare module "i18next" {
         failedFinal: "You failed the stage **{{stage}}**.";
         stale: "This challenge is no longer valid. Press the button of the verification message again.";
         expired: "Your time for this stage ran out.";
-        captchaUnavailable: "This stage is not available yet. Tell the moderators of the server.";
+        captcha: "Pass the captcha of **{{stage}}** on the website. Sign in with the Discord account you use here.";
+        captchaButton: "Open the captcha";
         emojiPrompt: "Press the **{{name}}**.";
         emojiApple: "apple";
         emojiDog: "dog";

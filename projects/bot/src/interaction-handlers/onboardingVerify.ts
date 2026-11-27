@@ -10,6 +10,7 @@ import {
 	startOnboardingStage
 } from '#lib/onboarding/members';
 import {
+	getOnboardingCaptchaUrl,
 	OnboardingAnswerInputId,
 	renderOnboardingEmojiChallenge,
 	renderOnboardingNotice,
@@ -172,7 +173,15 @@ export class UserInteractionHandler extends InteractionHandler {
 				case 'Question':
 					return { kind: 'Modal', body: renderOnboardingQuestionModal(t, stage, verification) };
 				case 'Captcha':
-					return reply(`${Root}:captchaUnavailable`);
+					// The website checks the captcha, and asks the bot to pass the member (`lib/onboarding/requests.ts`):
+					return {
+						kind: 'Reply',
+						body: renderOnboardingNotice(t(`${Root}:captcha`, { stage: stage.name }), {
+							kind: 'Link',
+							label: t(`${Root}:captchaButton`),
+							url: getOnboardingCaptchaUrl(stage.guildId)
+						})
+					};
 			}
 		});
 	}
@@ -219,7 +228,11 @@ export class UserInteractionHandler extends InteractionHandler {
 			if (result.kind === 'Stale') return respond(t(`${Root}:stale`));
 			if (result.kind === 'RoleRefused') {
 				// The row still waits: the button shows the challenge again, so the member answers once the role can be given.
-				const button = { label: t(`${Root}:answerAgain`), customId: encodeOnboardingVerifyId({ verb: 'start', guildId: stage.guildId }) };
+				const button: OnboardingNoticeButton = {
+					kind: 'Action',
+					label: t(`${Root}:answerAgain`),
+					customId: encodeOnboardingVerifyId({ verb: 'start', guildId: stage.guildId })
+				};
 				return respond(t(`${Root}:roleRefused`, { stage: stage.name }), button);
 			}
 			return respond(...this.describeNext(t, stage, result.next));
@@ -234,6 +247,7 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (stage.challenge === 'Emoji')
 			return { kind: 'Update', body: { ...renderOnboardingEmojiChallenge(t, stage, next, notice), flags: MessageFlags.IsComponentsV2 } };
 		return respond(notice, {
+			kind: 'Action',
 			label: t(`${Root}:answerAgain`),
 			customId: encodeOnboardingVerifyId({ verb: 'ask', verificationId: verification.id, attempts: next.attempts })
 		});
@@ -246,7 +260,11 @@ export class UserInteractionHandler extends InteractionHandler {
 		if (next === null || next.kind === 'Done') return [t(`${Root}:passedDone`, { stage: stage.name }), null];
 		if (next.kind === 'AwaitNativeOnboarding') return [t(`${Root}:passedAwaitNative`, { stage: stage.name, next: next.stage.name }), null];
 
-		const button = { label: t(`${Root}:continue`), customId: encodeOnboardingVerifyId({ verb: 'start', guildId: stage.guildId }) };
+		const button: OnboardingNoticeButton = {
+			kind: 'Action',
+			label: t(`${Root}:continue`),
+			customId: encodeOnboardingVerifyId({ verb: 'start', guildId: stage.guildId })
+		};
 		return [t(`${Root}:passedNext`, { stage: stage.name, next: next.stage.name }), button];
 	}
 }

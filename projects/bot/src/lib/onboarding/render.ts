@@ -3,6 +3,7 @@ import { getOnboardingEmojiChallenge } from '#lib/onboarding/flow';
 import { OnboardingEventsRoot } from '#lib/onboarding/log';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
+import { getWebsiteUrl } from '#utils/website';
 import { cutText } from '@sapphire/utilities';
 import type { AnyNamespace, TFunction } from '@wolfstar/plugin-i18next';
 import {
@@ -128,11 +129,26 @@ export function renderOnboardingQuestionModal(
 }
 
 /**
- * A button under a private answer of the members' side: `Continue` to the next stage, or `Answer again`.
+ * A button under a private answer of the members' side: `Continue` to the next stage or `Answer again` (an action of
+ * the bot), or the link to the captcha of a `Captcha` stage on the website.
  */
-export interface OnboardingNoticeButton {
-	readonly label: string;
-	readonly customId: string;
+export type OnboardingNoticeButton =
+	| { readonly kind: 'Action'; readonly label: string; readonly customId: string }
+	| { readonly kind: 'Link'; readonly label: string; readonly url: string };
+
+/**
+ * The page of the website where a member passes the captcha of a `Captcha` stage of a guild. The page of the join
+ * guard's checkpoint is the same: it shows what the member waits for.
+ */
+export function getOnboardingCaptchaUrl(guildId: Snowflake) {
+	return `${getWebsiteUrl()}/verify/${guildId}`;
+}
+
+function renderNoticeButton(button: OnboardingNoticeButton) {
+	const label = cutText(button.label, 80);
+	return button.kind === 'Link'
+		? { type: ComponentType.Button as const, style: ButtonStyle.Link as const, label, url: button.url }
+		: { type: ComponentType.Button as const, style: ButtonStyle.Primary as const, label, custom_id: button.customId };
 }
 
 /**
@@ -147,14 +163,7 @@ export function renderOnboardingNotice(content: string, button: OnboardingNotice
 				: [
 						{
 							type: ComponentType.ActionRow,
-							components: [
-								{
-									type: ComponentType.Button,
-									style: ButtonStyle.Primary,
-									label: cutText(button.label, 80),
-									custom_id: button.customId
-								}
-							]
+							components: [renderNoticeButton(button)]
 						}
 					],
 		flags: MessageFlags.Ephemeral,
@@ -175,14 +184,7 @@ export function renderOnboardingNoticeUpdate(content: string, button: Onboarding
 				: [
 						{
 							type: ComponentType.ActionRow as const,
-							components: [
-								{
-									type: ComponentType.Button as const,
-									style: ButtonStyle.Primary as const,
-									label: cutText(button.label, 80),
-									custom_id: button.customId
-								}
-							]
+							components: [renderNoticeButton(button)]
 						}
 					])
 		],

@@ -36,7 +36,13 @@ describe('parseDashboardSettingsUpdate', () => {
 
 describe('createWebsiteListener', () => {
 	const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
-	const target = { settingsUpdate: vi.fn(), invalidateAllSettings: vi.fn(), joinGuardRequest: vi.fn(), appealRequest: vi.fn() };
+	const target = {
+		settingsUpdate: vi.fn(),
+		invalidateAllSettings: vi.fn(),
+		joinGuardRequest: vi.fn(),
+		appealRequest: vi.fn(),
+		onboardingRequest: vi.fn()
+	};
 
 	beforeEach(() => vi.clearAllMocks());
 
@@ -79,6 +85,15 @@ describe('createWebsiteListener', () => {
 		await listener.stop();
 	});
 
+	test('GIVEN a request of the onboarding THEN the target is told its ID', async () => {
+		const { client, listener } = await listen();
+
+		client.emit('notification', { channel: DatabaseNotificationChannels.OnboardingRequest, payload: ' 42 ' });
+
+		expect(target.onboardingRequest).toHaveBeenCalledWith('42');
+		await listener.stop();
+	});
+
 	test('GIVEN a request of the join guard THEN the target is told its ID', async () => {
 		const { client, listener } = await listen();
 
@@ -97,10 +112,12 @@ describe('targets', () => {
 		target.settingsUpdate({ guildId, keys: ['logsWebhooks'] });
 		target.invalidateAllSettings();
 		target.joinGuardRequest('42');
+		target.onboardingRequest('43');
 
 		expect(manager.broadcast).toHaveBeenCalledWith({ type: 'settingsUpdate', guildId, keys: ['logsWebhooks'] });
 		expect(manager.broadcast).toHaveBeenCalledWith({ type: 'settingsInvalidateAll' });
 		expect(manager.send).toHaveBeenCalledWith(0, { type: 'joinGuardRequest', requestId: '42' });
+		expect(manager.send).toHaveBeenCalledWith(0, { type: 'onboardingRequest', requestId: '43' });
 	});
 
 	test('GIVEN one process THEN the writes are handled here as a shard would, and the requests are queued', () => {
@@ -110,14 +127,17 @@ describe('targets', () => {
 		onShardMessage('settingsUpdate', updates);
 		onShardMessage('settingsInvalidateAll', invalidations);
 		const enqueue = vi.fn();
-		const target = createLocalWebsiteTarget(enqueue, vi.fn());
+		const enqueueOnboarding = vi.fn();
+		const target = createLocalWebsiteTarget(enqueue, vi.fn(), enqueueOnboarding);
 
 		target.settingsUpdate({ guildId, keys: ['logsWebhooks'] });
 		target.invalidateAllSettings();
 		target.joinGuardRequest('42');
+		target.onboardingRequest('43');
 
 		expect(updates).toHaveBeenCalledWith({ type: 'settingsUpdate', guildId, keys: ['logsWebhooks'] });
 		expect(invalidations).toHaveBeenCalledTimes(1);
 		expect(enqueue).toHaveBeenCalledWith('42');
+		expect(enqueueOnboarding).toHaveBeenCalledWith('43');
 	});
 });
