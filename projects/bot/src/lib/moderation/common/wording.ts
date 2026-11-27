@@ -79,7 +79,7 @@ export function getRecentCaseVerb(t: Translator, type: TypeVariation, undo: bool
 	return t(`moderationActions:${undo ? 'recentUndoneVerb' : 'recentVerb'}.${getWordingName(type)}` as TranslationKey);
 }
 
-const CaseTypeEmojis: Partial<Record<TypeVariation, EmojiKey>> = {
+const CaseTypeEmojis: Record<TypeVariation, EmojiKey> = {
 	[TypeVariation.Ban]: 'Ban',
 	[TypeVariation.Kick]: 'Kick',
 	[TypeVariation.Mute]: 'Mute',
@@ -87,15 +87,23 @@ const CaseTypeEmojis: Partial<Record<TypeVariation, EmojiKey>> = {
 	[TypeVariation.VoiceKick]: 'Kick',
 	[TypeVariation.VoiceMute]: 'Mute',
 	[TypeVariation.Warning]: 'Warning',
+	[TypeVariation.RestrictedReaction]: 'RestrictedReaction',
+	[TypeVariation.RestrictedEmbed]: 'RestrictedEmbed',
+	[TypeVariation.RestrictedAttachment]: 'RestrictedAttachment',
+	[TypeVariation.RestrictedVoice]: 'RestrictedVoice',
+	[TypeVariation.SetNickname]: 'SetNickname',
+	[TypeVariation.RoleAdd]: 'RoleAdd',
+	[TypeVariation.RoleRemove]: 'RoleRemove',
+	[TypeVariation.RestrictedEmoji]: 'RestrictedEmoji',
 	[TypeVariation.Timeout]: 'Timeout',
 	[TypeVariation.Note]: 'Note'
 };
 
 /**
- * The emoji of a type of case, the shield of the moderators for the ones that have none of their own.
+ * The emoji of a type of case. Every type has one, so a new type does not compile until it is given its own.
  */
 export function getCaseTypeEmojiKey(type: TypeVariation): EmojiKey {
-	return CaseTypeEmojis[type] ?? 'Moderator';
+	return CaseTypeEmojis[type];
 }
 
 /**

@@ -53,7 +53,7 @@ interface AnyComponent {
 	content?: string;
 	custom_id?: string;
 	disabled?: boolean;
-	options?: { value: string; default?: boolean }[];
+	options?: { value: string; default?: boolean; emoji?: { name?: string } }[];
 	accessory?: AnyComponent;
 	components?: AnyComponent[];
 }
@@ -202,6 +202,18 @@ describe('case menu', () => {
 			const select = flatten(message.components!).find((component) => component.type === ComponentType.StringSelect)!;
 
 			expect(select.options!.filter((option) => option.default).map((option) => option.value)).toEqual(['pending']);
+		});
+
+		test('GIVEN the types of case THEN none of them falls back to the shield of the moderators', () => {
+			const message = renderCaseList(createContext(), { filter: 'all', userId: null, page: 0 }, entries);
+			const select = flatten(message.components!).find((component) => component.type === ComponentType.StringSelect)!;
+			// The first two options are every case and the pending ones, the others are one type each:
+			const emojis = select.options!.slice(2).map((option) => option.emoji?.name);
+
+			expect(emojis).not.toContain(undefined);
+			expect(emojis).not.toContain('moderator');
+			// A voice kick and a voice mute share the icon of a kick and of a mute, every other type has its own:
+			expect(new Set(emojis).size).toBe(emojis.length - 2);
 		});
 
 		test('GIVEN no case THEN the list says so and has no pages', () => {
