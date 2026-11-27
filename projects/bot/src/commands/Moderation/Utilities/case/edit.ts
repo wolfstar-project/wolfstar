@@ -5,6 +5,7 @@ import { renderStatus } from '#utils/status';
 import { isNullish } from '@sapphire/utilities';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { MessageFlags } from 'discord-api-types/v10';
 
 /**
  * `/case edit`, see the `case` parent command.
@@ -25,6 +26,8 @@ export class UserCommand extends Command {
 			const t = getDisplayT(interaction, false);
 			const duration = resolveCaseDuration(t, entry, options.duration);
 
+			// The edit waits for the lock of the case, which may take longer than Discord waits for an answer:
+			const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 			const outcome = await editCase({
 				entry,
 				moderatorId: interaction.user.id,
@@ -37,7 +40,7 @@ export class UserCommand extends Command {
 			});
 
 			const key = outcome.changes.length === 0 ? 'commands/case:editUnchanged' : 'commands/case:editSuccess';
-			return interaction.reply(renderStatus(outcome.changes.length === 0 ? 'info' : 'success', t(key, { caseId: entry.id })));
+			return deferred.update(renderStatus(outcome.changes.length === 0 ? 'info' : 'success', t(key, { caseId: entry.id })));
 		});
 	}
 }

@@ -4,6 +4,7 @@ import { getCase, getDisplayT, handleCase } from '#lib/structures/commands/moder
 import { renderStatus } from '#utils/status';
 import { applyLocalizedBuilder } from '@wolfstar/plugin-i18next';
 import { Command, RegisterAsSubcommand } from '@wolfstar/plugin-subcommands-advanced';
+import { MessageFlags } from 'discord-api-types/v10';
 
 /**
  * `/case archive`, see the `case` parent command.
@@ -19,10 +20,12 @@ export class UserCommand extends Command {
 		return handleCase(interaction, async () => {
 			const entry = await getCase(interaction, options.case);
 			const t = getDisplayT(interaction, false);
+			// Closing waits for the lock of the case, which may take longer than Discord waits for an answer:
+			const deferred = await interaction.defer({ flags: MessageFlags.Ephemeral });
 			const outcome = await closeCase({ entry, moderatorId: interaction.user.id, t, reason: null, notify: false });
 
 			const closed = outcome.changes.length > 0;
-			return interaction.reply(
+			return deferred.update(
 				renderStatus(
 					closed ? 'success' : 'info',
 					t(closed ? 'commands/case:archiveSuccess' : 'commands/case:closeAlready', { caseId: entry.id })
