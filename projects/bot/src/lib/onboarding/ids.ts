@@ -15,7 +15,7 @@ export const OnboardingVerifyHandlerName = 'onboardingVerify';
 /**
  * What a component of the panel does. Every one carries the revision the panel showed, which a write is made with:
  * - `home`: shows the summary again, read anew (`Reload` after a conflict too).
- * - `toggle`: switches the module.
+ * - `toggle`: turns the module on or off (`extra` holds `on` or `off`, what the panel offered).
  * - `create`, `createSubmit`: the modal of a new stage, and its submission.
  * - `stage`: the select menu that opens a stage.
  * - `edit`, `editSubmit`: the modal of the texts of a stage, and its submission (`extra` holds the challenge it sets).
@@ -86,6 +86,27 @@ export function decodeOnboardingPanelId(content: unknown): OnboardingPanelAction
 	if (!Number.isSafeInteger(revisionNumber) || revisionNumber < 0) return null;
 
 	return { ownerId: decoded.sessionId, verb: verb as OnboardingPanelVerb, revision: revisionNumber, stageId, extra };
+}
+
+/**
+ * The `extra` of a `toggle` button: the state the module gets when it is pressed.
+ *
+ * @remarks The button sets what the panel showed it would, and does not flip what is stored: a panel shown before
+ * a write of the dashboard, or a click sent twice, would undo it. The switch is not covered by the revision, since the
+ * dashboard writes it with the other settings.
+ */
+export function formatOnboardingToggleTarget(enabled: boolean): string {
+	return enabled ? 'on' : 'off';
+}
+
+/**
+ * Reads what {@linkcode formatOnboardingToggleTarget} wrote.
+ *
+ * @returns Whether the module is turned on, `null` when the button names no state.
+ */
+export function parseOnboardingToggleTarget(extra: string): boolean | null {
+	if (extra === 'on') return true;
+	return extra === 'off' ? false : null;
 }
 
 /**

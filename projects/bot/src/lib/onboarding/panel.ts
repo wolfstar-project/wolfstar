@@ -1,4 +1,4 @@
-import { encodeOnboardingPanelId, type OnboardingPanelAction, type OnboardingPanelVerb } from '#lib/onboarding/ids';
+import { encodeOnboardingPanelId, formatOnboardingToggleTarget, type OnboardingPanelAction, type OnboardingPanelVerb } from '#lib/onboarding/ids';
 import { getOnboardingStageBlockers, type OnboardingReadinessContext, type OnboardingStageBlocker } from '#lib/onboarding/readiness';
 import type { TranslationKey, Translator } from '#lib/structures/commands/utils';
 import { Colors } from '#utils/constants';
@@ -29,10 +29,12 @@ import {
 	OnboardingAttemptLimits,
 	OnboardingFailureTimeoutLimits,
 	OnboardingTimeLimitLimits,
+	normalizeOnboardingStageInput,
 	type OnboardingChallenge,
 	type OnboardingConfig,
 	type OnboardingCounts,
 	type OnboardingStage,
+	type OnboardingStageInput,
 	type OnboardingStageProblem
 } from 'wolfstar-database';
 
@@ -174,7 +176,7 @@ export function renderOnboardingPanel(context: OnboardingPanelContext): APIInter
 				type: ComponentType.Button,
 				style: settings.enabled ? ButtonStyle.Danger : ButtonStyle.Success,
 				label: t(settings.enabled ? `${Root}:disable` : `${Root}:enable`),
-				custom_id: id(context, 'toggle')
+				custom_id: id(context, 'toggle', '', formatOnboardingToggleTarget(!settings.enabled))
 			},
 			{
 				type: ComponentType.Button,
@@ -497,9 +499,75 @@ export function renderOnboardingStageModal(
 				OnboardingStageInputs.timeLimit,
 				`${Root}:modalTimeLimit`,
 				`${Root}:modalTimeLimitDescription`,
-				{ style: TextInputStyle.Short, required: true, maxLength: 4, value: String(values.timeLimit / 60) },
+				{
+					style: TextInputStyle.Short,
+					required: true,
+					maxLength: OnboardingTimeLimitInputLength,
+					value: formatOnboardingTimeLimitMinutes(values.timeLimit)
+				},
 				{ minimum: OnboardingTimeLimitLimits.minimum / 60, maximum: OnboardingTimeLimitLimits.maximum / 60 }
 			)
 		]
 	};
 }
+
+/**
+ * The longest text of the time limit in the modal: `1439.98`, the longest number of minutes
+ * {@linkcode formatOnboardingTimeLimitMinutes} writes for a time limit the dashboard can save.
+ */
+export const OnboardingTimeLimitInputLength = 7;
+
+/**
+ * Writes a time limit in seconds as the minutes the modal shows, with two decimals at most: `61` is `1.02`.
+ *
+ * @remarks The dashboard saves any whole number of seconds. Two decimals of a minute are off by 0.3 seconds at most,
+ * so {@linkcode parseOnboardingTimeLimitMinutes} reads every saved value back as it was.
+ */
+export function formatOnboardingTimeLimitMinutes(seconds: number): string {
+	return String(Math.round((seconds / 60) * 100) / 100);
+}
+
+/**
+ * Reads the minutes typed in the modal as whole seconds. A comma is read as a decimal point.
+ *
+ * @returns The seconds, `NaN` when the text is no number, which the validation refuses as a time limit out of range.
+ */
+export function parseOnboardingTimeLimitMinutes(text: string): number {
+	const trimmed = text.trim().replace(',', '.');
+	const minutes = trimmed.length === 0 ? Number.NaN : Number(trimmed);
+	return Number.isFinite(minutes) ? Math.round(minutes * 60) : Number.NaN;
+}
+
+/**
+ * What the modal of a new stage gives.
+ */
+export type OnboardingStageModalInput = Pick<OnboardingStageInput, 'name' | 'question' | 'answers' | 'maxAttempts' | 'timeLimit'>;
+
+/**
+ * The stage the modal of a new stage creates, normalized: a `Question` stage when a question or an answer is left
+ * after trimming, a `Button` stage otherwise.
+ *
+ * @remarks The choice is made on the normalized text. An answers field left empty reads as one empty answer, which
+ * would make a question stage with nothing to ask.
+ */
+export function createOnboardingStageInput(values: OnboardingStageModalInput): OnboardingStageInput {
+	const input = normalizeOnboardingStageInput({ ...OnboardingDefaultStage, ...values });
+	return { ...input, challenge: input.question === null && input.answers.length === 0 ? 'Button' : 'Question' };
+}
+
+/**
+ * What a new stage is set to, but for what its modal gives.
+ */
+const OnboardingDefaultStage: OnboardingStageInput = {
+	name: '',
+	enabled: true,
+	trigger: 'Join',
+	challenge: 'Button',
+	question: null,
+	answers: [],
+	maxAttempts: 3,
+	timeLimit: 600,
+	roleId: null,
+	failureAction: 'None',
+	failureTimeout: null
+};

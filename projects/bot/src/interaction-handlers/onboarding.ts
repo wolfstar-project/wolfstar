@@ -1,15 +1,17 @@
 import { resolveOnErrorCodes } from '#common';
-import { readSettings, writeSettings } from '#lib/database';
+import { writeSettings } from '#lib/database';
 import { fetchGuildT } from '#lib/moderation/common';
 import { getJoinGuardRoleProblem } from '#lib/moderation/joinguard/permissions';
 import { canManageServerSettingsFrom } from '#lib/structures/commands/permissions';
 import { getOnboardingChannelProblem } from '#lib/onboarding/discord';
-import { decodeOnboardingPanelId, type OnboardingPanelAction } from '#lib/onboarding/ids';
+import { decodeOnboardingPanelId, parseOnboardingToggleTarget, type OnboardingPanelAction } from '#lib/onboarding/ids';
 import {
+	createOnboardingStageInput,
 	describeOnboardingProblems,
 	OnboardingPanelRoot,
 	OnboardingStageInputs,
 	parseFailureChoice,
+	parseOnboardingTimeLimitMinutes,
 	renderOnboardingConflict,
 	renderOnboardingPanel,
 	renderOnboardingStageModal,
@@ -187,10 +189,16 @@ export class UserInteractionHandler extends InteractionHandler {
 		);
 	}
 
+	/**
+	 * Turns the module on or off, as the button the panel showed said: pressed twice, or after a write of the dashboard,
+	 * it sets the same state again instead of flipping it back.
+	 */
 	private async toggle(interaction: ComponentInteraction, guildId: Snowflake, action: OnboardingPanelAction, t: Translator) {
+		const enabled = parseOnboardingToggleTarget(action.extra);
+		if (enabled === null) return interaction.reply({ content: getDefaultExpiredReply(), flags: MessageFlags.Ephemeral });
+
 		const deferred = await interaction.deferUpdate();
-		const settings = await readSettings(guildId);
-		await writeSettings(guildId, { onboardingEnabled: !settings.onboardingEnabled }, interaction.user.id);
+		await writeSettings(guildId, { onboardingEnabled: enabled }, interaction.user.id);
 		announceOnboardingChange(guildId);
 		return deferred.update(this.render(await loadOnboardingPanel(guildId, action.ownerId, t), { kind: 'Home' }, t(`${Root}:saved`)));
 	}
@@ -356,11 +364,7 @@ export class UserInteractionHandler extends InteractionHandler {
 	private async submit(interaction: ModalSubmitInteraction, guildId: Snowflake, action: OnboardingPanelAction, t: Translator) {
 		const values = readStageModal(interaction);
 		if (action.verb === 'createSubmit') {
-			const input = normalizeOnboardingStageInput({
-				...DefaultStage,
-				...values,
-				challenge: values.question === null && values.answers.length === 0 ? 'Button' : 'Question'
-			});
+			const input = createOnboardingStageInput(values);
 			return this.write(interaction, guildId, action, t, createOnboardingStage(input, OnboardingCaptchaAvailable), (stage) => ({
 				kind: 'Stage',
 				stageId: stage.id
@@ -379,20 +383,6 @@ export class UserInteractionHandler extends InteractionHandler {
 	}
 }
 
-const DefaultStage: OnboardingStageInput = {
-	name: '',
-	enabled: true,
-	trigger: 'Join',
-	challenge: 'Button',
-	question: null,
-	answers: [],
-	maxAttempts: 3,
-	timeLimit: 600,
-	roleId: null,
-	failureAction: 'None',
-	failureTimeout: null
-};
-
 function toInput(stage: OnboardingStage): OnboardingStageInput {
 	const { id: _id, guildId: _guildId, position: _position, createdAt: _createdAt, ...input } = stage;
 	return input;
@@ -401,14 +391,13 @@ function toInput(stage: OnboardingStage): OnboardingStageInput {
 function readStageModal(interaction: ModalSubmitInteraction) {
 	const read = (inputId: string) => getModalValue(interaction.data.components, inputId);
 	const question = read(OnboardingStageInputs.question);
-	const minutes = Number((read(OnboardingStageInputs.timeLimit) ?? '').trim().replace(',', '.'));
 	return {
 		name: read(OnboardingStageInputs.name) ?? '',
 		question,
 		answers: (read(OnboardingStageInputs.answers) ?? '').split('\n'),
 		maxAttempts: Number((read(OnboardingStageInputs.attempts) ?? '').trim()),
 		// Minutes in the modal, seconds in the row; what is not a number is refused as a time limit out of range:
-		timeLimit: Number.isFinite(minutes) ? Math.round(minutes * 60) : Number.NaN
+		timeLimit: parseOnboardingTimeLimitMinutes(read(OnboardingStageInputs.timeLimit) ?? '')
 	};
 }
 
