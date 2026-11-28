@@ -28,7 +28,7 @@
 		"pg": "^8.23.1",
 		"prisma": "8.0.0-rc.19",
 		"prisma-orm-extension-typed-json": "8.0.0-rc.5",
-		"varlock": "^1.24.0"
+		"varlock": "^1.25.0"
 	},
 	"devDependencies": {
 		"@rollup/plugin-alias": "6.0.1",
